@@ -34,7 +34,7 @@
           "height": 430
         }
       },
-      "trayClickAction": "lectureDetailPage",
+      "trayClickAction": "play",
       "components": [
         {
           "layout": {

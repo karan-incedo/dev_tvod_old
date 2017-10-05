@@ -30,7 +30,7 @@
             android:textColor="@color/colorAccent"
             android:background="@android:color/transparent"
             android:fadingEdge="horizontal"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="20dp"
             android:singleLine="true"
             android:ellipsize="marquee"/>
     </LinearLayout>
@@ -48,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:visibility="gone"
+        android:visibility="visible"
         >
 
         <LinearLayout

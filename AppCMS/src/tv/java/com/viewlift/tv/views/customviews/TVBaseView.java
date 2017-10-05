@@ -21,6 +21,8 @@ import com.viewlift.tv.utility.Utils;
 
 import java.util.Map;
 
+import static com.viewlift.tv.utility.Utils.getViewHeight;
+import static com.viewlift.tv.utility.Utils.getViewWidth;
 
 
 /**
@@ -35,6 +37,8 @@ public abstract class TVBaseView extends FrameLayout {
     public static final int STANDARD_MOBILE_WIDTH_PX = 1920;
     public static final int STANDARD_MOBILE_HEIGHT_PX = 1080;
     private static float LETTER_SPACING = 0.17f;
+    private ViewGroup childrenContainer;
+    protected boolean[] componentHasViewList;
 
     public TVBaseView(@NonNull Context context) {
         super(context);
@@ -83,28 +87,49 @@ public abstract class TVBaseView extends FrameLayout {
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
 
     }
+    public ViewGroup getChildrenContainer() {
+        if (childrenContainer == null) {
+            return createChildrenContainer();
+        }
+        return childrenContainer;
+    }
 
-
+    public void setComponentHasView(int index, boolean hasView) {
+        if (componentHasViewList != null) {
+            componentHasViewList[index] = hasView;
+        }
+    }
+    protected ViewGroup createChildrenContainer() {
+        childrenContainer = new FrameLayout(getContext());
+        int viewWidth = (int) getViewWidth(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
+        int viewHeight = (int) getViewHeight(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams childContainerLayoutParams =
+                new FrameLayout.LayoutParams(viewWidth, viewHeight);
+        childrenContainer.setLayoutParams(childContainerLayoutParams);
+        addView(childrenContainer);
+        return childrenContainer;
+    }
     public void setViewMarginsFromComponent(Component childComponent,
                                             View view,
                                             Layout parentLayout,
                                             View parentView,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                             boolean useMarginsAsPercentages,
-                                            boolean useWidthOfScreen) {
+                                            boolean useWidthOfScreen,
+                                            String viewType) {
         Layout layout = childComponent.getLayout();
 
         view.setPadding(0, 0, 0, 0);
 
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight =    getContext().getResources().getDisplayMetrics().heightPixels;
-        int viewWidth = (int) Utils.getViewWidth(getContext(), layout, FrameLayout.LayoutParams.MATCH_PARENT);
-        int viewHeight = (int) Utils.getViewHeight(getContext(), layout, FrameLayout.LayoutParams.WRAP_CONTENT);
+        int viewWidth = (int) getViewWidth(getContext(), layout, FrameLayout.LayoutParams.MATCH_PARENT);
+        int viewHeight = (int) getViewHeight(getContext(), layout, FrameLayout.LayoutParams.WRAP_CONTENT);
 
-        int parentViewWidth = (int) Utils.getViewWidth(getContext(),
+        int parentViewWidth = (int) getViewWidth(getContext(),
                 parentLayout,
                 parentView.getMeasuredWidth());
-        int parentViewHeight = (int) Utils.getViewHeight(getContext(),
+        int parentViewHeight = (int) getViewHeight(getContext(),
                 parentLayout,
                 parentView.getMeasuredHeight());
       //  int maxViewWidth = (int) getViewMaximumWidth(getContext(), layout, -1);
@@ -113,14 +138,14 @@ public abstract class TVBaseView extends FrameLayout {
 
             FireTV mobile = layout.getTv();
             if (mobile != null) {
-                if (Utils.getViewWidth(mobile) != -1) {
+                if (getViewWidth(mobile) != -1) {
                     if (mobile.getXAxis() != null) {
                         float scaledX = DEVICE_WIDTH * (Float.valueOf(mobile.getXAxis()) / STANDARD_MOBILE_WIDTH_PX);
                         lm = Math.round(scaledX);
                     }
                 }
 
-                if (Utils.getViewHeight(mobile) != -1) {
+                if (getViewHeight(mobile) != -1) {
                     if (mobile.getYAxis() != null) {
                         float scaledY = DEVICE_HEIGHT * ((Float.valueOf(mobile.getYAxis()) / STANDARD_MOBILE_HEIGHT_PX));
                         tm = Math.round(scaledY);
@@ -184,9 +209,13 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_TRAY_TITLE_KEY:
                     break;
                 case PAGE_PLAY_IMAGE_KEY:
-                    gravity = Gravity.CENTER;
-                    tm = 0;
-                    lm = 0;
+                    if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
+                            && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
+                        gravity = Gravity.CENTER;
+                        tm = 0;
+                        lm = 0;
+                    }
                     break;
                 case PAGE_THUMBNAIL_TITLE_KEY:
                  {
@@ -209,6 +238,8 @@ public abstract class TVBaseView extends FrameLayout {
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
+                    viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
+                    break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
                     break;
@@ -221,6 +252,8 @@ public abstract class TVBaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
+        } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
+            viewHeight = (int) (viewHeight / 1.05);
         }
 
         if (useWidthOfScreen) {
@@ -252,5 +285,34 @@ public abstract class TVBaseView extends FrameLayout {
         return 0;
     }
 
+    protected void initializeComponentHasViewList(int size) {
+        componentHasViewList = new boolean[size];
+    }
 
+    protected void setTypeFace(Context context,
+                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                             Component component,
+                             TextView textView) {
+        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            Typeface face = null;
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
+                    break;
+                case PAGE_TEXT_SEMIBOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
+                    break;
+                case PAGE_TEXT_EXTRABOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
+                    break;
+                default:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
+            }
+            textView.setTypeface(face);
+        }
+    }
 }

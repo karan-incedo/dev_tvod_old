@@ -11,19 +11,12 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
-
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
-import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -59,7 +52,11 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         String filmId = extraData[2];
         String adsUrl = intent.getStringExtra(getString(R.string.video_player_ads_url_key));
         String bgColor = intent.getStringExtra(getString(R.string.app_cms_bg_color_key));
+        String closedCaptionUrl = intent.getStringExtra(getString(R.string.video_player_closed_caption_key));
+        long watchedTime = intent.getLongExtra(getString(R.string.video_player_watched_time_key), 0);
+        long runtime = intent.getLongExtra(getString(R.string.video_player_run_time_key), 0);
         boolean playAds = intent.getBooleanExtra(getString(R.string.play_ads_key), true);
+        boolean isTrailer = intent.getBooleanExtra(getString(R.string.is_trailer_key), false);
 
 
         System.out.println("Ads Url = "+adsUrl);
@@ -72,13 +69,21 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         appCMSPlayVideoFragment =
                 AppCMSPlayVideoFragment.newInstance(this,
+                        null,
                         fontColor,
                         title,
                         permaLink,
+                        isTrailer,
                         hlsUrl,
                         filmId,
                         adsUrl,
-                        playAds);
+                        playAds,
+                        0,
+                        watchedTime,
+                        runtime,
+                        null,
+                        closedCaptionUrl,
+                        null);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));
@@ -122,6 +127,8 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        Intent returnIntent = new Intent();
+        setResult(Activity.RESULT_OK,returnIntent);
         finish();
     }
 
@@ -147,16 +154,19 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
+                        return false;
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
+                        return true;
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
+                        return true;
                     }
                     break;
             }

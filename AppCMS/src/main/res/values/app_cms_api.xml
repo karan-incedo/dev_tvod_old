@@ -373,6 +373,16 @@
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 
+    <string name="app_cms_toggle_switch_type">toggleSwitch</string>
+    <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
+    <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
+    <string name="app_cms_logout_button_key">logout button</string>
+    <string name="app_cms_title_label">titleLabel</string>
+    <string name="app_cms_description_label">descriptionLabel</string>
+    <string name="app_cms_delete_item_button">deleteItemButton</string>
+    <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
+    <string name="app_cms_signup_footer_label_key">signupfooterview</string>
+
     <!-- AppCMS Payment Processor values -->
     <string name="subscription_ios_payment_processor">iOS</string>
     <string name="subscription_ios_payment_processor_friendly">iTunes</string>
@@ -387,4 +397,19 @@
     <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
     <string name="facebook_auth_provider_name_key">facebook</string>
     <string name="google_auth_provider_name_key">google</string>
+
+    <!--reset password-->
+    <string name="app_cms_reset_password_cancel_button_key">cancelButton</string>
+    <string name="app_cms_reset_password_continue_button_key">resetPasswordButton</string>
+    <string name="app_cms_forgotPasswordTitle_key">forgotPasswordTitle</string>
+
+    <string name="contact_us">Contact Us</string>
+
+    <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
+    <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
+    <string name="app_cms_contact_us_module">AC ContactUs 01</string>
+    <string name="app_cms_contact_number_label">contactNumber</string>
+    <string name="app_cms_email_id_label">emailId</string>
+    <string name="app_cms_contact_us_call_icon_key">call_Icon</string>
+    <string name="app_cms_contact_us_email_icon_key">email_Icon</string>
 </resources>

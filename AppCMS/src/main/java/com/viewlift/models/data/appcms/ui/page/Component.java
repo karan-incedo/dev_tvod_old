@@ -86,6 +86,19 @@ public class Component implements ModuleWithComponents {
     @Expose
     String trayClickAction;
 
+    public String getItemClickAction() {
+        return itemClickAction;
+    }
+
+    public void setItemClickAction(String itemClickAction) {
+        this.itemClickAction = itemClickAction;
+    }
+
+    @SerializedName("itemClickAction")
+    @Expose
+    String itemClickAction;
+
+
     @SerializedName("fontFamily")
     @Expose
     String fontFamily;
@@ -165,6 +178,18 @@ public class Component implements ModuleWithComponents {
     @SerializedName("svod")
     @Expose
     boolean svod;
+
+    public String getHintColor() {
+        return hintColor;
+    }
+
+    public void setHintColor(String hintColor) {
+        this.hintColor = hintColor;
+    }
+
+    @SerializedName("hintColor")
+    @Expose
+    String hintColor;
 
     boolean yAxisSetManually;
 
