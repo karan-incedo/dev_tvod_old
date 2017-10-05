@@ -170,7 +170,6 @@ public class AppCMSPageFragment extends Fragment {
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         }
 
-
         //Logs an app event.
         appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
         //Sets whether analytics collection is enabled for this app on this device.

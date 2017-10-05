@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.List;
 

@@ -13,22 +13,30 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
+import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
+import com.viewlift.tv.views.fragment.AppCmsLoginDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
+import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
+import com.viewlift.tv.views.fragment.AppCmsSignUpDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
@@ -36,10 +44,9 @@ import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-
-import com.viewlift.R;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -59,9 +66,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
     private Map<String, AppCMSBinder> appCMSBinderMap;
-    private static final String DIALOG_FRAGMENT_TAG = "text_overlay";
+    public static final String DIALOG_FRAGMENT_TAG = "text_overlay";
     private AppCmsTvSearchComponent appCMSSearchUrlComponent;
     private boolean isActive;
+    private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -106,6 +114,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             appCMSSearchUrlComponent = DaggerAppCmsTvSearchComponent.builder()
                     .appCMSSearchUrlModule(new AppCMSSearchUrlModule(appCMSMain.getApiBaseUrl(),
                             appCMSSite.getGist().getSiteInternalName(),
+                            appCMSPresenter.getApiKey(),
                             appCMSBinder.getAppCMSSearchCall()))
                     .build();
         }
@@ -117,14 +126,30 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
                      if (isActive) {
-                            if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
-                                handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+                            if(appCMSPresenter.isPageUser(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())
+                                    || appCMSPresenter.isPageFooter(((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getPageId())){
+                                //check first its a request for Terms of service or Privacy Policy dialog.
+                                if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
+                                        AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
+                                    openGenericDialog(intent , false);
+                                }else  if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
+                                        AppCMSPresenter.ExtraScreenType.EDIT_PROFILE)){
+                                    AppCMSBinder binder = (AppCMSBinder)args.getBinder(getString(R.string.app_cms_binder_key));
+                                    if(binder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_sign_up_pager_title))){
+                                        openSignUpDialog(intent,true);
+                                    }else{
+                                        openLoginDialog(intent,true);
+                                    }
+
+                                }else{
+                                    openMyProfile();
+                                    handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
+                                }
+
                             }else {
-                                updatedAppCMSBinder =
-                                        (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-                                handleLaunchPageAction(updatedAppCMSBinder);
+                                    updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                                    handleLaunchPageAction(updatedAppCMSBinder);
                             }
-                            //appCMSPresenter.sendStopLoadingPageAction(); //stop the progress bar..
                         }
                     } catch (ClassCastException e) {
                         Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
@@ -151,10 +176,18 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     newFragment.show(ft, DIALOG_FRAGMENT_TAG);
                 }else if (intent.getAction().equals(AppCMSPresenter.SEARCH_ACTION)) {
                    openSearchFragment();
-                }else if(intent.getAction().equals(AppCMSPresenter.MY_PROFILE_ACTION)){
-                    openMyProfile();
+                }else if(intent.getAction().equals(AppCMSPresenter.CLOSE_DIALOG_ACTION)){
+                    pageLoading(false);
+                    closeSignInDialog();
+                    closeSignUpDialog();
                 }else if(intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
                     openErrorDialog(intent);
+                }else if(intent.getAction().equals(AppCMSPresenter.ACTION_RESET_PASSWORD)){
+                    openResetPasswordScreen(intent);
+                }else if(intent.getAction().equals(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION)){
+
+                }else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
+                    updateData();
                 }
 
             }
@@ -164,18 +197,46 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_DIALOG_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.SEARCH_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.MY_PROFILE_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.CLOSE_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
 
     }
 
     private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {
+        String tag = getTag(updatedAppCMSBinder);
+        appCMSBinderMap.put(tag,updatedAppCMSBinder);
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        if(null != fragment && fragment instanceof AppCmsMyProfileFragment){
+            getFragmentManager().popBackStack();
+        }
+
+        appCMSPresenter.sendGaScreen(updatedAppCMSBinder.getScreenName());
         AppCmsMyProfileFragment appCmsMyProfileFragment = AppCmsMyProfileFragment.newInstance(this , updatedAppCMSBinder);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        String tag = getTag(updatedAppCMSBinder);
-        fragmentTransaction.replace(R.id.home_placeholder ,appCmsMyProfileFragment,tag).commitAllowingStateLoss();
+
+        fragmentTransaction.replace(R.id.home_placeholder ,appCmsMyProfileFragment,tag).addToBackStack(tag).commitAllowingStateLoss();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == AppCMSPresenter.PLAYER_REQUEST_CODE){
+            Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+            if(null != fragment && fragment instanceof AppCmsTVPageFragment){
+                ((AppCmsTVPageFragment)fragment).refreshBrowseFragment();
+            }else if(null != fragment && fragment instanceof AppCmsMyProfileFragment){
+                AppCmsMyProfileFragment profileFragment = ((AppCmsMyProfileFragment)fragment);
+                AppCMSBinder appCmsBinder = appCMSBinderMap.get(profileFragment.getTag());
+                ((AppCmsMyProfileFragment)fragment).updateAdapterData(appCmsBinder);
+            }
+        }
+
     }
 
     @Override
@@ -206,8 +267,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private void openErrorDialog(Intent intent){
         pageLoading(false);
         Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
-        bundle.putBoolean(getString(R.string.retry_key) , true);
-        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
+        bundle.putBoolean(getString(R.string.retry_key) , bundle.getBoolean(getString(R.string.retry_key)));
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , bundle.getBoolean(getString(R.string.register_internet_receiver_key)));
+        bundle.putString(getString(R.string.tv_dialog_msg_key) , bundle.getString(getString(R.string.tv_dialog_msg_key)));
+        bundle.putString(getString(R.string.tv_dialog_header_key) , bundle.getString(getString(R.string.tv_dialog_header_key)));
+
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         AppCmsTvErrorFragment newFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);
@@ -215,9 +279,80 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         newFragment.show(ft, DIALOG_FRAGMENT_TAG);
     }
 
+    private void openResetPasswordScreen(Intent intent){
+
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                appCmsResetPasswordFragment = AppCmsResetPasswordFragment.newInstance(
+                        appCMSBinder);
+                appCmsResetPasswordFragment.show(ft, DIALOG_FRAGMENT_TAG);
+                pageLoading(false);
+            }
+        }
+
+
+    }
+
+
+    AppCmsLoginDialogFragment loginDialog;
+    AppCmsSignUpDialogFragment signUpDialog;
+    private void openLoginDialog(Intent intent , boolean isLoginPage){
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage",isLoginPage);
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                loginDialog = AppCmsLoginDialogFragment.newInstance(
+                        appCMSBinder);
+                loginDialog.show(ft, DIALOG_FRAGMENT_TAG);
+                pageLoading(false);
+            }
+        }
+    }
+    private void openSignUpDialog(Intent intent , boolean isLoginPage){
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage",isLoginPage);
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                signUpDialog = AppCmsSignUpDialogFragment.newInstance(
+                        appCMSBinder);
+                signUpDialog.show(ft, DIALOG_FRAGMENT_TAG);
+                pageLoading(false);
+            }
+        }
+    }
+
+
+    private void openGenericDialog(Intent intent , boolean isLoginPage){
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage",isLoginPage);
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                AppCmsGenericDialogFragment newFragment = AppCmsGenericDialogFragment.newInstance(
+                        appCMSBinder );
+                newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+                pageLoading(false);
+            }
+        }
+
+
+    }
+
     @Override
     public void onErrorScreenClose() {
-
+        if (appCmsResetPasswordFragment != null
+                && appCmsResetPasswordFragment.isAdded()
+                && appCmsResetPasswordFragment.isVisible()){
+            appCmsResetPasswordFragment.dismiss();
+        }
     }
 
 
@@ -225,6 +360,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public void onRetry(Bundle bundle) {
         RetryCallBinder retryCallBinder = (RetryCallBinder)bundle.getBinder(getString(R.string.retryCallBinderKey));
         AppCMSPresenter.RETRY_TYPE retryType = retryCallBinder.getRetry_type();
+        boolean isTosPage = bundle.getBoolean(getString(R.string.is_tos_dialog_page_key));
+        boolean isLoginPage = bundle.getBoolean(getString(R.string.is_login_dialog_page_key));
         switch(retryType){
             case BUTTON_ACTION:
                 appCMSPresenter.launchTVButtonSelectedAction(
@@ -232,18 +369,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.getAction(),
                         retryCallBinder.getFilmTitle(),
                         retryCallBinder.getExtraData(),
-                        retryCallBinder.isCloselauncher()
+                        retryCallBinder.isCloselauncher(),
+                        retryCallBinder.getContentDatum()
                 );
                 break;
             case VIDEO_ACTION:
-                /*appCMSPresenter.launchVideoPlayer(
-                        retryCallBinder.getContentDatum(),
-                        -1,
-                        null,
-                        0
-
-                );*/
-
                 appCMSPresenter.launchTVVideoPlayer(
                         retryCallBinder.getFilmId(),
                         retryCallBinder.getPagePath(),
@@ -258,7 +388,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.getFilmTitle(),
                         retryCallBinder.getPagePath(),
                         retryCallBinder.isCloselauncher(),
-                        Uri.EMPTY
+                        Uri.EMPTY,
+                        false,
+                        isTosPage,
+                        isLoginPage
                 );
                 break;
 
@@ -269,6 +402,28 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     ((AppCmsSearchFragment) fragment).searchResult(retryCallBinder.getFilmTitle());
                 }
                 break;
+
+            case WATCHLIST_RETRY_ACTION:
+                appCMSPresenter.showLoadingDialog(true);
+                appCMSPresenter.navigateToWatchlistPage(
+                        retryCallBinder.getPageId(),
+                        retryCallBinder.getFilmTitle(),
+                        retryCallBinder.getPagePath(),
+                        false);
+                break;
+            case HISTORY_RETRY_ACTION:
+                appCMSPresenter.showLoadingDialog(true);
+                appCMSPresenter.navigateToHistoryPage(
+                        retryCallBinder.getPageId(),
+                        retryCallBinder.getFilmTitle(),
+                        retryCallBinder.getPagePath(),
+                        false);
+                break;
+            case RESET_PASSWORD_RETRY:
+                appCMSPresenter.showLoadingDialog(true);
+                appCMSPresenter.resetPassword(retryCallBinder.getFilmTitle()); //filmtitle here means emailid.
+                break;
+
         }
     }
 
@@ -313,6 +468,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 Log.d(TAG, "Popping stack to get to page item");
                 try {
                     appCMSBinderStack.pop();
+                    //getFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
                     Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
@@ -325,11 +481,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         showInfoIcon(appCMSBinder.getPageId());
         Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
-        boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 0 );
-        if(!isPoped)
+        boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 1 );
+        //if(!isPoped)
             setPageFragment(updatedAppCMSBinder);
-        else
-        selectNavItem(updatedAppCMSBinder.getPageId());
+        //else
+        //selectNavItem(updatedAppCMSBinder.getPageId());
     }
 
 
@@ -495,10 +651,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderStack.push(tag);
         appCMSPresenter.sendGaScreen(tag);
 
-        AppCmsSearchFragment searchFragment = new AppCmsSearchFragment();
-        getFragmentManager().beginTransaction().replace(R.id.home_placeholder , searchFragment ,
+        Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+        if(null != fragment && fragment instanceof AppCmsSearchFragment){
+            getFragmentManager().popBackStack();
+        }
+            AppCmsSearchFragment searchFragment = new AppCmsSearchFragment();
+            getFragmentManager().beginTransaction().replace(R.id.home_placeholder , searchFragment ,
                     tag).addToBackStack(tag).commit();
-
         selectNavItem(tag);
     }
 
@@ -520,17 +679,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 }
             }
         }
-
         showInfoIcon(tag);
         appCMSBinderStack.push(tag);
-       // appCMSPresenter.sendGaScreen(tag);
-
-       /* AppCmsMyProfileFragment profileFragment = new AppCmsMyProfileFragment();
-        getFragmentManager().beginTransaction().replace(R.id.home_placeholder , profileFragment ,
-                tag).addToBackStack(tag).commit();*/
-
-
-
         selectNavItem(tag);
     }
 
@@ -547,5 +697,125 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     public int getNavigationContaineer() {
         return R.id.navigation_placholder;
+    }
+
+
+    private void updateData() {
+        final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+        final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
+
+        if (appCMSPresenter != null) {
+            for (Map.Entry<String, AppCMSBinder> appCMSBinderEntry : appCMSBinderMap.entrySet()) {
+                final AppCMSBinder appCMSBinder = appCMSBinderEntry.getValue();
+                if (appCMSBinder != null) {
+                    String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
+                    boolean usePageIdQueryParam = true;
+                    if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
+                        endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
+                        usePageIdQueryParam = false;
+                    }
+
+                    if (!TextUtils.isEmpty(endPoint)
+                            && !appCMSBinder.getPageName().equalsIgnoreCase
+                            (getString(R.string.app_cms_watchlist_navigation_title))
+                            && !appCMSBinder.getPageName().equalsIgnoreCase
+                            (getString(R.string.app_cms_history_navigation_title))) {
+
+                        String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
+                                false,
+                                false,
+                                appCMSMain.getApiBaseUrl(),
+                                endPoint,
+                                appCMSSite.getGist().getSiteInternalName(),
+                                appCMSBinder.getPagePath());
+
+                        appCMSPresenter.getPageIdContent(apiUrl,
+                                appCMSBinder.getPagePath(),
+                                appCMSPageAPI -> {
+                                    if (appCMSPageAPI != null) {
+                                        boolean updatedHistory = false;
+                                        if (appCMSPresenter.isUserLoggedIn()) {
+                                            if (appCMSPageAPI.getModules() != null) {
+                                                List<Module> modules = appCMSPageAPI.getModules();
+                                                for (int i = 0; i < modules.size(); i++) {
+                                                    Module module = modules.get(i);
+                                                    AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
+                                                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                                                        if (module.getContentData() != null &&
+                                                                !module.getContentData().isEmpty()) {
+                                                            int finalI = i;
+                                                            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                                                                if (appCMSHistoryResult != null) {
+                                                                    if (appCMSHistoryResult != null) {
+                                                                        AppCMSPageAPI historyAPI = appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                        historyAPI.getModules().get(0).setId(module.getId());
+                                                                        historyAPI.getModules().get(0).setTitle(module.getTitle());
+                                                                         modules.set(finalI, historyAPI.getModules().get(0));
+                                                                    }
+                                                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                                                                }
+                                                            });
+                                                            updatedHistory = true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        appCMSBinderMap.put(getTag(appCMSBinder) ,appCMSBinder );
+                                        int totalNoOfFragment = getFragmentManager().getBackStackEntryCount();
+                                        for(int i=0;i<totalNoOfFragment;i++){
+                                            FragmentManager.BackStackEntry backStackEntry = getFragmentManager().getBackStackEntryAt(i);
+                                            String tag = backStackEntry.getName();
+                                            Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                                            AppCMSBinder appCmsBinder = appCMSBinderMap.get(tag);
+                                            if(fragment instanceof AppCmsTVPageFragment){
+                                                ((AppCmsTVPageFragment)fragment).updateBinder(appCmsBinder);
+                                            }
+                                        }
+                                    }
+                        });
+                    }else if(appCMSBinder.getPageName().equalsIgnoreCase
+                            (getString(R.string.app_cms_history_navigation_title))){
+                            AppCMSPageAPI appCMSPageAPI = appCMSBinder.getAppCMSPageAPI();
+                        appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                            if (appCMSHistoryResult != null) {
+                                AppCMSPageAPI historyAPI =
+                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                 appCMSBinder.updateAppCMSPageAPI(historyAPI);
+                            }
+                        });
+
+                    }
+
+                }
+            }
+        }
+    }
+
+    public void closeSignUpDialog() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(signUpDialog != null){
+                    signUpDialog.dismiss();
+                    signUpDialog = null;
+                }
+            }
+        },50);
+
+    }
+
+    public void closeSignInDialog() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(loginDialog != null){
+                    loginDialog.dismiss();
+                    loginDialog = null;
+                }
+            }
+        },50);
+
     }
 }

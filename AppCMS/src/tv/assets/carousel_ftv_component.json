@@ -24,7 +24,7 @@
           "bottomMargin": 15
         }
       },
-      "trayClickAction": "lectureDetailPage",
+      "trayClickAction": "play",
       "components": [
         {
           "layout": {

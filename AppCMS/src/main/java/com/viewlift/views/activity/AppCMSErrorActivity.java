@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.viewlift.AppCMSApplication;
-import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.fragments.AppCMSErrorFragment;
 import com.viewlift.R;
@@ -75,7 +74,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                     new Timer().schedule(new TimerTask() {
                                              @Override
                                              public void run() {
-                                                 Intent relaunchApp = new Intent(AppCMSErrorActivity.this, AppCMSLaunchActivity.class);
+                                                 Intent relaunchApp = getPackageManager().getLaunchIntentForPackage(getPackageName());
                                                  relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
                                                  startActivity(relaunchApp);
                                                  try {

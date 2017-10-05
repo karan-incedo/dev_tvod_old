@@ -1626,6 +1626,7 @@ public class ViewCreator {
                             componentViewResult.shouldHideComponent = true;
                         }
 
+
                         if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
                                 (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
                                         appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
@@ -2438,7 +2439,6 @@ public class ViewCreator {
                                         .fitCenter()
                                         .into((ImageView) componentViewResult.componentView);
                             }
-                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                         }
                         break;

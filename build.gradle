@@ -9,6 +9,7 @@ buildscript {
     repositories {
         jcenter()
         maven { url 'https://maven.google.com' }
+        google()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradleBuildVersion}"
@@ -41,7 +42,6 @@ allprojects {
         rxandroidVersion = "1.2.0"
         rxjavaVersion = "1.1.4"
         jsr250_apiVersion = "1.0"
-        exoplayerVersion = "r2.4.1"
         googleAdsInteractiveMediaV3 = "3.6.0"
         googlePlayServicesVersion = "10.2.1"
         crashlyticsVersion = "2.6.8@aar"

@@ -120,25 +120,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.app_cms_page_loading_progressbar)
     ProgressBar loadingProgressBar;
-
     @BindView(R.id.app_cms_parent_view)
     RelativeLayout appCMSParentView;
-
     @BindView(R.id.app_cms_fragment)
     FrameLayout appCMSFragment;
-
     @BindView(R.id.app_cms_appbarlayout)
     AppBarLayout appBarLayout;
-
     @BindView(R.id.app_cms_tab_nav_container)
     LinearLayout appCMSTabNavContainer;
-
     @BindView(R.id.ll_media_route_button)
     LinearLayout ll_media_route_button;
-
     @BindView(R.id.media_route_button)
     ImageButton mMediaRouteButton;
-
     @BindView(R.id.app_cms_close_button)
     ImageButton closeButton;
 

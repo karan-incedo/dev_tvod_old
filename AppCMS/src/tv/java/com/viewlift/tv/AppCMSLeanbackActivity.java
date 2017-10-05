@@ -50,7 +50,8 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
         appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
                 getString(R.string.app_cms_app_name),
                 Uri.parse(""),
-                AppCMSPresenter.PlatformType.TV);
+                AppCMSPresenter.PlatformType.TV,
+                false);
         }else{
             showErrorFragment(true);
         }

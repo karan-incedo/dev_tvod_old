@@ -108,7 +108,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 int horizontalSpacing = (int)mContext.getResources().getDimension(R.dimen.caurosel_grid_item_spacing);
 
                 //set the spacing between Carousal item.
-                horizontalGridView.setItemSpacing(horizontalSpacing);
+//                horizontalGridView.setItemSpacing(horizontalSpacing);
 
                 //set the HorizontalGrid Layout Params..
                 horizontalGrLayoutParams.setMargins(listRowLeftmargin, 0 , listRowRightmargin,0);
@@ -132,7 +132,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
                 horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop , 0,0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
-                horizontalGridView.setItemSpacing(horizontalSpacing);
+//                horizontalGridView.setItemSpacing(horizontalSpacing);
 
                 headerTitleContainerLayoutParams.setMargins(paddingLeft , 0 , 0 , 0);
                 headerTitleContainer.setLayoutParams(headerTitleContainerLayoutParams);
