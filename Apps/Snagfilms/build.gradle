@@ -4,10 +4,12 @@ apply plugin: 'realm-android'
 def final packageName = 'air.com.snagfilms'
 def final customApplicationId = 'SnagFilms'
 def final hostName = "www.snagfilms.com"
+def final appVersionName = "1.0.31"
 
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
+        google()
     }
 
     dependencies {
@@ -23,6 +25,8 @@ buildscript {
 apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
+    maven { url "https://jitpack.io" }
+    google()
 }
 
 android {
@@ -30,24 +34,29 @@ android {
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId packageName
-        minSdkVersion 23
+       	minSdkVersion 23
         targetSdkVersion 25
-        versionCode 3042062
-        versionName "1.0.20"
+        versionCode 3042073
+        versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 25
+        renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
+        useLibrary 'org.apache.http.legacy'
     }
     flavorDimensions "green"
     productFlavors {
         mobile {
             dimension = "green"
-            minSdkVersion 23
+            minSdkVersion 21
+            compileSdkVersion 23
             targetSdkVersion 25
         }
         tv {
+
             minSdkVersion 21
             compileSdkVersion 25
+            versionCode 3010010
+            versionName "1.0.18"
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
@@ -84,16 +93,18 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
             multiDexEnabled true
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
     }
@@ -101,7 +112,8 @@ android {
         unitTests.returnDefaultValues = true
     }
     lintOptions {
-        disable 'InvalidPackage'
+        checkReleaseBuilds false
+        abortOnError false
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES.txt'
@@ -120,10 +132,10 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile "junit:junit:$rootProject.ext.junitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
-    testCompile "junit:junit:$rootProject.ext.junitVersion"
     androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -150,7 +162,6 @@ dependencies {
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
-    compile "com.google.android.exoplayer:exoplayer:$rootProject.ext.exoplayerVersion"
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
@@ -160,31 +171,30 @@ dependencies {
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }
-
     compile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
-
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
-
     compile("com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
         exclude group: 'com.android.support', module: 'customtabs'
     })
-
-    compile 'com.github.amlcurran.showcaseview:library:5.4.3'
-
     compile "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
     annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
-
     compile "com.android.support:mediarouter-v7:$rootProject.ext.androidsupportVersion"
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
-
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
-
-    compile 'com.appsflyer:af-android-sdk:4.6.7@aar'
+    compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
-
+    tvCompile project(path: ':firetvcustomkeyboard')
+    compile "com.android.support:percent:$rootProject.ext.androidsupportVersion"
+    compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
+    compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
+    compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
+    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
+    compile project(':exoplayer-library')
+    compile project(':library')
+    compile project(':htmlspanner')
 }
 
 apply plugin: 'com.google.gms.google-services'
