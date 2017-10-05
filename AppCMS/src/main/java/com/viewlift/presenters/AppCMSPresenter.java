@@ -311,6 +311,7 @@ public class AppCMSPresenter {
     private static final String USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME = "user_download_quality_screen_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
     private static final String USER_AUTH_PROVIDER_SHARED_PREF_NAME = "user_auth_provider_shared_pref_name";
+    private static final String GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME = "google_play_app_store_version_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -3481,7 +3482,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public SemVer getInstalledApplicationVersion() {
+    public SemVer getInstalledAppSemVer() {
         SemVer semVer = null;
         if (currentActivity != null) {
             String currentApplicationVersion = currentActivity.getString(R.string.app_cms_app_version);
@@ -3497,12 +3498,37 @@ public class AppCMSPresenter {
     }
 
     public boolean isAppUpgradeAvailable() {
+        try {
+            SemVer installAppSemVer = getInstalledAppSemVer();
+            SemVer latestAppSemVer = new SemVer();
+            latestAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getLatest());
 
+            if (installAppSemVer.major < latestAppSemVer.major ||
+                    installAppSemVer.minor < latestAppSemVer.minor ||
+                    installAppSemVer.patch < latestAppSemVer.patch) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error attempting to retrieve app version");
+        }
 
         return false;
     }
 
     public boolean isAppBelowMinVersion() {
+        try {
+            SemVer installAppSemVer = getInstalledAppSemVer();
+            SemVer latestAppSemVer = new SemVer();
+            latestAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getMinimum());
+
+            if (installAppSemVer.major < latestAppSemVer.major ||
+                    installAppSemVer.minor < latestAppSemVer.minor ||
+                    installAppSemVer.patch < latestAppSemVer.patch) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error attempting to retrieve app version");
+        }
 
         return false;
     }
@@ -3530,7 +3556,7 @@ public class AppCMSPresenter {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((result) -> Observable.just(result).subscribe(currentAppVersion -> {
-                    // TODO: Save as user preference for ease of retrieval later
+                    setGooglePlayAppStoreVersion(currentAppVersion);
                 }));
     }
 
@@ -4814,6 +4840,22 @@ public class AppCMSPresenter {
                 + Environment.DIRECTORY_PICTURES + File.separator;
     }
 
+    public String getGooglePlayAppStoreVersion() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME, 0);
+            return sharedPrefs.getString(GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME, null);
+        }
+        return null;
+    }
+
+    public boolean setGooglePlayAppStoreVersion(String googlePlayAppStoreVersion) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME, googlePlayAppStoreVersion).commit();
+        }
+        return false;
+    }
+
     public String getLoggedInUser() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
@@ -5871,7 +5913,8 @@ public class AppCMSPresenter {
 
     public boolean isPagePrimary(String pageId) {
         for (NavigationPrimary navigationPrimary : navigation.getNavigationPrimary()) {
-            if (pageId != null &&
+            if (pageId != null && navigationPrimary != null &&
+                    navigationPrimary.getPageId() !=null &&
                     !TextUtils.isEmpty(pageId) &&
                     pageId.contains(navigationPrimary.getPageId()) &&
                     !isViewPlanPage(pageId)) {
@@ -8176,6 +8219,7 @@ public class AppCMSPresenter {
         Log.d(TAG, "Refreshing pages");
         if (currentActivity != null) {
             Log.d(TAG, "Refreshing main.json");
+            retrieveCurrentAppVersion();
             refreshAppCMSMain((appCMSMain) -> {
                 if (appCMSMain != null) {
                     Log.d(TAG, "Refreshed main.json");

@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.viewlift.hoichoi'
-def final customApplicationId = 'Hoichoi'
-def final hostName = "www.hoichoi.tv"
 
-def final appVersionName = "2.0.50"
+def final packageName = 'com.mse.monumentalnetworks'
+def final customApplicationId = 'MSE Sports Network'
+def final hostName = "www.monumentalsportsnetwork.com"
+def final appVersionName = "2.0.41"
 
 buildscript {
     repositories {
@@ -30,7 +30,7 @@ repositories {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
