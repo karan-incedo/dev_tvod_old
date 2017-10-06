@@ -121,6 +121,7 @@
     <string name="app_cms_page_passwordtextfield_key">passwordTextField</string>
     <string name="app_cms_page_passwordtextfield2_key">password label</string>
     <string name="app_cms_page_forgotpassword_key">forgot password button</string>
+    <string name="app_cms_page_login_key">login button</string>
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
@@ -140,7 +141,7 @@
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
     <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
-
+      <string name="app_cms_setting_module">AC UserManagement 01</string>
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_change_password_key">Change Password</string>
 
@@ -257,6 +258,7 @@
     <string name="app_cms_action_search_key">search</string>
     <string name="app_cms_action_login_key">login</string>
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
+    <string name="app_cms_page_name_forgotpassword">Reset Password</string>
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
     <string name="app_cms_action_signupfacebook_key">signupfacebook</string>
     <string name="app_cms_action_editprofile_key">editProfile</string>

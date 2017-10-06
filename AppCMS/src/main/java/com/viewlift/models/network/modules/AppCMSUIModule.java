@@ -255,6 +255,19 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_us_email_icon_key),
                 AppCMSUIKeyType.CONTACT_US_EMAIL_IMAGE);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_cancel_button_key),
+                AppCMSUIKeyType.RESET_PASSWORD_CANCEL_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_continue_button_key),
+                AppCMSUIKeyType.RESET_PASSWORD_CONTINUE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_forgotPasswordTitle_key),
+                AppCMSUIKeyType.RESET_PASSWORD_TITLE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key) ,
+                AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
+                AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
+                AppCMSUIKeyType.PAGE_API_DESCRIPTION);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadatatitle_key),
                 AppCMSUIKeyType.PAGE_PLANMETADATATITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_planmetadataimage_key),
@@ -282,6 +295,12 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_change_password_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_number_label),
+                AppCMSUIKeyType.CONTACT_US_PHONE_LABEL);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_email_id_label),
+                AppCMSUIKeyType.CONTACT_US_EMAIL_LABEL);
+
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_upgrade_subscription_key),
@@ -301,6 +320,9 @@ public class AppCMSUIModule {
                         .app_cms_page_use_sd_card_for_downloads_toggle_button_key),
                 AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_captions_toggle_button_key),
+                AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY);
+				
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_priceinfo_key),
@@ -466,6 +488,33 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_quality_cancel_button_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_toggle_switch_type),
+                AppCMSUIKeyType.PAGE_SETTING_TOGGLE_SWITCH_TYPE);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_toggle_switch_key),
+                AppCMSUIKeyType.PAGE_SETTING_AUTOPLAY_TOGGLE_SWITCH_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_caption_toggle_switch_key),
+                AppCMSUIKeyType.PAGE_SETTING_CLOSED_CAPTION_TOGGLE_SWITCH_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_logout_button_key),
+                AppCMSUIKeyType.PAGE_SETTING_LOGOUT_BUTTON_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_title_label),
+                AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_history_last_added_label),
+                AppCMSUIKeyType.PAGE_HISTORY_LAST_ADDED_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_signup_footer_label_key),
+                AppCMSUIKeyType.PAGE_SIGNUP_FOOTER_LABEL_KEY);
+
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
     }
@@ -483,7 +532,11 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_detailvideopage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_showscreen_key),
                 context.getString(R.string.app_cms_action_showvideopage_key));
-    }
+    
+	  this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword) ,
+                context.getString(R.string.app_cms_action_forgotpassword_key));
+				
+	}
 
     private void createActionToPageMap(Context context) {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_authpage_key), null);
@@ -494,6 +547,7 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchlistpage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
+		this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key) , null);
     }
 
     private void createActionToPageAPIMap(Context context) {
@@ -503,6 +557,7 @@ public class AppCMSUIModule {
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
+		this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_forgotpassword_key) , null);
     }
 
     private void createActionToActionTypeMap(Context context) {

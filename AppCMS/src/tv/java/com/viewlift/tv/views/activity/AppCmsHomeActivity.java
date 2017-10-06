@@ -19,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -86,6 +87,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+
+
+
+        //Settings The Firebase Analytics for TV
+        FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
+        if (mFireBaseAnalytics != null && appCMSPresenter != null) {
+            appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
+        }
 
 
         String tag = getTag(updatedAppCMSBinder);

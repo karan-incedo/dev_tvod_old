@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -39,7 +38,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_player_page);
+        setContentView(R.layout.activity_tv_video_player_page);
         appCMSPlayVideoPageContainer =
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
 

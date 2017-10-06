@@ -9040,7 +9040,7 @@ public class AppCMSPresenter {
                     return false;
                 }
 
-                String apiUrl = getApiUrl(false,
+                String apiUrl = getApiUrl(true,
                         false,
                         false,
                         appCMSMain.getApiBaseUrl(),
@@ -9733,11 +9733,6 @@ public class AppCMSPresenter {
     public void openSearch() {
         Intent searchIntent = new Intent(SEARCH_ACTION);
         currentActivity.sendBroadcast(searchIntent);
-    }
-
-    public void openMyProfile() {
-        Intent myProfileIntent = new Intent(MY_PROFILE_ACTION);
-        currentActivity.sendBroadcast(myProfileIntent);
     }
 
     public boolean launchTVVideoPlayer(final String filmId,
