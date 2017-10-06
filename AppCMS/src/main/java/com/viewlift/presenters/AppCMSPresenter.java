@@ -4981,6 +4981,13 @@ public class AppCMSPresenter {
     }
 
     public String getGooglePlayAppStoreVersion() {
+        if (appCMSMain != null &&
+                appCMSMain.getAppVersions() != null &&
+                appCMSMain.getAppVersions().getAndroidAppVersion() != null &&
+                !TextUtils.isEmpty(appCMSMain.getAppVersions().getAndroidAppVersion().getLatest())) {
+            return appCMSMain.getAppVersions().getAndroidAppVersion().getLatest();
+        }
+
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME, 0);
             return sharedPrefs.getString(GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME, null);
