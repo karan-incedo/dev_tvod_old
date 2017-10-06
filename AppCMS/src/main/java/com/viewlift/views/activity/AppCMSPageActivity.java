@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -560,6 +561,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (appCMSPresenter.isAppUpgradeAvailable()) {
             newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+            newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            newVersionUpgradeAvailable.requestLayout();
         } else if (appCMSPresenter.isAppBelowMinVersion()) {
             appCMSPresenter.launchUpgradeAppActivity();
         }
