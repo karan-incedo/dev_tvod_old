@@ -539,6 +539,8 @@ public class AppCMSPresenter {
 
     private boolean pageLoading;
 
+    private boolean cancelLoad;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -4878,8 +4880,10 @@ public class AppCMSPresenter {
     public void launchErrorActivity(PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
             try {
-                Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
-                currentActivity.startActivity(errorIntent);
+                if (!cancelLoad) {
+                    Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
+                    currentActivity.startActivity(errorIntent);
+                }
             } catch (Exception e) {
                 Log.e(TAG, "DialogType launching Mobile DialogType Activity");
             }
@@ -6047,6 +6051,7 @@ public class AppCMSPresenter {
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
+        this.cancelLoad = false;
 
         retrieveCurrentAppVersion();
 

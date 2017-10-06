@@ -74,15 +74,17 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                     new Timer().schedule(new TimerTask() {
                                              @Override
                                              public void run() {
-                                                 Intent relaunchApp = getPackageManager().getLaunchIntentForPackage(getPackageName());
-                                                 relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
-                                                 startActivity(relaunchApp);
-                                                 try {
-                                                     unregisterReceiver(networkConnectedReceiver);
-                                                 } catch (Exception e) {
-                                                     Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
+                                                 if (timerScheduled) {
+                                                     Intent relaunchApp = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                                                     relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
+                                                     startActivity(relaunchApp);
+                                                     try {
+                                                         unregisterReceiver(networkConnectedReceiver);
+                                                     } catch (Exception e) {
+                                                         Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
+                                                     }
+                                                     timerScheduled = false;
                                                  }
-                                                 timerScheduled = false;
                                              }
                                          }, 500);
                 }
@@ -123,7 +125,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         timerScheduled = false;
         try {
             ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
-            ((AppCMSApplication) getApplication()).setCloseApp();
+            ((AppCMSApplication) getApplication()).setCloseApp(this);
         } catch (Exception e) {
             Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
         }

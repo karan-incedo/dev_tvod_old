@@ -186,7 +186,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         super.onBackPressed();
         try {
             ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
-            ((AppCMSApplication) getApplication()).setCloseApp();
+            ((AppCMSApplication) getApplication()).setCloseApp(this);
         } catch (Exception e) {
             Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
         }
