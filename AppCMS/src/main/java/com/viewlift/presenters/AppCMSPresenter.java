@@ -1055,6 +1055,8 @@ public class AppCMSPresenter {
         } else {
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
+            refreshPages();
+
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null);
@@ -4620,6 +4622,8 @@ public class AppCMSPresenter {
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            refreshPages();
+
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             Log.d(TAG, "Search query (optional): " + searchQuery);

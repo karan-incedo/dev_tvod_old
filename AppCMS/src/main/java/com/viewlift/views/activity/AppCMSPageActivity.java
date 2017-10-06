@@ -180,8 +180,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private String FIREBASE_SEARCH_SCREEN = "Search Screen";
     private String FIREBASE_MENU_SCREEN = "MENU";
 
-    private Timer refreshPagesTimer;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -570,15 +568,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.launchUpgradeAppActivity();
         }
 
-        if (refreshPagesTimer == null) {
-            refreshPagesTimer = new Timer();
-            refreshPagesTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    appCMSPresenter.refreshPages();
-                }
-            }, 10000, 10000);
-        }
+        appCMSPresenter.refreshPages();
     }
 
     @Override
