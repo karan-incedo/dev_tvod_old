@@ -8468,7 +8468,6 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Refreshed main.json");
                     this.appCMSMain = appCMSMain;
                     refreshAppCMSAndroid((appCMSAndroid) -> {
-                        queueMetaPages(appCMSAndroid.getMetaPages());
                         for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
                             Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
                                     " " +
@@ -8478,7 +8477,8 @@ public class AppCMSPresenter {
                             getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                     metaPage.getPageUI()),
                                     appCMSPageUI -> {
-                                        if (appCMSPageUI.isLoadedFromNetwork()) {
+                                        if (appCMSPageUI.isLoadedFromNetwork() &&
+                                                pageViewLruCache != null) {
                                             pageViewLruCache.evictAll();
                                         }
                                     },
@@ -8488,7 +8488,8 @@ public class AppCMSPresenter {
                         getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
                             Log.d(TAG, "Received and refreshed module list");
                             this.appCMSAndroidModules = appCMSAndroidModules;
-                            if (appCMSAndroidModules.isLoadedFromNetwork()) {
+                            if (appCMSAndroidModules.isLoadedFromNetwork() &&
+                                    pageViewLruCache != null) {
                                 pageViewLruCache.evictAll();
                             }
                         });

@@ -840,6 +840,9 @@ public class ViewCreator {
                 }
             }
         }
+        if (pageView != null) {
+            pageView.requestLayout();
+        }
     }
 
     public PageView generatePage(Context context,
@@ -950,7 +953,7 @@ public class ViewCreator {
                         appCMSPresenter);
                 if (childView != null) {
                     childrenContainer.addView(childView);
-                    if (moduleAPI == null) {
+                    if (childView == null) {
                         childView.setVisibility(View.GONE);
                     }
                 }

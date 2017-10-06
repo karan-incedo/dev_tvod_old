@@ -34,8 +34,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -91,8 +89,6 @@ import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -1319,6 +1315,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSBinder.unsetSendCloseAction();
 
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+
+            if (appCMSPresenter.isAppUpgradeAvailable()) {
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+            } else if (appCMSPresenter.isAppBelowMinVersion()) {
+                appCMSPresenter.launchUpgradeAppActivity();
+            }
 
             if (refreshFragment) {
                 createScreenFromAppCMSBinder(appCMSBinder);
