@@ -841,7 +841,19 @@ public class ViewCreator {
             }
         }
         if (pageView != null) {
-            pageView.requestLayout();
+            forceRedrawOfAllChildren(pageView);
+        }
+    }
+
+    private void forceRedrawOfAllChildren(ViewGroup viewGroup) {
+        viewGroup.requestLayout();
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View v = viewGroup.getChildAt(i);
+            if (v instanceof ViewGroup) {
+                forceRedrawOfAllChildren((ViewGroup) v);
+            } else {
+                v.requestLayout();
+            }
         }
     }
 
