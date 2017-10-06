@@ -91,6 +91,8 @@ import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -177,6 +179,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private WifiManager wifiManager;
     private String FIREBASE_SEARCH_SCREEN = "Search Screen";
     private String FIREBASE_MENU_SCREEN = "MENU";
+
+    private Timer refreshPagesTimer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -566,7 +570,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.launchUpgradeAppActivity();
         }
 
-        appCMSPresenter.refreshPages();
+        if (refreshPagesTimer == null) {
+            refreshPagesTimer = new Timer();
+            refreshPagesTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    appCMSPresenter.refreshPages();
+                }
+            }, 10000, 10000);
+        }
     }
 
     @Override

@@ -8510,7 +8510,7 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Notifying listeners that main.json has been updated");
                 Observable.just(main).subscribe(readyAction);
             }
-        });
+        }).execute(params);
     }
 
     private void refreshAppCMSAndroid(Action1<AppCMSAndroidUI> readyAction) {

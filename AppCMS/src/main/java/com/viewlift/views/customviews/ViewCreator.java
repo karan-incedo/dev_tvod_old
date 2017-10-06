@@ -157,6 +157,8 @@ public class ViewCreator {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
+                    moduleView.setVisibility(View.VISIBLE);
+
                     moduleView.resetHeightAdjusters();
 
                     Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
@@ -739,6 +741,9 @@ public class ViewCreator {
                                 }
                             }
                         }
+                    } else {
+                        moduleView.setVisibility(View.GONE);
+                        shouldHideModule = true;
                     }
 
                     ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
@@ -945,9 +950,9 @@ public class ViewCreator {
                         appCMSPresenter);
                 if (childView != null) {
                     childrenContainer.addView(childView);
-                }
-                if (moduleAPI == null) {
-                    childView.setVisibility(View.GONE);
+                    if (moduleAPI == null) {
+                        childView.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -970,7 +975,7 @@ public class ViewCreator {
                                                                   PageView pageView,
                                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                   AppCMSPresenter appCMSPresenter) {
-        ModuleView moduleView;
+        ModuleView moduleView = null;
         if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY) {
             moduleView = new LoginModule(context,
                     module,
@@ -980,174 +985,179 @@ public class ViewCreator {
                     this);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView);
         } else {
-            updateModuleHeight(context,
-                    module.getLayout(),
-                    module.getComponents(),
-                    jsonValueKeyMap);
-            moduleView = new ModuleView<>(context, module, true);
-            ViewGroup childrenContainer = moduleView.getChildrenContainer();
-            boolean hideModule = false;
-            boolean modulesHasHiddenComponent = false;
-
-            AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
-            pageView.addModuleViewWithModuleId(module.getId(), moduleView);
             if (module.getComponents() != null) {
-                for (int i = 0; i < module.getComponents().size(); i++) {
-                    Component component = module.getComponents().get(i);
+                updateModuleHeight(context,
+                        module.getLayout(),
+                        module.getComponents(),
+                        jsonValueKeyMap);
+                moduleView = new ModuleView<>(context, module, true);
+                ViewGroup childrenContainer = moduleView.getChildrenContainer();
+                boolean hideModule = false;
+                boolean modulesHasHiddenComponent = false;
 
-                    createComponentView(context,
-                            component,
-                            module.getLayout(),
-                            moduleAPI,
-                            pageView,
-                            module.getSettings(),
-                            jsonValueKeyMap,
-                            appCMSPresenter,
-                            false,
-                            module.getView());
+                AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
+                pageView.addModuleViewWithModuleId(module.getId(), moduleView);
+                if (module.getComponents() != null) {
+                    for (int i = 0; i < module.getComponents().size(); i++) {
+                        Component component = module.getComponents().get(i);
 
-                    if (adjustOthers == AdjustOtherState.INITIATED) {
-                        adjustOthers = AdjustOtherState.ADJUST_OTHERS;
-                    }
+                        createComponentView(context,
+                                component,
+                                module.getLayout(),
+                                moduleAPI,
+                                pageView,
+                                module.getSettings(),
+                                jsonValueKeyMap,
+                                appCMSPresenter,
+                                false,
+                                module.getView());
 
-                    if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
-                        componentViewResult.shouldHideComponent = true;
-                        componentViewResult.componentView.setVisibility(View.GONE);
-                        adjustOthers = AdjustOtherState.INITIATED;
-                    }
+                        if (adjustOthers == AdjustOtherState.INITIATED) {
+                            adjustOthers = AdjustOtherState.ADJUST_OTHERS;
+                        }
 
-                    if (componentViewResult.shouldHideModule) {
-                        hideModule = true;
-                    }
+                        if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                            componentViewResult.shouldHideComponent = true;
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                            adjustOthers = AdjustOtherState.INITIATED;
+                        }
 
-                    if (componentViewResult.onInternalEvent != null) {
-                        appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
-                    }
+                        if (componentViewResult.shouldHideModule) {
+                            hideModule = true;
+                        }
 
-                    if (componentViewResult.shouldHideComponent) {
-                        ModuleView.HeightLayoutAdjuster heightLayoutAdjuster =
-                                new ModuleView.HeightLayoutAdjuster();
-                        modulesHasHiddenComponent = true;
-                        if (BaseView.isTablet(context)) {
-                            if (BaseView.isLandscape(context)) {
-                                heightLayoutAdjuster.heightAdjustment =
-                                        (int) component.getLayout().getTabletLandscape().getHeight();
-                                heightLayoutAdjuster.topMargin =
-                                        (int) component.getLayout().getTabletLandscape().getTopMargin();
-                                heightLayoutAdjuster.yAxis =
-                                        (int) component.getLayout().getTabletLandscape().getYAxis();
-                                heightLayoutAdjuster.component = component;
+                        if (componentViewResult.onInternalEvent != null) {
+                            appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
+                        }
+
+                        if (componentViewResult.shouldHideComponent) {
+                            ModuleView.HeightLayoutAdjuster heightLayoutAdjuster =
+                                    new ModuleView.HeightLayoutAdjuster();
+                            modulesHasHiddenComponent = true;
+                            if (BaseView.isTablet(context)) {
+                                if (BaseView.isLandscape(context)) {
+                                    heightLayoutAdjuster.heightAdjustment =
+                                            (int) component.getLayout().getTabletLandscape().getHeight();
+                                    heightLayoutAdjuster.topMargin =
+                                            (int) component.getLayout().getTabletLandscape().getTopMargin();
+                                    heightLayoutAdjuster.yAxis =
+                                            (int) component.getLayout().getTabletLandscape().getYAxis();
+                                    heightLayoutAdjuster.component = component;
+                                } else {
+                                    heightLayoutAdjuster.heightAdjustment =
+                                            (int) component.getLayout().getTabletPortrait().getHeight();
+                                    heightLayoutAdjuster.topMargin =
+                                            (int) component.getLayout().getTabletPortrait().getTopMargin();
+                                    heightLayoutAdjuster.yAxis =
+                                            (int) component.getLayout().getTabletPortrait().getYAxis();
+                                    heightLayoutAdjuster.component = component;
+                                }
                             } else {
                                 heightLayoutAdjuster.heightAdjustment =
-                                        (int) component.getLayout().getTabletPortrait().getHeight();
+                                        (int) component.getLayout().getMobile().getHeight();
                                 heightLayoutAdjuster.topMargin =
-                                        (int) component.getLayout().getTabletPortrait().getTopMargin();
+                                        (int) component.getLayout().getMobile().getTopMargin();
                                 heightLayoutAdjuster.yAxis =
-                                        (int) component.getLayout().getTabletPortrait().getYAxis();
+                                        (int) component.getLayout().getMobile().getYAxis();
                                 heightLayoutAdjuster.component = component;
                             }
-                        } else {
-                            heightLayoutAdjuster.heightAdjustment =
-                                    (int) component.getLayout().getMobile().getHeight();
-                            heightLayoutAdjuster.topMargin =
-                                    (int) component.getLayout().getMobile().getTopMargin();
-                            heightLayoutAdjuster.yAxis =
-                                    (int) component.getLayout().getMobile().getYAxis();
-                            heightLayoutAdjuster.component = component;
+                            moduleView.addHeightAdjuster(heightLayoutAdjuster);
                         }
-                        moduleView.addHeightAdjuster(heightLayoutAdjuster);
-                    }
 
-                    View componentView = componentViewResult.componentView;
+                        View componentView = componentViewResult.componentView;
 
-                    if (componentView != null) {
-                        if (componentViewResult.addToPageView) {
-                            pageView.addView(componentView);
-                        } else {
-                            childrenContainer.addView(componentView);
-                            moduleView.setComponentHasView(i, true);
-                            moduleView.setViewMarginsFromComponent(component,
-                                    componentView,
-                                    moduleView.getLayout(),
-                                    childrenContainer,
-                                    false,
-                                    jsonValueKeyMap,
-                                    componentViewResult.useMarginsAsPercentagesOverride,
-                                    componentViewResult.useWidthOfScreen,
-                                    module.getView());
-                            if ((adjustOthers == AdjustOtherState.IGNORE && componentViewResult.shouldHideComponent) ||
-                                    adjustOthers == AdjustOtherState.ADJUST_OTHERS) {
-                                moduleView.addChildComponentAndView(component, componentView);
+                        if (componentView != null) {
+                            if (componentViewResult.addToPageView) {
+                                pageView.addView(componentView);
                             } else {
-                                moduleView.setComponentHasView(i, false);
+                                childrenContainer.addView(componentView);
+                                moduleView.setComponentHasView(i, true);
+                                moduleView.setViewMarginsFromComponent(component,
+                                        componentView,
+                                        moduleView.getLayout(),
+                                        childrenContainer,
+                                        false,
+                                        jsonValueKeyMap,
+                                        componentViewResult.useMarginsAsPercentagesOverride,
+                                        componentViewResult.useWidthOfScreen,
+                                        module.getView());
+                                if ((adjustOthers == AdjustOtherState.IGNORE && componentViewResult.shouldHideComponent) ||
+                                        adjustOthers == AdjustOtherState.ADJUST_OTHERS) {
+                                    moduleView.addChildComponentAndView(component, componentView);
+                                } else {
+                                    moduleView.setComponentHasView(i, false);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (hideModule) {
-                moduleView.setVisibility(View.GONE);
-            }
 
-            if (modulesHasHiddenComponent) {
-                moduleView.verifyHeightAdjustments();
-                ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
-                for (int i = 0; i < moduleView.getHeightAdjusterListSize(); i++) {
-                    ModuleView.HeightLayoutAdjuster heightLayoutAdjuster = moduleView.getHeightLayoutAdjuster(i);
+                if (hideModule) {
+                    moduleView.setVisibility(View.GONE);
+                }
 
-                    moduleLayoutParams.height -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                    List<ModuleView.ChildComponentAndView> childComponentAndViewList =
-                            moduleView.getChildComponentAndViewList();
+                if (modulesHasHiddenComponent) {
+                    moduleView.verifyHeightAdjustments();
+                    ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
+                    for (int i = 0; i < moduleView.getHeightAdjusterListSize(); i++) {
+                        ModuleView.HeightLayoutAdjuster heightLayoutAdjuster = moduleView.getHeightLayoutAdjuster(i);
 
-                    for (int j = 0; j < childComponentAndViewList.size(); j++) {
-                        ModuleView.ChildComponentAndView childComponentAndView = childComponentAndViewList.get(j);
+                        moduleLayoutParams.height -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                        List<ModuleView.ChildComponentAndView> childComponentAndViewList =
+                                moduleView.getChildComponentAndViewList();
 
-                        ViewGroup.MarginLayoutParams childLayoutParams =
-                                (ViewGroup.MarginLayoutParams) childComponentAndView.childView.getLayoutParams();
-                        if (BaseView.isTablet(context)) {
-                            if (BaseView.isLandscape(context)) {
-                                if (childComponentAndView.component.getLayout().getTabletLandscape().getYAxis() > 0 &&
-                                        heightLayoutAdjuster.yAxis <
-                                                childComponentAndView.component.getLayout().getTabletLandscape().getYAxis()) {
-                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                }
-                                if (childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin() > 0 &&
-                                        heightLayoutAdjuster.topMargin <
-                                                childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin()) {
-                                    childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                        for (int j = 0; j < childComponentAndViewList.size(); j++) {
+                            ModuleView.ChildComponentAndView childComponentAndView = childComponentAndViewList.get(j);
+
+                            ViewGroup.MarginLayoutParams childLayoutParams =
+                                    (ViewGroup.MarginLayoutParams) childComponentAndView.childView.getLayoutParams();
+                            if (BaseView.isTablet(context)) {
+                                if (BaseView.isLandscape(context)) {
+                                    if (childComponentAndView.component.getLayout().getTabletLandscape().getYAxis() > 0 &&
+                                            heightLayoutAdjuster.yAxis <
+                                                    childComponentAndView.component.getLayout().getTabletLandscape().getYAxis()) {
+                                        childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                    }
+                                    if (childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin() > 0 &&
+                                            heightLayoutAdjuster.topMargin <
+                                                    childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin()) {
+                                        childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                    }
+                                } else {
+                                    if (childComponentAndView.component.getLayout().getTabletPortrait().getYAxis() > 0 &&
+                                            heightLayoutAdjuster.yAxis <
+                                                    childComponentAndView.component.getLayout().getTabletPortrait().getYAxis()) {
+                                        childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                    }
+                                    if (childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin() > 0 &&
+                                            heightLayoutAdjuster.topMargin <
+                                                    childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin()) {
+                                        childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                    }
                                 }
                             } else {
-                                if (childComponentAndView.component.getLayout().getTabletPortrait().getYAxis() > 0 &&
+                                if (childComponentAndView.component.getLayout().getMobile().getYAxis() > 0 &&
                                         heightLayoutAdjuster.yAxis <
-                                                childComponentAndView.component.getLayout().getTabletPortrait().getYAxis()) {
+                                                childComponentAndView.component.getLayout().getMobile().getYAxis()) {
                                     childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                 }
-                                if (childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin() > 0 &&
+                                if (childComponentAndView.component.getLayout().getMobile().getTopMargin() > 0 &&
                                         heightLayoutAdjuster.topMargin <
-                                                childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin()) {
+                                                childComponentAndView.component.getLayout().getMobile().getTopMargin()) {
                                     childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                 }
                             }
-                        } else {
-                            if (childComponentAndView.component.getLayout().getMobile().getYAxis() > 0 &&
-                                    heightLayoutAdjuster.yAxis <
-                                            childComponentAndView.component.getLayout().getMobile().getYAxis()) {
-                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                            }
-                            if (childComponentAndView.component.getLayout().getMobile().getTopMargin() > 0 &&
-                                    heightLayoutAdjuster.topMargin <
-                                            childComponentAndView.component.getLayout().getMobile().getTopMargin()) {
-                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                            }
+                            childComponentAndView.childView.setLayoutParams(childLayoutParams);
                         }
-                        childComponentAndView.childView.setLayoutParams(childLayoutParams);
                     }
+                    moduleView.setLayoutParams(moduleLayoutParams);
                 }
-                moduleView.setLayoutParams(moduleLayoutParams);
             }
         }
-        moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        if (moduleView != null) {
+            moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        }
         return moduleView;
     }
 

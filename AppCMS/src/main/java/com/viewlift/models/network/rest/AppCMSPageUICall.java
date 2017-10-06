@@ -56,9 +56,9 @@ public class AppCMSPageUICall {
             Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
             try {
                 deletePreviousFiles(url);
-                appCMSPageUI.setLoadedFromNetwork(true);
                 appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
                         .execute().body());
+                appCMSPageUI.setLoadedFromNetwork(true);
             } catch (Exception e2) {
                 Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
                         e2.getMessage());
