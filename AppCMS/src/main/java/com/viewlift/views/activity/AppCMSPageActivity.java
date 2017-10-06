@@ -826,7 +826,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(false);
             }
-
+            appCMSPresenter.setPageLoading(true);
         } else {
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
@@ -836,6 +836,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
+            appCMSPresenter.setPageLoading(false);
         }
     }
 

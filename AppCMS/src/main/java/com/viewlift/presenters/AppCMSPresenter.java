@@ -537,6 +537,8 @@ public class AppCMSPresenter {
 
     private Toast watchlistToast;
 
+    private boolean pageLoading;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -770,6 +772,14 @@ public class AppCMSPresenter {
             return urlWithContent;
         }
         return null;
+    }
+
+    public boolean isPageLoading() {
+        return pageLoading;
+    }
+
+    public void setPageLoading(boolean pageLoading) {
+        this.pageLoading = pageLoading;
     }
 
     public AppCMSAndroidModules getAppCMSAndroidModules() {

@@ -57,7 +57,6 @@ public class LoginModule extends ModuleView {
     private EditText visiblePasswordInputView;
     Context con;
     // variable to track event time
-    private long mLastClickTime = 0;
 
     public LoginModule(Context context,
                        ModuleWithComponents module,
@@ -311,9 +310,10 @@ public class LoginModule extends ModuleView {
                                 public void onClick(View v) {
                                     Log.d(TAG, "Button clicked: " + component.getAction());
 
-                                    mLastClickTime = SystemClock.elapsedRealtime();
-                                    if (visibleEmailInputView != null && visiblePasswordInputView != null) {
-
+                                    if (!appCMSPresenter.isPageLoading() &&
+                                            visibleEmailInputView != null &&
+                                            visiblePasswordInputView != null) {
+                                        appCMSPresenter.showLoadingDialog(true);
                                         String[] authData = new String[2];
                                         authData[0] = visibleEmailInputView.getText().toString();
                                         authData[1] = visiblePasswordInputView.getText().toString();
