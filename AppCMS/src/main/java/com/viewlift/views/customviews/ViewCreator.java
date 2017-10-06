@@ -133,9 +133,16 @@ public class ViewCreator {
             return;
         }
         for (ModuleList moduleInfo : appCMSPageUI.getModuleList()) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             if (module == null) {
                 module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
             }
 
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
@@ -906,9 +913,16 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             if (module == null) {
                 module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
             }
 
             boolean createModule = !modulesToIgnore.contains(module.getType());
@@ -2052,7 +2066,7 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             } else if (moduleAPI != null &&
                                     moduleAPI.getContentData() != null &&
-                                    moduleAPI.getContentData().size()>0 &&
+                                    moduleAPI.getContentData().size() > 0 &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
                                     moduleAPI.getContentData().get(0).getGist().getTitle() != null) {

@@ -9,14 +9,8 @@
     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->  <!--HoiChoi QA-->
 
     <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string><!--Snagfilms Prod-->
-
-
-
     <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
-
-    <!-- x-api-key -->
-    <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
 
     <!-- AppCMS StreamingInfo API -->
     <string name="app_cms_streaminginfo_api_url">%1$s/content/videos/%2$s?site=%3$s&amp;fields=streamingInfo</string>
@@ -317,8 +311,8 @@
     <string name="app_cms_subscription_key">android</string>
 
     <!--AppCMS Subscription Plan API-->
-    <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s</string>
-    <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s</string>
+    <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s&amp;device=android_phone</string>
+    <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s&amp;device=android_phone</string>
     <string name="app_cms_subscription_plan_list_key">list</string>
     <string name="app_cms_subscription_subscribed_plan_key">subscribed_plan</string>
     <string name="app_cms_check_ccavenue_plan_status_key">ccavenue_plan_status</string>
