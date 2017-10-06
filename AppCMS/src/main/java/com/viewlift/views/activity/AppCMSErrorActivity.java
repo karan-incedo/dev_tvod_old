@@ -116,4 +116,17 @@ public class AppCMSErrorActivity extends AppCompatActivity {
             Log.e(TAG, "Failed to unregister Network Connectivity Receiver");
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        timerScheduled = false;
+        try {
+            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
+            ((AppCMSApplication) getApplication()).setCloseApp();
+        } catch (Exception e) {
+            Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
+        }
+        finish();
+    }
 }

@@ -256,11 +256,11 @@ public class AppCMSPageFragment extends Fragment {
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
-            viewCreator.refreshPageView(pageView,
-                    getContext(),
+            viewCreator.generatePage(getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
                     appCMSPresenter.getAppCMSAndroidModules(),
+                    appCMSBinder.getScreenName(),
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSPresenter,
                     modulesToIgnore);

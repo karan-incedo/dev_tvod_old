@@ -56,8 +56,9 @@ public class AppCMSAndroidModuleCall {
 
         readModuleListFromFile(blocksList,
                 blocksBaseUrl,
-                (moduleList) -> {
-                    appCMSAndroidModules.setModuleListMap(moduleList);
+                (moduleDataMap) -> {
+                    appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
+                    appCMSAndroidModules.setLoadedFromNetwork(moduleDataMap.loadedFromNetwork);
                     Observable.just(appCMSAndroidModules).subscribe(readyAction);
                 });
     }
@@ -107,14 +108,16 @@ public class AppCMSAndroidModuleCall {
 
     private void readModuleListFromFile(List<Blocks> blocksList,
                                         String blocksBaseUrl,
-                                        Action1<Map<String, ModuleList>> readyAction) {
+                                        Action1<ModuleDataMap> readyAction) {
         Observable.fromCallable(() -> {
-            Map<String, ModuleList> appCMSAndroidModule = new HashMap<>();
+            ModuleDataMap moduleDataMap = new ModuleDataMap();
+            moduleDataMap.appCMSAndroidModule = new HashMap<>();
+            moduleDataMap.loadedFromNetwork = false;
             if (blocksList != null) {
                 for (Blocks blocks : blocksList) {
                     Log.d(TAG, "Retrieving block: " + blocks.getName());
                     try {
-                        if (!appCMSAndroidModule.containsKey(blocks.getName())) {
+                        if (!moduleDataMap.appCMSAndroidModule.containsKey(blocks.getName())) {
                             Log.d(TAG, "Attempting to read block from file");
                             InputStream inputStream = new FileInputStream(
                                     new File(storageDirectory.toString() +
@@ -132,7 +135,7 @@ public class AppCMSAndroidModuleCall {
                                     ModuleList.class);
                             deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getName()));
                             writeModuleToFile(getResourceFilename(blocks.getName(), blocks.getVersion()), moduleList);
-                            appCMSAndroidModule.put(blocks.getName(), moduleList);
+                            moduleDataMap.appCMSAndroidModule.put(blocks.getName(), moduleList);
                         }
                     } catch (Exception e) {
                         Log.w(TAG, "Cached file could not be retrieved");
@@ -155,7 +158,8 @@ public class AppCMSAndroidModuleCall {
                                         ModuleList.class);
                                 deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getName()));
                                 writeModuleToFile(getResourceFilename(blocks.getName(), blocks.getVersion()), moduleList);
-                                appCMSAndroidModule.put(blocks.getName(), moduleList);
+                                moduleDataMap.appCMSAndroidModule.put(blocks.getName(), moduleList);
+                                moduleDataMap.loadedFromNetwork = true;
                             }
                         } catch (Exception e1) {
                             Log.e(TAG, "Failed to retrieve module from URL: " +
@@ -167,7 +171,7 @@ public class AppCMSAndroidModuleCall {
                 }
             }
 
-            return appCMSAndroidModule;
+            return moduleDataMap;
         })
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
@@ -193,5 +197,10 @@ public class AppCMSAndroidModuleCall {
         }
         resourceFilename.append(".v" + version);
         return url;
+    }
+
+    private static class ModuleDataMap {
+        Map<String, ModuleList> appCMSAndroidModule;
+        boolean loadedFromNetwork;
     }
 }

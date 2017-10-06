@@ -51,10 +51,12 @@ public class AppCMSPageUICall {
         AppCMSPageUI appCMSPageUI = null;
         try {
             appCMSPageUI = readPageFromFile(filename);
+            appCMSPageUI.setLoadedFromNetwork(false);
         } catch (Exception e) {
             Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
             try {
                 deletePreviousFiles(url);
+                appCMSPageUI.setLoadedFromNetwork(true);
                 appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
                         .execute().body());
             } catch (Exception e2) {

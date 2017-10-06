@@ -29,6 +29,8 @@ public class AppCMSApplication extends Application {
 
     private AppCMSPresenterComponent appCMSPresenterComponent;
 
+    private boolean closeApp;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -59,6 +61,9 @@ public class AppCMSApplication extends Application {
             @Override
             public void onActivityResumed(Activity activity) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
+                if (closeApp) {
+                    activity.finish();
+                }
             }
 
             @Override
@@ -98,5 +103,9 @@ public class AppCMSApplication extends Application {
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
         return appCMSPresenterComponent;
+    }
+
+    public void setCloseApp() {
+        closeApp = true;
     }
 }

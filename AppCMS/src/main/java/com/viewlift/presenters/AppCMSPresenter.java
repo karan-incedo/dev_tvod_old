@@ -6706,18 +6706,20 @@ public class AppCMSPresenter {
 
     @SuppressWarnings("ConstantConditions")
     public boolean isNetworkConnected() {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) currentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Network activeNetwork = connectivityManager.getActiveNetwork();
-            if (activeNetwork != null) {
-                NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(activeNetwork);
-                return activeNetworkInfo.isConnectedOrConnecting();
-            }
-        } else {
-            for (NetworkInfo networkInfo : connectivityManager.getAllNetworkInfo()) {
-                if (networkInfo.isConnectedOrConnecting()) {
-                    return true;
+        if (currentActivity != null) {
+            ConnectivityManager connectivityManager =
+                    (ConnectivityManager) currentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Network activeNetwork = connectivityManager.getActiveNetwork();
+                if (activeNetwork != null) {
+                    NetworkInfo activeNetworkInfo = connectivityManager.getNetworkInfo(activeNetwork);
+                    return activeNetworkInfo.isConnectedOrConnecting();
+                }
+            } else {
+                for (NetworkInfo networkInfo : connectivityManager.getAllNetworkInfo()) {
+                    if (networkInfo.isConnectedOrConnecting()) {
+                        return true;
+                    }
                 }
             }
         }
@@ -8466,13 +8468,20 @@ public class AppCMSPresenter {
                                     metaPage.getPageUI());
                             getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                     metaPage.getPageUI()),
-                                    appCMSPageUI -> {},
+                                    appCMSPageUI -> {
+                                        if (appCMSPageUI.isLoadedFromNetwork()) {
+                                            pageViewLruCache.evictAll();
+                                        }
+                                    },
                                     false);
                         }
 
                         getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
                             Log.d(TAG, "Received and refreshed module list");
                             this.appCMSAndroidModules = appCMSAndroidModules;
+                            if (appCMSAndroidModules.isLoadedFromNetwork()) {
+                                pageViewLruCache.evictAll();
+                            }
                         });
                     });
                 } else {
@@ -8743,47 +8752,49 @@ public class AppCMSPresenter {
 
     private void processMetaPagesQueue(final boolean loadFromFile,
                                        final Action0 onPagesFinishedAction) {
-        final MetaPage metaPage = pagesToProcess.remove();
+        if (currentActivity != null) {
+            final MetaPage metaPage = pagesToProcess.remove();
 
-        Log.d(TAG, "Processing meta page " +
-                metaPage.getPageName() + ": " +
-                metaPage.getPageId() + " " +
-                metaPage.getPageUI() + " " +
-                metaPage.getPageAPI());
-        if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
+            Log.d(TAG, "Processing meta page " +
+                    metaPage.getPageName() + ": " +
+                    metaPage.getPageId() + " " +
+                    metaPage.getPageUI() + " " +
+                    metaPage.getPageAPI());
+            if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {//Fix SVFA-1435 app Launch:  setting Download page UI url in shared pref
 
-            setDownloadPageId(metaPage.getPageId());
+                setDownloadPageId(metaPage.getPageId());
+            }
+            pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
+            pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
+
+            getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                    metaPage.getPageUI()),
+                    appCMSPageUI -> {
+                        try {
+                            navigationPages.put(metaPage.getPageId(), appCMSPageUI);
+                            String action = pageNameToActionMap.get(metaPage.getPageName());
+                            if (action != null && actionToPageMap.containsKey(action)) {
+                                actionToPageMap.put(action, appCMSPageUI);
+                                actionToPageNameMap.put(action, metaPage.getPageName());
+                                actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
+                                actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPage);
+                                Log.d(TAG, "Action: " + action + "  PageAPI URL: "
+                                        + metaPage.getPageAPI());
+                            }
+                            if (!pagesToProcess.isEmpty()) {
+
+                                processMetaPagesQueue(loadFromFile,
+                                        onPagesFinishedAction);
+                            } else {
+                                onPagesFinishedAction.call();
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error retrieving AppCMS Page UI: " + e.getMessage());
+                            launchErrorActivity(PlatformType.ANDROID);
+                        }
+                    },
+                    loadFromFile);
         }
-        pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
-        pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
-
-        getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                metaPage.getPageUI()),
-                appCMSPageUI -> {
-                    try {
-                        navigationPages.put(metaPage.getPageId(), appCMSPageUI);
-                        String action = pageNameToActionMap.get(metaPage.getPageName());
-                        if (action != null && actionToPageMap.containsKey(action)) {
-                            actionToPageMap.put(action, appCMSPageUI);
-                            actionToPageNameMap.put(action, metaPage.getPageName());
-                            actionToPageAPIUrlMap.put(action, metaPage.getPageAPI());
-                            actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPage);
-                            Log.d(TAG, "Action: " + action + "  PageAPI URL: "
-                                    + metaPage.getPageAPI());
-                        }
-                        if (!pagesToProcess.isEmpty()) {
-
-                            processMetaPagesQueue(loadFromFile,
-                                    onPagesFinishedAction);
-                        } else {
-                            onPagesFinishedAction.call();
-                        }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error retrieving AppCMS Page UI: " + e.getMessage());
-                        launchErrorActivity(PlatformType.ANDROID);
-                    }
-                },
-                loadFromFile);
     }
 
     /**
