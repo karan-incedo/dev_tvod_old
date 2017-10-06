@@ -2066,7 +2066,7 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             } else if (moduleAPI != null &&
                                     moduleAPI.getContentData() != null &&
-                                    moduleAPI.getContentData().size()>0 &&
+                                    moduleAPI.getContentData().size() > 0 &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
                                     moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
