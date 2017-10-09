@@ -804,7 +804,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     false,
                     false);
         } else {
-            if (!appCMSPresenter.isNetworkConnected()) {
+            if (appCMSPresenter.isNetworkConnected()) {
                 finish();
             }
         }
