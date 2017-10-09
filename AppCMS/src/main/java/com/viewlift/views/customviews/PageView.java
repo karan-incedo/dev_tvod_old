@@ -132,11 +132,11 @@ public class PageView extends BaseView {
 
         if(appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP()){
             int tempheight= (int) appCMSPageUI.getModuleList().get(1).getLayout().getMobile().getHeight();
-            Toast.makeText(this.getContext(),"PIP appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP() "+appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(),Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(this.getContext(),"PIP appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP() "+appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(),Toast.LENGTH_SHORT).show();
             nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
                 if (scrollY> tempheight) {
-                    Toast.makeText(this.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
+             //       Toast.makeText(this.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
                 }else{
 
                 }
