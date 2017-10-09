@@ -133,8 +133,6 @@ public class AppCMSAndroidModuleCall {
                             inputStream.close();
                             ModuleList moduleList = gson.fromJson(sb.toString(),
                                     ModuleList.class);
-                            deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getName()));
-                            writeModuleToFile(getResourceFilename(blocks.getName(), blocks.getVersion()), moduleList);
                             moduleDataMap.appCMSAndroidModule.put(blocks.getName(), moduleList);
                         }
                     } catch (Exception e) {
