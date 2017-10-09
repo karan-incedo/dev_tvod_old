@@ -6553,7 +6553,14 @@ public class AppCMSPresenter {
                            boolean showCancelButton,
                            final Action0 onDismissAction) {
         if (currentActivity != null) {
-            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            int textColor = ContextCompat.getColor(currentContext, android.R.color.white);
+            try {
+                textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to get branding text color - defaulting to accent color: " +
+                    e.getMessage());
+                textColor = ContextCompat.getColor(currentContext, R.color.colorAccent);
+            }
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             String title;
             String message;
@@ -6696,10 +6703,17 @@ public class AppCMSPresenter {
 
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                        Color.parseColor(appCMSMain.getBrand()
-                                .getGeneral()
-                                .getBackgroundColor())));
+                try {
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                            Color.parseColor(appCMSMain.getBrand()
+                                    .getGeneral()
+                                    .getBackgroundColor())));
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to set background color from AppCMS branding - defaulting to colorPrimaryDark: " +
+                            e.getMessage());
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                            ContextCompat.getColor(currentContext, R.color.colorPrimaryDark)));
+                }
                 if (currentActivity.getWindow().isActive()) {
                     try {
                         if (!dialog.isShowing())

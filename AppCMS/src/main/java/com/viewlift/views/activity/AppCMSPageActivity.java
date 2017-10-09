@@ -250,11 +250,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
-                    AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                    handleLaunchPageAction(appCMSBinder,
-                            false,
-                            false,
-                            false);
+                    if (!appCMSBinderStack.isEmpty()) {
+                        AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                        handleLaunchPageAction(appCMSBinder,
+                                false,
+                                false,
+                                false);
+                    }
                 }
             }
         };
