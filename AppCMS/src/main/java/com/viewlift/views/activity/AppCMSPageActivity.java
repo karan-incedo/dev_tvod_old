@@ -25,6 +25,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -430,10 +431,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (updatedAppCMSBinder != null) {
-            appCMSParentView.setBackgroundColor(Color.parseColor(updatedAppCMSBinder.getAppCMSMain()
-                    .getBrand()
-                    .getGeneral()
-                    .getBackgroundColor()));
+            try {
+                appCMSParentView.setBackgroundColor(Color.parseColor(updatedAppCMSBinder.getAppCMSMain()
+                        .getBrand()
+                        .getGeneral()
+                        .getBackgroundColor()));
+            } catch (Exception e) {
+                Log.w(TAG, "Could not set background color of app based upon AppCMS branding - defaulting to primaryDark: " +
+                    e.getMessage());
+                appCMSParentView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            }
         }
 
         createMenuNavItem();
@@ -464,15 +471,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             try {
                 loadingProgressBar.getIndeterminateDrawable().setTint(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
             } catch (Exception e) {
-                Log.e(TAG, "Failed to set color for loader: " + e.getMessage());
+                Log.w(TAG, "Failed to set color for loader: " + e.getMessage());
+                loadingProgressBar.getIndeterminateDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
             }
         }
 
         if (appCMSPresenter != null) {
-            newVersionUpgradeAvailable.setBackgroundColor(Color.parseColor(
-                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-            newVersionAvailableTextView.setTextColor(Color.parseColor(
-                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+            try {
+                newVersionUpgradeAvailable.setBackgroundColor(Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                newVersionAvailableTextView.setTextColor(Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to set AppCMS branding colors for soft upgrade messages: " +
+                        e.getMessage());
+            }
         }
         newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
                 getString(R.string.app_cms_app_version),
@@ -1357,8 +1370,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (homePageIndex < appCMSTabNavContainer.getChildCount()) {
                 final NavBarItemView homeNavBarItemView =
                         (NavBarItemView) appCMSTabNavContainer.getChildAt(homePageIndex);
-                int highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getGeneral().getBlockTitleColor());
+                int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                try {
+                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                            .getGeneral().getBlockTitleColor());
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+                        e.getMessage());
+                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                }
                 homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
                 homeNavBarItemView.setHighlightColor(highlightColor);
                 homeNavBarItemView.setLabel(homePageNav.getTitle());
@@ -1383,8 +1403,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (navLivePageIndex < appCMSTabNavContainer.getChildCount()) {
             NavBarItemView navLiveItemView =
                     (NavBarItemView) appCMSTabNavContainer.getChildAt(navLivePageIndex);
-            int highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                    .getGeneral().getBlockTitleColor());
+            int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+            try {
+                highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral().getBlockTitleColor());
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+                        e.getMessage());
+                highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+            }
             navLiveItemView.setHighlightColor(highlightColor);
             navLiveItemView.setLabel(livePageNav.getTitle());
             navLiveItemView.setOnClickListener(v -> {
@@ -1409,8 +1436,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (categoriesPageIndex < appCMSTabNavContainer.getChildCount()) {
                 final NavBarItemView moviesNavBarItemView =
                         (NavBarItemView) appCMSTabNavContainer.getChildAt(categoriesPageIndex);
-                int highlightColor =
-                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+                int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                try {
+                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                            .getGeneral().getBlockTitleColor());
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+                            e.getMessage());
+                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                }
                 moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
                 moviesNavBarItemView.setHighlightColor(highlightColor);
                 moviesNavBarItemView.setLabel(moviePageNav.getTitle());
@@ -1437,8 +1471,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (searchPageIndex < appCMSTabNavContainer.getChildCount()) {
                 NavBarItemView searchNavBarItemView =
                         (NavBarItemView) appCMSTabNavContainer.getChildAt(searchPageIndex);
-                int highlightColor =
-                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+                int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                try {
+                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                            .getGeneral().getBlockTitleColor());
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+                            e.getMessage());
+                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                }
                 searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
                 searchNavBarItemView.setHighlightColor(highlightColor);
                 searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
@@ -1476,6 +1517,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
             highlightColor =
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        } else {
+            highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
         }
 
         menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
