@@ -105,8 +105,13 @@ public class AppCMSErrorActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        if (activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting()) {
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
     }
 
     @Override
