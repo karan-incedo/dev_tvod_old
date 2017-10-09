@@ -994,6 +994,9 @@ public class AppCMSPresenter {
             openDownloadScreenForNetworkError(false);
         } else {
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
+
+            refreshPages(null);
+
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null);
@@ -4332,6 +4335,8 @@ public class AppCMSPresenter {
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            refreshPages(null);
+
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             Log.d(TAG, "Search query (optional): " + searchQuery);
@@ -8033,6 +8038,90 @@ public class AppCMSPresenter {
                     }).execute(url);
         } else {
             launchErrorActivity(platformType);
+        }
+    }
+
+    public void refreshPages(Action0 onreadyAction) {
+        Log.d(TAG, "Refreshing pages");
+        if (currentActivity != null) {
+            Log.d(TAG, "Refreshing main.json");
+            retrieveCurrentAppVersion();
+            refreshAppCMSMain((appCMSMain) -> {
+                if (appCMSMain != null) {
+                    Log.d(TAG, "Refreshed main.json");
+                    this.appCMSMain = appCMSMain;
+                    refreshAppCMSAndroid((appCMSAndroid) -> {
+                        for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
+                            Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+                                    " " +
+                                    metaPage.getPageId() +
+                                    " " +
+                                    metaPage.getPageUI());
+                            getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    metaPage.getPageUI()),
+                                    appCMSPageUI -> {
+                                        if (appCMSPageUI.isLoadedFromNetwork() &&
+                                                pageViewLruCache != null) {
+                                            navigationPages.put(metaPage.getPageId(), appCMSPageUI);
+                                            pageViewLruCache.evictAll();
+                                        }
+                                    },
+                                    false);
+                        }
+
+                        getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
+                            Log.d(TAG, "Received and refreshed module list");
+                            this.appCMSAndroidModules = appCMSAndroidModules;
+                            if (appCMSAndroidModules.isLoadedFromNetwork() &&
+                                    pageViewLruCache != null) {
+                                pageViewLruCache.evictAll();
+                            }
+
+                            if (onreadyAction != null) {
+                                onreadyAction.call();
+                            }
+                        });
+
+                    });
+                } else {
+                    Log.w(TAG, "Resulting main.json from refresh is null");
+                }
+            });
+        } else {
+            Log.w(TAG, "Current activity is null, can not refresh page data");
+        }
+    }
+
+    private void refreshAppCMSMain(Action1<AppCMSMain> readyAction) {
+        GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
+                .context(currentActivity)
+                .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                .forceReloadFromNetwork(true)
+                .build();
+        new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
+            Log.d(TAG, "Refreshed main.json");
+            if (readyAction != null) {
+                Log.d(TAG, "Notifying listeners that main.json has been updated");
+                Observable.just(main).subscribe(readyAction);
+            }
+        }).execute(params);
+    }
+
+    private void refreshAppCMSAndroid(Action1<AppCMSAndroidUI> readyAction) {
+        if (currentActivity != null) {
+            GetAppCMSAndroidUIAsyncTask.Params params =
+                    new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                            .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    appCMSMain.getAndroid()))
+                            .loadFromFile(false)
+                            .build();
+            new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                Log.d(TAG, "Refreshed android.json");
+                if (readyAction != null) {
+                    Log.d(TAG, "Notifying listeners that android.json has been updated");
+                    Observable.just(appCMSAndroidUI).subscribe(readyAction);
+                }
+            }).execute(params);
         }
     }
 
