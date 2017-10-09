@@ -581,6 +581,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.closeSoftKeyboard();
         appCMSPresenter.cancelWatchlistToast();
+
+        appCMSPresenter.refreshPages();
     }
 
     @Override

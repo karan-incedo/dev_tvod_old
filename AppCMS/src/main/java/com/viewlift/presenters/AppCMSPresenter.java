@@ -8479,6 +8479,7 @@ public class AppCMSPresenter {
                                     appCMSPageUI -> {
                                         if (appCMSPageUI.isLoadedFromNetwork() &&
                                                 pageViewLruCache != null) {
+                                            navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                                             pageViewLruCache.evictAll();
                                         }
                                     },
