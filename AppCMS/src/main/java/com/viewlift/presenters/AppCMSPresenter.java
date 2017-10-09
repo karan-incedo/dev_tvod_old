@@ -7008,8 +7008,10 @@ public class AppCMSPresenter {
     }
 
     private String getBeaconUrl() {
-        return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
-
+        if (currentActivity != null) {
+            return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
+        }
+        return null;
     }
 
     private String getBeaconUrl(String vid, String screenName, String parentScreenName,
