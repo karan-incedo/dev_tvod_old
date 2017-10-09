@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.internal.NavigationSubMenu;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -24,17 +23,18 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.android.AccessLevels;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
-import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_HISTORY_NAV_KEY;
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -51,6 +51,9 @@ public class AppCmsSubNavigationFragment extends Fragment {
     private AppCMSBinder appCmsBinder;
     private  Navigation mNavigation;
     private boolean isUserLogin;
+    private AppCMSBinder mAppCMSBinder;
+    private boolean isLoginDialogPage;
+
     public static AppCmsSubNavigationFragment newInstance(Context context,
                                                           OnNavigationVisibilityListener listener
                                                          ) {
@@ -69,6 +72,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_navigation, null);
 
+
+        Bundle bundle = getArguments();
+        mAppCMSBinder = (AppCMSBinder)bundle.getBinder("app_cms_binder");
+        isLoginDialogPage = bundle.getBoolean(getString(R.string.is_login_dialog_page_key));
 /*
         AppCMSBinder appCMSBinder = ((AppCMSBinder) args.getBinder(getResources().getString(R.string.fragment_page_bundle_key)));
         this.appCmsBinder = appCMSBinder;
@@ -83,7 +90,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
 
         mNavigation = appCMSPresenter.getNavigation();
-        isUserLogin = appCMSPresenter.isUserLoggedIn(getActivity());
+        isUserLogin = appCMSPresenter.isUserLoggedIn();
 
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
@@ -94,6 +101,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                                 appCMSPresenter);
 
         mRecyclerView.setAdapter(navigationAdapter);
+        setFocusable(true);
+        navigationAdapter.setFocusOnSelectedPage();
         return view;
     }
 
@@ -128,7 +137,20 @@ public class AppCmsSubNavigationFragment extends Fragment {
     private String mSelectedPageId = null;
     public void setSelectedPageId(String selectedPageId) {
         this.mSelectedPageId = selectedPageId;
-        Log.d("" ,"Navigation setSelectedPageId = " + mSelectedPageId );
+    }
+
+    private int getSelectedPagePosition(){
+        if(null != mSelectedPageId){
+            if(null != navigationSubItemList && navigationSubItemList.size() > 0){
+                for(int i=0;i<navigationSubItemList.size();i++){
+                    NavigationSubItem navigationSubItem = navigationSubItemList.get(i);
+                    if(navigationSubItem.pageId == mSelectedPageId){
+                        return i;
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     public void notifiDataSetInvlidate() {
@@ -186,28 +208,51 @@ public class AppCmsSubNavigationFragment extends Fragment {
             if(selectedPosition >= 0 && selectedPosition == position){
                 holder.navItemlayout.setBackground(
                         Utils.getNavigationSelectedState(mContext , appCmsPresenter,true));
+                holder.navItemView.setTypeface(extraBoldTypeFace);
             }else{
                 holder.navItemlayout.setBackground(null);
+                holder.navItemView.setTypeface(semiBoldTypeFace);
             }
 
             holder.navItemlayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    appCmsPresenter.navigateToTVPage(
-                            subItem.pageId,
-                            subItem.title,
-                            subItem.url,
-                            false,
-                            Uri.EMPTY
-                    );
+                    NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
+                    if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
+                            .get(navigationSubItem.title))) {
+
+                        appCmsPresenter.showLoadingDialog(true);
+                        appCmsPresenter.navigateToWatchlistPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false);
+                    } else if (ANDROID_HISTORY_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
+                            .get(navigationSubItem.title))) {
+                        appCmsPresenter.showLoadingDialog(true);
+                        appCmsPresenter.navigateToHistoryPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false);
+                    } else {
+                        appCmsPresenter.navigateToTVPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false,
+                                Uri.EMPTY,
+                                false,
+                                false,
+                                isLoginDialogPage
+                        );
+                    }
                 }
             });
         }
 
         private boolean tryMoveSelection(RecyclerView.LayoutManager lm, int direction) {
             int tryFocusItem = selectedPosition + direction;
-
-            // If still within valid bounds, move the selection, notify to redraw, and scroll
             if (tryFocusItem >= 0 && tryFocusItem < getItemCount()) {
                 notifyItemChanged(selectedPosition);
                 selectedPosition = tryFocusItem;
@@ -215,7 +260,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 lm.scrollToPosition(selectedPosition);
                 return true;
             }
-            return false;
+            return true;
         }
 
         @Override
@@ -237,69 +282,44 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navItemlayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext,appCmsPresenter)));
-                navItemView.setTypeface(semiBoldTypeFace);
 
+                navItemlayout.setOnFocusChangeListener((view, focus) -> {
+                    if(focus)
+                     mRecyclerView.setAlpha(1f);
+                });
 
-               /* navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View view, boolean hasFocus) {
-                        String text = navItemView.getText().toString();
-                        int position = (int)navItemView.getTag(R.string.item_position);
-                        selectedPosition = position;
-
-                        Log.d("","Position onFocusChange= "+selectedPosition);
-                        Log.d("TAG","Nav position = "+position);
-                        if (hasFocus) {
-                            navItemView.setText(text.toUpperCase());
-                            navItemView.setTypeface(extraBoldTypeFace);
-                            navItemlayout.setBackground(Utils.getNavigationSelectedState(mContext , appCmsPresenter,true));
-                        } else {
-                            navItemView.setText(text.toUpperCase());
-                            navItemView.setTypeface(semiBoldTypeFace);
-                            navItemlayout.setBackground(null);
+                navItemlayout.setOnKeyListener((view, i, keyEvent) -> {
+                    int keyCode = keyEvent.getKeyCode();
+                    int action = keyEvent.getAction();
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        switch (keyCode) {
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                                return tryMoveSelection(mRecyclerView.getLayoutManager() , -1);
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                return tryMoveSelection(mRecyclerView.getLayoutManager() , 1);
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                                setFocusOnSelectedPage();
+                                new Handler().postDelayed(() -> mRecyclerView.setAlpha(0.52f), 50);
+                                break;
                         }
                     }
-                });*/
-
-                navItemlayout.setOnKeyListener(new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                        int keyCode = keyEvent.getKeyCode();
-                        int action = keyEvent.getAction();
-                        if (action == KeyEvent.ACTION_DOWN) {
-                            switch (keyCode) {
-                                case KeyEvent.KEYCODE_DPAD_LEFT:
-                                  //  selectedPosition = getAdapterPosition();
-                                    Log.d("","Position Left= "+selectedPosition);
-                                    /*if(isStartPosition()){
-                                        return true;
-                                    }*/
-                                    tryMoveSelection(mRecyclerView.getLayoutManager() , -1);
-                                    break;
-                                case KeyEvent.KEYCODE_DPAD_RIGHT:
-                                  //  selectedPosition = getAdapterPosition();
-                                    Log.d("","Position = Right"+selectedPosition);
-                                   /* if (isEndPosition()) {
-                                        return true;
-                                    }*/
-                                    tryMoveSelection(mRecyclerView.getLayoutManager() , 1);
-                                    break;
-                                case KeyEvent.KEYCODE_MENU:
-                                  /*  selectedPosition = getAdapterPosition();
-                                    if(selectedPosition != -1){
-                                        notifiDataSetInvlidate();
-                                    }*/
-                            }
-                        }
-                        return false;
-                    }
+                    return false;
                 });
             }
+        }
+
+        private void setFocusOnSelectedPage() {
+                int selectedPos = getSelectedPagePosition();
+                notifyItemChanged(selectedPosition);
+                selectedPosition = selectedPos;
+                notifyItemChanged(selectedPosition);
         }
     }
 
 
-  private int selectedPosition = 0;
+
+    private int selectedPosition = 0;
+
   private boolean isEndPosition(){
         return selectedPosition == navigationSubItemList.size()-1;
     }
@@ -329,10 +349,13 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navigationSubItemList.add(navigationSubItem);
             }
         }
+        if(!isUserLogin){
+            return;
+        }
+
         for(int i=0;i<mNavigation.getNavigationFooter().size();i++) {
             NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
-            if ((isUserLogin && navigationFooter.getAccessLevels().getLoggedIn())
-                    || (!isUserLogin && navigationFooter.getAccessLevels().getLoggedOut())) {
+            {
                 NavigationSubItem navigationSubItem = new NavigationSubItem();
                 navigationSubItem.pageId = navigationFooter.getPageId();
                 navigationSubItem.title = navigationFooter.getTitle();

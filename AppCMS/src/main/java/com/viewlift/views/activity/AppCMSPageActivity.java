@@ -32,10 +32,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -569,6 +568,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (appCMSPresenter.isAppUpgradeAvailable()) {
             newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+            newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            newVersionUpgradeAvailable.requestLayout();
         } else if (appCMSPresenter.isAppBelowMinVersion()) {
             appCMSPresenter.launchUpgradeAppActivity();
         }
@@ -833,7 +834,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(false);
             }
-
+            appCMSPresenter.setPageLoading(true);
         } else {
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
@@ -843,6 +844,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
+            appCMSPresenter.setPageLoading(false);
         }
     }
 
@@ -1324,6 +1326,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
+            if (appCMSPresenter.isAppUpgradeAvailable()) {
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+            } else if (appCMSPresenter.isAppBelowMinVersion()) {
+                appCMSPresenter.launchUpgradeAppActivity();
+            }
             if (refreshFragment) {
                 createScreenFromAppCMSBinder(appCMSBinder);
             }

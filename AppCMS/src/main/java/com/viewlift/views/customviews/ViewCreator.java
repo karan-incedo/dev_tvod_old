@@ -133,9 +133,16 @@ public class ViewCreator {
             return;
         }
         for (ModuleList moduleInfo : appCMSPageUI.getModuleList()) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             if (module == null) {
                 module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
             }
 
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
@@ -150,6 +157,7 @@ public class ViewCreator {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
+                    moduleView.setVisibility(View.VISIBLE);
                     moduleView.resetHeightAdjusters();
 
                     Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
@@ -732,6 +740,9 @@ public class ViewCreator {
                                 }
                             }
                         }
+                    } else {
+                        moduleView.setVisibility(View.GONE);
+                        shouldHideModule = true;
                     }
 
                     ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
@@ -828,6 +839,20 @@ public class ViewCreator {
                 }
             }
         }
+        if (pageView != null) {
+            forceRedrawOfAllChildren(pageView);
+        }
+    }
+    private void forceRedrawOfAllChildren(ViewGroup viewGroup) {
+        viewGroup.requestLayout();
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View v = viewGroup.getChildAt(i);
+            if (v instanceof ViewGroup) {
+                forceRedrawOfAllChildren((ViewGroup) v);
+            } else {
+                v.requestLayout();
+            }
+        }
     }
 
     public PageView generatePage(Context context,
@@ -905,35 +930,42 @@ public class ViewCreator {
         pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
-        for (ModuleList moduleInfo : modulesList) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
-            if (module == null) {
-                module = moduleInfo;
-            }
-
-            boolean createModule = !modulesToIgnore.contains(module.getType());
-
-            if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
-                    (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
-                createModule = false;
-            }
-
-            if (createModule) {
-                if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
-                        jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
-                        jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
-
+            for (ModuleList moduleInfo : modulesList) {
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                if (module == null) {
+                    module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
                 }
-                Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
-                View childView = createModuleView(context, module, moduleAPI, pageView,
-                        jsonValueKeyMap,
-                        appCMSPresenter);
-                if (childView != null) {
-                    childrenContainer.addView(childView);
+
+                boolean createModule = !modulesToIgnore.contains(module.getType());
+
+                if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                        (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                                jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+                    createModule = false;
                 }
-                if (moduleAPI == null) {
-                    childView.setVisibility(View.GONE);
+
+                if (createModule) {
+                    if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                            jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
+                            jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
+
+                    }
+                    Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+                    View childView = createModuleView(context, module, moduleAPI, pageView,
+                            jsonValueKeyMap,
+                            appCMSPresenter);
+                    if (childView != null) {
+                        childrenContainer.addView(childView);
+                    if (childView == null) {
+                        childView.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -956,7 +988,7 @@ public class ViewCreator {
                                                                   PageView pageView,
                                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                   AppCMSPresenter appCMSPresenter) {
-        ModuleView moduleView;
+        ModuleView moduleView = null;
         if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY) {
             moduleView = new LoginModule(context,
                     module,
@@ -966,6 +998,7 @@ public class ViewCreator {
                     this);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView);
         } else {
+            if (module.getComponents() != null) {
             updateModuleHeight(context,
                     module.getLayout(),
                     module.getComponents(),
@@ -1133,7 +1166,10 @@ public class ViewCreator {
                 moduleView.setLayoutParams(moduleLayoutParams);
             }
         }
+        }
+        if (moduleView != null) {
         moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        }
         return moduleView;
     }
 
@@ -2438,7 +2474,6 @@ public class ViewCreator {
                                         .fitCenter()
                                         .into((ImageView) componentViewResult.componentView);
                             }
-                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                         }
                         break;

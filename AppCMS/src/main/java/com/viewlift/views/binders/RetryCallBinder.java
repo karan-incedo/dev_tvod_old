@@ -20,6 +20,7 @@ public class RetryCallBinder extends Binder {
     private boolean closelauncher;
     private String[] extraData;
     private ContentDatum contentDatum;
+    private String pageId;
 
     public String getFilmId() {
         return filmId;
@@ -87,5 +88,11 @@ public class RetryCallBinder extends Binder {
 
     public void setContentDatum(ContentDatum contentDatum) {
         this.contentDatum = contentDatum;
+    }
+    public String getPageId() {
+        return pageId;
+    }
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
     }
 }

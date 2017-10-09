@@ -55,20 +55,20 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
         Bundle args = getArguments();
         String email = args.getString(getContext().getString(R.string.app_cms_password_reset_email_key));
 
-        TextView titleTextView = view.findViewById(R.id.app_cms_reset_password_page_title);
+        TextView titleTextView = (TextView) view.findViewById(R.id.app_cms_reset_password_page_title);
         titleTextView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                 .getBrand().getGeneral().getTextColor()));
 
-        final EditText appCMSResetPasswordEmailInput = view.findViewById(R.id.app_cms_reset_password_email_input);
+        final EditText appCMSResetPasswordEmailInput = (EditText) view.findViewById(R.id.app_cms_reset_password_email_input);
         if (!TextUtils.isEmpty(email)) {
             appCMSResetPasswordEmailInput.setText(email);
         }
 
         TextView appCMSResetPasswordTextInputDescription =
-                view.findViewById(R.id.app_cms_reset_password_text_input_description);
+                (TextView) view.findViewById(R.id.app_cms_reset_password_text_input_description);
         appCMSResetPasswordTextInputDescription.setTextColor(textColor);
 
-        Button appCMSSubmitResetPasswordButton = view.findViewById(R.id.app_cms_submit_reset_password_button);
+        Button appCMSSubmitResetPasswordButton = (Button) view.findViewById(R.id.app_cms_submit_reset_password_button);
         appCMSSubmitResetPasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +92,7 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
 
     private void setBgColor(int bgColor, View view) {
         RelativeLayout appCMSResetPasswordMainLayout =
-                view.findViewById(R.id.app_cms_reset_password_main_layout);
+                (RelativeLayout) view.findViewById(R.id.app_cms_reset_password_main_layout);
         appCMSResetPasswordMainLayout.setBackgroundColor(bgColor);
     }
 }

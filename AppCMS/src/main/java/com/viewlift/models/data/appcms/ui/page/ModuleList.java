@@ -39,6 +39,9 @@ public class ModuleList implements ModuleWithComponents {
     @Expose
     boolean svod;
 
+    @SerializedName("blockName")
+    @Expose
+    String blockName;
     public String getId() {
         return id;
     }
@@ -94,5 +97,11 @@ public class ModuleList implements ModuleWithComponents {
 
     public void setSvod(boolean svod) {
         this.svod = svod;
+    }
+    public String getBlockName() {
+        return blockName;
+    }
+    public void setBlockName(String blockName) {
+        this.blockName = blockName;
     }
 }

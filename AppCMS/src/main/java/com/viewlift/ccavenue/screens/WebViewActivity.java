@@ -184,7 +184,7 @@ public class WebViewActivity extends Activity {
 				dialog = null;
 			}
 
-			final WebView webview = findViewById(R.id.webview);
+			final WebView webview = (WebView) findViewById(R.id.webview);
 			webview.getSettings().setJavaScriptEnabled(true);
 			webview.addJavascriptInterface(new MyJavaScriptInterface(), "HTMLOUT");
 			webview.setWebViewClient(new WebViewClient(){

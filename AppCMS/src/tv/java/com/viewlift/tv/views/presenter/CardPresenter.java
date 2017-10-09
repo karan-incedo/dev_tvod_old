@@ -3,6 +3,8 @@ package com.viewlift.tv.views.presenter;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.support.design.widget.TabLayout;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -170,6 +173,30 @@ public class CardPresenter extends Presenter {
                         //tvTitle.setTextSize(component.getFontSize());
                         parentLayout.addView(tvTitle);
                         break;
+
+
+                    case PAGE_PROGRESS_VIEW_KEY:
+                        FrameLayout.LayoutParams progressBarParams = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT ,
+                                Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getHeight())));
+                        progressBarParams.topMargin =  Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getYAxis()));
+
+                        ProgressBar progressBar = new ProgressBar(mContext,
+                                null,
+                                R.style.Widget_AppCompat_ProgressBar_Horizontal);
+                        progressBar.setLayoutParams(progressBarParams);
+
+                        int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
+                        progressBar.setPadding(gridImagePadding,0,gridImagePadding,0);
+                        progressBar.setProgressDrawable(Utils.getProgressDrawable(mContext , component.getUnprogressColor() ,mAppCmsPresenter));
+                        int progress = (int)Math.ceil(Utils.getPercentage(contentData.getGist().getRuntime() , contentData.getGist().getWatchedTime()));
+                        Log.d("NITS>>>","Runtime = "+  contentData.getGist().getRuntime()
+                           + " WatchedTime = "+ contentData.getGist().getWatchedTime()
+                        +" Percentage = " + contentData.getGist().getWatchedPercentage()
+                        +" Progress = "+progress);
+                        progressBar.setProgress(progress);
+                        progressBar.setFocusable(false);
+                        parentLayout.addView(progressBar);
                 }
             }
         }

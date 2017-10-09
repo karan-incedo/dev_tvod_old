@@ -20,6 +20,8 @@ public class FireTV {
 
     private String leftMargin;
 
+    private String itemWidth;
+    private String itemHeight;
     public Float getFontSizeKey() {
         return fontSizeKey;
     }
@@ -154,6 +156,18 @@ public class FireTV {
         this.leftMargin = leftMargin;
     }
 
+    public String getItemWidth() {
+        return itemWidth;
+    }
+    public void setItemWidth(String itemWidth) {
+        this.itemWidth = itemWidth;
+    }
+    public String getItemHeight() {
+        return itemHeight;
+    }
+    public void setItemHeight(String itemHeight) {
+        this.itemHeight = itemHeight;
+    }
     @Override
     public String toString()
     {

@@ -57,8 +57,8 @@
     <dimen name="app_cms_video_controller_cc_height">34dp</dimen>
     <dimen name="app_cms_not_items_label_text_size">24sp</dimen>
     <dimen name="app_cms_planmetapage_end_margin">4dp</dimen>
-    <dimen name="app_cms_continue_watching_tray_marginLeft">10dp</dimen>
-    <dimen name="app_cms_episode_tray_marginStart">10dp</dimen>
+    <dimen name="app_cms_continue_watching_tray_marginLeft">8dp</dimen>
+    <dimen name="app_cms_episode_tray_marginStart">8dp</dimen>
 
 
     <dimen name="app_cms_download_quality_rendition_width">70dp</dimen>
@@ -76,7 +76,7 @@
     <dimen name="new_version_available_elevation">8dp</dimen>
     <dimen name="app_cms_force_upgrade_element_margin">8dp</dimen>
     <dimen name="app_cms_force_upgrade_button_padding">8dp</dimen>
-    <dimen name="app_cms_upgrade_now_text_margin">24dp</dimen>
+    <dimen name="app_cms_upgrade_now_text_margin">32dp</dimen>
     <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">3.4%</fraction>
     <fraction name="mainContainerHeightPercent">22%</fraction>
     <fraction name="mainContainerWidthPercent">90%</fraction>

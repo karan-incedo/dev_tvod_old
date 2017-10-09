@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -49,6 +50,7 @@ public class PageView extends BaseView {
                         FrameLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
         adapterList = new ArrayList<>();
+
     }
 
     public void addListWithAdapter(ListWithAdapter listWithAdapter) {
@@ -127,6 +129,21 @@ public class PageView extends BaseView {
                         LayoutParams.MATCH_PARENT);
         nestedScrollView.setLayoutParams(nestedScrollViewLayoutParams);
         nestedScrollView.addView(childrenContainer);
+
+        if(appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP()){
+            int tempheight= (int) appCMSPageUI.getModuleList().get(1).getLayout().getMobile().getHeight();
+            Toast.makeText(this.getContext(),"PIP appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP() "+appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(),Toast.LENGTH_SHORT).show();
+            nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+
+                if (scrollY> tempheight) {
+                    Toast.makeText(this.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
+                }else{
+
+                }
+
+            });
+
+        }
         addView(nestedScrollView);
         return childrenContainer;
     }

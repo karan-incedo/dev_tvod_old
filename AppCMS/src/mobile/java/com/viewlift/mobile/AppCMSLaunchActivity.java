@@ -148,11 +148,15 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         }
 
         if (appCMSPresenterComponent != null) {
+            try {
             appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
                     getString(R.string.app_cms_app_name),
                     searchQuery,
                     AppCMSPresenter.PlatformType.ANDROID,
                     forceReloadFromNetwork);
+            } catch (Exception e) {
+                Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
+            }
         }
     }
 
@@ -175,5 +179,16 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        try {
+            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
+            ((AppCMSApplication) getApplication()).setCloseApp(this);
+        } catch (Exception e) {
+            Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
+        }
+        finish();
     }
 }

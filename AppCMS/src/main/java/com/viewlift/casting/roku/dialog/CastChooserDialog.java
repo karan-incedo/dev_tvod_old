@@ -77,7 +77,7 @@ public class CastChooserDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mr_chooser_dialog);
-        mListView = findViewById(R.id.mr_chooser_list);
+        mListView = (ListView) findViewById(R.id.mr_chooser_list);
         mListView.setOnItemClickListener(chooserDialogItemClickListener);
         mAdapter = new RouteAdapter(getContext(), routes);
         mListView.setAdapter(mAdapter);
@@ -105,8 +105,8 @@ public class CastChooserDialog extends Dialog {
             }
 
 
-            TextView text1 = view.findViewById(R.id.mr_chooser_route_name);
-            TextView text2 = view.findViewById(R.id.mr_chooser_route_desc);
+            TextView text1 = (TextView) view.findViewById(R.id.mr_chooser_route_name);
+            TextView text2 = (TextView) view.findViewById(R.id.mr_chooser_route_desc);
             text1.setTextSize(15);
             text2.setTextSize(12);
             if (getItem(position) instanceof MediaRouter.RouteInfo) {
@@ -128,7 +128,7 @@ public class CastChooserDialog extends Dialog {
 
             }
 
-            ImageView iconView = view.findViewById(R.id.mr_chooser_route_icon);
+            ImageView iconView = (ImageView) view.findViewById(R.id.mr_chooser_route_icon);
             if (iconView != null) {
                 iconView.setImageDrawable(getContext().getDrawable(R.drawable.ic_tv_24dp));
             }
