@@ -94,6 +94,7 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -578,15 +579,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "checkForExistingSubscription()");
         appCMSPresenter.checkForExistingSubscription(false);
 
-        if (appCMSPresenter.isAppUpgradeAvailable()) {
-            newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
-            newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            newVersionUpgradeAvailable.requestLayout();
-        } else if (appCMSPresenter.isAppBelowMinVersion()) {
-            appCMSPresenter.launchUpgradeAppActivity();
-        }
-
-        appCMSPresenter.refreshPages();
+        appCMSPresenter.refreshPages(() -> {
+            if (appCMSPresenter.isAppUpgradeAvailable()) {
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+                newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                newVersionUpgradeAvailable.requestLayout();
+            } else if (appCMSPresenter.isAppBelowMinVersion()) {
+                appCMSPresenter.launchUpgradeAppActivity();
+            }
+        });
     }
 
     @Override
@@ -601,7 +602,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.closeSoftKeyboard();
         appCMSPresenter.cancelWatchlistToast();
 
-        appCMSPresenter.refreshPages();
+        appCMSPresenter.refreshPages(null);
     }
 
     @Override

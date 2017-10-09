@@ -1055,7 +1055,7 @@ public class AppCMSPresenter {
         } else {
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
-            refreshPages();
+            refreshPages(null);
 
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
@@ -4622,7 +4622,7 @@ public class AppCMSPresenter {
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            refreshPages();
+            refreshPages(null);
 
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
@@ -8477,7 +8477,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void refreshPages() {
+    public void refreshPages(Action0 onreadyAction) {
         Log.d(TAG, "Refreshing pages");
         if (currentActivity != null) {
             Log.d(TAG, "Refreshing main.json");
@@ -8512,7 +8512,12 @@ public class AppCMSPresenter {
                                     pageViewLruCache != null) {
                                 pageViewLruCache.evictAll();
                             }
+
+                            if (onreadyAction != null) {
+                                onreadyAction.call();
+                            }
                         });
+
                     });
                 } else {
                     Log.w(TAG, "Resulting main.json from refresh is null");
@@ -8539,19 +8544,21 @@ public class AppCMSPresenter {
     }
 
     private void refreshAppCMSAndroid(Action1<AppCMSAndroidUI> readyAction) {
-        GetAppCMSAndroidUIAsyncTask.Params params =
-                new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                        .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                appCMSMain.getAndroid()))
-                        .loadFromFile(false)
-                        .build();
-        new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-            Log.d(TAG, "Refreshed android.json");
-            if (readyAction != null) {
-                Log.d(TAG, "Notifying listeners that android.json has been updated");
-                Observable.just(appCMSAndroidUI).subscribe(readyAction);
-            }
-        }).execute(params);
+        if (currentActivity != null) {
+            GetAppCMSAndroidUIAsyncTask.Params params =
+                    new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                            .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                    appCMSMain.getAndroid()))
+                            .loadFromFile(false)
+                            .build();
+            new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                Log.d(TAG, "Refreshed android.json");
+                if (readyAction != null) {
+                    Log.d(TAG, "Notifying listeners that android.json has been updated");
+                    Observable.just(appCMSAndroidUI).subscribe(readyAction);
+                }
+            }).execute(params);
+        }
     }
 
     private void getAppCMSAndroid(int tryCount) {
