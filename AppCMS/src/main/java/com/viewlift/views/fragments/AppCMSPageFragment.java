@@ -207,6 +207,14 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (pageViewGroup != null) {
+            pageViewGroup.removeAllViews();
+        }
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBinder(getString(R.string.app_cms_binder_key), appCMSBinder);
