@@ -672,7 +672,26 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
-            return dataSource.read(buffer, offset, readLength);
+            int result = 0;
+            if (dataSource instanceof FileDataSource) {
+                try {
+                    long bytesRead = ((FileDataSource) dataSource).getBytesRead();
+                    result = dataSource.read(buffer, offset, readLength);
+                    for (int i = 0; i < 10 - bytesRead && i < readLength; i++) {
+                        if (~buffer[i] >= -128 && ~buffer[i] <= 127) {
+                            buffer[i + offset] = (byte) ~buffer[i + offset];
+                        }
+                    }
+                    return result;
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to retrieve number of bytes read from file input stream: " +
+                        e.getMessage());
+                    result = dataSource.read(buffer, offset, readLength);
+                }
+            } else {
+                result = dataSource.read(buffer, offset, readLength);
+            }
+            return result;
         }
 
         @Override

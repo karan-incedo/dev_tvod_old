@@ -226,6 +226,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                     R.drawable.ic_deleteicon));
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                            contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
                             appCMSPresenter.sendRefreshPageAction();
                             break;
 
@@ -475,7 +476,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private void playDownloaded(ContentDatum data, Context context, int position) {
         List<String> relatedVideoIds = getListOfUpcomingMovies(position);
-        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
+        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
                     null,
                     false,
