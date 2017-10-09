@@ -172,7 +172,7 @@ dependencies {
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }
-    compile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
+    mobileCompile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
     compile("com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
