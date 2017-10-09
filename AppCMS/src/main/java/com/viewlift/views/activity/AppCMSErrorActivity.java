@@ -107,8 +107,8 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         super.onResume();
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        if (activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting()) {
+        if (activeNetwork == null ||
+                !activeNetwork.isConnectedOrConnecting()) {
             registerReceiver(networkConnectedReceiver,
                     new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }

@@ -277,7 +277,7 @@ public class AppCMSPageFragment extends Fragment {
                     appCMSPresenter,
                     modulesToIgnore);
 
-            if (pageViewGroup != null) {
+            if (pageViewGroup != null && pageView != null) {
                 pageViewGroup.removeAllViews();
                 pageViewGroup.addView(pageView);
             }
