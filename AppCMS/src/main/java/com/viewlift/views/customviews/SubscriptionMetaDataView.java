@@ -20,6 +20,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.FeatureDetail;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
@@ -47,7 +48,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
     private int devicesSupportedComponentIndex;
     private int devicesSupportedFeatureIndex;
     private ContentDatum planData;
-
+    private AppCMSAndroidModules appCMSAndroidModules;
 
     public SubscriptionMetaDataView(Context context,
                                     Component component,
@@ -56,7 +57,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                                     Module moduleAPI,
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     AppCMSPresenter appCMSPresenter,
-                                    Settings moduleSettings) {
+                                    Settings moduleSettings,
+                                    AppCMSAndroidModules appCMSAndroidModules) {
         super(context);
         this.context = context;
         this.component = component;
@@ -68,6 +70,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
         this.moduleSettings = moduleSettings;
         this.devicesSupportedComponentIndex = -1;
         this.devicesSupportedFeatureIndex = -1;
+        this.appCMSAndroidModules = appCMSAndroidModules;
         init();
     }
 
@@ -150,7 +153,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 if (componentIndex != devicesSupportedComponentIndex) {
                     Component subComponent = component.getComponents().get(componentIndex);
                     planLayout.addView(addChildComponent(subComponent,
-                            featureDetail));
+                            featureDetail,
+                            appCMSAndroidModules));
                 }
             }
         }
@@ -175,6 +179,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 devicesSupportedComponent,
                 devicesSupportedComponent.getLayout(),
                 moduleAPI,
+                appCMSAndroidModules,
                 null,
                 moduleSettings,
                 jsonValueKeyMap,
@@ -194,6 +199,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
                     devicesSupportedComponent,
                     devicesSupportedComponent.getLayout(),
                     moduleAPI,
+                    appCMSAndroidModules,
                     null,
                     moduleSettings,
                     jsonValueKeyMap,
@@ -215,12 +221,14 @@ public class SubscriptionMetaDataView extends LinearLayout {
     }
 
     private View addChildComponent(Component subComponent,
-                                   FeatureDetail featureDetail) {
+                                   FeatureDetail featureDetail,
+                                   AppCMSAndroidModules appCMSAndroidModules) {
         ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
         viewCreator.createComponentView(getContext(),
                 subComponent,
                 subComponent.getLayout(),
                 moduleAPI,
+                appCMSAndroidModules,
                 null,
                 moduleSettings,
                 jsonValueKeyMap,

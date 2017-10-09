@@ -18,6 +18,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
@@ -62,6 +63,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private String watchVideoAction;
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
+    protected AppCMSAndroidModules appCMSAndroidModules;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -74,7 +76,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                              Module moduleAPI,
                              int defaultWidth,
                              int defaultHeight,
-                             String viewType) {
+                             String viewType,
+                             AppCMSAndroidModules appCMSAndroidModules) {
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
         this.parentLayout = parentLayout;
@@ -132,6 +135,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.watchTrailerAction = context.getString(R.string.app_cms_action_watchtrailervideo_key);
         this.watchTrailerQuailifier = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
 
+        this.appCMSAndroidModules = appCMSAndroidModules;
+
         sortPlansInDescendingOrderByPrice();
     }
 
@@ -143,6 +148,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 component,
                 appCMSPresenter,
                 moduleAPI,
+                appCMSAndroidModules,
                 settings,
                 jsonValueKeyMap,
                 defaultWidth,
