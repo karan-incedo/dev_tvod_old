@@ -401,6 +401,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 });
 
+        initPageActivity();
+
+        appCMSPresenter.sendCloseOthersAction(null, false);
+
+        Log.d(TAG, "onCreate()");
+    }
+
+    private void initPageActivity() {
         accessToken = AccessToken.getCurrentAccessToken();
 
         inAppBillingServiceConn = new ServiceConnection() {
@@ -438,7 +446,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         .getBackgroundColor()));
             } catch (Exception e) {
                 Log.w(TAG, "Could not set background color of app based upon AppCMS branding - defaulting to primaryDark: " +
-                    e.getMessage());
+                        e.getMessage());
                 appCMSParentView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
             }
         }
@@ -515,10 +523,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             set.setInterpolator(new AccelerateDecelerateInterpolator());
             set.start();
         });
-
-        appCMSPresenter.sendCloseOthersAction(null, false);
-
-        Log.d(TAG, "onCreate()");
     }
 
     private void inflateCastMiniController() {
@@ -598,6 +602,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.cancelWatchlistToast();
 
         appCMSPresenter.refreshPages();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (intent != null) {
+            Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            updatedAppCMSBinder =
+                    (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+            if (updatedAppCMSBinder != null) {
+                mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
+            }
+            if (isActive) {
+                initPageActivity();
+                handleLaunchPageAction(updatedAppCMSBinder,
+                        false,
+                        false,
+                        false);
+            }
+        }
     }
 
     @Override
@@ -1238,7 +1261,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.dismissOpenDialogs(null);
             } catch (EmptyStackException e) {
                 Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
-                appCMSPresenter.navigateToLoginPage();
             }
         } else {
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
