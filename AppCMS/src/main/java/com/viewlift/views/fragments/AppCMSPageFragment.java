@@ -110,6 +110,8 @@ public class AppCMSPageFragment extends Fragment {
             pageView = appCMSViewComponent.appCMSPageView();
         } else {
             pageView = null;
+            Log.e(TAG, "AppCMS page creation error");
+            onPageCreation.onError(appCMSBinder);
         }
 
         if (pageView != null) {
@@ -122,7 +124,12 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
             onPageCreation.onSuccess(appCMSBinder);
+        } else {
+            Log.e(TAG, "AppCMS page creation error");
+            onPageCreation.onError(appCMSBinder);
         }
+
+
         if (container != null) {
             container.removeAllViews();
             pageViewGroup = container;
@@ -188,10 +195,7 @@ public class AppCMSPageFragment extends Fragment {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
 
-        if (pageView == null) {
-            Log.e(TAG, "AppCMS page creation error");
-            onPageCreation.onError(appCMSBinder);
-        } else {
+        if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
         }
     }
@@ -277,7 +281,7 @@ public class AppCMSPageFragment extends Fragment {
                     appCMSPresenter,
                     modulesToIgnore);
 
-            if (pageViewGroup != null) {
+            if (pageViewGroup != null && pageView != null) {
                 pageViewGroup.removeAllViews();
                 pageViewGroup.addView(pageView);
             }
