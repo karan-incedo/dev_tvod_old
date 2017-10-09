@@ -395,19 +395,20 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     contentType = data.getGist().getContentType();
                                 }
 
-                                switch (contentType) {
-                                    case "SHOW":
-                                        action = showAction;
-                                        break;
+                                if (!action.equalsIgnoreCase("openOptionDialog")) {
+                                    switch (contentType) {
+                                        case "SHOW":
+                                            action = showAction;
+                                            break;
 
-                                    case "VIDEO":
-                                        action = videoAction;
-                                        break;
+                                        case "VIDEO":
+                                            action = videoAction;
+                                            break;
 
-                                    default:
-                                        break;
+                                        default:
+                                            break;
+                                    }
                                 }
-
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {
                                     if (!appCMSPresenter.launchVideoPlayer(data,
