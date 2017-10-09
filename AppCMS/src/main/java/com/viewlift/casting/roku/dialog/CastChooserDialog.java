@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastContext;
+import com.viewlift.casting.roku.RokuDevice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +63,10 @@ public class CastChooserDialog extends Dialog {
         this.routes = routes;
         Log.d("", "*******************setRoutes***************");
         for (Object obj : routes) {
-            Log.d(TAG, ((MediaRouter.RouteInfo) obj).getName());
+            if (obj instanceof RokuDevice)
+                Log.d("", ((RokuDevice) obj).getRokuDeviceName());
+            else
+                Log.d(TAG, ((MediaRouter.RouteInfo) obj).getName());
         }
         if (mAdapter != null) {
             activity.runOnUiThread(new Runnable(){
@@ -126,6 +130,11 @@ public class CastChooserDialog extends Dialog {
                     text2.setText("");
                 }
 
+            } else {
+                text1.setGravity(Gravity.CENTER_VERTICAL);
+                text2.setVisibility(View.GONE);
+                text2.setText("");
+                text1.setText(((RokuDevice) getItem(position)).getRokuDeviceName());
             }
 
             ImageView iconView = (ImageView) view.findViewById(R.id.mr_chooser_route_icon);
