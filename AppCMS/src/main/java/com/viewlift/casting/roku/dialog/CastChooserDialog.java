@@ -165,5 +165,6 @@ public class CastChooserDialog extends Dialog {
 
     public interface CastChooserDialogEventListener {
         void onChromeCastDeviceSelect();
+        void onRokuDeviceSelected(RokuDevice selectedRokuDevice);
     }
 }

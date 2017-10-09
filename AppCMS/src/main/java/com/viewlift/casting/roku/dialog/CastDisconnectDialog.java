@@ -61,7 +61,7 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
         mStopCastingButton.setText(getContext().getString(R.string.mr_controller_stop_casting));
         mStopCastingButton.setOnClickListener(this);
 
-        if (toBeDisconnectDevice != null)
+        if (toBeDisconnectDevice != null) {
             if (selectedDeviceType.equals(CHROMECAST)) {
                 mRouteNameTextView.setText(((MediaRouter) toBeDisconnectDevice).getSelectedRoute().getName());
             } else if (selectedDeviceType.equals(ROKU)) {
@@ -110,7 +110,7 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
     public void onClick(View v) {
         int id = v.getId();
         if (id == BUTTON_STOP_RES_ID || id == BUTTON_DISCONNECT_RES_ID) {
-            if (toBeDisconnectDevice != null)
+            if (toBeDisconnectDevice != null) {
                 if (selectedDeviceType.equals(CHROMECAST)) {
                     if (((MediaRouter) toBeDisconnectDevice).getSelectedRoute().isSelected()) {
 
