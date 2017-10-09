@@ -8,7 +8,6 @@ import android.util.Log;
 import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
-import com.urbanairship.UAirship;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
@@ -106,8 +105,6 @@ public class AppCMSApplication extends Application {
         Fabric.with(this, new Crashlytics());
         AppsFlyerLib.getInstance().startTracking(this, getString(R.string.app_cms_appsflyer_dev_key));
         trackInstallationEvent(this);
-        UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
-        Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
