@@ -155,9 +155,9 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
                 statusText = "STATUS_SUCCESSFUL";
                 reasonText = "Filename:\n" + filename;
                 String extension = MimeTypeMap.getFileExtensionFromUrl(filename.toString());
-//                if (extension.equals("mp4")) {
-//                    encryptTheFile(filename);
-//                }
+                if (extension.equals("mp4")) {
+                    encryptTheFile(filename);
+                }
                 break;
 
             default:
