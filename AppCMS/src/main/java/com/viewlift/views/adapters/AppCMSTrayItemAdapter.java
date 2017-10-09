@@ -118,6 +118,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             } else if (isHistory) {
                 Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getUpdateDate(),
                         o2.getUpdateDate()));
+
+                // To make the last watched item appear at the top of the list
                 Collections.reverse(adapterData);
             }
         }
@@ -375,13 +377,36 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         long currentTime = System.currentTimeMillis();
         long lastWatched = contentDatum.getUpdateDate();
 
-        long days = TimeUnit.MILLISECONDS.toDays(currentTime - lastWatched);
-        long hours = TimeUnit.MILLISECONDS.toHours(currentTime - lastWatched);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(currentTime - lastWatched);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);
+        long hours = TimeUnit.MILLISECONDS.toHours(currentTime - lastWatched);
+        long days = TimeUnit.MILLISECONDS.toDays(currentTime - lastWatched);
+
+        int weeks = (int) ((currentTime - lastWatched) / (1000 * 60 * 60 * 24 * 7));
+        int months = (weeks / 4);
+        int years = months / 12;
 
         String lastWatchedMessage = "";
 
-        if (days > 0) {
+        if (years > 0) {
+            if (years > 1) {
+                lastWatchedMessage = years + " years ago";
+            } else {
+                lastWatchedMessage = years + " year ago";
+            }
+        } else if (months > 0 && months < 12) {
+            if (months > 1) {
+                lastWatchedMessage = months + " months ago";
+            } else {
+                lastWatchedMessage = months + " month ago";
+            }
+        } else if (weeks > 0 && weeks < 4) {
+            if (weeks > 1) {
+                lastWatchedMessage = weeks + " weeks ago";
+            } else {
+                lastWatchedMessage = weeks + " week ago";
+            }
+        } else if (days > 0 && days < 6) {
             if (days > 1) {
                 lastWatchedMessage = days + " days ago";
             } else {
@@ -398,6 +423,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 lastWatchedMessage = minutes + " mins ago";
             } else {
                 lastWatchedMessage = minutes + " min ago";
+            }
+        } else if (seconds < 60) {
+            if (seconds > 3) {
+                lastWatchedMessage = seconds + " secs ago";
+            } else {
+                lastWatchedMessage = "Just now";
             }
         }
 
