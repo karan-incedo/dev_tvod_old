@@ -614,12 +614,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
             }
             if (isActive) {
-                initPageActivity();
                 handleLaunchPageAction(updatedAppCMSBinder,
                         false,
                         false,
                         false);
             }
+            initPageActivity();
         }
     }
 
