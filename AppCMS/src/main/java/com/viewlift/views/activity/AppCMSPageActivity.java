@@ -806,6 +806,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else {
             if (appCMSPresenter.isNetworkConnected()) {
                 finish();
+            } else {
+                appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID);
             }
         }
     }
