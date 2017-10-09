@@ -7008,7 +7008,10 @@ public class AppCMSPresenter {
     }
 
     private String getBeaconUrl() {
-        if (currentActivity != null) {
+        if (currentActivity != null &&
+                appCMSMain != null &&
+                appCMSMain.getBeacon() != null &&
+                appCMSMain.getBeacon().getApiBaseUrl() != null) {
             return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
         }
         return null;
