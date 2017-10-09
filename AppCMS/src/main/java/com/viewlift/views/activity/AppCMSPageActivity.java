@@ -523,7 +523,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void inflateCastMiniController() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
-                ConnectionResult.SUCCESS) {
+                ConnectionResult.SUCCESS && appCMSPresenter.isNetworkConnected()) {
             try {
                 LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSCastController);
                 castDisabled = false;
@@ -804,7 +804,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     false,
                     false);
         } else {
-            finish();
+            if (!appCMSPresenter.isNetworkConnected()) {
+                finish();
+            }
         }
     }
 
@@ -1142,7 +1144,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void handleNavbar(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
             final Navigation navigation = appCMSBinder.getNavigation();
-            if (navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
+            if (navigation != null && navigation.getNavigationPrimary() != null &&
+                    navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
                 appCMSTabNavContainer.setVisibility(View.GONE);
             } else {
                 appCMSTabNavContainer.setVisibility(View.VISIBLE);
