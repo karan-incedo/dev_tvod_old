@@ -148,10 +148,11 @@ public class AppCMSAndroidModuleCall {
                         Log.d(TAG, "Attempting to retrieve updated module from URL: " +
                                 bundleUrl.toString());
 
-                        Response<JsonElement> moduleListResponse =
-                                appCMSAndroidModuleRest.get(bundleUrl.toString()).execute();
                         try {
-                            if (moduleListResponse.body() != null) {
+                            Response<JsonElement> moduleListResponse =
+                                    appCMSAndroidModuleRest.get(bundleUrl.toString()).execute();
+                            if (moduleListResponse != null &&
+                                    moduleListResponse.body() != null) {
                                 ModuleList moduleList = gson.fromJson(moduleListResponse.body(),
                                         ModuleList.class);
                                 deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getName()));

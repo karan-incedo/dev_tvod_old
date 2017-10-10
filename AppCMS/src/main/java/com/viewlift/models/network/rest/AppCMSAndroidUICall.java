@@ -1,6 +1,7 @@
 package com.viewlift.models.network.rest;
 
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -21,6 +22,8 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidUI;
  */
 
 public class AppCMSAndroidUICall {
+    private static final String TAG = "AndroidUICall";
+
     private static final String SAVE_PATH = "AppCMSAndroidUIRest/";
 
     private final AppCMSAndroidUIRest appCMSAndroidUIRest;
@@ -42,17 +45,34 @@ public class AppCMSAndroidUICall {
             appCMSAndroidUI = readAndroidFromFile(filename);
         }
         if (appCMSAndroidUI == null) {
-            appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+            try {
+                appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
+                    e.getMessage());
+            }
         }
         if (appCMSAndroidUI == null && tryCount == 0) {
             return call(url, loadFromFile, tryCount + 1);
+        } else {
+            try {
+                appCMSAndroidUI = readAndroidFromFile(filename);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to read Android UI JSON file from file: " +
+                    e.getMessage());
+            }
         }
-        return writeAndroidToFile(filename, appCMSAndroidUI);
+        if (appCMSAndroidUI != null) {
+            return writeAndroidToFile(filename, appCMSAndroidUI);
+        }
+        return null;
     }
 
     private AppCMSAndroidUI writeAndroidToFile(String outputFilename, AppCMSAndroidUI appCMSAndroidUI) throws IOException {
         OutputStream outputStream = new FileOutputStream(
-                new File(storageDirectory.toString() + outputFilename));
+                new File(storageDirectory.toString() +
+                        File.separatorChar +
+                        outputFilename));
         String output = gson.toJson(appCMSAndroidUI, AppCMSAndroidUI.class);
         outputStream.write(output.getBytes());
         outputStream.close();
@@ -61,7 +81,9 @@ public class AppCMSAndroidUICall {
 
     private AppCMSAndroidUI readAndroidFromFile(String inputFilename) throws IOException {
         InputStream inputStream = new FileInputStream(
-                new File(storageDirectory.toString() + inputFilename));
+                new File(storageDirectory.toString() +
+                        File.separatorChar +
+                        inputFilename));
         Scanner scanner = new Scanner(inputStream);
         StringBuffer sb = new StringBuffer();
         while (scanner.hasNextLine()) {
