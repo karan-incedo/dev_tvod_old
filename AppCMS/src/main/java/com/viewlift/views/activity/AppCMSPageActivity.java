@@ -87,7 +87,6 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -503,16 +502,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         Log.d(TAG, "onResume()");
         Log.d(TAG, "checkForExistingSubscription() - 503");
         appCMSPresenter.checkForExistingSubscription(false);
-
-        appCMSPresenter.refreshPages(() -> {
-            if (appCMSPresenter.isAppUpgradeAvailable()) {
-                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
-                newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                newVersionUpgradeAvailable.requestLayout();
-            } else if (appCMSPresenter.isAppBelowMinVersion()) {
-                appCMSPresenter.launchUpgradeAppActivity();
-            }
-        });
     }
 
     @Override
@@ -523,30 +512,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
-
-        appCMSPresenter.closeSoftKeyboard();
-        appCMSPresenter.cancelWatchlistToast();
-
-        appCMSPresenter.refreshPages(null);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        if (intent != null) {
-            Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-            updatedAppCMSBinder =
-                    (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-            if (updatedAppCMSBinder != null) {
-                mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
-            }
-            if (isActive) {
-                handleLaunchPageAction(updatedAppCMSBinder,
-                        false,
-                        false,
-                        false);
-            }
-            initPageActivity();
-        }
     }
 
     @Override
