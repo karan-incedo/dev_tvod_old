@@ -217,6 +217,11 @@
     <string name="app_cms_page_subscription_page_name_key">View Plans</string>
     <string name="app_cms_page_show_page_name_key">Show Page</string>
 
+    <string name="app_cms_page_grid_option_key">gridOptions</string>
+    <string name="app_cms_page_thumbnail_option_key">thumbnailInfo</string>
+    <string name="app_cms_page_thumbnail_badgeimage">thumbnailBadgeImage</string>
+    <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
+
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_selection_plan_key">AC SelectPlan 02</string>
@@ -390,4 +395,6 @@
     <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
     <string name="facebook_auth_provider_name_key">facebook</string>
     <string name="google_auth_provider_name_key">google</string>
+
+
 </resources>

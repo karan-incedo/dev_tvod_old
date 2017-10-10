@@ -4525,11 +4525,11 @@ public class AppCMSPresenter {
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
 
-//                                if (pageTitle.contains("home") || pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
-//                                    appCMSPageUI = new GsonBuilder().create().fromJson(
-//                                            loadJsonFromAssets(currentActivity, "home_sports.json"),
-//                                            AppCMSPageUI.class);
-//                                } else
+                                if (pageTitle.contains("home") || pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
+                                    appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentActivity, "home_sports.json"),
+                                            AppCMSPageUI.class);
+                                } else
                                     {
                                     appCMSPageUI = appCMSPageAPIAction.appCMSPageUI;
                                 }
@@ -8345,7 +8345,7 @@ public class AppCMSPresenter {
                                 appCMSAndroidUI.getMetaPages().isEmpty()) {
                             Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                             launchErrorActivity(platformType);
-                        } else if (!isAppBelowMinVersion()) {
+                        } else if (isAppBelowMinVersion()) {
                             Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                             launchUpgradeAppActivity();
                         } else {

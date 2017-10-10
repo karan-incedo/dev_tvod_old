@@ -2373,8 +2373,10 @@ public class ViewCreator {
                             break;
                     }
                 } else {
-                    ((TextView) componentViewResult.componentView).setSingleLine(true);
-                    ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                    if (component.getNumberOfLines() <= 1) {
+                        ((TextView) componentViewResult.componentView).setSingleLine(true);
+                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                    }
                 }
 
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -2443,7 +2445,7 @@ public class ViewCreator {
                         ImageView imageView = (ImageView) componentViewResult.componentView;
                         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                         String iconImageUrl = "https://dummyimage.com/600x400/000/fff&text=badge";//component.getIcon_url();
-                        if (component.getIcon_url() != null && TextUtils.isEmpty(component.getIcon_url())) {
+                        if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
                             iconImageUrl = component.getIcon_url();
                             Glide.with(context)
                                     .load(iconImageUrl)
@@ -2566,7 +2568,12 @@ public class ViewCreator {
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                if(component.getBackgroundColor()!=null && !TextUtils.isEmpty(component.getBackgroundColor())){
+                    componentViewResult.componentView.
+                            setBackgroundColor(Color.parseColor(getColor(context,
+                                    component.getBackgroundColor())));
+                }
+                else if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                         .getTextColor())) {
                     componentViewResult.componentView.
                             setBackgroundColor(Color.parseColor(getColor(context,

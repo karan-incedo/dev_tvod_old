@@ -379,16 +379,12 @@ public class CollectionGridItemView extends BaseView {
                         ViewCreator.setViewWithSubtitle(getContext(), data, view);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
-                        ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
-
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         ((TextView) view).setText("INFO");
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
                         ((TextView) view).setText(data.getGist().getTitle());
-                        ((TextView) view).setMaxLines(childComponent.getNumberOfLines());
-
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
                         ((TextView) view).setText(data.getGist().getDescription());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
