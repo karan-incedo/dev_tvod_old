@@ -42,6 +42,18 @@ public class Component implements ModuleWithComponents {
     @Expose
     String key;
 
+    public int getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(int opacity) {
+        this.opacity = opacity;
+    }
+
+    @SerializedName("opacity")
+    @Expose
+    int opacity;
+
     @SerializedName("borderColor")
     @Expose
     String borderColor;
@@ -57,6 +69,18 @@ public class Component implements ModuleWithComponents {
     @SerializedName("imageName")
     @Expose
     String imageName;
+
+    public String getIcon_url() {
+        return icon_url;
+    }
+
+    public void setIcon_url(String icon_url) {
+        this.icon_url = icon_url;
+    }
+
+    @SerializedName("icon_url")
+    @Expose
+    String icon_url;
 
     @SerializedName("textAlignment")
     @Expose

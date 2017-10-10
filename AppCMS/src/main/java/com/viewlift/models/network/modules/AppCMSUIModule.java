@@ -496,6 +496,15 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SIGNUP_FOOTER_LABEL_KEY);
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_grid_option_key),
+                AppCMSUIKeyType.PAGE_GRID_OPTION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_option_key),
+                AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_badgeimage),
+                AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -627,6 +636,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_change_download_quality_key),
                 AppCMSActionType.CHANGE_DOWNLOAD_QUALITY);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_open_option_dialog),
+                AppCMSActionType.OPEN_OPTION_DIALOG);
     }
 
     @Provides

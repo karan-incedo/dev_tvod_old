@@ -73,6 +73,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -250,6 +251,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
@@ -1033,6 +1035,11 @@ public class AppCMSPresenter {
             Log.e(TAG, e.getLocalizedMessage());
         }
         final AppCMSActionType actionType = actionToActionTypeMap.get(action);
+        if ((actionType == AppCMSActionType.OPEN_OPTION_DIALOG)) {
+            Toast.makeText(currentActivity, " Open option dialog here ", Toast.LENGTH_LONG).show();
+            return false;
+        }
+
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
             // Fix of SVFA-1435
             if (actionType == AppCMSActionType.CLOSE) {
@@ -4631,6 +4638,14 @@ public class AppCMSPresenter {
                             @Override
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
+                                if (pageTitle.contains("home") || pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
+                                    appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentActivity, "home_sports.json"),
+                                            AppCMSPageUI.class);
+                                } else
+                                {
+                                    appCMSPageUI = appCMSPageAPIAction.appCMSPageUI;
+                                }
                                 if (appCMSPageAPI != null) {
                                     boolean loadingHistory = false;
                                     if (isUserLoggedIn()) {
@@ -6968,6 +6983,7 @@ public class AppCMSPresenter {
 
     }
 
+    @SuppressLint("StringFormatInvalid")
     private String getBeaconUrl() {
         if (currentActivity != null &&
                 appCMSMain != null &&
