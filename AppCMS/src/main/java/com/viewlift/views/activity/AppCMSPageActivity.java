@@ -1,5 +1,7 @@
 package com.viewlift.views.activity;
 
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -23,6 +25,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -30,13 +33,16 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.facebook.AccessToken;
@@ -72,6 +78,7 @@ import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
+import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
@@ -87,6 +94,7 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -104,6 +112,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int DEFAULT_CATEGORIES_PAGE_INDEX = 2;
     private static final int DEFAULT_SEARCH_INDEX = 3;
     private static final int DEFAULT_NAV_LIVE_PAGE_INDEX = 4;
+    private static final int NO_NAV_MENU_PAGE_INDEX = -1;
+
     private static final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
 
     @BindView(R.id.app_cms_parent_layout)
@@ -111,36 +121,40 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.app_cms_page_loading_progressbar)
     ProgressBar loadingProgressBar;
-
     @BindView(R.id.app_cms_parent_view)
     RelativeLayout appCMSParentView;
-
     @BindView(R.id.app_cms_fragment)
     FrameLayout appCMSFragment;
-
     @BindView(R.id.app_cms_appbarlayout)
     AppBarLayout appBarLayout;
-
     @BindView(R.id.app_cms_tab_nav_container)
     LinearLayout appCMSTabNavContainer;
-
     @BindView(R.id.ll_media_route_button)
     LinearLayout ll_media_route_button;
-
     @BindView(R.id.media_route_button)
     ImageButton mMediaRouteButton;
-
     @BindView(R.id.app_cms_close_button)
     ImageButton closeButton;
 
     @BindView(R.id.app_cms_cast_conroller)
     FrameLayout appCMSCastController;
 
+    @BindView(R.id.new_version_available_parent)
+    FrameLayout newVersionUpgradeAvailable;
+
+    @BindView(R.id.new_version_available_textview)
+    TextView newVersionAvailableTextView;
+
+    @BindView(R.id.new_version_available_close_button)
+    ImageButton newVersionAvailableCloseButton;
+
     private int navMenuPageIndex;
     private int homePageIndex;
     private int categoriesPageIndex;
     private int searchPageIndex;
     private int navLivePageIndex;
+    private int currentMenuTabIndex = NO_NAV_MENU_PAGE_INDEX;
+    private int defa;
 
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
@@ -238,11 +252,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
-                    AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                    handleLaunchPageAction(appCMSBinder,
-                            false,
-                            false,
-                            false);
+                    if (!appCMSBinderStack.isEmpty()) {
+                        AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                        handleLaunchPageAction(appCMSBinder,
+                                false,
+                                false,
+                                false);
+                    }
                 }
             }
         };
@@ -386,6 +402,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 });
 
+        initPageActivity();
+
+        appCMSPresenter.sendCloseOthersAction(null, false);
+
+        Log.d(TAG, "onCreate()");
+    }
+
+    private void initPageActivity() {
         accessToken = AccessToken.getCurrentAccessToken();
 
         inAppBillingServiceConn = new ServiceConnection() {
@@ -416,10 +440,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (updatedAppCMSBinder != null) {
-            appCMSParentView.setBackgroundColor(Color.parseColor(updatedAppCMSBinder.getAppCMSMain()
-                    .getBrand()
-                    .getGeneral()
-                    .getBackgroundColor()));
+            try {
+                appCMSParentView.setBackgroundColor(Color.parseColor(updatedAppCMSBinder.getAppCMSMain()
+                        .getBrand()
+                        .getGeneral()
+                        .getBackgroundColor()));
+            } catch (Exception e) {
+                Log.w(TAG, "Could not set background color of app based upon AppCMS branding - defaulting to primaryDark: " +
+                        e.getMessage());
+                appCMSParentView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+            }
         }
 
         createMenuNavItem();
@@ -450,18 +480,55 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             try {
                 loadingProgressBar.getIndeterminateDrawable().setTint(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
             } catch (Exception e) {
-                Log.e(TAG, "Failed to set color for loader: " + e.getMessage());
+                Log.w(TAG, "Failed to set color for loader: " + e.getMessage());
+                loadingProgressBar.getIndeterminateDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
             }
         }
 
-        appCMSPresenter.sendCloseOthersAction(null, false);
+        if (appCMSPresenter != null) {
+            try {
+                newVersionUpgradeAvailable.setBackgroundColor(Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                newVersionAvailableTextView.setTextColor(Color.parseColor(
+                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to set AppCMS branding colors for soft upgrade messages: " +
+                        e.getMessage());
+            }
+        }
+        newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
+                getString(R.string.app_cms_app_version),
+                appCMSPresenter.getGooglePlayAppStoreVersion()));
 
-        Log.d(TAG, "onCreate()");
+        newVersionAvailableTextView.setOnClickListener((v) -> {
+            Intent googlePlayStoreUpgradeAppIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse(getString(R.string.google_play_store_upgrade_app_url,
+                            getString(R.string.package_name))));
+            startActivity(googlePlayStoreUpgradeAppIntent);
+        });
+
+        newVersionAvailableCloseButton.setOnClickListener((v) -> {
+            ValueAnimator heightAnimator = ValueAnimator.ofInt(newVersionUpgradeAvailable.getHeight(),
+                    0);
+            heightAnimator.addUpdateListener((animation) -> {
+                Integer value = (Integer) animation.getAnimatedValue();
+                newVersionUpgradeAvailable.getLayoutParams().height = value;
+                if (value == 0) {
+                    newVersionUpgradeAvailable.setVisibility(View.GONE);
+                }
+                newVersionUpgradeAvailable.requestLayout();
+            });
+
+            AnimatorSet set = new AnimatorSet();
+            set.play(heightAnimator);
+            set.setInterpolator(new AccelerateDecelerateInterpolator());
+            set.start();
+        });
     }
 
     private void inflateCastMiniController() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
-                ConnectionResult.SUCCESS) {
+                ConnectionResult.SUCCESS && appCMSPresenter.isNetworkConnected()) {
             try {
                 LayoutInflater.from(this).inflate(R.layout.fragment_castminicontroller, appCMSCastController);
                 castDisabled = false;
@@ -476,6 +543,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onBackPressed() {
         if (!handlingClose && !isPageLoading()) {
+            if (appCMSPresenter.isAddOnFragmentVisible()) {
+                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                    if (fragment instanceof AppCMSMoreFragment) {
+                        ((AppCMSMoreFragment) fragment).sendDismissAction();
+                    }
+                }
+                return;
+            }
+
             handlingClose = true;
             handleCloseAction();
             handlingClose = false;
@@ -500,8 +576,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         resume();
         appCMSPresenter.setCurrentActivity(this);
         Log.d(TAG, "onResume()");
-        Log.d(TAG, "checkForExistingSubscription() - 503");
+        Log.d(TAG, "checkForExistingSubscription()");
         appCMSPresenter.checkForExistingSubscription(false);
+
+        appCMSPresenter.refreshPages(() -> {
+            if (appCMSPresenter.isAppUpgradeAvailable()) {
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+                newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                newVersionUpgradeAvailable.requestLayout();
+            } else if (appCMSPresenter.isAppBelowMinVersion()) {
+                appCMSPresenter.launchUpgradeAppActivity();
+            }
+        });
     }
 
     @Override
@@ -512,6 +598,30 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
+
+        appCMSPresenter.closeSoftKeyboard();
+        appCMSPresenter.cancelWatchlistToast();
+
+        appCMSPresenter.refreshPages(null);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        if (intent != null) {
+            Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            updatedAppCMSBinder =
+                    (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+            if (updatedAppCMSBinder != null) {
+                mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
+            }
+            if (isActive) {
+                handleLaunchPageAction(updatedAppCMSBinder,
+                        false,
+                        false,
+                        false);
+            }
+            initPageActivity();
+        }
     }
 
     @Override
@@ -718,7 +828,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     false,
                     false);
         } else {
-            finish();
+            if (appCMSPresenter.isNetworkConnected()) {
+                finish();
+            } else {
+                appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID);
+            }
         }
     }
 
@@ -758,7 +872,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(false);
             }
-
+            appCMSPresenter.setPageLoading(true);
         } else {
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
@@ -768,6 +882,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
+            appCMSPresenter.setPageLoading(false);
         }
     }
 
@@ -1055,7 +1170,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void handleNavbar(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
             final Navigation navigation = appCMSBinder.getNavigation();
-            if (navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
+            if (navigation != null && navigation.getNavigationPrimary() != null &&
+                    navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
                 appCMSTabNavContainer.setVisibility(View.GONE);
             } else {
                 appCMSTabNavContainer.setVisibility(View.VISIBLE);
@@ -1146,7 +1262,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.dismissOpenDialogs(null);
             } catch (EmptyStackException e) {
                 Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
-                appCMSPresenter.navigateToLoginPage();
             }
         } else {
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
@@ -1249,6 +1364,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
+            if (appCMSPresenter.isAppUpgradeAvailable()) {
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+            } else if (appCMSPresenter.isAppBelowMinVersion()) {
+                appCMSPresenter.launchUpgradeAppActivity();
+            }
+
             if (refreshFragment) {
                 createScreenFromAppCMSBinder(appCMSBinder);
             }
@@ -1277,12 +1398,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (homePageIndex < appCMSTabNavContainer.getChildCount()) {
                 final NavBarItemView homeNavBarItemView =
                         (NavBarItemView) appCMSTabNavContainer.getChildAt(homePageIndex);
-                int highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getGeneral().getBlockTitleColor());
+                int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                try {
+                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                            .getGeneral().getBlockTitleColor());
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+                        e.getMessage());
+                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                }
                 homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
                 homeNavBarItemView.setHighlightColor(highlightColor);
                 homeNavBarItemView.setLabel(homePageNav.getTitle());
                 homeNavBarItemView.setOnClickListener(v -> {
+                    if (currentMenuTabIndex == homePageIndex)
+                        return;
+                    currentMenuTabIndex = homePageIndex;
                     appCMSPresenter.showMainFragmentView(true);
                     selectNavItemAndLaunchPage(homeNavBarItemView,
                             homePageNav.getPageId(),
@@ -1297,15 +1428,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSTabNavContainer.getChildCount() <= navLivePageIndex) {
             navLivePageIndex = DEFAULT_NAV_LIVE_PAGE_INDEX;
         }
-
         if (navLivePageIndex < appCMSTabNavContainer.getChildCount()) {
             NavBarItemView navLiveItemView =
                     (NavBarItemView) appCMSTabNavContainer.getChildAt(navLivePageIndex);
-            int highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                    .getGeneral().getBlockTitleColor());
+            int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+            try {
+                highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral().getBlockTitleColor());
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+                        e.getMessage());
+                highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+            }
             navLiveItemView.setHighlightColor(highlightColor);
             navLiveItemView.setLabel(livePageNav.getTitle());
             navLiveItemView.setOnClickListener(v -> {
+                if (currentMenuTabIndex == navLivePageIndex)
+                    return;
+                currentMenuTabIndex = navLivePageIndex;
+
                 appCMSPresenter.showMainFragmentView(true);
                 selectNavItemAndLaunchPage(navLiveItemView,
                         livePageNav.getPageId(),
@@ -1323,12 +1464,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (categoriesPageIndex < appCMSTabNavContainer.getChildCount()) {
                 final NavBarItemView moviesNavBarItemView =
                         (NavBarItemView) appCMSTabNavContainer.getChildAt(categoriesPageIndex);
-                int highlightColor =
-                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+                int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                try {
+                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                            .getGeneral().getBlockTitleColor());
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+                            e.getMessage());
+                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                }
                 moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
                 moviesNavBarItemView.setHighlightColor(highlightColor);
                 moviesNavBarItemView.setLabel(moviePageNav.getTitle());
                 moviesNavBarItemView.setOnClickListener(v -> {
+                    if (currentMenuTabIndex == categoriesPageIndex)
+                        return;
+                    currentMenuTabIndex = categoriesPageIndex;
+
                     appCMSPresenter.showMainFragmentView(true);
                     selectNavItemAndLaunchPage(moviesNavBarItemView,
                             moviePageNav.getPageId(),
@@ -1347,12 +1499,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (searchPageIndex < appCMSTabNavContainer.getChildCount()) {
                 NavBarItemView searchNavBarItemView =
                         (NavBarItemView) appCMSTabNavContainer.getChildAt(searchPageIndex);
-                int highlightColor =
-                        Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+                int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                try {
+                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                            .getGeneral().getBlockTitleColor());
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+                            e.getMessage());
+                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                }
                 searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
                 searchNavBarItemView.setHighlightColor(highlightColor);
                 searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
                 searchNavBarItemView.setOnClickListener(v -> {
+                    if (currentMenuTabIndex == searchPageIndex)
+                        return;
+                    currentMenuTabIndex = searchPageIndex;
                     if (!appCMSPresenter.isNetworkConnected()) {
                         if (!appCMSPresenter.isUserLoggedIn()) {
                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
@@ -1383,12 +1545,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
             highlightColor =
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        } else {
+            highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
         }
 
         menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setHighlightColor(highlightColor);
         menuNavBarItemView.setOnClickListener(v -> {
+
+            currentMenuTabIndex = navMenuPageIndex;
             if (!appCMSBinderStack.isEmpty()) {
                 if (!appCMSPresenter.launchNavigationPage()) {
                     Log.e(TAG, "Could not launch navigation page!");
@@ -1411,6 +1577,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             pageId +
                             " index: " +
                             i);
+                    currentMenuTabIndex = i;
                     foundPage = true;
                 }
             }

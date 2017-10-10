@@ -23,6 +23,10 @@ public class AppCMSMain {
     @Expose
     String pageEndpoint;
 
+    public String getInternalName() {
+        return internalName;
+    }
+
     @SerializedName("internalName")
     @Expose
     String internalName;
@@ -83,6 +87,10 @@ public class AppCMSMain {
     @Expose
     Features features;
 
+    @SerializedName("appVersions")
+    @Expose
+    AppVersions appVersions;
+
     boolean loadFromFile;
 
     public String getFireTv() {
@@ -115,6 +123,18 @@ public class AppCMSMain {
     @SerializedName("paymentProviders")
     @Expose
     PaymentProviders paymentProviders;
+
+    public CustomerService getCustomerService() {
+        return customerService;
+    }
+
+    public void setCustomerService(CustomerService customerService) {
+        this.customerService = customerService;
+    }
+
+    @SerializedName("customerService")
+    @Expose
+    CustomerService customerService;
 
     public String getId() {
         return id;
@@ -318,5 +338,13 @@ public class AppCMSMain {
 
     public void setDownloadable(boolean downloadable) {
         isDownloadable = downloadable;
+    }
+
+    public AppVersions getAppVersions() {
+        return appVersions;
+    }
+
+    public void setAppVersions(AppVersions appVersions) {
+        this.appVersions = appVersions;
     }
 }

@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.signature.StringSignature;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -462,6 +463,7 @@ public class CollectionGridItemView extends BaseView {
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
+
                             stringBuilder.append(formattedRecurringPaymentAmount);
                             ((TextView) view).setText(stringBuilder.toString());
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());

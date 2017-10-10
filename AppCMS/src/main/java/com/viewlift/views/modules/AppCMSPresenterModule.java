@@ -6,6 +6,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.modules.AppCMSSearchModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
+import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
@@ -97,6 +98,8 @@ public class AppCMSPresenterModule {
 
                                                    AppCMSRestorePurchaseCall appCMSRestorePurchaseCall,
 
+                                                   AppCMSAndroidModuleCall appCMSAndroidModuleCall,
+
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -137,6 +140,8 @@ public class AppCMSPresenterModule {
                 appCMSUserDownloadVideoStatusCall,
                 appCMSBeaconCall,
                 appCMSRestorePurchaseCall,
+
+                appCMSAndroidModuleCall,
 
                 appCMSAddToWatchlistCall,
 

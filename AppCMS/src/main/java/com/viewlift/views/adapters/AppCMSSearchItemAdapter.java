@@ -217,7 +217,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                           int textTopMargin) {
             super(view);
             this.view = view;
-            this.parentLayout = view.findViewById(R.id.search_result_item_view);
+            this.parentLayout = (FrameLayout) view.findViewById(R.id.search_result_item_view);
 
             this.filmThumbnail = new ImageView(view.getContext());
             FrameLayout.LayoutParams filmImageThumbnailLayoutParams =

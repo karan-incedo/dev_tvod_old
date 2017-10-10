@@ -184,7 +184,7 @@ public class WebViewActivity extends Activity {
 				dialog = null;
 			}
 
-			final WebView webview = findViewById(R.id.webview);
+			final WebView webview = (WebView) findViewById(R.id.webview);
 			webview.getSettings().setJavaScriptEnabled(true);
 			webview.addJavascriptInterface(new MyJavaScriptInterface(), "HTMLOUT");
 			webview.setWebViewClient(new WebViewClient(){
@@ -233,7 +233,7 @@ public class WebViewActivity extends Activity {
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.REDIRECT_URL,cancelRedirectURL));
 			params.append(ServiceUtility.addToPostParams(AvenuesParams.CANCEL_URL,cancelRedirectURL));
 			//params.append(ServiceUtility.addToPostParams("billing_name",getIntent().getStringExtra("authorizedUserName")));
-			//params.append(ServiceUtility.addToPostParams("billing_email",getIntent().getStringExtra("email")));
+			params.append(ServiceUtility.addToPostParams("billing_email",getIntent().getStringExtra("email")));
 			params.append(ServiceUtility.addToPostParams("billing_country","India"));
 			params.append(ServiceUtility.addToPostParams("billing_tel",getIntent().getStringExtra("billing_tel")));
 

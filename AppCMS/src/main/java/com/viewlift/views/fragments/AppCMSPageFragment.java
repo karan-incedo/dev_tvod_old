@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
@@ -49,6 +50,8 @@ public class AppCMSPageFragment extends Fragment {
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     private boolean shouldSendFirebaseViewItemEvent;
+
+    private ViewGroup pageViewGroup;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
@@ -107,6 +110,8 @@ public class AppCMSPageFragment extends Fragment {
             pageView = appCMSViewComponent.appCMSPageView();
         } else {
             pageView = null;
+            Log.e(TAG, "AppCMS page creation error");
+            onPageCreation.onError(appCMSBinder);
         }
 
         if (pageView != null) {
@@ -119,9 +124,15 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
             onPageCreation.onSuccess(appCMSBinder);
+        } else {
+            Log.e(TAG, "AppCMS page creation error");
+            onPageCreation.onError(appCMSBinder);
         }
+
+
         if (container != null) {
             container.removeAllViews();
+            pageViewGroup = container;
         }
         /**
          * Here we are sending analytics for the screen views. Here we will log the events for
@@ -170,7 +181,6 @@ public class AppCMSPageFragment extends Fragment {
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         }
 
-
         //Logs an app event.
         appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
         //Sets whether analytics collection is enabled for this app on this device.
@@ -185,10 +195,7 @@ public class AppCMSPageFragment extends Fragment {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
 
-        if (pageView == null) {
-            Log.e(TAG, "AppCMS page creation error");
-            onPageCreation.onError(appCMSBinder);
-        } else {
+        if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
         }
     }
@@ -201,6 +208,14 @@ public class AppCMSPageFragment extends Fragment {
         }
         appCMSBinder = null;
         pageView = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (pageViewGroup != null) {
+            pageViewGroup.removeAllViews();
+        }
     }
 
     @Override
@@ -230,6 +245,7 @@ public class AppCMSPageFragment extends Fragment {
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
                         appCMSBinder.getAppCMSPageAPI(),
+                        appCMSPresenter.getAppCMSAndroidModules(),
                         appCMSBinder.getScreenName(),
                         appCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter))
@@ -256,16 +272,19 @@ public class AppCMSPageFragment extends Fragment {
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
-            viewCreator.refreshPageView(pageView,
-                    getContext(),
+            pageView = viewCreator.generatePage(getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
+                    appCMSPresenter.getAppCMSAndroidModules(),
+                    appCMSBinder.getScreenName(),
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSPresenter,
                     modulesToIgnore);
-        }
-        if (pageView != null) {
-            pageView.requestLayout();
+
+            if (pageViewGroup != null && pageView != null) {
+                pageViewGroup.removeAllViews();
+                pageViewGroup.addView(pageView);
+            }
         }
     }
 }

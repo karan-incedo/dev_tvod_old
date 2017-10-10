@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="error_parsing_layout_data_textsize">20sp</dimen>
+    <dimen name="upgrade_textsize">20sp</dimen>
     <bool name="isTablet">true</bool>
     <dimen name="dot_selector_listview_height">16dp</dimen>
     <dimen name="dot_selector_height">8dp</dimen>
@@ -27,6 +28,7 @@
     <dimen name="app_cms_video_player_title_view_text_size">24sp</dimen>
     <dimen name="close_button_margin">8dp</dimen>
     <dimen name="close_button_size">16dp</dimen>
+    <dimen name="new_version_available_close_button_size">16dp</dimen>
     <dimen name="app_cms_search_bar_width">480dp</dimen>
     <dimen name="app_cms_searchbar_top_margin">300dp</dimen>
     <dimen name="app_cms_searchbar_top_margin_land">140dp</dimen>
@@ -39,18 +41,24 @@
     <dimen name="app_cms_text_input_height">34dp</dimen>
     <dimen name="app_cms_text_input_margin">8dp</dimen>
     <dimen name="app_cms_continue_watching_tray_height">71dp</dimen>
+    <dimen name="app_cms_episode_tray_height">71dp</dimen>
     <dimen name="app_cms_continue_watching_tray_image_width">125dp</dimen>
+    <dimen name="app_cms_episode_tray_image_width">125dp</dimen>
     <dimen name="app_cms_continue_watching_tray_image_height">70dp</dimen>
     <dimen name="app_cms_continue_watching_play_button_width">25dp</dimen>
+    <dimen name="app_cms_episode_play_button_width">25dp</dimen>
     <dimen name="app_cms_continue_watching_play_button_height">28dp</dimen>
+    <dimen name="app_cms_episode_play_button_height">28dp</dimen>
     <dimen name="app_cms_continue_watching_progressbar_height">5dp</dimen>
+    <dimen name="app_cms_episode_progressbar_height">5dp</dimen>
     <dimen name="app_cms_continue_watching_description_width">222dp</dimen>
     <dimen name="app_cms_video_controller_cc_left_margin">24dp</dimen>
     <dimen name="app_cms_video_controller_cc_width">34dp</dimen>
     <dimen name="app_cms_video_controller_cc_height">34dp</dimen>
     <dimen name="app_cms_not_items_label_text_size">24sp</dimen>
     <dimen name="app_cms_planmetapage_end_margin">4dp</dimen>
-    <dimen name="app_cms_continue_watching_tray_marginLeft">10dp</dimen>
+    <dimen name="app_cms_continue_watching_tray_marginLeft">8dp</dimen>
+    <dimen name="app_cms_episode_tray_marginStart">8dp</dimen>
 
 
     <dimen name="app_cms_download_quality_rendition_width">70dp</dimen>
@@ -64,6 +72,11 @@
     <dimen name="app_cms_content_rating_title_text_size">18sp</dimen>
     <dimen name="app_cms_content_rating_view_margin">13dp</dimen>
     <dimen name="app_cms_content_rating_title_margin_left">45dp</dimen>
+    <dimen name="a_new_version_of_the_app_is_available_textsize">16sp</dimen>
+    <dimen name="new_version_available_elevation">8dp</dimen>
+    <dimen name="app_cms_force_upgrade_element_margin">8dp</dimen>
+    <dimen name="app_cms_force_upgrade_button_padding">8dp</dimen>
+    <dimen name="app_cms_upgrade_now_text_margin">32dp</dimen>
     <fraction name="app_cms_content_rating_progress_bar_margin_bottom_percent">3.4%</fraction>
     <fraction name="mainContainerHeightPercent">22%</fraction>
     <fraction name="mainContainerWidthPercent">90%</fraction>

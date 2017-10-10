@@ -32,6 +32,7 @@ public class CastingUtils {
     public static String castingMediaId = "";
 
     public static int CASTING_MODE_CHROMECAST = 1;
+    public static int CASTING_MODE_ROKU = 2;
 
     public static int routerDevices = 0;
     private static final int PRELOAD_TIME_S = 20;

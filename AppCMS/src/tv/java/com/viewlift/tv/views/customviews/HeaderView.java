@@ -76,7 +76,8 @@ public class HeaderView extends TVBaseView {
                             this,
                             mJsonValueKeyMap,
                             false,
-                    false);
+                    false,
+                            component.getView());
                     addView(componentView);
                 }
 
