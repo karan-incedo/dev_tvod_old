@@ -2,6 +2,7 @@ package com.viewlift.views.adapters;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -89,6 +90,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         if (getClickedItemPosition() == i) {
             viewHolder.navItemSelector.setVisibility(View.VISIBLE);
             viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+            viewHolder.navItemLabel.setTypeface(null, Typeface.BOLD);
         } else {
             viewHolder.navItemSelector.setVisibility(View.INVISIBLE);
         }

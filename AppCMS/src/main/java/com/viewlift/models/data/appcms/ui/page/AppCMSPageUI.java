@@ -18,6 +18,7 @@ public class AppCMSPageUI {
     @Expose
     String version;
 
+    boolean loadedFromNetwork;
     public ArrayList<ModuleList> getModuleList() {
         return moduleList;
     }
@@ -32,5 +33,11 @@ public class AppCMSPageUI {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+    public boolean isLoadedFromNetwork() {
+        return loadedFromNetwork;
+    }
+    public void setLoadedFromNetwork(boolean loadedFromNetwork) {
+        this.loadedFromNetwork = loadedFromNetwork;
     }
 }

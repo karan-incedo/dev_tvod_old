@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
@@ -18,6 +20,7 @@ import static android.content.Context.DOWNLOAD_SERVICE;
  */
 
 public class FileDownloadCompleteReceiver extends BroadcastReceiver {
+    private static final String TAG = "FileDlReceiver";
     DownloadManager downloadManager;
     Context mContext;
 
@@ -151,9 +154,9 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
                 statusText = "STATUS_SUCCESSFUL";
                 reasonText = "Filename:\n" + filename;
                 String extension = MimeTypeMap.getFileExtensionFromUrl(filename.toString());
-//                if (extension.equals("mp4")) {
-//                    encryptTheFile(filename);
-//                }
+                if (extension.equals("mp4")) {
+                    encryptTheFile(filename);
+                }
                 break;
 
             default:
@@ -162,9 +165,10 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
     }
 
     public void encryptTheFile(String filePath) {
+        RandomAccessFile file = null;
         try {
             byte[] exoBitsData = new byte[10];
-            RandomAccessFile file = new RandomAccessFile(filePath, "rw");
+            file = new RandomAccessFile(filePath, "rw");
 
             //We are reading the first few bits and applying on bits
             file.read(exoBitsData, 0, 10);
@@ -179,7 +183,15 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
 
             file.write(exoBitsData);
         } catch (Exception e1) {
-            e1.printStackTrace();
+            Log.e(TAG, "Failed to encrypt file: " + e1.getMessage());
+        } finally {
+            try {
+                if (file != null) {
+                    file.close();
+                }
+            } catch (IOException e2) {
+                Log.e(TAG, "Failed to encrypt file: " + e2.getMessage());
+            }
         }
     }
 }

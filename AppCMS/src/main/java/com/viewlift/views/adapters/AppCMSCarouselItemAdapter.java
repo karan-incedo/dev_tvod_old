@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
@@ -57,7 +58,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                                      Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                      Module moduleAPI,
                                      final RecyclerView listView,
-                                     boolean loop) {
+                                     boolean loop,
+                                     AppCMSAndroidModules appCMSAndroidModules) {
         super(context,
                 viewCreator,
                 appCMSPresenter,
@@ -69,7 +71,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 moduleAPI,
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                "");
+                "",
+                appCMSAndroidModules);
 
         this.listView = listView;
         this.loop = loop;
@@ -224,6 +227,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 component,
                 appCMSPresenter,
                 moduleAPI,
+                appCMSAndroidModules,
                 settings,
                 jsonValueKeyMap,
                 defaultWidth,

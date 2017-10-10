@@ -32,6 +32,7 @@ allprojects {
         espressoVersion = "2.2.2"
         dexmakerVersion = "1.0"
         androidsupportVersion = "23+"
+        androidSupportVersion26 = "26.1.0"
         androidsupportconstraintVersion = "1.0.2"
         glideVersion = "3.8.0"
         daggerVersion = "2.9"

@@ -606,7 +606,6 @@ public class CastHelper {
 
                     binderPlayScreen.setCurrentPlayingVideoIndex(playIndexPosition);
                     if (playIndexPosition < listCompareRelatedVideosId.size()) {
-                        appCMSPresenterComponenet.restrictLandscapeOnly();
                         appCMSPresenterComponenet.playNextVideo(binderPlayScreen,
                                 binderPlayScreen.getCurrentPlayingVideoIndex(),
                                 castCurrentMediaPosition);

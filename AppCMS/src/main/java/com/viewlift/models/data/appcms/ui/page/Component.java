@@ -110,6 +110,15 @@ public class Component implements ModuleWithComponents {
     @Expose
     String trayClickAction;
 
+    public String getItemClickAction() {
+        return itemClickAction;
+    }
+    public void setItemClickAction(String itemClickAction) {
+        this.itemClickAction = itemClickAction;
+    }
+    @SerializedName("itemClickAction")
+    @Expose
+    String itemClickAction;
     @SerializedName("fontFamily")
     @Expose
     String fontFamily;
@@ -189,7 +198,19 @@ public class Component implements ModuleWithComponents {
     @SerializedName("svod")
     @Expose
     boolean svod;
+    public String getHintColor() {
+        return hintColor;
+    }
+    public void setHintColor(String hintColor) {
+        this.hintColor = hintColor;
+    }
+    @SerializedName("hintColor")
+    @Expose
+    String hintColor;
 
+    @SerializedName("blockName")
+    @Expose
+    String blockName;
     boolean yAxisSetManually;
 
     public String getText() {
@@ -246,6 +267,12 @@ public class Component implements ModuleWithComponents {
 
     public void setType(String type) {
         this.type = type;
+    }
+    @Override
+    public void setId(String id) {
+    }
+    @Override
+    public void setSettings(Settings settings) {
     }
 
     public String getKey() {
@@ -503,6 +530,13 @@ public class Component implements ModuleWithComponents {
         return svod;
     }
 
+    @Override
+    public String getBlockName() {
+        return null;
+    }
+    @Override
+    public void setBlockName(String blockName) {
+    }
     public void setSvod(boolean svod) {
         this.svod = svod;
     }
