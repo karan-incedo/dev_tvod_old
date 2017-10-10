@@ -1,12 +1,9 @@
 package com.viewlift.models.network.rest;
 
-import android.util.Log;
 
-import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginRequest;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
 
-import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -24,7 +21,6 @@ public class AppCMSFacebookLoginCall {
     private static final String TAG = "AppCMSFacebookLogin";
 
     private AppCMSFacebookLoginRest appCMSFacebookLoginRest;
-    private Gson gson;
 
     @Inject
     public AppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest) {

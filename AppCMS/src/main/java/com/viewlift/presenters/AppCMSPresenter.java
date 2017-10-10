@@ -1042,7 +1042,7 @@ public class AppCMSPresenter {
             openDownloadScreenForNetworkError(false);
         } else {
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
-            refreshPages();
+            refreshPages(null);
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null);
@@ -4592,7 +4592,7 @@ public class AppCMSPresenter {
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            refreshPages();
+            refreshPages(null);
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             Log.d(TAG, "Search query (optional): " + searchQuery);
@@ -6514,7 +6514,14 @@ public class AppCMSPresenter {
                            boolean showCancelButton,
                            final Action0 onDismissAction) {
         if (currentActivity != null) {
-            int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            int textColor = ContextCompat.getColor(currentContext, android.R.color.white);
+            try {
+                textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to get branding text color - defaulting to accent color: " +
+                    e.getMessage());
+                textColor = ContextCompat.getColor(currentContext, R.color.colorAccent);
+            }
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             String title;
             String message;
@@ -6657,10 +6664,17 @@ public class AppCMSPresenter {
 
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
+                try {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                         Color.parseColor(appCMSMain.getBrand()
                                 .getGeneral()
                                 .getBackgroundColor())));
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to set background color from AppCMS branding - defaulting to colorPrimaryDark: " +
+                            e.getMessage());
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                            ContextCompat.getColor(currentContext, R.color.colorPrimaryDark)));
+                }
                 if (currentActivity.getWindow().isActive()) {
                     try {
                         if (!dialog.isShowing())
@@ -6954,9 +6968,14 @@ public class AppCMSPresenter {
 
     }
 
-    @SuppressLint("StringFormatInvalid")
     private String getBeaconUrl() {
+        if (currentActivity != null &&
+                appCMSMain != null &&
+                appCMSMain.getBeacon() != null &&
+                appCMSMain.getBeacon().getApiBaseUrl() != null) {
         return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
+        }
+        return null;
     }
 
     private String getBeaconUrl(String vid, String screenName, String parentScreenName,
@@ -8416,7 +8435,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void refreshPages() {
+    public void refreshPages(Action0 onreadyAction) {
         Log.d(TAG, "Refreshing pages");
         if (currentActivity != null) {
             Log.d(TAG, "Refreshing main.json");
@@ -8437,6 +8456,7 @@ public class AppCMSPresenter {
                                     appCMSPageUI -> {
                                         if (appCMSPageUI.isLoadedFromNetwork() &&
                                                 pageViewLruCache != null) {
+                                            navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                                             pageViewLruCache.evictAll();
                                         }
                                     },
@@ -8449,6 +8469,9 @@ public class AppCMSPresenter {
                             if (appCMSAndroidModules.isLoadedFromNetwork() &&
                                     pageViewLruCache != null) {
                                 pageViewLruCache.evictAll();
+                            }
+                            if (onreadyAction != null) {
+                                onreadyAction.call();
                             }
                         });
                     });
@@ -8477,6 +8500,7 @@ public class AppCMSPresenter {
     }
 
     private void refreshAppCMSAndroid(Action1<AppCMSAndroidUI> readyAction) {
+        if (currentActivity != null) {
         GetAppCMSAndroidUIAsyncTask.Params params =
                 new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                         .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
@@ -8490,6 +8514,7 @@ public class AppCMSPresenter {
                 Observable.just(appCMSAndroidUI).subscribe(readyAction);
             }
         }).execute(params);
+        }
     }
 
     private void getAppCMSAndroid(int tryCount) {
@@ -8887,7 +8912,7 @@ public class AppCMSPresenter {
             refreshIdentity(getRefreshToken(),
                     () -> getAppCMSTV(tryCount + 1));
         } else {
-            @SuppressLint("StringFormatMatches") GetAppCMSAndroidUIAsyncTask.Params params =
+            GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                     appCMSMain.getFireTv(),

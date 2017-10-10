@@ -958,7 +958,9 @@ public class ViewCreator {
 
                     }
                     Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
-                    View childView = createModuleView(context, module, moduleAPI, pageView,
+                View childView = createModuleView(context, module, moduleAPI,
+                        appCMSAndroidModules,
+                        pageView,
                             jsonValueKeyMap,
                             appCMSPresenter);
                     if (childView != null) {
@@ -985,6 +987,7 @@ public class ViewCreator {
     public <T extends ModuleWithComponents> View createModuleView(final Context context,
                                                                   final T module,
                                                                   final Module moduleAPI,
+                                                                  AppCMSAndroidModules appCMSAndroidModules,
                                                                   PageView pageView,
                                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                   AppCMSPresenter appCMSPresenter) {
@@ -995,7 +998,8 @@ public class ViewCreator {
                     moduleAPI,
                     jsonValueKeyMap,
                     appCMSPresenter,
-                    this);
+                    this,
+                    appCMSAndroidModules);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView);
         } else {
             if (module.getComponents() != null) {
@@ -1018,6 +1022,7 @@ public class ViewCreator {
                             component,
                             module.getLayout(),
                             moduleAPI,
+                                appCMSAndroidModules,
                             pageView,
                             module.getSettings(),
                             jsonValueKeyMap,
@@ -1192,6 +1197,7 @@ public class ViewCreator {
                                                                final Component component,
                                                                final AppCMSPresenter appCMSPresenter,
                                                                final Module moduleAPI,
+                                                               final AppCMSAndroidModules appCMSAndroidModules,
                                                                Settings settings,
                                                                Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                int defaultWidth,
@@ -1217,6 +1223,7 @@ public class ViewCreator {
                     childComponent,
                     parentLayout,
                     moduleAPI,
+                    appCMSAndroidModules,
                     null,
                     settings,
                     jsonValueKeyMap,
@@ -1258,6 +1265,7 @@ public class ViewCreator {
                                     final Component component,
                                     final Layout parentLayout,
                                     final Module moduleAPI,
+                                    final AppCMSAndroidModules appCMSAndroidModules,
                                     @Nullable final PageView pageView,
                                     final Settings settings,
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
@@ -1409,7 +1417,8 @@ public class ViewCreator {
                                 moduleAPI,
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                                viewType);
+                                viewType,
+                                appCMSAndroidModules);
 
                         if (!BaseView.isTablet(context)) {
                             componentViewResult.useWidthOfScreen = true;
@@ -1491,7 +1500,8 @@ public class ViewCreator {
                                     moduleAPI,
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    viewType);
+                                    viewType,
+                                    appCMSAndroidModules);
                             componentViewResult.useWidthOfScreen = true;
                             ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
                             if (pageView != null) {
@@ -1532,7 +1542,8 @@ public class ViewCreator {
                                 jsonValueKeyMap,
                                 moduleAPI,
                                 (RecyclerView) componentViewResult.componentView,
-                                loop);
+                                loop,
+                                appCMSAndroidModules);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
                 if (pageView != null) {
                     pageView.addListWithAdapter(new ListWithAdapter.Builder()
@@ -1624,7 +1635,10 @@ public class ViewCreator {
                             .getBlockTitleColor())) {
                         componentViewResult.componentView.setBackgroundColor(Color.parseColor(
                                 getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
-                                        .getGeneral().getBlockTitleColor())));
+                                        .getGeneral().getBackgroundColor())));
+                        applyBorderToComponent(context, componentViewResult.componentView, component,
+                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                                        .getGeneral().getBlockTitleColor()));
                     } else {
                         applyBorderToComponent(context, componentViewResult.componentView, component, -1);
                     }
@@ -2730,6 +2744,7 @@ public class ViewCreator {
                 componentViewResult.componentView = createModuleView(context,
                         component,
                         moduleAPI,
+                        appCMSAndroidModules,
                         pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
@@ -2794,6 +2809,7 @@ public class ViewCreator {
                     componentViewResult.componentView = createModuleView(context,
                             component,
                             moduleAPI,
+                            appCMSAndroidModules,
                             pageView,
                             jsonValueKeyMap,
                             appCMSPresenter);

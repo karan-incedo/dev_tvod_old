@@ -83,6 +83,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                                                  } catch (Exception e) {
                                                      Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
                                                  }
+                                                     finish();
                                                  timerScheduled = false;
                                                  }
                                              }
@@ -105,8 +106,13 @@ public class AppCMSErrorActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        if (activeNetwork == null ||
+                !activeNetwork.isConnectedOrConnecting()) {
         registerReceiver(networkConnectedReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
     }
 
     @Override
