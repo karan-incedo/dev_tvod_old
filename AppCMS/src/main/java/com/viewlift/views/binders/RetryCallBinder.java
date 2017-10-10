@@ -5,8 +5,6 @@ import android.os.Binder;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by nitin.tyagi on 7/31/2017.

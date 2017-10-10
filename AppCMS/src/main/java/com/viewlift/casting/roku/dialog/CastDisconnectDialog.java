@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.casting.roku.RokuDevice;
+import com.viewlift.casting.roku.RokuWrapper;
 
 
 public class CastDisconnectDialog extends MediaRouteControllerDialog implements View.OnClickListener {
@@ -62,6 +64,11 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
         if (toBeDisconnectDevice != null) {
             if (selectedDeviceType.equals(CHROMECAST)) {
                 mRouteNameTextView.setText(((MediaRouter) toBeDisconnectDevice).getSelectedRoute().getName());
+            } else if (selectedDeviceType.equals(ROKU)) {
+                mRouteNameTextView.setText(((RokuDevice) toBeDisconnectDevice).getRokuDeviceName());
+                findViewById(android.support.v7.mediarouter.R.id.mr_custom_control).setVisibility(View.GONE);
+                findViewById(android.support.v7.mediarouter.R.id.mr_default_control).setVisibility(View.GONE);
+                mStopCastingButton.setVisibility(View.GONE);
             }
         }
     }
@@ -78,6 +85,8 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
         this.toBeDisconnectDevice = toBeDisconnectDevice;
         if (toBeDisconnectDevice instanceof MediaRouter) {
             selectedDeviceType = CHROMECAST;
+        } else if (toBeDisconnectDevice instanceof RokuDevice) {
+            selectedDeviceType = ROKU;
         }
     }
 
@@ -111,6 +120,8 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
                         CastHelper.getInstance(mContext).isCastDeviceConnected = false;
                         System.out.println("unselecte");
                     }
+                } else if (selectedDeviceType.equals(ROKU)) {
+                    RokuWrapper.getInstance().sendStopRequest();
                 }
             }
             dismiss();

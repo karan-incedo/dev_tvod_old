@@ -5,13 +5,10 @@ package com.viewlift.models.network.rest;
  */
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginRequest;
 import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginResponse;
 
-import java.io.IOException;
 
 import javax.inject.Inject;
 
@@ -25,7 +22,6 @@ public class AppCMSGoogleLoginCall {
     private static final String TAG = "AppCMSGoogleLoginTAG_";
 
     private AppCMSGoogleLoginRest appCMSGoogleLoginRest;
-    private Gson gson;
 
     @Inject
     public AppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest) {

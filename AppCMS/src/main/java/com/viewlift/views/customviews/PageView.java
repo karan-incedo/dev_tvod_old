@@ -1,12 +1,24 @@
 package com.viewlift.views.customviews;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.PopupMenuCompat;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -130,17 +142,38 @@ public class PageView extends BaseView {
         nestedScrollView.setLayoutParams(nestedScrollViewLayoutParams);
         nestedScrollView.addView(childrenContainer);
 
-        if(appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP()){
-            int tempheight= (int) appCMSPageUI.getModuleList().get(1).getLayout().getMobile().getHeight();
-          //  Toast.makeText(this.getContext(),"PIP appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP() "+appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(),Toast.LENGTH_SHORT).show();
-            nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+        if (appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP()) {
+            int tempheight = (int) appCMSPageUI.getModuleList().get(1).getLayout().getMobile().getHeight();
 
-                if (scrollY> tempheight) {
-             //       Toast.makeText(this.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
-                }else{
+            //  Toast.makeText(this.getContext(),"PIP appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP() "+appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(),Toast.LENGTH_SHORT).show();
+            nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+                boolean pipPlayerVisible = false;
+                PopupWindow dialog;
+
+                @Override
+                public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+                    if (scrollY > (tempheight + 300) && !pipPlayerVisible) {
+                        Toast.makeText(v.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
+                        if (dialog!=null)
+                        {
+                            dialog.dismiss();
+
+                        }
+                        dialog = new PopupWindow(v.getContext());
+
+                        dialog.setContentView(new Button(v.getContext()));
+                        dialog.showAtLocation(v,Gravity.BOTTOM,200,500);
+                        pipPlayerVisible = true;
+                    } else if (scrollY < (tempheight + 300)) {
+                        pipPlayerVisible = false;
+                        if (dialog!=null){
+                            dialog.dismiss();
+                        }
+
+                    }
 
                 }
-
             });
 
         }

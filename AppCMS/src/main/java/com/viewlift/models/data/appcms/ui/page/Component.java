@@ -184,6 +184,9 @@ public class Component implements ModuleWithComponents {
     @Expose
     String hintColor;
 
+    @SerializedName("blockName")
+    @Expose
+    String blockName;
     boolean yAxisSetManually;
 
     public String getText() {
@@ -240,6 +243,12 @@ public class Component implements ModuleWithComponents {
 
     public void setType(String type) {
         this.type = type;
+    }
+    @Override
+    public void setId(String id) {
+    }
+    @Override
+    public void setSettings(Settings settings) {
     }
 
     public String getKey() {
@@ -497,6 +506,13 @@ public class Component implements ModuleWithComponents {
         return svod;
     }
 
+    @Override
+    public String getBlockName() {
+        return null;
+    }
+    @Override
+    public void setBlockName(String blockName) {
+    }
     public void setSvod(boolean svod) {
         this.svod = svod;
     }

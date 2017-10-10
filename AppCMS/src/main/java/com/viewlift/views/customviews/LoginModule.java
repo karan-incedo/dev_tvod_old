@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
-import android.os.SystemClock;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -22,8 +21,10 @@ import android.widget.TextView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -38,7 +39,7 @@ public class LoginModule extends ModuleView {
 
     private static final int NUM_CHILD_VIEWS = 2;
 
-    private final ModuleWithComponents module;
+    private final ModuleWithComponents moduleInfo;
     private final Module moduleAPI;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final AppCMSPresenter appCMSPresenter;
@@ -55,17 +56,19 @@ public class LoginModule extends ModuleView {
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
+    private AppCMSAndroidModules appCMSAndroidModules;
     Context con;
     // variable to track event time
 
     public LoginModule(Context context,
-                       ModuleWithComponents module,
+                       ModuleWithComponents moduleInfo,
                        Module moduleAPI,
                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                        AppCMSPresenter appCMSPresenter,
-                       ViewCreator viewCreator) {
-        super(context, module, false);
-        this.module = module;
+                       ViewCreator viewCreator,
+                       AppCMSAndroidModules appCMSAndroidModules) {
+        super(context, moduleInfo, false);
+        this.moduleInfo = moduleInfo;
         this.moduleAPI = moduleAPI;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.appCMSPresenter = appCMSPresenter;
@@ -78,12 +81,13 @@ public class LoginModule extends ModuleView {
         this.loginBorderPadding = context.getResources().getInteger(R.integer.app_cms_login_underline_padding);
         this.launchType = appCMSPresenter.getLaunchType();
         this.con = context;
+        this.appCMSAndroidModules = appCMSAndroidModules;
         init();
 
     }
 
     public void init() {
-        if (module != null &&
+        if (moduleInfo != null &&
                 moduleAPI != null &&
                 jsonValueKeyMap != null &&
                 appCMSPresenter != null &&
@@ -118,6 +122,18 @@ public class LoginModule extends ModuleView {
 
             topLayoutContainer.addView(loginModuleSwitcherContainer);
 
+            ModuleWithComponents module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            if (module == null) {
+                module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
+            }
+            if (module != null && module.getComponents() != null) {
             for (Component component : module.getComponents()) {
                 if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY &&
                         (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
@@ -156,7 +172,7 @@ public class LoginModule extends ModuleView {
                     ModuleView moduleView = new ModuleView<>(getContext(), component, false);
                     setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
                     childViews[0] = moduleView;
-                    addChildComponents(moduleView, component, 0);
+                        addChildComponents(moduleView, component, 0, appCMSAndroidModules);
                     topLayoutContainer.addView(moduleView);
                 } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
                         (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
@@ -221,9 +237,10 @@ public class LoginModule extends ModuleView {
                     ModuleView moduleView = new ModuleView<>(getContext(), component, false);
                     setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
                     childViews[1] = moduleView;
-                    addChildComponents(moduleView, component, 1);
+                        addChildComponents(moduleView, component, 1, appCMSAndroidModules);
                     topLayoutContainer.addView(moduleView);
 
+                    }
                 }
             }
 
@@ -240,6 +257,9 @@ public class LoginModule extends ModuleView {
     }
 
     private void selectChild(int childIndex) {
+        if (childViews != null &&
+                childIndex < childViews.length &&
+                childViews[childIndex] != null) {
         childViews[childIndex].setVisibility(VISIBLE);
         buttonSelectors[childIndex].setAlpha(1.0f);
         applyUnderlineToComponent(underlineViews[childIndex], underlineColor);
@@ -251,16 +271,22 @@ public class LoginModule extends ModuleView {
             visiblePasswordInputView.setText("");
         }
     }
+    }
 
     private void unselectChild(int childIndex) {
+        if (childViews != null&&
+                childIndex < childViews.length &&
+                childViews[childIndex] != null) {
         childViews[childIndex].setVisibility(GONE);
         buttonSelectors[childIndex].setAlpha(0.6f);
         applyUnderlineToComponent(underlineViews[childIndex], bgColor);
+        }
     }
 
     private void addChildComponents(ModuleView moduleView,
                                     Component subComponent,
-                                    final int childIndex) {
+                                    final int childIndex,
+                                    final AppCMSAndroidModules appCMSAndroidModules) {
         ViewCreator.ComponentViewResult componentViewResult = viewCreator.getComponentViewResult();
         ViewGroup subComponentChildContainer = moduleView.getChildrenContainer();
         float parentYAxis = 2 * getYAxis(getContext(), subComponent.getLayout(), 0.0f);
@@ -271,8 +297,9 @@ public class LoginModule extends ModuleView {
                         component,
                         component.getLayout(),
                         moduleAPI,
+                        appCMSAndroidModules,
                         null,
-                        module.getSettings(),
+                        moduleInfo.getSettings(),
                         jsonValueKeyMap,
                         appCMSPresenter,
                         false,

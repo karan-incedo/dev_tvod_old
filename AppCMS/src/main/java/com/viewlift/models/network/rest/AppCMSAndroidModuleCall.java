@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.android.Blocks;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
@@ -12,19 +11,15 @@ import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -138,8 +133,6 @@ public class AppCMSAndroidModuleCall {
                             inputStream.close();
                             ModuleList moduleList = gson.fromJson(sb.toString(),
                                     ModuleList.class);
-                            deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getName()));
-                            writeModuleToFile(getResourceFilename(blocks.getName(), blocks.getVersion()), moduleList);
                             moduleDataMap.appCMSAndroidModule.put(blocks.getName(), moduleList);
                         }
                     } catch (Exception e) {
