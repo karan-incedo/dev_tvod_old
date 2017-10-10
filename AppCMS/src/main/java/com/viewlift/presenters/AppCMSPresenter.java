@@ -1021,7 +1021,9 @@ public class AppCMSPresenter {
                         showDialog(DialogType.NETWORK, null, false, null);
                     }
                 } else {
-                    if (platformType == PlatformType.TV) {
+                    if (platformType == PlatformType.ANDROID) {
+                        getAppCMSAndroid(tryCount + 1);
+                    } else if (platformType == PlatformType.TV) {
                         getAppCMSTV(tryCount + 1);
                     }
                 }
@@ -6532,7 +6534,10 @@ public class AppCMSPresenter {
     public void openDownloadScreenForNetworkError(boolean launchActivity) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
             if (!isUserLoggedIn()) {//fix SVFA-1911
-                showDialog(DialogType.NETWORK, null, false, null);
+                showDialog(DialogType.NETWORK, null, false,
+                        () -> {
+                            launchErrorActivity(PlatformType.ANDROID);
+                        });
                 return;
             }
 
@@ -8016,9 +8021,12 @@ public class AppCMSPresenter {
                                 setRefreshToken(refreshIdentityResponse.getRefreshToken());
                                 setAuthToken(refreshIdentityResponse.getAuthorizationToken());
                                 onReadyAction.call();
+                            } else {
+                                onReadyAction.call();
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error retrieving refresh identity response: " + e.getMessage());
+                            onReadyAction.call();
                         }
                     }).execute(params);
         }
@@ -8619,15 +8627,51 @@ public class AppCMSPresenter {
                                 Log.d(TAG, "Processing meta pages queue");
                                 processMetaPagesQueue(loadFromFile,
                                         () -> {
-                                            if (appCMSMain.getServiceType()
-                                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
-                                                refreshSubscriptionData(() -> {
+                                            if (!isNetworkConnected()) {
+                                                openDownloadScreenForNetworkError(true);
+                                            } else {
+                                                if (appCMSMain.getServiceType()
+                                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                                    refreshSubscriptionData(() -> {
+                                                        if (appCMSMain.isForceLogin()) {
+                                                            boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                                                                    loginPage.getPageName(),
+                                                                    loginPage.getPageUI(),
+                                                                    true,
+                                                                    false,
+                                                                    false,
+                                                                    false,
+                                                                    false,
+                                                                    deeplinkSearchQuery);
+                                                            if (!launchSuccess) {
+                                                                Log.e(TAG, "Failed to launch page: "
+                                                                        + loginPage.getPageName());
+                                                                launchErrorActivity(platformType);
+                                                            }
+                                                        } else {
+                                                            boolean launchSuccess = navigateToPage(homePage.getPageId(),
+                                                                    homePage.getPageName(),
+                                                                    homePage.getPageUI(),
+                                                                    true,
+                                                                    true,
+                                                                    false,
+                                                                    true,
+                                                                    false,
+                                                                    deeplinkSearchQuery);
+                                                            if (!launchSuccess) {
+                                                                Log.e(TAG, "Failed to launch page: "
+                                                                        + loginPage.getPageName());
+                                                                launchErrorActivity(platformType);
+                                                            }
+                                                        }
+                                                    }, true);
+                                                } else {
                                                     if (appCMSMain.isForceLogin()) {
                                                         boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                                                                 loginPage.getPageName(),
                                                                 loginPage.getPageUI(),
                                                                 true,
-                                                                false,
+                                                                true,
                                                                 false,
                                                                 false,
                                                                 false,
@@ -8652,38 +8696,6 @@ public class AppCMSPresenter {
                                                                     + loginPage.getPageName());
                                                             launchErrorActivity(platformType);
                                                         }
-                                                    }
-                                                }, true);
-                                            } else {
-                                                if (appCMSMain.isForceLogin()) {
-                                                    boolean launchSuccess = navigateToPage(loginPage.getPageId(),
-                                                            loginPage.getPageName(),
-                                                            loginPage.getPageUI(),
-                                                            true,
-                                                            true,
-                                                            false,
-                                                            false,
-                                                            false,
-                                                            deeplinkSearchQuery);
-                                                    if (!launchSuccess) {
-                                                        Log.e(TAG, "Failed to launch page: "
-                                                                + loginPage.getPageName());
-                                                        launchErrorActivity(platformType);
-                                                    }
-                                                } else {
-                                                    boolean launchSuccess = navigateToPage(homePage.getPageId(),
-                                                            homePage.getPageName(),
-                                                            homePage.getPageUI(),
-                                                            true,
-                                                            true,
-                                                            false,
-                                                            true,
-                                                            false,
-                                                            deeplinkSearchQuery);
-                                                    if (!launchSuccess) {
-                                                        Log.e(TAG, "Failed to launch page: "
-                                                                + loginPage.getPageName());
-                                                        launchErrorActivity(platformType);
                                                     }
                                                 }
                                             }
