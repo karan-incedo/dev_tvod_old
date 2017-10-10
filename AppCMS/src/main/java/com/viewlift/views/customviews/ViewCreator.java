@@ -1636,9 +1636,15 @@ public class ViewCreator {
                 } else {
                     if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                             .getBlockTitleColor())) {
+//                        componentViewResult.componentView.setBackgroundColor(Color.parseColor(
+//                                getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
+//                                        .getGeneral().getBlockTitleColor())));
                         componentViewResult.componentView.setBackgroundColor(Color.parseColor(
                                 getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
-                                        .getGeneral().getBlockTitleColor())));
+                                        .getGeneral().getBackgroundColor())));
+                        applyBorderToComponent(context, componentViewResult.componentView, component,
+                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                                        .getGeneral().getBlockTitleColor()));
                     } else {
                         applyBorderToComponent(context, componentViewResult.componentView, component, -1);
                     }
