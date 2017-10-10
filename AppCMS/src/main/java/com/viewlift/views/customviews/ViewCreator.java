@@ -135,11 +135,17 @@ public class ViewCreator {
             return;
         }
         for (ModuleList moduleInfo : appCMSPageUI.getModuleList()) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             if (module == null) {
                 module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
             }
-
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
 
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
@@ -152,6 +158,7 @@ public class ViewCreator {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
+                    moduleView.setVisibility(View.VISIBLE);
                     moduleView.resetHeightAdjusters();
 
                     Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
@@ -735,6 +742,9 @@ public class ViewCreator {
                                 }
                             }
                         }
+                    }else {
+                        moduleView.setVisibility(View.GONE);
+                        shouldHideModule = true;
                     }
 
                     ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
@@ -829,6 +839,21 @@ public class ViewCreator {
 
                     moduleView.requestLayout();
                 }
+            }
+        }
+        if (pageView != null) {
+            forceRedrawOfAllChildren(pageView);
+        }
+    }
+
+    private void forceRedrawOfAllChildren(ViewGroup viewGroup) {
+        viewGroup.requestLayout();
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View v = viewGroup.getChildAt(i);
+            if (v instanceof ViewGroup) {
+                forceRedrawOfAllChildren((ViewGroup) v);
+            } else {
+                v.requestLayout();
             }
         }
     }

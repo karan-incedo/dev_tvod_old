@@ -73,6 +73,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -4637,6 +4638,14 @@ public class AppCMSPresenter {
                             @Override
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
+                                if (pageTitle.contains("home") || pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
+                                    appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentActivity, "home_sports.json"),
+                                            AppCMSPageUI.class);
+                                } else
+                                {
+                                    appCMSPageUI = appCMSPageAPIAction.appCMSPageUI;
+                                }
                                 if (appCMSPageAPI != null) {
                                     boolean loadingHistory = false;
                                     if (isUserLoggedIn()) {
@@ -6974,6 +6983,7 @@ public class AppCMSPresenter {
 
     }
 
+    @SuppressLint("StringFormatInvalid")
     private String getBeaconUrl() {
         if (currentActivity != null &&
                 appCMSMain != null &&
