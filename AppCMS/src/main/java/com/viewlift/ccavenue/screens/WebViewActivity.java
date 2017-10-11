@@ -247,9 +247,9 @@ public class WebViewActivity extends Activity {
 				params.append(ServiceUtility.addToPostParams("si_is_setup_amt","Y")) ;
 				params.append(ServiceUtility.addToPostParams("si_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
 				params.append(ServiceUtility.addToPostParams("si_setup_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
-				params.append(ServiceUtility.addToPostParams("si_frequency",mainIntent.getStringExtra("si_frequency"))) ;
-				params.append(ServiceUtility.addToPostParams("si_bill_cycle",mainIntent.getStringExtra("si_frequency"))) ;
-				params.append(ServiceUtility.addToPostParams("si_frequency_type",mainIntent.getStringExtra("si_frequency_type"))) ;
+//				params.append(ServiceUtility.addToPostParams("si_frequency",mainIntent.getStringExtra("si_frequency"))) ;
+//				params.append(ServiceUtility.addToPostParams("si_bill_cycle",mainIntent.getStringExtra("si_frequency"))) ;
+//				params.append(ServiceUtility.addToPostParams("si_frequency_type",mainIntent.getStringExtra("si_frequency_type"))) ;
 			//}
 
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
