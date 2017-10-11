@@ -3,6 +3,8 @@
     <item name="countdown_id" type="id">countdown_id</item>
     <item name="autoplay_play_button" type="id">autoplay_play_button</item>
 
+    <item name="home_nested_scroll_view" type="id">home_nested_scroll_view</item>
+
     <item name="download_quality_selection_list" type="id">download_quality_selection_list</item>
     <item name="download_quality_continue_button" type="id">download_quality_continue_button</item>
     <item name="download_quality_cancel_button" type="id">download_quality_cancel_button</item>
