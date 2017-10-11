@@ -187,6 +187,7 @@ public class WebViewActivity extends Activity {
 			final WebView webview = (WebView) findViewById(R.id.webview);
 			webview.getSettings().setJavaScriptEnabled(true);
 			webview.addJavascriptInterface(new MyJavaScriptInterface(), "HTMLOUT");
+			webview.clearCache(true);
 			webview.setWebViewClient(new WebViewClient(){
 
 				@Override
