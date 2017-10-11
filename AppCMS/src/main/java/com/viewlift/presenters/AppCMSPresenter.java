@@ -8404,37 +8404,38 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Refreshed main.json");
                     this.appCMSMain = appCMSMain;
                     refreshAppCMSAndroid((appCMSAndroid) -> {
-                        for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
-                            Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
-                                    " " +
-                                    metaPage.getPageId() +
-                                    " " +
-                                    metaPage.getPageUI());
-                            getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    metaPage.getPageUI()),
-                                    appCMSPageUI -> {
-                                        if (appCMSPageUI.isLoadedFromNetwork() &&
-                                                pageViewLruCache != null) {
-                                            navigationPages.put(metaPage.getPageId(), appCMSPageUI);
-                                            pageViewLruCache.evictAll();
-                                        }
-                                    },
-                                    false);
+                        if (appCMSAndroid != null) {
+                            for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
+                                Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+                                        " " +
+                                        metaPage.getPageId() +
+                                        " " +
+                                        metaPage.getPageUI());
+                                getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                        metaPage.getPageUI()),
+                                        appCMSPageUI -> {
+                                            if (appCMSPageUI.isLoadedFromNetwork() &&
+                                                    pageViewLruCache != null) {
+                                                navigationPages.put(metaPage.getPageId(), appCMSPageUI);
+                                                pageViewLruCache.evictAll();
+                                            }
+                                        },
+                                        false);
+                            }
+
+                            getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
+                                Log.d(TAG, "Received and refreshed module list");
+                                this.appCMSAndroidModules = appCMSAndroidModules;
+                                if (appCMSAndroidModules.isLoadedFromNetwork() &&
+                                        pageViewLruCache != null) {
+                                    pageViewLruCache.evictAll();
+                                }
+
+                                if (onreadyAction != null) {
+                                    onreadyAction.call();
+                                }
+                            });
                         }
-
-                        getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
-                            Log.d(TAG, "Received and refreshed module list");
-                            this.appCMSAndroidModules = appCMSAndroidModules;
-                            if (appCMSAndroidModules.isLoadedFromNetwork() &&
-                                    pageViewLruCache != null) {
-                                pageViewLruCache.evictAll();
-                            }
-
-                            if (onreadyAction != null) {
-                                onreadyAction.call();
-                            }
-                        });
-
                     });
                 } else {
                     Log.w(TAG, "Resulting main.json from refresh is null");
