@@ -70,7 +70,6 @@ import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.viewlift.R;
@@ -335,6 +334,7 @@ public class AppCMSPresenter {
     public static final int PLAYER_REQUEST_CODE = 1111;
     private static final String USER_AUTH_PROVIDER_SHARED_PREF_NAME = "user_auth_provider_shared_pref_name";
     private static final String GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME = "google_play_app_store_version_pref_name";
+    private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -4906,6 +4906,22 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getInstanceId() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
+            return sharedPrefs.getString(INSTANCE_ID_PREF_NAME, null);
+        }
+        return null;
+    }
+
+    public boolean setInstanceId(String instanceId) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(INSTANCE_ID_PREF_NAME, instanceId).commit();
+        }
+        return false;
+    }
+
     public String getLoggedInUser() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
@@ -6701,7 +6717,7 @@ public class AppCMSPresenter {
     }
 
     public ArrayList<BeaconRequest> getBeaconRequestList() {
-        String uid = InstanceID.getInstance(currentActivity).getId();
+        String uid = getInstanceId();
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
         }
@@ -6830,7 +6846,7 @@ public class AppCMSPresenter {
                                            String mediaType, String bitrte, String resolutionHeight,
                                            String resolutionWidth, String streamId, double ttfirstframe, int apod, boolean isDownloaded) {
         BeaconRequest beaconRequest = new BeaconRequest();
-        String uid = InstanceID.getInstance(currentActivity).getId();
+        String uid = getInstanceId();
         int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
@@ -6920,7 +6936,7 @@ public class AppCMSPresenter {
         StringBuilder url = new StringBuilder();
         if (currentActivity != null && appCMSMain != null) {
             final String utfEncoding = currentActivity.getString(R.string.utf8enc);
-            String uid = InstanceID.getInstance(currentActivity).getId();
+            String uid = getInstanceId();
             int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
             if (isUserLoggedIn()) {
                 uid = getLoggedInUser();

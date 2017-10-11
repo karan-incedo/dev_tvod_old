@@ -165,7 +165,7 @@ dependencies {
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
-    compile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
+    mobileCompile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
     compile "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
