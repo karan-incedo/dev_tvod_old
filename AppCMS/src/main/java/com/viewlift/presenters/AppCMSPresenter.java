@@ -84,6 +84,7 @@ import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
@@ -132,6 +133,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
@@ -161,6 +163,7 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
+import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
@@ -413,6 +416,7 @@ public class AppCMSPresenter {
 
     private final AppCMSRestorePurchaseCall appCMSRestorePurchaseCall;
     private final AppCMSAndroidModuleCall appCMSAndroidModuleCall;
+    private final AppCMSSignedURLCall appCMSSignedURLCall;
 
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
@@ -579,6 +583,8 @@ public class AppCMSPresenter {
 
                            AppCMSAndroidModuleCall appCMSAndroidModuleCall,
 
+                           AppCMSSignedURLCall appCMSSignedURLCall,
+
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
                            AppCMSCCAvenueCall appCMSCCAvenueCall,
@@ -621,6 +627,8 @@ public class AppCMSPresenter {
         this.appCMSRestorePurchaseCall = appCMSRestorePurchaseCall;
 
         this.appCMSAndroidModuleCall = appCMSAndroidModuleCall;
+
+        this.appCMSSignedURLCall = appCMSSignedURLCall;
 
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
 
@@ -2378,6 +2386,37 @@ public class AppCMSPresenter {
     public void unrestrictPortraitOnly() {
         if (currentActivity != null) {
             currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
+    }
+
+    public void getAppCMSSignedURL(String filmId,
+                                   Action1<AppCMSSignedURLResult> readyAction) {
+        if (currentContext != null) {
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(), () -> {
+                    String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            filmId,
+                            appCMSSite.getGist().getSiteInternalName());
+                    GetAppCMSSignedURLAsyncTask.Params params = new GetAppCMSSignedURLAsyncTask.Params.Builder()
+                            .authToken(getAuthToken())
+                            .url(url)
+                            .build();
+
+                    new GetAppCMSSignedURLAsyncTask(appCMSSignedURLCall, readyAction).execute(params);
+                });
+            } else {
+                String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        filmId,
+                        appCMSSite.getGist().getSiteInternalName());
+                GetAppCMSSignedURLAsyncTask.Params params = new GetAppCMSSignedURLAsyncTask.Params.Builder()
+                        .authToken(getAuthToken())
+                        .url(url)
+                        .build();
+
+                new GetAppCMSSignedURLAsyncTask(appCMSSignedURLCall, readyAction).execute(params);
+            }
         }
     }
 

@@ -405,6 +405,9 @@
     <string name="api_error_message">We are having trouble connecting to %1$s, please try again later.</string>
 
     <string name="app_connectivity_dialog_title">App Connectivity</string>
+    <string name="signed_policy_key">signed_policy</string>
+    <string name="signed_signature_key">signed_signature</string>
+    <string name="signed_keypairid_key">signed_keypairid</string>
 </resources>
 
 

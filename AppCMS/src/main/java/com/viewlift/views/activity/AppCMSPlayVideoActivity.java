@@ -21,6 +21,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastingUtils;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.VideoAssets;
@@ -224,30 +225,35 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     freeContent = binder.getContentData().getGist().getFree();
                 }
 
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
-                        AppCMSPlayVideoFragment.newInstance(this,
-                                primaryCategory,
-                                fontColor,
-                                title,
-                                permaLink,
-                                binder.isTrailer(),
-                                hlsUrl,
-                                filmId,
-                                adsUrl,
-                                playAds,
-                                playIndex,
-                                watchedTime,
-                                videoImageUrl,
-                                closedCaptionUrl,
-                                contentRating, videoRunTime,
-                                freeContent);
-                fragmentTransaction.add(R.id.app_cms_play_video_page_container,
-                        appCMSPlayVideoFragment,
-                        getString(R.string.video_fragment_tag_key));
-                fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
-                fragmentTransaction.commit();
+                String finalClosedCaptionUrl = closedCaptionUrl;
+                boolean finalFreeContent = freeContent;
+                appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
+                            AppCMSPlayVideoFragment.newInstance(this,
+                                    primaryCategory,
+                                    fontColor,
+                                    title,
+                                    permaLink,
+                                    binder.isTrailer(),
+                                    hlsUrl,
+                                    filmId,
+                                    adsUrl,
+                                    playAds,
+                                    playIndex,
+                                    watchedTime,
+                                    videoImageUrl,
+                                    finalClosedCaptionUrl,
+                                    contentRating, videoRunTime,
+                                    finalFreeContent,
+                                    appCMSSignedURLResult);
+                    fragmentTransaction.add(R.id.app_cms_play_video_page_container,
+                            appCMSPlayVideoFragment,
+                            getString(R.string.video_fragment_tag_key));
+                    fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
+                    fragmentTransaction.commit();
+                });
             }
         } catch (ClassCastException e) {
             Log.e(TAG, e.getMessage());

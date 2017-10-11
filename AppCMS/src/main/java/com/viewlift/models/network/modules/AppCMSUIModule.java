@@ -43,6 +43,8 @@ import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSSignedURLCall;
+import com.viewlift.models.network.rest.AppCMSSignedURLRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
@@ -842,6 +844,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSSignedURLRest providesAppCMSSignedURLRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSignedURLRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -982,6 +990,12 @@ public class AppCMSUIModule {
     public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(Gson gson,
                                                                    AppCMSAndroidModuleRest appCMSAndroidModuleRest) {
         return new AppCMSAndroidModuleCall(gson, appCMSAndroidModuleRest, storageDirectory);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSignedURLCall providesAppCMSSignedURLCall(AppCMSSignedURLRest appCMSSignedURLRest) {
+        return new AppCMSSignedURLCall(appCMSSignedURLRest);
     }
 
     @Provides
