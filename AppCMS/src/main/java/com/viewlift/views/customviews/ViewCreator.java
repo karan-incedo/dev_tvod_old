@@ -2142,6 +2142,9 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView)
+                                        .setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
                             }
                             break;
 
