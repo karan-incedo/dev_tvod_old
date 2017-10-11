@@ -54,5 +54,6 @@
 
      <string name="blank_email_error_msg">Please enter email to continue.</string>
     <string name="blank_password_error_msg">Please enter password to continue.</string>
-
+    <string name="app_cms_autoplay_finished_movie_title_key">finishedMovieNameTitle</string>
+    <string name="back">BACK</string>
 </resources>

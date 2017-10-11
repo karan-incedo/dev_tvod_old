@@ -18,8 +18,13 @@ import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.Gist;
+import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.fragment.AppCMSPlayVideoFragment;
+import com.viewlift.views.binders.AppCMSVideoPageBinder;
+
+import java.util.List;
 
 
 /**
@@ -34,7 +39,16 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     private AppCMSPresenter appCMSPresenter;
     FrameLayout appCMSPlayVideoPageContainer;
 
+    private AppCMSVideoPageBinder binder;
+
     private AppCMSPlayVideoFragment appCMSPlayVideoFragment;
+    private String title;
+    private String hlsUrl;
+    private String videoImageUrl;
+    private String filmId;
+    private String primaryCategory;
+    private List<String> relateVideoIds;
+    private int currentlyPlayingIndex = 0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,22 +57,72 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
 
         Intent intent = getIntent();
-        String title = intent.getStringExtra(getString(R.string.video_player_title_key));
-        String fontColor = intent.getStringExtra(getString(R.string.video_player_font_color_key));
-        String[] extraData = intent.getStringArrayExtra(getString(R.string.video_player_hls_url_key));
-        String permaLink = extraData[0];
-        String hlsUrl = extraData[1];
-        String filmId = extraData[2];
-        String adsUrl = intent.getStringExtra(getString(R.string.video_player_ads_url_key));
-        String bgColor = intent.getStringExtra(getString(R.string.app_cms_bg_color_key));
-        String closedCaptionUrl = intent.getStringExtra(getString(R.string.video_player_closed_caption_key));
-        long watchedTime = intent.getLongExtra(getString(R.string.video_player_watched_time_key), 0);
-        long runtime = intent.getLongExtra(getString(R.string.video_player_run_time_key), 0);
-        boolean playAds = intent.getBooleanExtra(getString(R.string.play_ads_key), true);
-        boolean isTrailer = intent.getBooleanExtra(getString(R.string.is_trailer_key), false);
+        Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
 
+        try {
+            binder = (AppCMSVideoPageBinder)
+                    bundleExtra.getBinder(getString(R.string.app_cms_video_player_binder_key));
+            if (binder != null
+                    && binder.getContentData() != null
+                    && binder.getContentData().getGist() != null) {
+                Gist gist = binder.getContentData().getGist();
+                String videoUrl = "";
+                String fontColor = binder.getFontColor();
+                title = "";
 
-        System.out.println("Ads Url = "+adsUrl);
+                String closedCaptionUrl = null;
+                if (!binder.isTrailer()) {
+                    title = gist.getTitle();
+                    if (binder.getContentData().getStreamingInfo() != null &&
+                            binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
+                        VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
+                        videoUrl = videoAssets.getHls();
+                        if (TextUtils.isEmpty(videoUrl)) {
+                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                            }
+                        }
+                    }
+
+                    // TODO: 7/27/2017 Implement CC for multiple languages.
+                    if (binder.getContentData() != null
+                            && binder.getContentData().getContentDetails() != null
+                            && binder.getContentData().getContentDetails().getClosedCaptions() != null
+                            && binder.getContentData().getContentDetails().getClosedCaptions().size() > 0
+                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null
+                            && !binder.getContentData().getContentDetails().getClosedCaptions()
+                            .get(0).getUrl().equalsIgnoreCase(
+                                    getString(R.string.download_file_prefix))) {
+                        closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
+                    }
+                } else {
+                    if (binder.getContentData().getContentDetails() != null
+                            && binder.getContentData().getContentDetails().getTrailers() != null
+                            && binder.getContentData().getContentDetails().getTrailers().get(0) != null
+                            && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+                        title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
+                        VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
+                        videoUrl = videoAssets.getHls();
+                        if (TextUtils.isEmpty(videoUrl)) {
+                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                            }
+                        }
+                    }
+                }
+                String permaLink = gist.getPermalink();
+                hlsUrl = videoUrl;
+                videoImageUrl = gist.getVideoImageUrl();
+                filmId = binder.getContentData().getGist().getId();
+                String adsUrl = binder.getAdsUrl();
+                String bgColor = binder.getBgColor();
+                int playIndex = binder.getCurrentPlayingVideoIndex();
+                long watchedTime = binder.getContentData().getGist().getWatchedTime();
+                if (gist.getPrimaryCategory() != null && gist.getPrimaryCategory().getTitle() != null)
+                    primaryCategory = gist.getPrimaryCategory().getTitle();
+                boolean playAds = binder.isPlayAds();
+                relateVideoIds = binder.getRelateVideoIds();
+                currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
 
         if (!TextUtils.isEmpty(bgColor)) {
             appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
@@ -72,14 +136,14 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         fontColor,
                         title,
                         permaLink,
-                        isTrailer,
+                        binder.isTrailer(),
                         hlsUrl,
                         filmId,
                         adsUrl,
                         playAds,
-                        0,
+                        playIndex,
                         watchedTime,
-                        runtime,
+                        binder.getContentData().getGist().getRuntime(),
                         null,
                         closedCaptionUrl,
                         null);
@@ -87,7 +151,10 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 appCMSPlayVideoFragment,
                 getString(R.string.video_fragment_tag_key));
         fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.commit();
+        fragmentTransaction.commit();}
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
 
         handoffReceiver = new BroadcastReceiver() {
             @Override
@@ -172,5 +239,15 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         }
         return super.dispatchKeyEvent(event) || result;
     }
-
+    @Override
+    public void onMovieFinished() {
+        if (!binder.isTrailer()
+                && relateVideoIds != null
+                && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+            binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+            appCMSPresenter.openAutoPlayScreen(binder);
+        } else {
+            closePlayer();
+        }
+    }
 }

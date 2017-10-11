@@ -378,17 +378,21 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.getAction(),
                         retryCallBinder.getFilmTitle(),
                         retryCallBinder.getExtraData(),
+                        retryCallBinder.getContentDatum(),
                         retryCallBinder.isCloselauncher(),
-                        retryCallBinder.getContentDatum()
+                        -1,
+                        null
                 );
                 break;
             case VIDEO_ACTION:
                 appCMSPresenter.launchTVVideoPlayer(
-                        retryCallBinder.getFilmId(),
-                        retryCallBinder.getPagePath(),
-                        retryCallBinder.getFilmTitle(),
-                        retryCallBinder.getContentDatum()
-                );
+                        retryCallBinder.getContentDatum(),
+                        -1,
+                        retryCallBinder.getContentDatum().getContentDetails() != null
+                                ? retryCallBinder.getContentDatum().getContentDetails().getRelatedVideoIds()
+                                : null,
+                        retryCallBinder.getContentDatum().getGist().getWatchedTime()
+                        );
 
                 break;
             case PAGE_ACTION:
@@ -561,6 +565,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         handleNavigationVisibility();
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                    case KeyEvent.KEYCODE_MEDIA_PLAY:
                         handlePlayRemoteKey();
                         break;
                     case KeyEvent.KEYCODE_DPAD_DOWN:

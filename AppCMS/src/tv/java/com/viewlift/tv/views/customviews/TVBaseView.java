@@ -242,7 +242,10 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
                     break;
-                default:
+                case PAGE_AUTOPLAY_FINISHED_UP_TITLE_KEY:
+                case PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY:
+                    gravity = Gravity.NO_GRAVITY;
+                break;
             }
 
             int fontsize = getFontsize(getContext(), childComponent);
@@ -253,6 +256,13 @@ public abstract class TVBaseView extends FrameLayout {
             viewHeight *= 1.2;
         } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             viewHeight = (int) (viewHeight / 1.05);
+        } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY
+            && componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_IMAGE_KEY) {
+                int imagePadding = Integer.valueOf(
+                        childComponent.getLayout().getTv().getPadding() != null
+                                ? childComponent.getLayout().getTv().getPadding()
+                                : "0");
+                view.setPadding(imagePadding, imagePadding, imagePadding, imagePadding);
         }
 
         if (useWidthOfScreen) {

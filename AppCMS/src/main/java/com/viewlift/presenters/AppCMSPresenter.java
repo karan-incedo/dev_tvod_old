@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -190,13 +189,8 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
-import com.viewlift.views.fragments.AppCMSUpgradeFragment;
 
 import org.jsoup.Jsoup;
-import org.threeten.bp.Duration;
-import org.threeten.bp.Instant;
-import org.threeten.bp.temporal.ChronoUnit;
-
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -221,7 +215,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -250,11 +243,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
-import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
-import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
-import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
-import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -476,6 +464,7 @@ public class AppCMSPresenter {
     private String tvHomeScreenPackage = "com.viewlift.tv.views.activity.AppCmsHomeActivity";
     private String tvErrorScreenPackage = "com.viewlift.tv.views.activity.AppCmsTvErrorActivity";
     private String tvVideoPlayerPackage = "com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity";
+    private String tvAutoplayActivityPackage = "com.viewlift.tv.views.activity.AppCMSTVAutoplayActivity";
     private Uri deeplinkSearchQuery;
     private boolean launched;
     private MetaPage splashPage;
@@ -8396,10 +8385,22 @@ public class AppCMSPresenter {
                 navbarPresent,
                 sendCloseAction,
                 binder);
-        Intent intent = new Intent(currentActivity, AutoplayActivity.class);
-        intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        currentActivity.startActivity(intent);
+        Intent intent;
+        if (platformType == PlatformType.ANDROID) {
+            intent = new Intent(currentActivity, AutoplayActivity.class);
+            intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            currentActivity.startActivity(intent);
+        } else {
+            try {
+                intent = new Intent(currentActivity, Class.forName(tvAutoplayActivityPackage));
+                intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                currentActivity.startActivity(intent);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void launchDownloadQualityActivity(Activity activity,
@@ -9315,11 +9316,18 @@ public class AppCMSPresenter {
         sendCloseOthersAction(null, true);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
-            launchVideoPlayer(binder.getContentData(),
-                    currentlyPlayingIndex,
-                    binder.getRelateVideoIds(),
-                    watchedTime / 1000L,
-                    null);
+            if (platformType.equals(PlatformType.ANDROID)) {
+                launchVideoPlayer(binder.getContentData(),
+                        currentlyPlayingIndex,
+                        binder.getRelateVideoIds(),
+                        watchedTime / 1000L,
+                        null);
+            } else {
+                launchTVVideoPlayer(binder.getContentData(),
+                        currentlyPlayingIndex,
+                        binder.getRelateVideoIds(),
+                        watchedTime / 1000L);
+            }
         } else {
             String permalink = binder.getContentData().getGist().getPermalink();
             String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
@@ -9363,6 +9371,7 @@ public class AppCMSPresenter {
      */
     public void openAutoPlayScreen(final AppCMSVideoPageBinder binder) {
         String url = null;
+        binder.setCurrentMovieName(binder.getContentData().getGist().getTitle());
         if (!binder.isOffline()) {
             final String filmId =
                     binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
@@ -9411,8 +9420,10 @@ public class AppCMSPresenter {
                                                 String action,
                                                 String filmTitle,
                                                 String[] extraData,
+                                                ContentDatum contentDatum,
                                                 final boolean closeLauncher,
-                                                ContentDatum contentDatum) {
+                                                int currentlyPlayingIndex,
+                                                List<String> relateVideoIds) {
         boolean result = false;
         Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
@@ -9433,10 +9444,11 @@ public class AppCMSPresenter {
                 return false;
             }
             result = true;
+            boolean isTrailer = actionType == AppCMSActionType.WATCH_TRAILER;
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
 
-                getUserVideoStatus(contentDatum.getGist().getId(),
+                /*getUserVideoStatus(contentDatum.getGist().getId(),
                         userVideoStatusResponse -> {
                             if (userVideoStatusResponse != null) {
                                 contentDatum.getGist().setWatchedTime
@@ -9449,9 +9461,92 @@ public class AppCMSPresenter {
                                     closeLauncher,
                                     contentDatum,
                                     actionType);
-                        });
+                        });*/
                 sendStopLoadingPageAction();
+                Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
+                try {
+                    Class videoPlayer = Class.forName(tvVideoPlayerPackage);
+                    playVideoIntent = new Intent(currentActivity, videoPlayer);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String adsUrl;
+                boolean requestAds = true;
+                if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
+                    if (pagePath != null && pagePath.contains(currentActivity
+                            .getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                        requestAds = false;
+                        playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key),
+                                0);
+                    } else {
+                        if (contentDatum != null &&
+                                contentDatum.getGist() != null &&
+                                contentDatum.getGist().getWatchedTime() != 0) {
+                            playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key),
+                                    contentDatum.getGist().getWatchedTime());
+                        }
+                    }
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
+                } else {
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
+                }
 
+                if (contentDatum != null &&
+                        contentDatum.getGist() != null &&
+                        contentDatum.getGist().getVideoImageUrl() != null) {
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url),
+                            contentDatum.getGist().getVideoImageUrl());
+                } else {
+                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
+                }
+
+                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
+                        appCMSMain.getBrand().getGeneral().getTextColor());
+                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_title_key),
+                        filmTitle);
+                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
+                        extraData);
+
+                Date now = new Date();
+                adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
+                        getPermalinkCompletePath(pagePath),
+                        now.getTime(),
+                        appCMSMain.getSite());
+
+                String backgroundColor = appCMSMain.getBrand()
+                        .getGeneral()
+                        .getBackgroundColor();
+                AppCMSVideoPageBinder appCMSVideoPageBinder =
+                        getAppCMSVideoPageBinder(currentActivity,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                false,
+                                false,
+                                false,
+                                false,
+                                false,
+                                requestAds,
+                                appCMSMain.getBrand().getGeneral().getTextColor(),
+                                backgroundColor,
+                                adsUrl,
+                                contentDatum,
+                                isTrailer,
+                                relateVideoIds,
+                                currentlyPlayingIndex,
+                                false);
+                if (closeLauncher) {
+                    sendCloseOthersAction(null, true);
+                }
+
+                Bundle bundle = new Bundle();
+                bundle.putBinder(currentActivity.getString(R.string.app_cms_video_player_binder_key),
+                        appCMSVideoPageBinder);
+                playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
+
+                currentActivity.startActivity(playVideoIntent);
             } else if (actionType == AppCMSActionType.SHARE) {
                 if (extraData != null && extraData.length > 0) {
                     Intent sendIntent = new Intent();
@@ -9762,18 +9857,18 @@ public class AppCMSPresenter {
         currentActivity.sendBroadcast(searchIntent);
     }
 
-    public boolean launchTVVideoPlayer(final String filmId,
-                                       final String pagePath,
-                                       final String filmTitle,
-                                       final ContentDatum contentDatum) {
+    public boolean launchTVVideoPlayer(final ContentDatum contentDatum,
+                                       final int currentlyPlayingIndex,
+                                       List<String> relateVideoIds,
+                                       long watchTime) {
         boolean result = false;
 
 
         if (!isNetworkConnected() && platformType == PlatformType.TV) {
-            RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, null,
-                    filmTitle, null,
+            RetryCallBinder retryCallBinder = getRetryCallBinder(contentDatum.getGist().getPermalink(), null,
+                    contentDatum.getGist().getTitle(), null,
                     contentDatum, false,
-                    filmId, VIDEO_ACTION
+                    contentDatum.getGist().getId(), VIDEO_ACTION
             );
 
             Bundle bundle = new Bundle();
@@ -9790,65 +9885,82 @@ public class AppCMSPresenter {
             result = true;
             final String action = currentActivity.getString(R.string.app_cms_action_watchvideo_key);
 
-            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    contentDatum.getGist().getId(),
-                    appCMSSite.getGist().getSiteInternalName());
-            GetAppCMSVideoDetailAsyncTask.Params params =
-                    new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                            .authToken(getAuthToken()).build();
+            if (contentDatum.getContentDetails() == null) {
+                String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        contentDatum.getGist().getId(),
+                        appCMSSite.getGist().getSiteInternalName());
+                GetAppCMSVideoDetailAsyncTask.Params params =
+                        new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+                                .authToken(getAuthToken()).build();
 
-            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                    appCMSVideoDetail -> {
-                        if (appCMSVideoDetail != null &&
-                                appCMSVideoDetail.getRecords() != null &&
-                                appCMSVideoDetail.getRecords().get(0) != null) {
-                            getUserVideoStatus(appCMSVideoDetail.getRecords().get(0).getGist().getId(),
-                                    userVideoStatusResponse -> {
-                                        if (userVideoStatusResponse != null) {
-                                            long watchedTime = userVideoStatusResponse.getWatchedTime();
-                                            String[] extraData = new String[4];
-                                            appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
-                                            if (appCMSVideoDetail.getRecords().get(0).getStreamingInfo() != null) {
-                                                StreamingInfo streamingInfo = appCMSVideoDetail.getRecords().get(0).getStreamingInfo();
-                                                extraData[0] = pagePath;
-                                                if (streamingInfo.getVideoAssets() != null &&
-                                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
-                                                    extraData[1] = streamingInfo.getVideoAssets().getHls();
-                                                } else if (streamingInfo.getVideoAssets() != null &&
-                                                        streamingInfo.getVideoAssets().getMpeg() != null &&
-                                                        !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
-                                                        streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
-                                                        !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
-                                                    extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
-                                                }
-                                                extraData[2] = filmId;
-                                                if (appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions() != null
-                                                        && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null) {
-                                                    extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
-                                                }
-                                              //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
-                                                if (!TextUtils.isEmpty(extraData[1])) {
-                                                    launchTVButtonSelectedAction(pagePath,
-                                                            action,
-                                                            filmTitle,
-                                                            extraData,
-                                                            false,
-                                                            appCMSVideoDetail.getRecords().get(0));
-                                                } else {
-                                                    openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
-                                                            currentActivity.getString(R.string.app_name)),
-                                                            currentActivity.getString(R.string.app_connectivity_dialog_title));
+                new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                        appCMSVideoDetail -> {
+                            if (appCMSVideoDetail != null &&
+                                    appCMSVideoDetail.getRecords() != null &&
+                                    appCMSVideoDetail.getRecords().get(0) != null) {
+                                getUserVideoStatus(appCMSVideoDetail.getRecords().get(0).getGist().getId(),
+                                        userVideoStatusResponse -> {
+                                            if (userVideoStatusResponse != null) {
+                                                long watchedTime = userVideoStatusResponse.getWatchedTime();
+                                                String[] extraData = new String[4];
+                                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(watchedTime);
+                                                if (appCMSVideoDetail.getRecords().get(0).getStreamingInfo() != null) {
+                                                    StreamingInfo streamingInfo = appCMSVideoDetail.getRecords().get(0).getStreamingInfo();
+                                                    extraData[0] = contentDatum.getGist().getPermalink();
+                                                    if (streamingInfo.getVideoAssets() != null &&
+                                                            !TextUtils.isEmpty(streamingInfo.getVideoAssets().getHls())) {
+                                                        extraData[1] = streamingInfo.getVideoAssets().getHls();
+                                                    } else if (streamingInfo.getVideoAssets() != null &&
+                                                            streamingInfo.getVideoAssets().getMpeg() != null &&
+                                                            !streamingInfo.getVideoAssets().getMpeg().isEmpty() &&
+                                                            streamingInfo.getVideoAssets().getMpeg().get(0) != null &&
+                                                            !TextUtils.isEmpty(streamingInfo.getVideoAssets().getMpeg().get(0).getUrl())) {
+                                                        extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
+                                                    }
+                                                    extraData[2] = contentDatum.getGist().getId();
+                                                    if (appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions() != null
+                                                            && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null) {
+                                                        extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                                    }
+                                                  //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
+                                                    if (!TextUtils.isEmpty(extraData[1])) {
+                                                        launchTVButtonSelectedAction(contentDatum.getGist().getId(),
+                                                                action,
+                                                                appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
+                                                                extraData,
+                                                                appCMSVideoDetail.getRecords().get(0),
+                                                                false,
+                                                                currentlyPlayingIndex,
+                                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                                    } else {
+                                                        openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
+                                                                currentActivity.getString(R.string.app_name)),
+                                                                currentActivity.getString(R.string.app_connectivity_dialog_title));
+                                                    }
                                                 }
                                             }
-                                        }
-                                    });
-                        } else {
-                            openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
-                                    currentActivity.getString(R.string.app_name)),
-                                    currentActivity.getString(R.string.app_connectivity_dialog_title));
-                        }
-                    }).execute(params);
+                                        });
+                            } else {
+                                openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
+                                        currentActivity.getString(R.string.app_name)),
+                                        currentActivity.getString(R.string.app_connectivity_dialog_title));
+                            }
+                        }).execute(params);
+            } else {
+                if (watchTime >= 0) {
+                    contentDatum.getGist().setWatchedTime(watchTime);
+                }
+                launchTVButtonSelectedAction(
+                        contentDatum.getGist().getPermalink(),
+                        action,
+                        contentDatum.getGist().getTitle(),
+                        null,
+                        contentDatum,
+                        false,
+                        currentlyPlayingIndex,
+                        relateVideoIds);
+            }
         }
         return result;
     }

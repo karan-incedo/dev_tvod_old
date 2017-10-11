@@ -95,7 +95,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title , rowData.contentData)) {
+                if (!appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
+                        -1,
+                        null,
+                        rowData.contentData.getGist().getWatchedTime())){
                     ((AppCmsHomeActivity)getActivity()).pageLoading(false);
                     Log.e(TAG, "Could not launch play action: " +
                             " filmId: " +
@@ -147,8 +150,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         action,
                         title,
                         extraData,
-                        false,
-                        data)) {
+                        data,
+                        false,-1, null)) {
                     Log.e(TAG, "Could not launch action: " +
                             " permalink: " +
                             permalink +
@@ -158,6 +161,22 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             hlsUrl);
                 }
             }
+            /*if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
+                        action,
+                        title,
+                        extraData,
+                        data,
+                        false,
+                        -1,
+                        null)) {
+                    Log.e(TAG, "Could not launch action: " +
+                            " permalink: " +
+                            permalink +
+                            " action: " +
+                            action +
+                            " hlsUrl: " +
+                            hlsUrl);
+                }*/
 
             itemViewHolder.view.setClickable(false);
             new Handler().postDelayed(() -> itemViewHolder.view.setClickable(true), 3000);

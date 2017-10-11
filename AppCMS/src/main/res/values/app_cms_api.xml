@@ -274,6 +274,7 @@
     <string name="app_cms_action_signup_key">signup</string>
     <string name="app_cms_action_logout_key">logout</string>
     <string name="app_cms_action_qualifier_watchvideo_key">trailer</string>
+    <string name="app_cms_action_qualifier_watchvideo_teaser_key">teaser</string>
     <string name="app_cms_action_start_trial_key">startTrial</string>
     <string name="app_cms_action_signin_key">signIn</string>
     <string name="app_cms_action_browse_key">browse</string>
@@ -374,6 +375,9 @@
     <string name="app_cms_delete_item_button">deleteItemButton</string>
     <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
     <string name="app_cms_signup_footer_label_key">signupfooterview</string>
+    <string name="app_cms_autoplay_up_next_loader_key">upNextLoader</string>
+    <string name="app_cms_autoplay_rotating_loader_view">rotatingLoaderView</string>
+
 
     <!-- AppCMS Payment Processor values -->
     <string name="subscription_ios_payment_processor">iOS</string>

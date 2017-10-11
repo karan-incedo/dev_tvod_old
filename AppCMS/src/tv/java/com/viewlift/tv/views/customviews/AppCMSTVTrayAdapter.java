@@ -259,8 +259,8 @@ public class AppCMSTVTrayAdapter
                                 action,
                                 title,
                                 extraData,
-                                false,
-                                data)) {
+                                data,
+                                false, -1, null)) {
                             Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
                                     + " action: " + action + " hlsUrl: " + hlsUrl);
                         }
@@ -272,10 +272,10 @@ public class AppCMSTVTrayAdapter
                     if (isClickable) {
                         Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                         appCMSPresenter.launchTVVideoPlayer(
-                                data.getGist().getId(),
-                                data.getGist().getPermalink(),
-                                data.getGist().getTitle(),
-                                data);
+                                data,
+                                -1,
+                                null,
+                                data.getGist().getWatchedTime());
                     }
                 }
 

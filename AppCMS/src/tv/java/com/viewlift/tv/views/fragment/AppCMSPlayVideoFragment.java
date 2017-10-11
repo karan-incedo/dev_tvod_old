@@ -23,7 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -94,6 +93,12 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     public interface OnClosePlayerEvent {
         void closePlayer();
+
+        /**
+         * Method is to be called by the fragment to tell the activity that a movie is finished
+         * playing. Primarily in the {@link ExoPlayer#STATE_ENDED}
+         */
+        void onMovieFinished();
     }
 
     private static class BeaconPingThread extends Thread {
@@ -207,6 +212,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         mContext = activity;
+        if (activity instanceof OnClosePlayerEvent) {
+            onClosePlayerEvent = (OnClosePlayerEvent) activity;
+        }
     }
 
     @Override
@@ -311,11 +319,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (shouldRequestAds) {
                             adsLoader.contentComplete();
                         }
-                        if (onClosePlayerEvent != null) {
+                        if (onClosePlayerEvent != null && permaLink.contains(
+                                getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
                             videoPlayerView.releasePlayer();
                             onClosePlayerEvent.closePlayer();
+                            return;
                         }
-                        getActivity().finish();
+                        if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
+                            // tell the activity that the movie is finished
+                            onClosePlayerEvent.onMovieFinished();
+                        }
                         break;
                     default:
                         text += "";
