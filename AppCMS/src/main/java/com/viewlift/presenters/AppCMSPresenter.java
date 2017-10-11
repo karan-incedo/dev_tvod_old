@@ -227,6 +227,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -9815,7 +9816,15 @@ public class AppCMSPresenter {
                         mpeg.getUrl());
             }
         }
+
         downloadURL = urlRenditionMap.get(downloadQualityRendition);
+
+        if (TextUtils.isEmpty(downloadURL)) {
+            Iterator<String> urlRenditionMapKeysIter = urlRenditionMap.keySet().iterator();
+            if (urlRenditionMapKeysIter.hasNext()) {
+                downloadURL = urlRenditionMap.get(urlRenditionMapKeysIter.next());
+            }
+        }
 
         if (downloadQualityRendition != null) {
             if (downloadURL == null && downloadQualityRendition.contains("360")) {
@@ -9845,10 +9854,6 @@ public class AppCMSPresenter {
         } else {
             downloadURL = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
         }
-
-        downloadURL = downloadURL != null
-                ? downloadURL.replace("https:/", "http:/")
-                : null;
 
         return downloadURL;
     }
