@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
@@ -139,11 +140,15 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 extraData[0] = permalink;
                 extraData[1] = hlsUrl;
                 extraData[2] = data.getGist().getId();
-                if (null != data.getContentDetails()
-                        && null != data.getContentDetails().getClosedCaptions()
-                        && null != data.getContentDetails().getClosedCaptions().get(0)
-                        && null != data.getContentDetails().getClosedCaptions().get(0).getUrl()) {
-                    extraData[3] = data.getContentDetails().getClosedCaptions().get(0).getUrl();
+                if (data.getContentDetails() != null &&
+                       data.getContentDetails().getClosedCaptions() != null) {
+                    for (ClosedCaptions closedCaption :
+                            data.getContentDetails().getClosedCaptions()) {
+                        if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                            extraData[3] = closedCaption.getUrl();
+                            break;
+                        }
+                    }
                 }
                 Log.d(TAG, "Launching " + permalink + ": " + action);
                 if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,

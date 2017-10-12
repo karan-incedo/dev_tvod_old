@@ -84,6 +84,7 @@ import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Module;
@@ -9919,9 +9920,15 @@ public class AppCMSPresenter {
                                                         extraData[1] = streamingInfo.getVideoAssets().getMpeg().get(0).getUrl();
                                                     }
                                                     extraData[2] = contentDatum.getGist().getId();
-                                                    if (appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions() != null
-                                                            && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null) {
-                                                        extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                                    if (appCMSVideoDetail.getRecords().get(0).getContentDetails() != null &&
+                                                            appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions() != null) {
+                                                        for (ClosedCaptions closedCaption :
+                                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions()) {
+                                                            if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                                                                extraData[3] = closedCaption.getUrl();
+                                                                break;
+                                                            }
+                                                        }
                                                     }
                                                   //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                     if (!TextUtils.isEmpty(extraData[1])) {

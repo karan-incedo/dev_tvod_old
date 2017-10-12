@@ -58,6 +58,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -754,11 +755,15 @@ public class TVViewCreator {
                                         extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                         extraData[1] = videoUrl;
                                         extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                                        if (null != moduleAPI.getContentData().get(0).getContentDetails()
-                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null
-                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0) != null
-                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                                            extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                        if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                                moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null) {
+                                            for (ClosedCaptions closedCaption :
+                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions()) {
+                                                if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                                                    extraData[3] = closedCaption.getUrl();
+                                                    break;
+                                                }
+                                            }
                                         }
 
                                         if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
@@ -1455,10 +1460,14 @@ public class TVViewCreator {
                                             extraData[1] = videoUrl;
                                             extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
                                             if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0) != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                                                extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null) {
+                                                for (ClosedCaptions closedCaption :
+                                                        moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions()) {
+                                                    if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                                                        extraData[3] = closedCaption.getUrl();
+                                                        break;
+                                                    }
+                                                }
                                             }
                                             if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                     component.getAction(),
