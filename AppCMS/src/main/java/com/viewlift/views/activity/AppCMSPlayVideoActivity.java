@@ -242,7 +242,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 boolean finalFreeContent = freeContent;
                 appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                     if (appCMSSignedURLResult == null ||
-                            TextUtils.isEmpty(appCMSSignedURLResult.getSigned())) {
+                            TextUtils.isEmpty(appCMSSignedURLResult.getSigned()) &&
+                                    (TextUtils.isEmpty(appCMSSignedURLResult.getPolicy()) ||
+                                    TextUtils.isEmpty(appCMSSignedURLResult.getSignature()) ||
+                                    TextUtils.isEmpty(appCMSSignedURLResult.getKeyPairId()))) {
                         appCMSSignedURLResult = new AppCMSSignedURLResult();
                         appCMSSignedURLResult.setSigned(hlsUrl);
                     }

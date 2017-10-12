@@ -804,7 +804,7 @@ public class AppCMSPresenter {
                                      String expectedAction) {
         boolean result = false;
         if (currentActivity != null &&
-                !loadingPage && appCMSMain != null &&
+                appCMSMain != null &&
                 !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
                 !TextUtils.isEmpty(appCMSSite.getGist().getSiteInternalName())) {
 
@@ -814,101 +814,86 @@ public class AppCMSPresenter {
             /*When content details are null it means video player is launched from somewhere
             * other than video detail fragment*/
 
-            if (contentDatum.getContentDetails() == null) {
-                String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        contentDatum.getGist().getId(),
-                        appCMSSite.getGist().getSiteInternalName());
-                GetAppCMSVideoDetailAsyncTask.Params params =
-                        new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                                .authToken(getAuthToken()).build();
+            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    contentDatum.getGist().getId(),
+                    appCMSSite.getGist().getSiteInternalName());
+            GetAppCMSVideoDetailAsyncTask.Params params =
+                    new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+                            .authToken(getAuthToken()).build();
 
-                new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                        appCMSVideoDetail -> {
-                            try {
-                                if (appCMSVideoDetail != null &&
-                                        appCMSVideoDetail.getRecords() != null &&
-                                        appCMSVideoDetail.getRecords().get(0) != null &&
-                                        appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
-                                    String updatedAction = expectedAction;
+            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                    appCMSVideoDetail -> {
+                        try {
+                            if (appCMSVideoDetail != null &&
+                                    appCMSVideoDetail.getRecords() != null &&
+                                    appCMSVideoDetail.getRecords().get(0) != null &&
+                                    appCMSVideoDetail.getRecords().get(0).getContentDetails() != null) {
+                                String updatedAction = expectedAction;
 
-                                    if (!TextUtils.isEmpty(expectedAction) &&
-                                            !expectedAction.equals(currentContext.getString(R.string.app_cms_action_videopage_key)) &&
-                                            !expectedAction.equals(currentContext.getString(R.string.app_cms_action_watchvideo_key))) {
-                                        String contentType = "";
+                                if (!TextUtils.isEmpty(expectedAction) &&
+                                        !expectedAction.equals(currentContext.getString(R.string.app_cms_action_videopage_key)) &&
+                                        !expectedAction.equals(currentContext.getString(R.string.app_cms_action_watchvideo_key))) {
+                                    String contentType = "";
 
-                                        if (appCMSVideoDetail.getRecords().get(0).getGist() != null &&
-                                                appCMSVideoDetail.getRecords().get(0).getGist().getContentType() != null) {
-                                            contentType = appCMSVideoDetail.getRecords().get(0).getGist().getContentType();
-                                        }
-
-                                        switch (contentType) {
-                                            case "SHOW":
-                                                updatedAction = currentContext.getString(R.string.app_cms_action_showvideopage_key);
-                                                break;
-
-                                            case "VIDEO":
-                                                updatedAction = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
-                                                break;
-
-                                            default:
-                                                break;
-                                        }
+                                    if (appCMSVideoDetail.getRecords().get(0).getGist() != null &&
+                                            appCMSVideoDetail.getRecords().get(0).getGist().getContentType() != null) {
+                                        contentType = appCMSVideoDetail.getRecords().get(0).getGist().getContentType();
                                     }
 
-                                    if (updatedAction == null) {
-                                        updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
-                                    }
+                                    switch (contentType) {
+                                        case "SHOW":
+                                            updatedAction = currentContext.getString(R.string.app_cms_action_showvideopage_key);
+                                            break;
 
-                                    appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
-                                    appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
+                                        case "VIDEO":
+                                            updatedAction = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
+                                            break;
 
-                                    launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
-                                            updatedAction,
-                                            appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
-                                            null,
-                                            appCMSVideoDetail.getRecords().get(0),
-                                            false,
-                                            currentlyPlayingIndex,
-                                            appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
-                                } else {
-                                    if (!isNetworkConnected()) {
-                                        // Fix of SVFA-1435
-                                        openDownloadScreenForNetworkError(false);
-                                    } else {
-                                        if (watchedTime >= 0) {
-                                            contentDatum.getGist().setWatchedTime(watchedTime);
-                                        }
-                                        launchButtonSelectedAction(
-                                                contentDatum.getGist().getPermalink(),
-                                                action,
-                                                contentDatum.getGist().getTitle(),
-                                                null,
-                                                contentDatum,
-                                                false,
-                                                currentlyPlayingIndex,
-                                                relateVideoIds);
+                                        default:
+                                            break;
                                     }
                                 }
 
-                            } catch (Exception e) {
-                                Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
+                                if (updatedAction == null) {
+                                    updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
+                                }
+
+                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
+                                appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
+
+                                launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
+                                        updatedAction,
+                                        appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
+                                        null,
+                                        appCMSVideoDetail.getRecords().get(0),
+                                        false,
+                                        currentlyPlayingIndex,
+                                        appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                            } else {
+                                if (!isNetworkConnected()) {
+                                    // Fix of SVFA-1435
+                                    openDownloadScreenForNetworkError(false);
+                                } else {
+                                    if (watchedTime >= 0) {
+                                        contentDatum.getGist().setWatchedTime(watchedTime);
+                                    }
+                                    launchButtonSelectedAction(
+                                            contentDatum.getGist().getPermalink(),
+                                            action,
+                                            contentDatum.getGist().getTitle(),
+                                            null,
+                                            contentDatum,
+                                            false,
+                                            currentlyPlayingIndex,
+                                            relateVideoIds);
+                                }
                             }
-                        }).execute(params);
-            } else {
-                if (watchedTime >= 0) {
-                    contentDatum.getGist().setWatchedTime(watchedTime);
-                }
-                launchButtonSelectedAction(
-                        contentDatum.getGist().getPermalink(),
-                        action,
-                        contentDatum.getGist().getTitle(),
-                        null,
-                        contentDatum,
-                        false,
-                        currentlyPlayingIndex,
-                        relateVideoIds);
-            }
+
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error retrieving AppCMS Video Details: " + e.getMessage());
+                        }
+                    }).execute(params);
         }
         return result;
     }
@@ -3567,30 +3552,36 @@ public class AppCMSPresenter {
     }
 
     public void retrieveCurrentAppVersion() {
-        Observable
-                .fromCallable(() -> {
-                    String currentAppVersion = "";
-                    try {
-                        currentAppVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=" +
-                                currentActivity.getPackageName() +
-                                "&hl=en")
-                            .timeout(30000)
-                            .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
-                            .referrer("http://www.google.com")
-                            .get()
-                            .select("div[itemprop=softwareVersion]")
-                            .first()
-                            .ownText();
-                    } catch (Exception e) {
-                        Log.e(TAG, "Failed to receive ");
-                    }
-                    return currentAppVersion;
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((result) -> Observable.just(result).subscribe(currentAppVersion -> {
-                    setGooglePlayAppStoreVersion(currentAppVersion);
-                }));
+        if (currentActivity != null) {
+            try {
+                Observable
+                        .fromCallable(() -> {
+                            String currentAppVersion = "";
+                            try {
+                                currentAppVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=" +
+                                        currentActivity.getPackageName() +
+                                        "&hl=en")
+                                        .timeout(30000)
+                                        .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                                        .referrer("http://www.google.com")
+                                        .get()
+                                        .select("div[itemprop=softwareVersion]")
+                                        .first()
+                                        .ownText();
+                            } catch (Exception e) {
+                                Log.e(TAG, "Failed to receive ");
+                            }
+                            return currentAppVersion;
+                        })
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe((result) -> Observable.just(result).subscribe(currentAppVersion -> {
+                            setGooglePlayAppStoreVersion(currentAppVersion);
+                        }));
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to refresh app version: " + e.getMessage());
+            }
+        }
     }
 
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
@@ -8400,66 +8391,108 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Log.d(TAG, "Refreshing main.json");
             retrieveCurrentAppVersion();
-            refreshAppCMSMain((appCMSMain) -> {
-                if (appCMSMain != null) {
-                    Log.d(TAG, "Refreshed main.json");
-                    this.appCMSMain = appCMSMain;
-                    refreshAppCMSAndroid((appCMSAndroid) -> {
-                        if (appCMSAndroid != null) {
-                            for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
-                                Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
-                                        " " +
-                                        metaPage.getPageId() +
-                                        " " +
-                                        metaPage.getPageUI());
-                                getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                        metaPage.getPageUI()),
-                                        appCMSPageUI -> {
-                                            if (appCMSPageUI.isLoadedFromNetwork() &&
+            try {
+                refreshAppCMSMain((appCMSMain) -> {
+                    if (appCMSMain != null) {
+                        Log.d(TAG, "Refreshed main.json");
+                        this.appCMSMain = appCMSMain;
+                        try {
+                            refreshAppCMSAndroid((appCMSAndroid) -> {
+                                if (appCMSAndroid != null) {
+                                    for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
+                                        Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+                                                " " +
+                                                metaPage.getPageId() +
+                                                " " +
+                                                metaPage.getPageUI());
+                                        if (currentActivity != null) {
+                                            try {
+                                                getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                                        metaPage.getPageUI()),
+                                                        appCMSPageUI -> {
+                                                            if (appCMSPageUI.isLoadedFromNetwork() &&
+                                                                    pageViewLruCache != null) {
+                                                                navigationPages.put(metaPage.getPageId(), appCMSPageUI);
+                                                                pageViewLruCache.evictAll();
+                                                            }
+                                                        },
+                                                        false);
+                                            } catch (Exception e) {
+                                                Log.e(TAG, "Failed to refresh AppCMS page " +
+                                                    metaPage.getPageName() +
+                                                " " +
+                                                e.getMessage());
+                                            }
+                                        }
+                                    }
+
+                                    try {
+                                        getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
+                                            Log.d(TAG, "Received and refreshed module list");
+                                            this.appCMSAndroidModules = appCMSAndroidModules;
+                                            if (appCMSAndroidModules.isLoadedFromNetwork() &&
                                                     pageViewLruCache != null) {
-                                                navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                                                 pageViewLruCache.evictAll();
                                             }
-                                        },
-                                        false);
-                            }
 
-                            getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
-                                Log.d(TAG, "Received and refreshed module list");
-                                this.appCMSAndroidModules = appCMSAndroidModules;
-                                if (appCMSAndroidModules.isLoadedFromNetwork() &&
-                                        pageViewLruCache != null) {
-                                    pageViewLruCache.evictAll();
-                                }
-
-                                if (onreadyAction != null) {
-                                    onreadyAction.call();
+                                            if (onreadyAction != null) {
+                                                onreadyAction.call();
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        Log.e(TAG, "Failed to refresh AppCMS modules: " +
+                                            e.getMessage());
+                                    }
                                 }
                             });
+                        } catch (Exception e) {
+                            Log.e(TAG, "Failed to refresh android.json: " + e.getMessage());
                         }
-                    });
-                } else {
-                    Log.w(TAG, "Resulting main.json from refresh is null");
-                }
-            });
+                    } else {
+                        Log.w(TAG, "Resulting main.json from refresh is null");
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to refresh main.json: " + e.getMessage());
+            }
         } else {
             Log.w(TAG, "Current activity is null, can not refresh page data");
         }
     }
 
     private void refreshAppCMSMain(Action1<AppCMSMain> readyAction) {
-        GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
-                .context(currentActivity)
-                .siteId(currentActivity.getString(R.string.app_cms_app_name))
-                .forceReloadFromNetwork(true)
-                .build();
-        new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
-            Log.d(TAG, "Refreshed main.json");
-            if (readyAction != null) {
-                Log.d(TAG, "Notifying listeners that main.json has been updated");
-                Observable.just(main).subscribe(readyAction);
+        if (currentActivity != null) {
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(),
+                        () -> {
+                            GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
+                                    .context(currentActivity)
+                                    .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                                    .forceReloadFromNetwork(true)
+                                    .build();
+                            new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
+                                Log.d(TAG, "Refreshed main.json");
+                                if (readyAction != null) {
+                                    Log.d(TAG, "Notifying listeners that main.json has been updated");
+                                    Observable.just(main).subscribe(readyAction);
+                                }
+                            }).execute(params);
+                });
+            } else {
+                GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
+                        .context(currentActivity)
+                        .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                        .forceReloadFromNetwork(true)
+                        .build();
+                new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
+                    Log.d(TAG, "Refreshed main.json");
+                    if (readyAction != null) {
+                        Log.d(TAG, "Notifying listeners that main.json has been updated");
+                        Observable.just(main).subscribe(readyAction);
+                    }
+                }).execute(params);
             }
-        }).execute(params);
+        }
     }
 
     private void refreshAppCMSAndroid(Action1<AppCMSAndroidUI> readyAction) {

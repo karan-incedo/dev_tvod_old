@@ -327,7 +327,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
                 }
             };
-            refreshTokenTimer.schedule(refreshTokenTimerTask, 600000);
+            refreshTokenTimer.schedule(refreshTokenTimerTask, 0, 600000);
         }
 
         if (appCMSPresenter.isAppSVOD() &&
