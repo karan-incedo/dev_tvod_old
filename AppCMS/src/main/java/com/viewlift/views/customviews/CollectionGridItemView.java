@@ -27,7 +27,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.bumptech.glide.signature.StringSignature;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -297,7 +296,8 @@ public class CollectionGridItemView extends BaseView {
                                         }
 
                                         @Override
-                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+                                                                   int outWidth, int outHeight) {
                                             int width = toTransform.getWidth();
                                             int height = toTransform.getHeight();
 
@@ -348,6 +348,29 @@ public class CollectionGridItemView extends BaseView {
                         } catch (IllegalArgumentException e) {
                             Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
+                    } else if (data.getGist().getImageGist() != null &&
+                            !TextUtils.isEmpty(data.getGist().getImageGist()
+                                    .getBadgeImageUrl().get_3x4())) {
+
+                        // TODO: 10/12/17 - Finish badge implementation.
+                        Log.d(TAG, "Loading badge: " + data.getGist().getImageGist()
+                                .getBadgeImageUrl().get_3x4());
+//                        Glide.with(context)
+//                                .load(data.getGist().getImageGist().getBadgeImageUrl().get_3x4())
+//                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+//                                .transform(new BitmapTransformation(context) {
+//                                    @Override
+//                                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+//                                                               int outWidth, int outHeight) {
+//                                        return null;
+//                                    }
+//
+//                                    @Override
+//                                    public String getId() {
+//                                        return null;
+//                                    }
+//                                })
+//                                .into((ImageView) view);
                     }
                     bringToFront = false;
                 }
