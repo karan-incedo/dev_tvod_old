@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -189,13 +188,8 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
-import com.viewlift.views.fragments.AppCMSUpgradeFragment;
 
 import org.jsoup.Jsoup;
-import org.threeten.bp.Duration;
-import org.threeten.bp.Instant;
-import org.threeten.bp.temporal.ChronoUnit;
-
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -220,7 +214,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -249,11 +242,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-
-import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
-import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
-import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
-import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -291,14 +279,12 @@ public class AppCMSPresenter {
     public static final int RC_GOOGLE_SIGN_IN = 1001;
     public static final int ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE = 5555;
     public static final int CC_AVENUE_REQUEST_CODE = 1;
+    public static final int PLAYER_REQUEST_CODE = 1111;
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
-
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
-
     private static final String CAST_SHARED_PREF_NAME = "cast_shown";
-
     private static final String USER_NAME_SHARED_PREF_NAME = "user_name_pref";
     private static final String USER_EMAIL_SHARED_PREF_NAME = "user_email_pref";
     private static final String REFRESH_TOKEN_SHARED_PREF_NAME = "refresh_token_pref";
@@ -328,7 +314,6 @@ public class AppCMSPresenter {
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME = "user_download_quality_screen_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
-    public static final int PLAYER_REQUEST_CODE = 1111;
     private static final String USER_AUTH_PROVIDER_SHARED_PREF_NAME = "user_auth_provider_shared_pref_name";
     private static final String GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME = "google_play_app_store_version_pref_name";
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
@@ -757,8 +742,15 @@ public class AppCMSPresenter {
                 }
             } else {
                 if (showPage) {
+                    // TODO: 10/12/17 Remove hardcoding of http://www.hoichoi.tv and use hostname.
+                    // TODO: 10/12/17 Check for http AND https.
+                    if (!TextUtils.isEmpty(pageId) && pageId.contains("http://www.hoichoi.tv")) {
+                        pageId = pageId.replace("http://www.hoichoi.tv", "");
+                    }
                     urlWithContent = currentContext.getString(R.string.app_cms_shows_status_api_url,
                             baseUrl,
+                            endpoint,
+                            pageId,
                             siteId);
                 } else {
                     urlWithContent =
@@ -1797,8 +1789,7 @@ public class AppCMSPresenter {
     }
 
 
-
-    public void launchResetPasswordTVPage( AppCMSPageUI appCMSPageUI) {
+    public void launchResetPasswordTVPage(AppCMSPageUI appCMSPageUI) {
         if (currentActivity != null) {
             cancelInternalEvents();
 
@@ -3196,7 +3187,7 @@ public class AppCMSPresenter {
             if (BaseView.isTablet(currentActivity)) {
                 canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
             } else {
-                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 7, paint);// Fix SVFA-1561 changed  -2 to -7
+                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
             }
 
             int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
@@ -3208,7 +3199,7 @@ public class AppCMSPresenter {
             if (BaseView.isTablet(currentActivity)) {
                 oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
             } else {
-                oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 6); //Fix SVFA-1561  change 2 to 6
+                oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 4); //Fix SVFA-1561  change 2 to 6
             }
             canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
@@ -3534,13 +3525,13 @@ public class AppCMSPresenter {
                         currentAppVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=" +
                                 currentActivity.getPackageName() +
                                 "&hl=en")
-                            .timeout(30000)
-                            .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
-                            .referrer("http://www.google.com")
-                            .get()
-                            .select("div[itemprop=softwareVersion]")
-                            .first()
-                            .ownText();
+                                .timeout(30000)
+                                .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                                .referrer("http://www.google.com")
+                                .get()
+                                .select("div[itemprop=softwareVersion]")
+                                .first()
+                                .ownText();
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to receive ");
                     }
@@ -3632,7 +3623,7 @@ public class AppCMSPresenter {
                 retryCallBinder.setPageId(pageId);
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
-                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
                 bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                 Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                 args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -3872,7 +3863,7 @@ public class AppCMSPresenter {
                 retryCallBinder.setPageId(pageId);
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
-                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
                 bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                 Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                 args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -4300,7 +4291,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
 
 
-            if(platformType == PlatformType.TV && !isNetworkConnected()){
+            if (platformType == PlatformType.TV && !isNetworkConnected()) {
                 //open error dialog.
                 RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
                         email, null,
@@ -4309,7 +4300,7 @@ public class AppCMSPresenter {
                 );
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
-                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+                bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
                 bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                 Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                 args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -4346,18 +4337,18 @@ public class AppCMSPresenter {
     }
 
     /**
-     *
      * this dialog is use for showing a message with OK button in case of TV.
+     *
      * @param message
      * @param headerTitle
      */
-    public void openTVErrorDialog(String message , String headerTitle) {
+    public void openTVErrorDialog(String message, String headerTitle) {
         try {
             Bundle bundle = new Bundle();
             bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
-            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,false);
-            bundle.putString(currentActivity.getString(R.string.tv_dialog_msg_key) , message);
-            bundle.putString(currentActivity.getString(R.string.tv_dialog_header_key) ,
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), false);
+            bundle.putString(currentActivity.getString(R.string.tv_dialog_msg_key), message);
+            bundle.putString(currentActivity.getString(R.string.tv_dialog_header_key),
                     headerTitle.toUpperCase()
             );
 
@@ -4890,6 +4881,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public String getDownloadPageId(Context context) {
         if (context != null) {
             SharedPreferences sharedPrefs = context.getSharedPreferences(DOWNLOAD_UI_ID, 0);
@@ -5810,7 +5802,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionId(null);
             setActiveSubscriptionSku(null);
             setActiveSubscriptionPlanName(null);
-            setActiveSubscriptionReceipt( null);
+            setActiveSubscriptionReceipt(null);
             setRefreshToken(null);
             setAuthToken(null);
             setIsUserSubscribed(false);
@@ -5823,20 +5815,20 @@ public class AppCMSPresenter {
 
             signinAnonymousUser();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
-                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                if (homePageNavItem != null) {
-                    cancelInternalEvents();
-                    navigateToTVPage(
-                            homePageNavItem.getPageId(),
-                            homePageNavItem.getTitle(),
-                            homePageNavItem.getUrl(),
-                            false,
-                            deeplinkSearchQuery,
-                            true,
-                            false,
-                            false
-                    );
-                }
+            NavigationPrimary homePageNavItem = findHomePageNavItem();
+            if (homePageNavItem != null) {
+                cancelInternalEvents();
+                navigateToTVPage(
+                        homePageNavItem.getPageId(),
+                        homePageNavItem.getTitle(),
+                        homePageNavItem.getUrl(),
+                        false,
+                        deeplinkSearchQuery,
+                        true,
+                        false,
+                        false
+                );
+            }
         }
     }
 
@@ -6433,7 +6425,7 @@ public class AppCMSPresenter {
                 textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             } catch (Exception e) {
                 Log.w(TAG, "Failed to get branding text color - defaulting to accent color: " +
-                    e.getMessage());
+                        e.getMessage());
                 textColor = ContextCompat.getColor(currentContext, R.color.colorAccent);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
@@ -8093,7 +8085,7 @@ public class AppCMSPresenter {
         );
         Bundle bundle = new Bundle();
         bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
-        bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+        bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
         bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
         Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
         args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -8861,9 +8853,9 @@ public class AppCMSPresenter {
 
                     //add search in navigation item.
                     NavigationPrimary myProfile = new NavigationPrimary();
-                    myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label ,
-                    currentActivity.getString(R.string.profile_label)));
-                    myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label ,
+                    myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
+                            currentActivity.getString(R.string.profile_label)));
+                    myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
                             appCMSAndroidUI.getShortAppName() != null ?
                                     appCMSAndroidUI.getShortAppName() :
                                     currentActivity.getString(R.string.profile_label)));
@@ -8912,7 +8904,7 @@ public class AppCMSPresenter {
                                     String pageTitle,
                                     String url,
                                     boolean launchActivity,
-                                    Uri searchQuery ,
+                                    Uri searchQuery,
                                     boolean forcedDownload,
                                     boolean isTOSDialogPage,
                                     boolean isLoginDialogPage) {
@@ -8928,7 +8920,7 @@ public class AppCMSPresenter {
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
 
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-            if(forcedDownload){
+            if (forcedDownload) {
                 appCMSPageAPI = null;
             }
 
@@ -8940,9 +8932,9 @@ public class AppCMSPresenter {
                             null, launchActivity, pageId, PAGE_ACTION);
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
-                    bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
-                    bundle.putBoolean(currentActivity.getString(R.string.is_tos_dialog_page_key),isTOSDialogPage);
-                    bundle.putBoolean(currentActivity.getString(R.string.is_login_dialog_page_key),isLoginDialogPage);
+                    bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+                    bundle.putBoolean(currentActivity.getString(R.string.is_tos_dialog_page_key), isTOSDialogPage);
+                    bundle.putBoolean(currentActivity.getString(R.string.is_login_dialog_page_key), isLoginDialogPage);
                     bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                     Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                     args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -8974,7 +8966,7 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
-                                    populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTOSDialogPage,isLoginDialogPage,this.pagePath);
+                                    populateTVPage(appCMSPageAPI, appCMSPageUI, this.pageId, this.launchActivity, this.pageTitle, isTOSDialogPage, isLoginDialogPage, this.pagePath);
                                 } else {
                                     sendStopLoadingPageAction();
                                     setNavItemToCurrentAction(currentActivity);
@@ -9030,7 +9022,7 @@ public class AppCMSPresenter {
         } else if (currentActivity != null &&
                 !TextUtils.isEmpty(url) &&
                 pageTitle.contains(currentActivity.getString(R.string.contact_us))) {
-            openContactUsScreen(pageId,pageTitle,url);
+            openContactUsScreen(pageId, pageTitle, url);
 
         } else {
             Log.d(TAG, "Resetting page navigation to previous tab");
@@ -9040,8 +9032,8 @@ public class AppCMSPresenter {
     }
 
 
-    private void populateTVPage(AppCMSPageAPI appCMSPageAPI , AppCMSPageUI appCMSPageUI, String pageId , boolean launchActivity ,
-                                String pageTitle , boolean isTosPage , boolean isLoginPage, String pagePath) {
+    private void populateTVPage(AppCMSPageAPI appCMSPageAPI, AppCMSPageUI appCMSPageUI, String pageId, boolean launchActivity,
+                                String pageTitle, boolean isTosPage, boolean isLoginPage, String pagePath) {
         cancelInternalEvents();
         pushActionInternalEvents(pageId
                 + BaseView.isLandscape(currentActivity));
@@ -9071,7 +9063,7 @@ public class AppCMSPresenter {
                     pagePath,
                     pageIdToPageNameMap.get(pageId),
                     loadFromFile,
-                   false,
+                    false,
                     false,
                     false,
                     false,
@@ -9092,7 +9084,7 @@ public class AppCMSPresenter {
 
     private void openContactUsScreen(String pageId,
                                      String pageTitle,
-                                     String url){
+                                     String url) {
         AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         appCMSPageAPI.setId(getPageId(appCMSPageUI));
@@ -9274,7 +9266,7 @@ public class AppCMSPresenter {
                     null, closeLauncher, null, BUTTON_ACTION);
             Bundle bundle = new Bundle();
             bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
-            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
             bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -9474,7 +9466,7 @@ public class AppCMSPresenter {
         if (closeLauncher) {
             sendCloseOthersAction(null, true);
         }
-        currentActivity.startActivityForResult(playVideoIntent ,PLAYER_REQUEST_CODE );
+        currentActivity.startActivityForResult(playVideoIntent, PLAYER_REQUEST_CODE);
     }
 
     public void showLoadingDialog(boolean showDialog) {
@@ -9631,7 +9623,7 @@ public class AppCMSPresenter {
 
             Bundle bundle = new Bundle();
             bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
-            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key) ,true);
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
             bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -9680,7 +9672,7 @@ public class AppCMSPresenter {
                                                         && appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0) != null) {
                                                     extraData[3] = appCMSVideoDetail.getRecords().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
                                                 }
-                                              //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
+                                                //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                 if (!TextUtils.isEmpty(extraData[1])) {
                                                     launchTVButtonSelectedAction(pagePath,
                                                             action,
@@ -9849,6 +9841,24 @@ public class AppCMSPresenter {
 
     }
 
+    public NavigationUser getLoginNavigation() {
+        for (NavigationUser navigationUser : getNavigation().getNavigationUser()) {
+            if (!isUserLoggedIn() && navigationUser.getUrl().contains(currentActivity.getString(R.string.app_cms_action_login_key))) {
+                return navigationUser;
+            }
+        }
+        return null;
+    }
+
+    public NavigationUser getSignUpNavigation() {
+        for (NavigationUser navigationUser : getNavigation().getNavigationUser()) {
+            if (!isUserLoggedIn() && navigationUser.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_signup))) {
+                return navigationUser;
+            }
+        }
+        return null;
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, HOME
     }
@@ -9901,7 +9911,7 @@ public class AppCMSPresenter {
     }
 
     public enum RETRY_TYPE {
-        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION , RESET_PASSWORD_RETRY
+        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY
     }
 
     public enum ExtraScreenType {
@@ -10289,31 +10299,12 @@ public class AppCMSPresenter {
         List<String> relateVideoIds;
     }
 
-    public NavigationUser getLoginNavigation(){
-        for(NavigationUser navigationUser : getNavigation().getNavigationUser()){
-            if(!isUserLoggedIn() && navigationUser.getUrl().contains(currentActivity.getString(R.string.app_cms_action_login_key))){
-                return navigationUser;
-            }
-        }
-        return null;
-    }
-
-    public NavigationUser getSignUpNavigation(){
-        for(NavigationUser navigationUser : getNavigation().getNavigationUser()){
-            if(!isUserLoggedIn() && navigationUser.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_signup))){
-                return navigationUser;
-            }
-        }
-        return null;
-    }
-
     public static class SemVer {
+        private static final String SEMVER_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
         int major;
         int minor;
         int patch;
         String original;
-
-        private static final String SEMVER_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
 
         public void parse(String original) {
             this.original = original;
