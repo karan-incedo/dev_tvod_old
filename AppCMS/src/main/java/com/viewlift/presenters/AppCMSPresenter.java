@@ -8554,35 +8554,35 @@ public class AppCMSPresenter {
                     this.appCMSMain = appCMSMain;
                     refreshAppCMSAndroid((appCMSAndroid) -> {
                         if (appCMSAndroid != null) {
-                        for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
-                            Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
-                                    " " +
-                                    metaPage.getPageId() +
-                                    " " +
-                                    metaPage.getPageUI());
-                            getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    metaPage.getPageUI()),
-                                    appCMSPageUI -> {
-                                        if (appCMSPageUI.isLoadedFromNetwork() &&
-                                                pageViewLruCache != null) {
-                                            navigationPages.put(metaPage.getPageId(), appCMSPageUI);
-                                            pageViewLruCache.evictAll();
-                                        }
-                                    },
-                                    false);
-                        }
+                            for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
+                                Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+                                        " " +
+                                        metaPage.getPageId() +
+                                        " " +
+                                        metaPage.getPageUI());
+                                getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                        metaPage.getPageUI()),
+                                        appCMSPageUI -> {
+                                            if (appCMSPageUI.isLoadedFromNetwork() &&
+                                                    pageViewLruCache != null) {
+                                                navigationPages.put(metaPage.getPageId(), appCMSPageUI);
+                                                pageViewLruCache.evictAll();
+                                            }
+                                        },
+                                        false);
+                            }
 
-                        getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
-                            Log.d(TAG, "Received and refreshed module list");
-                            this.appCMSAndroidModules = appCMSAndroidModules;
-                            if (appCMSAndroidModules.isLoadedFromNetwork() &&
-                                    pageViewLruCache != null) {
-                                pageViewLruCache.evictAll();
-                            }
-                            if (onreadyAction != null) {
-                                onreadyAction.call();
-                            }
-                        });
+                            getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
+                                Log.d(TAG, "Received and refreshed module list");
+                                this.appCMSAndroidModules = appCMSAndroidModules;
+                                if (appCMSAndroidModules.isLoadedFromNetwork() &&
+                                        pageViewLruCache != null) {
+                                    pageViewLruCache.evictAll();
+                                }
+                                if (onreadyAction != null) {
+                                    onreadyAction.call();
+                                }
+                            });
                         }
                     });
                 } else {
@@ -8688,15 +8688,48 @@ public class AppCMSPresenter {
                                             if (!isNetworkConnected()) {
                                                 openDownloadScreenForNetworkError(true);
                                             } else {
-                                            if (appCMSMain.getServiceType()
-                                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
-                                                refreshSubscriptionData(() -> {
+                                                if (appCMSMain.getServiceType()
+                                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                                    refreshSubscriptionData(() -> {
+                                                        if (appCMSMain.isForceLogin()) {
+                                                            boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                                                                    loginPage.getPageName(),
+                                                                    loginPage.getPageUI(),
+                                                                    true,
+                                                                    false,
+                                                                    false,
+                                                                    false,
+                                                                    false,
+                                                                    deeplinkSearchQuery);
+                                                            if (!launchSuccess) {
+                                                                Log.e(TAG, "Failed to launch page: "
+                                                                        + loginPage.getPageName());
+                                                                launchErrorActivity(platformType);
+                                                            }
+                                                        } else {
+                                                            boolean launchSuccess = navigateToPage(homePage.getPageId(),
+                                                                    homePage.getPageName(),
+                                                                    homePage.getPageUI(),
+                                                                    true,
+                                                                    true,
+                                                                    false,
+                                                                    true,
+                                                                    false,
+                                                                    deeplinkSearchQuery);
+                                                            if (!launchSuccess) {
+                                                                Log.e(TAG, "Failed to launch page: "
+                                                                        + loginPage.getPageName());
+                                                                launchErrorActivity(platformType);
+                                                            }
+                                                        }
+                                                    }, true);
+                                                } else {
                                                     if (appCMSMain.isForceLogin()) {
                                                         boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                                                                 loginPage.getPageName(),
                                                                 loginPage.getPageUI(),
                                                                 true,
-                                                                false,
+                                                                true,
                                                                 false,
                                                                 false,
                                                                 false,
@@ -8720,39 +8753,6 @@ public class AppCMSPresenter {
                                                             Log.e(TAG, "Failed to launch page: "
                                                                     + loginPage.getPageName());
                                                             launchErrorActivity(platformType);
-                                                        }
-                                                    }
-                                                }, true);
-                                            } else {
-                                                if (appCMSMain.isForceLogin()) {
-                                                    boolean launchSuccess = navigateToPage(loginPage.getPageId(),
-                                                            loginPage.getPageName(),
-                                                            loginPage.getPageUI(),
-                                                            true,
-                                                            true,
-                                                            false,
-                                                            false,
-                                                            false,
-                                                            deeplinkSearchQuery);
-                                                    if (!launchSuccess) {
-                                                        Log.e(TAG, "Failed to launch page: "
-                                                                + loginPage.getPageName());
-                                                        launchErrorActivity(platformType);
-                                                    }
-                                                } else {
-                                                    boolean launchSuccess = navigateToPage(homePage.getPageId(),
-                                                            homePage.getPageName(),
-                                                            homePage.getPageUI(),
-                                                            true,
-                                                            true,
-                                                            false,
-                                                            true,
-                                                            false,
-                                                            deeplinkSearchQuery);
-                                                    if (!launchSuccess) {
-                                                        Log.e(TAG, "Failed to launch page: "
-                                                                + loginPage.getPageName());
-                                                        launchErrorActivity(platformType);
                                                         }
                                                     }
                                                 }
@@ -10551,8 +10551,8 @@ public class AppCMSPresenter {
 
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
-    VideoPlayerView videoPlayerView;
-    RelativeLayout relativeLayout;
+    VideoPlayerView videoPlayerViewPIP;
+    RelativeLayout relativeLayoutPIP;
 
     public void showPopupWindowPlayer(View v) {
         //  dismissPopupWindowPlayer();
@@ -10563,13 +10563,13 @@ public class AppCMSPresenter {
         pipPlayerVisible = true;
 
 
-        videoPlayerView = new VideoPlayerView(currentActivity);
-        videoPlayerView.setUri(mp4VideoUri, null);
-        videoPlayerView.startPlayer();
-        videoPlayerView.getPlayerView().setControllerAutoShow(false);
+        videoPlayerViewPIP = new VideoPlayerView(currentActivity);
+        videoPlayerViewPIP.setUri(mp4VideoUri, null);
+        videoPlayerViewPIP.startPlayer();
+        videoPlayerViewPIP.getPlayerView().setControllerAutoShow(false);
 
 
-        relativeLayout = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
+        relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
 
         RelativeLayout.LayoutParams lpPipView = new RelativeLayout.LayoutParams(750, 450);
         lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
@@ -10577,35 +10577,60 @@ public class AppCMSPresenter {
         lpPipView.rightMargin = 50;
         lpPipView.bottomMargin = 20;
 
-        relativeLayout.setLayoutParams(lpPipView);
+        relativeLayoutPIP.setLayoutParams(lpPipView);
 
 
-        relativeLayout.addView(videoPlayerView);
-        relativeLayout.setVisibility(View.VISIBLE);
+        relativeLayoutPIP.addView(videoPlayerViewPIP);
+        relativeLayoutPIP.setVisibility(View.VISIBLE);
 
-        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayout);
+        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+    }
+
+    public void pausePIP() {
+        try {
+            if (videoPlayerViewPIP != null) {
+                videoPlayerViewPIP.pausePlayer();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    public void resumePIP() {
+        try {
+            if (videoPlayerViewPIP != null) {
+                videoPlayerViewPIP.startPlayer();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     public void dismissPopupWindowPlayer() {
-        if (videoPlayerView != null) {
+        try {
+            if (videoPlayerViewPIP != null) {
 
-            videoPlayerView.releasePlayer();
-            videoPlayerView = null;
+                videoPlayerViewPIP.releasePlayer();
+                videoPlayerViewPIP = null;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
         }
-
-        if (relativeLayout != null) {
-            //  relativeLayout.removeAllViews();
-            relativeLayout.setVisibility(View.GONE);
-            RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
-            rootView.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    rootView.removeView(relativeLayout);
-                    relativeLayout = null;
-                }
-            }, 100);
-
-
+        try {
+            if (relativeLayoutPIP != null) {
+                //  relativeLayout.removeAllViews();
+                relativeLayoutPIP.setVisibility(View.GONE);
+                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+                rootView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        rootView.removeView(relativeLayoutPIP);
+                        relativeLayoutPIP = null;
+                    }
+                }, 100);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
         }
 
         pipPlayerVisible = false;

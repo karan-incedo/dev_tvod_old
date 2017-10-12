@@ -594,6 +594,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.launchUpgradeAppActivity();
         }
         });
+        appCMSPresenter.resumePIP();
     }
 
     @Override
@@ -608,6 +609,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.closeSoftKeyboard();
         appCMSPresenter.cancelWatchlistToast();
         appCMSPresenter.refreshPages(null);
+        appCMSPresenter.pausePIP();
     }
     @Override
     protected void onNewIntent(Intent intent) {
@@ -672,6 +674,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             imm.hideSoftInputFromWindow(appCMSParentView.getWindowToken(), 0);
         }
 
+        appCMSPresenter.dismissPopupWindowPlayer();
         Log.d(TAG, "onDestroy()");
     }
 
