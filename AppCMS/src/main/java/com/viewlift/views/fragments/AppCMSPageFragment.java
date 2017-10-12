@@ -25,6 +25,7 @@ import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
@@ -55,6 +56,7 @@ public class AppCMSPageFragment extends Fragment {
 
     private boolean shouldSendFirebaseViewItemEvent;
     private ViewGroup pageViewGroup;
+    private VideoPlayerView videoPlayerView;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
@@ -127,6 +129,7 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
             onPageCreation.onSuccess(appCMSBinder);
+            videoPlayerView = pageView.findViewById(R.id.video_player_id);
         } else {
             Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
@@ -241,6 +244,17 @@ public class AppCMSPageFragment extends Fragment {
 
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
+            if(videoPlayerView != null) {
+                videoPlayerView.startPlayer();
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(videoPlayerView != null) {
+            videoPlayerView.pausePlayer();
         }
     }
 
