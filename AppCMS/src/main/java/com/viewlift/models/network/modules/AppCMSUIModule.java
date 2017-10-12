@@ -162,6 +162,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_key),
+                AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_image_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_add_to_watchlist_key),
@@ -370,6 +372,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_module_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_module_key),
+                AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
 
@@ -515,6 +520,19 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_badgeimage),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_image_key),
+                AppCMSUIKeyType.PAGE_BANNER_IMAGE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_icon_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_ICON);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_background_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_BACKGROUND);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_button_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_BUTTON);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_title_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_TITLE);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -649,6 +667,9 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_open_option_dialog),
                 AppCMSActionType.OPEN_OPTION_DIALOG);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_banner_detail_button_action_key),
+                AppCMSActionType.BANNER_DETAIL_CLICK);
     }
 
     @Provides

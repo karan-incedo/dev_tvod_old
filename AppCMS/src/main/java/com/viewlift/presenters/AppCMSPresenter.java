@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+import com.viewlift.views.customviews.PopupMenu;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -10652,5 +10653,10 @@ public class AppCMSPresenter {
             }
         }
         return 0;
+    }
+
+    public void showPopUpMenuSports(View v){
+        PopupMenu popupMenu=new PopupMenu(getCurrentActivity());
+        popupMenu.showLocation(v.getId(),getCurrentActivity());
     }
 }
