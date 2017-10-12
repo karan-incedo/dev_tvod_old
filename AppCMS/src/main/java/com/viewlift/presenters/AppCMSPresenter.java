@@ -8474,7 +8474,11 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Refreshed android.json");
                 if (readyAction != null) {
                     Log.d(TAG, "Notifying listeners that android.json has been updated");
-                    Observable.just(appCMSAndroidUI).subscribe(readyAction);
+                    if (appCMSAndroidUI != null) {
+                        Observable.just(appCMSAndroidUI).subscribe(readyAction);
+                    } else {
+                        Observable.just((AppCMSAndroidUI) null).subscribe(readyAction);
+                    }
                 }
             }).execute(params);
         }
