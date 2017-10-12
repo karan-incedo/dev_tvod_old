@@ -340,7 +340,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                                 double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
 
-                                boolean upgradesAvailable = adapterData.indexOf(data) == 0;
+                                boolean upgradesAvailable = false;
+                                for (ContentDatum plan : adapterData) {
+                                    if (plan != null &&
+                                            plan.getPlanDetails() != null &&
+                                            !plan.getPlanDetails().isEmpty() &&
+                                            ((plan.getPlanDetails().get(0).getStrikeThroughPrice() != 0 &&
+                                            price < plan.getPlanDetails().get(0).getStrikeThroughPrice()) ||
+                                                    (plan.getPlanDetails().get(0).getRecurringPaymentAmount() != 0 &&
+                                                    price < plan.getPlanDetails().get(0).getRecurringPaymentAmount()))) {
+                                        upgradesAvailable = true;
+                                    }
+                                }
 
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                         data.getId(),
