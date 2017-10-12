@@ -5,12 +5,14 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
@@ -138,6 +140,37 @@ public class AppCMSPageFragment extends Fragment {
         if (shouldSendFirebaseViewItemEvent) {
             sendFirebaseAnalyticsEvents(appCMSBinder);
             shouldSendFirebaseViewItemEvent = false;
+        }
+        if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView &&
+                appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().get(1) !=null &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() !=null ){
+
+            if(appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()){
+                NestedScrollView nestedScrollView= (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
+                Toast.makeText(getContext(),"Created Scroll Event listener  ",Toast.LENGTH_SHORT).show();
+                nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+                    int tempheight = (int) appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getLayout().getMobile().getHeight();
+
+                    @Override
+                    public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+                   if (scrollY > (tempheight + 300) && !appCMSPresenter.pipPlayerVisible) {
+                      //  Toast.makeText(v.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
+                       appCMSPresenter.showPopupWindowPlayer(v);
+                    } else if (scrollY < (tempheight + 300)) {
+                       appCMSPresenter.pipPlayerVisible = false;
+                        appCMSPresenter.dismissPopupWindowPlayer();
+
+                    }
+
+                    }
+                });
+            }else {
+                appCMSPresenter.dismissPopupWindowPlayer();
+            }
+
         }
 
         return pageView;

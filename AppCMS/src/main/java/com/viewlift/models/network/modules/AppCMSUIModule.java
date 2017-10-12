@@ -388,15 +388,21 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_REMOVEALL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_image_key),
                 AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_image_video_key),
+                AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_play_button_key),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAY_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_description_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_video_description_key),
                 AppCMSUIKeyType.PAGE_VIDEO_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_title_key),
                 AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_title_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_subtitle_key),
+                AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_video_subtitle_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_share_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY);
@@ -417,6 +423,8 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchTrailer_key),
                 AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
+                AppCMSUIKeyType.PAGE_API_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_show_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
