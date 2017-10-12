@@ -2491,13 +2491,13 @@ public class ViewCreator {
                         componentViewResult.componentView = new ImageView(context);
                         ImageView imageView = (ImageView) componentViewResult.componentView;
                         imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                        String iconImageUrl = "https://dummyimage.com/600x400/000/fff&text=badge";//component.getIcon_url();
+                        String iconImageUrl ;
                         if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
                             iconImageUrl = component.getIcon_url();
                             Glide.with(context)
                                     .load(iconImageUrl)
                                     .into(imageView);
-                        } else {
+                        } else if(context.getDrawable(R.drawable.pro_badge_con)!=null) {
                             componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
                         }
 
