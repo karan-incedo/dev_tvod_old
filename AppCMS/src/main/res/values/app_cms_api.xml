@@ -69,6 +69,7 @@
     <!-- Restore Purchase API -->
     <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/android?site=%2$s</string>
 
+    <string name="app_cms_signed_url_api_url">%1$s/content/signature/%2$s?site=%3$s</string>
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>

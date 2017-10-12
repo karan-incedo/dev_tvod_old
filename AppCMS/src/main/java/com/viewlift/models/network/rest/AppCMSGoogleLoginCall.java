@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginRequest;
 import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginResponse;
 
-
 import javax.inject.Inject;
 
 import retrofit2.Call;
@@ -38,8 +37,7 @@ public class AppCMSGoogleLoginCall {
             @Override
             public void onResponse(@NonNull Call<GoogleLoginResponse> call,
                                    @NonNull Response<GoogleLoginResponse> response) {
-
-                    Observable.just(response.body()).subscribe(responseAction1);
+                Observable.just(response.body()).subscribe(responseAction1);
             }
 
             @Override

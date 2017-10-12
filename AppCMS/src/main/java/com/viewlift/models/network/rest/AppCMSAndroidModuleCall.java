@@ -90,10 +90,10 @@ public class AppCMSAndroidModuleCall {
                 if (existingFilename.contains(fileToDeleteFilenamePattern)) {
                     File fileToDelete = new File(storageDirectory, existingFilename);
                     try {
-                    if (fileToDelete.delete()) {
-                        Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
-                    } else {
-                        Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                        if (fileToDelete.delete()) {
+                            Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
+                        } else {
+                            Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Could not delete file: " +
@@ -148,10 +148,11 @@ public class AppCMSAndroidModuleCall {
                         Log.d(TAG, "Attempting to retrieve updated module from URL: " +
                                 bundleUrl.toString());
 
-                        Response<JsonElement> moduleListResponse =
-                                appCMSAndroidModuleRest.get(bundleUrl.toString()).execute();
                         try {
-                            if (moduleListResponse.body() != null) {
+                            Response<JsonElement> moduleListResponse =
+                                    appCMSAndroidModuleRest.get(bundleUrl.toString()).execute();
+                            if (moduleListResponse != null &&
+                                    moduleListResponse.body() != null) {
                                 ModuleList moduleList = gson.fromJson(moduleListResponse.body(),
                                         ModuleList.class);
                                 deletePreviousFiles(getResourceFilenameWithJsonOnly(blocks.getName()));
@@ -196,6 +197,7 @@ public class AppCMSAndroidModuleCall {
         resourceFilename.append(".v" + version);
         return url;
     }
+
     private static class ModuleDataMap {
         Map<String, ModuleList> appCMSAndroidModule;
         boolean loadedFromNetwork;
