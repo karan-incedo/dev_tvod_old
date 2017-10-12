@@ -171,6 +171,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String closedCaptionUrl;
     private boolean isCastConnected;
 
+    private boolean refreshToken;
+    private Timer refreshTokenTimer;
+    private TimerTask refreshTokenTimerTask;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -281,6 +285,14 @@ public class AppCMSPlayVideoFragment extends Fragment
             policyCookie = args.getString(getString(R.string.signed_policy_key));
             signatureCookie = args.getString(getString(R.string.signed_signature_key));
             keyPairIdCookie = args.getString(getString(R.string.signed_keypairid_key));
+
+            if (TextUtils.isEmpty(policyCookie) ||
+                    TextUtils.isEmpty(signatureCookie) ||
+                    TextUtils.isEmpty(keyPairIdCookie)) {
+                refreshToken = false;
+            } else {
+                refreshToken = true;
+            }
         }
 
         hlsUrl = hlsUrl.replaceAll(" ", "+");
@@ -300,6 +312,23 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
+
+        if (refreshToken) {
+            refreshTokenTimer = new Timer();
+            refreshTokenTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
+                        if (videoPlayerView != null && appCMSSignedURLResult != null) {
+                            videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                                    appCMSSignedURLResult.getSignature(),
+                                    appCMSSignedURLResult.getKeyPairId());
+                        }
+                    });
+                }
+            };
+            refreshTokenTimer.schedule(refreshTokenTimerTask, 600000);
+        }
 
         if (appCMSPresenter.isAppSVOD() &&
                 !isTrailer &&
@@ -701,6 +730,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (castProvider != null) {
             castProvider.onActivityResume();
         }
+
+
     }
 
     @Override
@@ -806,6 +837,15 @@ public class AppCMSPlayVideoFragment extends Fragment
             }
             if (entitlementCheckTimer != null) {
                 entitlementCheckTimer.cancel();
+            }
+        }
+
+        if (refreshToken) {
+            if (refreshTokenTimerTask != null) {
+                refreshTokenTimerTask.cancel();
+            }
+            if (refreshTokenTimer != null) {
+                refreshTokenTimer.cancel();
             }
         }
     }
