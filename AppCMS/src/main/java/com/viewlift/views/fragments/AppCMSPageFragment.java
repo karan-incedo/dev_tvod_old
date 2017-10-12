@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
@@ -49,6 +51,7 @@ public class AppCMSPageFragment extends Fragment {
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     private boolean shouldSendFirebaseViewItemEvent;
+    private VideoPlayerView videoPlayerView;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
@@ -119,6 +122,7 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
             onPageCreation.onSuccess(appCMSBinder);
+            videoPlayerView = pageView.findViewById(R.id.video_player_id);
         }
         if (container != null) {
             container.removeAllViews();
@@ -190,6 +194,17 @@ public class AppCMSPageFragment extends Fragment {
             onPageCreation.onError(appCMSBinder);
         } else {
             pageView.notifyAdaptersOfUpdate();
+            if(videoPlayerView != null) {
+                videoPlayerView.startPlayer();
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(videoPlayerView != null) {
+            videoPlayerView.pausePlayer();
         }
     }
 

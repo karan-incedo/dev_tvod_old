@@ -8,6 +8,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -37,6 +38,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -142,6 +144,7 @@ public class ViewCreator {
 
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                 createModule = false;
             }
@@ -180,10 +183,12 @@ public class ViewCreator {
 
                                 if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ||
                                         componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY ||
-                                        componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY) {
+                                        componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY  ||
+                                        componentType == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY) {
 
                                     AppCMSUIKeyType moduleType = jsonValueKeyMap.get(module.getView());
                                     if (moduleType != AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_KEY) {
+
                                         pageView.updateDataList(moduleAPI.getContentData(),
                                                 moduleAPI.getId() + component.getKey());
                                         if ((moduleAPI.getContentData() != null &&
@@ -191,7 +196,7 @@ public class ViewCreator {
                                                 componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
                                             view.setVisibility(View.VISIBLE);
                                             moduleView.setVisibility(View.VISIBLE);
-                                        } else {
+                                            } else {
                                             if (view != null) {
                                                 view.setVisibility(View.GONE);
                                             }
@@ -915,6 +920,7 @@ public class ViewCreator {
 
             if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                 createModule = false;
             }
@@ -1473,6 +1479,12 @@ public class ViewCreator {
                         componentViewResult.shouldHideModule = true;
                     }
                 }
+
+                break;
+
+            case PAGE_VIDEO_PLAYER_VIEW_KEY:
+                    componentViewResult.componentView = playerView(context);
+                    componentViewResult.componentView.setId(R.id.video_player_id);
 
                 break;
 
@@ -3046,5 +3058,24 @@ public class ViewCreator {
                 imageButton.setOnClickListener(addClickListener);
             }
         }
+    }
+
+    private  VideoPlayerView playerView(Context context){
+
+            VideoPlayerView videoPlayerView = new VideoPlayerView(context);
+            videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
+                    null);
+            videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
+            videoPlayerView.getPlayerView().hideController();
+            videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
+                @Override
+                public void onVisibilityChange(int i) {
+                    if(i == 0) {
+                        videoPlayerView.getPlayerView().hideController();
+                    }
+                }
+            });
+
+        return videoPlayerView;
     }
 }
