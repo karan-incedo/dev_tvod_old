@@ -108,6 +108,7 @@ import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
 import com.viewlift.models.data.appcms.subscriptions.Receipt;
 import com.viewlift.models.data.appcms.subscriptions.UserSubscriptionPlan;
@@ -8961,8 +8962,7 @@ public class AppCMSPresenter {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    appCMSMain.getFireTv(),
-                                    appCMSMain.getTimestamp()))
+                                    appCMSMain.getFireTv()))
                             .loadFromFile(loadFromFile)
                             .build();
             Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
@@ -10598,6 +10598,37 @@ public class AppCMSPresenter {
                     patch = Integer.parseInt(semverMatcher.group(3));
                 }
             }
+        }
+    }
+
+    public void getSubscriptionData(Action1<AppCMSUserSubscriptionPlanResult> action1){
+        try {
+            appCMSSubscriptionPlanCall.call(
+                    currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            getLoggedInUser(),
+                            appCMSSite.getGist().getSiteInternalName()),
+                    R.string.app_cms_subscription_subscribed_plan_key,
+                    null,
+                    apikey,
+                    getAuthToken(),
+                    new Action1<List<AppCMSSubscriptionPlanResult>>() {
+                        @Override
+                        public void call(List<AppCMSSubscriptionPlanResult> listResult) {
+                            Log.v("currentActivity", "currentActivity");
+                        }
+                    }, new Action1<AppCMSSubscriptionPlanResult>() {
+                        @Override
+                        public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
+                            AppCMSPresenter.this.sendCloseOthersAction(null, true);
+                            AppCMSPresenter.this.refreshSubscriptionData(() -> {
+                                AppCMSPresenter.this.sendRefreshPageAction();
+                            }, true);
+                        }
+                    },action1
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

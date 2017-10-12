@@ -241,11 +241,15 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     }
     @Override
     public void onMovieFinished() {
-        if (!binder.isTrailer()
-                && relateVideoIds != null
-                && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-            binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-            appCMSPresenter.openAutoPlayScreen(binder);
+        if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
+            if (!binder.isTrailer()
+                    && relateVideoIds != null
+                    && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                appCMSPresenter.openAutoPlayScreen(binder);
+            } else {
+                closePlayer();
+            }
         } else {
             closePlayer();
         }

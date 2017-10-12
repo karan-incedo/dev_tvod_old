@@ -405,6 +405,10 @@
     <string name="api_error_message">We are having trouble connecting to %1$s, please try again later.</string>
 
     <string name="app_connectivity_dialog_title">App Connectivity</string>
+    <string name="no_active_subscription">NO ACTIVE SUBSCRIPTION</string>
+    <string name="app_cms_autoplay_finished_movie_title_key">finishedMovieNameTitle</string>
+    <string name="subscription">SUBSCRIPTION</string>
+
 </resources>
 
 
