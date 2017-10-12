@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +29,8 @@ import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.modules.AppCMSPageViewModule;
+
+import net.nightwhistler.htmlspanner.TextUtil;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -137,7 +140,11 @@ public class AutoplayFragment extends Fragment {
             if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
                 imageUrl = binder.getContentData().getGist().getVideoImageUrl();
             } else {
-                imageUrl = binder.getContentData().getGist().getPosterImageUrl();
+                if(binder.getContentData().getGist().getPosterImageUrl()!=null && !TextUtils.isEmpty(binder.getContentData().getGist().getPosterImageUrl())) {
+                    imageUrl = binder.getContentData().getGist().getPosterImageUrl();
+                }else{
+                    imageUrl = binder.getContentData().getGist().getVideoImageUrl();
+                }
             }
 
             Glide.with(getContext()).load(imageUrl)
