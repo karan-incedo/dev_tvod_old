@@ -45,10 +45,13 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -130,6 +133,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     private BeaconPingThread beaconMessageThread;
     private long beaconMsgTimeoutMsec;
 
+    private String policyCookie;
+    private String signatureCookie;
+    private String keyPairIdCookie;
+
     private BeaconBufferingThread beaconBufferingThread;
     private long beaconBufferingTimeoutMsec;
     private boolean sentBeaconPlay;
@@ -201,7 +208,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       String closedCaptionUrl,
                                                       String parentalRating,
                                                       long videoRunTime,
-                                                      boolean freeContent) {
+                                                      boolean freeContent,
+                                                      AppCMSSignedURLResult appCMSSignedURLResult) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -221,6 +229,18 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
         args.putString(context.getString(R.string.video_player_content_rating_key), parentalRating);
+
+        if (appCMSSignedURLResult != null) {
+            appCMSSignedURLResult.parseKeyValuePairs();
+            args.putString(context.getString(R.string.signed_policy_key), appCMSSignedURLResult.getPolicy());
+            args.putString(context.getString(R.string.signed_signature_key), appCMSSignedURLResult.getSignature());
+            args.putString(context.getString(R.string.signed_keypairid_key), appCMSSignedURLResult.getKeyPairId());
+        } else {
+            args.putString(context.getString(R.string.signed_policy_key), "");
+            args.putString(context.getString(R.string.signed_signature_key), "");
+            args.putString(context.getString(R.string.signed_keypairid_key), "");
+        }
+
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -257,6 +277,10 @@ public class AppCMSPlayVideoFragment extends Fragment
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
 
             freeContent = args.getBoolean(getString(R.string.free_content_key));
+
+            policyCookie = args.getString(getString(R.string.signed_policy_key));
+            signatureCookie = args.getString(getString(R.string.signed_signature_key));
+            keyPairIdCookie = args.getString(getString(R.string.signed_keypairid_key));
         }
 
         hlsUrl = hlsUrl.replaceAll(" ", "+");
@@ -378,6 +402,18 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+
+        if (!TextUtils.isEmpty(policyCookie) &&
+                !TextUtils.isEmpty(signatureCookie) &&
+                !TextUtils.isEmpty(keyPairIdCookie)) {
+            CookieManager cookieManager = new CookieManager();
+            CookieHandler.setDefault(cookieManager);
+
+            videoPlayerView.setPolicyCookie(policyCookie);
+            videoPlayerView.setSignatureCookie(signatureCookie);
+            videoPlayerView.setKeyPairIdCookie(keyPairIdCookie);
+        }
+
         videoPlayerView.setListener(this);
         videoPlayerView.enableController();
 
