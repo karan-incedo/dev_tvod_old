@@ -21,6 +21,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastingUtils;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.VideoAssets;
@@ -112,6 +113,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 videoUrl = videoAssets.getMpeg().get(i).getUrl();
                             }
                         }
+                        if (videoAssets.getMpeg() != null && videoAssets.getMpeg().size() > 0) {
+                            if (videoAssets.getMpeg().get(0).getUrl() != null &&
+                                    videoAssets.getMpeg().get(0).getUrl().indexOf("?") > 0) {
+                                videoUrl = videoUrl + videoAssets.getMpeg().get(0).getUrl().substring(videoAssets.getMpeg().get(0).getUrl().indexOf("?"));
+                            }
+                        }
                     }
 
                     // TODO: 7/27/2017 Implement CC for multiple languages.
@@ -172,6 +179,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                     videoUrl = videoAssets.getMpeg().get(i).getUrl();
                                 }
                             }
+                            if (videoAssets.getMpeg() != null && videoAssets.getMpeg().size() > 0) {
+                                if (videoAssets.getMpeg().get(0).getUrl() != null &&
+                                        videoAssets.getMpeg().get(0).getUrl().indexOf("?") > 0) {
+                                    videoUrl = videoUrl + videoAssets.getMpeg().get(0).getUrl().substring(videoAssets.getMpeg().get(0).getUrl().indexOf("?"));
+                                }
+                            }
                         }
 
                         // TODO: 7/27/2017 Implement CC for multiple languages.
@@ -224,6 +237,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     freeContent = binder.getContentData().getGist().getFree();
                 }
 
+                String finalClosedCaptionUrl = closedCaptionUrl;
+                boolean finalFreeContent = freeContent;
+                appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
+                    if (appCMSSignedURLResult == null ||
+                            TextUtils.isEmpty(appCMSSignedURLResult.getSigned())) {
+                        appCMSSignedURLResult = new AppCMSSignedURLResult();
+                        appCMSSignedURLResult.setSigned(hlsUrl);
+                    }
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
@@ -240,14 +261,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 playIndex,
                                 watchedTime,
                                 videoImageUrl,
-                                closedCaptionUrl,
+                                    finalClosedCaptionUrl,
                                 contentRating, videoRunTime,
-                                freeContent);
+                                    finalFreeContent,
+                                    appCMSSignedURLResult);
                 fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                         appCMSPlayVideoFragment,
                         getString(R.string.video_fragment_tag_key));
                 fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
                 fragmentTransaction.commit();
+                });
             }
         } catch (ClassCastException e) {
             Log.e(TAG, e.getMessage());

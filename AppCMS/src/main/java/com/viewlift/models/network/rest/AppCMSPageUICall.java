@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 import java.util.Scanner;
 
 import javax.inject.Inject;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -85,9 +86,9 @@ public class AppCMSPageUICall {
                 if (existingFilename.contains(fileToDeleteFilenamePatter)) {
                     File fileToDelete = new File(storageDirectory, existingFilename);
                     try {
-                    if (fileToDelete.delete()) {
-                        Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
-                    } else {
+                        if (fileToDelete.delete()) {
+                            Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
+                        } else {
                             Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
                         }
                     } catch (Exception e) {

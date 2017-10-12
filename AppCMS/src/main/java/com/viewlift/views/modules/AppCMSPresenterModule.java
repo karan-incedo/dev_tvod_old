@@ -23,6 +23,7 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
+import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
@@ -100,6 +101,7 @@ public class AppCMSPresenterModule {
 
                                                    AppCMSAndroidModuleCall appCMSAndroidModuleCall,
 
+                                                   AppCMSSignedURLCall appCMSSignedURLCall,
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -143,6 +145,7 @@ public class AppCMSPresenterModule {
 
                 appCMSAndroidModuleCall,
 
+                appCMSSignedURLCall,
                 appCMSAddToWatchlistCall,
 
                 appCMSCCAvenueCall,

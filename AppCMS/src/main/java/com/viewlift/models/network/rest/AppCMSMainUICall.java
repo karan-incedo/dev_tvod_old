@@ -91,12 +91,23 @@ public class AppCMSMainUICall {
                 if (tryCount == 0) {
                     return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
+                try {
+                    return readMainFromFile(getResourceFilename(appCMSMainUrl));
+                } catch (Exception e1) {
+                    Log.e(TAG, "Could not retrieve main.json from file: " +
+                        e1.getMessage());
+                }
                 return null;
             } finally {
                 future.cancel(true);
             }
 
-            main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
+            try {
+                main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
+            }
+
             String filename = getResourceFilename(appCMSMainUrl);
             try {
                 mainInStorage = readMainFromFile(filename);
@@ -137,7 +148,9 @@ public class AppCMSMainUICall {
 
     private AppCMSMain writeMainToFile(String outputFilename, AppCMSMain main) throws IOException {
         OutputStream outputStream = new FileOutputStream(
-                new File(storageDirectory.toString() + outputFilename));
+                new File(storageDirectory.toString() +
+                        File.separatorChar +
+                        outputFilename));
         String output = gson.toJson(main, AppCMSMain.class);
         outputStream.write(output.getBytes());
         outputStream.close();
@@ -145,7 +158,9 @@ public class AppCMSMainUICall {
     }
 
     private AppCMSMain readMainFromFile(String inputFilename) throws IOException {
-        InputStream inputStream = new FileInputStream(storageDirectory.toString() + inputFilename);
+        InputStream inputStream = new FileInputStream(storageDirectory.toString() +
+                File.separatorChar +
+                inputFilename);
         Scanner scanner = new Scanner(inputStream);
         StringBuffer sb = new StringBuffer();
         while (scanner.hasNextLine()) {

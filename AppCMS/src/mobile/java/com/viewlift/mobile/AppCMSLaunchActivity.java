@@ -22,6 +22,7 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
+import com.google.android.gms.iid.InstanceID;
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
@@ -47,6 +48,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         Log.d(TAG, "Search query (optional): " + searchQuery);
         appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+        appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
 
         if (!BaseView.isTablet(this)) {
             appCMSPresenterComponent.appCMSPresenter().restrictPortraitOnly();
