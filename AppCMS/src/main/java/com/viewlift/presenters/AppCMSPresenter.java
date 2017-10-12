@@ -814,7 +814,7 @@ public class AppCMSPresenter {
                             appCMSVideoDetail.getRecords().get(0) != null) {
                         readyAction.call(appCMSVideoDetail.getRecords().get(0));
                     }
-                });
+                }).execute(params);
     }
 
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
