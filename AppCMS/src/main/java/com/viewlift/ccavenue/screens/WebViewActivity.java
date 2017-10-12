@@ -217,6 +217,9 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onPageFinished(WebView view, String url) {
 					super.onPageFinished(webview, url);
+
+					backPressFlag = false;
+
 					final Handler handler = new Handler();
 					handler.postDelayed(new Runnable() {
 						@Override
