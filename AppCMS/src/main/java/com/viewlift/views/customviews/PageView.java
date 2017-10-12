@@ -1,13 +1,27 @@
 package com.viewlift.views.customviews;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.PopupMenuCompat;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
+import android.widget.Toast;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -49,6 +63,7 @@ public class PageView extends BaseView {
                         FrameLayout.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
         adapterList = new ArrayList<>();
+
     }
 
     public void addListWithAdapter(ListWithAdapter listWithAdapter) {
@@ -126,7 +141,9 @@ public class PageView extends BaseView {
                 new NestedScrollView.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
         nestedScrollView.setLayoutParams(nestedScrollViewLayoutParams);
+        nestedScrollView.setId(R.id.home_nested_scroll_view);
         nestedScrollView.addView(childrenContainer);
+
         addView(nestedScrollView);
         return childrenContainer;
     }

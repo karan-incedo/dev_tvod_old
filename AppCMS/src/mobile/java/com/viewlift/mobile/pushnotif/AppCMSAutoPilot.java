@@ -1,4 +1,4 @@
-package com.viewlift.pushnotif;
+package com.viewlift.mobile.pushnotif;
 
 import android.support.annotation.NonNull;
 

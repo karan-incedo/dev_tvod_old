@@ -76,7 +76,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             Log.e(TAG, "Failed to extract appCMSBinder from args");
         }
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
-        RecyclerView navItemsList = view.findViewById(R.id.nav_items_list);
+        RecyclerView navItemsList = (RecyclerView) view.findViewById(R.id.nav_items_list);
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
@@ -94,16 +94,16 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSPresenter.restrictPortraitOnly();
             }
 
-            LinearLayout appCMSNavLoginContainer = view.findViewById(R.id.app_cms_nav_login_container);
+            LinearLayout appCMSNavLoginContainer = (LinearLayout) view.findViewById(R.id.app_cms_nav_login_container);
             if (appCMSPresenter.isUserLoggedIn()) {
                 appCMSNavLoginContainer.setVisibility(View.GONE);
             } else {
                 appCMSNavLoginContainer.setVisibility(View.VISIBLE);
                 View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
                 appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
-                TextView appCMSNavItemsLoggedOutMessage = view.findViewById(R.id.app_cms_nav_items_logged_out_message);
+                TextView appCMSNavItemsLoggedOutMessage = (TextView) view.findViewById(R.id.app_cms_nav_items_logged_out_message);
                 appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
-                Button appCMSNavLoginButton = view.findViewById(R.id.app_cms_nav_login_button);
+                Button appCMSNavLoginButton = (Button) view.findViewById(R.id.app_cms_nav_login_button);
                 appCMSNavLoginButton.setTextColor(textColor);
                 appCMSNavLoginButton.setOnClickListener(v -> {
                     if (appCMSPresenter != null) {
@@ -126,7 +126,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
                 appCMSNavLoginButton.setBackground(loginBorder);
 
-                Button appCMSNavFreeTrialButton = view.findViewById(R.id.app_cms_nav_free_trial_button);
+                Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
                 if (appCMSPresenter.getAppCMSMain()
                         .getServiceType()
                         .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
@@ -160,7 +160,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
 
     private void setBgColor(int bgColor, View view) {
         RelativeLayout appCMSNavigationMenuMainLayout =
-                view.findViewById(R.id.app_cms_navigation_menu_main_layout);
+                (RelativeLayout) view.findViewById(R.id.app_cms_navigation_menu_main_layout);
         appCMSNavigationMenuMainLayout.setBackgroundColor(bgColor);
     }
 }

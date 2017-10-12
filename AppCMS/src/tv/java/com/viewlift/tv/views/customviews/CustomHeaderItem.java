@@ -23,6 +23,18 @@ public class CustomHeaderItem extends HeaderItem {
     private String mBackGroundColor;
 
 
+    public String getmModuleId() {
+        return mModuleId;
+    }
+
+    public void setmModuleId(String mModuleId) {
+        this.mModuleId = mModuleId;
+    }
+
+    private String mModuleId;
+
+
+
     public void setFontFamily(String fontFamily) {
         this.fontFamily = fontFamily;
     }

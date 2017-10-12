@@ -236,7 +236,9 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                                 updateNoResultsDisplay(appCMSPresenter, data);
                             }
                         }
-                    }, appCMSSearchCall).execute(url, appCMSPresenter.getApiKey());
+                    },
+                            appCMSSearchCall,
+                            appCMSPresenter.getApiKey()).execute(url, appCMSPresenter.getApiKey());
                 }
             }
         }
@@ -258,11 +260,14 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     private static class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
         final Action1<List<AppCMSSearchResult>> dataReadySubscriber;
         final AppCMSSearchCall appCMSSearchCall;
+        final String apiKey;
 
         SearchAsyncTask(Action1<List<AppCMSSearchResult>> dataReadySubscriber,
-                        AppCMSSearchCall appCMSSearchCall) {
+                        AppCMSSearchCall appCMSSearchCall,
+                        String apiKey) {
             this.dataReadySubscriber = dataReadySubscriber;
             this.appCMSSearchCall = appCMSSearchCall;
+            this.apiKey = apiKey;
         }
 
         @Override

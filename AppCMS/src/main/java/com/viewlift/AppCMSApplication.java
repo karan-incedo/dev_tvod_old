@@ -8,7 +8,6 @@ import android.util.Log;
 import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
-import com.urbanairship.UAirship;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
@@ -16,6 +15,8 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.components.DaggerAppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
 
+import java.util.HashMap;
+import java.util.Map;
 import io.fabric.sdk.android.Fabric;
 
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
@@ -29,11 +30,13 @@ public class AppCMSApplication extends Application {
 
     private AppCMSPresenterComponent appCMSPresenterComponent;
 
+    private Map<Activity, Integer> closeAppMap;
     @Override
     public void onCreate() {
         super.onCreate();
 
         Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+        closeAppMap = new HashMap<>();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
@@ -49,6 +52,10 @@ public class AppCMSApplication extends Application {
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
                 AppsFlyerUtils.appOpenEvent(activity);
+                if (closeAppMap.containsKey(activity)) {
+                    activity.finish();
+                    closeAppMap.remove(activity);
+                }
             }
 
             @Override
@@ -82,6 +89,9 @@ public class AppCMSApplication extends Application {
                 Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
                 appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
+                if (closeAppMap.containsKey(activity)) {
+                    closeAppMap.remove(activity);
+                }
             }
         });
 
@@ -92,11 +102,12 @@ public class AppCMSApplication extends Application {
         Fabric.with(this, new Crashlytics());
         AppsFlyerLib.getInstance().startTracking(this, getString(R.string.app_cms_appsflyer_dev_key));
         trackInstallationEvent(this);
-        UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
-        Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
         return appCMSPresenterComponent;
+    }
+    public void setCloseApp(Activity activity) {
+        closeAppMap.put(activity, 1);
     }
 }

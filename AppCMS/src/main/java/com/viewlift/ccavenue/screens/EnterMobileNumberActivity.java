@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.customviews.BaseView;
 
 public class EnterMobileNumberActivity extends AppCompatActivity {
 
@@ -36,9 +35,6 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        if (!BaseView.isTablet(this)) {
-            appCMSPresenter.restrictPortraitOnly();
-        }
 
         id_et_mobile_number = (EditText) findViewById(R.id.id_et_mobile_number) ;
         id_btn_checkout = (Button) findViewById(R.id.id_btn_checkout) ;

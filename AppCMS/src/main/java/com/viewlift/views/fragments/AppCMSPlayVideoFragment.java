@@ -348,14 +348,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         videoPlayerMainContainer =
-                rootView.findViewById(R.id.app_cms_video_player_main_container);
+                (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_main_container);
 
         videoPlayerInfoContainer =
-                rootView.findViewById(R.id.app_cms_video_player_info_container);
+                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
-        mMediaRouteButton = rootView.findViewById(R.id.media_route_button);
+        mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
-        videoPlayerTitleView = rootView.findViewById(R.id.app_cms_video_player_title_view);
+        videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
 
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
@@ -366,7 +366,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         sendFirebaseAnalyticsEvents(title);
 
-        videoPlayerViewDoneButton = rootView.findViewById(R.id.app_cms_video_player_done_button);
+        videoPlayerViewDoneButton = (ImageButton) rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(v -> {
             if (onClosePlayerEvent != null) {
                 videoPlayerView.releasePlayer();
@@ -376,11 +376,11 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
-        videoPlayerView = rootView.findViewById(R.id.app_cms_video_player_container);
+        videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         videoPlayerView.setListener(this);
         videoPlayerView.enableController();
 
-        videoLoadingProgress = rootView.findViewById(R.id.app_cms_video_loading);
+        videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
 
         setCasting();
 
@@ -968,32 +968,32 @@ public class AppCMSPlayVideoFragment extends Fragment
     private void initViewForCRW(View rootView) {
 
         contentRatingMainContainer =
-                rootView.findViewById(R.id.app_cms_content_rating_main_container);
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_main_container);
 
         contentRatingAnimationContainer =
-                rootView.findViewById(R.id.app_cms_content_rating_animation_container);
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_animation_container);
 
         contentRatingInfoContainer =
-                rootView.findViewById(R.id.app_cms_content_rating_info_container);
+                (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
 
-        contentRatingHeaderView = rootView.findViewById(R.id.app_cms_content_rating_header_view);
+        contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
         setTypeFace(getContext(), contentRatingHeaderView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingTitleHeader = rootView.findViewById(R.id.app_cms_content_rating_title_header);
+        contentRatingTitleHeader = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_header);
         setTypeFace(getContext(), contentRatingTitleHeader, getString(R.string.helvaticaneu_italic));
 
-        contentRatingTitleView = rootView.findViewById(R.id.app_cms_content_rating_title);
+        contentRatingTitleView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title);
         setTypeFace(getContext(), contentRatingTitleView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingDiscretionView = rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
+        contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
         setTypeFace(getContext(), contentRatingDiscretionView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingBack = rootView.findViewById(R.id.app_cms_content_rating_back);
+        contentRatingBack = (TextView) rootView.findViewById(R.id.app_cms_content_rating_back);
         setTypeFace(getContext(), contentRatingBack, getContext().getString(R.string.helvaticaneu_bold));
 
         contentRatingBackUnderline = rootView.findViewById(R.id.app_cms_content_rating_back_underline);
 
-        progressBar = rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
 
         if (!TextUtils.isEmpty(fontColor)) {
             contentRatingTitleHeader.setTextColor(Color.parseColor(fontColor));

@@ -98,7 +98,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public VideoPlayerView(Context context) {
         super(context);
-        this.uri = uri;
         init(context, null, 0);
     }
 
@@ -251,10 +250,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = findViewById(R.id.videoPlayerView);
+        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        ccToggleButton = playerView.findViewById(R.id.ccButton);
+        ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
@@ -674,7 +673,26 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
-            return dataSource.read(buffer, offset, readLength);
+            int result = 0;
+            if (dataSource instanceof FileDataSource) {
+                try {
+                    long bytesRead = ((FileDataSource) dataSource).getBytesRead();
+                    result = dataSource.read(buffer, offset, readLength);
+                    for (int i = 0; i < 10 - bytesRead && i < readLength; i++) {
+                        if (~buffer[i] >= -128 && ~buffer[i] <= 127) {
+                            buffer[i + offset] = (byte) ~buffer[i + offset];
+                        }
+                    }
+                    return result;
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to retrieve number of bytes read from file input stream: " +
+                        e.getMessage());
+                    result = dataSource.read(buffer, offset, readLength);
+                }
+            } else {
+                result = dataSource.read(buffer, offset, readLength);
+            }
+            return result;
         }
 
         @Override

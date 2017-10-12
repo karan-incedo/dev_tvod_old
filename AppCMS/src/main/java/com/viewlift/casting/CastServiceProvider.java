@@ -2,6 +2,7 @@ package com.viewlift.casting;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -11,6 +12,7 @@ import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.media.MediaRouter;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -25,6 +27,10 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.casting.roku.RokuCastingOverlay;
+import com.viewlift.casting.roku.RokuDevice;
+import com.viewlift.casting.roku.RokuLaunchThreadParams;
+import com.viewlift.casting.roku.RokuWrapper;
 import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -43,6 +49,7 @@ public class CastServiceProvider {
     private FragmentActivity mActivity;
     private ImageButton mMediaRouteButton;
     private CastHelper mCastHelper;
+    private RokuWrapper rokuWrapper;
     private boolean isHomeScreen=false;
     private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
@@ -73,6 +80,7 @@ public class CastServiceProvider {
 
     public void setCasting() {
         initChromecast();
+        initRoku();
     }
 
 
@@ -86,6 +94,10 @@ public class CastServiceProvider {
         }
         mCastHelper.setCallBackListener(callBackCastHelper);
         mCastHelper.setCastSessionManager();
+    }
+    private void initRoku() {
+        rokuWrapper = RokuWrapper.getInstance();
+        rokuWrapper.setListener(callBackRokuDiscoveredDevices);
     }
 
     /*
@@ -129,13 +141,25 @@ public class CastServiceProvider {
         if (mCastHelper.isRemoteDeviceConnected()) {
             launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             isConnected = true;
+            stopRokuDiscovery();
         }
         return isConnected;
     }
 
+    public boolean playRokuCastPlaybackIfCastConnected() {
+        boolean isConnected = false;
+        if (rokuWrapper.isRokuConnected()) {
+            launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_ROKU);
+            isConnected = true;
+        }
+        return isConnected;
+    }
+    public void launchRokuCasting(String filmId, String videoImageUrl, String title) {
+        launchRokuPlaybackLocation();
+    }
     public boolean isCastingConnected() {
         boolean isConnected = false;
-        if (mCastHelper.isCastDeviceAvailable && mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
+        if (mCastHelper.isCastDeviceAvailable && mCastHelper.isRemoteDeviceConnected() && rokuWrapper.isRokuConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
             isConnected = true;
         }
         return isConnected;
@@ -148,14 +172,27 @@ public class CastServiceProvider {
             mCastHelper.routes.addAll(mCastHelper.mMediaRouter.getRoutes());
         }
 
+	mCastHelper.routes.addAll(rokuWrapper.getRokuDevices());
         mCastHelper.onFilterRoutes(mCastHelper.routes);
         castChooserDialog.setRoutes(mCastHelper.routes);
     }
 
+    private void startRokuDiscovery() {
+        String appId = "";
+        if (!TextUtils.isEmpty(appId))
+            rokuWrapper.startDiscoveryTimer();
+    }
+    private void stopRokuDiscovery() {
+        if (rokuWrapper.isRokuDiscoveryTimerRunning()) {
+            rokuWrapper.stopDiscoveryTimer();
+        }
+    }
     public void onAppDestroy() {
         mCastHelper.removeCastSessionManager();
         mCastHelper.removeCallBackListener(null);
         mCastHelper.removeInstance();
+        rokuWrapper.removeListener();
+        stopRokuDiscovery();
     }
 
 
@@ -174,6 +211,7 @@ public class CastServiceProvider {
             if (mActivity != null && mActivity instanceof AppCMSPlayVideoActivity) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             }
+            stopRokuDiscovery();
         }
 
         @Override
@@ -185,6 +223,7 @@ public class CastServiceProvider {
             List<MediaRouter.RouteInfo> c_routes = mMediaRouter.getRoutes();
             mCastHelper.routes.clear();
             mCastHelper.routes.addAll(c_routes);
+            mCastHelper.routes.addAll(rokuWrapper.getRokuDevices());
             mCastHelper.onFilterRoutes(mCastHelper.routes);
             mCastHelper.isCastDeviceAvailable = mCastHelper.routes.size() > 0;
             refreshCastMediaIcon();
@@ -215,12 +254,17 @@ public class CastServiceProvider {
             mCastHelper.mSelectedDevice = CastDevice.getFromBundle(info.getExtras());
             mCastHelper.isCastDeviceConnected = true;
             refreshCastMediaIcon();
+            if (rokuWrapper.isRokuDiscoveryTimerRunning()) {
+                rokuWrapper.stopDiscoveryTimer();
+            }
         }
 
         @Override
         public void onRouterUnselected(MediaRouter mMediaRouter, MediaRouter.RouteInfo info) {
             mCastHelper.mSelectedDevice = null;
             refreshCastMediaIcon();
+            if (!rokuWrapper.isRokuDiscoveryTimerRunning()) {
+            }
         }
     };
 
@@ -230,11 +274,73 @@ public class CastServiceProvider {
      */
     CastChooserDialog.CastChooserDialogEventListener callBackRokuMediaSelection = new CastChooserDialog.CastChooserDialogEventListener() {
         @Override
+        public void onRokuDeviceSelected(RokuDevice selectedRokuDevice) {
+            mMediaRouteButton.setOnClickListener(null);
+            castAnimDrawable.start();
+            rokuWrapper.setSelectedRokuDevice(selectedRokuDevice);
+            if (mActivity != null)
+                launchRokuPlaybackLocation();
+        }
+        @Override
         public void onChromeCastDeviceSelect() {
             mMediaRouteButton.setOnClickListener(null);
             castAnimDrawable.start();
         }
     };
+    private void launchRokuPlaybackLocation() {
+        String userId = null;
+        String contentId = "0000015c-a2b4-d7a8-a3dc-b6f6f6ad0000";
+        if (contentId != null && mActivity instanceof AppCMSPlayVideoActivity) {
+            try {
+                rokuWrapper.sendFilmLaunchRequest(
+                        contentId,
+                        RokuLaunchThreadParams.CONTENT_TYPE_FILM,
+                        userId);
+            } catch (Exception e) {
+                rokuWrapper.sendAppLaunchRequest();
+                e.printStackTrace();
+            }
+        } else {
+            rokuWrapper.sendAppLaunchRequest();
+        }
+    }
+    RokuWrapper.RokuWrapperEventListener callBackRokuDiscoveredDevices = new RokuWrapper.RokuWrapperEventListener() {
+        @Override
+        public void onRokuDiscovered(List<RokuDevice> rokuDeviceList) {
+            Log.w(TAG, "MyMediaRouterCallback-onRokuDiscovered  " + rokuWrapper.getRokuDevices());
+            mCastHelper.routes.clear();
+            if (mCastHelper.mMediaRouter != null)
+                mCastHelper.routes.addAll(mCastHelper.mMediaRouter.getRoutes());
+            mCastHelper.routes.addAll(rokuWrapper.getRokuDevices());
+            mCastHelper.onFilterRoutes(mCastHelper.routes);
+            castChooserDialog.setRoutes(mCastHelper.routes);
+            mCastHelper.isCastDeviceAvailable = mCastHelper.routes.size() > 0;
+            refreshCastMediaIcon();
+        }
+        @Override
+        public void onRokuConnected(RokuDevice selectedRokuDevice) {
+            rokuWrapper.setRokuConnected(true);
+            refreshCastMediaIcon();
+            if (rokuWrapper.isRokuDiscoveryTimerRunning()) {
+                rokuWrapper.stopDiscoveryTimer();
+            }
+            setRokuPlayScreen();
+        }
+        @Override
+        public void onRokuStopped() {
+            rokuWrapper.setRokuConnected(false);
+            refreshCastMediaIcon();
+            if (!rokuWrapper.isRokuDiscoveryTimerRunning()) {
+            }
+        }
+        @Override
+        public void onRokuConnectedFailed(String obj) {
+        }
+    };
+    private void setRokuPlayScreen() {
+        if (mActivity instanceof AppCMSPlayVideoActivity)
+            mActivity.startActivity(new Intent(mActivity, RokuCastingOverlay.class));
+    }
     public void isHomeScreen(boolean fromHomePage) {
         isHomeScreen=fromHomePage;
     }
@@ -304,7 +410,7 @@ public class CastServiceProvider {
         }
 
         if (mCastHelper.isCastDeviceAvailable) {
-            if (mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
+            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources().getDrawable(R.drawable.toolbar_cast_connected, null);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());

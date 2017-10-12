@@ -2,10 +2,12 @@ package com.viewlift.models.network.rest;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
 import java.io.File;
@@ -18,6 +20,9 @@ import java.nio.charset.Charset;
 import java.util.Scanner;
 
 import javax.inject.Inject;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -45,12 +50,14 @@ public class AppCMSPageUICall {
         AppCMSPageUI appCMSPageUI = null;
         try {
             appCMSPageUI = readPageFromFile(filename);
+            appCMSPageUI.setLoadedFromNetwork(false);
         } catch (Exception e) {
             Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
             try {
                 deletePreviousFiles(url);
                 appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
                         .execute().body());
+                appCMSPageUI.setLoadedFromNetwork(true);
             } catch (Exception e2) {
                 Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
                         e2.getMessage());
@@ -72,15 +79,18 @@ public class AppCMSPageUICall {
 
     private void deletePreviousFiles(String url) {
         String fileToDeleteFilenamePatter = getResourceFilenameWithJsonOnly(url);
-        File savedFileDirectory = new File(storageDirectory.toString());
-        if (savedFileDirectory.isDirectory()) {
-            String[] listExistingFiles = savedFileDirectory.list();
+        if (storageDirectory.isDirectory()) {
+            String[] listExistingFiles = storageDirectory.list();
             for (String existingFilename : listExistingFiles) {
                 if (existingFilename.contains(fileToDeleteFilenamePatter)) {
-                    File fileToDelete = new File(existingFilename);
+                    File fileToDelete = new File(storageDirectory, existingFilename);
+                    try {
                     if (fileToDelete.delete()) {
                         Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
                     } else {
+                            Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                        }
+                    } catch (Exception e) {
                         Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
                     }
                 }

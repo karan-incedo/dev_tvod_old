@@ -19,4 +19,12 @@ public interface ModuleWithComponents {
     String getId();
 
     boolean isSvod();
+    String getBlockName();
+    void setBlockName(String blockName);
+    String getType();
+    void setType(String type);
+    void setId(String id);
+    void setSettings(Settings settings);
+    void setSvod(boolean svod);
+    void setView(String view);
 }

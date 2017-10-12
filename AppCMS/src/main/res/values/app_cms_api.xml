@@ -1,23 +1,14 @@
 <resources>
     <!-- Primary app values -->
-    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
 
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
 
-    <string name="app_cms_app_name">f2410236-d5e8-4031-8c55-a56c2f8b1e5f</string>
 
-    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
-    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
 
     <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
-    <!-- x-api-key -->
-    <!--<string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>-->
-    <string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
-
-    <!-- AppCMS StreamingInfo API -->
+       <!-- AppCMS StreamingInfo API -->
     <string name="app_cms_streaminginfo_api_url">%1$s/content/videos/%2$s?site=%3$s&amp;fields=streamingInfo</string>
 
     <!-- AppCMS Search API -->
@@ -135,6 +126,7 @@
     <string name="app_cms_page_passwordtextfield_key">passwordTextField</string>
     <string name="app_cms_page_passwordtextfield2_key">password label</string>
     <string name="app_cms_page_forgotpassword_key">forgot password button</string>
+    <string name="app_cms_page_login_key">login button</string>
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
@@ -155,7 +147,7 @@
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
     <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
-
+      <string name="app_cms_setting_module">AC UserManagement 01</string>
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_change_password_key">Change Password</string>
 
@@ -219,6 +211,11 @@
     <string name="app_cms_page_subscription_page_name_key">View Plans</string>
     <string name="app_cms_page_show_page_name_key">Show Page</string>
 
+    <string name="app_cms_page_grid_option_key">gridOptions</string>
+    <string name="app_cms_page_thumbnail_option_key">thumbnailInfo</string>
+    <string name="app_cms_page_thumbnail_badgeimage">thumbnailBadgeImage</string>
+    <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
+
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_selection_plan_key">AC SelectPlan 02</string>
@@ -272,6 +269,7 @@
     <string name="app_cms_action_search_key">search</string>
     <string name="app_cms_action_login_key">login</string>
     <string name="app_cms_action_forgotpassword_key">forgotPassword</string>
+    <string name="app_cms_page_name_forgotpassword">Reset Password</string>
     <string name="app_cms_action_loginfacebook_key">loginFacebook</string>
     <string name="app_cms_action_signupfacebook_key">signupfacebook</string>
     <string name="app_cms_action_editprofile_key">editProfile</string>
@@ -316,8 +314,8 @@
     <string name="app_cms_subscription_key">android</string>
 
     <!--AppCMS Subscription Plan API-->
-    <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s</string>
-    <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s</string>
+    <string name="app_cms_subscription_plan_api_url">%1$s/subscription/plan?site=%2$s&amp;device=android_phone</string>
+    <string name="app_cms_subscription_plan_list_api_url">%1$s/subscription/plans?site=%2$s&amp;device=android_phone</string>
     <string name="app_cms_subscription_plan_list_key">list</string>
     <string name="app_cms_subscription_subscribed_plan_key">subscribed_plan</string>
     <string name="app_cms_check_ccavenue_plan_status_key">ccavenue_plan_status</string>
@@ -378,6 +376,15 @@
     <string name="app_cms_download_quality_cancel_button_key">cancelButton</string>
     <string name="app_cms_download_quality_continue_button_key">continueButton</string>
 
+    <string name="app_cms_toggle_switch_type">toggleSwitch</string>
+    <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
+    <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
+    <string name="app_cms_logout_button_key">logout button</string>
+    <string name="app_cms_title_label">titleLabel</string>
+    <string name="app_cms_description_label">descriptionLabel</string>
+    <string name="app_cms_delete_item_button">deleteItemButton</string>
+    <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
+    <string name="app_cms_signup_footer_label_key">signupfooterview</string>
     <!-- AppCMS Payment Processor values -->
     <string name="subscription_ios_payment_processor">iOS</string>
     <string name="subscription_ios_payment_processor_friendly">iTunes</string>
@@ -392,4 +399,15 @@
     <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
     <string name="facebook_auth_provider_name_key">facebook</string>
     <string name="google_auth_provider_name_key">google</string>
+    <string name="app_cms_reset_password_cancel_button_key">cancelButton</string>
+    <string name="app_cms_reset_password_continue_button_key">resetPasswordButton</string>
+    <string name="app_cms_forgotPasswordTitle_key">forgotPasswordTitle</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
+    <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
+    <string name="app_cms_contact_us_module">AC ContactUs 01</string>
+    <string name="app_cms_contact_number_label">contactNumber</string>
+    <string name="app_cms_email_id_label">emailId</string>
+    <string name="app_cms_contact_us_call_icon_key">call_Icon</string>
+    <string name="app_cms_contact_us_email_icon_key">email_Icon</string>
 </resources>

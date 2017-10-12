@@ -1,0 +1,252 @@
+package com.viewlift.tv.views.fragment;
+
+
+import android.app.Activity;
+import android.app.DialogFragment;
+import android.content.Context;
+import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
+import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.tv.views.component.AppCMSTVViewComponent;
+import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
+import com.viewlift.tv.views.customviews.TVPageView;
+import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
+import com.viewlift.views.binders.AppCMSBinder;
+
+public class AppCmsLoginDialogFragment extends DialogFragment {
+
+    private AppCMSPresenter appCMSPresenter;
+    private AppCMSTVViewComponent appCmsViewComponent;
+    private TVPageView tvPageView;
+    private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
+    private Typeface extraBoldTypeFace;
+    private Component extraBoldComp;
+    private Typeface semiBoldTypeFace;
+    private Component semiBoldComp;
+    private Context mContext;
+    FrameLayout pageHolder;
+
+    public AppCmsLoginDialogFragment() {
+        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Translucent_NoTitleBar);
+    }
+
+    public static AppCmsLoginDialogFragment newInstance(AppCMSBinder appCMSBinder) {
+        AppCmsLoginDialogFragment fragment = new AppCmsLoginDialogFragment();
+        Bundle args = new Bundle();
+        args.putBinder("app_cms_binder_key", appCMSBinder);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private AppCMSBinder appCMSBinder;
+    private boolean isLoginPage;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            appCMSBinder = (AppCMSBinder) getArguments().getBinder("app_cms_binder_key");
+            isLoginPage = getArguments().getBoolean("isLoginPage");
+        }
+        appCMSPresenter =
+                ((AppCMSApplication) getActivity().getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+        appCmsViewComponent = buildAppCMSViewComponent();
+    }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        setTypeFaceValue(appCMSPresenter);
+
+        if (appCmsViewComponent == null) {
+            appCmsViewComponent = buildAppCMSViewComponent();
+        }
+
+        if (appCmsViewComponent != null) {
+            tvPageView = appCmsViewComponent.appCMSTVPageView();
+        } else {
+            tvPageView = null;
+        }
+
+        if (tvPageView != null) {
+            if (tvPageView.getParent() != null) {
+                ((ViewGroup) tvPageView.getParent()).removeAllViews();
+            }
+        }
+        if (container != null) {
+            container.removeAllViews();
+        }
+
+        View view = inflater.inflate(R.layout.app_cms_login_dialog_fragment, null);
+        LinearLayout navHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
+        TextView loginView = (TextView) view.findViewById(R.id.textView_login);
+        TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
+
+
+        loginView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+
+                int keyCode = keyEvent.getKeyCode();
+                int action = keyEvent.getAction();
+                if (action == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_LEFT:
+                            return true;
+                        case KeyEvent.KEYCODE_DPAD_RIGHT:
+                            focusSignupView(signupView,loginView);
+                            return true;
+                        case KeyEvent.KEYCODE_DPAD_UP:
+                            return true;
+                        case KeyEvent.KEYCODE_DPAD_DOWN:
+                            focusLoginView(signupView,loginView);
+                            return false;
+                    }
+                }
+                return false;
+            }
+        });
+
+        signupView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                int keyCode = keyEvent.getKeyCode();
+                int action = keyEvent.getAction();
+                if (action == KeyEvent.ACTION_DOWN) {
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_DPAD_LEFT:
+                            focusLoginView(signupView,loginView);
+                            return true;
+                        case KeyEvent.KEYCODE_DPAD_RIGHT:
+                            return true;
+                        case KeyEvent.KEYCODE_DPAD_UP:
+                            return true;
+                        case KeyEvent.KEYCODE_DPAD_DOWN:
+                            focusLoginView(signupView,loginView);
+                            return false;
+                    }
+                }
+                return false;
+            }
+        });
+
+        focusLoginView(signupView,loginView);
+
+        signupView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavigationUser navigationUser = appCMSPresenter.getSignUpNavigation();
+                appCMSPresenter.navigateToTVPage(
+                        navigationUser.getPageId(),
+                        navigationUser.getTitle(),
+                        navigationUser.getUrl(),
+                        false,
+                        Uri.EMPTY,
+                        false,
+                        false,
+                        true
+                );
+            }
+        });
+
+
+        pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
+        pageHolder.addView(tvPageView);
+
+        return view;
+    }
+
+
+    private void focusSignupView(TextView signupView , TextView loginView) {
+        signupView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true));
+        signupView.setTypeface(extraBoldTypeFace);
+        loginView.setBackground(null);
+        loginView.setTypeface(semiBoldTypeFace);
+        signupView.requestFocus();
+    }
+
+    private void focusLoginView(TextView signupView , TextView loginView) {
+        loginView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true));
+        loginView.setTypeface(extraBoldTypeFace);
+        signupView.setBackground(null);
+        signupView.setTypeface(semiBoldTypeFace);
+        loginView.requestFocus();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
+
+    }
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mContext = activity;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((AppCmsHomeActivity) getActivity()).closeSignUpDialog();
+    }
+
+    private void setTypeFaceValue(AppCMSPresenter appCMSPresenter) {
+        if (null == extraBoldTypeFace) {
+            extraBoldComp = new Component();
+            extraBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
+            extraBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_extrabold_key));
+            extraBoldTypeFace = Utils.getTypeFace(mContext, appCMSPresenter.getJsonValueKeyMap()
+                    , extraBoldComp);
+        }
+
+        if (null == semiBoldTypeFace) {
+            semiBoldComp = new Component();
+            semiBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
+            semiBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_semibold_key));
+            semiBoldTypeFace = Utils.getTypeFace(mContext, appCMSPresenter.getJsonValueKeyMap()
+                    , semiBoldComp);
+        }
+    }
+
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        Bundle bundle = new Bundle();
+        super.onActivityCreated(bundle);
+    }
+
+
+    public AppCMSTVViewComponent buildAppCMSViewComponent() {
+        return DaggerAppCMSTVViewComponent.builder()
+                .appCMSTVPageViewModule(new AppCMSTVPageViewModule(mContext,
+                        appCMSBinder.getAppCMSPageUI(),
+                        appCMSBinder.getAppCMSPageAPI(),
+                        appCMSPresenter.getJsonValueKeyMap(),
+                        appCMSPresenter,
+                        true
+                ))
+                .build();
+    }
+
+}

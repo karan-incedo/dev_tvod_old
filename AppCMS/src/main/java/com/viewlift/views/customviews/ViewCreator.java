@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
@@ -65,6 +66,7 @@ import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
+import net.nightwhistler.htmlspanner.TextUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,11 +137,17 @@ public class ViewCreator {
             return;
         }
         for (ModuleList moduleInfo : appCMSPageUI.getModuleList()) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             if (module == null) {
                 module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
             }
-
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
 
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
@@ -153,6 +161,7 @@ public class ViewCreator {
                 ModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
                 boolean shouldHideModule = false;
                 if (moduleView != null) {
+                    moduleView.setVisibility(View.VISIBLE);
                     moduleView.resetHeightAdjusters();
 
                     Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
@@ -196,7 +205,7 @@ public class ViewCreator {
                                                 componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
                                             view.setVisibility(View.VISIBLE);
                                             moduleView.setVisibility(View.VISIBLE);
-                                            } else {
+                                        } else {
                                             if (view != null) {
                                                 view.setVisibility(View.GONE);
                                             }
@@ -390,6 +399,7 @@ public class ViewCreator {
                                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                                             ((TextView) view).setSingleLine(true);
                                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY) {
                                         if (moduleAPI.getContentData() != null &&
@@ -737,6 +747,9 @@ public class ViewCreator {
                                 }
                             }
                         }
+                    }else {
+                        moduleView.setVisibility(View.GONE);
+                        shouldHideModule = true;
                     }
 
                     ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
@@ -833,6 +846,21 @@ public class ViewCreator {
                 }
             }
         }
+        if (pageView != null) {
+            forceRedrawOfAllChildren(pageView);
+        }
+    }
+
+    private void forceRedrawOfAllChildren(ViewGroup viewGroup) {
+        viewGroup.requestLayout();
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View v = viewGroup.getChildAt(i);
+            if (v instanceof ViewGroup) {
+                forceRedrawOfAllChildren((ViewGroup) v);
+            } else {
+                v.requestLayout();
+            }
+        }
     }
 
     public PageView generatePage(Context context,
@@ -910,39 +938,49 @@ public class ViewCreator {
         pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
-        for (ModuleList moduleInfo : modulesList) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getView());
-            if (module == null) {
-                module = moduleInfo;
+            for (ModuleList moduleInfo : modulesList) {
+            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                if (module == null) {
+                    module = moduleInfo;
+            } else if (moduleInfo != null) {
+                module.setId(moduleInfo.getId());
+                module.setSettings(moduleInfo.getSettings());
+                module.setSvod(moduleInfo.isSvod());
+                module.setType(moduleInfo.getType());
+                module.setView(moduleInfo.getView());
+                module.setBlockName(moduleInfo.getBlockName());
+                }
+
+                boolean createModule = !modulesToIgnore.contains(module.getType());
+
+                if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                        (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                                jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) ||
+                        jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY) {
+                    createModule = false;
+                }
+
+                if (createModule) {
+                    if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                            jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
+                            jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
+
+                    }
+                    Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+                    View childView = createModuleView(context, module, moduleAPI,
+                            appCMSAndroidModules,
+                            pageView,
+                            jsonValueKeyMap,
+                            appCMSPresenter);
+                    if (childView != null) {
+                        childrenContainer.addView(childView);
+                        if (childView == null) {
+                            childView.setVisibility(View.GONE);
+                        }
+                    }
+                }
             }
 
-            boolean createModule = !modulesToIgnore.contains(module.getType());
-
-            if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
-                    (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
-                createModule = false;
-            }
-
-            if (createModule) {
-                if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
-                        jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
-                        jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
-
-                }
-                Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
-                View childView = createModuleView(context, module, moduleAPI, pageView,
-                        jsonValueKeyMap,
-                        appCMSPresenter);
-                if (childView != null) {
-                    childrenContainer.addView(childView);
-                }
-                if (moduleAPI == null) {
-                    childView.setVisibility(View.GONE);
-                }
-            }
-        }
 
         List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
         if (presenterOnInternalEvents != null) {
@@ -959,19 +997,22 @@ public class ViewCreator {
     public <T extends ModuleWithComponents> View createModuleView(final Context context,
                                                                   final T module,
                                                                   final Module moduleAPI,
+                                                                  AppCMSAndroidModules appCMSAndroidModules,
                                                                   PageView pageView,
                                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                   AppCMSPresenter appCMSPresenter) {
-        ModuleView moduleView;
+        ModuleView moduleView = null;
         if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY) {
             moduleView = new LoginModule(context,
                     module,
                     moduleAPI,
                     jsonValueKeyMap,
                     appCMSPresenter,
-                    this);
+                    this,
+                    appCMSAndroidModules);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView);
         } else {
+            if (module.getComponents() != null) {
             updateModuleHeight(context,
                     module.getLayout(),
                     module.getComponents(),
@@ -991,6 +1032,7 @@ public class ViewCreator {
                             component,
                             module.getLayout(),
                             moduleAPI,
+                                appCMSAndroidModules,
                             pageView,
                             module.getSettings(),
                             jsonValueKeyMap,
@@ -1139,7 +1181,10 @@ public class ViewCreator {
                 moduleView.setLayoutParams(moduleLayoutParams);
             }
         }
+        }
+        if (moduleView != null) {
         moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        }
         return moduleView;
     }
 
@@ -1162,6 +1207,7 @@ public class ViewCreator {
                                                                final Component component,
                                                                final AppCMSPresenter appCMSPresenter,
                                                                final Module moduleAPI,
+                                                               final AppCMSAndroidModules appCMSAndroidModules,
                                                                Settings settings,
                                                                Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                                int defaultWidth,
@@ -1187,6 +1233,7 @@ public class ViewCreator {
                     childComponent,
                     parentLayout,
                     moduleAPI,
+                    appCMSAndroidModules,
                     null,
                     settings,
                     jsonValueKeyMap,
@@ -1228,6 +1275,7 @@ public class ViewCreator {
                                     final Component component,
                                     final Layout parentLayout,
                                     final Module moduleAPI,
+                                    final AppCMSAndroidModules appCMSAndroidModules,
                                     @Nullable final PageView pageView,
                                     final Settings settings,
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
@@ -1379,7 +1427,8 @@ public class ViewCreator {
                                 moduleAPI,
                                 ViewGroup.LayoutParams.MATCH_PARENT,
                                 ViewGroup.LayoutParams.WRAP_CONTENT,
-                                viewType);
+                                viewType,
+                                appCMSAndroidModules);
 
                         if (!BaseView.isTablet(context)) {
                             componentViewResult.useWidthOfScreen = true;
@@ -1461,7 +1510,8 @@ public class ViewCreator {
                                     moduleAPI,
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    viewType);
+                                    viewType,
+                                    appCMSAndroidModules);
                             componentViewResult.useWidthOfScreen = true;
                             ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
                             if (pageView != null) {
@@ -1508,7 +1558,8 @@ public class ViewCreator {
                                 jsonValueKeyMap,
                                 moduleAPI,
                                 (RecyclerView) componentViewResult.componentView,
-                                loop);
+                                loop,
+                                appCMSAndroidModules);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
                 if (pageView != null) {
                     pageView.addListWithAdapter(new ListWithAdapter.Builder()
@@ -1600,7 +1651,10 @@ public class ViewCreator {
                             .getBlockTitleColor())) {
                         componentViewResult.componentView.setBackgroundColor(Color.parseColor(
                                 getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
-                                        .getGeneral().getBlockTitleColor())));
+                                        .getGeneral().getBackgroundColor())));
+                        applyBorderToComponent(context, componentViewResult.componentView, component,
+                                Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                                        .getGeneral().getBlockTitleColor()));
                     } else {
                         applyBorderToComponent(context, componentViewResult.componentView, component, -1);
                     }
@@ -1665,6 +1719,11 @@ public class ViewCreator {
 
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
+                        break;
+
+                    case PAGE_GRID_OPTION_KEY:
+                        componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
+
                         break;
 
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
@@ -2036,8 +2095,33 @@ public class ViewCreator {
                                 Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                     }
                 }
+                if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
+                    int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                    if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                        textBgColor = Color.parseColor(getColorWithOpacity(context, component.getBackgroundColor(), component.getOpacity()));
+                    }
+                    int textFontColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                    if (!TextUtils.isEmpty(component.getTextColor())) {
+                        textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
+                    }
+                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
+                    ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
-                if (componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_FINISHED_UP_TITLE_KEY
+                    if (!TextUtils.isEmpty(component.getFontFamily())) {
+                        setTypeFace(context,
+                                jsonValueKeyMap,
+                                component,
+                                (TextView) componentViewResult.componentView);
+                    }
+
+                    if (component.getFontSize() > 0) {
+                        ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                    } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
+                        ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
+                    }
+                    break;
+                } else if (componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_FINISHED_UP_TITLE_KEY
                         || componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TITLE_KEY
                         || componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY
                         || componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY
@@ -2206,6 +2290,7 @@ public class ViewCreator {
                                     new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                             ((TextView) componentViewResult.componentView).setSingleLine(true);
+
                             ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             break;
 
@@ -2348,8 +2433,10 @@ public class ViewCreator {
                             break;
                     }
                 } else {
-                    ((TextView) componentViewResult.componentView).setSingleLine(true);
-                    ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                    if (component.getNumberOfLines() <= 1) {
+                        ((TextView) componentViewResult.componentView).setSingleLine(true);
+                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                    }
                 }
 
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -2413,6 +2500,23 @@ public class ViewCreator {
                         int t = 0;
                         break;
 
+                    case PAGE_THUMBNAIL_BADGE_IMAGE:
+                        componentViewResult.componentView = new ImageView(context);
+                        ImageView imageView = (ImageView) componentViewResult.componentView;
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        String iconImageUrl = "https://dummyimage.com/600x400/000/fff&text=badge";//component.getIcon_url();
+                        if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
+                            iconImageUrl = component.getIcon_url();
+                            Glide.with(context)
+                                    .load(iconImageUrl)
+                                    .into(imageView);
+                        } else {
+                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
+                        }
+
+
+                        break;
+
                     case PAGE_VIDEO_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -2450,7 +2554,6 @@ public class ViewCreator {
                                         .fitCenter()
                                         .into((ImageView) componentViewResult.componentView);
                             }
-                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                         }
                         break;
@@ -2524,7 +2627,12 @@ public class ViewCreator {
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                if(component.getBackgroundColor()!=null && !TextUtils.isEmpty(component.getBackgroundColor())){
+                    componentViewResult.componentView.
+                            setBackgroundColor(Color.parseColor(getColor(context,
+                                    component.getBackgroundColor())));
+                }
+                else if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                         .getTextColor())) {
                     componentViewResult.componentView.
                             setBackgroundColor(Color.parseColor(getColor(context,
@@ -2707,6 +2815,7 @@ public class ViewCreator {
                 componentViewResult.componentView = createModuleView(context,
                         component,
                         moduleAPI,
+                        appCMSAndroidModules,
                         pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
@@ -2771,6 +2880,7 @@ public class ViewCreator {
                     componentViewResult.componentView = createModuleView(context,
                             component,
                             moduleAPI,
+                            appCMSAndroidModules,
                             pageView,
                             jsonValueKeyMap,
                             appCMSPresenter);
@@ -2792,6 +2902,13 @@ public class ViewCreator {
             return context.getString(R.string.color_hash_prefix) + color;
         }
         return color;
+    }
+
+    private String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
+        if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
+        }
+        return baseColorCode;
     }
 
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,

@@ -9,7 +9,6 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
@@ -28,7 +27,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.gson.GsonBuilder;
@@ -48,17 +46,13 @@ import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
 import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
-import com.viewlift.views.binders.RetryCallBinder;
 
 import java.io.IOException;
-import java.net.URLDecoder;
+
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.RunnableFuture;
 
 import javax.inject.Inject;
 
@@ -72,14 +66,12 @@ import rx.functions.Action1;
 public class AppCmsSearchFragment extends Fragment {
 
     private static final String TAG = AppCmsSearchFragment.class.getName();
+    private static final long DELAY = 5000;
     @Inject
     AppCMSSearchUrlData appCMSSearchUrlData;
     @Inject
     AppCMSSearchCall appCMSSearchCall;
     private String lastSearchedString = "";
-    private final int SEARCH_THRESHOLD = 3000;
-    private long mLastClickTime;
-    private boolean isCallToBeMade;
     private SearchAsyncTask searchTask;
     private  ModuleList moduleList;
     private int trayIndex = -1;
@@ -162,7 +154,9 @@ public class AppCmsSearchFragment extends Fragment {
                 if (editable.toString().trim().length() >= 3){
                     if(appCMSPresenter.isNetworkConnected()){
                         handler.removeCallbacks(searcRunnable);
-                        handler.postDelayed(searcRunnable,3000);
+
+                        handler.postDelayed(searcRunnable,DELAY);
+
                         progressBar.setVisibility(View.VISIBLE);
                     }else{
                         appCMSPresenter.searchRetryDialog(editable.toString());
@@ -237,8 +231,10 @@ public class AppCmsSearchFragment extends Fragment {
                 case R.id.btn_clear_history:
                     llView.setVisibility(View.INVISIBLE);
                     appCMSPresenter.clearSearchResultsSharePreference();
+                    currentString = "";
+                    previousString = "";
 
-                    if(clrbtnFlag) {
+                  /*  if(clrbtnFlag) {
                         List<String> result = null;
                         result = appCMSPresenter.getSearchResultsFromSharePreference();
                         if(result == null)
@@ -246,7 +242,7 @@ public class AppCmsSearchFragment extends Fragment {
 
                         result.add(lastSearchedString);
                         appCMSPresenter.setSearchResultsOnSharePreference(result);
-                    }
+                    }*/
 
 
                     break;
@@ -350,6 +346,7 @@ public class AppCmsSearchFragment extends Fragment {
     }
 
 
+   String previousString = "" , currentString = "";
     Action1<List<AppCMSSearchResult>> searchDataObserver = new Action1<List<AppCMSSearchResult>>() {
         @Override
         public void call(List<AppCMSSearchResult> appCMSSearchResults) {
@@ -360,21 +357,34 @@ public class AppCmsSearchFragment extends Fragment {
             if(null != appCMSSearchResults && appCMSSearchResults.size() > 0){
                 clrbtnFlag = true;
                 noSearchTextView.setVisibility(View.GONE);
-                addSearchValueInSharePref();
+
+                if(currentString.length() > 0){
+                    previousString = currentString;
+                }
+                currentString = lastSearchedString;
+
+                if(previousString.length() > 0){
+                    addSearchValueInSharePref(previousString);
+                }
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
                 if (resultForTv != null && resultForTv.size() > 0) {
-                    if(resultForTv.size() > 1){
+                    if(resultForTv.size() > 0){
                         llView.setVisibility(View.VISIBLE);
-                        setSearchValueOnView(resultForTv, resultForTv.size() - 1);
+                        setSearchValueOnView(resultForTv, resultForTv.size());
+
                     } else {
                         llView.setVisibility(View.INVISIBLE);
                     }
                 }
                 setAdapter(appCMSSearchResults);
             }else{
-                clrbtnFlag = false;
-                noSearchTextView.setText(getString(R.string.app_cms_no_search_result , lastSearchedString).toUpperCase());
-                noSearchTextView.setVisibility(View.VISIBLE);
+                if(!appCMSPresenter.isNetworkConnected()){
+                    appCMSPresenter.searchRetryDialog(lastSearchedString.toString());
+                }else{
+                    clrbtnFlag = false;
+                    noSearchTextView.setText(getString(R.string.app_cms_no_search_result , lastSearchedString).toUpperCase());
+                    noSearchTextView.setVisibility(View.VISIBLE);
+                }
 
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
                 if (resultForTv != null && resultForTv.size() > 0) {
@@ -392,6 +402,15 @@ public class AppCmsSearchFragment extends Fragment {
 
     };
 
+    @Override
+    public void onPause() {
+        if(currentString.length() > 0){
+            addSearchValueInSharePref(currentString);
+        }
+        currentString = "";
+        previousString = "";
+        super.onPause();
+    }
 
     public void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -415,23 +434,24 @@ public class AppCmsSearchFragment extends Fragment {
         }
     }
 
-    private void addSearchValueInSharePref(){
+    private void addSearchValueInSharePref(String valueToBeSaved){
         List<String> result = appCMSPresenter.getSearchResultsFromSharePreference();
         if(result == null) {
             List<String> list = new ArrayList<String>();
-            list.add(lastSearchedString);
+            list.add(valueToBeSaved);
             appCMSPresenter.setSearchResultsOnSharePreference(list);
         } else {
             if (!result.isEmpty() && result.size() == 4) {
                 result.remove(result.iterator().next());
             }
             for(int i = 0; i < result.size(); i++) {
-                if(lastSearchedString.trim().equalsIgnoreCase(result.get(i).trim())){
+                if(valueToBeSaved.trim().equalsIgnoreCase(result.get(i).trim())){
+
                     result.remove(result.get(i));
                     break;
                 }
             }
-            result.add(lastSearchedString);
+            result.add(valueToBeSaved);
             appCMSPresenter.setSearchResultsOnSharePreference(result);
         }
 
@@ -462,8 +482,6 @@ public class AppCmsSearchFragment extends Fragment {
             }
         }
     };
-
-
 
     private class SearchAsyncTask extends AsyncTask<String, Void, List<AppCMSSearchResult>> {
         final Action1<List<AppCMSSearchResult>> dataReadySubscriber;
@@ -586,6 +604,7 @@ public class AppCmsSearchFragment extends Fragment {
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                     rowData.contentData = searchResult.getContent();
                     rowData.uiComponentList = component.getComponents();
+                    rowData.action = component.getTrayClickAction();
                     traylistRowAdapter.add(rowData);
                     Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                 }

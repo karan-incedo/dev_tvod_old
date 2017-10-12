@@ -20,9 +20,10 @@ public class AbsDialogFragment extends DialogFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        int width  = savedInstanceState.getInt( getString(R.string.tv_dialog_width_key) , -1);
+        int height =  savedInstanceState.getInt( getString(R.string.tv_dialog_height_key) , -1);
+
         if (getDialog().getWindow() != null) {
-            int width = getResources().getDimensionPixelSize(R.dimen.text_overlay_dialog_width);
-            int height = getResources().getDimensionPixelSize(R.dimen.text_overlay_dialog_height);
             getDialog().getWindow().setLayout(width, height);
             getDialog().getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             getDialog().getWindow().setDimAmount(0.6f);

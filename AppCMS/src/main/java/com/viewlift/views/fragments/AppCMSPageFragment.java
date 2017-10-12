@@ -5,12 +5,14 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
@@ -51,6 +53,7 @@ public class AppCMSPageFragment extends Fragment {
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     private boolean shouldSendFirebaseViewItemEvent;
+    private ViewGroup pageViewGroup;
     private VideoPlayerView videoPlayerView;
 
     public interface OnPageCreation {
@@ -110,6 +113,8 @@ public class AppCMSPageFragment extends Fragment {
             pageView = appCMSViewComponent.appCMSPageView();
         } else {
             pageView = null;
+            Log.e(TAG, "AppCMS page creation error");
+            onPageCreation.onError(appCMSBinder);
         }
 
         if (pageView != null) {
@@ -123,9 +128,13 @@ public class AppCMSPageFragment extends Fragment {
             }
             onPageCreation.onSuccess(appCMSBinder);
             videoPlayerView = pageView.findViewById(R.id.video_player_id);
+        } else {
+            Log.e(TAG, "AppCMS page creation error");
+            onPageCreation.onError(appCMSBinder);
         }
         if (container != null) {
             container.removeAllViews();
+            pageViewGroup = container;
         }
         /**
          * Here we are sending analytics for the screen views. Here we will log the events for
@@ -134,6 +143,37 @@ public class AppCMSPageFragment extends Fragment {
         if (shouldSendFirebaseViewItemEvent) {
             sendFirebaseAnalyticsEvents(appCMSBinder);
             shouldSendFirebaseViewItemEvent = false;
+        }
+        if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView &&
+                appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().get(1) !=null &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() !=null ){
+
+            if(appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()){
+                NestedScrollView nestedScrollView= (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
+                Toast.makeText(getContext(),"Created Scroll Event listener  ",Toast.LENGTH_SHORT).show();
+                nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+                    int tempheight = (int) appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getLayout().getMobile().getHeight();
+
+                    @Override
+                    public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+                   if (scrollY > (tempheight + 300) && !appCMSPresenter.pipPlayerVisible) {
+                      //  Toast.makeText(v.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
+                       appCMSPresenter.showPopupWindowPlayer(v);
+                    } else if (scrollY < (tempheight + 300)) {
+                       appCMSPresenter.pipPlayerVisible = false;
+                        appCMSPresenter.dismissPopupWindowPlayer();
+
+                    }
+
+                    }
+                });
+            }else {
+                appCMSPresenter.dismissPopupWindowPlayer();
+            }
+
         }
 
         return pageView;
@@ -189,10 +229,7 @@ public class AppCMSPageFragment extends Fragment {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
 
-        if (pageView == null) {
-            Log.e(TAG, "AppCMS page creation error");
-            onPageCreation.onError(appCMSBinder);
-        } else {
+        if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
             if(videoPlayerView != null) {
                 videoPlayerView.startPlayer();
@@ -216,6 +253,13 @@ public class AppCMSPageFragment extends Fragment {
         }
         appCMSBinder = null;
         pageView = null;
+    }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (pageViewGroup != null) {
+            pageViewGroup.removeAllViews();
+        }
     }
 
     @Override
@@ -272,17 +316,18 @@ public class AppCMSPageFragment extends Fragment {
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
-            viewCreator.refreshPageView(pageView,
-                    getContext(),
+            pageView = viewCreator.generatePage(getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
                     appCMSPresenter.getAppCMSAndroidModules(),
+                    appCMSBinder.getScreenName(),
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSPresenter,
                     modulesToIgnore);
+            if (pageViewGroup != null && pageView != null) {
+                pageViewGroup.removeAllViews();
+                pageViewGroup.addView(pageView);
         }
-        if (pageView != null) {
-            pageView.requestLayout();
         }
     }
 }
