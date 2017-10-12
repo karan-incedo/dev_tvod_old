@@ -1,9 +1,7 @@
 package com.viewlift.models.network.rest;
 
-
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginRequest;
 import com.viewlift.models.data.appcms.ui.authentication.FacebookLoginResponse;
-
 
 import javax.inject.Inject;
 
@@ -37,7 +35,7 @@ public class AppCMSFacebookLoginCall {
         appCMSFacebookLoginRest.login(url, facebookLoginRequest).enqueue(new Callback<FacebookLoginResponse>() {
             @Override
             public void onResponse(Call<FacebookLoginResponse> call, Response<FacebookLoginResponse> response) {
-                    Observable.just(response.body()).subscribe(readyAction);
+                Observable.just(response.body()).subscribe(readyAction);
             }
 
             @Override

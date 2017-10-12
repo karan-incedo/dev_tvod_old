@@ -1,7 +1,9 @@
 package com.viewlift.models.network.modules;
 
+import com.google.gson.Gson;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSSiteRest;
+import java.io.File;
 
 import javax.inject.Singleton;
 
@@ -23,7 +25,9 @@ public class AppCMSSiteModule {
 
     @Provides
     @Singleton
-    public AppCMSSiteCall providesAppCMSSiteCall(AppCMSSiteRest appCMSSiteRest) {
-        return new AppCMSSiteCall(appCMSSiteRest);
+    public AppCMSSiteCall providesAppCMSSiteCall(AppCMSSiteRest appCMSSiteRest,
+                                                 Gson gson,
+                                                 File storageDirectory) {
+        return new AppCMSSiteCall(appCMSSiteRest, gson, storageDirectory);
     }
 }

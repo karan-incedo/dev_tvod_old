@@ -2,6 +2,7 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -149,27 +151,38 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
                 appCMSBinder.getAppCMSPageUI().getModuleList().get(1) !=null &&
                 appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() !=null ){
+            NestedScrollView nestedScrollView= (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
 
+
+           //System.out.println(positionToScroll+ " positionToScroll "+holder.getChildCount() );
             if(appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()){
-                NestedScrollView nestedScrollView= (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
-                Toast.makeText(getContext(),"Created Scroll Event listener  ",Toast.LENGTH_SHORT).show();
+               Toast.makeText(getContext(),"Created Scroll Event listener  ",Toast.LENGTH_SHORT).show();
                 nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                     int tempheight = (int) appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getLayout().getMobile().getHeight();
 
                     @Override
                     public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
-                   if (scrollY > (tempheight + 300) && !appCMSPresenter.pipPlayerVisible) {
+
+                  // if (scrollY > (tempheight + 300) && !appCMSPresenter.pipPlayerVisible) {
+                       if (appCMSPresenter.getFirstVisibleChildPosition(v)==0){
                       //  Toast.makeText(v.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
-                       appCMSPresenter.showPopupWindowPlayer(v);
-                    } else if (scrollY < (tempheight + 300)) {
+
+
                        appCMSPresenter.pipPlayerVisible = false;
                         appCMSPresenter.dismissPopupWindowPlayer();
 
-                    }
+                    }else if (!appCMSPresenter.pipPlayerVisible){
+                           appCMSPresenter.showPopupWindowPlayer(v);
+                       }
 
                     }
                 });
+
+                if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView)>0 &&
+                        !appCMSPresenter.pipPlayerVisible){
+                    appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                }
             }else {
                 appCMSPresenter.dismissPopupWindowPlayer();
             }

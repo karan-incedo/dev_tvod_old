@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -57,6 +58,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.viewlift.R;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,6 +97,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private int fullscreenResizeMode;
     private Uri closedCaptionUri;
+    private String policyCookie;
+    private String signatureCookie;
+    private String keyPairIdCookie;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -292,6 +297,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
+        if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).policyCookie = policyCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookie = signatureCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).keyPairIdCookie = keyPairIdCookie;
+        }
         Format textFormat = Format.createTextSampleFormat(null,
                 MimeTypes.APPLICATION_SUBRIP,
                 C.SELECTION_FLAG_DEFAULT,
@@ -353,7 +363,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return new UpdatedUriDataSourceFactory(getContext(),
                 bandwidthMeter,
                 buildHttpDataSourceFactory(bandwidthMeter),
-                null);
+                policyCookie,
+                signatureCookie,
+                keyPairIdCookie);
     }
 
     private HttpDataSource.Factory buildHttpDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
@@ -506,6 +518,24 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         Log.d(TAG, "Rendered first frame");
     }
 
+    public String getPolicyCookie() {
+        return policyCookie;
+    }
+    public void setPolicyCookie(String policyCookie) {
+        this.policyCookie = policyCookie;
+    }
+    public String getSignatureCookie() {
+        return signatureCookie;
+    }
+    public void setSignatureCookie(String signatureCookie) {
+        this.signatureCookie = signatureCookie;
+    }
+    public String getKeyPairIdCookie() {
+        return keyPairIdCookie;
+    }
+    public void setKeyPairIdCookie(String keyPairIdCookie) {
+        this.keyPairIdCookie = keyPairIdCookie;
+    }
     public interface FinishListener {
         void onFinishCallback(String message);
     }
@@ -527,14 +557,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         private final Context context;
         private final TransferListener<? super DataSource> listener;
         private final DataSource.Factory baseDataSourceFactory;
-        private final String cdnCookie;
+        private String policyCookie;
+        private String signatureCookie;
+        private String keyPairIdCookie;
 
         /**
          * @param context   A context.
          * @param userAgent The User-Agent string that should be used.
          */
-        public UpdatedUriDataSourceFactory(Context context, String userAgent, String cdnCookie) {
-            this(context, userAgent, null, cdnCookie);
+        public UpdatedUriDataSourceFactory(Context context, String userAgent, String policyCookie,
+                                           String signatureCookie, String keyPairIdCookie) {
+            this(context, userAgent, null, policyCookie, signatureCookie, keyPairIdCookie);
         }
 
         /**
@@ -544,8 +577,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSourceFactory(Context context, String userAgent,
                                            TransferListener<? super DataSource> listener,
-                                           String cdnCookie) {
-            this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener), cdnCookie);
+                                           String policyCookie, String signatureCookie, String keyPairIdCookie) {
+            this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener), policyCookie,
+                    signatureCookie, keyPairIdCookie);
         }
 
         /**
@@ -557,19 +591,31 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
-                                           DataSource.Factory baseDataSourceFactory, String cdnCookie) {
+                                           DataSource.Factory baseDataSourceFactory, String policyCookie,
+                                           String signatureCookie, String keyPairIdCookie) {
             this.context = context.getApplicationContext();
             this.listener = listener;
             this.baseDataSourceFactory = baseDataSourceFactory;
-            this.cdnCookie = cdnCookie;
+            this.policyCookie = policyCookie;
+            this.signatureCookie = signatureCookie;
+            this.keyPairIdCookie = keyPairIdCookie;
         }
 
         @Override
         public UpdatedUriDataSource createDataSource() {
             return new UpdatedUriDataSource(context, listener, baseDataSourceFactory.createDataSource(),
-                    cdnCookie);
+                    policyCookie, signatureCookie, keyPairIdCookie);
+        }
+        public String getPolicyCookie() {
+            return policyCookie;
         }
 
+        public String getSignatureCookie() {
+            return signatureCookie;
+        }
+        public String getKeyPairIdCookie() {
+            return keyPairIdCookie;
+        }
     }
 
     private static class UpdatedUriDataSource implements DataSource {
@@ -580,7 +626,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         private final DataSource fileDataSource;
         private final DataSource assetDataSource;
         private final DataSource contentDataSource;
-        private final String cdnCookie;
+        private final String policyCookie;
+        private final String signatureCookie;
+        private final String keyPairIdCookie;
 
         private DataSource dataSource;
 
@@ -595,10 +643,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     String userAgent, boolean allowCrossProtocolRedirects,
-                                    String cdnCookie) {
+                                    String policyCookie, String signatureCookie, String keyPairIdCookie) {
             this(context, listener, userAgent, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                     DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, allowCrossProtocolRedirects,
-                    cdnCookie);
+                    policyCookie, signatureCookie, keyPairIdCookie);
         }
 
         /**
@@ -616,11 +664,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     String userAgent, int connectTimeoutMillis, int readTimeoutMillis,
-                                    boolean allowCrossProtocolRedirects, String cdnCookie) {
+                                    boolean allowCrossProtocolRedirects, String policyCookie,
+                                    String signatureCookie, String keyPairIdCookie) {
             this(context, listener,
                     new DefaultHttpDataSource(userAgent, null, listener, connectTimeoutMillis,
                             readTimeoutMillis, allowCrossProtocolRedirects, null),
-                    cdnCookie);
+                    policyCookie, signatureCookie, keyPairIdCookie);
         }
 
         /**
@@ -634,12 +683,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     DataSource baseDataSource,
-                                    String cdnCookie) {
+                                    String policyCookie, String signatureCookie, String keyPairIdCookie) {
             this.baseDataSource = Assertions.checkNotNull(baseDataSource);
             this.fileDataSource = new FileDataSource(listener);
             this.assetDataSource = new AssetDataSource(context, listener);
             this.contentDataSource = new ContentDataSource(context, listener);
-            this.cdnCookie = cdnCookie;
+            this.policyCookie = policyCookie;
+            this.signatureCookie = signatureCookie;
+            this.keyPairIdCookie = keyPairIdCookie;
         }
 
         @Override
@@ -666,6 +717,22 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     dataSpec.absoluteStreamPosition,
                     dataSpec.length,
                     dataSpec.key);
+            if (dataSource instanceof DefaultHttpDataSource) {
+                if (!TextUtils.isEmpty(policyCookie) &&
+                        !TextUtils.isEmpty(signatureCookie) &&
+                        !TextUtils.isEmpty(keyPairIdCookie)) {
+                    StringBuilder cookies = new StringBuilder();
+                    cookies.append("CloudFront-Policy=");
+                    cookies.append(policyCookie);
+                    cookies.append("; ");
+                    cookies.append("CloudFront-Signature=");
+                    cookies.append(signatureCookie);
+                    cookies.append("; ");
+                    cookies.append("CloudFront-Key-Pair-Id=");
+                    cookies.append(keyPairIdCookie);
+                    ((DefaultHttpDataSource) dataSource).setRequestProperty("Cookie", cookies.toString());
+                }
+            }
 
             // Open the source and return.
             return dataSource.open(dataSpec);

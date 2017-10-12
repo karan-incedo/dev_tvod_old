@@ -1651,7 +1651,7 @@ public class ViewCreator {
                             .getBlockTitleColor())) {
                         componentViewResult.componentView.setBackgroundColor(Color.parseColor(
                                 getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
-                                        .getGeneral().getBackgroundColor())));
+                                        .getGeneral().getBlockTitleColor())));
                         applyBorderToComponent(context, componentViewResult.componentView, component,
                                 Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                                         .getGeneral().getBlockTitleColor()));
@@ -1725,7 +1725,16 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
 
                         break;
-
+                    case PAGE_BANNER_DETAIL_BUTTON:
+                        componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
+                        componentViewResult.componentView.setId(View.generateViewId());
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                appCMSPresenter.showPopUpMenuSports(view);
+                            }
+                        });
+                        break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
@@ -2095,6 +2104,31 @@ public class ViewCreator {
                                 Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                     }
                 }
+                if (componentKey == AppCMSUIKeyType.PAGE_BANNER_DETAIL_TITLE) {
+                    int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+
+                    int textFontColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                    if (!TextUtils.isEmpty(component.getTextColor())) {
+                        textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
+                    }
+                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
+                    ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
+
+                    if (!TextUtils.isEmpty(component.getFontFamily())) {
+                        setTypeFace(context,
+                                jsonValueKeyMap,
+                                component,
+                                (TextView) componentViewResult.componentView);
+                    }
+
+                    if (component.getFontSize() > 0) {
+                        ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                    } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
+                        ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
+                    }
+                    ((TextView) componentViewResult.componentView).setText("Team Detail");
+                }
                 if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                     int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
                     if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -2181,6 +2215,9 @@ public class ViewCreator {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView)
+                                        .setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
                             }
                             break;
 
@@ -2499,7 +2536,10 @@ public class ViewCreator {
                     case PAGE_BADGE_IMAGE_KEY:
                         int t = 0;
                         break;
-
+                    case PAGE_BANNER_IMAGE:
+                        ImageView imageView1 = (ImageView) componentViewResult.componentView;
+                        imageView1.setImageResource(R.drawable.logo);
+                        break;
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
                         componentViewResult.componentView = new ImageView(context);
                         ImageView imageView = (ImageView) componentViewResult.componentView;
@@ -2516,7 +2556,18 @@ public class ViewCreator {
 
 
                         break;
-
+                    case PAGE_BANNER_DETAIL_ICON:
+                        componentViewResult.componentView = new ImageView(context);
+//                        int viewWidthForBannerIcon = (int) BaseView.getViewWidth(context,
+//                                component.getLayout(),
+//                                ViewGroup.LayoutParams.WRAP_CONTENT);
+//                        int viewHeightForBannerIcon = (int) BaseView.getViewHeight(context,
+//                                component.getLayout(),
+//                                ViewGroup.LayoutParams.WRAP_CONTENT);
+//
+                        ImageView bannerDetailImage = (ImageView) componentViewResult.componentView;
+                        bannerDetailImage.setImageResource(R.drawable.mastercard);
+                        break;
                     case PAGE_VIDEO_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -2623,7 +2674,14 @@ public class ViewCreator {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
                 break;
-
+            case PAGE_BANNER_DETAIL_BACKGROUND:
+                componentViewResult.componentView = new View(context);
+                if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
+                    componentViewResult.componentView.
+                            setBackgroundColor(Color.parseColor(getColor(context,
+                                    component.getBackgroundColor())));
+                }
+                break;
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);

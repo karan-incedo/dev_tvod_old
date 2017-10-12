@@ -3,20 +3,26 @@ package com.viewlift.ccavenue.screens;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.C;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -39,6 +45,7 @@ import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Date;
 
 import static com.viewlift.ccavenue.utility.Constants.TRANS_URL;
 
@@ -74,6 +81,14 @@ public class WebViewActivity extends Activity {
 		accessCode = mainIntent.getStringExtra("accessCode") ;
 		merchantID = mainIntent.getStringExtra("merchantID") ;
 		cancelRedirectURL = mainIntent.getStringExtra("cancelRedirectURL") ;
+		deleteDatabase("webview.db");
+		deleteDatabase("webviewCache.db");
+		final WebView webview = (WebView) findViewById(R.id.webview);
+		webview.clearFormData();
+		webview.clearHistory();
+		webview.clearCache(true);
+		webview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+		clearCookies();
 
 		appCMSPresenter = ((AppCMSApplication) getApplication())
 				.getAppCMSPresenterComponent()
@@ -247,9 +262,9 @@ public class WebViewActivity extends Activity {
 				params.append(ServiceUtility.addToPostParams("si_is_setup_amt","Y")) ;
 				params.append(ServiceUtility.addToPostParams("si_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
 				params.append(ServiceUtility.addToPostParams("si_setup_amount",mainIntent.getStringExtra(AvenuesParams.AMOUNT))) ;
-				params.append(ServiceUtility.addToPostParams("si_frequency",mainIntent.getStringExtra("si_frequency"))) ;
-				params.append(ServiceUtility.addToPostParams("si_bill_cycle",mainIntent.getStringExtra("si_frequency"))) ;
-				params.append(ServiceUtility.addToPostParams("si_frequency_type",mainIntent.getStringExtra("si_frequency_type"))) ;
+//				params.append(ServiceUtility.addToPostParams("si_frequency",mainIntent.getStringExtra("si_frequency"))) ;
+//				params.append(ServiceUtility.addToPostParams("si_bill_cycle",mainIntent.getStringExtra("si_frequency"))) ;
+//				params.append(ServiceUtility.addToPostParams("si_frequency_type",mainIntent.getStringExtra("si_frequency_type"))) ;
 			//}
 
 			params.append(ServiceUtility.addToPostParams("merchant_param1",getIntent().getStringExtra(getString(R.string.app_cms_site_name))));
@@ -278,6 +293,24 @@ public class WebViewActivity extends Activity {
 		Toast.makeText(this, "Toast: " + msg, Toast.LENGTH_LONG).show();
 	}
 
+	@SuppressWarnings("deprecation")
+	public void clearCookies() {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+			Log.d(TAG, "Using clearCookies code for API >=" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
+			CookieManager.getInstance().removeAllCookies(null);
+			CookieManager.getInstance().flush();
+		} else
+		{
+			Log.d(TAG, "Using clearCookies code for API <" + String.valueOf(Build.VERSION_CODES.LOLLIPOP_MR1));
+			CookieSyncManager cookieSyncMngr= CookieSyncManager.createInstance(this);
+			cookieSyncMngr.startSync();
+			CookieManager cookieManager=CookieManager.getInstance();
+			cookieManager.removeAllCookie();
+			cookieManager.removeSessionCookie();
+			cookieSyncMngr.stopSync();
+			cookieSyncMngr.sync();
+		}
+	}
 	public String getRSAKey () {
 		String JsonResponse = null;
 		String JsonDATA = "";
@@ -298,7 +331,7 @@ public class WebViewActivity extends Activity {
 		BufferedReader reader = null;
 		try {
 			//URL url = new URL(getString(R.string.app_cms_baseurl)+"/ccavenue/ccavenue/rsakey");
-			URL url = new URL (mainIntent.getStringExtra("api_base_url")+"/ccavenue/ccavenue/rsakey") ;
+			URL url = new URL (mainIntent.getStringExtra("api_base_url")+"/ccavenue/ccavenue/rsakey?x=" + new Date().getTime()) ;
 			urlConnection = (HttpURLConnection) url.openConnection();
 			urlConnection.setDoOutput(true);
 			// is output buffer writter
