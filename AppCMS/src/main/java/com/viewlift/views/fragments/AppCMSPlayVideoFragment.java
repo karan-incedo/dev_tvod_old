@@ -318,7 +318,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setRetainInstance(true);
 
-        if (refreshToken) {
+        if (!isVideoDownloaded && refreshToken) {
             refreshTokenTimer = new Timer();
             refreshTokenTimerTask = new TimerTask() {
                 @Override
