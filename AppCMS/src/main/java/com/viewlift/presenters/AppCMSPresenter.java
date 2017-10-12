@@ -2,6 +2,7 @@ package com.viewlift.presenters;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
@@ -18,8 +19,15 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
+import android.graphics.Point;
+import com.viewlift.views.customviews.PopupMenu;
+import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.SurfaceTexture;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -36,6 +44,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -43,23 +52,31 @@ import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.LruCache;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.Surface;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.apptentive.android.sdk.Apptentive;
@@ -68,6 +85,21 @@ import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
+import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -77,7 +109,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -89,6 +120,7 @@ import com.viewlift.models.billing.appcms.subscriptions.SkuDetails;
 import com.viewlift.models.billing.utils.IabHelper;
 import com.viewlift.models.data.appcms.api.AddToWatchlistRequest;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
@@ -137,6 +169,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSPageUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSRefreshIdentityAsyncTask;
+import com.viewlift.models.network.background.tasks.GetAppCMSSignedURLAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
@@ -166,6 +199,7 @@ import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
+import com.viewlift.models.network.rest.AppCMSSignedURLCall;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSStreamingInfoCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionCall;
@@ -202,7 +236,6 @@ import org.jsoup.Jsoup;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
-
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -231,6 +264,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -257,12 +291,10 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
-
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
@@ -338,6 +370,7 @@ public class AppCMSPresenter {
     public static final int PLAYER_REQUEST_CODE = 1111;
     private static final String USER_AUTH_PROVIDER_SHARED_PREF_NAME = "user_auth_provider_shared_pref_name";
     private static final String GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME = "google_play_app_store_version_pref_name";
+    private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -417,6 +450,7 @@ public class AppCMSPresenter {
     private final AppCMSBeaconCall appCMSBeaconCall;
     private final AppCMSRestorePurchaseCall appCMSRestorePurchaseCall;
     private final AppCMSAndroidModuleCall appCMSAndroidModuleCall;
+    private final AppCMSSignedURLCall appCMSSignedURLCall;
 
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
@@ -576,6 +610,7 @@ public class AppCMSPresenter {
                            AppCMSRestorePurchaseCall appCMSRestorePurchaseCall,
 
                            AppCMSAndroidModuleCall appCMSAndroidModuleCall,
+                           AppCMSSignedURLCall appCMSSignedURLCall,
 
                            AppCMSAddToWatchlistCall appCMSAddToWatchlistCall,
 
@@ -618,6 +653,7 @@ public class AppCMSPresenter {
         this.appCMSRestorePurchaseCall = appCMSRestorePurchaseCall;
 
         this.appCMSAndroidModuleCall = appCMSAndroidModuleCall;
+        this.appCMSSignedURLCall = appCMSSignedURLCall;
 
         this.appCMSAddToWatchlistCall = appCMSAddToWatchlistCall;
 
@@ -1020,7 +1056,9 @@ public class AppCMSPresenter {
                         showDialog(DialogType.NETWORK, null, false, null);
                     }
                 } else {
-                    if (platformType == PlatformType.TV) {
+                    if (platformType == PlatformType.ANDROID) {
+                        getAppCMSAndroid(tryCount + 1);
+                    } else if (platformType == PlatformType.TV) {
                         getAppCMSTV(tryCount + 1);
                     }
                 }
@@ -2443,6 +2481,34 @@ public class AppCMSPresenter {
         }
     }
 
+    public void getAppCMSSignedURL(String filmId,
+                                   Action1<AppCMSSignedURLResult> readyAction) {
+        if (currentContext != null) {
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(), () -> {
+                    String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            filmId,
+                            appCMSSite.getGist().getSiteInternalName());
+                    GetAppCMSSignedURLAsyncTask.Params params = new GetAppCMSSignedURLAsyncTask.Params.Builder()
+                            .authToken(getAuthToken())
+                            .url(url)
+                            .build();
+                    new GetAppCMSSignedURLAsyncTask(appCMSSignedURLCall, readyAction).execute(params);
+                });
+            } else {
+                String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        filmId,
+                        appCMSSite.getGist().getSiteInternalName());
+                GetAppCMSSignedURLAsyncTask.Params params = new GetAppCMSSignedURLAsyncTask.Params.Builder()
+                        .authToken(getAuthToken())
+                        .url(url)
+                        .build();
+                new GetAppCMSSignedURLAsyncTask(appCMSSignedURLCall, readyAction).execute(params);
+            }
+        }
+    }
     public void editWatchlist(final String filmId,
                               final Action1<AppCMSAddToWatchlistResult> resultAction1, boolean add) {
         if (!isNetworkConnected()) {
@@ -4997,6 +5063,20 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public String getInstanceId() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
+            return sharedPrefs.getString(INSTANCE_ID_PREF_NAME, null);
+        }
+        return null;
+    }
+    public boolean setInstanceId(String instanceId) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(INSTANCE_ID_PREF_NAME, instanceId).commit();
+        }
+        return false;
+    }
     public String getLoggedInUser() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
@@ -6516,7 +6596,10 @@ public class AppCMSPresenter {
     public void openDownloadScreenForNetworkError(boolean launchActivity) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
             if (!isUserLoggedIn()) {//fix SVFA-1911
-                showDialog(DialogType.NETWORK, null, false, null);
+                showDialog(DialogType.NETWORK, null, false,
+                        () -> {
+                            launchErrorActivity(PlatformType.ANDROID);
+                        });
                 return;
             }
 
@@ -6787,7 +6870,7 @@ public class AppCMSPresenter {
     }
 
     public ArrayList<BeaconRequest> getBeaconRequestList() {
-        String uid = InstanceID.getInstance(currentActivity).getId();
+        String uid = getInstanceId();
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
         }
@@ -6916,7 +6999,7 @@ public class AppCMSPresenter {
                                            String mediaType, String bitrte, String resolutionHeight,
                                            String resolutionWidth, String streamId, double ttfirstframe, int apod, boolean isDownloaded) {
         BeaconRequest beaconRequest = new BeaconRequest();
-        String uid = InstanceID.getInstance(currentActivity).getId();
+        String uid = getInstanceId();
         int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
         if (isUserLoggedIn()) {
             uid = getLoggedInUser();
@@ -6991,7 +7074,6 @@ public class AppCMSPresenter {
 
     }
 
-    @SuppressLint("StringFormatInvalid")
     private String getBeaconUrl() {
         if (currentActivity != null &&
                 appCMSMain != null &&
@@ -7007,7 +7089,7 @@ public class AppCMSPresenter {
         StringBuilder url = new StringBuilder();
         if (currentActivity != null && appCMSMain != null) {
             final String utfEncoding = currentActivity.getString(R.string.utf8enc);
-            String uid = InstanceID.getInstance(currentActivity).getId();
+            String uid = getInstanceId();
             int currentPositionSecs = (int) (currentPosition / MILLISECONDS_PER_SECOND);
             if (isUserLoggedIn()) {
                 uid = getLoggedInUser();
@@ -7998,9 +8080,12 @@ public class AppCMSPresenter {
                                 setRefreshToken(refreshIdentityResponse.getRefreshToken());
                                 setAuthToken(refreshIdentityResponse.getAuthorizationToken());
                                 onReadyAction.call();
+                            } else {
+                                onReadyAction.call();
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error retrieving refresh identity response: " + e.getMessage());
+                            onReadyAction.call();
                         }
                     }).execute(params);
         }
@@ -8469,6 +8554,7 @@ public class AppCMSPresenter {
                     Log.d(TAG, "Refreshed main.json");
                     this.appCMSMain = appCMSMain;
                     refreshAppCMSAndroid((appCMSAndroid) -> {
+                        if (appCMSAndroid != null) {
                         for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
                             Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
                                     " " +
@@ -8498,6 +8584,7 @@ public class AppCMSPresenter {
                                 onreadyAction.call();
                             }
                         });
+                        }
                     });
                 } else {
                     Log.w(TAG, "Resulting main.json from refresh is null");
@@ -8599,6 +8686,9 @@ public class AppCMSPresenter {
                                 Log.d(TAG, "Processing meta pages queue");
                                 processMetaPagesQueue(loadFromFile,
                                         () -> {
+                                            if (!isNetworkConnected()) {
+                                                openDownloadScreenForNetworkError(true);
+                                            } else {
                                             if (appCMSMain.getServiceType()
                                                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
                                                 refreshSubscriptionData(() -> {
@@ -8664,6 +8754,7 @@ public class AppCMSPresenter {
                                                         Log.e(TAG, "Failed to launch page: "
                                                                 + loginPage.getPageName());
                                                         launchErrorActivity(platformType);
+                                                        }
                                                     }
                                                 }
                                             }
@@ -9896,6 +9987,12 @@ public class AppCMSPresenter {
             }
         }
         downloadURL = urlRenditionMap.get(downloadQualityRendition);
+        if (TextUtils.isEmpty(downloadURL)) {
+            Iterator<String> urlRenditionMapKeysIter = urlRenditionMap.keySet().iterator();
+            if (urlRenditionMapKeysIter.hasNext()) {
+                downloadURL = urlRenditionMap.get(urlRenditionMapKeysIter.next());
+            }
+        }
 
         if (downloadQualityRendition != null) {
             if (downloadURL == null && downloadQualityRendition.contains("360")) {
@@ -10456,38 +10553,85 @@ public class AppCMSPresenter {
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
     VideoPlayerView videoPlayerView;
+    RelativeLayout relativeLayout;
 
     public void showPopupWindowPlayer(View v) {
-        dismissPopupWindowPlayer();
-        pipDialog = new PopupWindow(currentActivity);
-        VideoPlayerView videoPlayerView = new VideoPlayerView(currentActivity);
-        videoPlayerView.setUri(Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4"), null);
-        LinearLayout frameLayout = new LinearLayout(currentActivity);
-        LinearLayout.LayoutParams lpVideoPIP = new LinearLayout.LayoutParams(300, 200);
-        lpVideoPIP.height = 500;
-        lpVideoPIP.width = 500;
+        //  dismissPopupWindowPlayer();
 
-        Button button = new Button(currentActivity);
-        button.setLayoutParams(lpVideoPIP);
-        button.setLayoutParams(lpVideoPIP);
-        frameLayout.setBackgroundColor(Color.YELLOW);
-        frameLayout.addView(button);
-        // frameLayout.addView(videoPlayerView);
+        Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
 
-        showToast((v.getHeight() - 300) + " height width " + (v.getWidth() - 300), Toast.LENGTH_SHORT);
-        pipDialog.setContentView(frameLayout);
-        pipDialog.showAtLocation(v, Gravity.TOP, v.getWidth() - 300, v.getHeight() - 300);
+
         pipPlayerVisible = true;
+
+
+        videoPlayerView = new VideoPlayerView(currentActivity);
+        videoPlayerView.setUri(mp4VideoUri, null);
+        videoPlayerView.startPlayer();
+        videoPlayerView.getPlayerView().setControllerAutoShow(false);
+
+
+        relativeLayout = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
+
+        RelativeLayout.LayoutParams lpPipView = new RelativeLayout.LayoutParams(750, 450);
+        lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lpPipView.addRule(RelativeLayout.ABOVE, R.id.app_cms_tab_nav_container);
+        lpPipView.rightMargin = 50;
+        lpPipView.bottomMargin = 20;
+
+        relativeLayout.setLayoutParams(lpPipView);
+
+
+        relativeLayout.addView(videoPlayerView);
+        relativeLayout.setVisibility(View.VISIBLE);
+
+        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayout);
     }
 
     public void dismissPopupWindowPlayer() {
         if (videoPlayerView != null) {
-            videoPlayerView.pausePlayer();
+
             videoPlayerView.releasePlayer();
+            videoPlayerView = null;
         }
-        if (pipDialog != null) {
-            pipDialog.dismiss();
+
+        if (relativeLayout != null) {
+            //  relativeLayout.removeAllViews();
+            relativeLayout.setVisibility(View.GONE);
+            RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+            rootView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    rootView.removeView(relativeLayout);
+                    relativeLayout = null;
+                }
+            }, 100);
+
 
         }
+
+        pipPlayerVisible = false;
+    }
+
+    public int getFirstVisibleChildPosition(NestedScrollView nestedScrollView) {
+
+        final Rect scrollBounds = new Rect();
+        nestedScrollView.getHitRect(scrollBounds);
+        LinearLayout holder = (LinearLayout) nestedScrollView.getChildAt(0);
+        for (int i = 0; i < holder.getChildCount(); i++) {
+            View childView = holder.getChildAt(i);
+            if (childView != null) {
+                if (childView.getLocalVisibleRect(scrollBounds)) {
+                    //Here is the position of first visible view
+                    return i;
+
+                }
+            }
+        }
+        return 0;
+    }
+
+    public void showPopUpMenuSports(View v){
+        PopupMenu popupMenu=new PopupMenu(getCurrentActivity());
+        popupMenu.showLocation(v.getId(),getCurrentActivity());
     }
 }

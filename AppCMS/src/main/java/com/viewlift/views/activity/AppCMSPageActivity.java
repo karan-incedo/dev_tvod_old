@@ -1633,7 +1633,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();
-        String action = getString(R.string.app_cms_action_videopage_key);
+        String action = getString(R.string.app_cms_action_detailvideopage_key);
         StringBuffer pagePath = new StringBuffer();
         for (String pathSegment : deeplinkUri.getPathSegments()) {
             pagePath.append(File.separatorChar);
