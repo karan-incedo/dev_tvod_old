@@ -297,51 +297,25 @@ public class ViewCreator {
                                                 if (moduleAPI.getContentData().get(0).getGist() != null &&
                                                         moduleAPI.getContentData().get(0).getGist().getId() != null &&
                                                         moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-
-                                                    Log.d(TAG, "Clicked on item: " + moduleAPI.getContentData().get(0).getGist().getTitle());
-                                                    String permalink = moduleAPI.getContentData().get(0).getGist().getPermalink();
-                                                    String action = component.getAction();
-
-                                                    Log.d(TAG, "Launching " + permalink + ": " + action);
-                                                    List<String> relatedVideoIds = null;
-                                                    if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
-                                                        relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
-                                                    }
-                                                    int currentPlayingIndex = -1;
-                                                    if (relatedVideoIds == null) {
-                                                        currentPlayingIndex = 0;
-                                                    }
-
-                                                    String contentType = "";
-
-                                                    if (moduleAPI.getContentData().get(0).getGist() != null && moduleAPI.getContentData().get(0).getGist().getContentType() != null) {
-                                                        contentType = moduleAPI.getContentData().get(0).getGist().getContentType();
-                                                    }
-
-                                                    switch (contentType) {
-                                                        case "SHOW":
-                                                            action = getShowAction(context);
-                                                            break;
-
-                                                        case "VIDEO":
-                                                            action = getVideoAction(context);
-                                                            break;
-
-                                                        default:
-                                                            break;
-                                                    }
-
-                                                    if (!appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
-                                                            currentPlayingIndex,
-                                                            relatedVideoIds,
+                                                    String[] extraData = new String[3];
+                                                    extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
+                                                    extraData[1] = videoUrl;
+                                                    extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
+                                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                                            component.getAction(),
+                                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                            extraData,
+                                                            moduleAPI.getContentData().get(0),
+                                                            false,
                                                             -1,
-                                                            action)) {
+                                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
                                                         Log.e(TAG, "Could not launch action: " +
                                                                 " permalink: " +
-                                                                permalink +
+                                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
                                                                 " action: " +
-                                                                action);
+                                                                component.getAction() +
+                                                                " video URL: " +
+                                                                videoUrl);
                                                     }
                                                 }
                                             }
@@ -940,14 +914,6 @@ public class ViewCreator {
         }
         pageView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         return pageView;
-    }
-
-    private String getShowAction(Context context) {
-        return context.getString(R.string.app_cms_action_showvideopage_key);
-    }
-
-    private String getVideoAction(Context context) {
-        return context.getString(R.string.app_cms_action_detailvideopage_key);
     }
 
     public ComponentViewResult getComponentViewResult() {

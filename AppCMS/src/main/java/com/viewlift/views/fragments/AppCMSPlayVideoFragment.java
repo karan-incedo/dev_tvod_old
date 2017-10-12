@@ -46,6 +46,7 @@ import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
@@ -130,6 +131,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private VideoPlayerView videoPlayerView;
     private LinearLayout videoLoadingProgress;
     private OnClosePlayerEvent onClosePlayerEvent;
+    private OnUpdateContentDatumEvent onUpdateContentDatumEvent;
     private BeaconPingThread beaconMessageThread;
     private long beaconMsgTimeoutMsec;
 
@@ -255,6 +257,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (context instanceof OnClosePlayerEvent) {
             onClosePlayerEvent = (OnClosePlayerEvent) context;
         }
+        if (context instanceof OnUpdateContentDatumEvent) {
+            onUpdateContentDatumEvent = (OnUpdateContentDatumEvent) context;
+        }
     }
 
     @Override
@@ -318,13 +323,18 @@ public class AppCMSPlayVideoFragment extends Fragment
             refreshTokenTimerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
-                        if (videoPlayerView != null && appCMSSignedURLResult != null) {
-                            videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
-                                    appCMSSignedURLResult.getSignature(),
-                                    appCMSSignedURLResult.getKeyPairId());
-                        }
-                    });
+                    if (onUpdateContentDatumEvent != null) {
+                        appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum(), updatedContentDatum -> {
+                            onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
+                            appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
+                                if (videoPlayerView != null && appCMSSignedURLResult != null) {
+                                    videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                                            appCMSSignedURLResult.getSignature(),
+                                            appCMSSignedURLResult.getKeyPairId());
+                                }
+                            });
+                        });
+                    }
                 }
             };
             refreshTokenTimer.schedule(refreshTokenTimerTask, 0, 600000);
@@ -1293,6 +1303,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                               int castingMode,
                               boolean sentBeaconPlay,
                               Action1<CastHelper.OnApplicationEnded> onApplicationEndedAction);
+    }
+
+    public interface OnUpdateContentDatumEvent {
+        void updateContentDatum(ContentDatum contentDatum);
+        ContentDatum getCurrentContentDatum();
     }
 
     private static class BeaconPingThread extends Thread {

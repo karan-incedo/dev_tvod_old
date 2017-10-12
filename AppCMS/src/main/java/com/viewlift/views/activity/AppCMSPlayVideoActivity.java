@@ -23,6 +23,7 @@ import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
@@ -41,7 +42,8 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPlayVideoActivity extends AppCompatActivity implements
-        AppCMSPlayVideoFragment.OnClosePlayerEvent {
+        AppCMSPlayVideoFragment.OnClosePlayerEvent,
+        AppCMSPlayVideoFragment.OnUpdateContentDatumEvent {
     private static final String TAG = "VideoPlayerActivity";
 
     private BroadcastReceiver handoffReceiver;
@@ -415,5 +417,20 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    @Override
+    public void updateContentDatum(ContentDatum contentDatum) {
+        if (binder != null) {
+            binder.setContentData(contentDatum);
+        }
+    }
+
+    @Override
+    public ContentDatum getCurrentContentDatum() {
+        if (binder != null && binder.getContentData() != null) {
+            return binder.getContentData();
+        }
+        return null;
     }
 }

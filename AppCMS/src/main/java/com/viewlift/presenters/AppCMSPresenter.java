@@ -797,6 +797,26 @@ public class AppCMSPresenter {
         return appCMSAndroidModules;
     }
 
+    public void refreshVideoData(final ContentDatum contentDatum,
+                                 Action1<ContentDatum> readyAction) {
+        String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                appCMSMain.getApiBaseUrl(),
+                contentDatum.getGist().getId(),
+                appCMSSite.getGist().getSiteInternalName());
+        GetAppCMSVideoDetailAsyncTask.Params params =
+                new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+                        .authToken(getAuthToken()).build();
+
+        new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                appCMSVideoDetail -> {
+                    if (appCMSVideoDetail != null &&
+                            appCMSVideoDetail.getRecords() != null &&
+                            appCMSVideoDetail.getRecords().get(0) != null) {
+                        readyAction.call(appCMSVideoDetail.getRecords().get(0));
+                    }
+                });
+    }
+
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
                                      final int currentlyPlayingIndex,
                                      List<String> relateVideoIds,
@@ -3015,90 +3035,93 @@ public class AppCMSPresenter {
 
     public void startDownload(ContentDatum contentDatum,
                               Action1<UserVideoDownloadStatus> resultAction1) {
-        currentActivity.runOnUiThread(() -> {
-            try {
-                long enqueueId;
+        refreshVideoData(contentDatum, updateContentDatum -> {
+            currentActivity.runOnUiThread(() -> {
+                try {
 
-                if (contentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
+                    long enqueueId;
 
-                    String url = getStreamingInfoURL(contentDatum.getGist().getId());
+                    if (updateContentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
 
-                    GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
+                        String url = getStreamingInfoURL(updateContentDatum.getGist().getId());
 
-                    new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
-                        if (appCMSStreamingInfo != null) {
-                            contentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
-                        }
-                    }).execute(param);
+                        GetAppCMSStreamingInfoAsyncTask.Params param = new GetAppCMSStreamingInfoAsyncTask.Params.Builder().url(url).build();
 
-                    showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
-                    return;
-                }
+                        new GetAppCMSStreamingInfoAsyncTask(appCMSStreamingInfoCall, appCMSStreamingInfo -> {
+                            if (appCMSStreamingInfo != null) {
+                                updateContentDatum.setStreamingInfo(appCMSStreamingInfo.getStreamingInfo());
+                            }
+                        }).execute(param);
 
-                long ccEnqueueId = 0L;
-                if (contentDatum.getContentDetails() != null &&
-                        contentDatum.getContentDetails().getClosedCaptions() != null &&
-                        !contentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
-                        contentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                    ccEnqueueId = downloadVideoSubtitles(contentDatum.getContentDetails()
-                            .getClosedCaptions().get(0).getUrl(), contentDatum.getGist().getId());
-                }
+                        showDialog(DialogType.STREAMING_INFO_MISSING, null, false, null);
+                        return;
+                    }
 
-                cancelDownloadIconTimerTask();
+                    long ccEnqueueId = 0L;
+                    if (updateContentDatum.getContentDetails() != null &&
+                            updateContentDatum.getContentDetails().getClosedCaptions() != null &&
+                            !updateContentDatum.getContentDetails().getClosedCaptions().isEmpty() &&
+                            updateContentDatum.getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
+                        ccEnqueueId = downloadVideoSubtitles(updateContentDatum.getContentDetails()
+                                .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
+                    }
 
-                String downloadURL;
+                    cancelDownloadIconTimerTask();
+
+                    String downloadURL;
 
 
-                int bitrate = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
+                    int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 
 
-                downloadURL = getDownloadURL(contentDatum);
+                    downloadURL = getDownloadURL(updateContentDatum);
 
-                DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
-                        .setTitle(contentDatum.getGist().getTitle())
-                        .setDescription(contentDatum.getGist().getDescription())
-                        .setAllowedOverRoaming(false)
-                        .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                        .setVisibleInDownloadsUi(false)
-                        .setShowRunningNotification(true);
+                    DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
+                            .setTitle(updateContentDatum.getGist().getTitle())
+                            .setDescription(updateContentDatum.getGist().getDescription())
+                            .setAllowedOverRoaming(false)
+                            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                            .setVisibleInDownloadsUi(false)
+                            .setShowRunningNotification(true);
 
-                if (getUserDownloadLocationPref()) {
-                    downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, Environment.DIRECTORY_DOWNLOADS),
-                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
-                } else {
-                    downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
-                            contentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
-                }
+                    if (getUserDownloadLocationPref()) {
+                        downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, Environment.DIRECTORY_DOWNLOADS),
+                                updateContentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
+                    } else {
+                        downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
+                                updateContentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
+                    }
 
-                enqueueId = downloadManager.enqueue(downloadRequest);
+                    enqueueId = downloadManager.enqueue(downloadRequest);
 
-                long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
-                        contentDatum.getGist().getId());
-                long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
-                        contentDatum.getGist().getId());
+                    long thumbEnqueueId = downloadVideoImage(updateContentDatum.getGist().getVideoImageUrl(),
+                            updateContentDatum.getGist().getId());
+                    long posterEnqueueId = downloadPosterImage(updateContentDatum.getGist().getPosterImageUrl(),
+                            updateContentDatum.getGist().getId());
 
                 /*
                  * Inserting data in realm data object
                  */
-                createLocalEntry(
-                        enqueueId,
-                        thumbEnqueueId,
-                        posterEnqueueId,
-                        ccEnqueueId,
-                        contentDatum,
-                        downloadURL);
+                    createLocalEntry(
+                            enqueueId,
+                            thumbEnqueueId,
+                            posterEnqueueId,
+                            ccEnqueueId,
+                            updateContentDatum,
+                            downloadURL);
 
-                showToast(
-                        currentActivity.getString(R.string.app_cms_download_started_message,
-                                contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+                    showToast(
+                            currentActivity.getString(R.string.app_cms_download_started_message,
+                                    updateContentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
-            } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
-                showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
-            } finally {
-                appCMSUserDownloadVideoStatusCall.call(contentDatum.getGist().getId(), this,
-                        resultAction1, getLoggedInUser());
-            }
+                } catch (Exception e) {
+                    Log.e(TAG, e.getMessage());
+                    showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null);
+                } finally {
+                    appCMSUserDownloadVideoStatusCall.call(updateContentDatum.getGist().getId(), this,
+                            resultAction1, getLoggedInUser());
+                }
+            });
         });
     }
 
