@@ -428,11 +428,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                                 action);
                                     }
                                 } else {
+                                    ContentDatum contentDatum = (action != null && action.equalsIgnoreCase("openOptionDialog")) ? data : null;
                                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                                             action,
                                             title,
                                             null,
-                                            null,
+                                            contentDatum,
                                             false,
                                             currentPlayingIndex,
                                             relatedVideoIds)) {
