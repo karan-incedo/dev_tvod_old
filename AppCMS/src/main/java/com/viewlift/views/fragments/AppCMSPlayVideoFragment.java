@@ -1109,7 +1109,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             contentRatingBack.setTextColor(Color.parseColor(fontColor));
         }
 
-        if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
+        if (appCMSPresenter.getAppCMSMain() != null &&
+                !TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
             int highlightColor =
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
             contentRatingBackUnderline.setBackgroundColor(highlightColor);
