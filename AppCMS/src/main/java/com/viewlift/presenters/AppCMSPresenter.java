@@ -3374,7 +3374,13 @@ public class AppCMSPresenter {
         } else {
             if (getStorageDirectories(currentActivity) != null &&
                     getStorageDirectories(currentActivity).length > 0) {
-                storagePath = new File(getStorageDirectories(currentActivity)[0]);
+                try {
+                    storagePath = new File(getStorageDirectories(currentActivity)[0]);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to set appropriate storage path: " +
+                        e.getMessage());
+                    storagePath = Environment.getExternalStorageDirectory();
+                }
             } else {
                 storagePath = Environment.getExternalStorageDirectory();
             }
