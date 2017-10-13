@@ -3367,7 +3367,9 @@ public class AppCMSPresenter {
         Log.d(TAG, getRemainingDownloadSize() + "  Available storage space:=  "
                 + getMegabytesAvailable(Environment.getExternalStorageDirectory()));
         File storagePath = null;
-        if (!getUserDownloadLocationPref()) {
+        if (!getUserDownloadLocationPref() &&
+                (getStorageDirectories(currentActivity) == null &&
+                getStorageDirectories(currentActivity).length == 0)) {
             storagePath = Environment.getExternalStorageDirectory();
         } else {
             storagePath = new File(getStorageDirectories(currentActivity)[0]);
