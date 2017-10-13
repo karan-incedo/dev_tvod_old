@@ -299,7 +299,8 @@ public class CollectionGridItemView extends BaseView {
                                         }
 
                                         @Override
-                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+                                                                   int outWidth, int outHeight) {
                                             int width = toTransform.getWidth();
                                             int height = toTransform.getHeight();
 
@@ -350,6 +351,11 @@ public class CollectionGridItemView extends BaseView {
                         } catch (IllegalArgumentException e) {
                             Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
+                    } else if (data.getGist().getImageGist() != null &&
+                            !TextUtils.isEmpty(data.getGist().getImageGist()
+                                    .getBadgeImageUrl().get_3x4())) {
+                        Log.d(TAG, "Loading badge: " + data.getGist().getImageGist()
+                                .getBadgeImageUrl().get_3x4());
                     }
                     bringToFront = false;
                 }

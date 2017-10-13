@@ -56,6 +56,9 @@ public class AppCMSSignedURLResult {
 
     public void parseKeyValuePairs() {
         if (!TextUtils.isEmpty(signed)) {
+            if (TextUtils.isEmpty(signature) &&
+                    TextUtils.isEmpty(policy) &&
+                    TextUtils.isEmpty(keyPairId)) {
             int valueIndex = signed.indexOf("Policy=");
             int paramIndex = signed.indexOf("&");
             if (0 < paramIndex && 0 <= valueIndex) {
@@ -74,4 +77,5 @@ public class AppCMSSignedURLResult {
             }
         }
     }
+}
 }

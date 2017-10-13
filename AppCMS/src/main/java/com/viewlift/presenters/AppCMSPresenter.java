@@ -331,6 +331,7 @@ public class AppCMSPresenter {
     public static final int RC_GOOGLE_SIGN_IN = 1001;
     public static final int ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE = 5555;
     public static final int CC_AVENUE_REQUEST_CODE = 1;
+    public static final int PLAYER_REQUEST_CODE = 1111;
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
@@ -368,7 +369,6 @@ public class AppCMSPresenter {
     private static final String USER_DOWNLOAD_QUALITY_SHARED_PREF_NAME = "user_download_quality_pref";
     private static final String USER_DOWNLOAD_QUALITY_SCREEN_SHARED_PREF_NAME = "user_download_quality_screen_pref";
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
-    public static final int PLAYER_REQUEST_CODE = 1111;
     private static final String USER_AUTH_PROVIDER_SHARED_PREF_NAME = "user_auth_provider_shared_pref_name";
     private static final String GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME = "google_play_app_store_version_pref_name";
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
@@ -791,8 +791,13 @@ public class AppCMSPresenter {
                 }
             } else {
                 if (showPage) {
+                    if (!TextUtils.isEmpty(pageId) && pageId.contains("http://www.hoichoi.tv")) {
+                        pageId = pageId.replace("http://www.hoichoi.tv", "");
+                    }
                     urlWithContent = currentContext.getString(R.string.app_cms_shows_status_api_url,
                             baseUrl,
+                            endpoint,
+                            pageId,
                             siteId);
                 } else {
                     urlWithContent =
@@ -3329,7 +3334,7 @@ public class AppCMSPresenter {
             if (BaseView.isTablet(currentActivity)) {
                 canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
             } else {
-                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 7, paint);// Fix SVFA-1561 changed  -2 to -7
+                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
             }
 
             int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
@@ -3341,7 +3346,7 @@ public class AppCMSPresenter {
             if (BaseView.isTablet(currentActivity)) {
                 oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
             } else {
-                oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 6); //Fix SVFA-1561  change 2 to 6
+                oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 4); //Fix SVFA-1561  change 2 to 6
             }
             canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
@@ -8623,7 +8628,11 @@ public class AppCMSPresenter {
                 Log.d(TAG, "Refreshed android.json");
                 if (readyAction != null) {
                     Log.d(TAG, "Notifying listeners that android.json has been updated");
+                    if (appCMSAndroidUI != null) {
                     Observable.just(appCMSAndroidUI).subscribe(readyAction);
+                    } else {
+                        Observable.just((AppCMSAndroidUI) null).subscribe(readyAction);
+                    }
                 }
             }).execute(params);
         }
