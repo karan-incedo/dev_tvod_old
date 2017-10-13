@@ -438,7 +438,7 @@ public class CastServiceProvider {
         }
 
         if (mCastHelper.isCastDeviceAvailable) {
-            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
+            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected()) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources().getDrawable(R.drawable.toolbar_cast_connected, null);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
