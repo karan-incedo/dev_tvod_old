@@ -163,7 +163,7 @@ public class CastServiceProvider {
 
     public boolean isCastingConnected() {
         boolean isConnected = false;
-        if (mCastHelper.isCastDeviceAvailable && mCastHelper.isRemoteDeviceConnected() && rokuWrapper.isRokuConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
+        if (mCastHelper.isCastDeviceAvailable && (mCastHelper.isRemoteDeviceConnected() || rokuWrapper.isRokuConnected())) {
             isConnected = true;
         }
         return isConnected;
