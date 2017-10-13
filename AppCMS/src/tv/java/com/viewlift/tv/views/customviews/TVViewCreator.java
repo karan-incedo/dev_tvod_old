@@ -1041,29 +1041,47 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_SETTINGS_MANAGE_SUBSCRIPTION_BUTTON_KEY:
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            appCMSPresenter.getSubscriptionData(
-                                    appCMSUserSubscriptionPlanResult -> {
-                                        String btnUpgradeString;
-                                        String varMessage = "";
-                                        if (appCMSUserSubscriptionPlanResult != null
-                                                && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
-                                                && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
-                                            btnUpgradeString = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
-                                            if (btnUpgradeString.equalsIgnoreCase("web_browser")) {
-                                                varMessage = "This subscription was purchased on our website. To modify it, please visit your account settings in a browser.";
-                                            } else if (btnUpgradeString.equalsIgnoreCase("android") || btnUpgradeString.contains("android")) {
-                                                varMessage = "This subscription was purchased on Google Play Store. To modify it, please visit your account settings on your Android device.";
-                                            } else if (btnUpgradeString.contains("iOS") || btnUpgradeString.contains("ios_phone") || btnUpgradeString.contains("ios_ipad") || btnUpgradeString.contains("tvos")) {
-                                                varMessage = "This subscription was purchased on Apple App Store. To modify it, please visit your account settings on your Apple device.";
+                        if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                if (appCMSPresenter.getActiveSubscriptionPlatform() == null) {
+                                    appCMSPresenter.getSubscriptionData(
+                                            appCMSUserSubscriptionPlanResult -> {
+                                                String platform;
+                                                String varMessage = "";
+                                                if (appCMSUserSubscriptionPlanResult != null
+                                                        && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
+                                                        && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
+                                                    platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
+                                                    if (platform.equalsIgnoreCase("web_browser")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_web_msg);
+                                                    } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_android_msg);
+                                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_apple_msg);
+                                                    }
+                                                    appCMSPresenter.setActiveSubscriptionPlatform(platform);
+                                                } else {
+                                                    varMessage = context.getString(R.string.subscription_not_purchased);
+                                                }
+                                                appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription));
                                             }
-                                        } else {
-                                            varMessage = "You are currently not a subscriber, please visit our website to purchase a subscription.";
-                                        }
-                                        appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription));
+                                    );
+                                } else {
+                                    String platform = appCMSPresenter.getActiveSubscriptionPlatform();
+                                    String varMessage = "";
+                                    if (platform.equalsIgnoreCase("web_browser")) {
+                                        varMessage = context.getString(R.string.subscription_purchased_from_web_msg);
+                                    } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
+                                        varMessage = context.getString(R.string.subscription_purchased_from_android_msg);
+                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")) {
+                                        varMessage = context.getString(R.string.subscription_purchased_from_apple_msg);
                                     }
-                            );
-                        });
+                                    appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription));
+                                }
+                            });
+                        } else {
+                            componentViewResult.componentView.setVisibility(View.INVISIBLE);
+                        }
                         break;
 
                     default:
@@ -1386,25 +1404,48 @@ public class TVViewCreator {
                             componentViewResult.componentView.setId(R.id.up_next_text_view_id);
                             break;
                         case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
-                            TextView tv = (TextView) componentViewResult.componentView;
-                            appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
-                                try {
-                                    if (appCMSUserSubscriptionPlanResult != null) {
-                                        if (appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus().equalsIgnoreCase("COMPLETED") ||
-                                                appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus().equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                            tv.setText(appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
-                                        } else {
+                            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                TextView tv = (TextView) componentViewResult.componentView;
+                                if (appCMSPresenter.getActiveSubscriptionStatus() == null
+                                        || appCMSPresenter.getActiveSubscriptionPlanName() == null) {
+                                    appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                                        try {
+                                            if (appCMSUserSubscriptionPlanResult != null) {
+                                                String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                    String planName = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName();
+                                                    appCMSPresenter.setActiveSubscriptionStatus(subscriptionStatus);
+                                                    appCMSPresenter.setActiveSubscriptionPlanName(planName);
+                                                    appCMSPresenter.setActiveSubscriptionPlatform(appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform());
+                                                    tv.setText(planName);
+                                                } else {
+                                                    tv.setText(context.getString(R.string.no_active_subscription));
+                                                }
+                                            }else {
+                                                tv.setText(context.getString(R.string.no_active_subscription));
+                                            }
+                                        } catch (Exception e) {
                                             tv.setText(context.getString(R.string.no_active_subscription));
                                         }
-                                    }else {
+                                    });
+                                } else {
+                                    String activeSubscriptionStatus = appCMSPresenter.getActiveSubscriptionStatus();
+                                    if (activeSubscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                            activeSubscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                        tv.setText(appCMSPresenter.getActiveSubscriptionPlanName());
+                                    } else {
                                         tv.setText(context.getString(R.string.no_active_subscription));
                                     }
-                                } catch (Exception e) {
-                                    tv.setText(context.getString(R.string.no_active_subscription));
                                 }
-                            });
-                            if (!TextUtils.isEmpty(component.getText())) {
-                                ((TextView) componentViewResult.componentView).setText(component.getText());
+                            }
+                            break;
+
+                        case PAGE_SETTINGS_SUBSCRIPTION_LABEL_KEY:
+                            if(appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))){
+                                if (!TextUtils.isEmpty(component.getText())) {
+                                    ((TextView) componentViewResult.componentView).setText(component.getText());
+                                }
                             }
                             break;
                         default:

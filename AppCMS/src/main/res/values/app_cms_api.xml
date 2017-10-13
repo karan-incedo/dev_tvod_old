@@ -379,6 +379,7 @@
     <string name="app_cms_autoplay_rotating_loader_view">rotatingLoaderView</string>
     <string name="app_cms_settings_subscription_duration_label">subscriptionDurationLabel</string>
     <string name="app_cms_settings_manage_subscription_button_key">manageSubscriptionButton</string>
+    <string name="app_cms_settings_subscription_label_key">subscriptionLabel</string>
 
 
     <!-- AppCMS Payment Processor values -->

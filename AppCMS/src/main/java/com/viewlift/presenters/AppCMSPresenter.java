@@ -306,6 +306,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_RECEIPT = "active_subscription_token_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PLAN_NAME = "active_subscription_plan_name_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_STATUS = "active_subscription_status_pref_key";
+    private static final String ACTIVE_SUBSCRIPTION_PLATFORM = "active_subscription_platform_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PROCESSOR_NAME = "active_subscription_payment_processor_key";
     private static final String RESTORE_SUBSCRIPTION_RECEIPT = "restore_subscription_payment_process_key";
@@ -5777,6 +5778,22 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_STATUS, 0);
             return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_STATUS, subscriptionStatus).commit();
+        }
+        return false;
+    }
+
+    public String getActiveSubscriptionPlatform() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_PLATFORM, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_PLATFORM, null);
+        }
+        return null;
+    }
+
+    public boolean setActiveSubscriptionPlatform(String platform) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_PLATFORM, 0);
+            return sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_PLATFORM, platform).commit();
         }
         return false;
     }
