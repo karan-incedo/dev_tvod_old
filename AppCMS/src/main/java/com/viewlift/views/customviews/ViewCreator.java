@@ -702,9 +702,11 @@ public class ViewCreator {
 
                                                 if (appCMSPresenter.isExternalStorageAvailable()) {
                                                     componentViewResult.componentView.setEnabled(true);
+                                                    appCMSPresenter.setUserDownloadLocationPref(true);
                                                 } else {
                                                     componentViewResult.componentView.setEnabled(false);
                                                     ((Switch) componentViewResult.componentView).setChecked(false);
+                                                    appCMSPresenter.setUserDownloadLocationPref(false);
                                                 }
 
                                                 break;
