@@ -3379,9 +3379,11 @@ public class AppCMSPresenter {
                 } catch (Exception e) {
                     Log.e(TAG, "Failed to set appropriate storage path: " +
                         e.getMessage());
+                    setUserDownloadLocationPref(false);
                     storagePath = Environment.getExternalStorageDirectory();
                 }
             } else {
+                setUserDownloadLocationPref(false);
                 storagePath = Environment.getExternalStorageDirectory();
             }
         }
