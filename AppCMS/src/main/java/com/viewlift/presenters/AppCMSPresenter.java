@@ -231,6 +231,7 @@ import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
+import com.viewlift.views.fragments.AppCMSTrayMenuDialogFragment;
 import com.viewlift.views.fragments.AppCMSUpgradeFragment;
 
 import org.jsoup.Jsoup;
@@ -1089,7 +1090,17 @@ public class AppCMSPresenter {
         }
         final AppCMSActionType actionType = actionToActionTypeMap.get(action);
         if ((actionType == AppCMSActionType.OPEN_OPTION_DIALOG)) {
-            Toast.makeText(currentActivity, " Open option dialog here ", Toast.LENGTH_LONG).show();
+
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+
+            getUserVideoStatus(contentDatum.getGist().getId(),userVideoStatusResponse -> {
+
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(),contentDatum);
+                appCMSTrayMenuDialogFragment.show(((AppCompatActivity) currentActivity).getFragmentManager(),"AppCMSTrayMenuDialogFragment");
+                appCMSTrayMenuDialogFragment.setMoreClickListener(trayMenuClickListener);
+            });
+
             return false;
         }
 
@@ -1583,6 +1594,33 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
+    public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener = new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
+        @Override
+        public void addToWatchListClick(boolean isAddedOrNot,ContentDatum contentDatum) {
+            // ADD WATCHLIST API CALLING
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            if(isUserLoggedIn()) {
+                editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
+                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                    Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
+                }, isAddedOrNot);
+            }else{
+                if(isAppSVOD() && isUserLoggedIn()){
+                    showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                }else{
+                    showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
+                }
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+            }
+        }
+
+        @Override
+        public void downloadClick(ContentDatum contentDatum) {
+            // DOWNLOAD API CALLING
+
+        }
+    };
 
     public void setVideoPlayerHasStarted() {
         isVideoPlayerStarted = false;
