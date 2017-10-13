@@ -584,6 +584,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 newVersionUpgradeAvailable.requestLayout();
+                newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
+                        getString(R.string.app_cms_app_version),
+                        appCMSPresenter.getGooglePlayAppStoreVersion()));
             } else if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             }
@@ -1366,6 +1369,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             if (appCMSPresenter.isAppUpgradeAvailable()) {
                 newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+                newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
+                        getString(R.string.app_cms_app_version),
+                        appCMSPresenter.getGooglePlayAppStoreVersion()));
             } else if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             }
