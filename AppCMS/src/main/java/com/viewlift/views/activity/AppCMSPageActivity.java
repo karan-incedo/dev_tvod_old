@@ -580,15 +580,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.checkForExistingSubscription(false);
 
         appCMSPresenter.refreshPages(() -> {
-            if (appCMSPresenter.isAppUpgradeAvailable()) {
+            if (appCMSPresenter.isAppBelowMinVersion()) {
+                appCMSPresenter.launchUpgradeAppActivity();
+            } else if (appCMSPresenter.isAppUpgradeAvailable()) {
                 newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
                         getString(R.string.app_cms_app_version),
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
                 newVersionUpgradeAvailable.requestLayout();
-            } else if (appCMSPresenter.isAppBelowMinVersion()) {
-                appCMSPresenter.launchUpgradeAppActivity();
             }
         });
     }
@@ -1367,14 +1367,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-            if (appCMSPresenter.isAppUpgradeAvailable()) {
+            if (appCMSPresenter.isAppBelowMinVersion()) {
+                appCMSPresenter.launchUpgradeAppActivity();
+            } else if (appCMSPresenter.isAppUpgradeAvailable()) {
                 newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
                         getString(R.string.app_cms_app_version),
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
                 newVersionUpgradeAvailable.requestLayout();
-            } else if (appCMSPresenter.isAppBelowMinVersion()) {
-                appCMSPresenter.launchUpgradeAppActivity();
             }
 
             if (refreshFragment) {
