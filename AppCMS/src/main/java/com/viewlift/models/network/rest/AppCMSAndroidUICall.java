@@ -54,7 +54,7 @@ public class AppCMSAndroidUICall {
         }
         if (appCMSAndroidUI == null && tryCount == 0) {
             return call(url, loadFromFile, tryCount + 1);
-        } else {
+        } else if (appCMSAndroidUI == null) {
             try {
                 appCMSAndroidUI = readAndroidFromFile(filename);
             } catch (Exception e) {
