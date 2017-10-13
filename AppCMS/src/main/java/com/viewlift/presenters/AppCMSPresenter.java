@@ -3372,9 +3372,19 @@ public class AppCMSPresenter {
                 getStorageDirectories(currentActivity).length == 0)) {
             storagePath = Environment.getExternalStorageDirectory();
         } else {
-            storagePath = new File(getStorageDirectories(currentActivity)[0]);
+            if (getStorageDirectories(currentActivity) != null &&
+                    getStorageDirectories(currentActivity).length > 0) {
+                storagePath = new File(getStorageDirectories(currentActivity)[0]);
+            } else {
+                storagePath = Environment.getExternalStorageDirectory();
+            }
         }
         return getMegabytesAvailable(storagePath) > getRemainingDownloadSize();
+    }
+
+    public boolean isExternalStorageAvailable() {
+        return (getStorageDirectories(currentActivity) != null &&
+                getStorageDirectories(currentActivity).length > 0);
     }
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,

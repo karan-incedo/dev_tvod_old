@@ -699,6 +699,14 @@ public class ViewCreator {
                                             case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
                                                 ((Switch) view).setChecked(appCMSPresenter
                                                         .getUserDownloadLocationPref());
+
+                                                if (appCMSPresenter.isExternalStorageAvailable()) {
+                                                    componentViewResult.componentView.setEnabled(true);
+                                                } else {
+                                                    componentViewResult.componentView.setEnabled(false);
+                                                    ((Switch) componentViewResult.componentView).setChecked(false);
+                                                }
+
                                                 break;
 
                                             default:
@@ -2801,6 +2809,12 @@ public class ViewCreator {
                                     appCMSPresenter.setUserDownloadLocationPref(false);
                                 }
                             });
+                    if (appCMSPresenter.isExternalStorageAvailable()) {
+                        componentViewResult.componentView.setEnabled(true);
+                    } else {
+                        componentViewResult.componentView.setEnabled(false);
+                        ((Switch) componentViewResult.componentView).setChecked(false);
+                    }
                 }
                 break;
 
