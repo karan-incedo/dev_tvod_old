@@ -21,7 +21,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
+
+import com.google.gson.GsonBuilder;
 import com.viewlift.views.customviews.PopupMenu;
+
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -291,6 +294,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
@@ -2509,6 +2513,7 @@ public class AppCMSPresenter {
             }
         }
     }
+
     public void editWatchlist(final String filmId,
                               final Action1<AppCMSAddToWatchlistResult> resultAction1, boolean add) {
         if (!isNetworkConnected()) {
@@ -4675,7 +4680,7 @@ public class AppCMSPresenter {
                                   boolean sendCloseAction,
                                   final Uri searchQuery) {
         boolean result = false;
-        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+        if (currentActivity != null && !TextUtils.isEmpty(pageId) && !(pageTitle.equalsIgnoreCase(currentActivity.getString(R.string.contact_us)))) {
             refreshPages(null);
             loadingPage = true;
             Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
@@ -4839,6 +4844,12 @@ public class AppCMSPresenter {
                             }
                         });
                 result = true;
+            }
+        } else if (isNetworkConnected() && (pageTitle.equalsIgnoreCase(currentActivity.getString(R.string.contact_us))) && currentActivity.getString(R.string.app_cms_apptentive_api_key) != null && !TextUtils.isEmpty(currentActivity.getString(R.string.app_cms_apptentive_api_key))) {
+            //Firebase Event when contact us screen is opened.
+            sendFireBaseContactUsEvent();
+            if (Apptentive.canShowMessageCenter()) {
+                Apptentive.showMessageCenter(currentActivity);
             }
         } else if (isNetworkConnected() &&
                 currentActivity != null &&
@@ -5070,6 +5081,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public boolean setInstanceId(String instanceId) {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
@@ -5077,6 +5089,7 @@ public class AppCMSPresenter {
         }
         return false;
     }
+
     public String getLoggedInUser() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(LOGIN_SHARED_PREF_NAME, 0);
@@ -10655,8 +10668,8 @@ public class AppCMSPresenter {
         return 0;
     }
 
-    public void showPopUpMenuSports(View v){
-        PopupMenu popupMenu=new PopupMenu(getCurrentActivity());
-        popupMenu.showLocation(v.getId(),getCurrentActivity());
+    public void showPopUpMenuSports(View v) {
+        PopupMenu popupMenu = new PopupMenu(getCurrentActivity());
+        popupMenu.showLocation(v.getId(), getCurrentActivity());
     }
 }
