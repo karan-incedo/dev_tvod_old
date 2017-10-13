@@ -294,6 +294,10 @@ public class CastServiceProvider {
         public void onChromeCastDeviceSelect() {
             mMediaRouteButton.setOnClickListener(null);
             castAnimDrawable.start();
+            if (mActivity != null) {
+                launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
+                stopRokuDiscovery();
+            }
         }
     };
 
