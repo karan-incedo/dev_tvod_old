@@ -149,41 +149,43 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView &&
                 appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
                 appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
-                appCMSBinder.getAppCMSPageUI().getModuleList().get(1) !=null &&
-                appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() !=null ){
-            NestedScrollView nestedScrollView= (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
+                appCMSBinder.getAppCMSPageUI().getModuleList().get(1) != null &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() != null) {
+            NestedScrollView nestedScrollView = (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
 
 
-           //System.out.println(positionToScroll+ " positionToScroll "+holder.getChildCount() );
-            if(appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()){
-               Toast.makeText(getContext(),"Created Scroll Event listener  ",Toast.LENGTH_SHORT).show();
+            //System.out.println(positionToScroll+ " positionToScroll "+holder.getChildCount() );
+            if (appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()) {
+                Toast.makeText(getContext(), "Created Scroll Event listener  ", Toast.LENGTH_SHORT).show();
                 nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                    int tempheight = (int) appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getLayout().getMobile().getHeight();
-
                     @Override
                     public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
 
 
-                  // if (scrollY > (tempheight + 300) && !appCMSPresenter.pipPlayerVisible) {
-                       if (appCMSPresenter.getFirstVisibleChildPosition(v)==0){
-                      //  Toast.makeText(v.getContext(), "Show PIP  " + appCMSPageUI.getModuleList().get(1).getSettings().isShowPIP(), Toast.LENGTH_SHORT).show();
+                        if (appCMSPresenter.getFirstVisibleChildPosition(v) == 0) {
+                            appCMSPresenter.pipPlayerVisible = false;
+                            appCMSPresenter.dismissPopupWindowPlayer();
+                            if (videoPlayerView !=null) {
+                                videoPlayerView.startPlayer();
+                            }
 
-
-                       appCMSPresenter.pipPlayerVisible = false;
-                        appCMSPresenter.dismissPopupWindowPlayer();
-
-                    }else if (!appCMSPresenter.pipPlayerVisible){
-                           appCMSPresenter.showPopupWindowPlayer(v);
-                       }
+                        } else if (!appCMSPresenter.pipPlayerVisible) {
+                            appCMSPresenter.showPopupWindowPlayer(v);
+                            if (videoPlayerView !=null) {
+                                videoPlayerView.pausePlayer();
+                            }
+                        }
 
                     }
                 });
 
-                if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView)>0 &&
-                        !appCMSPresenter.pipPlayerVisible){
+                if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
+                        !appCMSPresenter.pipPlayerVisible) {
                     appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                }else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) ==0 ){
+                    appCMSPresenter.dismissPopupWindowPlayer();
                 }
-            }else {
+            } else {
                 appCMSPresenter.dismissPopupWindowPlayer();
             }
 
@@ -244,7 +246,7 @@ public class AppCMSPageFragment extends Fragment {
 
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
-            if(videoPlayerView != null) {
+            if (videoPlayerView != null && !appCMSPresenter.pipPlayerVisible) {
                 videoPlayerView.startPlayer();
             }
         }
@@ -253,7 +255,7 @@ public class AppCMSPageFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        if(videoPlayerView != null) {
+        if (videoPlayerView != null) {
             videoPlayerView.pausePlayer();
         }
     }
@@ -267,6 +269,7 @@ public class AppCMSPageFragment extends Fragment {
         appCMSBinder = null;
         pageView = null;
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -340,7 +343,7 @@ public class AppCMSPageFragment extends Fragment {
             if (pageViewGroup != null && pageView != null) {
                 pageViewGroup.removeAllViews();
                 pageViewGroup.addView(pageView);
-        }
+            }
         }
     }
 }

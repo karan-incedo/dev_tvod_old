@@ -3233,7 +3233,7 @@ public class ViewCreator {
         }
     }
 
-    private  VideoPlayerView playerView(Context context){
+    public static  VideoPlayerView playerView(Context context){
 
         VideoPlayerView videoPlayerView = new VideoPlayerView(context);
         // it should be dynamic when live url come from api

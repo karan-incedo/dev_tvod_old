@@ -228,6 +228,7 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSUpgradeFragment;
@@ -10552,24 +10553,18 @@ public class AppCMSPresenter {
 
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
-    VideoPlayerView videoPlayerViewPIP;
+    VideoPlayerView videoPlayerViewPIP,videoPlayerViewPage;
     RelativeLayout relativeLayoutPIP;
 
     public void showPopupWindowPlayer(View v) {
         //  dismissPopupWindowPlayer();
-
         Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
-
-
         pipPlayerVisible = true;
 
 
-        videoPlayerViewPIP = new VideoPlayerView(currentActivity);
-        videoPlayerViewPIP.setUri(mp4VideoUri, null);
-        videoPlayerViewPIP.startPlayer();
-        videoPlayerViewPIP.getPlayerView().setControllerAutoShow(false);
+        videoPlayerViewPIP = ViewCreator.playerView(currentActivity);
 
-
+        //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
         relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
 
         RelativeLayout.LayoutParams lpPipView = new RelativeLayout.LayoutParams(750, 450);
