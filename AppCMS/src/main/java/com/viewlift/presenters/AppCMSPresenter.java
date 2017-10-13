@@ -3037,7 +3037,6 @@ public class AppCMSPresenter {
                               Action1<UserVideoDownloadStatus> resultAction1) {
         refreshVideoData(contentDatum, updateContentDatum -> {
             if (updateContentDatum != null &&
-                    updateContentDatum.getId() != null &&
                     updateContentDatum.getGist().getId() != null) {
                 getAppCMSSignedURL(updateContentDatum.getGist().getId(), appCMSSignedURLResult -> {
                     currentActivity.runOnUiThread(() -> {

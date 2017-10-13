@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -58,11 +57,11 @@ import com.google.android.exoplayer2.util.Util;
 import com.viewlift.R;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -91,7 +90,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private long bitrate = 0l;
 
     private long mCurrentPlayerPosition;
-    private FinishListener mFinishListener;
+    private ErrorEventListener mErrorEventListener;
 
     private Map<String, Integer> failedMediaSourceLoads;
 
@@ -443,6 +442,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
+        Log.d(TAG, "Load started");
         bitrate = (trackFormat.bitrate / 1000);
     }
 
@@ -459,7 +459,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                long bytesLoaded) {
-
+        Log.d(TAG, "Load cancelled");
     }
 
     @Override
@@ -479,13 +479,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 int tryCount = failedMediaSourceLoads.get(failedMediaSourceLoadKey);
                 if (tryCount == 3) {
                     isLoadedNext = true;
-                    mFinishListener.onFinishCallback(error.getMessage());
+                    mErrorEventListener.onFinishCallback(error.getMessage());
                 } else {
                     failedMediaSourceLoads.put(failedMediaSourceLoadKey, tryCount + 1);
                 }
             } else {
                 failedMediaSourceLoads.put(failedMediaSourceLoadKey, 1);
             }
+        } else if (mErrorEventListener != null) {
+            mErrorEventListener.onRefreshTokenCallback();
         }
     }
 
@@ -500,8 +502,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
-    public void setListener(VideoPlayerView.FinishListener finishListener) {
-        mFinishListener = finishListener;
+    public void setListener(ErrorEventListener errorEventListener) {
+        mErrorEventListener = errorEventListener;
     }
 
     @Override
@@ -555,7 +557,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.keyPairIdCookie = keyPairIdCookie;
     }
 
-    public interface FinishListener {
+    public interface ErrorEventListener {
+        void onRefreshTokenCallback();
         void onFinishCallback(String message);
     }
 
@@ -732,7 +735,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
 
             Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
-            dataSpec = new DataSpec(updatedUri,
+            if (updatedUri.toString().contains("?")) {
+                updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
+            }
+            final DataSpec updatedDataSpec = new DataSpec(updatedUri,
                     dataSpec.absoluteStreamPosition,
                     dataSpec.length,
                     dataSpec.key);
@@ -755,7 +761,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
 
             // Open the source and return.
-            return dataSource.open(dataSpec);
+            try {
+                return dataSource.open(updatedDataSpec);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to load video: " + e.getMessage());
+            }
+            return 0L;
         }
 
         @Override

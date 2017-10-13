@@ -46,7 +46,9 @@ import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
@@ -67,7 +69,7 @@ import rx.functions.Action1;
 public class AppCMSPlayVideoFragment extends Fragment
         implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener,
-        VideoPlayerView.FinishListener,
+        VideoPlayerView.ErrorEventListener,
         Animation.AnimationListener,
         AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "PlayVideoFragment";
@@ -1016,6 +1018,23 @@ public class AppCMSPlayVideoFragment extends Fragment
                         apod,
                         isVideoDownloaded);
             }
+        }
+    }
+
+    @Override
+    public void onRefreshTokenCallback() {
+        Log.d(TAG, "Calling refresh token callback");
+        if (onUpdateContentDatumEvent != null) {
+            appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum(), updatedContentDatum -> {
+                onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
+                appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
+                    if (videoPlayerView != null && appCMSSignedURLResult != null) {
+                        videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                            appCMSSignedURLResult.getSignature(),
+                            appCMSSignedURLResult.getKeyPairId());
+                    }
+                });
+            });
         }
     }
 

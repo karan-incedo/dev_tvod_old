@@ -155,7 +155,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
                             && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
                         videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
-                    }else if (binder.getContentData().getContentDetails() != null
+                    } else if (binder.getContentData().getContentDetails() != null
                             && binder.getContentData().getContentDetails().getTrailers() != null
                             && !binder.getContentData().getContentDetails().getTrailers().isEmpty()
                             && binder.getContentData().getContentDetails().getTrailers().get(0) != null
