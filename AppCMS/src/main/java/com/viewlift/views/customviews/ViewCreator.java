@@ -2100,6 +2100,12 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             } else if (moduleAPI != null &&
                                     moduleAPI.getContentData() != null &&
                                     moduleAPI.getContentData().size() > 0 &&
@@ -2107,12 +2113,6 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0).getGist() != null &&
                                     moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
-                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
-                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
-                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             }
                             break;
 
