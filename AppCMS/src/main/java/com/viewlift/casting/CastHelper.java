@@ -593,7 +593,7 @@ public class CastHelper {
                     }
                     if (isMainMediaId) {
                         playIndexPosition--;
-                    } else if (listCompareRelatedVideosId != null) {
+                    } else {
                         playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
                     }
 
