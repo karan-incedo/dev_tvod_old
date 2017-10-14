@@ -272,6 +272,8 @@ public class AppCMSPageFragment extends Fragment {
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
+            pageView = null;
+
             pageView = viewCreator.generatePage(getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
@@ -281,8 +283,10 @@ public class AppCMSPageFragment extends Fragment {
                     appCMSPresenter,
                     modulesToIgnore);
 
-            if (pageViewGroup != null && pageView != null) {
-                pageViewGroup.removeAllViews();
+            if (pageViewGroup != null &&
+                    pageView != null &&
+                    pageView.getParent() == null) {
+                removeAllViews(pageViewGroup);
                 pageViewGroup.addView(pageView);
                 updateAllViews(pageViewGroup);
             }
@@ -301,6 +305,15 @@ public class AppCMSPageFragment extends Fragment {
                 child.setVisibility(View.GONE);
                 child.setVisibility(View.VISIBLE);
                 child.requestLayout();
+            }
+        }
+    }
+
+    private void removeAllViews(ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
+                removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
+                ((ViewGroup) viewGroup.getChildAt(i)).removeAllViews();
             }
         }
     }
