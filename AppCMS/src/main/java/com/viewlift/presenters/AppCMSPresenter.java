@@ -4858,6 +4858,7 @@ public class AppCMSPresenter {
                                     .urlWithContent(urlWithContent)
                                     .authToken(getAuthToken())
                                     .pageId(pageId)
+                                    .loadFromFile(appCMSMain.shouldLoadFromFile())
                                     .build();
                             new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
                         } catch (Exception e) {
@@ -4870,6 +4871,7 @@ public class AppCMSPresenter {
                     .urlWithContent(urlWithContent)
                     .authToken(getAuthToken())
                     .pageId(pageId)
+                    .loadFromFile(appCMSMain.shouldLoadFromFile())
                     .build();
             new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
         }
@@ -8645,7 +8647,7 @@ public class AppCMSPresenter {
                             new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                                     .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                             appCMSMain.getAndroid()))
-                                    .loadFromFile(false)
+                                    .loadFromFile(appCMSMain.shouldLoadFromFile())
                                     .build();
                     Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
                     new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {

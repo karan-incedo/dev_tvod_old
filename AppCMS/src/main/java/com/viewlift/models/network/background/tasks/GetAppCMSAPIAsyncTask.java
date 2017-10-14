@@ -26,6 +26,7 @@ public class GetAppCMSAPIAsyncTask {
         String urlWithContent;
         String authToken;
         String pageId;
+        boolean loadFromFile;
         public static class Builder {
             private Params params;
             public Builder() {
@@ -44,6 +45,10 @@ public class GetAppCMSAPIAsyncTask {
             }
             public Builder authToken(String authToken) {
                 params.authToken = authToken;
+                return this;
+            }
+            public Builder loadFromFile(boolean loadFromFile) {
+                params.loadFromFile = loadFromFile;
                 return this;
             }
             public Params build() {
@@ -65,6 +70,7 @@ public class GetAppCMSAPIAsyncTask {
                             return call.call(params.urlWithContent,
                                     params.authToken,
                                     params.pageId,
+                                    params.loadFromFile,
                                     0);
                         } catch (IOException e) {
                             Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
