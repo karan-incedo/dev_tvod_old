@@ -570,6 +570,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (resumeInternalEvents) {
             appCMSPresenter.restartInternalEvents();
         }
+        appCMSPresenter.setCancelAllLoads(false);
     }
 
     @Override
@@ -579,6 +580,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.setCurrentActivity(this);
         Log.d(TAG, "onResume()");
         Log.d(TAG, "checkForExistingSubscription()");
+
         appCMSPresenter.checkForExistingSubscription(false);
 
         appCMSPresenter.refreshPages(() -> {
@@ -648,6 +650,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         appCMSPresenter.cancelInternalEvents();
+        appCMSPresenter.setCancelAllLoads(true);
     }
 
     @Override

@@ -117,12 +117,10 @@ public class AppCMSMainUICall {
 
             boolean useExistingOldVersion = true;
 
-            if (mainInStorage != null) {
-                if (main != null && main.getOldVersion() != null) {
-                    useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
-                    if (!forceReloadFromNetwork) {
-                        main.setLoadFromFile(useExistingOldVersion);
-                    }
+            if (mainInStorage != null && mainInStorage.getVersion() != null) {
+                if (main != null && main.getVersion() != null) {
+                    useExistingOldVersion = main.getVersion().equals(mainInStorage.getVersion());
+                    main.setLoadFromFile(useExistingOldVersion);
                     main.setOldVersion(main.getVersion());
                 } else if (main == null) {
                     main = mainInStorage;
@@ -157,7 +155,7 @@ public class AppCMSMainUICall {
         return main;
     }
 
-    private AppCMSMain readMainFromFile(String inputFilename) throws IOException {
+    private AppCMSMain readMainFromFile(String inputFilename) throws Exception {
         InputStream inputStream = new FileInputStream(storageDirectory.toString() +
                 File.separatorChar +
                 inputFilename);

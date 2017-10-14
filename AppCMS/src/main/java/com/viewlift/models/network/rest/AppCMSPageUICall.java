@@ -99,7 +99,7 @@ public class AppCMSPageUICall {
         }
     }
 
-    private AppCMSPageUI readPageFromFile(String inputFilename) throws IOException {
+    private AppCMSPageUI readPageFromFile(String inputFilename) throws Exception {
         InputStream inputStream = new FileInputStream(
                 new File(storageDirectory.toString() +
                         File.separatorChar +

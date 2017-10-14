@@ -42,7 +42,11 @@ public class AppCMSAndroidUICall {
         String filename = getResourceFilename(url);
         AppCMSAndroidUI appCMSAndroidUI = null;
         if (loadFromFile) {
-            appCMSAndroidUI = readAndroidFromFile(filename);
+            try {
+                appCMSAndroidUI = readAndroidFromFile(filename);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to read android.json from file: " + e.getMessage());
+            }
         }
         if (appCMSAndroidUI == null) {
             try {
@@ -79,7 +83,7 @@ public class AppCMSAndroidUICall {
         return appCMSAndroidUI;
     }
 
-    private AppCMSAndroidUI readAndroidFromFile(String inputFilename) throws IOException {
+    private AppCMSAndroidUI readAndroidFromFile(String inputFilename) throws Exception {
         InputStream inputStream = new FileInputStream(
                 new File(storageDirectory.toString() +
                         File.separatorChar +

@@ -12,6 +12,6 @@ import retrofit2.http.Url;
 
 public interface AppCMSAndroidUIRest {
     @GET
-    @Headers("Cache-Control: no-cache, no-store")
+    @Headers("Cache-Control: max-age=120")
     Call<AppCMSAndroidUI> get(@Url String url);
 }

@@ -546,6 +546,8 @@ public class AppCMSPresenter {
 
     private boolean cancelLoad;
 
+    private boolean cancelAllLoads;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -682,6 +684,11 @@ public class AppCMSPresenter {
 
         this.checkUpgradeFlag = false;
         this.upgradesAvailable = false;
+        this.cancelAllLoads = false;
+    }
+
+    public void setCancelAllLoads(boolean cancelAllLoads) {
+        this.cancelAllLoads = cancelAllLoads;
     }
 
     /*does not let user enter space in edittext*/
@@ -1068,7 +1075,7 @@ public class AppCMSPresenter {
                 return false;
             }
             openDownloadScreenForNetworkError(false);
-        } else {
+        } else if (!cancelAllLoads) {
             Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
             refreshPages(null);
@@ -1772,7 +1779,7 @@ public class AppCMSPresenter {
     }
 
     public void launchSearchResultsPage(String searchQuery) {
-        if (currentActivity != null) {
+        if (currentActivity != null && !cancelAllLoads) {
 
             Intent searchIntent = new Intent(currentActivity, AppCMSSearchActivity.class);
             searchIntent.setAction(Intent.ACTION_SEARCH);
@@ -1782,7 +1789,7 @@ public class AppCMSPresenter {
     }
 
     public void launchResetPasswordPage(String email) {
-        if (currentActivity != null) {
+        if (currentActivity != null && !cancelAllLoads) {
             cancelInternalEvents();
 
             Bundle args = getPageActivityBundle(currentActivity,
@@ -1813,7 +1820,7 @@ public class AppCMSPresenter {
 
 
     public void launchResetPasswordTVPage( AppCMSPageUI appCMSPageUI) {
-        if (currentActivity != null) {
+        if (currentActivity != null && !cancelAllLoads) {
             cancelInternalEvents();
 
             AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
@@ -1845,7 +1852,7 @@ public class AppCMSPresenter {
     }
 
     public void launchEditProfilePage() {
-        if (currentActivity != null) {
+        if (currentActivity != null && !cancelAllLoads) {
             cancelInternalEvents();
 
             Bundle args = getPageActivityBundle(currentActivity,
@@ -1874,7 +1881,7 @@ public class AppCMSPresenter {
     }
 
     public void launchChangePasswordPage() {
-        if (currentActivity != null) {
+        if (currentActivity != null && !cancelAllLoads) {
             cancelInternalEvents();
 
             Bundle args = getPageActivityBundle(currentActivity,
@@ -3540,7 +3547,7 @@ public class AppCMSPresenter {
     }
 
     public void launchUpgradeAppActivity() {
-        if (platformType == PlatformType.ANDROID) {
+        if (platformType == PlatformType.ANDROID && !cancelAllLoads) {
             try {
                 Intent upgradeIntent = new Intent(currentActivity, AppCMSUpgradeActivity.class);
                 currentActivity.startActivity(upgradeIntent);
@@ -4827,7 +4834,7 @@ public class AppCMSPresenter {
     public void launchErrorActivity(PlatformType platformType) {
         if (platformType == PlatformType.ANDROID) {
             try {
-                if (!cancelLoad) {
+                if (!cancelLoad && !cancelAllLoads) {
                     Intent errorIntent = new Intent(currentActivity, AppCMSErrorActivity.class);
                     currentActivity.startActivity(errorIntent);
                 }
@@ -6017,6 +6024,7 @@ public class AppCMSPresenter {
         this.platformType = platformType;
         this.launched = false;
         this.cancelLoad = false;
+        this.cancelAllLoads = false;
 
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
@@ -8312,29 +8320,31 @@ public class AppCMSPresenter {
                                     boolean sendCloseAction,
                                     Uri searchQuery,
                                     ExtraScreenType extraScreenType) {
-        try {
-            Bundle args = getPageActivityBundle(activity,
-                    appCMSPageUI,
-                    appCMSPageAPI,
-                    pageId,
-                    pageName,
-                    pagePath,
-                    screenName,
-                    loadFromFile,
-                    appbarPresent,
-                    fullscreenEnabled,
-                    navbarPresent,
-                    sendCloseAction,
-                    searchQuery,
-                    extraScreenType);
-            Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
-            appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
-            appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            activity.startActivity(appCMSIntent);
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-        } catch (Exception e) {
-            Log.e(TAG, "Error launching page activity: " + pageName);
-            showDialog(DialogType.NETWORK, null, false, null);
+        if (!cancelAllLoads) {
+            try {
+                Bundle args = getPageActivityBundle(activity,
+                        appCMSPageUI,
+                        appCMSPageAPI,
+                        pageId,
+                        pageName,
+                        pagePath,
+                        screenName,
+                        loadFromFile,
+                        appbarPresent,
+                        fullscreenEnabled,
+                        navbarPresent,
+                        sendCloseAction,
+                        searchQuery,
+                        extraScreenType);
+                Intent appCMSIntent = new Intent(activity, AppCMSPageActivity.class);
+                appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
+                appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                activity.startActivity(appCMSIntent);
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+            } catch (Exception e) {
+                Log.e(TAG, "Error launching page activity: " + pageName);
+                showDialog(DialogType.NETWORK, null, false, null);
+            }
         }
     }
 
@@ -8354,22 +8364,25 @@ public class AppCMSPresenter {
             ((AppCMSPlayVideoActivity) currentActivity).closePlayer();
         }
 
-        Bundle args = getAutoplayActivityBundle(activity,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageId,
-                pageName,
-                screenName,
-                loadFromFile,
-                appbarPresent,
-                fullscreenEnabled,
-                navbarPresent,
-                sendCloseAction,
-                binder);
-        Intent intent = new Intent(currentActivity, AutoplayActivity.class);
-        intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        currentActivity.startActivity(intent);
+        if (!cancelAllLoads) {
+
+            Bundle args = getAutoplayActivityBundle(activity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageId,
+                    pageName,
+                    screenName,
+                    loadFromFile,
+                    appbarPresent,
+                    fullscreenEnabled,
+                    navbarPresent,
+                    sendCloseAction,
+                    binder);
+            Intent intent = new Intent(currentActivity, AutoplayActivity.class);
+            intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            currentActivity.startActivity(intent);
+        }
     }
 
     private void launchDownloadQualityActivity(Activity activity,
@@ -8384,14 +8397,15 @@ public class AppCMSPresenter {
                                                boolean navbarPresent,
                                                boolean sendCloseAction,
                                                AppCMSDownloadQualityBinder binder) {
+        if (!cancelAllLoads) {
 
-
-        Bundle args = new Bundle();
-        args.putBinder(activity.getString(R.string.app_cms_download_setting_binder_key), binder);
-        Intent intent = new Intent(currentActivity, AppCMSDownloadQualityActivity.class);
-        intent.putExtra(currentActivity.getString(R.string.app_cms_download_setting_bundle_key), args);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        currentActivity.startActivity(intent);
+            Bundle args = new Bundle();
+            args.putBinder(activity.getString(R.string.app_cms_download_setting_binder_key), binder);
+            Intent intent = new Intent(currentActivity, AppCMSDownloadQualityActivity.class);
+            intent.putExtra(currentActivity.getString(R.string.app_cms_download_setting_bundle_key), args);
+            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            currentActivity.startActivity(intent);
+        }
     }
 
     private void getAppCMSSite(final PlatformType platformType) {
@@ -8591,7 +8605,7 @@ public class AppCMSPresenter {
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                     appCMSMain.getAndroid()))
-                            .loadFromFile(false)
+                            .loadFromFile(appCMSMain.shouldLoadFromFile())
                             .build();
             try {
                 new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {

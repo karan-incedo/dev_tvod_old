@@ -109,7 +109,7 @@ public class AppCMSPageAPICall {
         return appCMSPageAPI;
     }
 
-    private AppCMSPageAPI readPageFromFile(String inputFilename) throws IOException {
+    private AppCMSPageAPI readPageFromFile(String inputFilename) throws Exception {
         InputStream inputStream = new FileInputStream(
                 new File(storageDirectory.toString() +
                         File.separatorChar +
