@@ -294,16 +294,20 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     private void updateAllViews(ViewGroup pageViewGroup) {
-        pageViewGroup.setVisibility(View.GONE);
-        pageViewGroup.setVisibility(View.VISIBLE);
+        if (pageViewGroup.getVisibility() == View.VISIBLE) {
+            pageViewGroup.setVisibility(View.GONE);
+            pageViewGroup.setVisibility(View.VISIBLE);
+        }
         pageViewGroup.requestLayout();
         for (int i = 0; i < pageViewGroup.getChildCount(); i++) {
             View child = pageViewGroup.getChildAt(i);
             if (child instanceof ViewGroup) {
                 updateAllViews((ViewGroup) child);
             } else {
-                child.setVisibility(View.GONE);
-                child.setVisibility(View.VISIBLE);
+                if (pageViewGroup.getVisibility() == View.VISIBLE) {
+                    child.setVisibility(View.GONE);
+                    child.setVisibility(View.VISIBLE);
+                }
                 child.requestLayout();
             }
         }

@@ -886,6 +886,15 @@ public class ViewCreator {
         }
 
         boolean newView = false;
+
+        if (pageView != null) {
+            String oldVersion = pageView.getAppCMSPageUI().getVersion();
+            String newVersion = appCMSPageUI.getVersion();
+            if (!TextUtils.isEmpty(oldVersion) && !oldVersion.equals(newVersion)) {
+                pageView = null;
+            }
+        }
+
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
