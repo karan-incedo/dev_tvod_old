@@ -254,6 +254,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                        pageLoading(false);
                         handleLaunchPageAction(appCMSBinder,
                                 false,
                                 false,
@@ -590,6 +591,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
                 newVersionUpgradeAvailable.requestLayout();
             }
+            pageLoading(true);
+            appCMSPresenter.sendRefreshPageAction();
         });
     }
 
