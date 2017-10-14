@@ -70,6 +70,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -592,6 +593,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.requestLayout();
             }
             pageLoading(true);
+            if (appCMSBinderMap != null &&
+                    appCMSBinderStack != null &&
+                    !appCMSBinderStack.isEmpty()) {
+                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                if (appCMSBinder != null) {
+                    AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getPageName());
+                    if (appCMSPageUI != null) {
+                        appCMSBinder.setAppCMSPageUI(appCMSPageUI);
+                    }
+                }
+            }
             appCMSPresenter.sendRefreshPageAction();
         });
     }

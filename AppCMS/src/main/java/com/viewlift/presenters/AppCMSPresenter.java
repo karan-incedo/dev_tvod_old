@@ -8462,6 +8462,11 @@ public class AppCMSPresenter {
                                                                     pageViewLruCache != null) {
                                                                 navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                                                                 pageViewLruCache.evictAll();
+
+                                                                String action = pageNameToActionMap.get(metaPage.getPageName());
+                                                                if (action != null && actionToPageMap.containsKey(action)) {
+                                                                    actionToPageMap.put(action, appCMSPageUI);
+                                                                }
                                                             }
                                                         },
                                                         false);
@@ -8840,6 +8845,14 @@ public class AppCMSPresenter {
                     },
                     loadFromFile);
         }
+    }
+
+    public AppCMSPageUI getAppCMSPageUI(String pageName) {
+        String action = pageNameToActionMap.get(pageName);
+        if (action != null && actionToPageMap.containsKey(action)) {
+            return actionToPageMap.get(action);
+        }
+        return null;
     }
 
     /**
