@@ -986,7 +986,7 @@ public class ViewCreator {
                         appCMSPresenter);
                 if (childView != null) {
                     childrenContainer.addView(childView);
-                    if (childView == null) {
+                    if (moduleAPI == null) {
                         childView.setVisibility(View.GONE);
                     }
                 }
