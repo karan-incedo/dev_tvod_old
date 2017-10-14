@@ -1580,6 +1580,12 @@ public class ViewCreator {
                 }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
                 componentViewResult.onInternalEvent.setModuleId(moduleAPI.getId());
+
+                if (moduleAPI.getContentData() == null ||
+                        moduleAPI.getContentData().isEmpty()) {
+                    componentViewResult.shouldHideModule = true;
+                }
+
                 break;
 
             case PAGE_PAGE_CONTROL_VIEW_KEY:
