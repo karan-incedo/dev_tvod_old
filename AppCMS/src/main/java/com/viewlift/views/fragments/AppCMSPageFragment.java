@@ -304,7 +304,7 @@ public class AppCMSPageFragment extends Fragment {
             if (child instanceof ViewGroup) {
                 updateAllViews((ViewGroup) child);
             } else {
-                if (pageViewGroup.getVisibility() == View.VISIBLE) {
+                if (child.getVisibility() == View.VISIBLE) {
                     child.setVisibility(View.GONE);
                     child.setVisibility(View.VISIBLE);
                 }
@@ -317,8 +317,8 @@ public class AppCMSPageFragment extends Fragment {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
                 removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
-                ((ViewGroup) viewGroup.getChildAt(i)).removeAllViews();
             }
         }
+        viewGroup.removeAllViews();
     }
 }
