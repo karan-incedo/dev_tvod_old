@@ -67,6 +67,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
     private InternalEvent<Integer> showRemoveAllButtonEvent;
 
+    private String moduleId;
+
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
                                  List<Component> components,
@@ -539,6 +541,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         for (OnInternalEvent internalEvent : receivers) {
             internalEvent.receiveEvent(event);
         }
+    }
+
+    @Override
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    @Override
+    public String getModuleId() {
+        return moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {

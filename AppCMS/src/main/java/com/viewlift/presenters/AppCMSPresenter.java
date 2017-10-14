@@ -2409,7 +2409,11 @@ public class AppCMSPresenter {
                             .url(url)
                             .build();
 
-                    new GetAppCMSSignedURLAsyncTask(appCMSSignedURLCall, readyAction).execute(params);
+                    try {
+                        new GetAppCMSSignedURLAsyncTask(appCMSSignedURLCall, readyAction).execute(params);
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to retrieve signed URL: " + e.getMessage());
+                    }
                 });
             } else {
                 String url = currentContext.getString(R.string.app_cms_signed_url_api_url,
@@ -2421,7 +2425,11 @@ public class AppCMSPresenter {
                         .url(url)
                         .build();
 
-                new GetAppCMSSignedURLAsyncTask(appCMSSignedURLCall, readyAction).execute(params);
+                try {
+                    new GetAppCMSSignedURLAsyncTask(appCMSSignedURLCall, readyAction).execute(params);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to retrieve signed URL: " + e.getMessage());
+                }
             }
         }
     }
@@ -3584,12 +3592,12 @@ public class AppCMSPresenter {
     public boolean isAppBelowMinVersion() {
         try {
             SemVer installAppSemVer = getInstalledAppSemVer();
-            SemVer latestAppSemVer = new SemVer();
-            latestAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getMinimum());
+            SemVer minAppVersion = new SemVer();
+            minAppVersion.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getMinimum());
 
-            if (installAppSemVer.major < latestAppSemVer.major ||
-                    installAppSemVer.minor < latestAppSemVer.minor ||
-                    installAppSemVer.patch < latestAppSemVer.patch) {
+            if (installAppSemVer.major < minAppVersion.major ||
+                    installAppSemVer.minor < minAppVersion.minor ||
+                    installAppSemVer.patch < minAppVersion.patch) {
                 return true;
             }
         } catch (Exception e) {
@@ -6008,50 +6016,53 @@ public class AppCMSPresenter {
         this.launched = false;
         this.cancelLoad = false;
 
-        retrieveCurrentAppVersion();
-
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
                 .forceReloadFromNetwork(forceReloadFromNetwork)
                 .build();
-        new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
-            try {
-                if (main == null) {
-                    Log.e(TAG, "DialogType retrieving main.json");
-                    if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
-                        openDownloadScreenForNetworkError(true);
-                    } else {
+
+        try {
+            new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
+                try {
+                    if (main == null) {
+                        Log.e(TAG, "DialogType retrieving main.json");
+                        if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
+                            openDownloadScreenForNetworkError(true);
+                        } else {
+                            launchErrorActivity(platformType);
+                            return;
+                        }
+                    } else if (TextUtils.isEmpty(main
+                            .getAndroid())) {
+                        Log.e(TAG, "AppCMS key for main not found");
                         launchErrorActivity(platformType);
                         return;
-                    }
-                } else if (TextUtils.isEmpty(main
-                        .getAndroid())) {
-                    Log.e(TAG, "AppCMS key for main not found");
-                    launchErrorActivity(platformType);
-                    return;
-                } else if (TextUtils.isEmpty(main
-                        .getApiBaseUrl())) {
-                    Log.e(TAG, "AppCMS key for API Base URL not found");
-                    launchErrorActivity(platformType);
-                    return;
-                } else {
-                    appCMSMain = main;
-                    new SoftReference<Object>(appCMSMain, referenceQueue);
-                    String version = main.getVersion();
-                    String oldVersion = main.getOldVersion();
-                    Log.d(TAG, "Version: " + version);
-                    Log.d(TAG, "OldVersion: " + oldVersion);
-                    loadFromFile = appCMSMain.shouldLoadFromFile();
+                    } else if (TextUtils.isEmpty(main
+                            .getApiBaseUrl())) {
+                        Log.e(TAG, "AppCMS key for API Base URL not found");
+                        launchErrorActivity(platformType);
+                        return;
+                    } else {
+                        appCMSMain = main;
+                        new SoftReference<Object>(appCMSMain, referenceQueue);
+                        String version = main.getVersion();
+                        String oldVersion = main.getOldVersion();
+                        Log.d(TAG, "Version: " + version);
+                        Log.d(TAG, "OldVersion: " + oldVersion);
+                        loadFromFile = appCMSMain.shouldLoadFromFile();
 
-                    getAppCMSSite(platformType);
+                        getAppCMSSite(platformType);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
+                    launchErrorActivity(platformType);
+                    return;
                 }
-            } catch (Exception e) {
-                Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
-                launchErrorActivity(platformType);
-                return;
-            }
-        }).execute(params);
+            }).execute(params);
+        } catch (Exception e) {
+            Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
+        }
     }
 
     public AppCMSMain getAppCMSMain() {
@@ -8438,7 +8449,7 @@ public class AppCMSPresenter {
         Log.d(TAG, "Refreshing pages");
         if (currentActivity != null) {
             Log.d(TAG, "Refreshing main.json");
-            retrieveCurrentAppVersion();
+
             try {
                 refreshAppCMSMain((appCMSMain) -> {
                     if (appCMSMain != null) {
@@ -8523,37 +8534,51 @@ public class AppCMSPresenter {
         }
     }
 
-    private void refreshAppCMSMain(Action1<AppCMSMain> readyAction) {
+    public void updateAppCMSMain(AppCMSMain appCMSMain) {
+        this.appCMSMain = appCMSMain;
+    }
+
+    public void refreshAppCMSMain(Action1<AppCMSMain> readyAction) {
         if (currentActivity != null) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(),
                         () -> {
-                            GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
-                                    .context(currentActivity)
-                                    .siteId(currentActivity.getString(R.string.app_cms_app_name))
-                                    .forceReloadFromNetwork(true)
-                                    .build();
-                            new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
-                                Log.d(TAG, "Refreshed main.json");
-                                if (readyAction != null) {
-                                    Log.d(TAG, "Notifying listeners that main.json has been updated");
-                                    Observable.just(main).subscribe(readyAction);
-                                }
-                            }).execute(params);
+                            try {
+                                GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
+                                        .context(currentActivity)
+                                        .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                                        .forceReloadFromNetwork(true)
+                                        .build();
+                                new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
+                                    Log.d(TAG, "Refreshed main.json");
+                                    if (readyAction != null) {
+                                        Log.d(TAG, "Notifying listeners that main.json has been updated");
+                                        Observable.just(main).subscribe(readyAction);
+                                    }
+                                }).execute(params);
+                            } catch (Exception e) {
+                                Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
+                                Observable.just((AppCMSMain) null).subscribe(readyAction);
+                            }
                 });
             } else {
-                GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
-                        .context(currentActivity)
-                        .siteId(currentActivity.getString(R.string.app_cms_app_name))
-                        .forceReloadFromNetwork(true)
-                        .build();
-                new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
-                    Log.d(TAG, "Refreshed main.json");
-                    if (readyAction != null) {
-                        Log.d(TAG, "Notifying listeners that main.json has been updated");
-                        Observable.just(main).subscribe(readyAction);
-                    }
-                }).execute(params);
+                try {
+                    GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
+                            .context(currentActivity)
+                            .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                            .forceReloadFromNetwork(true)
+                            .build();
+                    new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
+                        Log.d(TAG, "Refreshed main.json");
+                        if (readyAction != null) {
+                            Log.d(TAG, "Notifying listeners that main.json has been updated");
+                            Observable.just(main).subscribe(readyAction);
+                        }
+                    }).execute(params);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
+                    Observable.just((AppCMSMain) null).subscribe(readyAction);
+                }
             }
         }
     }
@@ -8566,17 +8591,22 @@ public class AppCMSPresenter {
                                     appCMSMain.getAndroid()))
                             .loadFromFile(false)
                             .build();
-            new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-                Log.d(TAG, "Refreshed android.json");
-                if (readyAction != null) {
-                    Log.d(TAG, "Notifying listeners that android.json has been updated");
-                    if (appCMSAndroidUI != null) {
-                        Observable.just(appCMSAndroidUI).subscribe(readyAction);
-                    } else {
-                        Observable.just((AppCMSAndroidUI) null).subscribe(readyAction);
+            try {
+                new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                    Log.d(TAG, "Refreshed android.json");
+                    if (readyAction != null) {
+                        Log.d(TAG, "Notifying listeners that android.json has been updated");
+                        if (appCMSAndroidUI != null) {
+                            Observable.just(appCMSAndroidUI).subscribe(readyAction);
+                        } else {
+                            Observable.just((AppCMSAndroidUI) null).subscribe(readyAction);
+                        }
                     }
-                }
-            }).execute(params);
+                }).execute(params);
+            } catch (Exception e) {
+                Log.e(TAG, "Error retrieving android.json: " + e.getMessage());
+                Observable.just((AppCMSAndroidUI) null).subscribe(readyAction);
+            }
         }
     }
 
@@ -8610,46 +8640,80 @@ public class AppCMSPresenter {
             } else {
                 Log.d(TAG, "Retrieving android.json");
 
-                GetAppCMSAndroidUIAsyncTask.Params params =
-                        new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                                .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                        appCMSMain.getAndroid()))
-                                .loadFromFile(false)
-                                .build();
-                Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
-                new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-                    try {
-                        if (appCMSAndroidUI == null ||
-                                appCMSAndroidUI.getMetaPages() == null ||
-                                appCMSAndroidUI.getMetaPages().isEmpty()) {
-                            Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                            launchErrorActivity(platformType);
-                        } else if (isAppBelowMinVersion()) {
-                            Log.e(TAG, "AppCMS current application version is below the minimum version supported");
-                            launchUpgradeAppActivity();
-                        } else {
-                            getAppCMSModules(appCMSAndroidUI, (appCMSAndroidModules) -> {
-                                Log.d(TAG, "Received module list");
-                                this.appCMSAndroidModules = appCMSAndroidModules;
-                                initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-                                navigation = appCMSAndroidUI.getNavigation();
-                                new SoftReference<>(navigation, referenceQueue);
-                                queueMetaPages(appCMSAndroidUI.getMetaPages());
-                                Log.d(TAG, "Processing meta pages queue");
-                                processMetaPagesQueue(loadFromFile,
-                                        () -> {
-                                            if (!isNetworkConnected()) {
-                                                openDownloadScreenForNetworkError(true);
-                                            } else {
-                                                if (appCMSMain.getServiceType()
-                                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
-                                                    refreshSubscriptionData(() -> {
+                try {
+                    GetAppCMSAndroidUIAsyncTask.Params params =
+                            new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                                    .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                            appCMSMain.getAndroid()))
+                                    .loadFromFile(false)
+                                    .build();
+                    Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
+                    new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                        try {
+                            if (appCMSAndroidUI == null ||
+                                    appCMSAndroidUI.getMetaPages() == null ||
+                                    appCMSAndroidUI.getMetaPages().isEmpty()) {
+                                Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
+                                launchErrorActivity(platformType);
+                            } else if (isAppBelowMinVersion()) {
+                                Log.e(TAG, "AppCMS current application version is below the minimum version supported");
+                                launchUpgradeAppActivity();
+                            } else {
+                                getAppCMSModules(appCMSAndroidUI, (appCMSAndroidModules) -> {
+                                    Log.d(TAG, "Received module list");
+                                    this.appCMSAndroidModules = appCMSAndroidModules;
+                                    initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+                                    navigation = appCMSAndroidUI.getNavigation();
+                                    new SoftReference<>(navigation, referenceQueue);
+                                    queueMetaPages(appCMSAndroidUI.getMetaPages());
+                                    Log.d(TAG, "Processing meta pages queue");
+                                    processMetaPagesQueue(loadFromFile,
+                                            () -> {
+                                                if (!isNetworkConnected()) {
+                                                    openDownloadScreenForNetworkError(true);
+                                                } else {
+                                                    if (appCMSMain.getServiceType()
+                                                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                                        refreshSubscriptionData(() -> {
+                                                            if (appCMSMain.isForceLogin()) {
+                                                                boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                                                                        loginPage.getPageName(),
+                                                                        loginPage.getPageUI(),
+                                                                        true,
+                                                                        false,
+                                                                        false,
+                                                                        false,
+                                                                        false,
+                                                                        deeplinkSearchQuery);
+                                                                if (!launchSuccess) {
+                                                                    Log.e(TAG, "Failed to launch page: "
+                                                                            + loginPage.getPageName());
+                                                                    launchErrorActivity(platformType);
+                                                                }
+                                                            } else {
+                                                                boolean launchSuccess = navigateToPage(homePage.getPageId(),
+                                                                        homePage.getPageName(),
+                                                                        homePage.getPageUI(),
+                                                                        true,
+                                                                        true,
+                                                                        false,
+                                                                        true,
+                                                                        false,
+                                                                        deeplinkSearchQuery);
+                                                                if (!launchSuccess) {
+                                                                    Log.e(TAG, "Failed to launch page: "
+                                                                            + loginPage.getPageName());
+                                                                    launchErrorActivity(platformType);
+                                                                }
+                                                            }
+                                                        }, true);
+                                                    } else {
                                                         if (appCMSMain.isForceLogin()) {
                                                             boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                                                                     loginPage.getPageName(),
                                                                     loginPage.getPageUI(),
                                                                     true,
-                                                                    false,
+                                                                    true,
                                                                     false,
                                                                     false,
                                                                     false,
@@ -8675,49 +8739,20 @@ public class AppCMSPresenter {
                                                                 launchErrorActivity(platformType);
                                                             }
                                                         }
-                                                    }, true);
-                                                } else {
-                                                    if (appCMSMain.isForceLogin()) {
-                                                        boolean launchSuccess = navigateToPage(loginPage.getPageId(),
-                                                                loginPage.getPageName(),
-                                                                loginPage.getPageUI(),
-                                                                true,
-                                                                true,
-                                                                false,
-                                                                false,
-                                                                false,
-                                                                deeplinkSearchQuery);
-                                                        if (!launchSuccess) {
-                                                            Log.e(TAG, "Failed to launch page: "
-                                                                    + loginPage.getPageName());
-                                                            launchErrorActivity(platformType);
-                                                        }
-                                                    } else {
-                                                        boolean launchSuccess = navigateToPage(homePage.getPageId(),
-                                                                homePage.getPageName(),
-                                                                homePage.getPageUI(),
-                                                                true,
-                                                                true,
-                                                                false,
-                                                                true,
-                                                                false,
-                                                                deeplinkSearchQuery);
-                                                        if (!launchSuccess) {
-                                                            Log.e(TAG, "Failed to launch page: "
-                                                                    + loginPage.getPageName());
-                                                            launchErrorActivity(platformType);
-                                                        }
                                                     }
                                                 }
-                                            }
-                                        });
-                            });
+                                            });
+                                });
+                            }
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
+                            launchErrorActivity(platformType);
                         }
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
-                        launchErrorActivity(platformType);
-                    }
-                }).execute(params);
+                    }).execute(params);
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to load Android json file: " + e.getMessage());
+                    launchErrorActivity(PlatformType.ANDROID);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Failed to load Android json file: " + e.getMessage());

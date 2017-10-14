@@ -998,7 +998,10 @@ public class ViewCreator {
             for (OnInternalEvent onInternalEvent : presenterOnInternalEvents) {
                 for (OnInternalEvent receiverInternalEvent : presenterOnInternalEvents) {
                     if (receiverInternalEvent != onInternalEvent) {
-                        onInternalEvent.addReceiver(receiverInternalEvent);
+                        if (!TextUtils.isEmpty(onInternalEvent.getModuleId()) &&
+                                onInternalEvent.getModuleId().equals(receiverInternalEvent.getModuleId())) {
+                            onInternalEvent.addReceiver(receiverInternalEvent);
+                        }
                     }
                 }
             }
@@ -1388,6 +1391,7 @@ public class ViewCreator {
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+                    componentViewResult.onInternalEvent.setModuleId(moduleAPI.getId());
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
@@ -1575,6 +1579,7 @@ public class ViewCreator {
                             .build());
                 }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
+                componentViewResult.onInternalEvent.setModuleId(moduleAPI.getId());
                 break;
 
             case PAGE_PAGE_CONTROL_VIEW_KEY:
@@ -1593,6 +1598,7 @@ public class ViewCreator {
                 int numDots = moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0;
                 ((DotSelectorView) componentViewResult.componentView).addDots(numDots);
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
+                componentViewResult.onInternalEvent.setModuleId(moduleAPI.getId());
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
 
@@ -1928,9 +1934,12 @@ public class ViewCreator {
 
                         componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
 
+                        final String moduleId = moduleAPI.getId();
+
                         componentViewResult.onInternalEvent = new OnInternalEvent() {
                             final View removeAllButton = componentViewResult.componentView;
                             private List<OnInternalEvent> receivers = new ArrayList<>();
+                            private String internalEventModuleId = moduleId;
 
                             @Override
                             public void addReceiver(OnInternalEvent e) {
@@ -1959,6 +1968,16 @@ public class ViewCreator {
                             @Override
                             public void cancel(boolean cancel) {
                                 //
+                            }
+
+                            @Override
+                            public void setModuleId(String moduleId) {
+                                internalEventModuleId = moduleId;
+                            }
+
+                            @Override
+                            public String getModuleId() {
+                                return internalEventModuleId;
                             }
                         };
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {

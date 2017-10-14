@@ -57,6 +57,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     private String userId;
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
     private InternalEvent<Integer> showRemoveAllButtonEvent;
+    private String moduleId;
 
     public AppCMSTraySeasonItemAdapter(Context context,
                                        List<ContentDatum> adapterData,
@@ -171,6 +172,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         for (OnInternalEvent internalEvent : receivers) {
             internalEvent.receiveEvent(event);
         }
+    }
+
+    @Override
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    @Override
+    public String getModuleId() {
+        return moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {

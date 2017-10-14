@@ -49,6 +49,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     private boolean scrolled;
     private RecyclerView.OnScrollListener scrollListener;
 
+    private String moduleId;
+
     public AppCMSCarouselItemAdapter(Context context,
                                      ViewCreator viewCreator,
                                      AppCMSPresenter appCMSPresenter,
@@ -308,6 +310,16 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
             started = false;
             updatedIndex = getDefaultIndex();
         }
+    }
+
+    @Override
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    @Override
+    public String getModuleId() {
+        return moduleId;
     }
 
     public void postUpdateCarousel() {

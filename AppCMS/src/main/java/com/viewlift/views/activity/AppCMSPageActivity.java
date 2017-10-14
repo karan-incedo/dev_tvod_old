@@ -591,20 +591,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         getString(R.string.app_cms_app_version),
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
                 newVersionUpgradeAvailable.requestLayout();
-            }
-            if (appCMSBinderMap != null &&
-                    appCMSBinderStack != null &&
-                    !appCMSBinderStack.isEmpty()) {
-                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                if (appCMSBinder != null) {
-                    pageLoading(true);
-                    AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
-                    if (appCMSPageUI != null) {
-                        appCMSBinder.setAppCMSPageUI(appCMSPageUI);
+            } else {
+                newVersionUpgradeAvailable.setVisibility(View.GONE);
+                if (appCMSBinderMap != null &&
+                        appCMSBinderStack != null &&
+                        !appCMSBinderStack.isEmpty()) {
+                    AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                    if (appCMSBinder != null) {
+                        pageLoading(true);
+                        AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
+                        if (appCMSPageUI != null) {
+                            appCMSBinder.setAppCMSPageUI(appCMSPageUI);
+                        }
+                        updateData(appCMSBinder, () -> {
+                            appCMSPresenter.sendRefreshPageAction();
+                        });
                     }
-                    updateData(appCMSBinder, () -> {
-                        appCMSPresenter.sendRefreshPageAction();
-                    });
                 }
             }
         });
