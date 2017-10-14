@@ -592,19 +592,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
                 newVersionUpgradeAvailable.requestLayout();
             }
-            pageLoading(true);
             if (appCMSBinderMap != null &&
                     appCMSBinderStack != null &&
                     !appCMSBinderStack.isEmpty()) {
                 AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
                 if (appCMSBinder != null) {
-                    AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getPageName());
+                    pageLoading(true);
+                    AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
                     if (appCMSPageUI != null) {
                         appCMSBinder.setAppCMSPageUI(appCMSPageUI);
                     }
+                    updateData(appCMSBinder, () -> {
+                        appCMSPresenter.sendRefreshPageAction();
+                    });
                 }
             }
-            appCMSPresenter.sendRefreshPageAction();
         });
     }
 
@@ -619,8 +621,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.closeSoftKeyboard();
         appCMSPresenter.cancelWatchlistToast();
-
-        appCMSPresenter.refreshPages(null);
     }
 
     @Override
@@ -1632,6 +1632,43 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 false,
                 0,
                 null);
+    }
+
+    private void updateData(AppCMSBinder appCMSBinder, Action0 readyAction) {
+        final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+        final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
+
+        String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
+        boolean usePageIdQueryParam = true;
+        if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
+            endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
+            usePageIdQueryParam = false;
+        }
+
+        if (!TextUtils.isEmpty(endPoint)) {
+            String baseUrl = appCMSMain.getApiBaseUrl();
+            String siteId = appCMSSite.getGist().getSiteInternalName();
+            boolean viewPlans = appCMSPresenter.isViewPlanPage(endPoint);
+            boolean showPage = appCMSPresenter.isShowPage(appCMSBinder.getPageId());
+            String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
+                    viewPlans,
+                    showPage,
+                    baseUrl,
+                    endPoint,
+                    siteId,
+                    appCMSBinder.getPagePath());
+
+            appCMSPresenter.getPageIdContent(apiUrl,
+                    appCMSBinder.getPagePath(),
+                    appCMSPageAPI -> {
+                        if (appCMSPageAPI != null) {
+                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                        }
+                        if (readyAction != null) {
+                            readyAction.call();
+                        }
+                    });
+        }
     }
 
     private void updateData() {

@@ -8458,7 +8458,16 @@ public class AppCMSPresenter {
                                                 getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                                         metaPage.getPageUI()),
                                                         appCMSPageUI -> {
-                                                            if (appCMSPageUI.isLoadedFromNetwork() &&
+                                                            boolean updatePage = false;
+                                                            if (navigationPages.containsKey(metaPage.getPageId())) {
+                                                                String oldVersion = navigationPages.get(metaPage.getPageId()).getVersion();
+                                                                String newVersion = appCMSPageUI.getVersion();
+                                                                if (!TextUtils.isEmpty(oldVersion)) {
+                                                                    updatePage = !oldVersion.equals(newVersion);
+                                                                }
+                                                            }
+
+                                                            if (updatePage &&
                                                                     pageViewLruCache != null) {
                                                                 navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                                                                 pageViewLruCache.evictAll();
@@ -8468,6 +8477,7 @@ public class AppCMSPresenter {
                                                                     actionToPageMap.put(action, appCMSPageUI);
                                                                 }
                                                             }
+
                                                         },
                                                         false);
                                             } catch (Exception e) {
