@@ -1668,6 +1668,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             readyAction.call();
                         }
                     });
+        } else if (readyAction != null) {
+            readyAction.call();
         }
     }
 
