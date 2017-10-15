@@ -8705,9 +8705,7 @@ public class AppCMSPresenter {
                                 launchUpgradeAppActivity();
                             } else {
                                 getAppCMSModules(appCMSAndroidUI, (appCMSAndroidModules) -> {
-                                    if (appCMSMain.shouldLoadFromFile()) {
-                                        launchBlankPage();
-                                    }
+                                    launchBlankPage();
 
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;

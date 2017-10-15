@@ -1,8 +1,8 @@
 <resources>
     <integer name="app_cms_beacon_timeout_msec">1000</integer>
     <integer name="app_cms_beacon_buffering_timeout_msec">5000</integer>
-    <integer name="app_cms_default_connection_timeout_msec">500</integer>
-    <integer name="app_cms_default_read_timeout_msec">500</integer>
+    <integer name="app_cms_default_connection_timeout_msec">5000</integer>
+    <integer name="app_cms_default_read_timeout_msec">5000</integer>
     <integer name="app_cms_default_write_timeout_msec">2000</integer>
     <integer name="app_cms_unknown_host_exception_connection_timeout_msec">2000</integer>
     <integer name="app_cms_login_selector_margin">98</integer>
