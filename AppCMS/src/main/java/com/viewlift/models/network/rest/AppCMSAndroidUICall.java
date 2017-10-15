@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -88,13 +90,19 @@ public class AppCMSAndroidUICall {
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         inputFilename));
-        Scanner scanner = new Scanner(inputStream);
-        StringBuffer sb = new StringBuffer();
-        while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine());
+
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+        while (0 < bufferedInputStream.available()) {
+            int len = bufferedInputStream.read(buffer, 0, buffer.length);
+            bytesOut.write(buffer, 0, len);
         }
-        AppCMSAndroidUI appCMSAndroidUI = gson.fromJson(sb.toString(), AppCMSAndroidUI.class);
-        scanner.close();
+
+        AppCMSAndroidUI appCMSAndroidUI = gson.fromJson(bytesOut.toString("UTF-8"),
+                AppCMSAndroidUI.class);
+        bytesOut.close();
+        bufferedInputStream.close();
         inputStream.close();
         return appCMSAndroidUI;
     }

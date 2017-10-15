@@ -10,6 +10,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -104,14 +106,18 @@ public class AppCMSPageUICall {
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         inputFilename));
-        Scanner scanner = new Scanner(inputStream);
-        StringBuffer sb = new StringBuffer();
-        while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine());
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+        while (0 < bufferedInputStream.available()) {
+            int len = bufferedInputStream.read(buffer, 0, buffer.length);
+            bytesOut.write(buffer, 0, len);
         }
+
         AppCMSPageUI appCMSPageUI =
-                gson.fromJson(sb.toString(), AppCMSPageUI.class);
-        scanner.close();
+                gson.fromJson(bytesOut.toString("UTF-8"), AppCMSPageUI.class);
+        bytesOut.close();
+        bufferedInputStream.close();
         inputStream.close();
         return appCMSPageUI;
     }

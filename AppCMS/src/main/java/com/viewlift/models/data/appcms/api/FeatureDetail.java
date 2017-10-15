@@ -2,9 +2,11 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 import io.realm.annotations.PrimaryKey;
 
+@UseStag
 public class FeatureDetail {
 
     @SerializedName("textToDisplay")

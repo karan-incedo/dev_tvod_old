@@ -5,6 +5,8 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -114,14 +116,19 @@ public class AppCMSPageAPICall {
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         inputFilename));
-        Scanner scanner = new Scanner(inputStream);
-        StringBuffer sb = new StringBuffer();
-        while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine());
+
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+        while (0 < bufferedInputStream.available()) {
+            int len = bufferedInputStream.read(buffer, 0, buffer.length);
+            bytesOut.write(buffer, 0, len);
         }
+
         AppCMSPageAPI appCMSPageAPI =
-                gson.fromJson(sb.toString(), AppCMSPageAPI.class);
-        scanner.close();
+                gson.fromJson(bytesOut.toString("UTF-8"), AppCMSPageAPI.class);
+        bytesOut.close();
+        bufferedInputStream.close();
         inputStream.close();
         return appCMSPageAPI;
     }

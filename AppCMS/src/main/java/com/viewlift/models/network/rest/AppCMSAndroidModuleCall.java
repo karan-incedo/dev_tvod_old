@@ -9,6 +9,8 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.android.Blocks;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -118,16 +120,21 @@ public class AppCMSAndroidModuleCall {
                         new File(storageDirectory.toString() +
                                 File.separatorChar +
                                 getResourceFilename(blocksBaseUrl, version)));
-                Scanner scanner = new Scanner(inputStream);
-                StringBuffer sb = new StringBuffer();
-                while (scanner.hasNextLine()) {
-                    sb.append(scanner.nextLine());
+
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                byte[] buffer = new byte[1024];
+                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+                while (0 < bufferedInputStream.available()) {
+                    int len = bufferedInputStream.read(buffer, 0, buffer.length);
+                    bytesOut.write(buffer, 0, len);
                 }
 
-                scanner.close();
-                inputStream.close();
-                moduleDataMap.appCMSAndroidModule = gson.fromJson(sb.toString(),
+                moduleDataMap.appCMSAndroidModule = gson.fromJson(bytesOut.toString("UTF-8"),
                         new TypeToken<Map<String, ModuleList>>(){}.getType());
+
+                bytesOut.close();
+                bufferedInputStream.close();
+                inputStream.close();
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to load block modules from file: " + e.getMessage());
                 try {

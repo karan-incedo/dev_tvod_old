@@ -8,6 +8,8 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,9 +18,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -159,13 +161,17 @@ public class AppCMSMainUICall {
         InputStream inputStream = new FileInputStream(storageDirectory.toString() +
                 File.separatorChar +
                 inputFilename);
-        Scanner scanner = new Scanner(inputStream);
-        StringBuffer sb = new StringBuffer();
-        while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine());
+        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+        while (0 < bufferedInputStream.available()) {
+            int len = bufferedInputStream.read(buffer, 0, buffer.length);
+            bytesOut.write(buffer, 0, len);
         }
-        AppCMSMain main = gson.fromJson(sb.toString(), AppCMSMain.class);
-        scanner.close();
+
+        AppCMSMain main = gson.fromJson(bytesOut.toString("UTF-8"), AppCMSMain.class);
+        bytesOut.close();
+        bufferedInputStream.close();
         inputStream.close();
         return main;
     }
