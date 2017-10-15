@@ -45,6 +45,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.appsflyer.AppsFlyerLib;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -97,6 +98,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action0;
 import rx.functions.Action1;
+
+import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -409,6 +412,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.sendCloseOthersAction(null, false);
 
 //        Log.d(TAG, "onCreate()");
+        sendAnalytics();
+    }
+
+    private void sendAnalytics() {
+        AppsFlyerLib.getInstance().startTracking(getApplication(), getString(R.string.app_cms_appsflyer_dev_key));
+        trackInstallationEvent(getApplication());
     }
 
     private void initPageActivity() {

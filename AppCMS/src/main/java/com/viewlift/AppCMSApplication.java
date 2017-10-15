@@ -103,8 +103,6 @@ public class AppCMSApplication extends Application {
 
     private void sendAnalytics() {
         Fabric.with(this, new Crashlytics());
-        AppsFlyerLib.getInstance().startTracking(this, getString(R.string.app_cms_appsflyer_dev_key));
-        trackInstallationEvent(this);
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
