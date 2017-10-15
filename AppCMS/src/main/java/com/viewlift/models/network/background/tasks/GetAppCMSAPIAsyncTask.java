@@ -73,7 +73,7 @@ public class GetAppCMSAPIAsyncTask {
                                     params.loadFromFile,
                                     0);
                         } catch (IOException e) {
-                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                            //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
                     }
                     return null;

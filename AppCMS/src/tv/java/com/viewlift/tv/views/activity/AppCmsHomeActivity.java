@@ -161,14 +161,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             }
                         }
                     } catch (ClassCastException e) {
-                        Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
+                        //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
                     }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
                         pageLoading(true);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION)) {
                        pageLoading(false);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION)) {
-                    Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
+                    //Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
                             intent.getStringExtra(getString(R.string.navigation_item_key)));
                   //  selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION)) {
@@ -454,7 +454,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
 
     private void selectNavItem(String pageId) {
-        Log.d(TAG , "Nav Pageid = "+pageId);
+        //Log.d(TAG , "Nav Pageid = "+pageId);
         navigationFragment.setSelectedPageId(pageId);
     }
 
@@ -471,15 +471,15 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         distanceFromStackTop = appCMSBinderStack.search(tag);
 
-        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
+        //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
         if (0 < distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
-                Log.d(TAG, "Popping stack to get to page item");
+                //Log.d(TAG, "Popping stack to get to page item");
                 try {
                     appCMSBinderStack.pop();
                     //getFragmentManager().popBackStack();
                 } catch (IllegalStateException e) {
-                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                    //Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
             }
         }
@@ -488,7 +488,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         appCMSBinderMap.put(tag, appCMSBinder);
 
         showInfoIcon(appCMSBinder.getPageId());
-        Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
+        //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId() , 1 );
         //if(!isPoped)
@@ -582,7 +582,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private void handleNavigationVisibility(){
-        Log.d(TAG , "handleNavigationVisibility*****");
+        //Log.d(TAG , "handleNavigationVisibility*****");
         if(appCMSPresenter.isPagePrimary(appCMSBinderStack.peek())){
             if(isNavigationVisible()){
                 showNavigation(false);
@@ -644,14 +644,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         distanceFromStackTop = appCMSBinderStack.search(tag);
 
-        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
+        //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
         if (0 < distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
-                Log.d(TAG, "Popping stack to get to page item");
+                //Log.d(TAG, "Popping stack to get to page item");
                 try {
                     appCMSBinderStack.pop();
                 } catch (IllegalStateException e) {
-                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                    //Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
             }
         }
@@ -677,14 +677,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         distanceFromStackTop = appCMSBinderStack.search(tag);
 
-        Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
+        //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
         if (0 < distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
-                Log.d(TAG, "Popping stack to get to page item");
+                //Log.d(TAG, "Popping stack to get to page item");
                 try {
                     appCMSBinderStack.pop();
                 } catch (IllegalStateException e) {
-                    Log.e(TAG, "Error popping back stack: " + e.getMessage());
+                    //Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
             }
         }

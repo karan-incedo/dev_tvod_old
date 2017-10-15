@@ -45,15 +45,15 @@ public class AppCMSAndroidUICall {
             try {
                 appCMSAndroidUI = readAndroidFromFile(filename);
             } catch (Exception e) {
-                Log.w(TAG, "Failed to read android.json from file: " + e.getMessage());
+                //Log.w(TAG, "Failed to read android.json from file: " + e.getMessage());
             }
         }
         if (appCMSAndroidUI == null) {
             try {
                 appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
             } catch (Exception e) {
-                Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
-                    e.getMessage());
+                //Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
+//                    e.getMessage());
             }
         }
         if (appCMSAndroidUI == null && tryCount == 0) {
@@ -62,8 +62,8 @@ public class AppCMSAndroidUICall {
             try {
                 appCMSAndroidUI = readAndroidFromFile(filename);
             } catch (Exception e) {
-                Log.e(TAG, "Failed to read Android UI JSON file from file: " +
-                    e.getMessage());
+                //Log.e(TAG, "Failed to read Android UI JSON file from file: " +
+//                    e.getMessage());
             }
         }
         if (appCMSAndroidUI != null) {

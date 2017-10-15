@@ -53,11 +53,11 @@ public class AppCMSWatchlistCall {
                 @Override
                 public void onFailure(@NonNull Call<AppCMSWatchlistResult> call,
                                       @NonNull Throwable t) {
-                    Log.e(TAG, "onFailure: " + t.getMessage());
+                    //Log.e(TAG, "onFailure: " + t.getMessage());
                 }
             });
         } catch (Exception e) {
-            Log.e(TAG, "Failed to execute watchlist " + url + ": " + e.toString());
+            //Log.e(TAG, "Failed to execute watchlist " + url + ": " + e.toString());
         }
     }
 }

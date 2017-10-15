@@ -95,7 +95,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 String sendingPage = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
-                    Log.d(TAG, "Closing activity");
+                    //Log.d(TAG, "Closing activity");
                     finish();
                 }
             }

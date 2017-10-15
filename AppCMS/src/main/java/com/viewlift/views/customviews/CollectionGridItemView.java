@@ -257,7 +257,7 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getPosterImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
-                        Log.d(TAG, "Loading image: " + imageUrl);
+                        //Log.d(TAG, "Loading image: " + imageUrl);
                         Glide.with(context)
                                 .load(imageUrl)
                                 .override(childViewWidth, childViewHeight)
@@ -270,7 +270,7 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getVideoImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
-                        Log.d(TAG, "Loading image: " + imageUrl);
+                        //Log.d(TAG, "Loading image: " + imageUrl);
                         Glide.with(context)
                                 .load(imageUrl)
                                 .override(childViewWidth, childViewHeight)
@@ -282,7 +282,7 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getVideoImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
-                        Log.d(TAG, "Loading image: " + imageUrl);
+                        //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
@@ -346,7 +346,7 @@ public class CollectionGridItemView extends BaseView {
                                     })
                                     .into((ImageView) view);
                         } catch (IllegalArgumentException e) {
-                            Log.e(TAG, "Failed to load image with Glide: " + e.toString());
+                            //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
                     }
                     bringToFront = false;
@@ -404,7 +404,7 @@ public class CollectionGridItemView extends BaseView {
                             try {
                                 currency = Currency.getInstance(data.getPlanDetails().get(planIndex).getRecurringPaymentCurrencyCode());
                             } catch (Exception e) {
-                                Log.e(TAG, "Could not parse locale");
+                                //Log.e(TAG, "Could not parse locale");
                             }
                         }
 

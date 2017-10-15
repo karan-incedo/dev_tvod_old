@@ -289,12 +289,12 @@ public class SubscriptionMetaDataView extends LinearLayout {
                     break;
             }
 
-            Log.d(TAG, "Created child component: " +
-                    featureDetail.getTextToDisplay() +
-                    " - " +
-                    subComponent.getKey() +
-                    " - " +
-                    componentView.getClass().getName());
+            //Log.d(TAG, "Created child component: " +
+//                    featureDetail.getTextToDisplay() +
+//                    " - " +
+//                    subComponent.getKey() +
+//                    " - " +
+//                    componentView.getClass().getName());
         }
         return componentView;
     }

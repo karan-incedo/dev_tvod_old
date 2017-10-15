@@ -267,13 +267,13 @@ public class ViewCreator {
                                                         false,
                                                         -1,
                                                         null)) {
-                                                    Log.e(TAG, "Could not launch action: " +
-                                                            " permalink: " +
-                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                            " action: " +
-                                                            component.getAction() +
-                                                            " hls URL: " +
-                                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                                    //Log.e(TAG, "Could not launch action: " +
+//                                                            " permalink: " +
+//                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                            " action: " +
+//                                                            component.getAction() +
+//                                                            " hls URL: " +
+//                                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                                 }
                                             });
                                         } else {
@@ -309,13 +309,13 @@ public class ViewCreator {
                                                             false,
                                                             -1,
                                                             moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                                                        Log.e(TAG, "Could not launch action: " +
-                                                                " permalink: " +
-                                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                                " action: " +
-                                                                component.getAction() +
-                                                                " video URL: " +
-                                                                videoUrl);
+                                                        //Log.e(TAG, "Could not launch action: " +
+//                                                                " permalink: " +
+//                                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                                " action: " +
+//                                                                component.getAction() +
+//                                                                " video URL: " +
+//                                                                videoUrl);
                                                     }
                                                 }
                                             }
@@ -343,13 +343,13 @@ public class ViewCreator {
                                                         false,
                                                         0,
                                                         null)) {
-                                                    Log.e(TAG, "Could not launch action: " +
-                                                            " permalink: " +
-                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                            " action: " +
-                                                            component.getAction() +
-                                                            " film URL: " +
-                                                            filmUrl.toString());
+                                                    //Log.e(TAG, "Could not launch action: " +
+//                                                            " permalink: " +
+//                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                            " action: " +
+//                                                            component.getAction() +
+//                                                            " film URL: " +
+//                                                            filmUrl.toString());
                                                 }
                                             }
                                         });
@@ -598,7 +598,7 @@ public class ViewCreator {
                                             view.forceLayout();
                                         }
                                     } else if (componentType == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
-                                        Log.d(TAG, "checkForExistingSubscription() - 574");
+                                        //Log.d(TAG, "checkForExistingSubscription() - 574");
                                         appCMSPresenter.checkForExistingSubscription(false);
                                         if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
                                             shouldHideComponent = true;
@@ -671,7 +671,7 @@ public class ViewCreator {
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed()) {
-                                                                Log.d(TAG, "checkForExistingSubscription() - 647");
+                                                                //Log.d(TAG, "checkForExistingSubscription() - 647");
                                                                 appCMSPresenter.checkForExistingSubscription(false);
 
                                                                 if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
@@ -1795,13 +1795,13 @@ public class ViewCreator {
                                         false,
                                         -1,
                                         null)) {
-                                    Log.e(TAG, "Could not launch action: " +
-                                            " permalink: " +
-                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                            " action: " +
-                                            component.getAction() +
-                                            " hls URL: " +
-                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                            " permalink: " +
+//                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                            " action: " +
+//                                            component.getAction() +
+//                                            " hls URL: " +
+//                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                 }
                             });
                         } else {
@@ -1842,13 +1842,13 @@ public class ViewCreator {
                                             false,
                                             -1,
                                             moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                                        Log.e(TAG, "Could not launch action: " +
-                                                " permalink: " +
-                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                " action: " +
-                                                component.getAction() +
-                                                " video URL: " +
-                                                videoUrl);
+                                        //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                " action: " +
+//                                                component.getAction() +
+//                                                " video URL: " +
+//                                                videoUrl);
                                     }
                                 }
                             }
@@ -1880,9 +1880,9 @@ public class ViewCreator {
                                     false,
                                     0,
                                     null)) {
-                                Log.e(TAG, "Could not launch action: " +
-                                        " action: " +
-                                        component.getAction());
+                                //Log.e(TAG, "Could not launch action: " +
+//                                        " action: " +
+//                                        component.getAction());
                             }
                         });
                         break;
@@ -1912,13 +1912,13 @@ public class ViewCreator {
                                         false,
                                         0,
                                         null)) {
-                                    Log.e(TAG, "Could not launch action: " +
-                                            " permalink: " +
-                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                            " action: " +
-                                            component.getAction() +
-                                            " film URL: " +
-                                            filmUrl.toString());
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                            " permalink: " +
+//                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                            " action: " +
+//                                            component.getAction() +
+//                                            " film URL: " +
+//                                            filmUrl.toString());
                                 }
                             }
                         });
@@ -2027,9 +2027,9 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
-                                Log.e(TAG, "Could not perform close action: " +
-                                        " action: " +
-                                        component.getAction());
+                                //Log.e(TAG, "Could not perform close action: " +
+//                                        " action: " +
+//                                        component.getAction());
                             }
                         });
                         break;
@@ -2043,9 +2043,9 @@ public class ViewCreator {
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
-                                    Log.e(TAG, "Could not perform close action: " +
-                                            " action: " +
-                                            component.getAction());
+                                    //Log.e(TAG, "Could not perform close action: " +
+//                                            " action: " +
+//                                            component.getAction());
                                 }
                             });
                         } else {
@@ -3134,7 +3134,7 @@ public class ViewCreator {
                         break;
 
                     default:
-                        Log.d(TAG, "No download Status available ");
+                        //Log.d(TAG, "No download Status available ");
                         break;
                 }
 

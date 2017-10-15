@@ -138,7 +138,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             player.prepare(buildMediaSource(uri, closedCaptionUri));
             player.seekTo(mCurrentPlayerPosition);
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
+            //Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
         }
     }
 
@@ -148,7 +148,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         try {
             player.prepare(buildMediaSource(videoUri, closedCaptionUri));
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
+            //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
         if (closedCaptionUri == null) {
             if (ccToggleButton != null) {
@@ -409,7 +409,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             try {
                 Observable.just(playerState).subscribe(onPlayerStateChanged);
             } catch (Exception e) {
-                Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
+                //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
             }
         }
     }
@@ -442,7 +442,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
-        Log.d(TAG, "Load started");
+        //Log.d(TAG, "Load started");
         bitrate = (trackFormat.bitrate / 1000);
     }
 
@@ -459,7 +459,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                long bytesLoaded) {
-        Log.d(TAG, "Load cancelled");
+        //Log.d(TAG, "Load cancelled");
     }
 
     @Override
@@ -467,7 +467,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                             int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                             long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                             long bytesLoaded, IOException error, boolean wasCanceled) {
-        Log.d(TAG, "onLoadError : " + error.getMessage());
+        //Log.d(TAG, "onLoadError : " + error.getMessage());
         /**
          * We can enhance logic here depending on the error code list that we will use for closing the video page.
          */
@@ -508,14 +508,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-        Log.i(TAG, "Video size changed: width = " +
-                width +
-                " height = " +
-                height +
-                " rotation degrees = " +
-                unappliedRotationDegrees +
-                " width/height ratio = " +
-                pixelWidthHeightRatio);
+        //Log.i(TAG, "Video size changed: width = " +
+//                width +
+//                " height = " +
+//                height +
+//                " rotation degrees = " +
+//                unappliedRotationDegrees +
+//                " width/height ratio = " +
+//                pixelWidthHeightRatio);
         if (width > height) {
             fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
         } else {
@@ -530,7 +530,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onRenderedFirstFrame() {
-        Log.d(TAG, "Rendered first frame");
+        //Log.d(TAG, "Rendered first frame");
     }
 
     public String getPolicyCookie() {
@@ -764,7 +764,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             try {
                 return dataSource.open(updatedDataSpec);
             } catch (Exception e) {
-                Log.e(TAG, "Failed to load video: " + e.getMessage());
+                //Log.e(TAG, "Failed to load video: " + e.getMessage());
             }
             return 0L;
         }
@@ -783,8 +783,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     }
                     return result;
                 } catch (Exception e) {
-                    Log.w(TAG, "Failed to retrieve number of bytes read from file input stream: " +
-                        e.getMessage());
+                    //Log.w(TAG, "Failed to retrieve number of bytes read from file input stream: " +
+//                        e.getMessage());
                     result = dataSource.read(buffer, offset, readLength);
                 }
             } else {

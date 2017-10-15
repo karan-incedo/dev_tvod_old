@@ -33,7 +33,7 @@ public class GetAppCMSSiteAsyncTask {
                         try {
                             return call.call(params, 0);
                         } catch (Exception e) {
-                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                            //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
                     }
                     return null;

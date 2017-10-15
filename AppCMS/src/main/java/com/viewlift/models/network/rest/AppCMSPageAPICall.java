@@ -60,7 +60,7 @@ public class AppCMSPageAPICall {
                               String pageId,
                               boolean loadFromFile,
                               int tryCount) throws IOException {
-        Log.d(TAG, "URL: " + urlWithContent);
+        //Log.d(TAG, "URL: " + urlWithContent);
         String filename = getResourceFilename(pageId);
         AppCMSPageAPI appCMSPageAPI = null;
         try {
@@ -68,7 +68,7 @@ public class AppCMSPageAPICall {
                 try {
                     appCMSPageAPI = readPageFromFile(filename);
                 } catch (Exception e) {
-                    Log.w(TAG, "Failed to read page API json: " + e.getMessage());
+                    //Log.w(TAG, "Failed to read page API json: " + e.getMessage());
                 }
             }
 
@@ -80,12 +80,12 @@ public class AppCMSPageAPICall {
                 if (!TextUtils.isEmpty(authToken)) {
                     headersMap.put("Authorization", authToken);
                 }
-                Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
+                //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
                 Response<AppCMSPageAPI> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
                 appCMSPageAPI = response.body();
 
                 if (!response.isSuccessful()) {
-                    Log.e(TAG, "Response error: " + response.errorBody().string());
+                    //Log.e(TAG, "Response error: " + response.errorBody().string());
                 }
 
                 if (filename != null) {
@@ -93,9 +93,9 @@ public class AppCMSPageAPICall {
                 }
             }
         } catch (JsonSyntaxException e) {
-            Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());
+            //Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());
         } catch (Exception e) {
-            Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+            //Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
         }
 
         if (appCMSPageAPI == null && tryCount == 0) {

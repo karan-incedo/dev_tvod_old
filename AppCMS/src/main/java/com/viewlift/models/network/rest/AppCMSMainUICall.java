@@ -66,7 +66,7 @@ public class AppCMSMainUICall {
         AppCMSMain main = null;
         AppCMSMain mainInStorage = null;
         try {
-            Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
+            //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
             final String hostName = new URL(appCMSMainUrl).getHost();
             ExecutorService executor = Executors.newCachedThreadPool();
@@ -75,27 +75,27 @@ public class AppCMSMainUICall {
             try {
                 future.get(connectionTimeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
-                Log.e(TAG, "Connection timed out: " + e.toString());
+                //Log.e(TAG, "Connection timed out: " + e.toString());
                 if (tryCount == 0) {
                     return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (InterruptedException e) {
-                Log.e(TAG, "Connection interrupted: " + e.toString());
+                //Log.e(TAG, "Connection interrupted: " + e.toString());
                 if (tryCount == 0) {
                     return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (ExecutionException e) {
-                Log.e(TAG, "Execution error: " + e.toString());
+                //Log.e(TAG, "Execution error: " + e.toString());
                 if (tryCount == 0) {
                     return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 try {
                     return readMainFromFile(getResourceFilename(appCMSMainUrl));
                 } catch (Exception e1) {
-                    Log.e(TAG, "Could not retrieve main.json from file: " +
-                        e1.getMessage());
+                    //Log.e(TAG, "Could not retrieve main.json from file: " +
+//                        e1.getMessage());
                 }
                 return null;
             } finally {
@@ -105,14 +105,14 @@ public class AppCMSMainUICall {
             try {
                 main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
             } catch (Exception e) {
-                Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
+                //Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
             }
 
             String filename = getResourceFilename(appCMSMainUrl);
             try {
                 mainInStorage = readMainFromFile(filename);
             } catch (IOException exception) {
-                Log.w(TAG, "Previous version of main.json file is not in storage");
+                //Log.w(TAG, "Previous version of main.json file is not in storage");
             }
 
             boolean useExistingOldVersion = true;
@@ -134,7 +134,7 @@ public class AppCMSMainUICall {
 
             main = writeMainToFile(filename, main);
         } catch (Exception e) {
-            Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+            //Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
         }
 
         if (main == null && tryCount == 0) {

@@ -121,7 +121,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                             try {
                                 listView.smoothScrollToPosition(nextVisibleViewIndex);
                             } catch (Exception e) {
-                                Log.e(TAG, "Error scrolling to position: " + nextVisibleViewIndex);
+                                //Log.e(TAG, "Error scrolling to position: " + nextVisibleViewIndex);
                             }
                             sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
                             setUpdatedIndex(nextVisibleViewIndex);
@@ -333,7 +333,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
             try {
                 listView.smoothScrollToPosition(updatedIndex);
             } catch (Exception e) {
-                Log.e(TAG, "Error scrolling to position: " + updatedIndex);
+                //Log.e(TAG, "Error scrolling to position: " + updatedIndex);
             }
             if (!fromEvent) {
                 sendEvent(new InternalEvent<Object>(index));

@@ -279,7 +279,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 });
             }
         } catch (ClassCastException e) {
-            Log.e(TAG, e.getMessage());
+            //Log.e(TAG, e.getMessage());
         }
 
         handoffReceiver = new BroadcastReceiver() {
@@ -288,7 +288,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String sendingPage = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
-                    Log.d(TAG, "Closing activity");
+                    //Log.d(TAG, "Closing activity");
                     finish();
                 }
             }
@@ -342,7 +342,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             unregisterReceiver(handoffReceiver);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
+            //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }
 //        unregisterReceiver(networkConnectedReceiver);
         if (BaseView.isTablet(this)) {

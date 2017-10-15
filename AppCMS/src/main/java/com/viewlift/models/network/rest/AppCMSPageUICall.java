@@ -53,15 +53,15 @@ public class AppCMSPageUICall {
             appCMSPageUI = readPageFromFile(filename);
             appCMSPageUI.setLoadedFromNetwork(false);
         } catch (Exception e) {
-            Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+            //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
             try {
                 deletePreviousFiles(url);
                 appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
                         .execute().body());
                 appCMSPageUI.setLoadedFromNetwork(true);
             } catch (Exception e2) {
-                Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
-                        e2.getMessage());
+                //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
+//                        e2.getMessage());
             }
         }
         return appCMSPageUI;
@@ -87,12 +87,12 @@ public class AppCMSPageUICall {
                     File fileToDelete = new File(storageDirectory, existingFilename);
                     try {
                         if (fileToDelete.delete()) {
-                            Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
+                            //Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
                         } else {
-                            Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                            //Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
                         }
                     } catch (Exception e) {
-                        Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                        //Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
                     }
                 }
             }

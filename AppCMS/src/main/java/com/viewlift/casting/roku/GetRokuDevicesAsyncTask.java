@@ -80,12 +80,12 @@ public class GetRokuDevicesAsyncTask extends AsyncTask<GetRokuDevicesAsyncTask.P
             }
             in.close();
             String res = response.toString();
-            Log.d(TAG, "Roku devices"+res);
+            //Log.d(TAG, "Roku devices"+res);
 
             return res;
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d(TAG, e.toString());
+            //Log.d(TAG, e.toString());
 
             return "";
         }

@@ -85,7 +85,7 @@ public class RealmController {
             realm.delete(DownloadVideoRealm.class);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to clear all downloads: " + e.getMessage());
+            //Log.e(TAG, "Failed to clear all downloads: " + e.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class RealmController {
         try {
             return realm.where(DownloadVideoRealm.class).findAll();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get downloads: " + e.getMessage());
+            //Log.e(TAG, "Failed to get downloads: " + e.getMessage());
         }
         return null;
     }
@@ -102,7 +102,7 @@ public class RealmController {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("userId", userId).findAll();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
+            //Log.e(TAG, "Failed to get downloads by user ID: " + e.getMessage());
         }
         return null;
     }
@@ -111,7 +111,7 @@ public class RealmController {
             return realm.where(DownloadVideoRealm.class).equalTo("isSyncedWithServer", false)
                     .equalTo("userId", userId).findAll();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
+            //Log.e(TAG, "Failed to get server sync status: " + e.getMessage());
         }
         return  null;
     }
@@ -124,7 +124,7 @@ public class RealmController {
             return realm.where(DownloadVideoRealm.class).in("downloadStatus", status)
                     .equalTo("userId", userId).findAll();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get all unfinished downloads: " + e.getMessage());
+            //Log.e(TAG, "Failed to get all unfinished downloads: " + e.getMessage());
         }
         return null;
     }
@@ -133,7 +133,7 @@ public class RealmController {
         try {
             return realm.where(DownloadVideoRealm.class).contains("downloadStatus", status).findAll();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get downloads by status: " + e.getMessage());
+            //Log.e(TAG, "Failed to get downloads by status: " + e.getMessage());
         }
         return null;
     }
@@ -142,7 +142,7 @@ public class RealmController {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findFirst();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
+            //Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
         }
         return null;
     }
@@ -150,7 +150,7 @@ public class RealmController {
         try {
             return realm.where(DownloadVideoRealm.class).equalTo("videoId", videoId).findAll();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
+            //Log.e(TAG, "Failed to get download by ID " + videoId + ": " + e.getMessage());
         }
         return null;
     }
@@ -170,7 +170,7 @@ public class RealmController {
             return downloadById != null && getDownloadById(videoId).getDownloadStatus()
                     .equals(DownloadStatus.STATUS_SUCCESSFUL);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get video ready to play offline: " + e.getMessage());
+            //Log.e(TAG, "Failed to get video ready to play offline: " + e.getMessage());
         }
         return false;
     }
@@ -185,7 +185,7 @@ public class RealmController {
                     .endGroup()
                     .findFirst();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get download by ID belonging to user " + userId + " " + videoId + ": " + e.getMessage());
+            //Log.e(TAG, "Failed to get download by ID belonging to user " + userId + " " + videoId + ": " + e.getMessage());
         }
         return null;
     }
@@ -196,7 +196,7 @@ public class RealmController {
             realm.insertOrUpdate(currentDownloadingVideo);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to add current download video: " + e.getMessage());
+            //Log.e(TAG, "Failed to add current download video: " + e.getMessage());
         }
     }
 
@@ -205,7 +205,7 @@ public class RealmController {
             return realm.where(CurrentDownloadingVideo.class)
                     .findFirst();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get current current download title: " + e.getMessage());
+            //Log.e(TAG, "Failed to get current current download title: " + e.getMessage());
         }
         return null;
     }
@@ -216,7 +216,7 @@ public class RealmController {
             realm.delete(CurrentDownloadingVideo.class);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to remove current download title: " + e.getMessage());
+            //Log.e(TAG, "Failed to remove current download title: " + e.getMessage());
         }
     }
 
@@ -226,7 +226,7 @@ public class RealmController {
             realm.insertOrUpdate(downloadVideoRealm);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to add download: " + e.getMessage());
+            //Log.e(TAG, "Failed to add download: " + e.getMessage());
         }
     }
 
@@ -236,7 +236,7 @@ public class RealmController {
             realm.insertOrUpdate(downloadVideoRealm);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to update download: " + e.getMessage());
+            //Log.e(TAG, "Failed to update download: " + e.getMessage());
         }
     }
 
@@ -246,7 +246,7 @@ public class RealmController {
             realm.insertOrUpdate(subscriptionPlan);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to add subscription plan: " + e.getMessage());
+            //Log.e(TAG, "Failed to add subscription plan: " + e.getMessage());
         }
     }
 
@@ -256,7 +256,7 @@ public class RealmController {
             realm.delete(SubscriptionPlan.class);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to delete subscription plans: " + e.getMessage());
+            //Log.e(TAG, "Failed to delete subscription plans: " + e.getMessage());
         }
     }
 
@@ -266,7 +266,7 @@ public class RealmController {
                 return realm.where(SubscriptionPlan.class).findAll();
             }
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get all subscription plans: " + e.getMessage());
+            //Log.e(TAG, "Failed to get all subscription plans: " + e.getMessage());
         }
         return null;
     }
@@ -277,7 +277,7 @@ public class RealmController {
             realm.insertOrUpdate(userSubscriptionPlan);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to add user subscription plan: " + e.getMessage());
+            //Log.e(TAG, "Failed to add user subscription plan: " + e.getMessage());
         }
     }
 
@@ -287,7 +287,7 @@ public class RealmController {
                 return realm.where(UserSubscriptionPlan.class).equalTo("userId", userId).distinct("userId");
             }
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get user subscription plan " + userId + ": " + e.getMessage());
+            //Log.e(TAG, "Failed to get user subscription plan " + userId + ": " + e.getMessage());
         }
         return null;
     }
@@ -313,7 +313,7 @@ public class RealmController {
             realm.copyToRealmOrUpdate(toEdit);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to update download info: " + e.getMessage());
+            //Log.e(TAG, "Failed to update download info: " + e.getMessage());
         }
     }
 
@@ -346,7 +346,7 @@ public class RealmController {
             realm.copyToRealmOrUpdate(toEdit);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to update download info: " + e.getMessage());
+            //Log.e(TAG, "Failed to update download info: " + e.getMessage());
         }
     }
 
@@ -366,7 +366,7 @@ public class RealmController {
 
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to to remove video from database: " + e.getMessage());
+            //Log.e(TAG, "Failed to to remove video from database: " + e.getMessage());
         }
     }
 
@@ -378,7 +378,7 @@ public class RealmController {
             realm.insert(offlineBeaconData);
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to add offline beacon data: " + e.getMessage());
+            //Log.e(TAG, "Failed to add offline beacon data: " + e.getMessage());
         }
     }
 
@@ -388,7 +388,7 @@ public class RealmController {
                 return realm.where(OfflineBeaconData.class).equalTo("uid", userId).findAll();
             }
         } catch (Exception e) {
-            Log.e(TAG, "Failed to get offline beacond data list by user " + userId + ": " + e.getMessage());
+            //Log.e(TAG, "Failed to get offline beacond data list by user " + userId + ": " + e.getMessage());
         }
         return null;
     }
@@ -402,7 +402,7 @@ public class RealmController {
             resultsToDel.deleteAllFromRealm();
             realm.commitTransaction();
         } catch (Exception e) {
-            Log.e(TAG, "Failed to delete offline beacon user data " + userId + " : " + e.getMessage());
+            //Log.e(TAG, "Failed to delete offline beacon user data " + userId + " : " + e.getMessage());
         }
     }
 

@@ -33,7 +33,7 @@ public class GetAppCMSVideoDetailAsyncTask {
                         try {
                             return call.call(params.url, params.authToken);
                         } catch (Exception e) {
-                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                            //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
                     }
                     return null;

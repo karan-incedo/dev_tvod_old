@@ -63,7 +63,7 @@ public class AppCMSApplication extends Application {
 
             @Override
             public void onActivityStarted(Activity activity) {
-                Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
+                //Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
             }
 
             @Override
@@ -73,13 +73,13 @@ public class AppCMSApplication extends Application {
 
             @Override
             public void onActivityPaused(Activity activity) {
-                Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
+                //Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
-                Log.d(TAG, "Activity being stopped: " + activity.getLocalClassName());
+                //Log.d(TAG, "Activity being stopped: " + activity.getLocalClassName());
             }
 
             @Override
@@ -89,7 +89,7 @@ public class AppCMSApplication extends Application {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-                Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
+                //Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
                 appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
                 if (closeAppMap.containsKey(activity)) {

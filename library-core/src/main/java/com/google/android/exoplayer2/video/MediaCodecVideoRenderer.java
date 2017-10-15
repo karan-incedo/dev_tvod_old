@@ -211,7 +211,7 @@ public class MediaCodecVideoRenderer extends MediaCodecRenderer {
       } else {
         decoderCapable = format.width * format.height <= MediaCodecUtil.maxH264DecodableFrameSize();
         if (!decoderCapable) {
-          Log.d(TAG, "FalseCheck [legacyFrameSize, " + format.width + "x" + format.height + "] ["
+          //Log.d(TAG, "FalseCheck [legacyFrameSize, " + format.width + "x" + format.height + "] ["
               + Util.DEVICE_DEBUG_INFO + "]");
         }
       }

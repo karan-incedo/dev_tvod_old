@@ -94,12 +94,12 @@ public class BorderSpan implements LineBackgroundSpan {
         p.setStyle(Paint.Style.STROKE);
 
         if ( start <= this.start ) {
-            Log.d("BorderSpan", "Drawing first line");
+            //Log.d("BorderSpan", "Drawing first line");
             c.drawLine(left, top, right, top, p);
         }
 
         if ( end >= this.end ) {
-            Log.d("BorderSpan", "Drawing last line");
+            //Log.d("BorderSpan", "Drawing last line");
             c.drawLine(left, bottom, right, bottom, p);
         }
 

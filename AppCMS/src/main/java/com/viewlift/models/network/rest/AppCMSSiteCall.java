@@ -39,7 +39,7 @@ public class AppCMSSiteCall {
     @WorkerThread
     public AppCMSSite call(String url, int numberOfTries) throws IOException {
         try {
-            Log.d(TAG, "Attempting to retrieve site JSON: " + url);
+            //Log.d(TAG, "Attempting to retrieve site JSON: " + url);
             AppCMSSite appCMSSite = appCMSSiteRest.get(url).execute().body();
             if (appCMSSite == null) {
                 appCMSSite = readAppCMSSiteFromFile(getResourceFilename());
@@ -49,9 +49,9 @@ public class AppCMSSiteCall {
 
             return appCMSSite;
         } catch (JsonSyntaxException e) {
-            Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
+            //Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
-            Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
+            //Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }
 
         if (numberOfTries == 0) {
@@ -60,7 +60,7 @@ public class AppCMSSiteCall {
             try {
                 return readAppCMSSiteFromFile(getResourceFilename());
             } catch (Exception e) {
-                Log.e(TAG, "Failed to read site.json from file: " + e.getMessage());
+                //Log.e(TAG, "Failed to read site.json from file: " + e.getMessage());
             }
         }
 

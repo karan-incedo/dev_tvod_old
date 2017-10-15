@@ -196,7 +196,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                             contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
                                                         }
                                                     } catch (Exception e) {
-                                                        Log.e(TAG, e.getMessage());
+                                                        //Log.e(TAG, e.getMessage());
                                                     }
 
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
@@ -497,7 +497,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         extraData[1] = hlsUrl;
         extraData[2] = data.getGist() != null ? data.getGist().getId() : null;
         extraData[3] = "true"; // to know that this is an offline video
-        Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
+        //Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
 
         if (permalink == null ||
                 hlsUrl == null ||
@@ -511,13 +511,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         false,
                         -1,
                         relatedVideoIds)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " permalink: " +
-                    permalink +
-                    " action: " +
-                    action +
-                    " hlsUrl: " +
-                    hlsUrl);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action +
+//                    " hlsUrl: " +
+//                    hlsUrl);
         }
     }
 
@@ -776,7 +776,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void click(ContentDatum data) {
-        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
         String permalink = data.getGist().getPermalink();
         String action = defaultAction;
         String title = data.getGist().getTitle();
@@ -793,7 +793,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             relatedVideos = data.getContentDetails().getRelatedVideoIds();
         }
 
-        Log.d(TAG, "Launching " + permalink + ": " + action);
+        //Log.d(TAG, "Launching " + permalink + ": " + action);
 
         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                 action,
@@ -803,13 +803,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 false,
                 -1,
                 relatedVideos)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " permalink: " +
-                    permalink +
-                    " action: " +
-                    action +
-                    " hlsUrl: " +
-                    hlsUrl);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action +
+//                    " hlsUrl: " +
+//                    hlsUrl);
         }
     }
 
@@ -819,9 +819,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 null,
                 data.getGist().getWatchedTime(),
                 null)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " action: " +
-                    action);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " action: " +
+//                    action);
         }
     }
 
@@ -830,12 +830,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void showDelete(ContentDatum contentDatum) {
-        Log.d(TAG, "Show delete button");
+        //Log.d(TAG, "Show delete button");
     }
 
     private void delete(final ContentDatum contentDatum, int position) {
         if ((isHistory) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.editHistory(contentDatum.getGist().getId(),
                     appCMSDeleteHistoryResult -> {
                         adapterData.remove(contentDatum);
@@ -844,7 +844,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting download item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting download item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
                     appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message),
                     true, () ->
@@ -860,7 +860,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
                     addToWatchlistResult -> {
                         adapterData.remove(contentDatum);

@@ -128,7 +128,7 @@ public class CastServiceProvider {
         mCastHelper.setCastDiscovery();
 
         if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
-            Log.d(TAG, "This is a default route");
+            //Log.d(TAG, "This is a default route");
             mCastHelper.mSelectedDevice = null;
         } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
                 == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
@@ -325,7 +325,7 @@ public class CastServiceProvider {
     RokuWrapper.RokuWrapperEventListener callBackRokuDiscoveredDevices = new RokuWrapper.RokuWrapperEventListener() {
         @Override
         public void onRokuDiscovered(List<RokuDevice> rokuDeviceList) {
-            Log.w(TAG, "MyMediaRouterCallback-onRokuDiscovered  " + rokuWrapper.getRokuDevices());
+            //Log.w(TAG, "MyMediaRouterCallback-onRokuDiscovered  " + rokuWrapper.getRokuDevices());
 
             mCastHelper.routes.clear();
             if (mCastHelper.mMediaRouter != null)

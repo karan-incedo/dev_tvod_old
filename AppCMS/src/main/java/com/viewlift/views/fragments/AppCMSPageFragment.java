@@ -82,7 +82,7 @@ public class AppCMSPageFragment extends Fragment {
 
                 shouldSendFirebaseViewItemEvent = true;
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         } else {
             throw new RuntimeException("Attached context must implement " +
@@ -110,7 +110,7 @@ public class AppCMSPageFragment extends Fragment {
             pageView = appCMSViewComponent.appCMSPageView();
         } else {
             pageView = null;
-            Log.e(TAG, "AppCMS page creation error");
+            //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
         }
 
@@ -125,7 +125,7 @@ public class AppCMSPageFragment extends Fragment {
             }
             onPageCreation.onSuccess(appCMSBinder);
         } else {
-            Log.e(TAG, "AppCMS page creation error");
+            //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
         }
 
@@ -154,7 +154,7 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSBinder = (AppCMSBinder)
                         savedInstanceState.getBinder(getString(R.string.app_cms_binder_key));
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
     }
