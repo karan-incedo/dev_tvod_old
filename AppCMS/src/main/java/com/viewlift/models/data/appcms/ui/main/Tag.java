@@ -8,8 +8,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 @UseStag
-public class Tag {
+public class Tag implements Serializable {
 
     @SerializedName("title")
     @Expose

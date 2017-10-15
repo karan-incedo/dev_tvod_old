@@ -12,6 +12,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
@@ -47,7 +49,7 @@ public class AppCMSAndroidUICall {
             try {
                 appCMSAndroidUI = readAndroidFromFile(filename);
             } catch (Exception e) {
-                //Log.w(TAG, "Failed to read android.json from file: " + e.getMessage());
+                Log.w(TAG, "Failed to read android.json from file: " + e.getMessage());
             }
         }
         if (appCMSAndroidUI == null) {
@@ -79,8 +81,8 @@ public class AppCMSAndroidUICall {
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         outputFilename));
-        String output = gson.toJson(appCMSAndroidUI, AppCMSAndroidUI.class);
-        outputStream.write(output.getBytes());
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(appCMSAndroidUI);
         outputStream.close();
         return appCMSAndroidUI;
     }
@@ -90,19 +92,8 @@ public class AppCMSAndroidUICall {
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         inputFilename));
-
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-        byte[] buffer = new byte[1024];
-        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-        while (0 < bufferedInputStream.available()) {
-            int len = bufferedInputStream.read(buffer, 0, buffer.length);
-            bytesOut.write(buffer, 0, len);
-        }
-
-        AppCMSAndroidUI appCMSAndroidUI = gson.fromJson(bytesOut.toString("UTF-8"),
-                AppCMSAndroidUI.class);
-        bytesOut.close();
-        bufferedInputStream.close();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        AppCMSAndroidUI appCMSAndroidUI = (AppCMSAndroidUI) objectInputStream.readObject();
         inputStream.close();
         return appCMSAndroidUI;
     }

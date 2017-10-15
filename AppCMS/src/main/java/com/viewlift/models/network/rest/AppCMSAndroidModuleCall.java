@@ -10,12 +10,16 @@ import com.viewlift.models.data.appcms.ui.android.Blocks;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,9 +75,9 @@ public class AppCMSAndroidModuleCall {
                     new File(storageDirectory.toString() +
                             File.separatorChar +
                             outputFilename));
-            String output = gson.toJson(moduleListMap,
-                    new TypeToken<Map<String, ModuleList>>(){}.getType());
-            outputStream.write(output.getBytes());
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(moduleListMap);
+            objectOutputStream.close();
             outputStream.close();
         } catch (Exception e) {
             //Log.e(TAG, "Could not write module to file: " +
@@ -122,17 +126,14 @@ public class AppCMSAndroidModuleCall {
                                 getResourceFilename(blocksBaseUrl, version)));
 
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                byte[] buffer = new byte[1024];
-                ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-                while (0 < bufferedInputStream.available()) {
-                    int len = bufferedInputStream.read(buffer, 0, buffer.length);
-                    bytesOut.write(buffer, 0, len);
-                }
-
-                moduleDataMap.appCMSAndroidModule = gson.fromJson(bytesOut.toString("UTF-8"),
-                        new TypeToken<Map<String, ModuleList>>(){}.getType());
-
-                bytesOut.close();
+                long startTime = new Date().getTime();
+                Log.d(TAG, "Start time: " + startTime);
+                ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
+                moduleDataMap.appCMSAndroidModule = (HashMap<String, ModuleList>) objectInputStream.readObject();
+                long endTime = new Date().getTime();
+                Log.d(TAG, "End time: " + endTime);
+                Log.d(TAG, "Time elapsed: " + (endTime - startTime));
+                objectInputStream.close();
                 bufferedInputStream.close();
                 inputStream.close();
             } catch (Exception e) {

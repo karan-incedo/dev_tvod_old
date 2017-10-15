@@ -4,10 +4,11 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
 import java.util.List;
 
 @UseStag
-public class LinkActive_ {
+public class LinkActive_ implements Serializable {
 
     @SerializedName("style")
     @Expose

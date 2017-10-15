@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URL;
@@ -113,8 +115,8 @@ public class AppCMSMainUICall {
             String filename = getResourceFilename(appCMSMainUrl);
             try {
                 mainInStorage = readMainFromFile(filename);
-            } catch (IOException exception) {
-                //Log.w(TAG, "Previous version of main.json file is not in storage");
+            } catch (Exception exception) {
+                Log.w(TAG, "Previous version of main.json file is not in storage");
             }
 
             boolean useExistingOldVersion = true;
@@ -151,8 +153,8 @@ public class AppCMSMainUICall {
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         outputFilename));
-        String output = gson.toJson(main, AppCMSMain.class);
-        outputStream.write(output.getBytes());
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(main);
         outputStream.close();
         return main;
     }
@@ -161,17 +163,8 @@ public class AppCMSMainUICall {
         InputStream inputStream = new FileInputStream(storageDirectory.toString() +
                 File.separatorChar +
                 inputFilename);
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-        byte[] buffer = new byte[1024];
-        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-        while (0 < bufferedInputStream.available()) {
-            int len = bufferedInputStream.read(buffer, 0, buffer.length);
-            bytesOut.write(buffer, 0, len);
-        }
-
-        AppCMSMain main = gson.fromJson(bytesOut.toString("UTF-8"), AppCMSMain.class);
-        bytesOut.close();
-        bufferedInputStream.close();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        AppCMSMain main = (AppCMSMain) objectInputStream.readObject();
         inputStream.close();
         return main;
     }
