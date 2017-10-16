@@ -735,7 +735,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
 
             Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
-            if (updatedUri.toString().contains("?")) {
+
+            boolean useHls = dataSpec.uri.toString().contains("m3u8");
+
+            if (useHls && updatedUri.toString().contains("?")) {
                 updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
             }
             final DataSpec updatedDataSpec = new DataSpec(updatedUri,
@@ -743,7 +746,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     dataSpec.length,
                     dataSpec.key);
 
-            if (dataSource instanceof DefaultHttpDataSource) {
+            if (useHls && dataSource instanceof DefaultHttpDataSource) {
                 if (!TextUtils.isEmpty(signatureCookies.policyCookie) &&
                         !TextUtils.isEmpty(signatureCookies.signatureCookie) &&
                         !TextUtils.isEmpty(signatureCookies.keyPairIdCookie)) {
