@@ -3,9 +3,7 @@ package com.viewlift;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -19,8 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
-
-import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -54,7 +50,6 @@ public class AppCMSApplication extends Application {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
-                AppsFlyerUtils.appOpenEvent(activity);
                 if (closeAppMap.containsKey(activity)) {
                     activity.finish();
                     closeAppMap.remove(activity);
