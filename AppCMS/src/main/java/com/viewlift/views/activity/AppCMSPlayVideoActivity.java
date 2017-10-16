@@ -345,12 +345,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-                if (!appCMSPresenter.isVideoDownloaded(filmId) &&
-                        activeNetwork == null ||
-                        !activeNetwork.isConnectedOrConnecting()) {
-                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                            appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-                            false, () -> closePlayer());
+                try {
+                    if (!appCMSPresenter.isVideoDownloaded(filmId) &&
+                            activeNetwork == null ||
+                            !activeNetwork.isConnectedOrConnecting()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
+                                false, () -> closePlayer());
+                    }
+                } catch (Exception e) {
+
                 }
             }
         };
