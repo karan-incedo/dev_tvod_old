@@ -762,6 +762,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
         } else if (isDownload) {
+            for (ContentDatum contentDatum : adapterData) {
+                if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
+                    contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
+                }
+            }
             notifyDataSetChanged();
         }
     }
