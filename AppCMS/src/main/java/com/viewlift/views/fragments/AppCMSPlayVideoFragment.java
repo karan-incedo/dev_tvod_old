@@ -460,7 +460,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
 
-        setCasting();
+        boolean allowFreePlay = !appCMSPresenter.isAppSVOD() || isTrailer || freeContent;
+
+        setCasting(allowFreePlay);
 
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
@@ -663,9 +665,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
-    private void setCasting() {
+    private void setCasting(boolean allowFreePlay) {
         try {
             castProvider = CastServiceProvider.getInstance(getActivity());
+            castProvider.setAllowFreePlay(allowFreePlay);
             castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
             isCastConnected = castProvider.isCastingConnected();
             castProvider.playChromeCastPlaybackIfCastConnected();

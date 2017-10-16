@@ -60,6 +60,7 @@ public class CastServiceProvider {
     private Context mContext;
     private AppCMSPresenter appCMSPresenter;
     private ShowcaseView mShowCaseView;
+    private boolean allowFreePlay;
 
     private CastServiceProvider(Activity activity) {
         this.mContext = activity;
@@ -68,6 +69,8 @@ public class CastServiceProvider {
         appCMSPresenter = ((AppCMSApplication) activity.getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+
+        allowFreePlay = false;
     }
 
     public static synchronized CastServiceProvider getInstance(Activity activity) {
@@ -83,6 +86,13 @@ public class CastServiceProvider {
         initRoku();
     }
 
+    public boolean isAllowFreePlay() {
+        return allowFreePlay;
+    }
+
+    public void setAllowFreePlay(boolean allowFreePlay) {
+        this.allowFreePlay = allowFreePlay;
+    }
 
     private void initChromecast() {
 
@@ -451,7 +461,7 @@ public class CastServiceProvider {
         }
 
         mMediaRouteButton.setOnClickListener(v -> {
-            if (!appCMSPresenter.isUserSubscribed()) {
+            if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
                 if (appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                             null);
