@@ -354,7 +354,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 false, () -> closePlayer());
                     }
                 } catch (Exception e) {
-
+                    if (!appCMSPresenter.isVideoDownloaded(filmId)) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
+                                false, () -> closePlayer());
+                    }
                 }
             }
         };
