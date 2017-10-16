@@ -306,11 +306,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
-                String pageid = "";
+                String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
-                    pageid = appCMSBinderStack.peek();
+                    pageId = appCMSBinderStack.peek();
                 }
-                appCMSPresenter.setNetworkConnected(isConnected);
+                appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
         };
 
