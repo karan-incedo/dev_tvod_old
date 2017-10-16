@@ -306,6 +306,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
+                String pageid = "";
+                if (!appCMSBinderStack.isEmpty()) {
+                    pageid = appCMSBinderStack.peek();
+                }
                 appCMSPresenter.setNetworkConnected(isConnected);
             }
         };
@@ -587,7 +591,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
         resume();
-        AppsFlyerUtils.appOpenEvent(this);
+
         appCMSPresenter.setCurrentActivity(this);
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");

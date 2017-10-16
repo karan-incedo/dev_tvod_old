@@ -533,6 +533,8 @@ public class AppCMSPresenter {
 
     private boolean cancelAllLoads;
 
+    private boolean downloadInProgress;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -670,6 +672,7 @@ public class AppCMSPresenter {
         this.checkUpgradeFlag = false;
         this.upgradesAvailable = false;
         this.cancelAllLoads = false;
+        this.downloadInProgress = false;
     }
 
     public void setCancelAllLoads(boolean cancelAllLoads) {
@@ -727,6 +730,14 @@ public class AppCMSPresenter {
 
     public void setIsLoading(boolean isLoading) {
         loadingPage = isLoading;
+    }
+
+    public boolean isDownloadInProgress() {
+        return downloadInProgress;
+    }
+
+    public void setDownloadInProgress(boolean downloadInProgress) {
+        this.downloadInProgress = downloadInProgress;
     }
 
     public String getApiUrl(boolean usePageIdQueryParam,
@@ -2073,7 +2084,7 @@ public class AppCMSPresenter {
                                     if (appCMSSubscriptionPlanResult != null) {
                                         String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId();
                                         if (paymentUniqueId.length() > 0) {
-                                            checkCCAvenueUpgradeStatus(paymentUniqueId);
+                                            upgradePlanAPICall();
                                         } else {
                                             showDialog(DialogType.SUBSCRIBE, "Cannot Upgrade", false, null);
                                         }
@@ -2183,44 +2194,6 @@ public class AppCMSPresenter {
         }
     }
 
-    private void checkCCAvenueUpgradeStatus(String referenceNo) {
-        try {
-            SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
-            subscriptionRequest.setReferenceNo(referenceNo);
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-            appCMSSubscriptionPlanCall.call(
-                    currentActivity.getString(R.string.app_cms_ccavenue_is_plan_upgradable_url,
-                            appCMSMain.getApiBaseUrl(),
-                            appCMSSite.getGist().getSiteInternalName()),
-                    R.string.app_cms_check_ccavenue_plan_status_key,
-                    subscriptionRequest,
-                    apikey,
-                    getAuthToken(),
-                    listResult -> {
-                        //Log.v("currentActivity", "currentActivity");
-                    },
-                    singleResult -> {
-                        if (singleResult != null) {
-                            String siStatus = singleResult.getSiStatus();
-                            if (siStatus.equalsIgnoreCase("ACTI")) {
-                                upgradePlanAPICall();
-                            } else {
-                                showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
-                                sendCloseOthersAction(null, true);
-                            }
-                        } else {
-                            showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
-                            sendCloseOthersAction(null, true);
-                        }
-                    },
-                    appCMSSubscriptionPlanResult -> {
-                    }
-            );
-        } catch (Exception ex) {
-
-        }
-    }
-
     private void upgradePlanAPICall() {
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
@@ -2246,10 +2219,18 @@ public class AppCMSPresenter {
                         //
                         //Log.v("got result", "got result");
                     }, appCMSSubscriptionPlanResults -> {
-                        sendCloseOthersAction(null, true);
-                        refreshSubscriptionData(() -> {
-                            sendRefreshPageAction();
-                        }, true);
+                        if (appCMSSubscriptionPlanResults != null &&
+                                !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
+                            showDialog(DialogType.SUBSCRIBE,
+                                    appCMSSubscriptionPlanResults.getMessage(),
+                                    false,
+                                    null);
+                        } else {
+                            sendCloseOthersAction(null, true);
+                            refreshSubscriptionData(() -> {
+                                sendRefreshPageAction();
+                            }, true);
+                        }
                     },
                     currentUserPlan -> {
 
@@ -4643,7 +4624,7 @@ public class AppCMSPresenter {
                 String endPoint = pageIdToPageAPIUrlMap.get(pageId);
                 String siteId = appCMSSite.getGist().getSiteInternalName();
                 boolean usePageIdQueryParam = true;
-                boolean viewPlans = isViewPlanPage(endPoint);
+                boolean viewPlans = isViewPlanPage(pageId);
                 boolean showPage = false;
                 String apiUrl = getApiUrl(usePageIdQueryParam,
                         viewPlans,
@@ -5284,12 +5265,23 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public boolean setNetworkConnected(boolean networkConnected) {
+    public boolean setNetworkConnected(boolean networkConnected, String pageId) {
         if (currentContext != null) {
             if (networkConnected) {
                 sendOfflineBeaconMessage();
                 updateAllOfflineWatchTime();
             }
+
+            String downloadPageId = getDownloadPageId();
+            boolean onDownloadPage = false;
+            if (!TextUtils.isEmpty(downloadPageId)) {
+                onDownloadPage = downloadPageId.equals(pageId);
+            }
+            if (!networkConnected &&
+                    (downloadInProgress || !onDownloadPage)) {
+                showDialog(DialogType.NETWORK, null, false, null);
+            }
+
             SharedPreferences sharedPrefs =
                     currentContext.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
             return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();

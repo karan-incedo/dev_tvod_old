@@ -368,7 +368,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         // This is to enable offline video playback even when Internet is not available.
         if (binder != null && !binder.isOffline() && !appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                    null,
+                    appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                     false,
                     null);
             finish();

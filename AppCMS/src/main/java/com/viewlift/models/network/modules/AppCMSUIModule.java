@@ -925,8 +925,9 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest) {
-        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest);
+    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest,
+                                                               Gson gson) {
+        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest, gson);
     }
 
     @Provides

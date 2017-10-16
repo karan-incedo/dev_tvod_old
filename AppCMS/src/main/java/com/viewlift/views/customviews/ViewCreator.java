@@ -3109,6 +3109,7 @@ public class ViewCreator {
 
                 switch (userVideoDownloadStatus.getDownloadStatus()) {
                     case STATUS_FAILED:
+                        appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.startNextDownload();
                         break;
 
@@ -3117,18 +3118,21 @@ public class ViewCreator {
                         break;
 
                     case STATUS_PENDING:
+                        appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_RUNNING:
+                        appCMSPresenter.setDownloadInProgress(true);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_SUCCESSFUL:
+                        appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.cancelDownloadIconTimerTask();
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
@@ -3136,6 +3140,7 @@ public class ViewCreator {
                         break;
 
                     case STATUS_INTERRUPTED:
+                        appCMSPresenter.setDownloadInProgress(false);
                         imageButton.setImageResource(android.R.drawable.stat_sys_warning);
                         imageButton.setOnClickListener(null);
                         break;
