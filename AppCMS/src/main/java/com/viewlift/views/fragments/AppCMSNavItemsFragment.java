@@ -73,7 +73,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             appCMSBinder =
                     ((AppCMSBinder) args.getBinder(getContext().getString(R.string.fragment_page_bundle_key)));
         } catch (Exception e) {
-            Log.e(TAG, "Failed to extract appCMSBinder from args");
+            //Log.e(TAG, "Failed to extract appCMSBinder from args");
         }
         View view = inflater.inflate(R.layout.fragment_menu_nav, container, false);
         RecyclerView navItemsList = (RecyclerView) view.findViewById(R.id.nav_items_list);

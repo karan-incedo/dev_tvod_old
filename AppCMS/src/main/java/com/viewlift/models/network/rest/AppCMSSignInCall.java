@@ -44,16 +44,16 @@ public class AppCMSSignInCall {
             Response<JsonElement> response = call.execute();
             if (response.body() != null) {
                 JsonElement signInResponse = response.body();
-                Log.d(TAG, "Raw response: " + signInResponse.toString());
+                //Log.d(TAG, "Raw response: " + signInResponse.toString());
                 loggedInResponseResponse = gson.fromJson(signInResponse, SignInResponse.class);
             } else if (response.errorBody() != null) {
                 String errorResponse = response.errorBody().string();
-                Log.d(TAG, "Raw response: " + errorResponse);
+                //Log.d(TAG, "Raw response: " + errorResponse);
                 loggedInResponseResponse = new SignInResponse();
                 loggedInResponseResponse.setErrorResponse(gson.fromJson(errorResponse, ErrorResponse.class));
             }
         } catch (JsonSyntaxException | IOException e) {
-            Log.e(TAG, "SignIn error: " + e.toString());
+            //Log.e(TAG, "SignIn error: " + e.toString());
         }
 
         return loggedInResponseResponse;

@@ -203,7 +203,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             final NavigationSubItem subItem = (NavigationSubItem)getItem(position);
             holder.navItemView.setText(subItem.title.toString().toUpperCase());
             holder.navItemView.setTag(R.string.item_position , position);
-            Log.d("NavigationAdapter", subItem.title.toString());
+            //Log.d("NavigationAdapter", subItem.title.toString());
 
             if(selectedPosition >= 0 && selectedPosition == position){
                 holder.navItemlayout.setBackground(

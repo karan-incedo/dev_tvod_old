@@ -169,4 +169,8 @@ public class PageView extends BaseView {
         }
         return null;
     }
+
+    public AppCMSPageUI getAppCMSPageUI() {
+        return appCMSPageUI;
+    }
 }

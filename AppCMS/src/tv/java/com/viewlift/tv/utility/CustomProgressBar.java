@@ -95,7 +95,7 @@ public class CustomProgressBar {
             }
         } catch (final IllegalArgumentException e) {
             // Handle or log or ignore
-            Log.e("ASEEM...","dismissProgressDialog: "+e.getMessage());
+            //Log.e("ASEEM...","dismissProgressDialog: "+e.getMessage());
         }
         //}
     }

@@ -84,8 +84,8 @@ public class SpanStack {
 
             spanItemStack.push(callback);
         } else {
-            Log.d( "SpanStack", "refusing to put span of type " + span.getClass().getSimpleName()
-                    + " and length " + (end - start) );
+            //Log.d( "SpanStack", "refusing to put span of type " + span.getClass().getSimpleName()
+//                    + " and length " + (end - start) );
         }
     }
 

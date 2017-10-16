@@ -53,12 +53,12 @@ public class AppCMSBeaconCall {
 
                 @Override
                 public void onFailure(Call<BeaconResponse> call, Throwable t) {
-                    Log.e(TAG, "onFailure: " + t.getMessage());
+                    //Log.e(TAG, "onFailure: " + t.getMessage());
                 }
             });
 
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            //Log.e(TAG, e.getMessage());
         }
     }
 }

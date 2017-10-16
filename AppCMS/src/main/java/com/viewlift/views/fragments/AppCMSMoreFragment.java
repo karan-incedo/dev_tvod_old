@@ -75,7 +75,7 @@ public class AppCMSMoreFragment extends DialogFragment {
         try {
             textColor = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor();
         } catch (Exception e) {
-            Log.e(TAG, "Could not retrieve text color from AppCMS Brand: " + e.getMessage());
+            //Log.e(TAG, "Could not retrieve text color from AppCMS Brand: " + e.getMessage());
         }
 
         appCMSCloseButton.setOnClickListener((v) -> {

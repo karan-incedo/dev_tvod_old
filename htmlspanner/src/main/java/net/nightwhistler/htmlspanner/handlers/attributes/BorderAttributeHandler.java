@@ -27,7 +27,7 @@ public class BorderAttributeHandler extends WrappingStyleHandler {
                               Style useStyle, SpanStack spanStack) {
 
         if ( node.getAttributeByName("border") != null ) {
-            Log.d("BorderAttributeHandler", "Adding BorderSpan from " + start + " to " + end);
+            //Log.d("BorderAttributeHandler", "Adding BorderSpan from " + start + " to " + end);
             spanStack.pushSpan(new BorderSpan(useStyle, start, end, getSpanner().isUseColoursFromStyle() ), start, end);
         }
 

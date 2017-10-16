@@ -142,10 +142,14 @@ public class WebViewActivity extends Activity {
 			{
 				// process the html as needed by the app
 				String status = null;
-				if(html.indexOf("F")!=-1){
-					backPressFlag = false ;
+				if(html.indexOf("F")!=-1) {
+					backPressFlag = false;
 					status = "Transaction Declined!";
 					displaySuccessPaymentDialog("Transaction Failed!", "Retry Later");
+				} else if (html.contains("O")) {
+					backPressFlag = false;
+					displaySuccessPaymentDialog("Thank you for signing up on Hoichoi! We are processing your subscription and shall notify you via email.#hoyejak",
+							"OK");
 				}else if(html.indexOf("S")!=-1){
 					try {
 						backPressFlag = true ;
@@ -217,6 +221,9 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onPageFinished(WebView view, String url) {
 					super.onPageFinished(webview, url);
+
+					backPressFlag = false;
+
 					final Handler handler = new Handler();
 					handler.postDelayed(new Runnable() {
 						@Override

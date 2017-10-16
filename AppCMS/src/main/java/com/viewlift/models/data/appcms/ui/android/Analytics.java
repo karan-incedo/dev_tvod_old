@@ -4,8 +4,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 @UseStag
-public class Analytics {
+public class Analytics implements Serializable {
 
     @SerializedName("googleTagManagerId")
     @Expose

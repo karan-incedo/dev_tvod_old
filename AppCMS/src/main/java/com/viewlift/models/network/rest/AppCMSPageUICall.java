@@ -10,11 +10,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.Scanner;
@@ -53,15 +57,15 @@ public class AppCMSPageUICall {
             appCMSPageUI = readPageFromFile(filename);
             appCMSPageUI.setLoadedFromNetwork(false);
         } catch (Exception e) {
-            Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+            //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
             try {
                 deletePreviousFiles(url);
                 appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
                         .execute().body());
                 appCMSPageUI.setLoadedFromNetwork(true);
             } catch (Exception e2) {
-                Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
-                        e2.getMessage());
+                //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
+//                        e2.getMessage());
             }
         }
         return appCMSPageUI;
@@ -72,8 +76,8 @@ public class AppCMSPageUICall {
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         outputFilename));
-        String output = gson.toJson(appCMSPageUI, AppCMSPageUI.class);
-        outputStream.write(output.getBytes());
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(appCMSPageUI);
         outputStream.close();
         return appCMSPageUI;
     }
@@ -87,31 +91,25 @@ public class AppCMSPageUICall {
                     File fileToDelete = new File(storageDirectory, existingFilename);
                     try {
                         if (fileToDelete.delete()) {
-                            Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
+                            //Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
                         } else {
-                            Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                            //Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
                         }
                     } catch (Exception e) {
-                        Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
+                        //Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
                     }
                 }
             }
         }
     }
 
-    private AppCMSPageUI readPageFromFile(String inputFilename) throws IOException {
+    private AppCMSPageUI readPageFromFile(String inputFilename) throws Exception {
         InputStream inputStream = new FileInputStream(
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         inputFilename));
-        Scanner scanner = new Scanner(inputStream);
-        StringBuffer sb = new StringBuffer();
-        while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine());
-        }
-        AppCMSPageUI appCMSPageUI =
-                gson.fromJson(sb.toString(), AppCMSPageUI.class);
-        scanner.close();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        AppCMSPageUI appCMSPageUI = (AppCMSPageUI) objectInputStream.readObject();
         inputStream.close();
         return appCMSPageUI;
     }

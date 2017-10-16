@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 @UseStag
-public class Gist {
+public class Gist implements Serializable {
 
     @SerializedName("id")
     @Expose

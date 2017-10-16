@@ -107,7 +107,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 try {
                     subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice());
                 } catch (Exception e) {
-                    Log.e(TAG, "Failed to parse double value for subscription price");
+                    //Log.e(TAG, "Failed to parse double value for subscription price");
                 }
 
                 if (subscriptionPrice >= 0.0) {
@@ -307,7 +307,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 try {
                     subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice());
                 } catch (Exception e) {
-                    Log.e(TAG, "Failed to parse double value for subscription price");
+                    //Log.e(TAG, "Failed to parse double value for subscription price");
                 }
 
                 if (subscriptionPrice >= 0.0) {
@@ -330,8 +330,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                       ContentDatum data) {
                         if (isClickable) {
                             if (collectionGridItemView.isSelectable()) {
-                                Log.d(TAG, "Initiating signup and subscription: " +
-                                        data.getIdentifier());
+                                //Log.d(TAG, "Initiating signup and subscription: " +
+//                                        data.getIdentifier());
 
                                 double price = data.getPlanDetails().get(0).getStrikeThroughPrice();
                                 if (price == 0) {
@@ -340,7 +340,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                                 double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
 
-                                boolean upgradesAvailable = adapterData.indexOf(data) == 0;
+                                boolean upgradesAvailable = false;
+                                for (ContentDatum plan : adapterData) {
+                                    if (plan != null &&
+                                            plan.getPlanDetails() != null &&
+                                            !plan.getPlanDetails().isEmpty() &&
+                                            ((plan.getPlanDetails().get(0).getStrikeThroughPrice() != 0 &&
+                                            price < plan.getPlanDetails().get(0).getStrikeThroughPrice()) ||
+                                                    (plan.getPlanDetails().get(0).getRecurringPaymentAmount() != 0 &&
+                                                    price < plan.getPlanDetails().get(0).getRecurringPaymentAmount()))) {
+                                        upgradesAvailable = true;
+                                    }
+                                }
 
                                 appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
                                         data.getId(),
@@ -372,7 +383,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                       ContentDatum data) {
                         if (isClickable) {
                             if (data.getGist() != null) {
-                                Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                                //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
                                 String action = videoAction;
                                 if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
@@ -384,7 +395,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 extraData[0] = permalink;
                                 extraData[1] = hlsUrl;
                                 extraData[2] = data.getGist().getId();
-                                Log.d(TAG, "Launching " + permalink + ": " + action);
+                                //Log.d(TAG, "Launching " + permalink + ": " + action);
                                 List<String> relatedVideoIds = null;
                                 if (data.getContentDetails() != null &&
                                         data.getContentDetails().getRelatedVideoIds() != null) {
@@ -421,11 +432,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             relatedVideoIds,
                                             -1,
                                             action)) {
-                                        Log.e(TAG, "Could not launch action: " +
-                                                " permalink: " +
-                                                permalink +
-                                                " action: " +
-                                                action);
+                                        //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
                                     }
                                 } else {
                                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
@@ -436,11 +447,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             false,
                                             currentPlayingIndex,
                                             relatedVideoIds)) {
-                                        Log.e(TAG, "Could not launch action: " +
-                                                " permalink: " +
-                                                permalink +
-                                                " action: " +
-                                                action);
+                                        //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
                                     }
                                 }
                             }
@@ -451,7 +462,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     public void play(Component childComponent, ContentDatum data) {
                         if (isClickable) {
                             if (data.getGist() != null) {
-                                Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                                //Log.d(TAG, "Playing item: " + data.getGist().getTitle());
                                 String filmId = data.getGist().getId();
                                 String permaLink = data.getGist().getPermalink();
                                 String title = data.getGist().getTitle();
@@ -469,13 +480,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         relatedVideoIds,
                                         -1,
                                         null)) {
-                                    Log.e(TAG, "Could not launch play action: " +
-                                            " filmId: " +
-                                            filmId +
-                                            " permaLink: " +
-                                            permaLink +
-                                            " title: " +
-                                            title);
+                                    //Log.e(TAG, "Could not launch play action: " +
+//                                            " filmId: " +
+//                                            filmId +
+//                                            " permaLink: " +
+//                                            permaLink +
+//                                            " title: " +
+//                                            title);
                                 }
                             }
                         }
@@ -517,7 +528,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             break;
                     }
 
-                    Log.d(TAG, "Launching " + permalink + ":" + action);
+                    //Log.d(TAG, "Launching " + permalink + ":" + action);
                     List<String> relatedVideoIds = null;
                     if (data.getContentDetails() != null &&
                             data.getContentDetails().getRelatedVideoIds() != null) {
@@ -535,11 +546,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 relatedVideoIds,
                                 -1,
                                 action)) {
-                            Log.e(TAG, "Could not launch action: " +
-                                    " permalink: " +
-                                    permalink +
-                                    " action: " +
-                                    action);
+                            //Log.e(TAG, "Could not launch action: " +
+//                                    " permalink: " +
+//                                    permalink +
+//                                    " action: " +
+//                                    action);
                         }
                     } else {
                         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
@@ -550,11 +561,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 false,
                                 currentPlayingIndex,
                                 relatedVideoIds)) {
-                            Log.e(TAG, "Could not launch action: " +
-                                    " permalink: " +
-                                    permalink +
-                                    " action: " +
-                                    action);
+                            //Log.e(TAG, "Could not launch action: " +
+//                                    " permalink: " +
+//                                    permalink +
+//                                    " action: " +
+//                                    action);
                         }
                     }
                 }

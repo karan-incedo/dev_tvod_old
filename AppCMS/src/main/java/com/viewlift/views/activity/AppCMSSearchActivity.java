@@ -105,7 +105,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) ||
                         sendingPage == null ||
                         !getString(R.string.app_cms_navigation_page_tag).equals(sendingPage)) {
-                    Log.d(TAG, "Closing activity");
+                    //Log.d(TAG, "Closing activity");
                     finish();
                 }
             }
@@ -227,7 +227,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                             appCMSSearchUrlData.getBaseUrl(),
                             appCMSSearchUrlData.getSiteName(),
                             searchTerm);
-                    Log.d(TAG, "Search URL: " + url);
+                    //Log.d(TAG, "Search URL: " + url);
                     new SearchAsyncTask(new Action1<List<AppCMSSearchResult>>() {
                         @Override
                         public void call(List<AppCMSSearchResult> data) {
@@ -276,7 +276,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 try {
                     return appCMSSearchCall.call(params[1], params[0]);
                 } catch (IOException e) {
-                    Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
+                    //Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
                 }
             }
             return null;

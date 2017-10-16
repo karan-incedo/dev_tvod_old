@@ -33,9 +33,9 @@ public class AppCMSRefreshIdentityCall {
         try {
             return appCMSRefreshIdentityRest.get(url).execute().body();
         } catch (JsonSyntaxException e) {
-            Log.e(TAG, "JsonSyntaxException retrieving Refresh Identity Response: " + e.toString());
+            //Log.e(TAG, "JsonSyntaxException retrieving Refresh Identity Response: " + e.toString());
         } catch (IOException e) {
-            Log.e(TAG, "IO error retrieving Refresh Identity Response: " + e.toString());
+            //Log.e(TAG, "IO error retrieving Refresh Identity Response: " + e.toString());
         }
         return null;
     }
@@ -49,7 +49,7 @@ public class AppCMSRefreshIdentityCall {
 
             @Override
             public void onFailure(Call<RefreshIdentityResponse> call, Throwable t) {
-                Log.e(TAG, "DialogType retrieving Refresh Identity Response");
+                //Log.e(TAG, "DialogType retrieving Refresh Identity Response");
                 Observable.just((RefreshIdentityResponse) null).subscribe(readyAction);
             }
         });

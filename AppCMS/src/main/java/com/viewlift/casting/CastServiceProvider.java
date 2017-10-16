@@ -128,7 +128,7 @@ public class CastServiceProvider {
         mCastHelper.setCastDiscovery();
 
         if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
-            Log.d(TAG, "This is a default route");
+            //Log.d(TAG, "This is a default route");
             mCastHelper.mSelectedDevice = null;
         } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
                 == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
@@ -163,7 +163,7 @@ public class CastServiceProvider {
 
     public boolean isCastingConnected() {
         boolean isConnected = false;
-        if (mCastHelper.isCastDeviceAvailable && mCastHelper.isRemoteDeviceConnected() && rokuWrapper.isRokuConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
+        if (mCastHelper.isCastDeviceAvailable && (mCastHelper.isRemoteDeviceConnected() || rokuWrapper.isRokuConnected())) {
             isConnected = true;
         }
         return isConnected;
@@ -325,7 +325,7 @@ public class CastServiceProvider {
     RokuWrapper.RokuWrapperEventListener callBackRokuDiscoveredDevices = new RokuWrapper.RokuWrapperEventListener() {
         @Override
         public void onRokuDiscovered(List<RokuDevice> rokuDeviceList) {
-            Log.w(TAG, "MyMediaRouterCallback-onRokuDiscovered  " + rokuWrapper.getRokuDevices());
+            //Log.w(TAG, "MyMediaRouterCallback-onRokuDiscovered  " + rokuWrapper.getRokuDevices());
 
             mCastHelper.routes.clear();
             if (mCastHelper.mMediaRouter != null)
@@ -438,7 +438,7 @@ public class CastServiceProvider {
         }
 
         if (mCastHelper.isCastDeviceAvailable) {
-            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
+            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected()) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources().getDrawable(R.drawable.toolbar_cast_connected, null);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());

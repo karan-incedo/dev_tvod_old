@@ -4,12 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 /**
  * Created by viewlift on 10/4/17.
  */
 
 @UseStag
-public class Blocks {
+public class Blocks implements Serializable {
     @SerializedName("name")
     @Expose
     String name;

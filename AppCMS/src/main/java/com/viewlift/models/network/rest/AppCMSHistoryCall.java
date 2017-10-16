@@ -53,12 +53,12 @@ public class AppCMSHistoryCall {
                 @Override
                 public void onFailure(@NonNull Call<AppCMSHistoryResult> call,
                                       @NonNull Throwable t) {
-                    Log.e(TAG, "onFailure: " + t.getMessage());
+                    //Log.e(TAG, "onFailure: " + t.getMessage());
                     Observable.just((AppCMSHistoryResult) null).subscribe(historyResultAction1);
                 }
             });
         } catch (Exception e) {
-            Log.e(TAG, "Failed to execute history " + url + ": " + e.toString());
+            //Log.e(TAG, "Failed to execute history " + url + ": " + e.toString());
             Observable.just((AppCMSHistoryResult) null).subscribe(historyResultAction1);
         }
     }

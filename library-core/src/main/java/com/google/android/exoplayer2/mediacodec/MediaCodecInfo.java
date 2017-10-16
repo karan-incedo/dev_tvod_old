@@ -284,12 +284,12 @@ public final class MediaCodecInfo {
   }
 
   private void logNoSupport(String message) {
-    Log.d(TAG, "NoSupport [" + message + "] [" + name + ", " + mimeType + "] ["
+    //Log.d(TAG, "NoSupport [" + message + "] [" + name + ", " + mimeType + "] ["
         + Util.DEVICE_DEBUG_INFO + "]");
   }
 
   private void logAssumedSupport(String message) {
-    Log.d(TAG, "AssumedSupport [" + message + "] [" + name + ", " + mimeType + "] ["
+    //Log.d(TAG, "AssumedSupport [" + message + "] [" + name + ", " + mimeType + "] ["
         + Util.DEVICE_DEBUG_INFO + "]");
   }
 

@@ -502,7 +502,7 @@ public class AppCmsSearchFragment extends Fragment {
                 try {
                     return appCMSSearchCall.call(apiKey, params[0]);
                 } catch (IOException e) {
-                    Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
+                    //Log.e(TAG, "I/O DialogType retrieving search data from URL: " + params[0]);
                 }
             }
             return null;
@@ -606,7 +606,7 @@ public class AppCmsSearchFragment extends Fragment {
                     rowData.uiComponentList = component.getComponents();
                     rowData.action = component.getTrayClickAction();
                     traylistRowAdapter.add(rowData);
-                    Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
+                    //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                 }
                 mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                 break;

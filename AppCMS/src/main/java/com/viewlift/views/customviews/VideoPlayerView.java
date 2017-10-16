@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.FrameLayout;
@@ -58,11 +57,11 @@ import com.google.android.exoplayer2.util.Util;
 import com.viewlift.R;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
+import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -91,7 +90,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private long bitrate = 0l;
 
     private long mCurrentPlayerPosition;
-    private FinishListener mFinishListener;
+    private ErrorEventListener mErrorEventListener;
 
     private Map<String, Integer> failedMediaSourceLoads;
 
@@ -139,7 +138,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             player.prepare(buildMediaSource(uri, closedCaptionUri));
             player.seekTo(mCurrentPlayerPosition);
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
+            //Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
         }
     }
 
@@ -149,7 +148,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         try {
             player.prepare(buildMediaSource(videoUri, closedCaptionUri));
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
+            //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
         if (closedCaptionUri == null) {
             if (ccToggleButton != null) {
@@ -246,6 +245,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         playerView.setUseController(false);
     }
 
+    public void updateSignatureCookies(String policyCookie,
+                                       String signatureCookie,
+                                       String keyPairIdCookie) {
+        if (mediaDataSourceFactory != null &&
+                mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).updateSignatureCookies(policyCookie,
+                    signatureCookie,
+                    keyPairIdCookie);
+        }
+    }
+
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         initializePlayer(context, attrs, defStyleAttr);
         playerState = new PlayerState();
@@ -299,9 +309,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
         if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
-            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).policyCookie = policyCookie;
-            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookie = signatureCookie;
-            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).keyPairIdCookie = keyPairIdCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.policyCookie = policyCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.signatureCookie = signatureCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.keyPairIdCookie = keyPairIdCookie;
         }
 
         Format textFormat = Format.createTextSampleFormat(null,
@@ -399,7 +409,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             try {
                 Observable.just(playerState).subscribe(onPlayerStateChanged);
             } catch (Exception e) {
-                Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
+                //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
             }
         }
     }
@@ -432,6 +442,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
+        //Log.d(TAG, "Load started");
         bitrate = (trackFormat.bitrate / 1000);
     }
 
@@ -448,7 +459,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                long bytesLoaded) {
-
+        //Log.d(TAG, "Load cancelled");
     }
 
     @Override
@@ -456,7 +467,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                             int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                             long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                             long bytesLoaded, IOException error, boolean wasCanceled) {
-        Log.d(TAG, "onLoadError : " + error.getMessage());
+        //Log.d(TAG, "onLoadError : " + error.getMessage());
         /**
          * We can enhance logic here depending on the error code list that we will use for closing the video page.
          */
@@ -468,13 +479,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 int tryCount = failedMediaSourceLoads.get(failedMediaSourceLoadKey);
                 if (tryCount == 3) {
                     isLoadedNext = true;
-                    mFinishListener.onFinishCallback(error.getMessage());
+                    mErrorEventListener.onFinishCallback(error.getMessage());
                 } else {
                     failedMediaSourceLoads.put(failedMediaSourceLoadKey, tryCount + 1);
                 }
             } else {
                 failedMediaSourceLoads.put(failedMediaSourceLoadKey, 1);
             }
+        } else if (mErrorEventListener != null) {
+            mErrorEventListener.onRefreshTokenCallback();
         }
     }
 
@@ -489,20 +502,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
-    public void setListener(VideoPlayerView.FinishListener finishListener) {
-        mFinishListener = finishListener;
+    public void setListener(ErrorEventListener errorEventListener) {
+        mErrorEventListener = errorEventListener;
     }
 
     @Override
     public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
-        Log.i(TAG, "Video size changed: width = " +
-                width +
-                " height = " +
-                height +
-                " rotation degrees = " +
-                unappliedRotationDegrees +
-                " width/height ratio = " +
-                pixelWidthHeightRatio);
+        //Log.i(TAG, "Video size changed: width = " +
+//                width +
+//                " height = " +
+//                height +
+//                " rotation degrees = " +
+//                unappliedRotationDegrees +
+//                " width/height ratio = " +
+//                pixelWidthHeightRatio);
         if (width > height) {
             fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
         } else {
@@ -517,7 +530,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onRenderedFirstFrame() {
-        Log.d(TAG, "Rendered first frame");
+        //Log.d(TAG, "Rendered first frame");
     }
 
     public String getPolicyCookie() {
@@ -544,7 +557,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.keyPairIdCookie = keyPairIdCookie;
     }
 
-    public interface FinishListener {
+    public interface ErrorEventListener {
+        void onRefreshTokenCallback();
         void onFinishCallback(String message);
     }
 
@@ -561,13 +575,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
+    public static class SignatureCookies {
+        String policyCookie;
+        String signatureCookie;
+        String keyPairIdCookie;
+    }
+
     private static class UpdatedUriDataSourceFactory implements Factory {
         private final Context context;
         private final TransferListener<? super DataSource> listener;
         private final DataSource.Factory baseDataSourceFactory;
-        private String policyCookie;
-        private String signatureCookie;
-        private String keyPairIdCookie;
+        private SignatureCookies signatureCookies;
 
         /**
          * @param context   A context.
@@ -604,27 +622,26 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             this.context = context.getApplicationContext();
             this.listener = listener;
             this.baseDataSourceFactory = baseDataSourceFactory;
-            this.policyCookie = policyCookie;
-            this.signatureCookie = signatureCookie;
-            this.keyPairIdCookie = keyPairIdCookie;
+
+            signatureCookies = new SignatureCookies();
+
+            signatureCookies.policyCookie = policyCookie;
+            signatureCookies.signatureCookie = signatureCookie;
+            signatureCookies.keyPairIdCookie = keyPairIdCookie;
         }
 
         @Override
         public UpdatedUriDataSource createDataSource() {
             return new UpdatedUriDataSource(context, listener, baseDataSourceFactory.createDataSource(),
-                    policyCookie, signatureCookie, keyPairIdCookie);
+                    signatureCookies);
         }
 
-        public String getPolicyCookie() {
-            return policyCookie;
-        }
-
-        public String getSignatureCookie() {
-            return signatureCookie;
-        }
-
-        public String getKeyPairIdCookie() {
-            return keyPairIdCookie;
+        public void updateSignatureCookies(String policyCookie,
+                                           String signatureCookie,
+                                           String keyPairIdCookie) {
+            signatureCookies.policyCookie = policyCookie;
+            signatureCookies.signatureCookie = signatureCookie;
+            signatureCookies.keyPairIdCookie = keyPairIdCookie;
         }
     }
 
@@ -636,9 +653,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         private final DataSource fileDataSource;
         private final DataSource assetDataSource;
         private final DataSource contentDataSource;
-        private final String policyCookie;
-        private final String signatureCookie;
-        private final String keyPairIdCookie;
+        private final SignatureCookies signatureCookies;
 
         private DataSource dataSource;
 
@@ -653,10 +668,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     String userAgent, boolean allowCrossProtocolRedirects,
-                                    String policyCookie, String signatureCookie, String keyPairIdCookie) {
+                                    SignatureCookies signatureCookies) {
             this(context, listener, userAgent, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                     DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, allowCrossProtocolRedirects,
-                    policyCookie, signatureCookie, keyPairIdCookie);
+                    signatureCookies);
         }
 
         /**
@@ -674,12 +689,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     String userAgent, int connectTimeoutMillis, int readTimeoutMillis,
-                                    boolean allowCrossProtocolRedirects, String policyCookie,
-                                    String signatureCookie, String keyPairIdCookie) {
+                                    boolean allowCrossProtocolRedirects, SignatureCookies signatureCookies) {
             this(context, listener,
                     new DefaultHttpDataSource(userAgent, null, listener, connectTimeoutMillis,
                             readTimeoutMillis, allowCrossProtocolRedirects, null),
-                    policyCookie, signatureCookie, keyPairIdCookie);
+                    signatureCookies);
         }
 
         /**
@@ -693,14 +707,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     DataSource baseDataSource,
-                                    String policyCookie, String signatureCookie, String keyPairIdCookie) {
+                                    SignatureCookies signatureCookies) {
             this.baseDataSource = Assertions.checkNotNull(baseDataSource);
             this.fileDataSource = new FileDataSource(listener);
             this.assetDataSource = new AssetDataSource(context, listener);
             this.contentDataSource = new ContentDataSource(context, listener);
-            this.policyCookie = policyCookie;
-            this.signatureCookie = signatureCookie;
-            this.keyPairIdCookie = keyPairIdCookie;
+            this.signatureCookies = signatureCookies;
         }
 
         @Override
@@ -723,30 +735,38 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
 
             Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
-            dataSpec = new DataSpec(updatedUri,
+            if (updatedUri.toString().contains("?")) {
+                updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
+            }
+            final DataSpec updatedDataSpec = new DataSpec(updatedUri,
                     dataSpec.absoluteStreamPosition,
                     dataSpec.length,
                     dataSpec.key);
 
             if (dataSource instanceof DefaultHttpDataSource) {
-                if (!TextUtils.isEmpty(policyCookie) &&
-                        !TextUtils.isEmpty(signatureCookie) &&
-                        !TextUtils.isEmpty(keyPairIdCookie)) {
+                if (!TextUtils.isEmpty(signatureCookies.policyCookie) &&
+                        !TextUtils.isEmpty(signatureCookies.signatureCookie) &&
+                        !TextUtils.isEmpty(signatureCookies.keyPairIdCookie)) {
                     StringBuilder cookies = new StringBuilder();
                     cookies.append("CloudFront-Policy=");
-                    cookies.append(policyCookie);
+                    cookies.append(signatureCookies.policyCookie);
                     cookies.append("; ");
                     cookies.append("CloudFront-Signature=");
-                    cookies.append(signatureCookie);
+                    cookies.append(signatureCookies.signatureCookie);
                     cookies.append("; ");
                     cookies.append("CloudFront-Key-Pair-Id=");
-                    cookies.append(keyPairIdCookie);
+                    cookies.append(signatureCookies.keyPairIdCookie);
                     ((DefaultHttpDataSource) dataSource).setRequestProperty("Cookie", cookies.toString());
                 }
             }
 
             // Open the source and return.
-            return dataSource.open(dataSpec);
+            try {
+                return dataSource.open(updatedDataSpec);
+            } catch (Exception e) {
+                //Log.e(TAG, "Failed to load video: " + e.getMessage());
+            }
+            return 0L;
         }
 
         @Override
@@ -763,8 +783,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     }
                     return result;
                 } catch (Exception e) {
-                    Log.w(TAG, "Failed to retrieve number of bytes read from file input stream: " +
-                        e.getMessage());
+                    //Log.w(TAG, "Failed to retrieve number of bytes read from file input stream: " +
+//                        e.getMessage());
                     result = dataSource.read(buffer, offset, readLength);
                 }
             } else {

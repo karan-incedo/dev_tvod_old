@@ -192,9 +192,9 @@ public class CastHelper {
         try {
             mCastContext.getSessionManager().addSessionManagerListener(mSessionManagerListener, CastSession.class);
         } catch (NullPointerException npe) {
-            Log.e(TAG, getClass().getCanonicalName() + " " + npe.getMessage());
+            //Log.e(TAG, getClass().getCanonicalName() + " " + npe.getMessage());
         } catch (Exception e) {
-            Log.e(TAG, getClass().getCanonicalName() + " " + e.getMessage());
+            //Log.e(TAG, getClass().getCanonicalName() + " " + e.getMessage());
         }
     }
 
@@ -347,7 +347,7 @@ public class CastHelper {
             try {
                 mStreamId = appCMSPresenterComponenet.getStreamingId(binder.getContentData().getGist().getTitle());
             } catch (Exception e) {
-                Log.e(TAG, e.getMessage());
+                //Log.e(TAG, e.getMessage());
                 mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
             }
 
@@ -380,7 +380,7 @@ public class CastHelper {
         try {
             mStreamId = appCMSPresenterComponenet.getStreamingId(binder.getContentData().getGist().getTitle());
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            //Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenterComponenet.getCurrentTimeStamp();
         }
 
@@ -404,12 +404,12 @@ public class CastHelper {
         try {
             customData.put(CastingUtils.MEDIA_KEY, filmId);
         } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
+            //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
         } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
+            //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
         if (getRemoteMediaClient() != null) {
             getRemoteMediaClient().load(CastingUtils.buildMediaInfo(title,
@@ -429,7 +429,7 @@ public class CastHelper {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
-                Log.e(TAG, "Error opening remote controller: " + e.getMessage());
+                //Log.e(TAG, "Error opening remote controller: " + e.getMessage());
             }
             if (!CastingUtils.isRemoteMediaControllerOpen) {
                 Intent intent = new Intent(mActivity, ExpandedControlsActivity.class);
@@ -454,7 +454,7 @@ public class CastHelper {
                     try {
                         mStreamId = appCMSPresenterComponenet.getStreamingId(title);
                     } catch (Exception e) {
-                        Log.e(TAG, e.getMessage());
+                        //Log.e(TAG, e.getMessage());
                         mStreamId = CastingUtils.getRemoteMediaId(mAppContext) + appCMSPresenterComponenet.getCurrentTimeStamp();
                     }
 
@@ -475,35 +475,35 @@ public class CastHelper {
                             .getCustomData();
                     CastingUtils.castingMediaId = getRemoteObject.getString(CastingUtils.MEDIA_KEY);
                 } catch (Exception e) {
-                    Log.e(TAG, e.getLocalizedMessage());
+                    //Log.e(TAG, e.getLocalizedMessage());
                 }
                 if (listCompareRelatedVideosId != null) {
                     playIndexPosition = listCompareRelatedVideosId
                             .indexOf(CastingUtils.castingMediaId);
                 }
 
-                Log.d(TAG, "Remote Media listener-" + "onMetadataUpdated");
+                //Log.d(TAG, "Remote Media listener-" + "onMetadataUpdated");
             }
 
             @Override
             public void onQueueStatusUpdated() {
-                Log.d(TAG, "Remote Media listener-" + "onQueueStatusUpdated");
+                //Log.d(TAG, "Remote Media listener-" + "onQueueStatusUpdated");
             }
 
             @Override
             public void onPreloadStatusUpdated() {
-                Log.d(TAG, "Remote Media listener-" + "onPreloadStatusUpdated");
+                //Log.d(TAG, "Remote Media listener-" + "onPreloadStatusUpdated");
             }
 
             @Override
             public void onSendingRemoteMediaRequest() {
-                Log.d(TAG, "Remote Media listener-" + "onSendingRemoteMediaRequest");
+                //Log.d(TAG, "Remote Media listener-" + "onSendingRemoteMediaRequest");
 
             }
 
             @Override
             public void onAdBreakStatusUpdated() {
-                Log.d(TAG, "Remote Media listener-" + "onAdBreakStatusUpdated");
+                //Log.d(TAG, "Remote Media listener-" + "onAdBreakStatusUpdated");
 
             }
         };
@@ -597,7 +597,7 @@ public class CastHelper {
                         playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
                     }
 
-                    Log.d(TAG, "Cast Index " + playIndexPosition);
+                    //Log.d(TAG, "Cast Index " + playIndexPosition);
                     if (listRelatedVideosDetails != null && listRelatedVideosDetails.size() > 0) {
                         int currentVideoDetailIndex = getCurrentIndex(listRelatedVideosDetails, CastingUtils.castingMediaId);
                         if (currentVideoDetailIndex < listRelatedVideosDetails.size())
@@ -655,7 +655,7 @@ public class CastHelper {
 
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error initializing progress indicators: " + e.getMessage());
+                //Log.e(TAG, "Error initializing progress indicators: " + e.getMessage());
             }
         };
     }
@@ -673,7 +673,7 @@ public class CastHelper {
             listRelatedVideosId.clear();
         }
 
-        Log.d(TAG, "Film Ids-" + filmIds);
+        //Log.d(TAG, "Film Ids-" + filmIds);
 
         appCMSPresenterComponenet.getRelatedMedia(filmIds, new Action1<AppCMSVideoDetail>() {
             @Override
@@ -688,7 +688,7 @@ public class CastHelper {
                     callRelatedVideoData();
                 } else {
                     castMediaListToRemoteLocation();
-                    Log.d(TAG, "Cast Media List ");
+                    //Log.d(TAG, "Cast Media List ");
                 }
             }
         });
@@ -720,7 +720,7 @@ public class CastHelper {
     private class MyMediaRouterCallback extends MediaRouter.Callback {
         @Override
         public void onRouteAdded(MediaRouter router, MediaRouter.RouteInfo route) {
-            Log.w(TAG, "MyMediaRouterCallback-onRouteAdded ");
+            //Log.w(TAG, "MyMediaRouterCallback-onRouteAdded ");
             List<MediaRouter.RouteInfo> c_routes = mMediaRouter.getRoutes();
             routes.clear();
             routes.addAll(c_routes);
@@ -732,7 +732,7 @@ public class CastHelper {
 
         @Override
         public void onRouteRemoved(MediaRouter router, MediaRouter.RouteInfo route) {
-            Log.w(TAG, "MyMediaRouterCallback-onRouteRemoved ");
+            //Log.w(TAG, "MyMediaRouterCallback-onRouteRemoved ");
             for (int i = 0; i < routes.size(); i++) {
                 if (routes.get(i) instanceof MediaRouter.RouteInfo) {
                     MediaRouter.RouteInfo routeInfo = (MediaRouter.RouteInfo) routes.get(i);
@@ -771,7 +771,7 @@ public class CastHelper {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
         if (castSession == null || !castSession.isConnected()) {
-            Log.w(TAG, "Trying to get a RemoteMediaClient when no CastSession is started.");
+            //Log.w(TAG, "Trying to get a RemoteMediaClient when no CastSession is started.");
             return null;
         }
         return castSession.getRemoteMediaClient();
@@ -963,7 +963,7 @@ public class CastHelper {
                 mSessionManagerListener = null;
                 CastContext.getSharedInstance(mAppContext).getSessionManager().endCurrentSession(true);
             } catch (Exception e) {
-                Log.e(TAG, e.getMessage()); // getting crash by e.printStackTrace()
+                //Log.e(TAG, e.getMessage()); // getting crash by e.printStackTrace()
 
             }
         }

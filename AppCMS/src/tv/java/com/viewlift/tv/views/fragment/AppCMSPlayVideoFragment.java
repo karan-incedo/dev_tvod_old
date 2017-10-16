@@ -159,7 +159,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         }
                     }
                 } catch (InterruptedException e) {
-                    Log.e(TAG, "BeaconPingThread sleep interrupted");
+                    //Log.e(TAG, "BeaconPingThread sleep interrupted");
                 }
             }
         }
@@ -262,12 +262,12 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                             : View.GONE);
             videoPlayerView.setUri(Uri.parse(hlsUrl),
                     !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
-            Log.i(TAG, "Playing video: " + hlsUrl);
+            //Log.i(TAG, "Playing video: " + hlsUrl);
         }
         try {
             mStreamId = appCMSPresenter.getStreamingId(title);
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            //Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
 
@@ -290,12 +290,12 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 String text = "";
                 switch(playerState.getPlaybackState()) {
                     case ExoPlayer.STATE_BUFFERING:
-                        Log.d(TAG, "Video STATE_BUFFERING");
+                        //Log.d(TAG, "Video STATE_BUFFERING");
                         text += "buffering...";
                         playBackStateLayout.setVisibility(View.VISIBLE);
                         break;
                     case ExoPlayer.STATE_READY:
-                        Log.d(TAG, "Video STATE_READY");
+                        //Log.d(TAG, "Video STATE_READY");
                         text += "";
                         playBackStateLayout.setVisibility(View.GONE);
                         if (shouldRequestAds && !isADPlay) {
@@ -306,7 +306,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         }*/
                         break;
                     case ExoPlayer.STATE_ENDED:
-                        Log.d(TAG, "Video STATE_ENDED");
+                        //Log.d(TAG, "Video STATE_ENDED");
                         playBackStateLayout.setVisibility(View.GONE);
                         if (shouldRequestAds) {
                             adsLoader.contentComplete();
@@ -430,7 +430,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             adsManager.resume();
         } else {
             videoPlayerView.resumePlayer();
-            Log.d(TAG, "Resuming playback");
+            //Log.d(TAG, "Resuming playback");
         }*/
 
 
@@ -457,7 +457,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
-        Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
+        //Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
         videoPlayerView.getPlayer().setPlayWhenReady(true);
         preparePlayer();
        // videoPlayerView.getPlayer().setPlayWhenReady(true);
@@ -466,7 +466,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     @Override
     public void onAdEvent(AdEvent adEvent) {
-        Log.i(TAG, "Event: " + adEvent.getType());
+        //Log.i(TAG, "Event: " + adEvent.getType());
 
         switch (adEvent.getType()) {
             case LOADED:
@@ -530,7 +530,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     private void requestAds(String adTagUrl) {
         if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null) {
-            Log.d(TAG, "Requesting ads: " + adTagUrl);
+            //Log.d(TAG, "Requesting ads: " + adTagUrl);
             AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
             adDisplayContainer.setAdContainer(videoPlayerView);
 
