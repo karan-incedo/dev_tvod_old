@@ -109,10 +109,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 } catch (Exception e) {
                     //Log.e(TAG, "Failed to parse double value for subscription price");
                 }
-
-                if (subscriptionPrice >= 0.0) {
-                    cullDataByAvailableUpgrades(availableSubscriptionPlans, subscriptionPrice);
-                }
             }
         }
 
@@ -308,10 +304,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice());
                 } catch (Exception e) {
                     //Log.e(TAG, "Failed to parse double value for subscription price");
-                }
-
-                if (subscriptionPrice >= 0.0) {
-                    cullDataByAvailableUpgrades(availableSubscriptionPlans, subscriptionPrice);
                 }
             }
         }

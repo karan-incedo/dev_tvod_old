@@ -769,11 +769,6 @@ public class AppCMSPresenter {
                 }
             } else {
                 if (showPage) {
-                    // TODO: 10/12/17 Remove hardcoding of http://www.hoichoi.tv and use hostname.
-                    // TODO: 10/12/17 Check for http AND https.
-                    if (!TextUtils.isEmpty(pageId) && pageId.contains("http://www.hoichoi.tv")) {
-                        pageId = pageId.replace("http://www.hoichoi.tv", "");
-                    }
                     urlWithContent = currentContext.getString(R.string.app_cms_shows_status_api_url,
                             baseUrl,
                             endpoint,

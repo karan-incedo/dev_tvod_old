@@ -21,6 +21,7 @@ public class GetAppCMSAPIAsyncTask {
 
     private final AppCMSPageAPICall call;
     private final Action1<AppCMSPageAPI> readyAction;
+    private Params currentParams;
 
     public static class Params {
         String urlWithContent;
@@ -63,14 +64,15 @@ public class GetAppCMSAPIAsyncTask {
     }
 
     public void execute(Params params) {
+        currentParams = params;
         Observable
                 .fromCallable(() -> {
-                    if (params != null) {
+                    if (currentParams != null) {
                         try {
-                            return call.call(params.urlWithContent,
-                                    params.authToken,
-                                    params.pageId,
-                                    params.loadFromFile,
+                            return call.call(currentParams.urlWithContent,
+                                    currentParams.authToken,
+                                    currentParams.pageId,
+                                    currentParams.loadFromFile,
                                     0);
                         } catch (IOException e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
