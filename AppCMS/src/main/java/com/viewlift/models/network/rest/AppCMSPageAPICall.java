@@ -68,33 +68,23 @@ public class AppCMSPageAPICall {
         String filename = getResourceFilename(pageId);
         AppCMSPageAPI appCMSPageAPI = null;
         try {
-            if (loadFromFile) {
-                try {
-                    appCMSPageAPI = readPageFromFile(filename);
-                } catch (Exception e) {
-                    Log.w(TAG, "Failed to read page API json: " + e.getMessage());
-                }
+            headersMap.clear();
+            if (!TextUtils.isEmpty(apiKey)) {
+                headersMap.put("x-api-key", apiKey);
+            }
+            if (!TextUtils.isEmpty(authToken)) {
+                headersMap.put("Authorization", authToken);
+            }
+            //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
+            Response<AppCMSPageAPI> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
+            appCMSPageAPI = response.body();
+
+            if (!response.isSuccessful()) {
+                //Log.e(TAG, "Response error: " + response.errorBody().string());
             }
 
-            if (appCMSPageAPI == null) {
-                headersMap.clear();
-                if (!TextUtils.isEmpty(apiKey)) {
-                    headersMap.put("x-api-key", apiKey);
-                }
-                if (!TextUtils.isEmpty(authToken)) {
-                    headersMap.put("Authorization", authToken);
-                }
-                //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
-                Response<AppCMSPageAPI> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
-                appCMSPageAPI = response.body();
-
-                if (!response.isSuccessful()) {
-                    //Log.e(TAG, "Response error: " + response.errorBody().string());
-                }
-
-                if (filename != null) {
-                    appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
-                }
+            if (filename != null) {
+                appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
             }
         } catch (JsonSyntaxException e) {
             //Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());

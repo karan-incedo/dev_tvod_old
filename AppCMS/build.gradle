@@ -5,7 +5,7 @@ def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 
-def final appVersionName = "2.0.83"
+def final appVersionName = "2.0.85"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -35,7 +35,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 115
+        versionCode 117
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26

@@ -2,16 +2,11 @@ package com.viewlift.models.network.rest;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,10 +19,6 @@ import java.nio.charset.Charset;
 import java.util.Scanner;
 
 import javax.inject.Inject;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by viewlift on 5/9/17.
@@ -83,11 +74,11 @@ public class AppCMSPageUICall {
     }
 
     private void deletePreviousFiles(String url) {
-        String fileToDeleteFilenamePatter = getResourceFilenameWithJsonOnly(url);
+        String fileToDeleteFilenamePattern = getResourceFilenameWithJsonOnly(url);
         if (storageDirectory.isDirectory()) {
             String[] listExistingFiles = storageDirectory.list();
             for (String existingFilename : listExistingFiles) {
-                if (existingFilename.contains(fileToDeleteFilenamePatter)) {
+                if (existingFilename.contains(fileToDeleteFilenamePattern)) {
                     File fileToDelete = new File(storageDirectory, existingFilename);
                     try {
                         if (fileToDelete.delete()) {
