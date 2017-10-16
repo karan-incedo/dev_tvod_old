@@ -195,6 +195,10 @@ public class AppCMSPageFragment extends Fragment {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
 
+        updateDataLists();
+    }
+
+    public void updateDataLists() {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
         }

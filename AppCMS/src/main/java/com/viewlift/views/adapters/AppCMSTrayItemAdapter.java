@@ -761,6 +761,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     listView.invalidate();
                 }
             });
+        } else if (isDownload) {
+            notifyDataSetChanged();
         }
     }
 

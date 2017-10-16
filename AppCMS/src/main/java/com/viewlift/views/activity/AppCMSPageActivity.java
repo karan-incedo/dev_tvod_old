@@ -92,6 +92,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.util.EmptyStackException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -331,6 +332,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String action = intent.getAction();
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                     //
+                   List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+                   for (Fragment fragment : fragmentList) {
+                       if (fragment instanceof AppCMSPageFragment) {
+                           ((AppCMSPageFragment) fragment).updateDataLists();
+                       }
+                   }
                 }
             }
         };
