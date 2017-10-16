@@ -2079,7 +2079,7 @@ public class AppCMSPresenter {
                                     if (appCMSSubscriptionPlanResult != null) {
                                         String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId();
                                         if (paymentUniqueId.length() > 0) {
-                                            upgradePlanAPICall();
+                                            checkCCAvenueUpgradeStatus(paymentUniqueId);
                                         } else {
                                             showDialog(DialogType.SUBSCRIBE, "Cannot Upgrade", false, null);
                                         }
@@ -2186,6 +2186,44 @@ public class AppCMSPresenter {
             } else {
                 //Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
+        }
+    }
+
+    private void checkCCAvenueUpgradeStatus(String referenceNo) {
+        try {
+            SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
+            subscriptionRequest.setReferenceNo(referenceNo);
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            appCMSSubscriptionPlanCall.call(
+                    currentActivity.getString(R.string.app_cms_ccavenue_is_plan_upgradable_url,
+                            appCMSMain.getApiBaseUrl(),
+                            appCMSSite.getGist().getSiteInternalName()),
+                    R.string.app_cms_check_ccavenue_plan_status_key,
+                    subscriptionRequest,
+                    apikey,
+                    getAuthToken(),
+                    listResult -> {
+                        //Log.v("currentActivity", "currentActivity");
+                    },
+                    singleResult -> {
+                        if (singleResult != null) {
+                            String siStatus = singleResult.getSiStatus();
+                            if (siStatus != null && siStatus.equalsIgnoreCase("ACTI")) {
+                                upgradePlanAPICall();
+                            } else {
+                                showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
+                                sendCloseOthersAction(null, true);
+                            }
+                        } else {
+                            showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null);
+                            sendCloseOthersAction(null, true);
+                        }
+                    },
+                    appCMSSubscriptionPlanResult -> {
+                    }
+            );
+        } catch (Exception ex) {
+
         }
     }
 
