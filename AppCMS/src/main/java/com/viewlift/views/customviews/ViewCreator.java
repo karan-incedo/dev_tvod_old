@@ -1052,7 +1052,8 @@ public class ViewCreator {
                                 jsonValueKeyMap,
                                 appCMSPresenter,
                                 false,
-                                module.getView());
+                                module.getView(),
+                                module.getId());
 
                         if (adjustOthers == AdjustOtherState.INITIATED) {
                             adjustOthers = AdjustOtherState.ADJUST_OTHERS;
@@ -1254,7 +1255,8 @@ public class ViewCreator {
                     jsonValueKeyMap,
                     appCMSPresenter,
                     gridElement,
-                    viewType);
+                    viewType,
+                    component.getId());
 
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
@@ -1296,7 +1298,8 @@ public class ViewCreator {
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement,
-                                    final String viewType) {
+                                    final String viewType,
+                                    String moduleId) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
@@ -1391,7 +1394,7 @@ public class ViewCreator {
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
-                    componentViewResult.onInternalEvent.setModuleId(moduleAPI.getId());
+                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
@@ -1579,7 +1582,7 @@ public class ViewCreator {
                             .build());
                 }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
-                componentViewResult.onInternalEvent.setModuleId(moduleAPI.getId());
+                componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                 if (moduleAPI.getContentData() == null ||
                         moduleAPI.getContentData().isEmpty()) {
@@ -1604,7 +1607,7 @@ public class ViewCreator {
                 int numDots = moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0;
                 ((DotSelectorView) componentViewResult.componentView).addDots(numDots);
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
-                componentViewResult.onInternalEvent.setModuleId(moduleAPI.getId());
+                componentViewResult.onInternalEvent.setModuleId(moduleId);
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
 
@@ -1943,8 +1946,6 @@ public class ViewCreator {
                         removeAllLayoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
 
                         componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
-
-                        final String moduleId = moduleAPI.getId();
 
                         componentViewResult.onInternalEvent = new OnInternalEvent() {
                             final View removeAllButton = componentViewResult.componentView;

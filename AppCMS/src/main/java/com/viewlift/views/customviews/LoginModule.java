@@ -304,7 +304,8 @@ public class LoginModule extends ModuleView {
                         jsonValueKeyMap,
                         appCMSPresenter,
                         false,
-                        "");
+                        "",
+                        moduleInfo.getId());
                 View componentView = componentViewResult.componentView;
                 if (componentView != null) {
                     float componentYAxis = getYAxis(getContext(),
