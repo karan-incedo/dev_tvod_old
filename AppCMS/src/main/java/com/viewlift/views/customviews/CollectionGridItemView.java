@@ -248,6 +248,11 @@ public class CollectionGridItemView extends BaseView {
                                         defaultHeight));
                     }
 
+                    if (childViewWidth < 0 &&
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
+                        childViewWidth = (16 * childViewHeight) / 9;
+                    }
+
                     if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
