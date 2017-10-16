@@ -359,6 +359,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
+        appCMSPresenter.setCancelAllLoads(false);
     }
 
     @Override
@@ -397,6 +398,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }else{
             appCMSPresenter.restrictPortraitOnly();
         }
+
         super.onDestroy();
     }
 

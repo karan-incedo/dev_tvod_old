@@ -418,6 +418,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
 //        Log.d(TAG, "onCreate()");
         sendAnalytics();
+
+        appCMSPresenter.setCancelAllLoads(false);
     }
 
     private void sendAnalytics() {
@@ -584,7 +586,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (resumeInternalEvents) {
             appCMSPresenter.restartInternalEvents();
         }
-        appCMSPresenter.setCancelAllLoads(false);
     }
 
     @Override
@@ -665,7 +666,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         appCMSPresenter.cancelInternalEvents();
-        appCMSPresenter.setCancelAllLoads(true);
     }
 
     @Override
@@ -705,6 +705,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (imm != null && appCMSParentView != null) {
             imm.hideSoftInputFromWindow(appCMSParentView.getWindowToken(), 0);
         }
+
+        appCMSPresenter.setCancelAllLoads(true);
 
         //Log.d(TAG, "onDestroy()");
     }
