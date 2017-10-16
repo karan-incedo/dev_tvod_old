@@ -325,7 +325,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             };
         }
 
-        DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         downloadReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -1468,7 +1467,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 homeNavBarItemView.setHighlightColor(highlightColor);
                 homeNavBarItemView.setLabel(homePageNav.getTitle());
                 homeNavBarItemView.setOnClickListener(v -> {
-                    if (currentMenuTabIndex == homePageIndex)
+                    if (getSelectedNavItem() == homeNavBarItemView)
                         return;
                     currentMenuTabIndex = homePageIndex;
                     appCMSPresenter.showMainFragmentView(true);
@@ -1500,7 +1499,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             navLiveItemView.setHighlightColor(highlightColor);
             navLiveItemView.setLabel(livePageNav.getTitle());
             navLiveItemView.setOnClickListener(v -> {
-                if (currentMenuTabIndex == navLivePageIndex)
+                if (getSelectedNavItem() == navLiveItemView)
                     return;
                 currentMenuTabIndex = navLivePageIndex;
 
@@ -1534,7 +1533,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 moviesNavBarItemView.setHighlightColor(highlightColor);
                 moviesNavBarItemView.setLabel(moviePageNav.getTitle());
                 moviesNavBarItemView.setOnClickListener(v -> {
-                    if (currentMenuTabIndex == categoriesPageIndex)
+                    if (getSelectedNavItem() == moviesNavBarItemView)
                         return;
                     currentMenuTabIndex = categoriesPageIndex;
 
@@ -1569,7 +1568,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 searchNavBarItemView.setHighlightColor(highlightColor);
                 searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
                 searchNavBarItemView.setOnClickListener(v -> {
-                    if (currentMenuTabIndex == searchPageIndex)
+                    if (getSelectedNavItem() == searchNavBarItemView)
                         return;
                     currentMenuTabIndex = searchPageIndex;
                     if (!appCMSPresenter.isNetworkConnected()) {
