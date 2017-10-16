@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
@@ -294,22 +295,22 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         };
 
-//        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//        networkConnectedReceiver = new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context context, Intent intent) {
-//                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-//                if (activeNetwork == null ||
-//                        !activeNetwork.isConnectedOrConnecting()) {
-//                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-//                            appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-//                            false, () -> closePlayer());
-//                }
-//            }
-//        };
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                if (activeNetwork == null ||
+                        !activeNetwork.isConnectedOrConnecting()) {
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
+                            false, () -> closePlayer());
+                }
+            }
+        };
 
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-//        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -341,10 +342,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onDestroy() {
         try {
             unregisterReceiver(handoffReceiver);
+            unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }
-//        unregisterReceiver(networkConnectedReceiver);
+
         if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
         }else{
