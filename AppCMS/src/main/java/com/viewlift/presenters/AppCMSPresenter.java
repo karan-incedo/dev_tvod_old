@@ -5370,12 +5370,8 @@ public class AppCMSPresenter {
             }
             if (!networkConnected &&
                     (downloadInProgress || !onDownloadPage) && launched) {
-                showDialog(DialogType.NETWORK,
-                        currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
-                        true,
-                        () -> navigateToDownloadPage(getDownloadPageId(),
-                                null, null, false),
-                        () -> launchErrorActivity(PlatformType.ANDROID));
+                navigateToDownloadPage(getDownloadPageId(),
+                        null, null, false);
             }
 
             SharedPreferences sharedPrefs =
