@@ -202,6 +202,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WATCH_VIDEO_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_image_key),
                 AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_live_image_key),
+                AppCMSUIKeyType.PAGE_PLAY_LIVE_IMAGE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_title_key),
                 AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_key),
