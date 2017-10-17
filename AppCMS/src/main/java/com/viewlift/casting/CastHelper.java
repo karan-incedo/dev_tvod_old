@@ -580,7 +580,7 @@ public class CastHelper {
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
                 CastingUtils.isMediaQueueLoaded = true;
-                if (callBackRemoteListener != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null) {
+                if (callBackRemoteListener != null && mActivity!=null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null) {
 
                     //if player activity already opened than finish it
                     if (onApplicationEndedAction != null) {

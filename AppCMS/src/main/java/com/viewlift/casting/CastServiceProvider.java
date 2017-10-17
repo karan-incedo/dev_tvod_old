@@ -60,6 +60,7 @@ public class CastServiceProvider {
     private Context mContext;
     private AppCMSPresenter appCMSPresenter;
     private ShowcaseView mShowCaseView;
+    private boolean isMovieContentFree;
 
     private CastServiceProvider(Activity activity) {
         this.mContext = activity;
@@ -113,6 +114,12 @@ public class CastServiceProvider {
         mMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.anim_cast, null));
         castAnimDrawable = (AnimationDrawable) mMediaRouteButton.getDrawable();
 
+    }
+    public void setIsMovieFree(boolean isContentFree){
+        isMovieContentFree=isContentFree;
+    }
+    public boolean getIsMovieFree(){
+        return isMovieContentFree;
     }
 
     public void onActivityResume() {
@@ -451,7 +458,8 @@ public class CastServiceProvider {
         }
 
         mMediaRouteButton.setOnClickListener(v -> {
-            if (!appCMSPresenter.isUserSubscribed()) {
+            //for unsubsribed/guest user, movie content is not free and remote  device not connected ,show entitlement dialog
+            if (!appCMSPresenter.isUserSubscribed() && !getIsMovieFree() && !mCastHelper.isRemoteDeviceConnected()) {
                 if (appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                             null);

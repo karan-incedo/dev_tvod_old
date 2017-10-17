@@ -99,7 +99,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     Runnable mProgressRunnable;
     long mTotalVideoDuration;
     Animation animSequential, animFadeIn, animFadeOut, animTranslate;
-    boolean isStreamStart, isStream25, isStream50, isStream75,isStream100;
+    boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
     private AppCMSPresenter appCMSPresenter;
     private String fontColor;
     private String title;
@@ -632,6 +632,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                 getActivity().finish();
             } else {
                 castProvider.setActivityInstance(getActivity(), mMediaRouteButton);
+                if (isTrailer || freeContent) {
+                    castProvider.setIsMovieFree(true);
+                } else {
+                    castProvider.setIsMovieFree(false);
+                }
             }
         } catch (Exception e) {
             Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
@@ -1079,7 +1084,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             @Override
             public void onTick(long millisUntilFinished) {
                 long progress = (long) (100.0 * (1.0 - (double) millisUntilFinished / (double) totalCountdownInMillis));
-                Log.d(TAG, "CRW Progress:"  + progress);
+                Log.d(TAG, "CRW Progress:" + progress);
                 progressBar.setProgress((int) progress);
             }
 
@@ -1223,9 +1228,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case AudioManager.AUDIOFOCUS_GAIN:
-                if(videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
+                if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
                     videoPlayerView.startPlayer();
-                }else{
+                } else {
                     videoPlayerView.pausePlayer();
                 }
                 break;
