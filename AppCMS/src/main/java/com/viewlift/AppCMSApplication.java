@@ -58,7 +58,7 @@ public class AppCMSApplication extends Application {
             }
         };
 
-//        AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
+        AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
 
         Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
 
