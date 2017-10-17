@@ -1874,6 +1874,7 @@ public class ViewCreator {
                     case PAGE_VIDEO_CLOSE_KEY:
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setPadding(0, 0, 0, 0);
                         int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
 //                        componentViewResult.componentView.setPadding(0, 0, 0, 0);
                         ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
