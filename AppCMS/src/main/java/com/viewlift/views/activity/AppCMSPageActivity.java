@@ -43,6 +43,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.appsflyer.AppsFlyerLib;
@@ -170,6 +171,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver networkConnectedReceiver;
     private BroadcastReceiver wifiConnectedReceiver;
     private BroadcastReceiver downloadReceiver;
+    private BroadcastReceiver notifyUpdateListsReceiver;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -331,12 +333,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String action = intent.getAction();
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                     //
-                   List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-                   for (Fragment fragment : fragmentList) {
-                       if (fragment instanceof AppCMSPageFragment) {
-                           ((AppCMSPageFragment) fragment).updateDataLists();
-                       }
-                   }
+                }
+            }
+        };
+
+        notifyUpdateListsReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Toast.makeText(AppCMSPageActivity.this, "Download has completed", Toast.LENGTH_LONG).show();
+                List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+                for (Fragment fragment : fragmentList) {
+                    if (fragment instanceof AppCMSPageFragment) {
+                        ((AppCMSPageFragment) fragment).updateDataLists();
+                    }
                 }
             }
         };
@@ -361,6 +370,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
         registerReceiver(downloadReceiver,
                 new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        registerReceiver(notifyUpdateListsReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
 
         resumeInternalEvents = false;
 
@@ -695,6 +706,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(networkConnectedReceiver);
         unregisterReceiver(wifiConnectedReceiver);
         unregisterReceiver(downloadReceiver);
+        unregisterReceiver(notifyUpdateListsReceiver);
 
         if (inAppBillingServiceConn != null) {
             try {

@@ -268,6 +268,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_UPDATE_HISTORY_ACTION = "appcms_presenter_update_history_action";
     public static final String PRESENTER_REFRESH_PAGE_ACTION = "appcms_presenter_refresh_page_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
+    public static final String PRESENTER_UPDATE_LISTS_ACTION = "appcms_presenter_update_lists_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -2991,7 +2992,9 @@ public class AppCMSPresenter {
     public boolean isVideoDownloaded(String videoId) {
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
                 getLoggedInUser());
-        return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
+        return downloadVideoRealm != null &&
+                downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
+                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED;
     }
 
     @UiThread
@@ -3152,6 +3155,13 @@ public class AppCMSPresenter {
     public void checkDownloadCurrentStatus(String filmId, final Action1<UserVideoDownloadStatus> responseAction) {
         appCMSUserDownloadVideoStatusCall
                 .call(filmId, this, responseAction, getLoggedInUser());
+    }
+
+    public void notifyDownloadHasCompleted() {
+        if (currentActivity != null) {
+            Intent notifiyDownloadHasCompleted = new Intent(PRESENTER_UPDATE_LISTS_ACTION);
+            currentActivity.sendBroadcast(notifiyDownloadHasCompleted);
+        }
     }
 
     @UiThread

@@ -3138,6 +3138,7 @@ public class ViewCreator {
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.startNextDownload();
+                        appCMSPresenter.notifyDownloadHasCompleted();
                         break;
 
                     case STATUS_INTERRUPTED:
