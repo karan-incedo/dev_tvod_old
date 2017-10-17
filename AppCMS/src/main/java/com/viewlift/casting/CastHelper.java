@@ -678,7 +678,7 @@ public class CastHelper {
 
         appCMSPresenterComponenet.getRelatedMedia(filmIds, new Action1<AppCMSVideoDetail>() {
             @Override
-            public void call(AppCMSVideoDetail relatedMediaVideoDetails) {)
+            public void call(AppCMSVideoDetail relatedMediaVideoDetails) {
                 if (listRelatedVideosDetails == null && relatedMediaVideoDetails != null && relatedMediaVideoDetails.getRecords() != null) {
                     listRelatedVideosDetails = relatedMediaVideoDetails.getRecords();
                 } else if (relatedMediaVideoDetails != null && relatedMediaVideoDetails.getRecords() != null) {
@@ -698,15 +698,13 @@ public class CastHelper {
         });
     }
 
-    List<AppCMSVideoDetail> removeNonFreeVideos(List<AppCMSVideoDetail> relatedVidesDetails) {
-        List<AppCMSVideoDetail> freeMovies = new ArrayList<>();
-        for (AppCMSVideoDetail appCMSVideoDetail : relatedVidesDetails) {
-            if (appCMSVideoDetail.getRecords() != null &&
-                    !appCMSVideoDetail.getRecords().isEmpty() &&
-                    appCMSVideoDetail.getRecords().get(0) != null &&
-                    appCMSVideoDetail.getRecords().get(0).getGist() != null &&
-                    appCMSVideoDetail.getRecords().get(0).getGist().getFree()) {
-                freeMovies.add(appCMSVideoDetail);
+    List<ContentDatum> removeNonFreeVideos(List<ContentDatum> relatedVideoDetails) {
+        List<ContentDatum> freeMovies = new ArrayList<>();
+        for (ContentDatum contentDatum : relatedVideoDetails) {
+            if (contentDatum != null &&
+                    contentDatum.getGist() != null &&
+                    contentDatum.getGist().getFree()) {
+                freeMovies.add(contentDatum);
             }
         }
         return freeMovies;
