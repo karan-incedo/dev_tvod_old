@@ -84,7 +84,7 @@ public class SystemFontResolver implements FontResolver {
 
     protected FontFamily resolveFont( String name ) {
 
-        Log.d("SystemFontResolver", "Trying to resolve font " + name );
+        //Log.d("SystemFontResolver", "Trying to resolve font " + name );
 
         if ( name.equalsIgnoreCase("serif") ) {
             return getSerifFont();

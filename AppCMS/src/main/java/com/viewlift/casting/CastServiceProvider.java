@@ -60,7 +60,7 @@ public class CastServiceProvider {
     private Context mContext;
     private AppCMSPresenter appCMSPresenter;
     private ShowcaseView mShowCaseView;
-    private boolean isMovieContentFree;
+    private boolean allowFreePlay;
 
     private CastServiceProvider(Activity activity) {
         this.mContext = activity;
@@ -69,6 +69,8 @@ public class CastServiceProvider {
         appCMSPresenter = ((AppCMSApplication) activity.getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+
+        allowFreePlay = false;
     }
 
     public static synchronized CastServiceProvider getInstance(Activity activity) {
@@ -84,6 +86,13 @@ public class CastServiceProvider {
         initRoku();
     }
 
+    public boolean isAllowFreePlay() {
+        return allowFreePlay;
+    }
+
+    public void setAllowFreePlay(boolean allowFreePlay) {
+        this.allowFreePlay = allowFreePlay;
+    }
 
     private void initChromecast() {
 
@@ -115,12 +124,6 @@ public class CastServiceProvider {
         castAnimDrawable = (AnimationDrawable) mMediaRouteButton.getDrawable();
 
     }
-    public void setIsMovieFree(boolean isContentFree){
-        isMovieContentFree=isContentFree;
-    }
-    public boolean getIsMovieFree(){
-        return isMovieContentFree;
-    }
 
     public void onActivityResume() {
 
@@ -135,7 +138,7 @@ public class CastServiceProvider {
         mCastHelper.setCastDiscovery();
 
         if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().isDefault()) {
-            Log.d(TAG, "This is a default route");
+            //Log.d(TAG, "This is a default route");
             mCastHelper.mSelectedDevice = null;
         } else if (mCastHelper.mMediaRouter != null && mCastHelper.mMediaRouter.getSelectedRoute().getConnectionState()
                 == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
@@ -170,7 +173,7 @@ public class CastServiceProvider {
 
     public boolean isCastingConnected() {
         boolean isConnected = false;
-        if (mCastHelper.isCastDeviceAvailable && mCastHelper.isRemoteDeviceConnected() && rokuWrapper.isRokuConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
+        if (mCastHelper.isCastDeviceAvailable && (mCastHelper.isRemoteDeviceConnected() || rokuWrapper.isRokuConnected())) {
             isConnected = true;
         }
         return isConnected;
@@ -332,7 +335,7 @@ public class CastServiceProvider {
     RokuWrapper.RokuWrapperEventListener callBackRokuDiscoveredDevices = new RokuWrapper.RokuWrapperEventListener() {
         @Override
         public void onRokuDiscovered(List<RokuDevice> rokuDeviceList) {
-            Log.w(TAG, "MyMediaRouterCallback-onRokuDiscovered  " + rokuWrapper.getRokuDevices());
+            //Log.w(TAG, "MyMediaRouterCallback-onRokuDiscovered  " + rokuWrapper.getRokuDevices());
 
             mCastHelper.routes.clear();
             if (mCastHelper.mMediaRouter != null)
@@ -445,7 +448,7 @@ public class CastServiceProvider {
         }
 
         if (mCastHelper.isCastDeviceAvailable) {
-            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected() || (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null)) {
+            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected()) {
                 castAnimDrawable.stop();
                 Drawable selectedImageDrawable = mActivity.getResources().getDrawable(R.drawable.toolbar_cast_connected, null);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
@@ -458,8 +461,7 @@ public class CastServiceProvider {
         }
 
         mMediaRouteButton.setOnClickListener(v -> {
-            //for unsubsribed/guest user, movie content is not free and remote  device not connected ,show entitlement dialog
-            if (!appCMSPresenter.isUserSubscribed() && !getIsMovieFree() && !mCastHelper.isRemoteDeviceConnected()) {
+            if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
                 if (appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                             null);

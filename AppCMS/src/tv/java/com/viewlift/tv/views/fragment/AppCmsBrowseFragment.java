@@ -35,7 +35,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     public static AppCmsBrowseFragment newInstance(Context context){
         AppCmsBrowseFragment appCmsBrowseFragment = new AppCmsBrowseFragment();
-        Log.d("" , "appcmsBrowseFragment newInstance");
+        //Log.d("" , "appcmsBrowseFragment newInstance");
         return appCmsBrowseFragment;
     }
 
@@ -62,7 +62,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d(TAG , "appcmsBrowseFragment onActivityCreated");
+        //Log.d(TAG , "appcmsBrowseFragment onActivityCreated");
         if(null != mRowsAdapter){
             setAdapter(mRowsAdapter);
         }
@@ -97,7 +97,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 clickedTime = System.currentTimeMillis();
                 if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title , rowData.contentData)) {
                     ((AppCmsHomeActivity)getActivity()).pageLoading(false);
-                    Log.e(TAG, "Could not launch play action: " +
+                    //Log.e(TAG, "Could not launch play action: " +
                             " filmId: " +
                             filmId +
                             " permaLink: " +
@@ -123,7 +123,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
             ContentDatum data = rowData.contentData;
             //String hls = rowData.contentData.getStreamingInfo().getVideoAssets().getHls();
-            Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+            //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
 
             String action = /*"play"*/rowData.action;
             if (action.equalsIgnoreCase(getString(R.string.app_cms_action_watchvideo_key))) {
@@ -142,14 +142,14 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         && null != data.getContentDetails().getClosedCaptions().get(0).getUrl()) {
                     extraData[3] = data.getContentDetails().getClosedCaptions().get(0).getUrl();
                 }
-                Log.d(TAG, "Launching " + permalink + ": " + action);
+                //Log.d(TAG, "Launching " + permalink + ": " + action);
                 if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
                         action,
                         title,
                         extraData,
                         false,
                         data)) {
-                    Log.e(TAG, "Could not launch action: " +
+                    //Log.e(TAG, "Could not launch action: " +
                             " permalink: " +
                             permalink +
                             " action: " +

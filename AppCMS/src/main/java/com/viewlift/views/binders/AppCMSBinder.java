@@ -20,7 +20,7 @@ import com.viewlift.models.network.rest.AppCMSSearchCall;
 
 public class AppCMSBinder extends Binder {
     private final AppCMSMain appCMSMain;
-    private final AppCMSPageUI appCMSPageUI;
+    private AppCMSPageUI appCMSPageUI;
     private AppCMSPageAPI appCMSPageAPI;
     private final Navigation navigation;
     private final String pageId;
@@ -174,5 +174,9 @@ public class AppCMSBinder extends Binder {
 
     public AppCMSPresenter.ExtraScreenType getExtraScreenType() {
         return extraScreenType;
+    }
+
+    public void setAppCMSPageUI(AppCMSPageUI appCMSPageUI) {
+        this.appCMSPageUI = appCMSPageUI;
     }
 }

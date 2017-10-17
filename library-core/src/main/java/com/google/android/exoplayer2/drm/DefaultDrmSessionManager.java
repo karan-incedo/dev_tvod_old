@@ -487,7 +487,7 @@ public class DefaultDrmSessionManager<T extends ExoMediaCrypto> implements DrmSe
             long licenseDurationRemainingSec = getLicenseDurationRemainingSec();
             if (mode == MODE_PLAYBACK
                 && licenseDurationRemainingSec <= MAX_LICENSE_DURATION_TO_RENEW) {
-              Log.d(TAG, "Offline license has expired or will expire soon. "
+              //Log.d(TAG, "Offline license has expired or will expire soon. "
                   + "Remaining seconds: " + licenseDurationRemainingSec);
               postKeyRequest(sessionId, MediaDrm.KEY_TYPE_OFFLINE);
             } else if (licenseDurationRemainingSec <= 0) {

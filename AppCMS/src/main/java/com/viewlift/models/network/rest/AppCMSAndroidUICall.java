@@ -5,11 +5,15 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 
@@ -42,24 +46,28 @@ public class AppCMSAndroidUICall {
         String filename = getResourceFilename(url);
         AppCMSAndroidUI appCMSAndroidUI = null;
         if (loadFromFile) {
-            appCMSAndroidUI = readAndroidFromFile(filename);
+            try {
+                appCMSAndroidUI = readAndroidFromFile(filename);
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to read android.json from file: " + e.getMessage());
+            }
         }
         if (appCMSAndroidUI == null) {
             try {
                 appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
             } catch (Exception e) {
-                Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
-                    e.getMessage());
+                //Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
+//                    e.getMessage());
             }
         }
         if (appCMSAndroidUI == null && tryCount == 0) {
             return call(url, loadFromFile, tryCount + 1);
-        } else {
+        } else if (appCMSAndroidUI == null) {
             try {
                 appCMSAndroidUI = readAndroidFromFile(filename);
             } catch (Exception e) {
-                Log.e(TAG, "Failed to read Android UI JSON file from file: " +
-                    e.getMessage());
+                //Log.e(TAG, "Failed to read Android UI JSON file from file: " +
+//                    e.getMessage());
             }
         }
         if (appCMSAndroidUI != null) {
@@ -73,24 +81,19 @@ public class AppCMSAndroidUICall {
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         outputFilename));
-        String output = gson.toJson(appCMSAndroidUI, AppCMSAndroidUI.class);
-        outputStream.write(output.getBytes());
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(appCMSAndroidUI);
         outputStream.close();
         return appCMSAndroidUI;
     }
 
-    private AppCMSAndroidUI readAndroidFromFile(String inputFilename) throws IOException {
+    private AppCMSAndroidUI readAndroidFromFile(String inputFilename) throws Exception {
         InputStream inputStream = new FileInputStream(
                 new File(storageDirectory.toString() +
                         File.separatorChar +
                         inputFilename));
-        Scanner scanner = new Scanner(inputStream);
-        StringBuffer sb = new StringBuffer();
-        while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine());
-        }
-        AppCMSAndroidUI appCMSAndroidUI = gson.fromJson(sb.toString(), AppCMSAndroidUI.class);
-        scanner.close();
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        AppCMSAndroidUI appCMSAndroidUI = (AppCMSAndroidUI) objectInputStream.readObject();
         inputStream.close();
         return appCMSAndroidUI;
     }

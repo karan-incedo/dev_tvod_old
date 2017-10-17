@@ -74,7 +74,7 @@ public class AutoplayFragment extends Fragment {
                         .appCMSPresenter();
                 appCMSViewComponent = buildAppCMSViewComponent();
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         } else {
             throw new RuntimeException("Attached context must implement " +
@@ -184,7 +184,7 @@ public class AutoplayFragment extends Fragment {
             try {
                 binder = (AppCMSVideoPageBinder) savedInstanceState.getBinder(getString(R.string.app_cms_video_player_binder_key));
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
         if (countdownTimer == null) {
@@ -200,7 +200,7 @@ public class AutoplayFragment extends Fragment {
         }
 
         if (pageView == null) {
-            Log.e(TAG, "AppCMS page creation error");
+            //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(binder);
         } else {
             pageView.notifyAdaptersOfUpdate();

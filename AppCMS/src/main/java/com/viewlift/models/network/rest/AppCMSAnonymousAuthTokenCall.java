@@ -44,7 +44,7 @@ public class AppCMSAnonymousAuthTokenCall {
             @Override
             public void onFailure(@NonNull Call<AnonymousAuthTokenResponse> call,
                                   @NonNull Throwable t) {
-                Log.e(TAG, "onFailure: " + t.getMessage());
+                //Log.e(TAG, "onFailure: " + t.getMessage());
                 Observable.just((AnonymousAuthTokenResponse) null).subscribe(responseAction1);
             }
         });

@@ -232,7 +232,7 @@ public class AppCMSTVTrayAdapter
                                   Component childComponent,
                                   ContentDatum data) {
                     if (isClickable) {
-                        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                         String permalink = data.getGist().getPermalink();
                         String action = defaultAction;
                         String title = data.getGist().getTitle();
@@ -241,7 +241,7 @@ public class AppCMSTVTrayAdapter
                         extraData[0] = permalink;
                         extraData[1] = hlsUrl;
                         extraData[2] = data.getGist().getId();
-                        Log.d(TAG, "Launching " + permalink + ": " + action);
+                        //Log.d(TAG, "Launching " + permalink + ": " + action);
                         List<String> relatedVideoIds = null;
                         if (data.getContentDetails() != null &&
                                 data.getContentDetails().getRelatedVideoIds() != null) {
@@ -261,7 +261,7 @@ public class AppCMSTVTrayAdapter
                                 extraData,
                                 false,
                                 data)) {
-                            Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
+                            //Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
                                     + " action: " + action + " hlsUrl: " + hlsUrl);
                         }
                     }
@@ -270,7 +270,7 @@ public class AppCMSTVTrayAdapter
                 @Override
                 public void play(Component childComponent, ContentDatum data) {
                     if (isClickable) {
-                        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+                        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                         appCMSPresenter.launchTVVideoPlayer(
                                 data.getGist().getId(),
                                 data.getGist().getPermalink(),
@@ -281,7 +281,7 @@ public class AppCMSTVTrayAdapter
 
                 @Override
                 public void delete(Component childComponent, ContentDatum data) {
-                    Log.d(TAG, "Deleting watchlist item: " + data.getGist().getTitle());
+                    //Log.d(TAG, "Deleting watchlist item: " + data.getGist().getTitle());
                     appCMSPresenter.editWatchlist(data.getGist().getId(),
                             addToWatchlistResult -> {
                                 adapterData.remove(data);

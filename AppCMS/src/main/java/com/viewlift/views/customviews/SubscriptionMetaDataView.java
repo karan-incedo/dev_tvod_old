@@ -185,7 +185,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 jsonValueKeyMap,
                 appCMSPresenter,
                 false,
-                "");
+                "",
+                component.getId());
         if (componentViewResult.componentView instanceof TextView) {
             ((TextView) componentViewResult.componentView).setText("Device(s)");
             componentViewResult.componentView.setLayoutParams(gridLayoutParams);
@@ -205,7 +206,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                     jsonValueKeyMap,
                     appCMSPresenter,
                     false,
-                    "");
+                    "",
+                    component.getId());
             if (componentViewResult.componentView instanceof TextView) {
                 ((TextView) componentViewResult.componentView).setText(String.valueOf(numSupportedDevices));
                 componentViewResult.componentView.setLayoutParams(gridLayoutParams);
@@ -234,7 +236,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 jsonValueKeyMap,
                 appCMSPresenter,
                 false,
-                "");
+                "",
+                component.getId());
         View componentView = componentViewResult.componentView;
         if (componentView != null) {
             AppCMSUIKeyType componentKeyType = jsonValueKeyMap.get(subComponent.getKey());
@@ -289,12 +292,12 @@ public class SubscriptionMetaDataView extends LinearLayout {
                     break;
             }
 
-            Log.d(TAG, "Created child component: " +
-                    featureDetail.getTextToDisplay() +
-                    " - " +
-                    subComponent.getKey() +
-                    " - " +
-                    componentView.getClass().getName());
+            //Log.d(TAG, "Created child component: " +
+//                    featureDetail.getTextToDisplay() +
+//                    " - " +
+//                    subComponent.getKey() +
+//                    " - " +
+//                    componentView.getClass().getName());
         }
         return componentView;
     }

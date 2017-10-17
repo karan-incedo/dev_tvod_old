@@ -174,7 +174,7 @@ import com.google.android.exoplayer2.util.Util;
       } else if (type == TYPE_INTERNAL) {
         return parseInternalAttribute(ilst, endPosition);
       }
-      Log.d(TAG, "Skipped unknown metadata entry: " + Atom.getAtomTypeString(type));
+      //Log.d(TAG, "Skipped unknown metadata entry: " + Atom.getAtomTypeString(type));
       return null;
     } finally {
       ilst.setPosition(endPosition);

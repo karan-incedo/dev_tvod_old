@@ -26,7 +26,7 @@ public class GoogleCancelSubscriptionCall {
     }
 
     public void cancelSubscription(String url, String accessToken) {
-        Log.d(TAG, "Cancelling subscription: " + url);
+        //Log.d(TAG, "Cancelling subscription: " + url);
         authHeaders.clear();
         authHeaders.put("Authorization", accessToken);
         googleCancelSubscriptionRest.sendCancelSubscription(url, authHeaders);
