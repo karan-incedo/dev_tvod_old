@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -1070,6 +1071,10 @@ public class AppCMSPresenter {
         if (!isNetworkConnected() && !isVideoOffline) { //checking isVideoOffline here to fix SVFA-1431 in offline mode
             // Fix of SVFA-1435
             if (actionType == AppCMSActionType.CLOSE) {
+                if (pagePath == null) {
+                    currentActivity.finish();
+                    return false;
+                }
                 sendCloseOthersAction(null, true);
                 return false;
             }
@@ -1286,6 +1291,20 @@ public class AppCMSPresenter {
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
+                    if (pagePath == null) {
+                        NavigationPrimary homePageNav=findHomePageNavItem();
+                        if (navigateToPage(homePageNav.getPageId(),
+                                homePageNav.getTitle(),
+                                homePageNav.getUrl(),
+                                false,
+                                true,
+                                false,
+                                true,
+                                false,
+                                null)) {
+                            return true;
+                        }
+                    }
                     sendCloseOthersAction(null, true);
                 } else if (actionType == AppCMSActionType.LOGIN) {
                     //Log.d(TAG, "Login action selected: " + extraData[0]);
@@ -1816,7 +1835,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void launchResetPasswordTVPage( AppCMSPageUI appCMSPageUI) {
+    public void launchResetPasswordTVPage(AppCMSPageUI appCMSPageUI) {
         if (currentActivity != null && !cancelAllLoads) {
             cancelInternalEvents();
 
@@ -3398,7 +3417,7 @@ public class AppCMSPresenter {
         File storagePath = null;
         if (!getUserDownloadLocationPref() &&
                 (getStorageDirectories(currentActivity) == null &&
-                getStorageDirectories(currentActivity).length == 0)) {
+                        getStorageDirectories(currentActivity).length == 0)) {
             storagePath = Environment.getExternalStorageDirectory();
         } else {
             if (getStorageDirectories(currentActivity) != null &&
@@ -8631,7 +8650,7 @@ public class AppCMSPresenter {
                                 //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
                                 Observable.just((AppCMSMain) null).subscribe(readyAction);
                             }
-                });
+                        });
             } else {
                 try {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
@@ -8718,7 +8737,7 @@ public class AppCMSPresenter {
                                             appCMSMain.getAndroid()))
                                     .loadFromFile(appCMSMain.shouldLoadFromFile())
                                     .build();
-                    //Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
+//                    Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
                     new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
                         try {
                             if (appCMSAndroidUI == null ||

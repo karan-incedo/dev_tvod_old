@@ -28,7 +28,7 @@
             android:name=".views.activity.AppCMSPageActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustPan|stateHidden">
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value="com.viewlift.views.activity.AppCMSSearchActivity" />
