@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,8 +117,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
                         o2.getAddedDate()));
             } else if (isHistory) {
-                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getUpdateDate(),
-                        o2.getUpdateDate()));
+                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
+                        o2.getGist().getUpdateDate()));
 
                 // To make the last watched item appear at the top of the list
                 Collections.reverse(adapterData);
@@ -378,7 +377,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
-        long lastWatched = contentDatum.getUpdateDate();
+        long lastWatched = contentDatum.getGist().getUpdateDate();
 
         long seconds = TimeUnit.MILLISECONDS.toSeconds(currentTime - lastWatched);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);
@@ -546,13 +545,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     @Override
-    public void setModuleId(String moduleId) {
-        this.moduleId = moduleId;
+    public String getModuleId() {
+        return moduleId;
     }
 
     @Override
-    public String getModuleId() {
-        return moduleId;
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
