@@ -470,14 +470,18 @@ public class CastServiceProvider {
                             null);
                 }
             } else {
-                castDisconnectDialog = new CastDisconnectDialog(mActivity);
+                try {
+                    castDisconnectDialog = new CastDisconnectDialog(mActivity);
 
-                if (mCastHelper.mSelectedDevice == null && mActivity != null) {
-                    castChooserDialog.setRoutes(mCastHelper.routes);
-                    castChooserDialog.show();
-                } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
-                    castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
-                    castDisconnectDialog.show();
+                    if (mCastHelper.mSelectedDevice == null && mActivity != null) {
+                        castChooserDialog.setRoutes(mCastHelper.routes);
+                        castChooserDialog.show();
+                    } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null && mActivity != null) {
+                        castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
+                        castDisconnectDialog.show();
+                    }
+                } catch (Exception e) {
+
                 }
             }
         });
