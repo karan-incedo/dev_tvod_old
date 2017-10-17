@@ -346,9 +346,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 try {
-                    if (binder.getContentData().getGist().getDownloadStatus() != null &&
+                    if (((binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL &&
+                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
+                            binder.getContentData().getGist().getDownloadStatus() == null) &&
                             (activeNetwork == null ||
                             !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
@@ -356,9 +357,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 false, () -> closePlayer());
                     }
                 } catch (Exception e) {
-                    if (binder.getContentData().getGist().getDownloadStatus() != null &&
+                    if ((binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
+                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
+                            binder.getContentData().getGist().getDownloadStatus() == null) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer());
