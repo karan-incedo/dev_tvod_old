@@ -86,7 +86,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
         switch (uriMatcher.match(uri)) {
             case 1:
             case 2:
-                Log.d(TAG, "Performing a search of Viewlift films");
+                //Log.d(TAG, "Performing a search of Viewlift films");
                 if (selectionArgs != null &&
                         selectionArgs.length > 0 &&
                         !TextUtils.isEmpty(appCMSSearchUrlData.getBaseUrl()) &&
@@ -95,11 +95,11 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                             appCMSSearchUrlData.getBaseUrl(),
                             appCMSSearchUrlData.getSiteName(),
                             selectionArgs[0]);
-                    Log.d(TAG, "Search URL: " + url);
+                    //Log.d(TAG, "Search URL: " + url);
                     try {
                         List<AppCMSSearchResult> searchResultList = appCMSSearchCall.call(appCMSSearchUrlData.getApiKey(), url);
                         if (searchResultList != null) {
-                            Log.d(TAG, "Search results received (" + searchResultList.size() + "): ");
+                            //Log.d(TAG, "Search results received (" + searchResultList.size() + "): ");
                             cursor = new MatrixCursor(SUGGESTION_COLUMN_NAMES, searchResultList.size());
 
                             for (int i = 0; i < searchResultList.size(); i++) {
@@ -120,18 +120,18 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         searchHintResult};
 
                                 cursor.addRow(rowResult);
-                                Log.d(TAG, searchResultList.get(i).getGist().getTitle());
-                                Log.d(TAG, String.valueOf(searchResultList.get(i).getGist().getRuntime())
-                                        + " seconds");
+                                //Log.d(TAG, searchResultList.get(i).getGist().getTitle());
+                                //Log.d(TAG, String.valueOf(searchResultList.get(i).getGist().getRuntime())
+//                                        + " seconds");
                             }
                         } else {
-                            Log.d(TAG, "No search results found");
+                            //Log.d(TAG, "No search results found");
                         }
                     } catch (Exception e) {
-                        Log.e(TAG, "Received exception: " + e.getMessage());
+                        //Log.e(TAG, "Received exception: " + e.getMessage());
                     }
                 } else {
-                    Log.d(TAG, "Could not retrieved results - search content provider has not been injected");
+                    //Log.d(TAG, "Could not retrieved results - search content provider has not been injected");
                 }
                 break;
 

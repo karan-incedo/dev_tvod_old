@@ -4,8 +4,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 @UseStag
-public class PosterImage {
+public class PosterImage implements Serializable {
 
     @SerializedName("id")
     @Expose

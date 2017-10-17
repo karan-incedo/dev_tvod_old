@@ -81,7 +81,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                                                      try {
                                                          unregisterReceiver(networkConnectedReceiver);
                                                      } catch (Exception e) {
-                                                         Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
+                                                         //Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
                                                      }
                                                      finish();
                                                      timerScheduled = false;
@@ -99,7 +99,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         try {
             unregisterReceiver(presenterCloseActionReceiver);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to unregister Close Action Receiver");
+            //Log.e(TAG, "Failed to unregister Close Action Receiver");
         }
     }
 
@@ -121,7 +121,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to unregister Network Connectivity Receiver");
+            //Log.e(TAG, "Failed to unregister Network Connectivity Receiver");
         }
     }
 
@@ -133,7 +133,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
             ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
             ((AppCMSApplication) getApplication()).setCloseApp(this);
         } catch (Exception e) {
-            Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
+            //Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
         }
         finish();
     }

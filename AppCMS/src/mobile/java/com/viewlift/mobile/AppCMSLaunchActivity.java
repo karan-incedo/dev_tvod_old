@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.appsflyer.AppsFlyerLib;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
@@ -23,6 +24,8 @@ import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
+
+import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
@@ -45,8 +48,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         handleIntent(getIntent());
 
-        Log.d(TAG, "Launching application from main.json");
-        Log.d(TAG, "Search query (optional): " + searchQuery);
+        //Log.d(TAG, "Launching application from main.json");
+        //Log.d(TAG, "Search query (optional): " + searchQuery);
         appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
 
@@ -68,7 +71,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        Log.d(TAG, "onCreate()");
+        //Log.d(TAG, "onCreate()");
         setCasting();
         setFullScreenFocus();
 
@@ -92,7 +95,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         };
 
         UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
-        Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
+        //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
+
+        sendAnalytics();
     }
 
     @Override
@@ -106,7 +111,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         try {
             unregisterReceiver(presenterCloseActionReceiver);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to unregister Close Action Receiver");
+            //Log.e(TAG, "Failed to unregister Close Action Receiver");
         }
     }
 
@@ -115,7 +120,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             mCastHelper = CastHelper.getInstance(getApplicationContext());
             mCastHelper.initCastingObj();
         } catch (Exception e) {
-            Log.e(TAG, "Error initializing casting: " + e.getMessage());
+            //Log.e(TAG, "Error initializing casting: " + e.getMessage());
         }
     }
 
@@ -123,9 +128,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (intent != null) {
             String action = intent.getAction();
             final Uri data = intent.getData();
-            Log.i(TAG, "Received intent action: " + action);
+            //Log.i(TAG, "Received intent action: " + action);
             if (data != null) {
-                Log.i(TAG, "Received intent data: " + data.toString());
+                //Log.i(TAG, "Received intent data: " + data.toString());
                 searchQuery = data;
                 AppCMSPresenterComponent appCMSPresenterComponent =
                         ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
@@ -163,7 +168,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                         AppCMSPresenter.PlatformType.ANDROID,
                         forceReloadFromNetwork);
             } catch (Exception e) {
-                Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
+                //Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
             }
         }
     }
@@ -174,7 +179,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to unregister network receiver");
+            //Log.e(TAG, "Failed to unregister network receiver");
         }
     }
 
@@ -196,8 +201,13 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
             ((AppCMSApplication) getApplication()).setCloseApp(this);
         } catch (Exception e) {
-            Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
+            //Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
         }
         finish();
+    }
+
+    private void sendAnalytics() {
+        AppsFlyerLib.getInstance().startTracking(getApplication(), getString(R.string.app_cms_appsflyer_dev_key));
+        trackInstallationEvent(getApplication());
     }
 }

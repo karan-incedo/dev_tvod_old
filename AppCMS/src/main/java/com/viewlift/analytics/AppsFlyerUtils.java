@@ -109,7 +109,7 @@ public class AppsFlyerUtils {
 
 //        } else {
 //            AppsFlyerLib.getInstance().trackEvent(context, CANCEL_SUBSCRIPTION_EVENT_NAME, eventValue);
-//            Log.d("AppsFlyer__", "Cancel Sub Event");
+//            //Log.d("AppsFlyer__", "Cancel Sub Event");
         }
     }
 

@@ -5,10 +5,11 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @UseStag
-public class ModuleList implements ModuleWithComponents {
+public class ModuleList implements ModuleWithComponents, Serializable {
 
     @SerializedName("id")
     @Expose

@@ -113,8 +113,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     viewHolder.itemView.setOnClickListener(v -> {
                         setClickedItemPosition(i);
                         notifyDataSetChanged();
-                        Log.d(TAG, "Navigating to page with Title position: " + i);
-                        Log.d(TAG, "Navigating to page with Title: " + navigationPrimary.getTitle());
+                        //Log.d(TAG, "Navigating to page with Title position: " + i);
+                        //Log.d(TAG, "Navigating to page with Title: " + navigationPrimary.getTitle());
                         AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationPrimary.getTitle());
                         if (titleKey == null) {
                             titleKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -132,10 +132,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 true,
                                 false,
                                 null)) {
-                            Log.e(TAG, "Could not navigate to page with Title: " +
-                                    navigationPrimary.getTitle() +
-                                    " Id: " +
-                                    navigationPrimary.getPageId());
+                            //Log.e(TAG, "Could not navigate to page with Title: " +
+//                                    navigationPrimary.getTitle() +
+//                                    " Id: " +
+//                                    navigationPrimary.getPageId());
                         } else {
                             itemSelected = true;
                         }
@@ -167,7 +167,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.itemView.setOnClickListener(v -> {
                             setClickedItemPosition(i);
                             notifyDataSetChanged();
-                            Log.d(TAG, "Navigating to page with Title position: " + i);
+                            //Log.d(TAG, "Navigating to page with Title position: " + i);
 
                             appCMSPresenter.cancelInternalEvents();
                             AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationUser.getTitle());
@@ -232,8 +232,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                             false,
                                             false,
                                             null)) {
-                                        Log.e(TAG, "Could not navigate to page with Title: "
-                                                + navigationUser.getTitle() + " Id: " + navigationUser.getPageId());
+                                        //Log.e(TAG, "Could not navigate to page with Title: "
+//                                                + navigationUser.getTitle() + " Id: " + navigationUser.getPageId());
                                     }
                                     break;
                             }
@@ -267,7 +267,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.itemView.setOnClickListener(v -> {
                             setClickedItemPosition(i);
                             notifyDataSetChanged();
-                            Log.d(TAG, "Navigating to page with Title position: " + i);
+                            //Log.d(TAG, "Navigating to page with Title position: " + i);
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
                             if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
@@ -279,10 +279,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     false,
                                     false,
                                     null)) {
-                                Log.e(TAG, "Could not navigate to page with Title: " +
-                                        navigationFooter.getTitle() +
-                                        " Id: " +
-                                        navigationFooter.getPageId());
+                                //Log.e(TAG, "Could not navigate to page with Title: " +
+//                                        navigationFooter.getTitle() +
+//                                        " Id: " +
+//                                        navigationFooter.getPageId());
                             }
                         });
                     }

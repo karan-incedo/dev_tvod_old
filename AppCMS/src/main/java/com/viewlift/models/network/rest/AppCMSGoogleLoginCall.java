@@ -6,6 +6,7 @@ package com.viewlift.models.network.rest;
 
 import android.support.annotation.NonNull;
 
+import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginRequest;
 import com.viewlift.models.data.appcms.ui.authentication.GoogleLoginResponse;
 
@@ -21,10 +22,12 @@ public class AppCMSGoogleLoginCall {
     private static final String TAG = "AppCMSGoogleLoginTAG_";
 
     private AppCMSGoogleLoginRest appCMSGoogleLoginRest;
+    private final Gson gson;
 
     @Inject
-    public AppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest) {
+    public AppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest, Gson gson) {
         this.appCMSGoogleLoginRest = appCMSGoogleLoginRest;
+        this.gson = gson;
     }
 
     public void call(String url,
@@ -37,7 +40,18 @@ public class AppCMSGoogleLoginCall {
             @Override
             public void onResponse(@NonNull Call<GoogleLoginResponse> call,
                                    @NonNull Response<GoogleLoginResponse> response) {
-                Observable.just(response.body()).subscribe(responseAction1);
+                if (response.body() != null) {
+                    Observable.just(response.body()).subscribe(responseAction1);
+                } else if (response.errorBody() != null) {
+                    try {
+                        GoogleLoginResponse googleLoginResponse =
+                                gson.fromJson(response.errorBody().toString(),
+                                        GoogleLoginResponse.class);
+                        Observable.just(googleLoginResponse).subscribe(responseAction1);
+                    } catch (Exception e) {
+                        Observable.just((GoogleLoginResponse) null).subscribe(responseAction1);
+                    }
+                }
             }
 
             @Override

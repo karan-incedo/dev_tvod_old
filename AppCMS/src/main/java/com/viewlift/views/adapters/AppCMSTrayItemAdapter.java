@@ -67,6 +67,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
     private InternalEvent<Integer> showRemoveAllButtonEvent;
 
+    private String moduleId;
+
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
                                  List<Component> components,
@@ -150,7 +152,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (adapterData != null && !adapterData.isEmpty()) {
+        if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
             ContentDatum contentDatum = adapterData.get(position);
 
             StringBuffer imageUrl;
@@ -194,7 +196,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                             contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
                                                         }
                                                     } catch (Exception e) {
-                                                        Log.e(TAG, e.getMessage());
+                                                        //Log.e(TAG, e.getMessage());
                                                     }
 
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
@@ -476,7 +478,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private void playDownloaded(ContentDatum data, Context context, int position) {
         List<String> relatedVideoIds = getListOfUpcomingMovies(position);
-        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED) {
+        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
                     null,
                     false,
@@ -495,7 +498,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         extraData[1] = hlsUrl;
         extraData[2] = data.getGist() != null ? data.getGist().getId() : null;
         extraData[3] = "true"; // to know that this is an offline video
-        Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
+        //Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
 
         if (permalink == null ||
                 hlsUrl == null ||
@@ -509,13 +512,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         false,
                         -1,
                         relatedVideoIds)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " permalink: " +
-                    permalink +
-                    " action: " +
-                    action +
-                    " hlsUrl: " +
-                    hlsUrl);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action +
+//                    " hlsUrl: " +
+//                    hlsUrl);
         }
     }
 
@@ -539,6 +542,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         for (OnInternalEvent internalEvent : receivers) {
             internalEvent.receiveEvent(event);
         }
+    }
+
+    @Override
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    @Override
+    public String getModuleId() {
+        return moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
@@ -749,6 +762,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     listView.invalidate();
                 }
             });
+        } else if (isDownload) {
+            notifyDataSetChanged();
         }
     }
 
@@ -764,7 +779,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void click(ContentDatum data) {
-        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
         String permalink = data.getGist().getPermalink();
         String action = defaultAction;
         String title = data.getGist().getTitle();
@@ -781,7 +796,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             relatedVideos = data.getContentDetails().getRelatedVideoIds();
         }
 
-        Log.d(TAG, "Launching " + permalink + ": " + action);
+        //Log.d(TAG, "Launching " + permalink + ": " + action);
 
         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                 action,
@@ -791,13 +806,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 false,
                 -1,
                 relatedVideos)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " permalink: " +
-                    permalink +
-                    " action: " +
-                    action +
-                    " hlsUrl: " +
-                    hlsUrl);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action +
+//                    " hlsUrl: " +
+//                    hlsUrl);
         }
     }
 
@@ -807,9 +822,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 null,
                 data.getGist().getWatchedTime(),
                 null)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " action: " +
-                    action);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " action: " +
+//                    action);
         }
     }
 
@@ -818,12 +833,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void showDelete(ContentDatum contentDatum) {
-        Log.d(TAG, "Show delete button");
+        //Log.d(TAG, "Show delete button");
     }
 
     private void delete(final ContentDatum contentDatum, int position) {
         if ((isHistory) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.editHistory(contentDatum.getGist().getId(),
                     appCMSDeleteHistoryResult -> {
                         adapterData.remove(contentDatum);
@@ -832,7 +847,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting download item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting download item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
                     appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message),
                     true, () ->
@@ -848,7 +863,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
                     addToWatchlistResult -> {
                         adapterData.remove(contentDatum);

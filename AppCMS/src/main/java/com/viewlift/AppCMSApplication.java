@@ -3,9 +3,7 @@ package com.viewlift;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -19,8 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
-
-import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -54,7 +50,6 @@ public class AppCMSApplication extends Application {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
-                AppsFlyerUtils.appOpenEvent(activity);
                 if (closeAppMap.containsKey(activity)) {
                     activity.finish();
                     closeAppMap.remove(activity);
@@ -63,7 +58,7 @@ public class AppCMSApplication extends Application {
 
             @Override
             public void onActivityStarted(Activity activity) {
-                Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
+                //Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
             }
 
             @Override
@@ -73,13 +68,13 @@ public class AppCMSApplication extends Application {
 
             @Override
             public void onActivityPaused(Activity activity) {
-                Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
+                //Log.d(TAG, "Activity being paused: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
-                Log.d(TAG, "Activity being stopped: " + activity.getLocalClassName());
+                //Log.d(TAG, "Activity being stopped: " + activity.getLocalClassName());
             }
 
             @Override
@@ -89,7 +84,7 @@ public class AppCMSApplication extends Application {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-                Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
+                //Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
                 appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
                 if (closeAppMap.containsKey(activity)) {
@@ -103,8 +98,6 @@ public class AppCMSApplication extends Application {
 
     private void sendAnalytics() {
         Fabric.with(this, new Crashlytics());
-        AppsFlyerLib.getInstance().startTracking(this, getString(R.string.app_cms_appsflyer_dev_key));
-        trackInstallationEvent(this);
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

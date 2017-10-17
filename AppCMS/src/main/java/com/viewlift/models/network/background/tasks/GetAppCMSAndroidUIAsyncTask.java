@@ -61,9 +61,9 @@ public class GetAppCMSAndroidUIAsyncTask {
                         try {
                             return call.call(params.url, params.loadFromFile, 0);
                         } catch (IOException e) {
-                            Log.e(TAG, "Error retrieving AppCMS Android file with params " +
-                                    params.toString() + ": " +
-                                    e.getMessage());
+                            //Log.e(TAG, "Error retrieving AppCMS Android file with params " +
+//                                    params.toString() + ": " +
+//                                    e.getMessage());
                         }
                     }
                     return null;

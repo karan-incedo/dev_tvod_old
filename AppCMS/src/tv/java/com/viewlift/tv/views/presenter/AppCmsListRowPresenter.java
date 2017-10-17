@@ -101,7 +101,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             boolean isCarousal = customHeaderItem.ismIsCarousal();
 
-            Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString());
+            //Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString());
             if(isCarousal){
                 headerTitleContainer.setVisibility(View.GONE);
                 headerTitle.setVisibility(View.GONE);

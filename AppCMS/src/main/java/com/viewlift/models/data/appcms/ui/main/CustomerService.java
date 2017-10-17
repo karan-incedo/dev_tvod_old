@@ -1,10 +1,12 @@
 package com.viewlift.models.data.appcms.ui.main;
 
+import java.io.Serializable;
+
 /**
  * Created by nitin.tyagi on 9/11/2017.
  */
 
-public class CustomerService {
+public class CustomerService implements Serializable {
 
     String email;
 

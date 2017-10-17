@@ -37,7 +37,7 @@ public class StyleValue {
         }
 
         if ( value.endsWith("%") ) {
-            Log.d("StyleValue", "translating percentage " + value );
+            //Log.d("StyleValue", "translating percentage " + value );
             try {
                 final int percentage = Integer.parseInt( value.substring(0, value.length() -1 ) );
                 final float floatValue = percentage / 100f;

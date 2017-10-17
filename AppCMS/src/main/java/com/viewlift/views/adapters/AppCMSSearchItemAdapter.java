@@ -98,7 +98,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
                 String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
                 String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
-                Log.d(TAG, "Launching " + permalink + ":" + action);
+                //Log.d(TAG, "Launching " + permalink + ":" + action);
                 if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                         action,
                         title,
@@ -107,11 +107,11 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                         true,
                         0,
                         null)) {
-                    Log.e(TAG, "Could not launch action: " +
-                            " permalink: " +
-                            permalink +
-                            " action: " +
-                            action);
+//                    //Log.e(TAG, "Could not launch action: " +
+//                            " permalink: " +
+//                            permalink +
+//                            " action: " +
+//                            action);
                 }
                 //context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             }

@@ -9,4 +9,6 @@ public interface OnInternalEvent {
     void sendEvent(InternalEvent<?> event);
     void receiveEvent(InternalEvent<?> event);
     void cancel(boolean cancel);
+    void setModuleId(String moduleId);
+    String getModuleId();
 }

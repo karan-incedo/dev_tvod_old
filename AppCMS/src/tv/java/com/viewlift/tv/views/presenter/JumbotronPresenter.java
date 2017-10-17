@@ -39,7 +39,7 @@ public class JumbotronPresenter extends CardPresenter {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
-            Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
+            //Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
 
             FrameLayout frameLayout = new FrameLayout(parent.getContext());
             FrameLayout.LayoutParams layoutParams;
@@ -56,7 +56,7 @@ public class JumbotronPresenter extends CardPresenter {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-      Log.d("Presenter" , " CardPresenter onBindViewHolder******");
+      //Log.d("Presenter" , " CardPresenter onBindViewHolder******");
         BrowseFragmentRowData rowData = (BrowseFragmentRowData)item;
         ContentDatum contentData = rowData.contentData;
         List<Component> componentList = rowData.uiComponentList;

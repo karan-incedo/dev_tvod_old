@@ -61,11 +61,11 @@ public class AppCMSAddToWatchlistCall {
                 @Override
                 public void onFailure(@NonNull Call<AppCMSAddToWatchlistResult> call,
                                       @NonNull Throwable t) {
-                    Log.e(TAG, "onFailure: " + t.getMessage());
+                    //Log.e(TAG, "onFailure: " + t.getMessage());
                 }
             });
         } catch (Exception e) {
-            Log.e(TAG, "Failed to execute add to watchlist " + url + ": " + e.toString());
+            //Log.e(TAG, "Failed to execute add to watchlist " + url + ": " + e.toString());
         }
     }
 }
