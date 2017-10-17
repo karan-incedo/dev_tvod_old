@@ -275,6 +275,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     String bgColor = binder.getBgColor();
                     int playIndex = binder.getCurrentPlayingVideoIndex();
                     long watchedTime = intent.getLongExtra(getString(R.string.watched_time_key), 0L);
+                    long duration = binder.getContentData().getGist().getRuntime();
+                    if (duration <= watchedTime) {
+                        watchedTime = 0L;
+                    }
                     if (gist.getPrimaryCategory() != null && gist.getPrimaryCategory().getTitle() != null) {
                         primaryCategory = gist.getPrimaryCategory().getTitle();
                     }
@@ -354,7 +358,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-                                false, () -> closePlayer());
+                                false, () -> closePlayer(),
+                                null);
                     }
                 } catch (Exception e) {
                     if ((binder.getContentData().getGist().getDownloadStatus() != null &&
@@ -363,7 +368,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             binder.getContentData().getGist().getDownloadStatus() == null) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-                                false, () -> closePlayer());
+                                false, () -> closePlayer(),
+                                null);
                     }
                 }
             }
@@ -386,6 +392,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                     false,
+                    null,
                     null);
             finish();
         }

@@ -91,6 +91,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                 }
             }
         };
+
     }
 
     @Override

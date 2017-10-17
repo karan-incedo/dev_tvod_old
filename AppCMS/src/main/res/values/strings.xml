@@ -408,6 +408,7 @@
     <string name="signed_policy_key">signed_policy</string>
     <string name="signed_signature_key">signed_signature</string>
     <string name="signed_keypairid_key">signed_keypairid</string>
+    <string name="refreshing_data_text">Refreshing Data</string>
 </resources>
 
 

@@ -187,14 +187,17 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
-                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                                    () -> appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID),
+                                                    null);
                                             return;
                                         }
                                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                                 appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
                                                 true,
                                                 () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                                        null, null, false));
+                                                        null, null, false),
+                                                null);
                                         return;
                                     }
                                     appCMSPresenter.getCurrentActivity()
@@ -206,14 +209,15 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 case ANDROID_HISTORY_NAV_KEY:
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
-                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null, null);
                                             return;
                                         }
                                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                                 appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
                                                 true,
                                                 () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                                        null, null, false));
+                                                        null, null, false),
+                                                null);
                                         return;
                                     }
                                     appCMSPresenter.getCurrentActivity()
@@ -304,7 +308,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                 () -> {
                                     appCMSPresenter.cancelInternalEvents();
                                     appCMSPresenter.logout();
-                                });
+                                },
+                                null);
 
                     }
                 });

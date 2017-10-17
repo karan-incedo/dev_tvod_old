@@ -896,7 +896,7 @@ public class ViewCreator {
         }
 
         if (pageView == null || pageView.getContext() != context) {
-            pageView = new PageView(context, appCMSPageUI);
+            pageView = new PageView(context, appCMSPageUI, appCMSPresenter);
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
             if (appCMSPresenter.isPageAVideoPage(screenName)) {
                 appCMSPresenter.getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
@@ -911,7 +911,6 @@ public class ViewCreator {
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
             pageView.getChildrenContainer().removeAllViews();
-            Runtime.getRuntime().gc();
             componentViewResult = new ComponentViewResult();
             createPageView(context,
                     appCMSPageUI,
@@ -1695,7 +1694,7 @@ public class ViewCreator {
                                 if (appCMSPresenter.isRemovableSDCardAvailable()) {
                                     appCMSPresenter.setPreferedStorageLocationSDCard(true);
                                 } else {
-                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null);
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null, null);
                                     buttonView.setChecked(false);
                                 }
                             } else {
@@ -1876,6 +1875,7 @@ public class ViewCreator {
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+//                        componentViewResult.componentView.setPadding(0, 0, 0, 0);
                         ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setOnClickListener(v -> {
@@ -2846,6 +2846,7 @@ public class ViewCreator {
                                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE,
                                                 null,
                                                 false,
+                                                null,
                                                 null);
                                         buttonView.setChecked(false);
                                     }
@@ -2895,6 +2896,18 @@ public class ViewCreator {
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
+            for (Module moduleAPI : appCMSPageAPI.getModules()) {
+                if (module.getId().equals(moduleAPI.getId())) {
+
+                    return moduleAPI;
+                } else if (jsonValueKeyMap.get(module.getType()) != null &&
+                        jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
+                        jsonValueKeyMap.get(module.getType()) ==
+                                jsonValueKeyMap.get(moduleAPI.getModuleType())) {
+                    return moduleAPI;
+                }
+            }
+
             if (jsonValueKeyMap.get(module.getView()) != null) {
                 switch (jsonValueKeyMap.get(module.getView())) {
                     case PAGE_HISTORY_MODULE_KEY:
@@ -2910,18 +2923,6 @@ public class ViewCreator {
 
                     default:
                         break;
-                }
-            }
-
-            for (Module moduleAPI : appCMSPageAPI.getModules()) {
-                if (module.getId().equals(moduleAPI.getId())) {
-
-                    return moduleAPI;
-                } else if (jsonValueKeyMap.get(module.getType()) != null &&
-                        jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
-                        jsonValueKeyMap.get(module.getType()) ==
-                                jsonValueKeyMap.get(moduleAPI.getModuleType())) {
-                    return moduleAPI;
                 }
             }
         }
@@ -3072,14 +3073,17 @@ public class ViewCreator {
             addClickListener = v -> {
                 if (!appCMSPresenter.isNetworkConnected()) {
                     if (!appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                () -> appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID),
+                                null);
                         return;
                     }
                     appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                             appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
                             true,
                             () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                    null, null, false));
+                                    null, null, false),
+                            null);
                     return;
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||

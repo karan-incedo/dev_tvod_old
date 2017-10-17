@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -83,5 +84,20 @@ public class GetAppCMSAPIAsyncTask {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((result) -> Observable.just(result).subscribe(readyAction));
+    }
+
+    public void deleteAll(Action0 onDelete) {
+        Observable
+                .fromCallable(() -> {
+                    call.deleteAllFiles();
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((t) -> {
+                    if (onDelete != null) {
+                        onDelete.call();
+                    }
+                });
     }
 }

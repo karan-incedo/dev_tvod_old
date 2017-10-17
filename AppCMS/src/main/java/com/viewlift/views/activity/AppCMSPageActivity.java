@@ -172,6 +172,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver wifiConnectedReceiver;
     private BroadcastReceiver downloadReceiver;
     private BroadcastReceiver notifyUpdateListsReceiver;
+    private BroadcastReceiver refreshPageDataReceiver;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -343,13 +344,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         notifyUpdateListsReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Toast.makeText(AppCMSPageActivity.this, "Download has completed", Toast.LENGTH_LONG).show();
                 List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
                 for (Fragment fragment : fragmentList) {
                     if (fragment instanceof AppCMSPageFragment) {
                         ((AppCMSPageFragment) fragment).updateDataLists();
                     }
                 }
+            }
+        };
+
+        refreshPageDataReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                refreshPageData();
             }
         };
 
@@ -375,6 +382,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         registerReceiver(notifyUpdateListsReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
+        registerReceiver(refreshPageDataReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
 
         resumeInternalEvents = false;
 
@@ -633,23 +642,33 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.requestLayout();
             } else {
                 newVersionUpgradeAvailable.setVisibility(View.GONE);
-                if (appCMSBinderMap != null &&
-                        appCMSBinderStack != null &&
-                        !appCMSBinderStack.isEmpty()) {
-                    AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                    if (appCMSBinder != null) {
-                        pageLoading(true);
-                        AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
-                        if (appCMSPageUI != null) {
-                            appCMSBinder.setAppCMSPageUI(appCMSPageUI);
-                        }
-                        updateData(appCMSBinder, () -> {
-                            appCMSPresenter.sendRefreshPageAction();
-                        });
-                    }
-                }
+                refreshPageData();
             }
         });
+    }
+
+    private void refreshPageData() {
+        pageLoading(true);
+        if (appCMSBinderMap != null &&
+                appCMSBinderStack != null &&
+                !appCMSBinderStack.isEmpty()) {
+            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+            if (appCMSBinder != null) {
+                AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
+                if (appCMSPageUI != null) {
+                    appCMSBinder.setAppCMSPageUI(appCMSPageUI);
+                } else {
+                    pageLoading(false);
+                }
+                updateData(appCMSBinder, () -> {
+                    appCMSPresenter.sendRefreshPageAction();
+                });
+            } else {
+                pageLoading(false);
+            }
+        } else {
+            pageLoading(false);
+        }
     }
 
     @Override
@@ -712,6 +731,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(wifiConnectedReceiver);
         unregisterReceiver(downloadReceiver);
         unregisterReceiver(notifyUpdateListsReceiver);
+        unregisterReceiver(refreshPageDataReceiver);
 
         if (inAppBillingServiceConn != null) {
             try {
@@ -845,6 +865,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SIGNIN,
                             message,
                             false,
+                            null,
                             null);
                 }
             }
@@ -1591,14 +1612,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     currentMenuTabIndex = searchPageIndex;
                     if (!appCMSPresenter.isNetworkConnected()) {
                         if (!appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                    () -> appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID),
+                                    null);
                             return;
                         }
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
                                 true,
                                 () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                        null, null, false));
+                                        null, null, false),
+                                null);
                         return;
                     }
                     selectNavItem(searchNavBarItemView);
@@ -1684,6 +1708,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 false,
                 0,
                 null);
+
+        appCMSPresenter.resetDeeplinkQuery();
     }
 
     private void updateData(AppCMSBinder appCMSBinder, Action0 readyAction) {
