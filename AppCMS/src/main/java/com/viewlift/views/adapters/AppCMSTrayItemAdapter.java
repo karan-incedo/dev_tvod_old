@@ -478,7 +478,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private void playDownloaded(ContentDatum data, Context context, int position) {
         List<String> relatedVideoIds = getListOfUpcomingMovies(position);
-        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED) {
+        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
                     null,
                     false,
@@ -762,11 +763,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
         } else if (isDownload) {
-            for (ContentDatum contentDatum : adapterData) {
-                if (appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId())) {
-                    contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
-                }
-            }
             notifyDataSetChanged();
         }
     }
