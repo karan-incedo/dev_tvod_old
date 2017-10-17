@@ -4790,6 +4790,9 @@ public class AppCMSPresenter {
                 launchErrorActivity(PlatformType.ANDROID);
             }
         }
+
+        deeplinkSearchQuery = null;
+
         return result;
     }
 

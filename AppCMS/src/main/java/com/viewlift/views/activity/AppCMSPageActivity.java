@@ -613,6 +613,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onResume();
         resume();
 
+        appCMSPresenter.setCancelAllLoads(false);
+
         appCMSPresenter.setCurrentActivity(this);
 //        Log.d(TAG, "onResume()");
         //Log.d(TAG, "checkForExistingSubscription()");
