@@ -2497,12 +2497,8 @@ public class AppCMSPresenter {
                         null);
                 return;
             }
-            showDialog(AppCMSPresenter.DialogType.NETWORK,
-                    getNetworkConnectivityDownloadErrorMsg(),
-                    true,
-                    () -> navigateToDownloadPage(getDownloadPageId(),
-                            null, null, false),
-                    () -> sendCloseOthersAction(null, true));
+            navigateToDownloadPage(getDownloadPageId(),
+                    null, null, false);
             return;
         }
 
@@ -6613,11 +6609,8 @@ public class AppCMSPresenter {
                 return;
             }
 
-            showDialog(DialogType.NETWORK,
-                    currentActivity.getString(R.string.app_cms_network_connectivity_error_message_download),
-                    true,
-                    () -> navigateToDownloadPage(getDownloadPageId(),
-                            null, null, launchActivity), null);
+            navigateToDownloadPage(getDownloadPageId(),
+                    null, null, launchActivity);
         } catch (Exception e) {
             launchErrorActivity(platformType);// Fix for SVFA-1435 after killing app
             //Log.d(TAG, e.getMessage());
@@ -8602,7 +8595,7 @@ public class AppCMSPresenter {
 
     public void refreshPages(Action0 onreadyAction) {
         //Log.d(TAG, "Refreshing pages");
-        if (currentActivity != null) {
+        if (currentActivity != null && launched) {
             //Log.d(TAG, "Refreshing main.json");
 
             try {
