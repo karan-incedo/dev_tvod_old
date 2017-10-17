@@ -5,7 +5,7 @@ def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 
-def final appVersionName = "2.0.90"
+def final appVersionName = "2.0.91"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -35,7 +35,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 122
+        versionCode 123
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -161,6 +161,7 @@ dependencies {
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
+    compile "com.android.support:multidex:1.0.1"
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
@@ -183,7 +184,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
-    mobileCompile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
+    compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
     tvCompile project(path: ':firetvcustomkeyboard')
     compile "com.android.support:percent:$rootProject.ext.androidsupportVersion"
