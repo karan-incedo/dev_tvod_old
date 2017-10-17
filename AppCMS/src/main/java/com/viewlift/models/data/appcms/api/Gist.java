@@ -249,7 +249,10 @@ public class Gist implements Serializable {
     }
 
     public DownloadStatus getDownloadStatus() {
-        return DownloadStatus.valueOf(downloadStatus);
+        if (downloadStatus != null) {
+            return DownloadStatus.valueOf(downloadStatus);
+        }
+        return DownloadStatus.STATUS_PENDING;
     }
 
     public void setDownloadStatus(DownloadStatus downloadStatus) {
