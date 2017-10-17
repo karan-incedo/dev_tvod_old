@@ -2471,15 +2471,21 @@ public class AppCMSPresenter {
     }
 
     public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
-        showLoadingDialog(true);
-        new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
-            if (currentActivity != null && sendRefreshPageDataAction) {
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
-            }
+        if (isNetworkConnected()) {
+            showLoadingDialog(true);
+            new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
+                if (currentActivity != null && sendRefreshPageDataAction) {
+                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+                }
+                if (onRefreshFinished != null) {
+                    onRefreshFinished.call();
+                }
+            });
+        } else {
             if (onRefreshFinished != null) {
                 onRefreshFinished.call();
             }
-        });
+        }
     }
 
     public void editWatchlist(final String filmId,
