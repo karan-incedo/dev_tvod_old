@@ -1028,7 +1028,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        if (updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.BLANK) {
+        if (updatedAppCMSBinder != null &&
+                updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.BLANK) {
             pageLoading(true);
         }
     }
