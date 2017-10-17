@@ -4,8 +4,10 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 @UseStag
-public class AppCMSMain {
+public class AppCMSMain implements Serializable {
 
     @SerializedName("id")
     @Expose
@@ -26,6 +28,7 @@ public class AppCMSMain {
     public String getInternalName() {
         return internalName;
     }
+
     @SerializedName("internalName")
     @Expose
     String internalName;
@@ -89,6 +92,7 @@ public class AppCMSMain {
     @SerializedName("appVersions")
     @Expose
     AppVersions appVersions;
+
     boolean loadFromFile;
 
     public String getFireTv() {
@@ -125,9 +129,11 @@ public class AppCMSMain {
     public CustomerService getCustomerService() {
         return customerService;
     }
+
     public void setCustomerService(CustomerService customerService) {
         this.customerService = customerService;
     }
+
     @SerializedName("customerService")
     @Expose
     CustomerService customerService;

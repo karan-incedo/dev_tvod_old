@@ -35,7 +35,6 @@ public class FacebookLoginResponse {
     @Expose
     boolean isSubscribed;
 
-
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -83,6 +82,4 @@ public class FacebookLoginResponse {
     public void setSubscribed(boolean subscribed) {
         isSubscribed = subscribed;
     }
-
-
 }

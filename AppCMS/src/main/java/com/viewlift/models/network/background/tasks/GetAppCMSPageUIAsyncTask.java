@@ -56,7 +56,7 @@ public class GetAppCMSPageUIAsyncTask {
                         try {
                             return call.call(params.url, params.timeStamp);
                         } catch (IOException e) {
-                            Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
+                            //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
                         }
                         return null;
                     })

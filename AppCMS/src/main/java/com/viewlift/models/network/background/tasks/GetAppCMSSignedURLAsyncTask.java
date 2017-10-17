@@ -57,9 +57,9 @@ public class GetAppCMSSignedURLAsyncTask {
                         try {
                             return appCMSSignedURLCall.call(params.authToken, params.url);
                         } catch (Exception e) {
-                            Log.e(TAG, "Error retrieving AppCMS Android file with params " +
-                                    params.toString() + ": " +
-                                    e.getMessage());
+                            //Log.e(TAG, "Error retrieving AppCMS Android file with params " +
+//                                    params.toString() + ": " +
+//                                    e.getMessage());
                         }
                     }
                     return null;

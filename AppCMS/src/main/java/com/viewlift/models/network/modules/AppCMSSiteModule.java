@@ -3,6 +3,7 @@ package com.viewlift.models.network.modules;
 import com.google.gson.Gson;
 import com.viewlift.models.network.rest.AppCMSSiteCall;
 import com.viewlift.models.network.rest.AppCMSSiteRest;
+
 import java.io.File;
 
 import javax.inject.Singleton;

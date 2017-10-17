@@ -81,13 +81,17 @@ public class WebViewActivity extends Activity {
 		accessCode = mainIntent.getStringExtra("accessCode") ;
 		merchantID = mainIntent.getStringExtra("merchantID") ;
 		cancelRedirectURL = mainIntent.getStringExtra("cancelRedirectURL") ;
+
 		deleteDatabase("webview.db");
 		deleteDatabase("webviewCache.db");
+
 		final WebView webview = (WebView) findViewById(R.id.webview);
 		webview.clearFormData();
 		webview.clearHistory();
 		webview.clearCache(true);
+
 		webview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+
 		clearCookies();
 
 		appCMSPresenter = ((AppCMSApplication) getApplication())
@@ -138,10 +142,14 @@ public class WebViewActivity extends Activity {
 			{
 				// process the html as needed by the app
 				String status = null;
-				if(html.indexOf("F")!=-1){
-					backPressFlag = false ;
+				if(html.indexOf("F")!=-1) {
+					backPressFlag = false;
 					status = "Transaction Declined!";
 					displaySuccessPaymentDialog("Transaction Failed!", "Retry Later");
+				} else if (html.contains("O")) {
+					backPressFlag = false;
+					displaySuccessPaymentDialog("Thank you for signing up on Hoichoi! We are processing your subscription and shall notify you via email.#hoyejak",
+							"OK");
 				}else if(html.indexOf("S")!=-1){
 					try {
 						backPressFlag = true ;
@@ -213,6 +221,9 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onPageFinished(WebView view, String url) {
 					super.onPageFinished(webview, url);
+
+					backPressFlag = false;
+
 					final Handler handler = new Handler();
 					handler.postDelayed(new Runnable() {
 						@Override
@@ -311,6 +322,7 @@ public class WebViewActivity extends Activity {
 			cookieSyncMngr.sync();
 		}
 	}
+
 	public String getRSAKey () {
 		String JsonResponse = null;
 		String JsonDATA = "";

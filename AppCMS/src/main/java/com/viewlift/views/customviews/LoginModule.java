@@ -303,7 +303,8 @@ public class LoginModule extends ModuleView {
                         jsonValueKeyMap,
                         appCMSPresenter,
                         false,
-                        "");
+                        "",
+                        moduleInfo.getId());
                 View componentView = componentViewResult.componentView;
                 if (componentView != null) {
                     float componentYAxis = getYAxis(getContext(),
@@ -335,7 +336,7 @@ public class LoginModule extends ModuleView {
                             componentView.setOnClickListener(new OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    Log.d(TAG, "Button clicked: " + component.getAction());
+                                    //Log.d(TAG, "Button clicked: " + component.getAction());
 
                                     if (!appCMSPresenter.isPageLoading() &&
                                             visibleEmailInputView != null &&

@@ -65,7 +65,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                     .appCMSPresenter();
             appCMSViewComponent = buildAppCMSViewComponent();
         } catch (ClassCastException e) {
-            Log.e(TAG, "Could not attach fragment: " + e.toString());
+            //Log.e(TAG, "Could not attach fragment: " + e.toString());
         }
     }
 
@@ -136,7 +136,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
             try {
                 binder = (AppCMSDownloadQualityBinder) savedInstanceState.getBinder(getString(R.string.app_cms_download_setting_binder_key));
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
     }
@@ -149,7 +149,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
         }
 
         if (pageView == null) {
-            Log.e(TAG, "AppCMS page creation error");
+            //Log.e(TAG, "AppCMS page creation error");
         } else {
 
             getActivity().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -206,7 +206,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                             appCMSPresenter))
                     .build();
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            //Log.e(TAG, e.getMessage());
         }
         return null;
     }

@@ -57,6 +57,18 @@ public class AppCMSSubscriptionPlanResult {
     @Expose
     String siStatus ;
 
+    @SerializedName("code")
+    @Expose
+    String code;
+
+    @SerializedName("error")
+    @Expose
+    String error;
+
+    @SerializedName("message")
+    @Expose
+    String message;
+
     public String getId() {
         return id;
     }
@@ -145,4 +157,27 @@ public class AppCMSSubscriptionPlanResult {
         this.siStatus = siStatus;
     }
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

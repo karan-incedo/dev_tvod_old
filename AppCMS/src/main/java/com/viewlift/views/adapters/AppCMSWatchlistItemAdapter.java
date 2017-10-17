@@ -85,7 +85,7 @@ public class AppCMSWatchlistItemAdapter extends RecyclerView.Adapter<AppCMSWatch
 
     @Override
     public void onBindViewHolder(AppCMSWatchlistItemAdapter.ViewHolder viewHolder, int i) {
-        Log.d(TAG, "onBindViewHolder: " + viewHolder);
+        //Log.d(TAG, "onBindViewHolder: " + viewHolder);
     }
 
     @Override

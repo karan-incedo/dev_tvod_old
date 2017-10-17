@@ -14,6 +14,7 @@ public class AppCMSAndroidModules {
     Map<String, ModuleList> moduleListMap;
 
     boolean loadedFromNetwork;
+
     public Map<String, ModuleList> getModuleListMap() {
         return moduleListMap;
     }
@@ -21,9 +22,11 @@ public class AppCMSAndroidModules {
     public void setModuleListMap(Map<String, ModuleList> moduleListMap) {
         this.moduleListMap = moduleListMap;
     }
+
     public boolean isLoadedFromNetwork() {
         return loadedFromNetwork;
     }
+
     public void setLoadedFromNetwork(boolean loadedFromNetwork) {
         this.loadedFromNetwork = loadedFromNetwork;
     }

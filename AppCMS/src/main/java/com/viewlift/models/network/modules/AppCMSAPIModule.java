@@ -106,7 +106,7 @@ public class AppCMSAPIModule {
 
     @Provides
     @Singleton
-    public AppCMSVideoDetailCall providesAppCMSVideoDetailCall(AppCMSVideoDetailRest appCMSVideoDetailRest) {
+    public AppCMSVideoDetailCall providesAppCMSVideoDetailCall(AppCMSVideoDetailRest appCMSVideoDetailRest){
         return new AppCMSVideoDetailCall(appCMSVideoDetailRest);
     }
 }

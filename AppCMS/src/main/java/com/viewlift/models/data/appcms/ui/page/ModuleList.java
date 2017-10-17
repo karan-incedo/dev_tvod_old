@@ -5,10 +5,11 @@ import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 @UseStag
-public class ModuleList implements ModuleWithComponents {
+public class ModuleList implements ModuleWithComponents, Serializable {
 
     @SerializedName("id")
     @Expose
@@ -42,6 +43,7 @@ public class ModuleList implements ModuleWithComponents {
     @SerializedName("blockName")
     @Expose
     String blockName;
+
     public String getId() {
         return id;
     }
@@ -98,9 +100,11 @@ public class ModuleList implements ModuleWithComponents {
     public void setSvod(boolean svod) {
         this.svod = svod;
     }
+
     public String getBlockName() {
         return blockName;
     }
+
     public void setBlockName(String blockName) {
         this.blockName = blockName;
     }

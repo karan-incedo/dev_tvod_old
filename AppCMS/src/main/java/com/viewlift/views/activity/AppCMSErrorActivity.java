@@ -76,15 +76,15 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                                              public void run() {
                                                  if (timerScheduled) {
                                                      Intent relaunchApp = getPackageManager().getLaunchIntentForPackage(getPackageName());
-                                                 relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
-                                                 startActivity(relaunchApp);
-                                                 try {
-                                                     unregisterReceiver(networkConnectedReceiver);
-                                                 } catch (Exception e) {
-                                                     Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
-                                                 }
+                                                     relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
+                                                     startActivity(relaunchApp);
+                                                     try {
+                                                         unregisterReceiver(networkConnectedReceiver);
+                                                     } catch (Exception e) {
+                                                         //Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
+                                                     }
                                                      finish();
-                                                 timerScheduled = false;
+                                                     timerScheduled = false;
                                                  }
                                              }
                                          }, 500);
@@ -99,7 +99,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         try {
             unregisterReceiver(presenterCloseActionReceiver);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to unregister Close Action Receiver");
+            //Log.e(TAG, "Failed to unregister Close Action Receiver");
         }
     }
 
@@ -110,8 +110,8 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         if (activeNetwork == null ||
                 !activeNetwork.isConnectedOrConnecting()) {
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }
     }
 
@@ -121,9 +121,10 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to unregister Network Connectivity Receiver");
+            //Log.e(TAG, "Failed to unregister Network Connectivity Receiver");
         }
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -132,7 +133,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
             ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
             ((AppCMSApplication) getApplication()).setCloseApp(this);
         } catch (Exception e) {
-            Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
+            //Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
         }
         finish();
     }

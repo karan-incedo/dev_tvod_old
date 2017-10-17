@@ -4,13 +4,15 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 /**
  * Created by anas.azeem on 7/26/2017.
  * Owned by ViewLift, NYC
  */
 
 @UseStag
-public class ClosedCaptions {
+public class ClosedCaptions implements Serializable {
 
     @SerializedName("id")
     @Expose

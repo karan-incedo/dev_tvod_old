@@ -4,12 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 /**
  * Created by viewlift on 9/11/17.
  */
 
 @UseStag
-public class CCAv {
+public class CCAv implements Serializable {
     @SerializedName("apiKey")
     @Expose
     String apiKey;

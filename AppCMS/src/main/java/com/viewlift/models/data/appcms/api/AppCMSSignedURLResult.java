@@ -59,23 +59,23 @@ public class AppCMSSignedURLResult {
             if (TextUtils.isEmpty(signature) &&
                     TextUtils.isEmpty(policy) &&
                     TextUtils.isEmpty(keyPairId)) {
-            int valueIndex = signed.indexOf("Policy=");
-            int paramIndex = signed.indexOf("&");
-            if (0 < paramIndex && 0 <= valueIndex) {
-                policy = signed.substring(valueIndex + "Policy=".length(), paramIndex);
-
-                valueIndex = signed.indexOf("Signature=", paramIndex);
-                paramIndex = signed.indexOf("&", paramIndex + 1);
+                int valueIndex = signed.indexOf("Policy=");
+                int paramIndex = signed.indexOf("&");
                 if (0 < paramIndex && 0 <= valueIndex) {
-                    signature = signed.substring(valueIndex + "Signature=".length(), paramIndex);
+                    policy = signed.substring(valueIndex + "Policy=".length(), paramIndex);
 
-                    valueIndex = signed.indexOf("Key-Pair-Id=", paramIndex);
-                    if (0 <= valueIndex) {
-                        keyPairId = signed.substring(valueIndex + "Key-Pair-Id=".length());
+                    valueIndex = signed.indexOf("Signature=", paramIndex);
+                    paramIndex = signed.indexOf("&", paramIndex + 1);
+                    if (0 < paramIndex && 0 <= valueIndex) {
+                        signature = signed.substring(valueIndex + "Signature=".length(), paramIndex);
+
+                        valueIndex = signed.indexOf("Key-Pair-Id=", paramIndex);
+                        if (0 <= valueIndex) {
+                            keyPairId = signed.substring(valueIndex + "Key-Pair-Id=".length());
+                        }
                     }
                 }
             }
         }
     }
-}
 }

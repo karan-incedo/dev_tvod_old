@@ -4,11 +4,12 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @UseStag(UseStag.FieldOption.SERIALIZED_NAME)
-public class Component implements ModuleWithComponents {
+public class Component implements ModuleWithComponents, Serializable {
 
     @SerializedName("text")
     @Expose

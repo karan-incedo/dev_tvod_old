@@ -4,10 +4,11 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
 import java.util.List;
 
 @UseStag
-public class CreditBlock {
+public class CreditBlock implements Serializable {
 
     @SerializedName("id")
     @Expose

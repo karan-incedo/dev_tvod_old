@@ -5,7 +5,6 @@ import android.os.Binder;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 
-
 /**
  * Created by nitin.tyagi on 7/31/2017.
  */
@@ -87,9 +86,11 @@ public class RetryCallBinder extends Binder {
     public void setContentDatum(ContentDatum contentDatum) {
         this.contentDatum = contentDatum;
     }
+
     public String getPageId() {
         return pageId;
     }
+
     public void setPageId(String pageId) {
         this.pageId = pageId;
     }

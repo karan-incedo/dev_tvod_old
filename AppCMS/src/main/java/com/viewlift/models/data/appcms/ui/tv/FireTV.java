@@ -3,11 +3,13 @@ package com.viewlift.models.data.appcms.ui.tv;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by nitin.tyagi on 7/5/2017.
  */
 
-public class FireTV {
+public class FireTV implements Serializable {
     private String yAxis;
 
     private String height;
@@ -21,7 +23,9 @@ public class FireTV {
     private String leftMargin;
 
     private String itemWidth;
+
     private String itemHeight;
+
     public Float getFontSizeKey() {
         return fontSizeKey;
     }
@@ -159,15 +163,19 @@ public class FireTV {
     public String getItemWidth() {
         return itemWidth;
     }
+
     public void setItemWidth(String itemWidth) {
         this.itemWidth = itemWidth;
     }
+
     public String getItemHeight() {
         return itemHeight;
     }
+
     public void setItemHeight(String itemHeight) {
         this.itemHeight = itemHeight;
     }
+
     @Override
     public String toString()
     {

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +29,6 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
-import net.nightwhistler.htmlspanner.TextUtil;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -77,7 +75,7 @@ public class AutoplayFragment extends Fragment {
                         .appCMSPresenter();
                 appCMSViewComponent = buildAppCMSViewComponent();
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         } else {
             throw new RuntimeException("Attached context must implement " +
@@ -140,11 +138,7 @@ public class AutoplayFragment extends Fragment {
             if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
                 imageUrl = binder.getContentData().getGist().getVideoImageUrl();
             } else {
-                if(binder.getContentData().getGist().getPosterImageUrl()!=null && !TextUtils.isEmpty(binder.getContentData().getGist().getPosterImageUrl())) {
                     imageUrl = binder.getContentData().getGist().getPosterImageUrl();
-                }else{
-                    imageUrl = binder.getContentData().getGist().getVideoImageUrl();
-                }
             }
 
             Glide.with(getContext()).load(imageUrl)
@@ -191,7 +185,7 @@ public class AutoplayFragment extends Fragment {
             try {
                 binder = (AppCMSVideoPageBinder) savedInstanceState.getBinder(getString(R.string.app_cms_video_player_binder_key));
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
         if (countdownTimer == null) {
@@ -207,7 +201,7 @@ public class AutoplayFragment extends Fragment {
         }
 
         if (pageView == null) {
-            Log.e(TAG, "AppCMS page creation error");
+            //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(binder);
         } else {
             pageView.notifyAdaptersOfUpdate();

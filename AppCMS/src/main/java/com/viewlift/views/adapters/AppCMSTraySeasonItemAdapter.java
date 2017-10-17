@@ -57,6 +57,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     private String userId;
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
     private InternalEvent<Integer> showRemoveAllButtonEvent;
+    private String moduleId;
 
     public AppCMSTraySeasonItemAdapter(Context context,
                                        List<ContentDatum> adapterData,
@@ -171,6 +172,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         for (OnInternalEvent internalEvent : receivers) {
             internalEvent.receiveEvent(event);
         }
+    }
+
+    @Override
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    @Override
+    public String getModuleId() {
+        return moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
@@ -355,7 +366,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
     private void click(ContentDatum data) {
-        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
 
         String permalink = data.getGist().getPermalink();
         String action = defaultAction;
@@ -372,7 +383,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                 data.getContentDetails().getRelatedVideoIds() != null) {
             relatedVideos = data.getContentDetails().getRelatedVideoIds();
         }
-        Log.d(TAG, "Launching " + permalink + ": " + action);
+        //Log.d(TAG, "Launching " + permalink + ": " + action);
         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                 action,
                 title,
@@ -381,13 +392,13 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                 false,
                 -1,
                 relatedVideos)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " permalink: " +
-                    permalink +
-                    " action: " +
-                    action +
-                    " hlsUrl: " +
-                    hlsUrl);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action +
+//                    " hlsUrl: " +
+//                    hlsUrl);
         }
     }
 
@@ -397,9 +408,9 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                 null,
                 data.getGist().getWatchedTime(),
                 null)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " action: " +
-                    action);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " action: " +
+//                    action);
         }
     }
 

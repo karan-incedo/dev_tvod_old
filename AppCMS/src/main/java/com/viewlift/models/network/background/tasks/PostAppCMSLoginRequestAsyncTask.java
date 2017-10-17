@@ -60,7 +60,7 @@ public class PostAppCMSLoginRequestAsyncTask {
                         try {
                             return call.call(params.url, params.email, params.password);
                         } catch (Exception e) {
-                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                            //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
                     }
                     return null;

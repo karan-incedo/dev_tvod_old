@@ -21,6 +21,7 @@ import static android.content.Context.DOWNLOAD_SERVICE;
 
 public class FileDownloadCompleteReceiver extends BroadcastReceiver {
     private static final String TAG = "FileDlReceiver";
+
     DownloadManager downloadManager;
     Context mContext;
 
@@ -183,14 +184,14 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
 
             file.write(exoBitsData);
         } catch (Exception e1) {
-            Log.e(TAG, "Failed to encrypt file: " + e1.getMessage());
+            //Log.e(TAG, "Failed to encrypt file: " + e1.getMessage());
         } finally {
             try {
                 if (file != null) {
                     file.close();
                 }
             } catch (IOException e2) {
-                Log.e(TAG, "Failed to encrypt file: " + e2.getMessage());
+                //Log.e(TAG, "Failed to encrypt file: " + e2.getMessage());
             }
         }
     }

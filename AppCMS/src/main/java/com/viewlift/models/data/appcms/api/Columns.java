@@ -4,12 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 /**
  * Created by viewlift on 9/18/17.
  */
 
 @UseStag
-public class Columns {
+public class Columns implements Serializable {
     @SerializedName("tablet")
     @Expose
     int tablet;

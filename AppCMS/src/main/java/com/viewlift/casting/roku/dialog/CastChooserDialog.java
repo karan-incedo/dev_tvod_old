@@ -61,12 +61,13 @@ public class CastChooserDialog extends Dialog {
 
     public void setRoutes(List<Object> routes) {
         this.routes = routes;
-        Log.d("", "*******************setRoutes***************");
+        //Log.d("", "*******************setRoutes***************");
         for (Object obj : routes) {
-            if (obj instanceof RokuDevice)
-                Log.d("", ((RokuDevice) obj).getRokuDeviceName());
-            else
-                Log.d(TAG, ((MediaRouter.RouteInfo) obj).getName());
+            if (obj instanceof RokuDevice) {
+                //Log.d("", ((RokuDevice) obj).getRokuDeviceName());
+            } else {
+                //Log.d(TAG, ((MediaRouter.RouteInfo) obj).getName());
+            }
         }
         if (mAdapter != null) {
             activity.runOnUiThread(new Runnable(){

@@ -271,13 +271,13 @@ public class ViewCreator {
                                                         false,
                                                         -1,
                                                         null)) {
-                                                    Log.e(TAG, "Could not launch action: " +
-                                                            " permalink: " +
-                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                            " action: " +
-                                                            component.getAction() +
-                                                            " hls URL: " +
-                                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                                    //Log.e(TAG, "Could not launch action: " +
+//                                                            " permalink: " +
+//                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                            " action: " +
+//                                                            component.getAction() +
+//                                                            " hls URL: " +
+//                                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                                 }
                                             });
                                         } else {
@@ -313,13 +313,13 @@ public class ViewCreator {
                                                             false,
                                                             -1,
                                                             moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                                                        Log.e(TAG, "Could not launch action: " +
-                                                                " permalink: " +
-                                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                                " action: " +
-                                                                component.getAction() +
-                                                                " video URL: " +
-                                                                videoUrl);
+                                                        //Log.e(TAG, "Could not launch action: " +
+//                                                                " permalink: " +
+//                                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                                " action: " +
+//                                                                component.getAction() +
+//                                                                " video URL: " +
+//                                                                videoUrl);
                                                     }
                                                 }
                                             }
@@ -347,13 +347,13 @@ public class ViewCreator {
                                                         false,
                                                         0,
                                                         null)) {
-                                                    Log.e(TAG, "Could not launch action: " +
-                                                            " permalink: " +
-                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                            " action: " +
-                                                            component.getAction() +
-                                                            " film URL: " +
-                                                            filmUrl.toString());
+                                                    //Log.e(TAG, "Could not launch action: " +
+//                                                            " permalink: " +
+//                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                            " action: " +
+//                                                            component.getAction() +
+//                                                            " film URL: " +
+//                                                            filmUrl.toString());
                                                 }
                                             }
                                         });
@@ -603,7 +603,7 @@ public class ViewCreator {
                                             view.forceLayout();
                                         }
                                     } else if (componentType == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
-                                        Log.d(TAG, "checkForExistingSubscription() - 574");
+                                        //Log.d(TAG, "checkForExistingSubscription() - 574");
                                         appCMSPresenter.checkForExistingSubscription(false);
                                         if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
                                             shouldHideComponent = true;
@@ -676,7 +676,7 @@ public class ViewCreator {
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                                             if (appCMSPresenter.isUserSubscribed()) {
-                                                                Log.d(TAG, "checkForExistingSubscription() - 647");
+                                                                //Log.d(TAG, "checkForExistingSubscription() - 647");
                                                                 appCMSPresenter.checkForExistingSubscription(false);
 
                                                                 if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
@@ -704,6 +704,14 @@ public class ViewCreator {
                                             case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
                                                 ((Switch) view).setChecked(appCMSPresenter
                                                         .getUserDownloadLocationPref());
+                                                if (appCMSPresenter.isExternalStorageAvailable()) {
+                                                    componentViewResult.componentView.setEnabled(true);
+                                                    appCMSPresenter.setUserDownloadLocationPref(true);
+                                                } else {
+                                                    componentViewResult.componentView.setEnabled(false);
+                                                    ((Switch) componentViewResult.componentView).setChecked(false);
+                                                    appCMSPresenter.setUserDownloadLocationPref(false);
+                                                }
                                                 break;
 
                                             default:
@@ -881,6 +889,13 @@ public class ViewCreator {
         }
 
         boolean newView = false;
+        if (pageView != null) {
+            String oldVersion = pageView.getAppCMSPageUI().getVersion();
+            String newVersion = appCMSPageUI.getVersion();
+            if (!TextUtils.isEmpty(oldVersion) && !oldVersion.equals(newVersion)) {
+                pageView = null;
+            }
+        }
         if (pageView == null || pageView.getContext() != context) {
             pageView = new PageView(context, appCMSPageUI);
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
@@ -973,7 +988,7 @@ public class ViewCreator {
                         appCMSPresenter);
                 if (childView != null) {
                     childrenContainer.addView(childView);
-                    if (childView == null) {
+                    if (moduleAPI == null) {
                         childView.setVisibility(View.GONE);
                     }
                 }
@@ -985,7 +1000,10 @@ public class ViewCreator {
             for (OnInternalEvent onInternalEvent : presenterOnInternalEvents) {
                 for (OnInternalEvent receiverInternalEvent : presenterOnInternalEvents) {
                     if (receiverInternalEvent != onInternalEvent) {
+                        if (!TextUtils.isEmpty(onInternalEvent.getModuleId()) &&
+                                onInternalEvent.getModuleId().equals(receiverInternalEvent.getModuleId())) {
                         onInternalEvent.addReceiver(receiverInternalEvent);
+                        }
                     }
                 }
             }
@@ -1036,7 +1054,8 @@ public class ViewCreator {
                                 jsonValueKeyMap,
                                 appCMSPresenter,
                                 false,
-                                module.getView());
+                                module.getView(),
+                                module.getId());
 
                         if (adjustOthers == AdjustOtherState.INITIATED) {
                             adjustOthers = AdjustOtherState.ADJUST_OTHERS;
@@ -1237,7 +1256,8 @@ public class ViewCreator {
                     jsonValueKeyMap,
                     appCMSPresenter,
                     gridElement,
-                    viewType);
+                    viewType,
+                    component.getId());
 
             if (componentViewResult.onInternalEvent != null) {
                 onInternalEvents.add(componentViewResult.onInternalEvent);
@@ -1279,7 +1299,8 @@ public class ViewCreator {
                                     Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                     final AppCMSPresenter appCMSPresenter,
                                     boolean gridElement,
-                                    final String viewType) {
+                                    final String viewType,
+                                    String moduleId) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
@@ -1374,6 +1395,7 @@ public class ViewCreator {
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
@@ -1567,6 +1589,11 @@ public class ViewCreator {
                             .build());
                 }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
+                componentViewResult.onInternalEvent.setModuleId(moduleId);
+                if (moduleAPI.getContentData() == null ||
+                        moduleAPI.getContentData().isEmpty()) {
+                    componentViewResult.shouldHideModule = true;
+                }
                 break;
 
             case PAGE_PAGE_CONTROL_VIEW_KEY:
@@ -1585,6 +1612,7 @@ public class ViewCreator {
                 int numDots = moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0;
                 ((DotSelectorView) componentViewResult.componentView).addDots(numDots);
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
+                componentViewResult.onInternalEvent.setModuleId(moduleId);
                 componentViewResult.useMarginsAsPercentagesOverride = false;
                 break;
 
@@ -1791,13 +1819,13 @@ public class ViewCreator {
                                         false,
                                         -1,
                                         null)) {
-                                    Log.e(TAG, "Could not launch action: " +
-                                            " permalink: " +
-                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                            " action: " +
-                                            component.getAction() +
-                                            " hls URL: " +
-                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                            " permalink: " +
+//                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                            " action: " +
+//                                            component.getAction() +
+//                                            " hls URL: " +
+//                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                 }
                             });
                         } else {
@@ -1838,13 +1866,13 @@ public class ViewCreator {
                                             false,
                                             -1,
                                             moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                                        Log.e(TAG, "Could not launch action: " +
-                                                " permalink: " +
-                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                " action: " +
-                                                component.getAction() +
-                                                " video URL: " +
-                                                videoUrl);
+                                        //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                " action: " +
+//                                                component.getAction() +
+//                                                " video URL: " +
+//                                                videoUrl);
                                     }
                                 }
                             }
@@ -1876,9 +1904,9 @@ public class ViewCreator {
                                     false,
                                     0,
                                     null)) {
-                                Log.e(TAG, "Could not launch action: " +
-                                        " action: " +
-                                        component.getAction());
+                                //Log.e(TAG, "Could not launch action: " +
+//                                        " action: " +
+//                                        component.getAction());
                             }
                         });
                         break;
@@ -1908,13 +1936,13 @@ public class ViewCreator {
                                         false,
                                         0,
                                         null)) {
-                                    Log.e(TAG, "Could not launch action: " +
-                                            " permalink: " +
-                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                            " action: " +
-                                            component.getAction() +
-                                            " film URL: " +
-                                            filmUrl.toString());
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                            " permalink: " +
+//                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                            " action: " +
+//                                            component.getAction() +
+//                                            " film URL: " +
+//                                            filmUrl.toString());
                                 }
                             }
                         });
@@ -1939,6 +1967,7 @@ public class ViewCreator {
                         componentViewResult.onInternalEvent = new OnInternalEvent() {
                             final View removeAllButton = componentViewResult.componentView;
                             private List<OnInternalEvent> receivers = new ArrayList<>();
+                            private String internalEventModuleId = moduleId;
 
                             @Override
                             public void addReceiver(OnInternalEvent e) {
@@ -1967,6 +1996,14 @@ public class ViewCreator {
                             @Override
                             public void cancel(boolean cancel) {
                                 //
+                            }
+                            @Override
+                            public void setModuleId(String moduleId) {
+                                internalEventModuleId = moduleId;
+                            }
+                            @Override
+                            public String getModuleId() {
+                                return internalEventModuleId;
                             }
                         };
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
@@ -2010,9 +2047,9 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
-                                Log.e(TAG, "Could not perform close action: " +
-                                        " action: " +
-                                        component.getAction());
+                                //Log.e(TAG, "Could not perform close action: " +
+//                                        " action: " +
+//                                        component.getAction());
                             }
                         });
                         break;
@@ -2026,9 +2063,9 @@ public class ViewCreator {
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
-                                    Log.e(TAG, "Could not perform close action: " +
-                                            " action: " +
-                                            component.getAction());
+                                    //Log.e(TAG, "Could not perform close action: " +
+//                                            " action: " +
+//                                            component.getAction());
                                 }
                             });
                         } else {
@@ -2177,6 +2214,12 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             } else if (moduleAPI != null &&
                                     moduleAPI.getContentData() != null &&
                                     moduleAPI.getContentData().size()>0 &&
@@ -2184,12 +2227,6 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0).getGist() != null &&
                                     moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
-                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
-                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
-                                ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             }
                             break;
 
@@ -2927,6 +2964,12 @@ public class ViewCreator {
                                     appCMSPresenter.setUserDownloadLocationPref(false);
                                 }
                             });
+                    if (appCMSPresenter.isExternalStorageAvailable()) {
+                        componentViewResult.componentView.setEnabled(true);
+                    } else {
+                        componentViewResult.componentView.setEnabled(false);
+                        ((Switch) componentViewResult.componentView).setChecked(false);
+                    }
                 }
                 break;
 
@@ -3185,6 +3228,7 @@ public class ViewCreator {
 
                 switch (userVideoDownloadStatus.getDownloadStatus()) {
                     case STATUS_FAILED:
+                        appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.startNextDownload();
                         break;
 
@@ -3193,31 +3237,36 @@ public class ViewCreator {
                         break;
 
                     case STATUS_PENDING:
+                        appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_RUNNING:
+                        appCMSPresenter.setDownloadInProgress(true);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                         imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_SUCCESSFUL:
+                        appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.cancelDownloadIconTimerTask();
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.startNextDownload();
+                        appCMSPresenter.notifyDownloadHasCompleted();
                         break;
 
                     case STATUS_INTERRUPTED:
+                        appCMSPresenter.setDownloadInProgress(false);
                         imageButton.setImageResource(android.R.drawable.stat_sys_warning);
                         imageButton.setOnClickListener(null);
                         break;
 
                     default:
-                        Log.d(TAG, "No download Status available ");
+                        //Log.d(TAG, "No download Status available ");
                         break;
                 }
 

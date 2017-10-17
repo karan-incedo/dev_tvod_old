@@ -4,11 +4,12 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @UseStag
-public class AppCMSPageUI {
+public class AppCMSPageUI implements Serializable {
 
     @SerializedName("moduleList")
     @Expose
@@ -19,6 +20,7 @@ public class AppCMSPageUI {
     String version;
 
     boolean loadedFromNetwork;
+
     public ArrayList<ModuleList> getModuleList() {
         return moduleList;
     }
@@ -34,9 +36,11 @@ public class AppCMSPageUI {
     public void setVersion(String version) {
         this.version = version;
     }
+
     public boolean isLoadedFromNetwork() {
         return loadedFromNetwork;
     }
+
     public void setLoadedFromNetwork(boolean loadedFromNetwork) {
         this.loadedFromNetwork = loadedFromNetwork;
     }

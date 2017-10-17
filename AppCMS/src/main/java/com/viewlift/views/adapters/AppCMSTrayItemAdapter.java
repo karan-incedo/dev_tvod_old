@@ -67,6 +67,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
     private InternalEvent<Integer> showRemoveAllButtonEvent;
 
+    private String moduleId;
+
     public AppCMSTrayItemAdapter(Context context,
                                  List<ContentDatum> adapterData,
                                  List<Component> components,
@@ -118,6 +120,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             } else if (isHistory) {
                 Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getUpdateDate(),
                         o2.getUpdateDate()));
+
+                // To make the last watched item appear at the top of the list
                 Collections.reverse(adapterData);
             }
         }
@@ -148,7 +152,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (adapterData != null && !adapterData.isEmpty()) {
+        if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
             ContentDatum contentDatum = adapterData.get(position);
 
             StringBuffer imageUrl;
@@ -192,7 +196,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                             contentDatum.getContentDetails().getClosedCaptions().get(0).setUrl(userVideoDownloadStatus.getSubtitlesUri());
                                                         }
                                                     } catch (Exception e) {
-                                                        Log.e(TAG, e.getMessage());
+                                                        //Log.e(TAG, e.getMessage());
                                                     }
 
                                                 } else if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_INTERRUPTED) {
@@ -257,6 +261,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     imageUrl = new StringBuffer();
                 }
             }
+
             loadImage(holder.itemView.getContext(), imageUrl.toString(), holder.appCMSContinueWatchingVideoImage);
 
             holder.itemView.setOnClickListener(v -> {
@@ -268,6 +273,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     click(adapterData.get(position));
                 }
             });
+
             holder.appCMSContinueWatchingButton.setOnClickListener(null);
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(v -> {
@@ -302,6 +308,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
 
             holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum, position));
+
             if (isHistory) {
                 holder.appCMSContinueWatchingLastViewed.setVisibility(View.VISIBLE);
                 holder.appCMSContinueWatchingLastViewed.setText(getLastWatchedTime(contentDatum));
@@ -325,6 +332,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist()
                         .getRuntime() / SECONDS_PER_MINS) + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
             }
+
             if (contentDatum.getGist().getWatchedPercentage() > 0) {
                 holder.appCMSContinueWatchingProgress.setVisibility(View.VISIBLE);
                 holder.appCMSContinueWatchingProgress.setProgress(contentDatum.getGist()
@@ -353,6 +361,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             } else {
                 holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_watchlist_message));
             }
+
             holder.appCMSContinueWatchingVideoImage.setVisibility(View.GONE);
             holder.appCMSContinueWatchingPlayButton.setVisibility(View.GONE);
             holder.appCMSContinueWatchingTitle.setVisibility(View.GONE);
@@ -370,14 +379,18 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
         long lastWatched = contentDatum.getUpdateDate();
+
         long seconds = TimeUnit.MILLISECONDS.toSeconds(currentTime - lastWatched);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);
         long hours = TimeUnit.MILLISECONDS.toHours(currentTime - lastWatched);
         long days = TimeUnit.MILLISECONDS.toDays(currentTime - lastWatched);
+
         int weeks = (int) ((currentTime - lastWatched) / (1000 * 60 * 60 * 24 * 7));
         int months = (weeks / 4);
         int years = months / 12;
+
         String lastWatchedMessage = "";
+
         if (years > 0) {
             if (years > 1) {
                 lastWatchedMessage = years + " years ago";
@@ -421,12 +434,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 lastWatchedMessage = "Just now";
             }
         }
+
         return lastWatchedMessage;
     }
+
     private ContentDatum getNextContentDatum(int position) {
         if (position + 1 == adapterData.size()) {
             return null;
         }
+
         ContentDatum contentDatum = adapterData.get(++position);
         if (contentDatum.getGist() != null) {
             if (!contentDatum.getGist().getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
@@ -462,24 +478,27 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private void playDownloaded(ContentDatum data, Context context, int position) {
         List<String> relatedVideoIds = getListOfUpcomingMovies(position);
-        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED) {
+        if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
                     null,
                     false,
                     null);
             return;
         }
+
         boolean networkAvailable = appCMSPresenter.isNetworkConnected();
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist() != null ? data.getGist().getTitle() : null;
         String hlsUrl = data.getGist().getLocalFileUrl();
+
         String[] extraData = new String[4];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
         extraData[2] = data.getGist() != null ? data.getGist().getId() : null;
         extraData[3] = "true"; // to know that this is an offline video
-        Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
+        //Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
 
         if (permalink == null ||
                 hlsUrl == null ||
@@ -493,13 +512,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         false,
                         -1,
                         relatedVideoIds)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " permalink: " +
-                    permalink +
-                    " action: " +
-                    action +
-                    " hlsUrl: " +
-                    hlsUrl);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action +
+//                    " hlsUrl: " +
+//                    hlsUrl);
         }
     }
 
@@ -523,6 +542,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         for (OnInternalEvent internalEvent : receivers) {
             internalEvent.receiveEvent(event);
         }
+    }
+
+    @Override
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    @Override
+    public String getModuleId() {
+        return moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
@@ -733,6 +762,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     listView.invalidate();
                 }
             });
+        } else if (isDownload) {
+            notifyDataSetChanged();
         }
     }
 
@@ -748,21 +779,25 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void click(ContentDatum data) {
-        Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
         String permalink = data.getGist().getPermalink();
         String action = defaultAction;
         String title = data.getGist().getTitle();
         String hlsUrl = getHlsUrl(data);
+
         String[] extraData = new String[3];
         extraData[0] = permalink;
         extraData[1] = hlsUrl;
         extraData[2] = data.getGist().getId();
         List<String> relatedVideos = null;
+
         if (data.getContentDetails() != null &&
                 data.getContentDetails().getRelatedVideoIds() != null) {
             relatedVideos = data.getContentDetails().getRelatedVideoIds();
         }
-        Log.d(TAG, "Launching " + permalink + ": " + action);
+
+        //Log.d(TAG, "Launching " + permalink + ": " + action);
+
         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                 action,
                 title,
@@ -771,13 +806,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 false,
                 -1,
                 relatedVideos)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " permalink: " +
-                    permalink +
-                    " action: " +
-                    action +
-                    " hlsUrl: " +
-                    hlsUrl);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action +
+//                    " hlsUrl: " +
+//                    hlsUrl);
         }
     }
 
@@ -787,9 +822,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 null,
                 data.getGist().getWatchedTime(),
                 null)) {
-            Log.e(TAG, "Could not launch action: " +
-                    " action: " +
-                    action);
+            //Log.e(TAG, "Could not launch action: " +
+//                    " action: " +
+//                    action);
         }
     }
 
@@ -798,12 +833,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     private void showDelete(ContentDatum contentDatum) {
-        Log.d(TAG, "Show delete button");
+        //Log.d(TAG, "Show delete button");
     }
 
     private void delete(final ContentDatum contentDatum, int position) {
         if ((isHistory) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting history item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.editHistory(contentDatum.getGist().getId(),
                     appCMSDeleteHistoryResult -> {
                         adapterData.remove(contentDatum);
@@ -812,7 +847,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         if ((isDownload) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting download item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting download item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
                     appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message),
                     true, () ->
@@ -828,7 +863,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {
-            Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
+            //Log.d(TAG, "Deleting watchlist item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.editWatchlist(contentDatum.getGist().getId(),
                     addToWatchlistResult -> {
                         adapterData.remove(contentDatum);
@@ -863,6 +898,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                              TextView textView) {
         if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
@@ -909,6 +945,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         @BindView(R.id.app_cms_continue_watching_last_viewed)
         TextView appCMSContinueWatchingLastViewed;
+
         @BindView(R.id.app_cms_continue_watching_delete_button)
         ImageButton appCMSContinueWatchingDeleteButton;
 

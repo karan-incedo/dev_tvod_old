@@ -1,6 +1,7 @@
 
 package com.viewlift.models.data.appcms.api;
 
+import java.io.Serializable;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -8,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class PlanDetail {
+public class PlanDetail implements Serializable {
 
     @SerializedName("recurringPaymentAmount")
     @Expose

@@ -34,6 +34,8 @@ public class AppCMSUpgradeFragment extends Fragment {
     @BindView(R.id.app_cms_upgrade_button)
     Button upgradeButton;
 
+    private AppCMSPresenter appCMSPresenter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,7 +43,7 @@ public class AppCMSUpgradeFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
-        AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
@@ -51,6 +53,7 @@ public class AppCMSUpgradeFragment extends Fragment {
             upgradeTextView.setTextColor(textColor);
             upgradeButton.setTextColor(textColor);
             upgradeButton.setBackgroundColor(bgColor);
+
             upgradeTextView.setText(getString(R.string.app_cms_upgrade_textview_text,
                     getString(R.string.app_cms_app_version),
                     appCMSPresenter.getGooglePlayAppStoreVersion()));
@@ -63,5 +66,15 @@ public class AppCMSUpgradeFragment extends Fragment {
             startActivity(googlePlayStoreUpgradeAppIntent);
         });
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (appCMSPresenter != null) {
+            upgradeTextView.setText(getString(R.string.app_cms_upgrade_textview_text,
+                    getString(R.string.app_cms_app_version),
+                    appCMSPresenter.getGooglePlayAppStoreVersion()));
+        }
     }
 }

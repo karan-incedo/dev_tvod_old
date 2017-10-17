@@ -73,6 +73,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -90,6 +91,7 @@ public class AppCMSUIModule {
     private final long defaultWriteConnectionTimeout;
     private final long defaultReadConnectionTimeout;
     private final long unknownHostExceptionTimeout;
+    private final Cache cache;
 
     public AppCMSUIModule(Context context) {
         this.baseUrl = context.getString(R.string.app_cms_baseurl);
@@ -121,6 +123,8 @@ public class AppCMSUIModule {
 
         this.unknownHostExceptionTimeout =
                 context.getResources().getInteger(R.integer.app_cms_unknown_host_exception_connection_timeout_msec);
+        int cacheSize = 10 * 1024 * 1024; // 10 MB
+        cache = new Cache(context.getCacheDir(), cacheSize);
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -692,6 +696,7 @@ public class AppCMSUIModule {
                 .connectTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
                 .writeTimeout(defaultWriteConnectionTimeout, TimeUnit.MILLISECONDS)
                 .readTimeout(defaultReadConnectionTimeout, TimeUnit.MILLISECONDS)
+                .cache(cache)
                 .build();
     }
 
@@ -923,8 +928,9 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest) {
-        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest);
+    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest,
+                                                               Gson gson) {
+        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest, gson);
     }
 
     @Provides
