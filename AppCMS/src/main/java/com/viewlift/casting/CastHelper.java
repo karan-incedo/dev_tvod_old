@@ -665,6 +665,7 @@ public class CastHelper {
         String filmIds = "";
         if (listRelatedVideosId != null && listRelatedVideosId.size() >= 5) {
             List<String> subList = listRelatedVideosId.subList(0, 5);
+
             filmIds = TextUtils.join(",", subList);
             subList.clear();
 
@@ -677,7 +678,7 @@ public class CastHelper {
 
         appCMSPresenterComponenet.getRelatedMedia(filmIds, new Action1<AppCMSVideoDetail>() {
             @Override
-            public void call(AppCMSVideoDetail relatedMediaVideoDetails) {
+            public void call(AppCMSVideoDetail relatedMediaVideoDetails) {)
                 if (listRelatedVideosDetails == null && relatedMediaVideoDetails != null && relatedMediaVideoDetails.getRecords() != null) {
                     listRelatedVideosDetails = relatedMediaVideoDetails.getRecords();
                 } else if (relatedMediaVideoDetails != null && relatedMediaVideoDetails.getRecords() != null) {
@@ -687,6 +688,9 @@ public class CastHelper {
                 if (listRelatedVideosId != null && listRelatedVideosId.size() > 0) {
                     callRelatedVideoData();
                 } else {
+                    if (appCMSPresenterComponenet.isAppSVOD() && !appCMSPresenterComponenet.isUserSubscribed()) {
+                        listRelatedVideosDetails = removeNonFreeVideos(listRelatedVideosDetails);
+                    }
                     castMediaListToRemoteLocation();
                     //Log.d(TAG, "Cast Media List ");
                 }
@@ -694,6 +698,19 @@ public class CastHelper {
         });
     }
 
+    List<AppCMSVideoDetail> removeNonFreeVideos(List<AppCMSVideoDetail> relatedVidesDetails) {
+        List<AppCMSVideoDetail> freeMovies = new ArrayList<>();
+        for (AppCMSVideoDetail appCMSVideoDetail : relatedVidesDetails) {
+            if (appCMSVideoDetail.getRecords() != null &&
+                    !appCMSVideoDetail.getRecords().isEmpty() &&
+                    appCMSVideoDetail.getRecords().get(0) != null &&
+                    appCMSVideoDetail.getRecords().get(0).getGist() != null &&
+                    appCMSVideoDetail.getRecords().get(0).getGist().getFree()) {
+                freeMovies.add(appCMSVideoDetail);
+            }
+        }
+        return freeMovies;
+    }
 
     private void castMediaListToRemoteLocation() {
         CastingUtils.isMediaQueueLoaded = true;
