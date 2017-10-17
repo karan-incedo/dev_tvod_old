@@ -190,6 +190,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppsFlyerLib.getInstance().startTracking(getApplication());
+
         setContentView(R.layout.activity_appcms_page);
 
         homePageIndex = getResources().getInteger(R.integer.first_primary_page_index);
@@ -436,6 +439,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onCreate()");
 
         appCMSPresenter.setCancelAllLoads(false);
+
+        sendAnalytics();
+    }
+
+    private void sendAnalytics() {
+        trackInstallationEvent(getApplication());
     }
 
     private void initPageActivity() {

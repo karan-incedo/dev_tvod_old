@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.appsflyer.AppsFlyerConversionListener;
+import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -32,6 +34,31 @@ public class AppCMSApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        AppsFlyerConversionListener conversionDataListener = new AppsFlyerConversionListener() {
+
+            @Override
+            public void onInstallConversionDataLoaded(Map<String, String> map) {
+
+            }
+
+            @Override
+            public void onInstallConversionFailure(String s) {
+
+            }
+
+            @Override
+            public void onAppOpenAttribution(Map<String, String> map) {
+
+            }
+
+            @Override
+            public void onAttributionFailure(String s) {
+
+            }
+        };
+
+        AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
 
         Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
 
