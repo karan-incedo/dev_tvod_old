@@ -434,14 +434,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.sendCloseOthersAction(null, false);
 
 //        Log.d(TAG, "onCreate()");
-        sendAnalytics();
 
         appCMSPresenter.setCancelAllLoads(false);
-    }
-
-    private void sendAnalytics() {
-        AppsFlyerLib.getInstance().startTracking(getApplication(), getString(R.string.app_cms_appsflyer_dev_key));
-        trackInstallationEvent(getApplication());
     }
 
     private void initPageActivity() {

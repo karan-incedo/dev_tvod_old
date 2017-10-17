@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.appsflyer.AppsFlyerLib;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
@@ -23,6 +24,8 @@ import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
+
+import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
@@ -93,6 +96,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
+
+        sendAnalytics();
     }
 
     @Override
@@ -199,5 +204,10 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             //Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
         }
         finish();
+    }
+
+    private void sendAnalytics() {
+        AppsFlyerLib.getInstance().startTracking(getApplication(), getString(R.string.app_cms_appsflyer_dev_key));
+        trackInstallationEvent(getApplication());
     }
 }
