@@ -194,7 +194,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                                         data.getGist().getVideoImageUrl(),
                                         childViewWidth,
                                         childViewHeight);
-                        Log.d(TAG, "Loading image: " + imageUrl);
+                        //Log.d(TAG, "Loading image: " + imageUrl);
                         Glide.with(context)
                                 .load(imageUrl)
                                 .override(childViewWidth, childViewHeight)
@@ -293,7 +293,7 @@ public class TVCollectionGridItemView extends TVBaseView {
                 ((ProgressBar) view).setMax(100);
                 int progress = (int) Math.ceil(Utils.getPercentage(data.getGist().getRuntime(),
                         data.getGist().getWatchedTime()));
-                Log.d(TAG , "Progress Bar = "+progress);
+                //Log.d(TAG , "Progress Bar = "+progress);
                 ((ProgressBar) view).setProgress(0);
                 ((ProgressBar) view).setProgress(progress);
                 view.setFocusable(false);

@@ -65,7 +65,7 @@ public class CardPresenter extends Presenter {
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
-        Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
+        //Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
         final FrameLayout frameLayout = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams layoutParams;
 
@@ -95,7 +95,7 @@ public class CardPresenter extends Presenter {
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
-        Log.d("Presenter" , " CardPresenter onBindViewHolder******. viewHolder: " + viewHolder + ", item: " + item);
+        //Log.d("Presenter" , " CardPresenter onBindViewHolder******. viewHolder: " + viewHolder + ", item: " + item);
         BrowseFragmentRowData rowData = (BrowseFragmentRowData)item;
         ContentDatum contentData = rowData.contentData;
         List<Component> componentList = rowData.uiComponentList;
@@ -148,7 +148,7 @@ public class CardPresenter extends Presenter {
                                         .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
                                         .into(imageView);
 
-                                Log.d("TAG" , "Url = "+contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight);
+                                //Log.d("TAG" , "Url = "+contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight);
                                 parentLayout.addView(imageView);
                                 break;
                         }
@@ -190,7 +190,7 @@ public class CardPresenter extends Presenter {
                         progressBar.setPadding(gridImagePadding,0,gridImagePadding,0);
                         progressBar.setProgressDrawable(Utils.getProgressDrawable(mContext , component.getUnprogressColor() ,mAppCmsPresenter));
                         int progress = (int)Math.ceil(Utils.getPercentage(contentData.getGist().getRuntime() , contentData.getGist().getWatchedTime()));
-                        Log.d("NITS>>>","Runtime = "+  contentData.getGist().getRuntime()
+                        //Log.d("NITS>>>","Runtime = "+  contentData.getGist().getRuntime()
                            + " WatchedTime = "+ contentData.getGist().getWatchedTime()
                         +" Percentage = " + contentData.getGist().getWatchedPercentage()
                         +" Progress = "+progress);
