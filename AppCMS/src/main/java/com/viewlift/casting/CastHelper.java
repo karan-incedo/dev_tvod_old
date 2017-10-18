@@ -712,12 +712,12 @@ public class CastHelper {
         }
 
         for (int i = 0; i < freeMovieIndices.size(); i++) {
-            freeMovies.add(listRelatedVideosDetails.get(i));
-            freeMovieIds.add(listRelatedVideosId.get(i));
+            freeMovies.add(listRelatedVideosDetails.get(freeMovieIndices.get(i)));
+            freeMovieIds.add(listCompareRelatedVideosId.get(freeMovieIndices.get(i)));
         }
 
         listRelatedVideosDetails = freeMovies;
-        listRelatedVideosId = freeMovieIds;
+        listCompareRelatedVideosId = freeMovieIds;
     }
 
     private void castMediaListToRemoteLocation() {
