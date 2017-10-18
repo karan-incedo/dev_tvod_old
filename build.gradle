@@ -12,7 +12,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:${gradleBuildVersion}"
+        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
         classpath "io.realm:realm-gradle-plugin:${realmVersion}"
         classpath "com.google.gms:google-services:${playServicesVersion}"
 
