@@ -31,7 +31,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.appsflyer.AppsFlyerLib;
@@ -65,7 +63,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
@@ -1730,38 +1727,76 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
         final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
-        String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
-        boolean usePageIdQueryParam = true;
-        if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
-            endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
-            usePageIdQueryParam = false;
-        }
+        if (appCMSPresenter.isHistoryPage(appCMSBinder.getPageId())) {
+            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                if (appCMSHistoryResult != null) {
+                    AppCMSPageAPI historyAPI =
+                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
+                    historyAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+                    appCMSPresenter.mergeData(historyAPI, appCMSBinder.getAppCMSPageAPI());
+                    appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
 
-        if (!TextUtils.isEmpty(endPoint)) {
-            String baseUrl = appCMSMain.getApiBaseUrl();
-            String siteId = appCMSSite.getGist().getSiteInternalName();
-            boolean viewPlans = appCMSPresenter.isViewPlanPage(endPoint);
-            boolean showPage = appCMSPresenter.isShowPage(appCMSBinder.getPageId());
-            String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
-                    viewPlans,
-                    showPage,
-                    baseUrl,
-                    endPoint,
-                    siteId,
-                    appCMSBinder.getPagePath());
+                    //Log.d(TAG, "Updated watched history for loaded displays");
 
-            appCMSPresenter.getPageIdContent(apiUrl,
-                    appCMSBinder.getPagePath(),
-                    appCMSPageAPI -> {
-                        if (appCMSPageAPI != null) {
-                            appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
-                        }
-                        if (readyAction != null) {
-                            readyAction.call();
-                        }
-                    });
-        } else if (readyAction != null) {
-            readyAction.call();
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            });
+        } else if (appCMSPresenter.isWatchlistPage(appCMSBinder.getPageId())) {
+            appCMSPresenter.getWatchlistData(appCMSWatchlistResult -> {
+                if (appCMSWatchlistResult != null) {
+                    AppCMSPageAPI watchlistAPI =
+                            appCMSWatchlistResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
+                    watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+                    appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
+                    appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
+
+                    //Log.d(TAG, "Updated watched history for loaded displays");
+
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            });
+        } else {
+            String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
+            boolean usePageIdQueryParam = true;
+            if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
+                endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
+                usePageIdQueryParam = false;
+            }
+
+            if (!TextUtils.isEmpty(endPoint)) {
+                String baseUrl = appCMSMain.getApiBaseUrl();
+                String siteId = appCMSSite.getGist().getSiteInternalName();
+                boolean viewPlans = appCMSPresenter.isViewPlanPage(endPoint);
+                boolean showPage = appCMSPresenter.isShowPage(appCMSBinder.getPageId());
+                String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
+                        viewPlans,
+                        showPage,
+                        baseUrl,
+                        endPoint,
+                        siteId,
+                        appCMSBinder.getPagePath());
+
+                appCMSPresenter.getPageIdContent(apiUrl,
+                        appCMSBinder.getPagePath(),
+                        appCMSPageAPI -> {
+                            if (appCMSPageAPI != null) {
+                                appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                            }
+                            if (readyAction != null) {
+                                readyAction.call();
+                            }
+                        });
+            } else if (readyAction != null) {
+                readyAction.call();
+            }
         }
     }
 
@@ -1773,55 +1808,79 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (Map.Entry<String, AppCMSBinder> appCMSBinderEntry : appCMSBinderMap.entrySet()) {
                 final AppCMSBinder appCMSBinder = appCMSBinderEntry.getValue();
                 if (appCMSBinder != null) {
+                    if (appCMSPresenter.isHistoryPage(appCMSBinder.getPageId())) {
+                        appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                            if (appCMSHistoryResult != null) {
+                                AppCMSPageAPI historyAPI =
+                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
+                                historyAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+                                appCMSPresenter.mergeData(historyAPI, appCMSBinder.getAppCMSPageAPI());
+                                appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
 
+                                //Log.d(TAG, "Updated watched history for loaded displays");
+                            }
+                        });
+                    } else if (appCMSPresenter.isWatchlistPage(appCMSBinder.getPageId())) {
+                        appCMSPresenter.getWatchlistData(appCMSWatchlistResult -> {
+                            if (appCMSWatchlistResult != null) {
+                                AppCMSPageAPI watchlistAPI =
+                                        appCMSWatchlistResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
+                                watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+                                appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
+                                appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
 
-                    String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
-                    boolean usePageIdQueryParam = true;
-                    if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
-                        endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
-                        usePageIdQueryParam = false;
-                    }
+                                //Log.d(TAG, "Updated watched history for loaded displays");
+                            }
+                        });
+                    } else {
+                        String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
+                        boolean usePageIdQueryParam = true;
+                        if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
+                            endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
+                            usePageIdQueryParam = false;
+                        }
 
-                    if (!TextUtils.isEmpty(endPoint)) {
-                        String baseUrl = appCMSMain.getApiBaseUrl();
-                        String siteId = appCMSSite.getGist().getSiteInternalName();
-                        boolean viewPlans = appCMSPresenter.isViewPlanPage(endPoint);
-                        boolean showPage = appCMSPresenter.isShowPage(appCMSBinder.getPageId());
-                        String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
-                                viewPlans,
-                                showPage,
-                                baseUrl,
-                                endPoint,
-                                siteId,
-                                appCMSBinder.getPagePath());
+                        if (!TextUtils.isEmpty(endPoint)) {
+                            String baseUrl = appCMSMain.getApiBaseUrl();
+                            String siteId = appCMSSite.getGist().getSiteInternalName();
+                            boolean viewPlans = appCMSPresenter.isViewPlanPage(endPoint);
+                            boolean showPage = appCMSPresenter.isShowPage(appCMSBinder.getPageId());
+                            String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
+                                    viewPlans,
+                                    showPage,
+                                    baseUrl,
+                                    endPoint,
+                                    siteId,
+                                    appCMSBinder.getPagePath());
 
-                        appCMSPresenter.getPageIdContent(apiUrl,
-                                appCMSBinder.getPagePath(),
-                                appCMSPageAPI -> {
-                                    if (appCMSPageAPI != null) {
-                                        if (appCMSPresenter.isUserLoggedIn()) {
-                                            if (appCMSPageAPI.getModules() != null) {
-                                                for (Module module : appCMSPageAPI.getModules()) {
-                                                    AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
-                                                    if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
-                                                            moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
-                                                        appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
-                                                            if (appCMSHistoryResult != null) {
-                                                                AppCMSPageAPI historyAPI =
-                                                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                historyAPI.getModules().get(0).setId(module.getId());
-                                                                appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
-                                                                appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
+                            appCMSPresenter.getPageIdContent(apiUrl,
+                                    appCMSBinder.getPagePath(),
+                                    appCMSPageAPI -> {
+                                        if (appCMSPageAPI != null) {
+                                            if (appCMSPresenter.isUserLoggedIn()) {
+                                                if (appCMSPageAPI.getModules() != null) {
+                                                    for (Module module : appCMSPageAPI.getModules()) {
+                                                        AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
+                                                        if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY ||
+                                                                moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                                            appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
+                                                                if (appCMSHistoryResult != null) {
+                                                                    AppCMSPageAPI historyAPI =
+                                                                            appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                    historyAPI.getModules().get(0).setId(module.getId());
+                                                                    appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);
+                                                                    appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
 
-                                                                //Log.d(TAG, "Updated watched history for loaded displays");
-                                                            }
-                                                        });
+                                                                    //Log.d(TAG, "Updated watched history for loaded displays");
+                                                                }
+                                                            });
+                                                        }
                                                     }
                                                 }
                                             }
                                         }
-                                    }
-                                });
+                                    });
+                        }
                     }
                 }
             }

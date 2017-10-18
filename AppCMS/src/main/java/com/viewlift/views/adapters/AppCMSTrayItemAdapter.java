@@ -73,7 +73,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                  List<Component> components,
                                  AppCMSPresenter appCMSPresenter,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                 String viewType) {
+                                 String viewType,
+                                 RecyclerView listView) {
         this.adapterData = adapterData;
         this.sortData();
         this.components = components;
@@ -109,6 +110,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.setHasStableIds(false);
 
         sortData();
+
+        resetData(listView);
     }
 
     private void sortData() {
@@ -378,6 +381,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
         long lastWatched = contentDatum.getGist().getUpdateDate();
+
+        if (currentTime == 0) {
+            lastWatched = 0;
+        }
 
         long seconds = TimeUnit.MILLISECONDS.toSeconds(currentTime - lastWatched);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);

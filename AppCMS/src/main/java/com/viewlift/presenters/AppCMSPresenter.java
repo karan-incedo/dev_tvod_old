@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -43,7 +42,6 @@ import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -106,7 +104,6 @@ import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
-import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
 import com.viewlift.models.data.appcms.subscriptions.Receipt;
@@ -477,6 +474,8 @@ public class AppCMSPresenter {
     private MetaPage downloadPage;
     private MetaPage homePage;
     private MetaPage subscriptionPage;
+    private MetaPage historyPage;
+    private MetaPage watchlistPage;
     private PlatformType platformType;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
     private LaunchType launchType;
@@ -678,10 +677,6 @@ public class AppCMSPresenter {
         this.downloadInProgress = false;
     }
 
-    public void setCancelAllLoads(boolean cancelAllLoads) {
-        this.cancelAllLoads = cancelAllLoads;
-    }
-
     /*does not let user enter space in edittext*/
     public static void noSpaceInEditTextFilter(EditText passwordEditText, Context con) {
         /* To restrict Space Bar in Keyboard */
@@ -698,6 +693,10 @@ public class AppCMSPresenter {
             }
         };
         passwordEditText.setFilters(new InputFilter[]{filter});
+    }
+
+    public void setCancelAllLoads(boolean cancelAllLoads) {
+        this.cancelAllLoads = cancelAllLoads;
     }
 
     public Navigation getNavigation() {
@@ -1294,7 +1293,7 @@ public class AppCMSPresenter {
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
                     if (pagePath == null) {
-                        NavigationPrimary homePageNav=findHomePageNavItem();
+                        NavigationPrimary homePageNav = findHomePageNavItem();
                         if (navigateToPage(homePageNav.getPageId(),
                                 homePageNav.getTitle(),
                                 homePageNav.getUrl(),
@@ -2377,12 +2376,12 @@ public class AppCMSPresenter {
                     !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                     appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode)) {
                 showDialog(DialogType.CANCEL_SUBSCRIPTION, "Are you sure you want to cancel subscription?", true, new Action0() {
-                    @Override
-                    public void call() {
-                        sendSubscriptionCancellation();
-                    }
-                },
-                null);
+                            @Override
+                            public void call() {
+                                sendSubscriptionCancellation();
+                            }
+                        },
+                        null);
             } else {
                 String paymentProcessor = getActiveSubscriptionProcessor();
                 if (!TextUtils.isEmpty(getExistingGooglePlaySubscriptionId()) ||
@@ -2395,12 +2394,12 @@ public class AppCMSPresenter {
                 } else {
                     if ("CCAvenue".equalsIgnoreCase(paymentProcessor)) {
                         showDialog(DialogType.CANCEL_SUBSCRIPTION, "Are you sure you want to cancel subscription?", true, new Action0() {
-                            @Override
-                            public void call() {
-                                sendSubscriptionCancellation();
-                            }
-                        },
-                        null);
+                                    @Override
+                                    public void call() {
+                                        sendSubscriptionCancellation();
+                                    }
+                                },
+                                null);
                     }
                 }
             }
@@ -4049,8 +4048,7 @@ public class AppCMSPresenter {
                         @Override
                         public void call(AppCMSHistoryResult appCMSHistoryResult) {
                             cancelInternalEvents();
-                            pushActionInternalEvents(this.pageId
-                                    + BaseView.isLandscape(currentActivity));
+                            pushActionInternalEvents(this.pageId + BaseView.isLandscape(currentActivity));
 
                             AppCMSPageAPI pageAPI;
                             if (appCMSHistoryResult != null &&
@@ -6763,7 +6761,7 @@ public class AppCMSPresenter {
                             } catch (Exception e) {
 
                             }
-                });
+                        });
             } else {
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
                         (dialog, which) -> {
@@ -8938,6 +8936,16 @@ public class AppCMSPresenter {
                 splashPage = metaPageList.get(splashScreenIndex);
                 new SoftReference<Object>(splashPage, referenceQueue);
             }
+            int historyIndex = getHistoryPage(metaPageList);
+            if (historyIndex >= 0) {
+                historyPage = metaPageList.get(historyIndex);
+                new SoftReference<Object>(historyPage, referenceQueue);
+            }
+            int watchlistIndex = getWatchlistPage(metaPageList);
+            if (watchlistIndex >= 0) {
+                watchlistPage = metaPageList.get(watchlistIndex);
+                new SoftReference<Object>(watchlistPage, referenceQueue);
+            }
             int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
                     && !isUserLoggedIn()) {
@@ -9053,6 +9061,40 @@ public class AppCMSPresenter {
             }
         }
         return -1;
+    }
+
+    private int getHistoryPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public boolean isHistoryPage(String pageId) {
+        if (!TextUtils.isEmpty(pageId) && historyPage != null) {
+            return pageId.equals(historyPage.getPageId());
+        }
+        return false;
+    }
+
+    private int getWatchlistPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public boolean isWatchlistPage(String pageId) {
+        if (!TextUtils.isEmpty(pageId) && watchlistPage != null) {
+            return pageId.equals(watchlistPage.getPageId());
+        }
+        return false;
     }
 
     private int getSigninPage(List<MetaPage> metaPageList) {
