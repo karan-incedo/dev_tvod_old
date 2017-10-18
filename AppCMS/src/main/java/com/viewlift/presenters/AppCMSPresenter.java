@@ -2491,7 +2491,7 @@ public class AppCMSPresenter {
     public void editWatchlist(final String filmId,
                               final Action1<AppCMSAddToWatchlistResult> resultAction1, boolean add) {
         if (!isNetworkConnected()) {
-            if (!isUserLoggedIn()) {
+            if (!isUserSubscribed()) {
                 showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
                         () -> launchErrorActivity(PlatformType.ANDROID),
                         null);
@@ -6599,7 +6599,7 @@ public class AppCMSPresenter {
 
     public void openDownloadScreenForNetworkError(boolean launchActivity) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-            if (!isUserLoggedIn()) {//fix SVFA-1911
+            if (!isUserSubscribed()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, false,
                         () -> {
                             launchErrorActivity(PlatformType.ANDROID);
