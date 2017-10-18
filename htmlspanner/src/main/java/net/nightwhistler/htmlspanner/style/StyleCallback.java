@@ -87,7 +87,7 @@ public class StyleCallback implements SpanCallback {
 
             if ( styleValue.getUnit() == StyleValue.Unit.PX ) {
                 if ( styleValue.getIntValue() > 0 ) {
-                    // Log.d("StyleCallback", "Applying AbsoluteSizeSpan with size " + useStyle.getAbsoluteFontSize() + " from " + start + " to " + end + " on text " + builder.subSequence(start, end));
+                    // //Log.d("StyleCallback", "Applying AbsoluteSizeSpan with size " + useStyle.getAbsoluteFontSize() + " from " + start + " to " + end + " on text " + builder.subSequence(start, end));
                     builder.setSpan(new AbsoluteSizeSpan(styleValue.getIntValue()), start, end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
@@ -140,8 +140,8 @@ public class StyleCallback implements SpanCallback {
 
             int marginEnd = min( end, marginStart +1 );
 
-            Log.d("StyleCallback", "Applying LeadingMarginSpan from " + marginStart + " to " + marginEnd +
-                    " on text " + builder.subSequence(marginStart, marginEnd));
+            //Log.d("StyleCallback", "Applying LeadingMarginSpan from " + marginStart + " to " + marginEnd +
+//                    " on text " + builder.subSequence(marginStart, marginEnd));
 
             if ( styleValue.getUnit() == StyleValue.Unit.PX ) {
                 if ( styleValue.getIntValue() > 0 ) {

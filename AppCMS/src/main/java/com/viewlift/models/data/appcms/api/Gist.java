@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 @UseStag
-public class Gist {
+public class Gist implements Serializable {
 
     @SerializedName("id")
     @Expose
@@ -247,7 +249,10 @@ public class Gist {
     }
 
     public DownloadStatus getDownloadStatus() {
-        return DownloadStatus.valueOf(downloadStatus);
+        if (downloadStatus != null) {
+            return DownloadStatus.valueOf(downloadStatus);
+        }
+        return DownloadStatus.STATUS_PENDING;
     }
 
     public void setDownloadStatus(DownloadStatus downloadStatus) {

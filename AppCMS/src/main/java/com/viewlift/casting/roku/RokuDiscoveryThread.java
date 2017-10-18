@@ -54,7 +54,7 @@ public class RokuDiscoveryThread extends Thread {
                     System.out.println("********************** appUrl ********************" + appUrl);
                     this.client.handler.sendMessage(msg);
                 } catch (SocketTimeoutException ste) {
-                    Log.d(TAG, "SocketTimeoutException: "+ste.getLocalizedMessage());
+                    //Log.d(TAG, "SocketTimeoutException: "+ste.getLocalizedMessage());
                 }
                 readCount++;
             }
@@ -62,7 +62,7 @@ public class RokuDiscoveryThread extends Thread {
             //Tell the main UI that the Discover button can now be enabled again
             Message uiMsg = Message.obtain();
             uiMsg.what = RokuWrapper.DISCOVERY_COMPLETED_MESSAGE_ID;
-            Log.d(TAG, "sending result back to Wrapper");
+            //Log.d(TAG, "sending result back to Wrapper");
             this.client.handler.sendMessage(uiMsg);
         } catch (Exception e) {
             System.out.println(e);
@@ -95,7 +95,7 @@ public class RokuDiscoveryThread extends Thread {
 
             //print result
             String res = response.toString();
-            Log.d("App info response", res);
+            //Log.d("App info response", res);
 
             /*Intent intent = new Intent(this.client, AppInfoActivity.class);
             intent.putExtra("appInfo", res);

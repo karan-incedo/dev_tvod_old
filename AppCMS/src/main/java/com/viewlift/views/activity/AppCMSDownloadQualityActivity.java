@@ -62,7 +62,7 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
             fragmentTransaction.addToBackStack(TAG);
             fragmentTransaction.commit();
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to add Fragment to back stack");
+            //Log.e(TAG, "Failed to add Fragment to back stack");
         }
     }
 

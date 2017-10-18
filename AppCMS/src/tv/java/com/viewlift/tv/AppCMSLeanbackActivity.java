@@ -36,9 +36,9 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launch_tv);
-        Log.d(TAG, "Launching application from main.json");
+        //Log.d(TAG, "Launching application from main.json");
 
-        Log.d(TAG, "onCreate()");
+        //Log.d(TAG, "onCreate()");
         getAppCmsMain();
     }
 

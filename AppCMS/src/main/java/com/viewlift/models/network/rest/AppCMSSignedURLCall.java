@@ -33,8 +33,8 @@ public class AppCMSSignedURLCall {
     public AppCMSSignedURLResult call(String authToken, String url) {
         authHeaders.put("Authorization", authToken);
         try {
-            Log.d(TAG, "Auth token: " + authToken);
-            Log.d(TAG, "URL: " + url);
+            //Log.d(TAG, "Auth token: " + authToken);
+            //Log.d(TAG, "URL: " + url);
             Response<AppCMSSignedURLResult> appCMSSignedURLResultResponse =
                     appCMSSignedURLRest.get(url, authHeaders).execute();
             Headers headers = appCMSSignedURLResultResponse.headers();
@@ -55,8 +55,8 @@ public class AppCMSSignedURLCall {
             }
             return appCMSSignedURLResult;
         } catch (Exception e) {
-            Log.e(TAG, "Failed to retrieve signed URL response: " +
-                e.getMessage());
+            //Log.e(TAG, "Failed to retrieve signed URL response: " +
+//                e.getMessage());
         }
         return null;
     }

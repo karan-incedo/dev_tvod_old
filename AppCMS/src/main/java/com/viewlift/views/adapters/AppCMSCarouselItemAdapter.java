@@ -49,6 +49,8 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
     private boolean scrolled;
     private RecyclerView.OnScrollListener scrollListener;
 
+    private String moduleId;
+
     public AppCMSCarouselItemAdapter(Context context,
                                      ViewCreator viewCreator,
                                      AppCMSPresenter appCMSPresenter,
@@ -119,7 +121,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                             try {
                                 listView.smoothScrollToPosition(nextVisibleViewIndex);
                             } catch (Exception e) {
-                                Log.e(TAG, "Error scrolling to position: " + nextVisibleViewIndex);
+                                //Log.e(TAG, "Error scrolling to position: " + nextVisibleViewIndex);
                             }
                             sendEvent(new InternalEvent<Object>(nextVisibleViewIndex));
                             setUpdatedIndex(nextVisibleViewIndex);
@@ -310,6 +312,16 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         }
     }
 
+    @Override
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
+    }
+
+    @Override
+    public String getModuleId() {
+        return moduleId;
+    }
+
     public void postUpdateCarousel() {
         carouselHandler.postDelayed(carouselUpdater, UPDATE_CAROUSEL_TO);
     }
@@ -321,7 +333,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
             try {
                 listView.smoothScrollToPosition(updatedIndex);
             } catch (Exception e) {
-                Log.e(TAG, "Error scrolling to position: " + updatedIndex);
+                //Log.e(TAG, "Error scrolling to position: " + updatedIndex);
             }
             if (!fromEvent) {
                 sendEvent(new InternalEvent<Object>(index));

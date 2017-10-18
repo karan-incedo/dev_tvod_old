@@ -115,7 +115,7 @@ public class AppCMSUserDownloadVideoStatusCall {
 
         } catch (Exception e) {
 
-            Log.e(TAG, e.getMessage());
+            //Log.e(TAG, e.getMessage());
             Observable.just((UserVideoDownloadStatus) null).subscribe(readyAction1);
         }
     }

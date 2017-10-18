@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.ui.tv.FireTV;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 @UseStag
-public class Layout {
+public class Layout implements Serializable {
 
     @SerializedName("tabletPortrait")
     @Expose

@@ -12,5 +12,6 @@ import retrofit2.http.Url;
 
 public interface AppCMSPageUIRest {
     @GET
+    @Headers("Cache-Control: max-age=120")
     Call<AppCMSPageUI> get(@Url String url);
 }
