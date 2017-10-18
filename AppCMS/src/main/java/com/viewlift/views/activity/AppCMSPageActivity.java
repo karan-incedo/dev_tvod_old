@@ -1745,6 +1745,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     readyAction.call();
                 }
             });
+        } else if (appCMSPresenter.isWatchlistPage(appCMSBinder.getPageId())) {
+            appCMSPresenter.getWatchlistData(appCMSWatchlistResult -> {
+                if (appCMSWatchlistResult != null) {
+                    AppCMSPageAPI watchlistAPI =
+                            appCMSWatchlistResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
+                    watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+                    appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
+                    appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
+
+                    //Log.d(TAG, "Updated watched history for loaded displays");
+
+                    if (readyAction != null) {
+                        readyAction.call();
+                    }
+                } else if (readyAction != null) {
+                    readyAction.call();
+                }
+            });
         } else {
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;
@@ -1797,6 +1815,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         appCMSHistoryResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
                                 historyAPI.getModules().get(0).setId(appCMSBinder.getPageId());
                                 appCMSPresenter.mergeData(historyAPI, appCMSBinder.getAppCMSPageAPI());
+                                appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
+
+                                //Log.d(TAG, "Updated watched history for loaded displays");
+                            }
+                        });
+                    } else if (appCMSPresenter.isWatchlistPage(appCMSBinder.getPageId())) {
+                        appCMSPresenter.getWatchlistData(appCMSWatchlistResult -> {
+                            if (appCMSWatchlistResult != null) {
+                                AppCMSPageAPI watchlistAPI =
+                                        appCMSWatchlistResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
+                                watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
+                                appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
                                 appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
 
                                 //Log.d(TAG, "Updated watched history for loaded displays");

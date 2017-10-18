@@ -475,6 +475,7 @@ public class AppCMSPresenter {
     private MetaPage homePage;
     private MetaPage subscriptionPage;
     private MetaPage historyPage;
+    private MetaPage watchlistPage;
     private PlatformType platformType;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
     private LaunchType launchType;
@@ -8940,6 +8941,11 @@ public class AppCMSPresenter {
                 historyPage = metaPageList.get(historyIndex);
                 new SoftReference<Object>(historyPage, referenceQueue);
             }
+            int watchlistIndex = getWatchlistPage(metaPageList);
+            if (watchlistIndex >= 0) {
+                watchlistPage = metaPageList.get(watchlistIndex);
+                new SoftReference<Object>(watchlistPage, referenceQueue);
+            }
             int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
                     && !isUserLoggedIn()) {
@@ -9070,6 +9076,23 @@ public class AppCMSPresenter {
     public boolean isHistoryPage(String pageId) {
         if (!TextUtils.isEmpty(pageId) && historyPage != null) {
             return pageId.equals(historyPage.getPageId());
+        }
+        return false;
+    }
+
+    private int getWatchlistPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public boolean isWatchlistPage(String pageId) {
+        if (!TextUtils.isEmpty(pageId) && watchlistPage != null) {
+            return pageId.equals(watchlistPage.getPageId());
         }
         return false;
     }

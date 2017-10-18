@@ -147,6 +147,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_watchlist_navigation_title),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
+                AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
@@ -269,7 +271,7 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_forgotPasswordTitle_key),
                 AppCMSUIKeyType.RESET_PASSWORD_TITLE_KEY);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key) ,
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key),
                 AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
@@ -431,7 +433,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_ageLabel_key),
                 AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY);
-        jsonValueKeyMap.put(context.getString(R.string. app_cms_page_video_credits_director_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_credits_director_key),
                 AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_credits_directedby_key),
                 AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY);
@@ -548,7 +550,7 @@ public class AppCMSUIModule {
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_showscreen_key),
                 context.getString(R.string.app_cms_action_showvideopage_key));
 
-        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword) ,
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword),
                 context.getString(R.string.app_cms_action_forgotpassword_key));
 
     }
@@ -562,7 +564,7 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchlistpage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
-        this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key) , null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
     }
 
     private void createActionToPageAPIMap(Context context) {
@@ -572,7 +574,7 @@ public class AppCMSUIModule {
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
-        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_forgotpassword_key) , null);
+        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
     }
 
     private void createActionToActionTypeMap(Context context) {
