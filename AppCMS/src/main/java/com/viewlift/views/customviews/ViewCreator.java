@@ -22,7 +22,6 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1389,7 +1388,8 @@ public class ViewCreator {
                             component.getComponents(),
                             appCMSPresenter,
                             jsonValueKeyMap,
-                            viewType);
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
@@ -1983,13 +1983,13 @@ public class ViewCreator {
                             }
 
                             @Override
-                            public void setModuleId(String moduleId) {
-                                internalEventModuleId = moduleId;
+                            public String getModuleId() {
+                                return internalEventModuleId;
                             }
 
                             @Override
-                            public String getModuleId() {
-                                return internalEventModuleId;
+                            public void setModuleId(String moduleId) {
+                                internalEventModuleId = moduleId;
                             }
                         };
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
