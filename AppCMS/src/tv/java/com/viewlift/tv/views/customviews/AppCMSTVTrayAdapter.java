@@ -334,6 +334,16 @@ public class AppCMSTVTrayAdapter
 
     }
 
+    @Override
+    public void setModuleId(String moduleId) {
+
+    }
+
+    @Override
+    public String getModuleId() {
+        return null;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TVCollectionGridItemView componentView;
 
