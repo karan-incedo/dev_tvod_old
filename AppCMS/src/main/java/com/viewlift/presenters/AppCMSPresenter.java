@@ -5521,6 +5521,9 @@ public class AppCMSPresenter {
                             if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
                                 showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            } else if (!TextUtils.isEmpty(googleLoginResponse.getError())) {
+                                showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else {
                                 setAuthToken(googleLoginResponse.getAuthorizationToken());
                                 setRefreshToken(googleLoginResponse.getRefreshToken());
