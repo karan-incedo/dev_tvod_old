@@ -118,11 +118,6 @@ public class AppCMSPageFragment extends Fragment {
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
-            if (!BaseView.isTablet(getContext())) {
-                appCMSPresenter.restrictPortraitOnly();
-            } else {
-                appCMSPresenter.unrestrictPortraitOnly();
-            }
             onPageCreation.onSuccess(appCMSBinder);
         } else {
             //Log.e(TAG, "AppCMS page creation error");

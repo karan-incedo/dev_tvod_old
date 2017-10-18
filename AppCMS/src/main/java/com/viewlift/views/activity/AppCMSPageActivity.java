@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -193,6 +194,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         AppsFlyerLib.getInstance().startTracking(getApplication());
+
+        if (BaseView.isTablet(this)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
 
         setContentView(R.layout.activity_appcms_page);
 
@@ -620,6 +625,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+
+        if (!BaseView.isTablet(this)) {
+            appCMSPresenter.restrictPortraitOnly();
+        } else {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
+
         resume();
 
         appCMSPresenter.setCancelAllLoads(false);
@@ -645,6 +657,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 refreshPageData();
             }
         });
+
+
     }
 
     private void refreshPageData() {
@@ -1716,6 +1730,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
         final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
+        if
+
         String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
         boolean usePageIdQueryParam = true;
         if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
@@ -1759,6 +1775,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (Map.Entry<String, AppCMSBinder> appCMSBinderEntry : appCMSBinderMap.entrySet()) {
                 final AppCMSBinder appCMSBinder = appCMSBinderEntry.getValue();
                 if (appCMSBinder != null) {
+
+
                     String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
                     boolean usePageIdQueryParam = true;
                     if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
