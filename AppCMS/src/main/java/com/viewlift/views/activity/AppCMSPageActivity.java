@@ -193,8 +193,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        AppsFlyerLib.getInstance().startTracking(getApplication());
-
         if (BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
@@ -625,6 +623,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+
+        AppsFlyerLib.getInstance().startTracking(getApplication());
 
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
