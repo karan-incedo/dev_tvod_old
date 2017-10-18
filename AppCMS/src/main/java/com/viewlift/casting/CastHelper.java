@@ -689,7 +689,7 @@ public class CastHelper {
                     callRelatedVideoData();
                 } else {
                     if (appCMSPresenterComponenet.isAppSVOD() && !appCMSPresenterComponenet.isUserSubscribed()) {
-                        listRelatedVideosDetails = removeNonFreeVideos(listRelatedVideosDetails);
+                        removeNonFreeVideos();
                     }
                     castMediaListToRemoteLocation();
                     //Log.d(TAG, "Cast Media List ");
@@ -698,16 +698,26 @@ public class CastHelper {
         });
     }
 
-    List<ContentDatum> removeNonFreeVideos(List<ContentDatum> relatedVideoDetails) {
+    private void removeNonFreeVideos() {
+        List<Integer> freeMovieIndices = new ArrayList<>();
         List<ContentDatum> freeMovies = new ArrayList<>();
-        for (ContentDatum contentDatum : relatedVideoDetails) {
+        List<String> freeMovieIds = new ArrayList<>();
+        for (int i = 0; i < listRelatedVideosDetails.size(); i++) {
+            ContentDatum contentDatum = listRelatedVideosDetails.get(i);
             if (contentDatum != null &&
                     contentDatum.getGist() != null &&
                     contentDatum.getGist().getFree()) {
-                freeMovies.add(contentDatum);
+                freeMovieIndices.add(i);
             }
         }
-        return freeMovies;
+
+        for (int i = 0; i < freeMovieIndices.size(); i++) {
+            freeMovies.add(listRelatedVideosDetails.get(i));
+            freeMovieIds.add(listRelatedVideosId.get(i));
+        }
+
+        listRelatedVideosDetails = freeMovies;
+        listRelatedVideosId = freeMovieIds;
     }
 
     private void castMediaListToRemoteLocation() {
