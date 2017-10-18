@@ -1730,8 +1730,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
         final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
-        if
-
         String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
         boolean usePageIdQueryParam = true;
         if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
