@@ -415,12 +415,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }
 
-        if (BaseView.isTablet(this)) {
-            appCMSPresenter.unrestrictPortraitOnly();
-        }else{
-            appCMSPresenter.restrictPortraitOnly();
-        }
-
         super.onDestroy();
     }
 
