@@ -45,10 +45,13 @@ import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -129,6 +132,11 @@ public class AppCMSPlayVideoFragment extends Fragment
     private OnClosePlayerEvent onClosePlayerEvent;
     private BeaconPingThread beaconMessageThread;
     private long beaconMsgTimeoutMsec;
+
+    private String policyCookie;
+    private String signatureCookie;
+    private String keyPairIdCookie;
+
     private BeaconBufferingThread beaconBufferingThread;
     private long beaconBufferingTimeoutMsec;
     private boolean sentBeaconPlay;
@@ -200,7 +208,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                                                       String closedCaptionUrl,
                                                       String parentalRating,
                                                       long videoRunTime,
-                                                      boolean freeContent) {
+                                                      boolean freeContent,
+                                                      AppCMSSignedURLResult appCMSSignedURLResult) {
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
         args.putString(context.getString(R.string.video_player_font_color_key), fontColor);
@@ -220,6 +229,18 @@ public class AppCMSPlayVideoFragment extends Fragment
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
         args.putString(context.getString(R.string.video_player_content_rating_key), parentalRating);
+
+        if (appCMSSignedURLResult != null) {
+            appCMSSignedURLResult.parseKeyValuePairs();
+            args.putString(context.getString(R.string.signed_policy_key), appCMSSignedURLResult.getPolicy());
+            args.putString(context.getString(R.string.signed_signature_key), appCMSSignedURLResult.getSignature());
+            args.putString(context.getString(R.string.signed_keypairid_key), appCMSSignedURLResult.getKeyPairId());
+        } else {
+            args.putString(context.getString(R.string.signed_policy_key), "");
+            args.putString(context.getString(R.string.signed_signature_key), "");
+            args.putString(context.getString(R.string.signed_keypairid_key), "");
+        }
+
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -256,6 +277,10 @@ public class AppCMSPlayVideoFragment extends Fragment
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
 
             freeContent = args.getBoolean(getString(R.string.free_content_key));
+
+            policyCookie = args.getString(getString(R.string.signed_policy_key));
+            signatureCookie = args.getString(getString(R.string.signed_signature_key));
+            keyPairIdCookie = args.getString(getString(R.string.signed_keypairid_key));
         }
 
         hlsUrl = hlsUrl.replaceAll(" ", "+");
@@ -348,14 +373,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_video_player, container, false);
 
         videoPlayerMainContainer =
-                rootView.findViewById(R.id.app_cms_video_player_main_container);
+                (RelativeLayout) rootView.findViewById(R.id.app_cms_video_player_main_container);
 
         videoPlayerInfoContainer =
-                rootView.findViewById(R.id.app_cms_video_player_info_container);
+                (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
 
-        mMediaRouteButton = rootView.findViewById(R.id.media_route_button);
+        mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
-        videoPlayerTitleView = rootView.findViewById(R.id.app_cms_video_player_title_view);
+        videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);
 
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
@@ -366,7 +391,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         sendFirebaseAnalyticsEvents(title);
 
-        videoPlayerViewDoneButton = rootView.findViewById(R.id.app_cms_video_player_done_button);
+        videoPlayerViewDoneButton = (ImageButton) rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(v -> {
             if (onClosePlayerEvent != null) {
                 videoPlayerView.releasePlayer();
@@ -376,11 +401,23 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
-        videoPlayerView = rootView.findViewById(R.id.app_cms_video_player_container);
+        videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+
+        if (!TextUtils.isEmpty(policyCookie) &&
+                !TextUtils.isEmpty(signatureCookie) &&
+                !TextUtils.isEmpty(keyPairIdCookie)) {
+            CookieManager cookieManager = new CookieManager();
+            CookieHandler.setDefault(cookieManager);
+
+            videoPlayerView.setPolicyCookie(policyCookie);
+            videoPlayerView.setSignatureCookie(signatureCookie);
+            videoPlayerView.setKeyPairIdCookie(keyPairIdCookie);
+        }
+
         videoPlayerView.setListener(this);
         videoPlayerView.enableController();
 
-        videoLoadingProgress = rootView.findViewById(R.id.app_cms_video_loading);
+        videoLoadingProgress = (LinearLayout) rootView.findViewById(R.id.app_cms_video_loading);
 
         setCasting();
 
@@ -569,6 +606,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         }*/
 
         return rootView;
+
     }
 
     private void sendFirebaseAnalyticsEvents(String screenVideoName) {
@@ -968,32 +1006,32 @@ public class AppCMSPlayVideoFragment extends Fragment
     private void initViewForCRW(View rootView) {
 
         contentRatingMainContainer =
-                rootView.findViewById(R.id.app_cms_content_rating_main_container);
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_main_container);
 
         contentRatingAnimationContainer =
-                rootView.findViewById(R.id.app_cms_content_rating_animation_container);
+                (PercentRelativeLayout) rootView.findViewById(R.id.app_cms_content_rating_animation_container);
 
         contentRatingInfoContainer =
-                rootView.findViewById(R.id.app_cms_content_rating_info_container);
+                (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
 
-        contentRatingHeaderView = rootView.findViewById(R.id.app_cms_content_rating_header_view);
+        contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
         setTypeFace(getContext(), contentRatingHeaderView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingTitleHeader = rootView.findViewById(R.id.app_cms_content_rating_title_header);
+        contentRatingTitleHeader = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_header);
         setTypeFace(getContext(), contentRatingTitleHeader, getString(R.string.helvaticaneu_italic));
 
-        contentRatingTitleView = rootView.findViewById(R.id.app_cms_content_rating_title);
+        contentRatingTitleView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title);
         setTypeFace(getContext(), contentRatingTitleView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingDiscretionView = rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
+        contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
         setTypeFace(getContext(), contentRatingDiscretionView, getString(R.string.helvaticaneu_bold));
 
-        contentRatingBack = rootView.findViewById(R.id.app_cms_content_rating_back);
+        contentRatingBack = (TextView) rootView.findViewById(R.id.app_cms_content_rating_back);
         setTypeFace(getContext(), contentRatingBack, getContext().getString(R.string.helvaticaneu_bold));
 
         contentRatingBackUnderline = rootView.findViewById(R.id.app_cms_content_rating_back_underline);
 
-        progressBar = rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
+        progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
 
         if (!TextUtils.isEmpty(fontColor)) {
             contentRatingTitleHeader.setTextColor(Color.parseColor(fontColor));
@@ -1229,6 +1267,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         boolean sendBeaconPing;
         boolean isTrailer;
         int playbackState;
+
 
         public BeaconPingThread(long beaconMsgTimeoutMsec,
                                 AppCMSPresenter appCMSPresenter,

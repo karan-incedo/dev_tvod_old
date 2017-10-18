@@ -4,17 +4,21 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.nfc.Tag;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -109,6 +113,30 @@ public class Utils {
         return defaultWidth;
     }
 
+    public static float getItemViewHeight(Context context, Layout layout, float defaultHeight) {
+        if (layout != null) {
+            FireTV fireTV = layout.getTv();
+            float height = getItemViewHeight(fireTV);
+            if (height != -1.0f) {
+                return getViewYAxisAsPerScreen(context,(int)height);
+            }
+        }
+        return defaultHeight;
+    }
+
+
+    public static float getItemViewWidth(Context context, Layout layout, float defaultWidth) {
+        if (layout != null) {
+            FireTV fireTV = layout.getTv();
+            float width = getItemViewWidth(fireTV);
+            if (width != -1.0f) {
+                return getViewXAxisAsPerScreen(context,(int)width);
+               // return width;
+            }
+        }
+        return defaultWidth;
+    }
+
 
     public static int getViewXAxisAsPerScreen(Context context , int dimension){
         float dim  = context.getResources().getDisplayMetrics().widthPixels
@@ -194,6 +222,26 @@ public class Utils {
     }
 
 
+    public static float getItemViewHeight(FireTV fireTV) {
+        if (fireTV != null) {
+            if (fireTV.getHeight() != null) {
+                return Float.valueOf(fireTV.getItemHeight());
+            }
+        }
+        return -1.0f;
+    }
+
+
+    public static float getItemViewWidth(FireTV fireTV) {
+        if (fireTV != null) {
+            if (fireTV.getWidth() != null) {
+                return Float.valueOf(fireTV.getItemHeight());
+            }
+        }
+        return -1.0f;
+    }
+
+
 
     public static float getFontSizeKey(Context context, Layout layout) {
        {
@@ -220,6 +268,22 @@ public class Utils {
         res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent)));
         return res;
     }
+
+    public static Drawable getProgressDrawable(Context context , String unProgressColor , AppCMSPresenter appCMSPresenter) {
+        ShapeDrawable shape = new ShapeDrawable();
+        shape.getPaint().setStyle(Paint.Style.FILL);
+        shape.getPaint().setColor(Color.parseColor(getColor(context,unProgressColor)));
+        ShapeDrawable shapeD = new ShapeDrawable();
+        shapeD.getPaint().setStyle(Paint.Style.FILL);
+        shapeD.getPaint().setColor(
+                Color.parseColor(getFocusColor(context,appCMSPresenter)));
+        ClipDrawable clipDrawable = new ClipDrawable(shapeD, Gravity.LEFT,
+                ClipDrawable.HORIZONTAL);
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{
+                 shape , clipDrawable});
+        return layerDrawable;
+    }
+
 
     public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation){
         GradientDrawable focusedLayer = new GradientDrawable();
@@ -255,19 +319,39 @@ public class Utils {
      * @return
      */
     public static StateListDrawable getTrayBorder(Context context , String selectedColor , Component component){
+        boolean isEditText = false;
+        if(null != component){
+            isEditText = component.getType().equalsIgnoreCase(context.getString(R.string.app_cms_page_textfield_key));
+        }
+
         StateListDrawable res = new StateListDrawable();
-        res.addState(new int[]{android.R.attr.state_focused}, getBorder(context,selectedColor));
-        res.addState(new int[]{android.R.attr.state_pressed}, getBorder(context,selectedColor));
-        res.addState(new int[]{android.R.attr.state_selected}, getBorder(context,selectedColor));
-        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent)));
+        res.addState(new int[]{android.R.attr.state_focused}, getBorder(context,selectedColor,isEditText , component,false));
+        res.addState(new int[]{android.R.attr.state_pressed}, getBorder(context,selectedColor,isEditText , component,false));
+        res.addState(new int[]{android.R.attr.state_selected}, getBorder(context,selectedColor,isEditText, component , false));
+        if(isEditText)
+        res.addState(new int[]{} ,getBorder(context,selectedColor,isEditText, component , true) );
+        else
+        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
+                context,
+                android.R.color.transparent
+        )));
         return res;
     }
 
-    private static GradientDrawable getBorder(Context context , String borderColor){
+    private static GradientDrawable getBorder(Context context , String borderColor , boolean isEditText , Component component , boolean isNormalState){
         GradientDrawable ageBorder = new GradientDrawable();
         ageBorder.setShape(GradientDrawable.RECTANGLE);
+
+        if(isEditText)
+        ageBorder.setCornerRadius(component.getCornerRadius());
+
+        if(!isNormalState)
         ageBorder.setStroke(6,Color.parseColor(borderColor));
-        ageBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
+
+        ageBorder.setColor(ContextCompat.getColor(
+                context,
+                isEditText ? android.R.color.white : android.R.color.transparent
+        ));
         return ageBorder;
     }
 
@@ -434,6 +518,12 @@ public class Utils {
             color =  appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor();
         }
         return color;
+    }
+
+    public static double getPercentage(long runtime , long watchedTime){
+        double percentage = 0;
+        percentage = ((double)watchedTime / (double) runtime ) * 100;
+        return percentage;
     }
 
 }

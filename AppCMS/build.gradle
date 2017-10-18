@@ -5,11 +5,12 @@ def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 
-def final appVersionName = "2.0.49"
+def final appVersionName = "2.0.82"
 
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
+        google()
     }
 
     dependencies {
@@ -26,6 +27,7 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
+    google()
 }
 
 android {
@@ -35,10 +37,10 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 23
-        versionCode 81
+        versionCode 94
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 23
+        renderscriptTargetApi 26
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }
@@ -51,10 +53,11 @@ android {
             targetSdkVersion 25
         }
         tv {
-            minSdkVersion 23
-            compileSdkVersion 26
-            versionCode 105
-            versionName "1.0.5"
+
+            minSdkVersion 21
+            compileSdkVersion 25
+            versionCode 3010010
+            versionName "1.0.18"
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
@@ -163,13 +166,13 @@ dependencies {
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
-    compile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
+    mobileCompile "com.google.android.gms:play-services-gcm:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-auth:$rootProject.ext.googlePlayServicesVersion"
     compile "jp.wasabeef:glide-transformations:$rootProject.ext.glideTransformationVersion"
     compile("com.crashlytics.sdk.android:crashlytics:$rootProject.ext.crashlyticsVersion") {
         transitive = true
     }
-    compile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
+    mobileCompile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
     compile("com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
@@ -188,6 +191,7 @@ dependencies {
     compile "com.android.support:percent:$rootProject.ext.androidsupportVersion"
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
+    compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile project(':exoplayer-library')
     compile project(':library')

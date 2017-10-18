@@ -21,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.gms.cast.framework.CastContext;
+import com.viewlift.casting.roku.RokuDevice;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +63,10 @@ public class CastChooserDialog extends Dialog {
         this.routes = routes;
         Log.d("", "*******************setRoutes***************");
         for (Object obj : routes) {
-            Log.d(TAG, ((MediaRouter.RouteInfo) obj).getName());
+            if (obj instanceof RokuDevice)
+                Log.d("", ((RokuDevice) obj).getRokuDeviceName());
+            else
+                Log.d(TAG, ((MediaRouter.RouteInfo) obj).getName());
         }
         if (mAdapter != null) {
             activity.runOnUiThread(new Runnable(){
@@ -77,7 +81,7 @@ public class CastChooserDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.mr_chooser_dialog);
-        mListView = findViewById(R.id.mr_chooser_list);
+        mListView = (ListView) findViewById(R.id.mr_chooser_list);
         mListView.setOnItemClickListener(chooserDialogItemClickListener);
         mAdapter = new RouteAdapter(getContext(), routes);
         mListView.setAdapter(mAdapter);
@@ -105,8 +109,8 @@ public class CastChooserDialog extends Dialog {
             }
 
 
-            TextView text1 = view.findViewById(R.id.mr_chooser_route_name);
-            TextView text2 = view.findViewById(R.id.mr_chooser_route_desc);
+            TextView text1 = (TextView) view.findViewById(R.id.mr_chooser_route_name);
+            TextView text2 = (TextView) view.findViewById(R.id.mr_chooser_route_desc);
             text1.setTextSize(15);
             text2.setTextSize(12);
             if (getItem(position) instanceof MediaRouter.RouteInfo) {
@@ -126,9 +130,14 @@ public class CastChooserDialog extends Dialog {
                     text2.setText("");
                 }
 
+            } else {
+                text1.setGravity(Gravity.CENTER_VERTICAL);
+                text2.setVisibility(View.GONE);
+                text2.setText("");
+                text1.setText(((RokuDevice) getItem(position)).getRokuDeviceName());
             }
 
-            ImageView iconView = view.findViewById(R.id.mr_chooser_route_icon);
+            ImageView iconView = (ImageView) view.findViewById(R.id.mr_chooser_route_icon);
             if (iconView != null) {
                 iconView.setImageDrawable(getContext().getDrawable(R.drawable.ic_tv_24dp));
             }
@@ -156,5 +165,6 @@ public class CastChooserDialog extends Dialog {
 
     public interface CastChooserDialogEventListener {
         void onChromeCastDeviceSelect();
+        void onRokuDeviceSelected(RokuDevice selectedRokuDevice);
     }
 }

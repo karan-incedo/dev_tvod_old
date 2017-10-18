@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.viewlift.AppCMSApplication;
-import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.fragments.AppCMSErrorFragment;
 import com.viewlift.R;
@@ -75,15 +74,18 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                     new Timer().schedule(new TimerTask() {
                                              @Override
                                              public void run() {
-                                                 Intent relaunchApp = new Intent(AppCMSErrorActivity.this, AppCMSLaunchActivity.class);
-                                                 relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
-                                                 startActivity(relaunchApp);
-                                                 try {
-                                                     unregisterReceiver(networkConnectedReceiver);
-                                                 } catch (Exception e) {
-                                                     Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
+                                                 if (timerScheduled) {
+                                                     Intent relaunchApp = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                                                     relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
+                                                     startActivity(relaunchApp);
+                                                     try {
+                                                         unregisterReceiver(networkConnectedReceiver);
+                                                     } catch (Exception e) {
+                                                         Log.e(TAG, "Failed to unregister network receiver: " + e.getMessage());
+                                                     }
+                                                     finish();
+                                                     timerScheduled = false;
                                                  }
-                                                 timerScheduled = false;
                                              }
                                          }, 500);
                 }
@@ -104,8 +106,13 @@ public class AppCMSErrorActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        if (activeNetwork == null ||
+                !activeNetwork.isConnectedOrConnecting()) {
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
     }
 
     @Override
@@ -116,5 +123,18 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(TAG, "Failed to unregister Network Connectivity Receiver");
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        timerScheduled = false;
+        try {
+            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
+            ((AppCMSApplication) getApplication()).setCloseApp(this);
+        } catch (Exception e) {
+            Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
+        }
+        finish();
     }
 }

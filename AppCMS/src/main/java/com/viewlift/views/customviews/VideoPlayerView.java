@@ -42,6 +42,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSource;
@@ -53,7 +54,6 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
-import com.google.android.exoplayer2.upstream.DataSource.Factory;
 import com.viewlift.R;
 
 import java.io.IOException;
@@ -94,10 +94,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private Map<String, Integer> failedMediaSourceLoads;
 
     private int fullscreenResizeMode;
+    private Uri closedCaptionUri;
+
+    private String policyCookie;
+    private String signatureCookie;
+    private String keyPairIdCookie;
 
     public VideoPlayerView(Context context) {
         super(context);
-        this.uri = uri;
         init(context, null, 0);
     }
 
@@ -136,8 +140,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             Log.e(TAG, "Unsupported video format for URI: " + uri.toString());
         }
     }
-
-    private Uri closedCaptionUri;
 
     public void setUri(Uri videoUri, Uri closedCaptionUri) {
         this.uri = videoUri;
@@ -208,14 +210,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return -1L;
     }
 
-    public long getBitrate() {
-        return bitrate;
-    }
-
     public void setCurrentPosition(long currentPosition) {
         if (player != null) {
             player.seekTo(currentPosition);
         }
+    }
+
+    public long getBitrate() {
+        return bitrate;
     }
 
     public void setClosedCaptionEnabled(boolean closedCaptionEnabled) {
@@ -252,10 +254,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = findViewById(R.id.videoPlayerView);
+        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        ccToggleButton = playerView.findViewById(R.id.ccButton);
+        ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
@@ -271,6 +273,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         DefaultTrackSelector trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
 
+        trackSelector.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(getContext()));
+
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
         playerView.setPlayer(player);
@@ -279,7 +283,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 onPlayerControlsStateChanged.call(visibility);
             }
         });
-        player.addVideoListener(this);
+//        player.addVideoListener(this);
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
@@ -292,6 +296,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
+        if (mediaDataSourceFactory instanceof UpdatedUriDataSourceFactory) {
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).policyCookie = policyCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookie = signatureCookie;
+            ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).keyPairIdCookie = keyPairIdCookie;
+        }
+
         Format textFormat = Format.createTextSampleFormat(null,
                 MimeTypes.APPLICATION_SUBRIP,
                 C.SELECTION_FLAG_DEFAULT,
@@ -305,6 +315,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 mediaDataSourceFactory,
                 textFormat,
                 C.TIME_UNSET);
+
         // Plays the video with the side-loaded subtitle.
         return new MergingMediaSource(videoSource, subtitleSource);
     }
@@ -353,7 +364,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return new UpdatedUriDataSourceFactory(getContext(),
                 bandwidthMeter,
                 buildHttpDataSourceFactory(bandwidthMeter),
-                null);
+                policyCookie,
+                signatureCookie,
+                keyPairIdCookie);
     }
 
     private HttpDataSource.Factory buildHttpDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
@@ -396,7 +409,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onPlayerError(ExoPlaybackException e) {
-
         mCurrentPlayerPosition = player.getCurrentPosition();
     }
 
@@ -418,7 +430,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
-        bitrate=(trackFormat.bitrate/1000);
+        bitrate = (trackFormat.bitrate / 1000);
     }
 
     @Override
@@ -446,8 +458,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         /**
          * We can enhance logic here depending on the error code list that we will use for closing the video page.
          */
-        if ( (error.getMessage().contains("404") ||
-                error.getMessage().contains("400") )
+        if ((error.getMessage().contains("404") ||
+                error.getMessage().contains("400"))
                 && !isLoadedNext) {
             String failedMediaSourceLoadKey = dataSpec.uri.toString();
             if (failedMediaSourceLoads.containsKey(failedMediaSourceLoadKey)) {
@@ -506,6 +518,30 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         Log.d(TAG, "Rendered first frame");
     }
 
+    public String getPolicyCookie() {
+        return policyCookie;
+    }
+
+    public void setPolicyCookie(String policyCookie) {
+        this.policyCookie = policyCookie;
+    }
+
+    public String getSignatureCookie() {
+        return signatureCookie;
+    }
+
+    public void setSignatureCookie(String signatureCookie) {
+        this.signatureCookie = signatureCookie;
+    }
+
+    public String getKeyPairIdCookie() {
+        return keyPairIdCookie;
+    }
+
+    public void setKeyPairIdCookie(String keyPairIdCookie) {
+        this.keyPairIdCookie = keyPairIdCookie;
+    }
+
     public interface FinishListener {
         void onFinishCallback(String message);
     }
@@ -527,49 +563,67 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         private final Context context;
         private final TransferListener<? super DataSource> listener;
         private final DataSource.Factory baseDataSourceFactory;
-        private final String cdnCookie;
+        private String policyCookie;
+        private String signatureCookie;
+        private String keyPairIdCookie;
 
         /**
-         * @param context A context.
+         * @param context   A context.
          * @param userAgent The User-Agent string that should be used.
          */
-        public UpdatedUriDataSourceFactory(Context context, String userAgent, String cdnCookie) {
-            this(context, userAgent, null, cdnCookie);
+        public UpdatedUriDataSourceFactory(Context context, String userAgent, String policyCookie,
+                                           String signatureCookie, String keyPairIdCookie) {
+            this(context, userAgent, null, policyCookie, signatureCookie, keyPairIdCookie);
         }
 
         /**
-         * @param context A context.
+         * @param context   A context.
          * @param userAgent The User-Agent string that should be used.
-         * @param listener An optional listener.
+         * @param listener  An optional listener.
          */
         public UpdatedUriDataSourceFactory(Context context, String userAgent,
-                                        TransferListener<? super DataSource> listener,
-                                           String cdnCookie) {
-            this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener), cdnCookie);
+                                           TransferListener<? super DataSource> listener,
+                                           String policyCookie, String signatureCookie, String keyPairIdCookie) {
+            this(context, listener, new DefaultHttpDataSourceFactory(userAgent, listener), policyCookie,
+                    signatureCookie, keyPairIdCookie);
         }
 
         /**
-         * @param context A context.
-         * @param listener An optional listener.
+         * @param context               A context.
+         * @param listener              An optional listener.
          * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
-         *     for {@link DefaultDataSource}.
-         * @param cdnCookie The cookie used for accessing CDN protected data.
+         *                              for {@link DefaultDataSource}.
+         * @param policyCookie             The cookie used for accessing CDN protected data.
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
-                                        DataSource.Factory baseDataSourceFactory, String cdnCookie) {
+                                           DataSource.Factory baseDataSourceFactory, String policyCookie,
+                                           String signatureCookie, String keyPairIdCookie) {
             this.context = context.getApplicationContext();
             this.listener = listener;
             this.baseDataSourceFactory = baseDataSourceFactory;
-            this.cdnCookie = cdnCookie;
+            this.policyCookie = policyCookie;
+            this.signatureCookie = signatureCookie;
+            this.keyPairIdCookie = keyPairIdCookie;
         }
 
         @Override
         public UpdatedUriDataSource createDataSource() {
             return new UpdatedUriDataSource(context, listener, baseDataSourceFactory.createDataSource(),
-                    cdnCookie);
+                    policyCookie, signatureCookie, keyPairIdCookie);
         }
 
+        public String getPolicyCookie() {
+            return policyCookie;
+        }
+
+        public String getSignatureCookie() {
+            return signatureCookie;
+        }
+
+        public String getKeyPairIdCookie() {
+            return keyPairIdCookie;
+        }
     }
 
     private static class UpdatedUriDataSource implements DataSource {
@@ -580,7 +634,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         private final DataSource fileDataSource;
         private final DataSource assetDataSource;
         private final DataSource contentDataSource;
-        private final String cdnCookie;
+        private final String policyCookie;
+        private final String signatureCookie;
+        private final String keyPairIdCookie;
 
         private DataSource dataSource;
 
@@ -595,10 +651,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     String userAgent, boolean allowCrossProtocolRedirects,
-                                    String cdnCookie) {
+                                    String policyCookie, String signatureCookie, String keyPairIdCookie) {
             this(context, listener, userAgent, DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
                     DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS, allowCrossProtocolRedirects,
-                    cdnCookie);
+                    policyCookie, signatureCookie, keyPairIdCookie);
         }
 
         /**
@@ -616,11 +672,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     String userAgent, int connectTimeoutMillis, int readTimeoutMillis,
-                                    boolean allowCrossProtocolRedirects, String cdnCookie) {
+                                    boolean allowCrossProtocolRedirects, String policyCookie,
+                                    String signatureCookie, String keyPairIdCookie) {
             this(context, listener,
                     new DefaultHttpDataSource(userAgent, null, listener, connectTimeoutMillis,
                             readTimeoutMillis, allowCrossProtocolRedirects, null),
-                    cdnCookie);
+                    policyCookie, signatureCookie, keyPairIdCookie);
         }
 
         /**
@@ -634,12 +691,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          */
         public UpdatedUriDataSource(Context context, TransferListener<? super DataSource> listener,
                                     DataSource baseDataSource,
-                                    String cdnCookie) {
+                                    String policyCookie, String signatureCookie, String keyPairIdCookie) {
             this.baseDataSource = Assertions.checkNotNull(baseDataSource);
             this.fileDataSource = new FileDataSource(listener);
             this.assetDataSource = new AssetDataSource(context, listener);
             this.contentDataSource = new ContentDataSource(context, listener);
-            this.cdnCookie = cdnCookie;
+            this.policyCookie = policyCookie;
+            this.signatureCookie = signatureCookie;
+            this.keyPairIdCookie = keyPairIdCookie;
         }
 
         @Override
@@ -667,13 +726,49 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     dataSpec.length,
                     dataSpec.key);
 
+            if (dataSource instanceof DefaultHttpDataSource) {
+                if (!TextUtils.isEmpty(policyCookie) &&
+                        !TextUtils.isEmpty(signatureCookie) &&
+                        !TextUtils.isEmpty(keyPairIdCookie)) {
+                    StringBuilder cookies = new StringBuilder();
+                    cookies.append("CloudFront-Policy=");
+                    cookies.append(policyCookie);
+                    cookies.append("; ");
+                    cookies.append("CloudFront-Signature=");
+                    cookies.append(signatureCookie);
+                    cookies.append("; ");
+                    cookies.append("CloudFront-Key-Pair-Id=");
+                    cookies.append(keyPairIdCookie);
+                    ((DefaultHttpDataSource) dataSource).setRequestProperty("Cookie", cookies.toString());
+                }
+            }
+
             // Open the source and return.
             return dataSource.open(dataSpec);
         }
 
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
-            return dataSource.read(buffer, offset, readLength);
+            int result = 0;
+            if (dataSource instanceof FileDataSource) {
+                try {
+                    long bytesRead = 0 ;//((FileDataSource) dataSource).getBytesRead();
+                    result = dataSource.read(buffer, offset, readLength);
+                    for (int i = 0; i < 10 - bytesRead && i < readLength; i++) {
+                        if (~buffer[i] >= -128 && ~buffer[i] <= 127) {
+                            buffer[i + offset] = (byte) ~buffer[i + offset];
+                        }
+                    }
+                    return result;
+                } catch (Exception e) {
+                    Log.w(TAG, "Failed to retrieve number of bytes read from file input stream: " +
+                        e.getMessage());
+                    result = dataSource.read(buffer, offset, readLength);
+                }
+            } else {
+                result = dataSource.read(buffer, offset, readLength);
+            }
+            return result;
         }
 
         @Override

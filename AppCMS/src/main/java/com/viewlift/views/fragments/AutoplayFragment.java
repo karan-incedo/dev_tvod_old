@@ -117,8 +117,8 @@ public class AutoplayFragment extends Fragment {
         }
 
         if (pageView != null) {
-            tvCountdown = pageView.findViewById(R.id.countdown_id);
-            Button playButton = pageView.findViewById(R.id.autoplay_play_button);
+            tvCountdown = (TextView) pageView.findViewById(R.id.countdown_id);
+            Button playButton = (Button) pageView.findViewById(R.id.autoplay_play_button);
 
             if (playButton != null) {
                 playButton.setOnClickListener(v -> {
@@ -252,6 +252,7 @@ public class AutoplayFragment extends Fragment {
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         binder.getAppCMSPageUI(),
                         binder.getAppCMSPageAPI(),
+                        appCMSPresenter.getAppCMSAndroidModules(),
                         binder.getScreenName(),
                         binder.getJsonValueKeyMap(),
                         appCMSPresenter))

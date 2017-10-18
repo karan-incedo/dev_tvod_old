@@ -24,7 +24,7 @@ public class AppCMSErrorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_error_page, container, false);
-        TextView errorTextView = view.findViewById(R.id.app_cms_error_textview);
+        TextView errorTextView = (TextView) view.findViewById(R.id.app_cms_error_textview);
         errorTextView.setText(Html.fromHtml(getString(R.string.error_loading_page)));
         return view;
     }

@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -20,6 +21,8 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
 
 import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
+
+import com.google.android.gms.iid.InstanceID;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
@@ -46,6 +49,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         Log.d(TAG, "Search query (optional): " + searchQuery);
         appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+
+        appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
 
         if (!BaseView.isTablet(this)) {
             appCMSPresenterComponent.appCMSPresenter().restrictPortraitOnly();
@@ -85,6 +90,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 }
             }
         };
+
+        UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+        Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
     @Override
@@ -148,11 +156,15 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         }
 
         if (appCMSPresenterComponent != null) {
-            appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                    getString(R.string.app_cms_app_name),
-                    searchQuery,
-                    AppCMSPresenter.PlatformType.ANDROID,
-                    forceReloadFromNetwork);
+            try {
+                appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
+                        getString(R.string.app_cms_app_name),
+                        searchQuery,
+                        AppCMSPresenter.PlatformType.ANDROID,
+                        forceReloadFromNetwork);
+            } catch (Exception e) {
+                Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
+            }
         }
     }
 
@@ -175,5 +187,17 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        try {
+            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
+            ((AppCMSApplication) getApplication()).setCloseApp(this);
+        } catch (Exception e) {
+            Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
+        }
+        finish();
     }
 }

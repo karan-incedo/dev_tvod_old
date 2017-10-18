@@ -35,6 +35,7 @@ public class AppCMSTVPageViewModule {
     private final AppCMSPresenter appCMSPresenter;
     private final List<String> modulesToIgnoreList;
     private TVViewCreator viewCreator;
+    private boolean isFromLoginDialog;
 
     public AppCMSTVPageViewModule(Context context,
                                   AppCMSPageUI appCMSPageUI,
@@ -49,6 +50,25 @@ public class AppCMSTVPageViewModule {
         this.modulesToIgnoreList =
                 Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules_to_ignore));
     }
+
+
+    public AppCMSTVPageViewModule(Context context,
+                                  AppCMSPageUI appCMSPageUI,
+                                  AppCMSPageAPI appCMSPageAPI,
+                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                  AppCMSPresenter appCMSPresenter,
+                                  boolean isFromLoginDialog) {
+        this.context = context;
+        this.appCMSPageUI = appCMSPageUI;
+        this.appCMSPageAPI = appCMSPageAPI;
+        this.jsonValueKeyMap = jsonValueKeyMap;
+        this.appCMSPresenter = appCMSPresenter;
+        this.modulesToIgnoreList =
+                Arrays.asList(context.getResources().getStringArray(R.array.app_cms_modules_to_ignore));
+        this.isFromLoginDialog = isFromLoginDialog;
+    }
+
+
 
     @Provides
     @Singleton
@@ -67,6 +87,7 @@ public class AppCMSTVPageViewModule {
                 appCMSPageAPI,
                 jsonValueKeyMap,
                 appCMSPresenter,
-                modulesToIgnoreList);
+                modulesToIgnoreList,
+                isFromLoginDialog);
     }
 }

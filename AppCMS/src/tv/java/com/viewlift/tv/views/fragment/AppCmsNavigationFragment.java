@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -18,15 +19,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
-import com.viewlift.R;
+import java.util.List;
+
+import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -202,19 +207,38 @@ public class AppCmsNavigationFragment extends Fragment {
                                 ((AppCmsHomeActivity)getActivity()).pageLoading(false);
                             }else if(primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label ,
                                     getString(R.string.profile_label)))){
-                                /*appCmsPresenter.openMyProfile();*/
-                                appCmsPresenter.navigateToTVPage(
-                                        navigation.getNavigationUser().get(0).getPageId(),
-                                        navigation.getNavigationUser().get(0).getTitle(),
-                                        navigation.getNavigationUser().get(0).getUrl(),
-                                        false,
-                                        null
-                                );
+
+                                NavigationUser navigationUser = getNavigationUser();
+                                Log.d("","Selected Title = "+navigationUser.getTitle());
+                                if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
+                                        .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
+                                    appCmsPresenter.navigateToWatchlistPage(
+                                            navigationUser.getPageId(),
+                                            navigationUser.getTitle(),
+                                            navigationUser.getUrl(),
+                                            false);
+                                } else {
+                                    appCmsPresenter.navigateToTVPage(
+                                            navigationUser.getPageId(),
+                                            navigationUser.getTitle(),
+                                            navigationUser.getUrl(),
+                                            false,
+                                            Uri.EMPTY,
+                                            false,
+                                            false,
+                                            false
+                                    );
+                                }
+
                             }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),
                                     false,
-                                    null)) {
+                                    null,
+                                    true,
+                                    false,
+                                    false)) {
+
                             }
                         }
                     } , 500);
@@ -222,6 +246,17 @@ public class AppCmsNavigationFragment extends Fragment {
             });
         }
 
+        private NavigationUser getNavigationUser(){
+             List<NavigationUser> navigationUserList = navigation.getNavigationUser();
+                for(NavigationUser navigationUser : navigationUserList){
+                if(appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedIn()){
+                    return navigationUser;
+                }else if(!appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedOut()){
+                    return navigationUser;
+                }
+            }
+             return null;
+        }
         @Override
         public int getItemCount() {
             int totalCount = 0;

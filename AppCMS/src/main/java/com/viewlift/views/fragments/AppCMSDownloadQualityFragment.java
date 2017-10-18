@@ -105,9 +105,9 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
 
         if (pageView != null) {
 
-            RecyclerView listDownloadQuality = pageView.findViewById(R.id.download_quality_selection_list);
-            Button continueButton = pageView.findViewById(R.id.download_quality_continue_button);
-            Button cancelButton = pageView.findViewById(R.id.download_quality_cancel_button);
+            RecyclerView listDownloadQuality = (RecyclerView) pageView.findViewById(R.id.download_quality_selection_list);
+            Button continueButton = (Button) pageView.findViewById(R.id.download_quality_continue_button);
+            Button cancelButton = (Button) pageView.findViewById(R.id.download_quality_cancel_button);
 
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
@@ -200,6 +200,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
                     .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                             binder.getAppCMSPageUI(),
                             binder.getAppCMSPageAPI(),
+                            appCMSPresenter.getAppCMSAndroidModules(),
                             binder.getScreenName(),
                             binder.getJsonValueKeyMap(),
                             appCMSPresenter))

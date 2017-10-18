@@ -47,6 +47,10 @@ public class GoogleLoginResponse {
     @Expose
     boolean isSubscribed;
 
+    @SerializedName("error")
+    @Expose
+    String error;
+
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -117,5 +121,13 @@ public class GoogleLoginResponse {
 
     public void setSubscribed(boolean subscribed) {
         isSubscribed = subscribed;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 }

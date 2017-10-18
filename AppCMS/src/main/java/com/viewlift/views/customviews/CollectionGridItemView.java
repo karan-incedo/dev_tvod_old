@@ -296,7 +296,8 @@ public class CollectionGridItemView extends BaseView {
                                         }
 
                                         @Override
-                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform, int outWidth, int outHeight) {
+                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+                                                                   int outWidth, int outHeight) {
                                             int width = toTransform.getWidth();
                                             int height = toTransform.getHeight();
 
@@ -347,6 +348,29 @@ public class CollectionGridItemView extends BaseView {
                         } catch (IllegalArgumentException e) {
                             Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
+                    } else if (data.getGist().getImageGist() != null &&
+                            !TextUtils.isEmpty(data.getGist().getImageGist()
+                                    .getBadgeImageUrl().get_3x4())) {
+
+                        // TODO: 10/12/17 - Finish badge implementation.
+                        Log.d(TAG, "Loading badge: " + data.getGist().getImageGist()
+                                .getBadgeImageUrl().get_3x4());
+//                        Glide.with(context)
+//                                .load(data.getGist().getImageGist().getBadgeImageUrl().get_3x4())
+//                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+//                                .transform(new BitmapTransformation(context) {
+//                                    @Override
+//                                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+//                                                               int outWidth, int outHeight) {
+//                                        return null;
+//                                    }
+//
+//                                    @Override
+//                                    public String getId() {
+//                                        return null;
+//                                    }
+//                                })
+//                                .into((ImageView) view);
                     }
                     bringToFront = false;
                 }
@@ -462,6 +486,7 @@ public class CollectionGridItemView extends BaseView {
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
+
                             stringBuilder.append(formattedRecurringPaymentAmount);
                             ((TextView) view).setText(stringBuilder.toString());
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());

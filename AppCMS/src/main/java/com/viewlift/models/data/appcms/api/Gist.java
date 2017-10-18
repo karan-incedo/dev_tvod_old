@@ -52,6 +52,10 @@ public class Gist {
     @Expose
     String videoImageUrl;
 
+    @SerializedName("imageGist")
+    @Expose
+    ImageGist imageGist;
+
     @SerializedName("addedDate")
     @Expose
     long addedDate;
@@ -85,7 +89,6 @@ public class Gist {
     int watchedPercentage;
 
     String downloadStatus;
-
     /**
      * This is to store the url of the downloaded file
      */
@@ -257,5 +260,13 @@ public class Gist {
 
     public void setLocalFileUrl(String localFileUrl) {
         this.localFileUrl = localFileUrl;
+    }
+
+    public ImageGist getImageGist() {
+        return imageGist;
+    }
+
+    public void setImageGist(ImageGist imageGist) {
+        this.imageGist = imageGist;
     }
 }

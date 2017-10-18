@@ -1,2 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <integer name="app_cms_tv_login_input_horizontal_margin">16</integer>
+</resources>

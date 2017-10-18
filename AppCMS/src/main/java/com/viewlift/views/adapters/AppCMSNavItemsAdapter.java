@@ -2,6 +2,7 @@ package com.viewlift.views.adapters;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -40,6 +41,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
     private int numUserItems;
     private int numFooterItems;
     private boolean itemSelected;
+    private int numItemClickedPosition = -1;
 
     public AppCMSNavItemsAdapter(Navigation navigation,
                                  AppCMSPresenter appCMSPresenter,
@@ -85,11 +87,20 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             }
         }
 
+        if (getClickedItemPosition() == i) {
+            viewHolder.navItemSelector.setVisibility(View.VISIBLE);
+            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+            viewHolder.navItemLabel.setTypeface(null, Typeface.BOLD);
+        } else {
+            viewHolder.navItemSelector.setVisibility(View.INVISIBLE);
+        }
+
         if (navigation.getNavigationPrimary() != null &&
                 (i + indexOffset) < navigation.getNavigationPrimary().size() &&
                 i < numPrimaryItems) {
 
             final NavigationPrimary navigationPrimary = navigation.getNavigationPrimary().get(i + indexOffset);
+
             if (navigationPrimary.getAccessLevels() != null) {
                 if ((userLoggedIn && navigationPrimary.getAccessLevels().getLoggedIn()) ||
                         !userLoggedIn && navigationPrimary.getAccessLevels().getLoggedOut() ||
@@ -100,7 +111,9 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                     // TODO: 9/8/17 Implement Expandable ListView.
 
                     viewHolder.itemView.setOnClickListener(v -> {
-                        viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                        setClickedItemPosition(i);
+                        notifyDataSetChanged();
+                        Log.d(TAG, "Navigating to page with Title position: " + i);
                         Log.d(TAG, "Navigating to page with Title: " + navigationPrimary.getTitle());
                         AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationPrimary.getTitle());
                         if (titleKey == null) {
@@ -152,7 +165,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.navItemLabel.setText(navigationUser.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
-                            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                            setClickedItemPosition(i);
+                            notifyDataSetChanged();
+                            Log.d(TAG, "Navigating to page with Title position: " + i);
+
                             appCMSPresenter.cancelInternalEvents();
                             AppCMSUIKeyType titleKey = jsonValueKeyMap.get(navigationUser.getTitle());
                             if (titleKey == null) {
@@ -188,6 +204,18 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     break;
 
                                 case ANDROID_HISTORY_NAV_KEY:
+                                    if (!appCMSPresenter.isNetworkConnected()) {
+                                        if (!appCMSPresenter.isUserLoggedIn()) {
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                                            return;
+                                        }
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                                                true,
+                                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                                        null, null, false));
+                                        return;
+                                    }
                                     appCMSPresenter.getCurrentActivity()
                                             .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                                     appCMSPresenter.navigateToHistoryPage(navigationUser.getPageId(),
@@ -237,7 +265,9 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         viewHolder.navItemLabel.setText(navigationFooter.getTitle().toUpperCase());
                         viewHolder.navItemLabel.setTextColor(textColor);
                         viewHolder.itemView.setOnClickListener(v -> {
-                            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                            setClickedItemPosition(i);
+                            notifyDataSetChanged();
+                            Log.d(TAG, "Navigating to page with Title position: " + i);
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
                             if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
@@ -348,6 +378,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
     public void setItemSelected(boolean itemSelected) {
         this.itemSelected = itemSelected;
+    }
+
+    public int getClickedItemPosition() {
+        return numItemClickedPosition;
+    }
+
+    public void setClickedItemPosition(int itemSelectedPosition) {
+        this.numItemClickedPosition = itemSelectedPosition;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

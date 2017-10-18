@@ -337,8 +337,8 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             public ImageView id_iv_card ;
             public ViewHolder(View v) {
                 super(v);
-                id_tv_payment_options = v.findViewById(R.id.id_tv_payment_options);
-                id_iv_card = v.findViewById(R.id.id_iv_card) ;
+                id_tv_payment_options = (TextView) v.findViewById(R.id.id_tv_payment_options);
+                id_iv_card = (ImageView) v.findViewById(R.id.id_iv_card);
             }
 
             public void bind(final PaymentOptionDTO item, final OnItemClickListener listener) {

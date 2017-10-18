@@ -71,7 +71,7 @@ public class AppCMSCCAvenueFragment extends DialogFragment {
 
     private void setBgColor(int bgColor, View view) {
         RelativeLayout appCMSNavigationMenuMainLayout =
-                view.findViewById(R.id.app_cms_navigation_menu_main_layout);
+                (RelativeLayout) view.findViewById(R.id.app_cms_navigation_menu_main_layout);
         appCMSNavigationMenuMainLayout.setBackgroundColor(bgColor);
     }
 }
