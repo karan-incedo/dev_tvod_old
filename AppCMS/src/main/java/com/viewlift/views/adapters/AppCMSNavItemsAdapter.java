@@ -121,8 +121,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         }
 
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                            appCMSPresenter.navigateToSubscriptionPlansPage(null,
-                                    null);
+                            appCMSPresenter.navigateToSubscriptionPlansPage(true);
                         } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),

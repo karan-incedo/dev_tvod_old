@@ -1371,7 +1371,7 @@ public class AppCMSPresenter {
                         sendSignUpEmailFirebase();
                     } else if (actionType == AppCMSActionType.START_TRIAL) {
                         //Log.d(TAG, "Start Trial selected");
-                        navigateToSubscriptionPlansPage(null, null);
+                        navigateToSubscriptionPlansPage(false);
                     } else if (actionType == AppCMSActionType.EDIT_PROFILE) {
                         launchEditProfilePage();
                     } else if (actionType == AppCMSActionType.CHANGE_PASSWORD) {
@@ -1396,7 +1396,7 @@ public class AppCMSPresenter {
                                                 !upgradesAvailableForUser())) {
                                     showEntitlementDialog(DialogType.UPGRADE_UNAVAILABLE, null);
                                 } else {
-                                    navigateToSubscriptionPlansPage(null, null);
+                                    navigateToSubscriptionPlansPage(false);
                                 }
                             } else if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
                                 String paymentProcessor = getActiveSubscriptionProcessor();
@@ -4193,7 +4193,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void navigateToSubscriptionPlansPage(String previousPageId, String previousPageName) {
+    public void navigateToSubscriptionPlansPage(boolean loginFromNavPage) {
+        this.loginFromNavPage = loginFromNavPage;
         if (subscriptionPage != null) {
             launchType = LaunchType.SUBSCRIBE;
             boolean launchSuccess = navigateToPage(subscriptionPage.getPageId(),
@@ -6513,7 +6514,7 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToSubscriptionPlansPage(null, null);
+                                navigateToSubscriptionPlansPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
@@ -6570,7 +6571,7 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToSubscriptionPlansPage(null, null);
+                                navigateToSubscriptionPlansPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
@@ -10314,6 +10315,10 @@ public class AppCMSPresenter {
             }
         }
         return null;
+    }
+
+    public boolean getLoginFromNavPage() {
+        return loginFromNavPage;
     }
 
     public enum LaunchType {
