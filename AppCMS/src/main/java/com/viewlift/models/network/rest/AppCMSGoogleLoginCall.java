@@ -51,6 +51,8 @@ public class AppCMSGoogleLoginCall {
                     } catch (Exception e) {
                         Observable.just((GoogleLoginResponse) null).subscribe(responseAction1);
                     }
+                } else {
+                    Observable.just((GoogleLoginResponse) null).subscribe(responseAction1);
                 }
             }
 
