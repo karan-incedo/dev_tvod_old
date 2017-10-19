@@ -198,7 +198,8 @@ public class LoginModule extends ModuleView {
                                         appCMSPresenter.navigateToSubscriptionPlansPage(null,
                                                 null);
                                         appCMSPresenter.sendCloseOthersAction(null,
-                                                true);
+                                                true,
+                                                false);
                                     } else {
                                         appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                                     }

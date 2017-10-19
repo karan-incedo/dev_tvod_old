@@ -2032,7 +2032,9 @@ public class ViewCreator {
 
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
+                            if (!appCMSPresenter.sendCloseOthersAction(null,
+                                    true,
+                                    false)) {
                                 //Log.e(TAG, "Could not perform close action: " +
 //                                        " action: " +
 //                                        component.getAction());
@@ -2048,7 +2050,9 @@ public class ViewCreator {
                         if (jsonValueKeyMap.get(moduleAPI.getModuleType())
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                             componentViewResult.componentView.setOnClickListener(v -> {
-                                if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
+                                if (!appCMSPresenter.sendCloseOthersAction(null,
+                                        true,
+                                        false)) {
                                     //Log.e(TAG, "Could not perform close action: " +
 //                                            " action: " +
 //                                            component.getAction());

@@ -64,7 +64,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
             }
         };
 
-        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
+        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false, false);
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -138,7 +138,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
         super.onBackPressed();
         timerScheduled = false;
         try {
-            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
+            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false, false);
             ((AppCMSApplication) getApplication()).setCloseApp(this);
         } catch (Exception e) {
             //Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());

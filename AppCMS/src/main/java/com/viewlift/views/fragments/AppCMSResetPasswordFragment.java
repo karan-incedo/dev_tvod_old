@@ -73,7 +73,9 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 appCMSPresenter.resetPassword(appCMSResetPasswordEmailInput.getText().toString());
-                appCMSPresenter.sendCloseOthersAction(null, true);
+                appCMSPresenter.sendCloseOthersAction(null,
+                        true,
+                        false);
             }
         });
         appCMSSubmitResetPasswordButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));

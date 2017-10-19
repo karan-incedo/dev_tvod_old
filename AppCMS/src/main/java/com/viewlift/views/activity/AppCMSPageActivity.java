@@ -283,9 +283,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     boolean closeSelf = intent.getBooleanExtra(getString(R.string.close_self_key),
                             false);
+                    boolean closeOnePage = intent.getBooleanExtra(getString(R.string.close_one_page_key),
+                            false);
                     if (closeSelf && !handlingClose && appCMSBinderStack.size() > 1) {
                         handlingClose = true;
-                        handleCloseAction();
+                        handleCloseAction(closeOnePage);
                         for (String appCMSBinderKey : appCMSBinderStack) {
                             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderKey);
                             if (appCMSBinder != null) {
@@ -411,7 +413,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                             //Log.e(TAG, "Null pointer exception attempting to parse JSON: " + npe.getMessage());
                                         }
                                         if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                                            handleCloseAction();
+                                            handleCloseAction(false);
                                         }
                                         appCMSPresenter.setFacebookAccessToken(
                                                 AppCMSPageActivity.this.accessToken.getToken(),
@@ -443,7 +445,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         initPageActivity();
 
-        appCMSPresenter.sendCloseOthersAction(null, false);
+        appCMSPresenter.sendCloseOthersAction(null, false, false);
 
 //        Log.d(TAG, "onCreate()");
 
@@ -517,7 +519,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     }
-                    appCMSPresenter.sendCloseOthersAction(null, true);
+                    appCMSPresenter.sendCloseOthersAction(null, true, false);
                 }
         );
 
@@ -600,7 +602,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             handlingClose = true;
-            handleCloseAction();
+            handleCloseAction(false);
             handlingClose = false;
         } else if (isPageLoading()) {
             pageLoading(false);
@@ -792,7 +794,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (result != null && result.isSuccess()) {
                     //Log.d(TAG, "Google Signin Status Message: " + result.getStatus().getStatusMessage());
                     if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                        handleCloseAction();
+                        handleCloseAction(false);
                     }
                     appCMSPresenter.setGoogleAccessToken(result.getSignInAccount().getIdToken(),
                             result.getSignInAccount().getId(),
@@ -825,11 +827,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (retry) {
                             appCMSPresenter.initiateItemPurchase();
                         } else {
-                            appCMSPresenter.sendCloseOthersAction(null, true);
+                            appCMSPresenter.sendCloseOthersAction(null, true, false);
                         }
                     });
                 } else {
-                    appCMSPresenter.sendCloseOthersAction(null, true);
+                    appCMSPresenter.sendCloseOthersAction(null, true, false);
                 }
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -1051,7 +1053,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         isActive = true;
 
         if (shouldSendCloseOthersAction && appCMSPresenter != null) {
-            appCMSPresenter.sendCloseOthersAction(null, false);
+            appCMSPresenter.sendCloseOthersAction(null, false, false);
             shouldSendCloseOthersAction = false;
         }
 
@@ -1952,7 +1954,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    private void handleCloseAction() {
+    private void handleCloseAction(boolean closeOnePage) {
         //Log.d(TAG, "Received Presenter Close Action: fragment count = "
 //                + getSupportFragmentManager().getBackStackEntryCount());
         if (!appCMSBinderStack.isEmpty()) {
@@ -1971,9 +1973,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             boolean leavingExtraPage = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=
                     AppCMSPresenter.ExtraScreenType.NONE;
 
+            boolean recurse = !closeOnePage &&
+                    appCMSPresenter.isPageAVideoPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getScreenName());
+
             handleBack(true,
                     false,
-                    appCMSPresenter.isPageAVideoPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getScreenName()),
+                    recurse,
                     true);
 
             if (appCMSBinderStack.isEmpty()) {

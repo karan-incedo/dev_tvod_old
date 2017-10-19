@@ -102,7 +102,11 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSNavLoginContainer.setVisibility(View.GONE);
                 ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
             } else {
-                ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                if (!BaseView.isTablet(getContext())) {
+                    ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                } else {
+                    ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
+                }
                 appCMSNavLoginContainer.setVisibility(View.VISIBLE);
                 View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
                 appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
@@ -113,7 +117,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSNavLoginButton.setOnClickListener(v -> {
                     if (appCMSPresenter != null) {
                         appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
-                        appCMSPresenter.navigateToLoginPage();
+                        appCMSPresenter.navigateToLoginPage(true);
                         Bundle bundle = new Bundle();
                         bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
                         String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;

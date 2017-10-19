@@ -539,6 +539,8 @@ public class AppCMSPresenter {
 
     private boolean downloadInProgress;
 
+    private boolean loginFromNavPage;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -656,7 +658,7 @@ public class AppCMSPresenter {
         this.referenceQueue = referenceQueue;
 
         this.entitlementCheckActive = new EntitlementCheckActive(() -> {
-            sendCloseOthersAction(null, true);
+            sendCloseOthersAction(null, true, false);
             launchButtonSelectedAction(entitlementCheckActive.getPagePath(),
                     entitlementCheckActive.getAction(),
                     entitlementCheckActive.getFilmTitle(),
@@ -677,6 +679,7 @@ public class AppCMSPresenter {
         this.upgradesAvailable = false;
         this.cancelAllLoads = false;
         this.downloadInProgress = false;
+        this.loginFromNavPage = true;
     }
 
     /*does not let user enter space in edittext*/
@@ -1091,7 +1094,7 @@ public class AppCMSPresenter {
                     currentActivity.finish();
                     return false;
                 }
-                sendCloseOthersAction(null, true);
+                sendCloseOthersAction(null, true, false);
                 return false;
             }
             int finalCurrentlyPlayingIndex = currentlyPlayingIndex;
@@ -1280,7 +1283,7 @@ public class AppCMSPresenter {
                                         currentlyPlayingIndex,
                                         isVideoOffline);
                         if (closeLauncher) {
-                            sendCloseOthersAction(null, true);
+                            sendCloseOthersAction(null, true, false);
                         }
 
                         Bundle bundle = new Bundle();
@@ -1334,7 +1337,7 @@ public class AppCMSPresenter {
                             return true;
                         }
                     }
-                    sendCloseOthersAction(null, true);
+                    sendCloseOthersAction(null, true, false);
                 } else if (actionType == AppCMSActionType.LOGIN) {
                     //Log.d(TAG, "Login action selected: " + extraData[0]);
                     closeSoftKeyboard();
@@ -1413,7 +1416,7 @@ public class AppCMSPresenter {
                     } else if (actionType == AppCMSActionType.HOME_PAGE) {
                         navigateToHomePage();
                     } else if (actionType == AppCMSActionType.SIGNIN) {
-                        navigateToLoginPage();
+                        navigateToLoginPage(false);
                     } else if (actionType == AppCMSActionType.CHANGE_DOWNLOAD_QUALITY) {
                         showDownloadQualityScreen(contentDatum, userVideoDownloadStatus -> {
                             //
@@ -2046,7 +2049,7 @@ public class AppCMSPresenter {
                 initiateItemPurchase();
             } else {
                 //Log.d(TAG, "Navigating to login page for subscription");
-                navigateToLoginPage();
+                navigateToLoginPage(loginFromNavPage);
 
                 Bundle bundleSignUp = new Bundle();
                 bundleSignUp.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_SIGNUP_SCREEN_VALUE);
@@ -2123,7 +2126,7 @@ public class AppCMSPresenter {
                             listResult -> {
                                 //Log.v("currentActivity", "currentActivity");
                             }, appCMSSubscriptionPlanResults -> {
-                                sendCloseOthersAction(null, true);
+                                sendCloseOthersAction(null, true, false);
                                 refreshSubscriptionData(() -> {
                                     sendRefreshPageAction();
                                 }, true);
@@ -2266,11 +2269,11 @@ public class AppCMSPresenter {
                                 upgradePlanAPICall();
                             } else {
                                 showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null, null);
-                                sendCloseOthersAction(null, true);
+                                sendCloseOthersAction(null, true, false);
                             }
                         } else {
                             showDialog(DialogType.SUBSCRIBE, "Please Try Again Later!", false, null, null);
-                            sendCloseOthersAction(null, true);
+                            sendCloseOthersAction(null, true, false);
                         }
                     },
                     appCMSSubscriptionPlanResult -> {
@@ -2314,7 +2317,7 @@ public class AppCMSPresenter {
                                     null,
                                     null);
                         } else {
-                            sendCloseOthersAction(null, true);
+                            sendCloseOthersAction(null, true, false);
                             refreshSubscriptionData(() -> {
                                 sendRefreshPageAction();
                             }, true);
@@ -2367,7 +2370,7 @@ public class AppCMSPresenter {
                                 }
                             },
                             appCMSSubscriptionPlanResults -> {
-                                sendCloseOthersAction(null, true);
+                                sendCloseOthersAction(null, true, false);
 
                                 refreshSubscriptionData(() -> {
                                     sendRefreshPageAction();
@@ -4300,9 +4303,9 @@ public class AppCMSPresenter {
                                                                 showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                                         () -> {
                                                                             setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
-                                                                            sendCloseOthersAction(null, true);
+                                                                            sendCloseOthersAction(null, true, false);
                                                                             launchType = LaunchType.INIT_SIGNUP;
-                                                                            navigateToLoginPage();
+                                                                            navigateToLoginPage(loginFromNavPage);
                                                                         });
                                                             }
                                                         }
@@ -4349,7 +4352,7 @@ public class AppCMSPresenter {
 
                                                                 if (showErrorDialogIfSubscriptionExists) {
                                                                     //Log.d(TAG, "Launching home page");
-                                                                    sendCloseOthersAction(null, true);
+                                                                    sendCloseOthersAction(null, true, false);
                                                                     cancelInternalEvents();
                                                                     restartInternalEvents();
 
@@ -4381,8 +4384,8 @@ public class AppCMSPresenter {
                                         if (showErrorDialogIfSubscriptionExists) {
                                             showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION,
                                                     () -> {
-                                                        sendCloseOthersAction(null, true);
-                                                        navigateToLoginPage();
+                                                        sendCloseOthersAction(null, true, false);
+                                                        navigateToLoginPage(loginFromNavPage);
                                                     });
                                         }
                                     }
@@ -4465,7 +4468,8 @@ public class AppCMSPresenter {
         }
     }
 
-    public void navigateToLoginPage() {
+    public void navigateToLoginPage(boolean loginFromNavPage) {
+        this.loginFromNavPage = loginFromNavPage;
         if (loginPage != null) {
             boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                     loginPage.getPageName(),
@@ -4607,7 +4611,7 @@ public class AppCMSPresenter {
                             getAuthToken(),
                             userIdentity,
                             userIdentityResult -> {
-                                sendCloseOthersAction(null, true);
+                                sendCloseOthersAction(null, true, false);
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                 try {
                                     if (userIdentityResult != null) {
@@ -4660,7 +4664,7 @@ public class AppCMSPresenter {
                         try {
                             if (userIdentityPasswordResult != null) {
                                 showToast("Password Changed Successfully", Toast.LENGTH_LONG);
-                                sendCloseOthersAction(null, true);
+                                sendCloseOthersAction(null, true, false);
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "Error retrieving user password reset result: " + e.getMessage());
@@ -4891,13 +4895,17 @@ public class AppCMSPresenter {
         }
     }
 
-    public boolean sendCloseOthersAction(String pageName, boolean closeSelf) {
+    public boolean sendCloseOthersAction(String pageName,
+                                         boolean closeSelf,
+                                         boolean closeOnePage) {
         //Log.d(TAG, "Sending close others action");
         boolean result = false;
         if (currentActivity != null) {
             Intent closeOthersIntent = new Intent(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION);
             closeOthersIntent.putExtra(currentActivity.getString(R.string.close_self_key),
                     closeSelf);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_one_page_key),
+                    closeOnePage);
             closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_closing_page_name),
                     pageName);
             currentActivity.sendBroadcast(closeOthersIntent);
@@ -5509,7 +5517,7 @@ public class AppCMSPresenter {
                                 if (entitlementPendingVideoData != null) {
                                     navigateToHomeToRefresh = false;
                                     sendRefreshPageAction();
-                                    sendCloseOthersAction(null, true);
+                                    sendCloseOthersAction(null, true, false);
                                     launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                             entitlementPendingVideoData.action,
                                             entitlementPendingVideoData.filmTitle,
@@ -5528,7 +5536,7 @@ public class AppCMSPresenter {
                                     entitlementPendingVideoData.relateVideoIds = null;
                                     entitlementPendingVideoData = null;
                                 } else {
-                                    sendCloseOthersAction(null, true);
+                                    sendCloseOthersAction(null, true, false);
                                     cancelInternalEvents();
                                     restartInternalEvents();
 
@@ -5622,7 +5630,7 @@ public class AppCMSPresenter {
                                     if (entitlementPendingVideoData != null) {
                                         navigateToHomeToRefresh = false;
                                         sendRefreshPageAction();
-                                        sendCloseOthersAction(null, true);
+                                        sendCloseOthersAction(null, true, false);
                                         launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                                 entitlementPendingVideoData.action,
                                                 entitlementPendingVideoData.filmTitle,
@@ -5641,7 +5649,7 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.relateVideoIds = null;
                                         entitlementPendingVideoData = null;
                                     } else {
-                                        sendCloseOthersAction(null, true);
+                                        sendCloseOthersAction(null, true, false);
                                         cancelInternalEvents();
                                         restartInternalEvents();
 
@@ -6493,7 +6501,7 @@ public class AppCMSPresenter {
                             try {
                                 dialog.dismiss();
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
-                                navigateToLoginPage();
+                                navigateToLoginPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
@@ -6523,7 +6531,7 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToLoginPage();
+                                navigateToLoginPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
@@ -6590,7 +6598,7 @@ public class AppCMSPresenter {
                 dialog.setOnCancelListener(dialogInterface -> {
                     if (dialogType == DialogType.EXISTING_SUBSCRIPTION ||
                             dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
-                        sendCloseOthersAction(null, true);
+                        sendCloseOthersAction(null, true, false);
                     }
                 });
             }
@@ -7239,7 +7247,7 @@ public class AppCMSPresenter {
             isVideoPlayerStarted = false;
             navigateToHomeToRefresh = false;
             sendRefreshPageAction();
-            sendCloseOthersAction(null, true);
+            sendCloseOthersAction(null, true, false);
             launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                     entitlementPendingVideoData.action,
                     entitlementPendingVideoData.filmTitle,
@@ -7258,7 +7266,7 @@ public class AppCMSPresenter {
             entitlementPendingVideoData.relateVideoIds = null;
             entitlementPendingVideoData = null;
         } else {
-            sendCloseOthersAction(null, true);
+            sendCloseOthersAction(null, true, false);
             cancelInternalEvents();
             restartInternalEvents();
 
@@ -7413,7 +7421,7 @@ public class AppCMSPresenter {
                                 if (entitlementPendingVideoData != null) {
                                     navigateToHomeToRefresh = false;
                                     sendRefreshPageAction();
-                                    sendCloseOthersAction(null, true);
+                                    sendCloseOthersAction(null, true, false);
                                     launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                             entitlementPendingVideoData.action,
                                             entitlementPendingVideoData.filmTitle,
@@ -7432,7 +7440,7 @@ public class AppCMSPresenter {
                                     entitlementPendingVideoData.relateVideoIds = null;
                                     entitlementPendingVideoData = null;
                                 } else {
-                                    sendCloseOthersAction(null, true);
+                                    sendCloseOthersAction(null, true, false);
                                     cancelInternalEvents();
                                     restartInternalEvents();
 
@@ -8002,7 +8010,7 @@ public class AppCMSPresenter {
                             showDialog(DialogType.SIGNIN, signInResponse.getErrorResponse().getError(), false, null, null);
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         } else {
-                            String signResponseValue = gson.toJson(signInResponse, SignInResponse.class);
+//                            String signResponseValue = gson.toJson(signInResponse, SignInResponse.class);
                             //Log.d(TAG, "Sign in response value: " + signResponseValue);
                             setRefreshToken(signInResponse.getRefreshToken());
                             setAuthToken(signInResponse.getAuthorizationToken());
@@ -8040,7 +8048,7 @@ public class AppCMSPresenter {
                                 isSignupFromGoogle = false;
                                 subscriptionUserEmail = email;
                                 subscriptionUserPassword = password;
-                                sendCloseOthersAction(null, true);
+                                sendCloseOthersAction(null, true, false);
                                 initiateItemPurchase();
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else {
@@ -8053,7 +8061,7 @@ public class AppCMSPresenter {
                                         if (entitlementPendingVideoData != null) {
                                             navigateToHomeToRefresh = false;
                                             sendRefreshPageAction();
-                                            sendCloseOthersAction(null, true);
+                                            sendCloseOthersAction(null, true, false);
                                             launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                                     entitlementPendingVideoData.action,
                                                     entitlementPendingVideoData.filmTitle,
@@ -8072,25 +8080,28 @@ public class AppCMSPresenter {
                                             entitlementPendingVideoData.relateVideoIds = null;
                                             entitlementPendingVideoData = null;
                                         } else {
-                                            sendCloseOthersAction(null, true);
+                                            sendCloseOthersAction(null, true, !loginFromNavPage);
                                             cancelInternalEvents();
                                             restartInternalEvents();
 
                                             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                                                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                                             }
-                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                            if (homePageNavItem != null) {
-                                                cancelInternalEvents();
-                                                navigateToPage(homePageNavItem.getPageId(),
-                                                        homePageNavItem.getTitle(),
-                                                        homePageNavItem.getUrl(),
-                                                        false,
-                                                        true,
-                                                        false,
-                                                        true,
-                                                        true,
-                                                        deeplinkSearchQuery);
+
+                                            if (loginFromNavPage) {
+                                                NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                                if (homePageNavItem != null) {
+                                                    cancelInternalEvents();
+                                                    navigateToPage(homePageNavItem.getPageId(),
+                                                            homePageNavItem.getTitle(),
+                                                            homePageNavItem.getUrl(),
+                                                            false,
+                                                            true,
+                                                            false,
+                                                            true,
+                                                            true,
+                                                            deeplinkSearchQuery);
+                                                }
                                             }
                                         }
                                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
@@ -8100,7 +8111,7 @@ public class AppCMSPresenter {
                                     if (entitlementPendingVideoData != null) {
                                         navigateToHomeToRefresh = false;
                                         sendRefreshPageAction();
-                                        sendCloseOthersAction(null, true);
+                                        sendCloseOthersAction(null, true, true);
                                         launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                                 entitlementPendingVideoData.action,
                                                 entitlementPendingVideoData.filmTitle,
@@ -8119,7 +8130,7 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.relateVideoIds = null;
                                         entitlementPendingVideoData = null;
                                     } else {
-                                        sendCloseOthersAction(null, true);
+                                        sendCloseOthersAction(null, true, true);
                                         cancelInternalEvents();
                                         restartInternalEvents();
 
@@ -9593,7 +9604,7 @@ public class AppCMSPresenter {
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-        sendCloseOthersAction(null, true);
+        sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             launchVideoPlayer(binder.getContentData(),
@@ -9746,7 +9757,7 @@ public class AppCMSPresenter {
                             currentActivity.getResources().getText(R.string.send_to)));
                 }
             } else if (actionType == AppCMSActionType.CLOSE) {
-                sendCloseOthersAction(null, true);
+                sendCloseOthersAction(null, true, false);
             } else if (actionType == AppCMSActionType.LOGIN) {
                 //Log.d(TAG, "Login action selected: " + extraData[0]);
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
@@ -9906,7 +9917,7 @@ public class AppCMSPresenter {
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_watched_time_key), contentDatum.getGist().getWatchedTime());
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_run_time_key), contentDatum.getGist().getRuntime());
         if (closeLauncher) {
-            sendCloseOthersAction(null, true);
+            sendCloseOthersAction(null, true, false);
         }
         currentActivity.startActivityForResult(playVideoIntent, PLAYER_REQUEST_CODE);
     }

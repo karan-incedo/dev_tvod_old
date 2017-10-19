@@ -412,6 +412,7 @@
     <string name="no_network_connectivity_message">No Network Connectivity</string>
     <string name="app_cms_retry_text">RETRY</string>
     <string name="app_cms_close_text">CLOSE</string>
+    <string name="close_one_page_key">close_one_page</string>
 </resources>
 
 
