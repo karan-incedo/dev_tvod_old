@@ -1,6 +1,7 @@
 package com.viewlift.models.network.background.tasks;
 
 import android.util.Log;
+import android.util.LruCache;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
@@ -29,6 +30,7 @@ public class GetAppCMSAPIAsyncTask {
         String authToken;
         String pageId;
         boolean loadFromFile;
+        LruCache<String, AppCMSPageAPI> appCMSPageAPILruCache;
         public static class Builder {
             private Params params;
             public Builder() {
@@ -51,6 +53,10 @@ public class GetAppCMSAPIAsyncTask {
             }
             public Builder loadFromFile(boolean loadFromFile) {
                 params.loadFromFile = loadFromFile;
+                return this;
+            }
+            public Builder appCMSPageAPILruCache(LruCache<String, AppCMSPageAPI> appCMSPageAPILruCache) {
+                params.appCMSPageAPILruCache = appCMSPageAPILruCache;
                 return this;
             }
             public Params build() {
@@ -83,7 +89,12 @@ public class GetAppCMSAPIAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((result) -> Observable.just(result).subscribe(readyAction));
+                .subscribe((result) -> {
+                    if (params.appCMSPageAPILruCache != null) {
+                        params.appCMSPageAPILruCache.put(params.pageId, result);
+                        Observable.just(result).subscribe(readyAction);
+                    }
+                });
     }
 
     public void deleteAll(Action0 onDelete) {

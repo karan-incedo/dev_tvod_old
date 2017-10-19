@@ -409,6 +409,7 @@
     <string name="signed_signature_key">signed_signature</string>
     <string name="signed_keypairid_key">signed_keypairid</string>
     <string name="refreshing_data_text">Refreshing Data</string>
+    <string name="no_network_connectivity_message">No Network Connectivity</string>
 </resources>
 
 

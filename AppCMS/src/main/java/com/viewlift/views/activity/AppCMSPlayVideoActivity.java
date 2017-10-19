@@ -350,7 +350,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 try {
-                    if (((binder.getContentData().getGist().getDownloadStatus() != null &&
+                    if (((binder != null &&
+                            binder.getContentData() != null &&
+                            binder.getContentData().getGist() != null &&
+                            binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
                             binder.getContentData().getGist().getDownloadStatus() == null) &&
@@ -362,7 +365,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 null);
                     }
                 } catch (Exception e) {
-                    if ((binder.getContentData().getGist().getDownloadStatus() != null &&
+                    if ((binder != null &&
+                            binder.getContentData() != null &&
+                            binder.getContentData().getGist() != null &&binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
                             binder.getContentData().getGist().getDownloadStatus() == null) {

@@ -333,6 +333,7 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_JPG = ".jpg";
     private static final String MEDIA_SUFFIX_SRT = ".srt";
     private static int PAGE_LRU_CACHE_SIZE = 10;
+    private static int PAGE_API_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     private final String FIREBASE_SCREEN_BEGIN_CHECKOUT = "begin_checkout";
@@ -508,6 +509,7 @@ public class AppCMSPresenter {
     private GoogleApiClient googleApiClient;
     private long downloaded = 0L;
     private LruCache<String, PageView> pageViewLruCache;
+    private LruCache<String, AppCMSPageAPI> pageAPILruCache;
     private EntitlementPendingVideoData entitlementPendingVideoData;
     private List<SubscriptionPlan> subscriptionPlans;
     private boolean navigateToHomeToRefresh;
@@ -701,6 +703,13 @@ public class AppCMSPresenter {
 
     public Navigation getNavigation() {
         return navigation;
+    }
+
+    public LruCache<String, AppCMSPageAPI> getPageAPILruCache() {
+        if (pageAPILruCache == null) {
+            pageAPILruCache = new LruCache<>(PAGE_API_LRU_CACHE_SIZE);
+        }
+        return pageAPILruCache;
     }
 
     public LruCache<String, PageView> getPageViewLruCache() {
@@ -2498,6 +2507,7 @@ public class AppCMSPresenter {
             }
             navigateToDownloadPage(getDownloadPageId(),
                     null, null, false);
+            Toast.makeText(currentContext, R.string.no_network_connectivity_message, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -4917,31 +4927,42 @@ public class AppCMSPresenter {
     public void getPageIdContent(String urlWithContent,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
-        if (shouldRefreshAuthToken()) {
-            refreshIdentity(getRefreshToken(),
-                    () -> {
-                        try {
-                            GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
-                                    .urlWithContent(urlWithContent)
-                                    .authToken(getAuthToken())
-                                    .pageId(pageId)
-                                    .loadFromFile(appCMSMain.shouldLoadFromFile())
-                                    .build();
-                            new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
-                        } catch (Exception e) {
-                            //Log.e(TAG, "Error retrieving page ID content: " + e.getMessage());
-                            showDialog(DialogType.NETWORK, null, false, null, null);
-                        }
-                    });
+
+        AppCMSPageAPI appCMSPageAPI = getPageAPILruCache().get(pageId);
+        if (appCMSPageAPI == null) {
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(),
+                        () -> {
+                            try {
+                                GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                                        .urlWithContent(urlWithContent)
+                                        .authToken(getAuthToken())
+                                        .pageId(pageId)
+                                        .loadFromFile(appCMSMain.shouldLoadFromFile())
+                                        .appCMSPageAPILruCache(getPageAPILruCache())
+                                        .build();
+                                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+                            } catch (Exception e) {
+                                //Log.e(TAG, "Error retrieving page ID content: " + e.getMessage());
+                                showDialog(DialogType.NETWORK, null, false, null, null);
+                            }
+                        });
+            } else {
+                GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                        .urlWithContent(urlWithContent)
+                        .authToken(getAuthToken())
+                        .pageId(pageId)
+                        .loadFromFile(appCMSMain.shouldLoadFromFile())
+                        .appCMSPageAPILruCache(getPageAPILruCache())
+                        .build();
+                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+            }
         } else {
-            GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
-                    .urlWithContent(urlWithContent)
-                    .authToken(getAuthToken())
-                    .pageId(pageId)
-                    .loadFromFile(appCMSMain.shouldLoadFromFile())
-                    .build();
-            new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+            if (readyAction != null) {
+                Observable.just(appCMSPageAPI).subscribe(readyAction);
+            }
         }
+
     }
 
     public boolean isViewPlanPage(String pageId) {
@@ -5370,6 +5391,7 @@ public class AppCMSPresenter {
                     (downloadInProgress || !onDownloadPage) && launched) {
                 navigateToDownloadPage(getDownloadPageId(),
                         null, null, false);
+                Toast.makeText(currentContext, R.string.no_network_connectivity_message, Toast.LENGTH_LONG).show();
             }
 
             SharedPreferences sharedPrefs =
@@ -6608,6 +6630,7 @@ public class AppCMSPresenter {
 
             navigateToDownloadPage(getDownloadPageId(),
                     null, null, launchActivity);
+            Toast.makeText(currentContext, R.string.no_network_connectivity_message, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             launchErrorActivity(platformType);// Fix for SVFA-1435 after killing app
             //Log.d(TAG, e.getMessage());
