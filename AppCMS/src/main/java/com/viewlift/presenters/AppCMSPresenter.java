@@ -5503,54 +5503,53 @@ public class AppCMSPresenter {
                                     }, true);
                                 }
 
-                                refreshAPIData(() -> {
-                                            if (entitlementPendingVideoData != null) {
-                                                navigateToHomeToRefresh = false;
-                                                sendRefreshPageAction();
-                                                sendCloseOthersAction(null, true);
-                                                launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                                                        entitlementPendingVideoData.action,
-                                                        entitlementPendingVideoData.filmTitle,
-                                                        entitlementPendingVideoData.extraData,
-                                                        entitlementPendingVideoData.contentDatum,
-                                                        entitlementPendingVideoData.closeLauncher,
-                                                        entitlementPendingVideoData.currentlyPlayingIndex,
-                                                        entitlementPendingVideoData.relateVideoIds);
-                                                entitlementPendingVideoData.pagePath = null;
-                                                entitlementPendingVideoData.action = null;
-                                                entitlementPendingVideoData.filmTitle = null;
-                                                entitlementPendingVideoData.extraData = null;
-                                                entitlementPendingVideoData.contentDatum = null;
-                                                entitlementPendingVideoData.closeLauncher = false;
-                                                entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                                entitlementPendingVideoData.relateVideoIds = null;
-                                                entitlementPendingVideoData = null;
-                                            } else {
-                                                sendCloseOthersAction(null, true);
-                                                cancelInternalEvents();
-                                                restartInternalEvents();
+                                refreshAPIData(null, false);
 
-                                                if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                                                    setUserDownloadQualityPref(
-                                                            currentActivity.getString(R.string.app_cms_default_download_quality));
-                                                }
+                                if (entitlementPendingVideoData != null) {
+                                    navigateToHomeToRefresh = false;
+                                    sendRefreshPageAction();
+                                    sendCloseOthersAction(null, true);
+                                    launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                            entitlementPendingVideoData.action,
+                                            entitlementPendingVideoData.filmTitle,
+                                            entitlementPendingVideoData.extraData,
+                                            entitlementPendingVideoData.contentDatum,
+                                            entitlementPendingVideoData.closeLauncher,
+                                            entitlementPendingVideoData.currentlyPlayingIndex,
+                                            entitlementPendingVideoData.relateVideoIds);
+                                    entitlementPendingVideoData.pagePath = null;
+                                    entitlementPendingVideoData.action = null;
+                                    entitlementPendingVideoData.filmTitle = null;
+                                    entitlementPendingVideoData.extraData = null;
+                                    entitlementPendingVideoData.contentDatum = null;
+                                    entitlementPendingVideoData.closeLauncher = false;
+                                    entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                    entitlementPendingVideoData.relateVideoIds = null;
+                                    entitlementPendingVideoData = null;
+                                } else {
+                                    sendCloseOthersAction(null, true);
+                                    cancelInternalEvents();
+                                    restartInternalEvents();
 
-                                                NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                                if (homePageNavItem != null) {
-                                                    cancelInternalEvents();
-                                                    navigateToPage(homePageNavItem.getPageId(),
-                                                            homePageNavItem.getTitle(),
-                                                            homePageNavItem.getUrl(),
-                                                            false,
-                                                            true,
-                                                            false,
-                                                            true,
-                                                            true,
-                                                            deeplinkSearchQuery);
-                                                }
-                                            }
-                                        },
-                                        false);
+                                    if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+                                        setUserDownloadQualityPref(
+                                                currentActivity.getString(R.string.app_cms_default_download_quality));
+                                    }
+
+                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                    if (homePageNavItem != null) {
+                                        cancelInternalEvents();
+                                        navigateToPage(homePageNavItem.getPageId(),
+                                                homePageNavItem.getTitle(),
+                                                homePageNavItem.getUrl(),
+                                                false,
+                                                true,
+                                                false,
+                                                true,
+                                                true,
+                                                deeplinkSearchQuery);
+                                    }
+                                }
                             }
                         }
                     }
@@ -5598,73 +5597,72 @@ public class AppCMSPresenter {
                                 //Log.d(TAG, "checkForExistingSubscription()");
                                 checkForExistingSubscription(false);
 
-                                refreshAPIData(() -> {
-                                            if (launchType == LaunchType.SUBSCRIBE) {
-                                                this.googleAccessToken = googleAccessToken;
-                                                this.googleUserId = googleUserId;
-                                                this.googleUsername = googleUsername;
-                                                this.googleEmail = googleEmail;
-                                                initiateItemPurchase();
-                                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-                                            } else {
+                                refreshAPIData(null, false);
 
-                                                if (appCMSMain.getServiceType()
-                                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
-                                                        refreshSubscriptionData) {
+                                if (launchType == LaunchType.SUBSCRIBE) {
+                                    this.googleAccessToken = googleAccessToken;
+                                    this.googleUserId = googleUserId;
+                                    this.googleUsername = googleUsername;
+                                    this.googleEmail = googleEmail;
+                                    initiateItemPurchase();
+                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                } else {
 
-                                                    checkUpgradeFlag = false;
+                                    if (appCMSMain.getServiceType()
+                                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
+                                            refreshSubscriptionData) {
 
-                                                    refreshSubscriptionData(() -> {
+                                        checkUpgradeFlag = false;
 
-                                                    }, true);
-                                                }
-                                                if (entitlementPendingVideoData != null) {
-                                                    navigateToHomeToRefresh = false;
-                                                    sendRefreshPageAction();
-                                                    sendCloseOthersAction(null, true);
-                                                    launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                                                            entitlementPendingVideoData.action,
-                                                            entitlementPendingVideoData.filmTitle,
-                                                            entitlementPendingVideoData.extraData,
-                                                            entitlementPendingVideoData.contentDatum,
-                                                            entitlementPendingVideoData.closeLauncher,
-                                                            entitlementPendingVideoData.currentlyPlayingIndex,
-                                                            entitlementPendingVideoData.relateVideoIds);
-                                                    entitlementPendingVideoData.pagePath = null;
-                                                    entitlementPendingVideoData.action = null;
-                                                    entitlementPendingVideoData.filmTitle = null;
-                                                    entitlementPendingVideoData.extraData = null;
-                                                    entitlementPendingVideoData.contentDatum = null;
-                                                    entitlementPendingVideoData.closeLauncher = false;
-                                                    entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                                    entitlementPendingVideoData.relateVideoIds = null;
-                                                    entitlementPendingVideoData = null;
-                                                } else {
-                                                    sendCloseOthersAction(null, true);
-                                                    cancelInternalEvents();
-                                                    restartInternalEvents();
+                                        refreshSubscriptionData(() -> {
 
-                                                    if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                                                        setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
-                                                    }
+                                        }, true);
+                                    }
+                                    if (entitlementPendingVideoData != null) {
+                                        navigateToHomeToRefresh = false;
+                                        sendRefreshPageAction();
+                                        sendCloseOthersAction(null, true);
+                                        launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                                entitlementPendingVideoData.action,
+                                                entitlementPendingVideoData.filmTitle,
+                                                entitlementPendingVideoData.extraData,
+                                                entitlementPendingVideoData.contentDatum,
+                                                entitlementPendingVideoData.closeLauncher,
+                                                entitlementPendingVideoData.currentlyPlayingIndex,
+                                                entitlementPendingVideoData.relateVideoIds);
+                                        entitlementPendingVideoData.pagePath = null;
+                                        entitlementPendingVideoData.action = null;
+                                        entitlementPendingVideoData.filmTitle = null;
+                                        entitlementPendingVideoData.extraData = null;
+                                        entitlementPendingVideoData.contentDatum = null;
+                                        entitlementPendingVideoData.closeLauncher = false;
+                                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                        entitlementPendingVideoData.relateVideoIds = null;
+                                        entitlementPendingVideoData = null;
+                                    } else {
+                                        sendCloseOthersAction(null, true);
+                                        cancelInternalEvents();
+                                        restartInternalEvents();
 
-                                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                                    if (homePageNavItem != null) {
-                                                        cancelInternalEvents();
-                                                        navigateToPage(homePageNavItem.getPageId(),
-                                                                homePageNavItem.getTitle(),
-                                                                homePageNavItem.getUrl(),
-                                                                false,
-                                                                true,
-                                                                false,
-                                                                true,
-                                                                true,
-                                                                deeplinkSearchQuery);
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        false);
+                                        if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+                                            setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+                                        }
+
+                                        NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                        if (homePageNavItem != null) {
+                                            cancelInternalEvents();
+                                            navigateToPage(homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    true,
+                                                    true,
+                                                    deeplinkSearchQuery);
+                                        }
+                                    }
+                                }
                             }
                         }
                     } catch (Exception e) {
@@ -6020,7 +6018,9 @@ public class AppCMSPresenter {
 
             navigateToHomeToRefresh = true;
 
-            refreshAPIData(() -> navigateToHomePage(), false);
+            refreshAPIData(null, false);
+
+            navigateToHomePage();
 
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
@@ -8044,106 +8044,104 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else {
                                 //Log.d(TAG, "Logging in");
-                                refreshAPIData(() -> {
-                                            if (appCMSMain.getServiceType()
-                                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
-                                                    refreshSubscriptionData) {
-                                                checkUpgradeFlag = false;
-                                                refreshSubscriptionData(() -> {
-                                                    if (entitlementPendingVideoData != null) {
-                                                        navigateToHomeToRefresh = false;
-                                                        sendRefreshPageAction();
-                                                        sendCloseOthersAction(null, true);
-                                                        launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                                                                entitlementPendingVideoData.action,
-                                                                entitlementPendingVideoData.filmTitle,
-                                                                entitlementPendingVideoData.extraData,
-                                                                entitlementPendingVideoData.contentDatum,
-                                                                entitlementPendingVideoData.closeLauncher,
-                                                                entitlementPendingVideoData.currentlyPlayingIndex,
-                                                                entitlementPendingVideoData.relateVideoIds);
-                                                        entitlementPendingVideoData.pagePath = null;
-                                                        entitlementPendingVideoData.action = null;
-                                                        entitlementPendingVideoData.filmTitle = null;
-                                                        entitlementPendingVideoData.extraData = null;
-                                                        entitlementPendingVideoData.contentDatum = null;
-                                                        entitlementPendingVideoData.closeLauncher = false;
-                                                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                                        entitlementPendingVideoData.relateVideoIds = null;
-                                                        entitlementPendingVideoData = null;
-                                                    } else {
-                                                        sendCloseOthersAction(null, true);
-                                                        cancelInternalEvents();
-                                                        restartInternalEvents();
+                                if (appCMSMain.getServiceType()
+                                        .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
+                                        refreshSubscriptionData) {
+                                    checkUpgradeFlag = false;
+                                    refreshSubscriptionData(() -> {
+                                        if (entitlementPendingVideoData != null) {
+                                            navigateToHomeToRefresh = false;
+                                            sendRefreshPageAction();
+                                            sendCloseOthersAction(null, true);
+                                            launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                                    entitlementPendingVideoData.action,
+                                                    entitlementPendingVideoData.filmTitle,
+                                                    entitlementPendingVideoData.extraData,
+                                                    entitlementPendingVideoData.contentDatum,
+                                                    entitlementPendingVideoData.closeLauncher,
+                                                    entitlementPendingVideoData.currentlyPlayingIndex,
+                                                    entitlementPendingVideoData.relateVideoIds);
+                                            entitlementPendingVideoData.pagePath = null;
+                                            entitlementPendingVideoData.action = null;
+                                            entitlementPendingVideoData.filmTitle = null;
+                                            entitlementPendingVideoData.extraData = null;
+                                            entitlementPendingVideoData.contentDatum = null;
+                                            entitlementPendingVideoData.closeLauncher = false;
+                                            entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                            entitlementPendingVideoData.relateVideoIds = null;
+                                            entitlementPendingVideoData = null;
+                                        } else {
+                                            sendCloseOthersAction(null, true);
+                                            cancelInternalEvents();
+                                            restartInternalEvents();
 
-                                                        if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                                                            setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
-                                                        }
-                                                        NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                                        if (homePageNavItem != null) {
-                                                            cancelInternalEvents();
-                                                            navigateToPage(homePageNavItem.getPageId(),
-                                                                    homePageNavItem.getTitle(),
-                                                                    homePageNavItem.getUrl(),
-                                                                    false,
-                                                                    true,
-                                                                    false,
-                                                                    true,
-                                                                    true,
-                                                                    deeplinkSearchQuery);
-                                                        }
-                                                    }
-                                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-                                                }, true);
-                                            } else {
-                                                if (entitlementPendingVideoData != null) {
-                                                    navigateToHomeToRefresh = false;
-                                                    sendRefreshPageAction();
-                                                    sendCloseOthersAction(null, true);
-                                                    launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                                                            entitlementPendingVideoData.action,
-                                                            entitlementPendingVideoData.filmTitle,
-                                                            entitlementPendingVideoData.extraData,
-                                                            entitlementPendingVideoData.contentDatum,
-                                                            entitlementPendingVideoData.closeLauncher,
-                                                            entitlementPendingVideoData.currentlyPlayingIndex,
-                                                            entitlementPendingVideoData.relateVideoIds);
-                                                    entitlementPendingVideoData.pagePath = null;
-                                                    entitlementPendingVideoData.action = null;
-                                                    entitlementPendingVideoData.filmTitle = null;
-                                                    entitlementPendingVideoData.extraData = null;
-                                                    entitlementPendingVideoData.contentDatum = null;
-                                                    entitlementPendingVideoData.closeLauncher = false;
-                                                    entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                                    entitlementPendingVideoData.relateVideoIds = null;
-                                                    entitlementPendingVideoData = null;
-                                                } else {
-                                                    sendCloseOthersAction(null, true);
-                                                    cancelInternalEvents();
-                                                    restartInternalEvents();
-
-                                                    if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                                                        setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
-                                                    }
-
-                                                    NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                                    if (homePageNavItem != null) {
-                                                        cancelInternalEvents();
-                                                        navigateToPage(homePageNavItem.getPageId(),
-                                                                homePageNavItem.getTitle(),
-                                                                homePageNavItem.getUrl(),
-                                                                false,
-                                                                true,
-                                                                false,
-                                                                true,
-                                                                true,
-                                                                deeplinkSearchQuery);
-                                                    }
-                                                }
-                                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                            if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+                                                setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                                             }
-                                        },
-                                        false);
+                                            NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                            if (homePageNavItem != null) {
+                                                cancelInternalEvents();
+                                                navigateToPage(homePageNavItem.getPageId(),
+                                                        homePageNavItem.getTitle(),
+                                                        homePageNavItem.getUrl(),
+                                                        false,
+                                                        true,
+                                                        false,
+                                                        true,
+                                                        true,
+                                                        deeplinkSearchQuery);
+                                            }
+                                        }
+                                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                    }, true);
+                                } else {
+                                    refreshAPIData(() -> {}, false);
+                                    if (entitlementPendingVideoData != null) {
+                                        navigateToHomeToRefresh = false;
+                                        sendRefreshPageAction();
+                                        sendCloseOthersAction(null, true);
+                                        launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
+                                                entitlementPendingVideoData.action,
+                                                entitlementPendingVideoData.filmTitle,
+                                                entitlementPendingVideoData.extraData,
+                                                entitlementPendingVideoData.contentDatum,
+                                                entitlementPendingVideoData.closeLauncher,
+                                                entitlementPendingVideoData.currentlyPlayingIndex,
+                                                entitlementPendingVideoData.relateVideoIds);
+                                        entitlementPendingVideoData.pagePath = null;
+                                        entitlementPendingVideoData.action = null;
+                                        entitlementPendingVideoData.filmTitle = null;
+                                        entitlementPendingVideoData.extraData = null;
+                                        entitlementPendingVideoData.contentDatum = null;
+                                        entitlementPendingVideoData.closeLauncher = false;
+                                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                        entitlementPendingVideoData.relateVideoIds = null;
+                                        entitlementPendingVideoData = null;
+                                    } else {
+                                        sendCloseOthersAction(null, true);
+                                        cancelInternalEvents();
+                                        restartInternalEvents();
+
+                                        if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+                                            setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+                                        }
+
+                                        NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                        if (homePageNavItem != null) {
+                                            cancelInternalEvents();
+                                            navigateToPage(homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    true,
+                                                    false,
+                                                    true,
+                                                    true,
+                                                    deeplinkSearchQuery);
+                                        }
+                                    }
+                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                }
                             }
                         }
                     } catch (Exception e) {
