@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.appsflyer.AppsFlyerLib;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
@@ -98,6 +99,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         };
 
         UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+
+        AppsFlyerLib.getInstance().startTracking(getApplication());
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 

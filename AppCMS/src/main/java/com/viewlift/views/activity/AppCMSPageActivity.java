@@ -621,8 +621,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        AppsFlyerLib.getInstance().startTracking(getApplication());
-
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
         } else {
