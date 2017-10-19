@@ -2504,6 +2504,7 @@ public class AppCMSPresenter {
 
     public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
         if (isNetworkConnected()) {
+            getPageAPILruCache().evictAll();
             showLoadingDialog(true);
             new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
                 if (currentActivity != null && sendRefreshPageDataAction) {
