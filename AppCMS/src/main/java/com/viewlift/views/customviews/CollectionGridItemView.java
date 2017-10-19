@@ -15,7 +15,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -362,28 +361,11 @@ public class CollectionGridItemView extends BaseView {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
                     } else if (data.getGist().getImageGist() != null &&
-                            !TextUtils.isEmpty(data.getGist().getImageGist()
-                                    .getBadgeImageUrl().get_3x4())) {
+                            data.getGist().getBadgeImages() != null &&
+                            data.getGist().getImageGist().get_3x4() != null &&
+                            data.getGist().getBadgeImages().get_3x4() != null) {
 
-                        // TODO: 10/12/17 - Finish badge implementation.
-                        Log.d(TAG, "Loading badge: " + data.getGist().getImageGist()
-                                .getBadgeImageUrl().get_3x4());
-//                        Glide.with(context)
-//                                .load(data.getGist().getImageGist().getBadgeImageUrl().get_3x4())
-//                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-//                                .transform(new BitmapTransformation(context) {
-//                                    @Override
-//                                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
-//                                                               int outWidth, int outHeight) {
-//                                        return null;
-//                                    }
-//
-//                                    @Override
-//                                    public String getId() {
-//                                        return null;
-//                                    }
-//                                })
-//                                .into((ImageView) view);
+                        // TODO: 10/19/17 - Finish badge implementation.
                     }
                     bringToFront = false;
                 }
