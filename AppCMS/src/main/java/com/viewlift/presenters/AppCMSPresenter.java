@@ -4360,6 +4360,7 @@ public class AppCMSPresenter {
                                                                     NavigationPrimary homePageNavItem = findHomePageNavItem();
                                                                     if (homePageNavItem != null) {
                                                                         cancelInternalEvents();
+                                                                        refreshAPIData(null, false);
                                                                         navigateToPage(homePageNavItem.getPageId(),
                                                                                 homePageNavItem.getTitle(),
                                                                                 homePageNavItem.getUrl(),
