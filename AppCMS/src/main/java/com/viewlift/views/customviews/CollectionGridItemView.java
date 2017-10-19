@@ -362,12 +362,10 @@ public class CollectionGridItemView extends BaseView {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
                     } else if (data.getGist().getImageGist() != null &&
-                            !TextUtils.isEmpty(data.getGist().getImageGist()
-                                    .getBadgeImageUrl().get_3x4())) {
+                            !TextUtils.isEmpty(data.getGist().getBadgeImages().get_3x4())) {
 
                         // TODO: 10/12/17 - Finish badge implementation.
-                        Log.d(TAG, "Loading badge: " + data.getGist().getImageGist()
-                                .getBadgeImageUrl().get_3x4());
+                        Log.d(TAG, "Loading badge: " + data.getGist().getBadgeImages().get_3x4());
 //                        Glide.with(context)
 //                                .load(data.getGist().getImageGist().getBadgeImageUrl().get_3x4())
 //                                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
