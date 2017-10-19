@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -94,10 +95,14 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSPresenter.restrictPortraitOnly();
             }
 
+            NestedScrollView nestedScrollView = (NestedScrollView) view.findViewById(R.id.app_cms_nav_items_main_view);
+
             LinearLayout appCMSNavLoginContainer = (LinearLayout) view.findViewById(R.id.app_cms_nav_login_container);
             if (appCMSPresenter.isUserLoggedIn()) {
                 appCMSNavLoginContainer.setVisibility(View.GONE);
+                ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
             } else {
+                ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 appCMSNavLoginContainer.setVisibility(View.VISIBLE);
                 View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
                 appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
