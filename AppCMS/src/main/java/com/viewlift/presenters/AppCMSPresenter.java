@@ -909,7 +909,14 @@ public class AppCMSPresenter {
                             } else {
                                 if (!isNetworkConnected()) {
                                     // Fix of SVFA-1435
-                                    openDownloadScreenForNetworkError(false);
+                                    openDownloadScreenForNetworkError(false,
+                                            () -> {
+                                                launchVideoPlayer(contentDatum,
+                                                        currentlyPlayingIndex,
+                                                        relateVideoIds,
+                                                        watchedTime,
+                                                        expectedAction);
+                                            });
                                 } else {
                                     if (watchedTime >= 0) {
                                         contentDatum.getGist().setWatchedTime(watchedTime);
@@ -1087,7 +1094,19 @@ public class AppCMSPresenter {
                 sendCloseOthersAction(null, true);
                 return false;
             }
-            openDownloadScreenForNetworkError(false);
+            int finalCurrentlyPlayingIndex = currentlyPlayingIndex;
+            List<String> finalRelateVideoIds = relateVideoIds;
+            openDownloadScreenForNetworkError(false,
+                    () -> {
+                        launchButtonSelectedAction(pagePath,
+                                action,
+                                filmTitle,
+                                extraData,
+                                contentDatum,
+                                closeLauncher,
+                                finalCurrentlyPlayingIndex,
+                                finalRelateVideoIds);
+                    });
         } else if (!cancelAllLoads) {
             //Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
@@ -1457,6 +1476,8 @@ public class AppCMSPresenter {
                                 AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                         AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
                         if (appCMSPageUI != null) {
+                            int finalCurrentlyPlayingIndex1 = currentlyPlayingIndex;
+                            List<String> finalRelateVideoIds1 = relateVideoIds;
                             getPageIdContent(apiUrl,
                                     pagePath,
                                     new AppCMSPageAPIAction(appbarPresent,
@@ -1506,10 +1527,13 @@ public class AppCMSPresenter {
                                                 launched = true;
                                             } else {
                                                 if (launched) {
-                                                    sendStopLoadingPageAction();
+                                                    sendStopLoadingPageAction(true,
+                                                            () -> {
+                                                                launchButtonSelectedAction(pagePath, action, filmTitle, extraData, contentDatum, closeLauncher, finalCurrentlyPlayingIndex1, finalRelateVideoIds1);
+                                                            });
                                                     setNavItemToCurrentAction(currentActivity);
                                                 } else {
-                                                    launchErrorActivity(PlatformType.ANDROID);
+                                                    launchBlankPage();
                                                 }
                                             }
                                             loadingPage = false;
@@ -2501,7 +2525,7 @@ public class AppCMSPresenter {
         if (!isNetworkConnected()) {
             if (!isUserSubscribed()) {
                 showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                        () -> launchErrorActivity(PlatformType.ANDROID),
+                        () -> launchBlankPage(),
                         null);
                 return;
             }
@@ -4189,7 +4213,7 @@ public class AppCMSPresenter {
 
             if (!launchSuccess) {
                 //Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
-                launchErrorActivity(platformType);
+                launchBlankPage();
             }
 
         }
@@ -4452,7 +4476,7 @@ public class AppCMSPresenter {
                     deeplinkSearchQuery);
             if (!launchSuccess) {
                 //Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
-                launchErrorActivity(platformType);
+                launchBlankPage();
             }
         }
     }
@@ -4795,10 +4819,13 @@ public class AppCMSPresenter {
                                     launched = true;
                                 } else {
                                     if (launched) {
-                                        sendStopLoadingPageAction();
+                                        sendStopLoadingPageAction(true,
+                                                () -> {
+                                                    navigateToPage(pageId, pageTitle, url, launchActivity, appbarPresent, fullscreenEnabled, navbarPresent, sendCloseAction, searchQuery);
+                                                });
                                         setNavItemToCurrentAction(currentActivity);
                                     } else {
-                                        launchErrorActivity(PlatformType.ANDROID);
+                                        launchBlankPage();
                                     }
                                 }
                                 loadingPage = false;
@@ -4823,7 +4850,7 @@ public class AppCMSPresenter {
                 //Log.d(TAG, "Resetting page navigation to previous tab");
                 setNavItemToCurrentAction(currentActivity);
             } else {
-                launchErrorActivity(PlatformType.ANDROID);
+                launchBlankPage();
             }
         }
 
@@ -4889,13 +4916,14 @@ public class AppCMSPresenter {
         return result;
     }
 
-    public void sendStopLoadingPageAction() {
+    public void sendStopLoadingPageAction(boolean showNetworkErrorDialog,
+                                          Action0 retryAction) {
         if (currentActivity != null) {
             Intent stopLoadingPageIntent =
                     new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
             currentActivity.sendBroadcast(stopLoadingPageIntent);
-            if (!isNetworkConnected()) { // Fix of SVFA-1918
-                openDownloadScreenForNetworkError(false);
+            if (!isNetworkConnected() && showNetworkErrorDialog) { // Fix of SVFA-1918
+                openDownloadScreenForNetworkError(false, retryAction);
                 // fix of SVFA-1435 for build #1.0.35
             }
         }
@@ -4941,7 +4969,9 @@ public class AppCMSPresenter {
                                         .loadFromFile(appCMSMain.shouldLoadFromFile())
                                         .appCMSPageAPILruCache(getPageAPILruCache())
                                         .build();
-                                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+                                new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
+                                        readyAction)
+                                        .execute(params);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error retrieving page ID content: " + e.getMessage());
                                 showDialog(DialogType.NETWORK, null, false, null, null);
@@ -6154,20 +6184,27 @@ public class AppCMSPresenter {
                     if (main == null) {
                         //Log.e(TAG, "DialogType retrieving main.json");
                         if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
-                            openDownloadScreenForNetworkError(true);
+                            openDownloadScreenForNetworkError(true,
+                                    () -> {
+                                        getAppCMSMain(activity,
+                                                siteId,
+                                                searchQuery,
+                                                platformType,
+                                                forceReloadFromNetwork);
+                                    });
                         } else {
-                            launchErrorActivity(platformType);
+                            launchBlankPage();
                             return;
                         }
                     } else if (TextUtils.isEmpty(main
                             .getAndroid())) {
                         //Log.e(TAG, "AppCMS key for main not found");
-                        launchErrorActivity(platformType);
+                        launchBlankPage();
                         return;
                     } else if (TextUtils.isEmpty(main
                             .getApiBaseUrl())) {
                         //Log.e(TAG, "AppCMS key for API Base URL not found");
-                        launchErrorActivity(platformType);
+                        launchBlankPage();
                         return;
                     } else {
                         appCMSMain = main;
@@ -6182,7 +6219,7 @@ public class AppCMSPresenter {
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
-                    launchErrorActivity(platformType);
+                    launchBlankPage();
                     return;
                 }
             }).execute(params);
@@ -6617,14 +6654,20 @@ public class AppCMSPresenter {
         }
     }
 
-    public void openDownloadScreenForNetworkError(boolean launchActivity) {
+    public void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
             if (!isUserSubscribed()) {//fix SVFA-1911
-                showDialog(DialogType.NETWORK, null, false,
+                showDialog(DialogType.NETWORK, null, true,
                         () -> {
-                            launchErrorActivity(PlatformType.ANDROID);
+                            if (retryAction != null) {
+                                retryAction.call();
+                            }
                         },
-                        null);
+                        () -> {
+                            launched = true;
+                            launchBlankPage();
+                            sendStopLoadingPageAction(false, null);
+                        });
                 return;
             }
 
@@ -6632,7 +6675,8 @@ public class AppCMSPresenter {
                     null, null, launchActivity);
             Toast.makeText(currentContext, R.string.no_network_connectivity_message, Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-            launchErrorActivity(platformType);// Fix for SVFA-1435 after killing app
+            launchBlankPage();// Fix for SVFA-1435 after killing app
+            sendStopLoadingPageAction(false, null);
             //Log.d(TAG, e.getMessage());
             return;
         }
@@ -6763,7 +6807,13 @@ public class AppCMSPresenter {
                             Integer.toHexString(textColor).substring(2),
                             message)));
             if (showCancelButton) {
-                builder.setPositiveButton(R.string.app_cms_confirm_alert_dialog_button_text,
+                String okText = currentContext.getString(R.string.app_cms_confirm_alert_dialog_button_text);
+                String cancelText = currentContext.getString(R.string.app_cms_cancel_alert_dialog_button_text);
+                if (dialogType == DialogType.NETWORK) {
+                    okText = currentActivity.getString(R.string.app_cms_retry_text);
+                    cancelText = currentActivity.getString(R.string.app_cms_close_text);
+                }
+                builder.setPositiveButton(okText,
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
@@ -6774,7 +6824,7 @@ public class AppCMSPresenter {
                                 //Log.e(TAG, "Error closing cancellation dialog: " + e.getMessage());
                             }
                         });
-                builder.setNegativeButton(R.string.app_cms_cancel_alert_dialog_button_text,
+                builder.setNegativeButton(cancelText,
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
@@ -8477,7 +8527,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private void launchBlankPage() {
+    public void launchBlankPage() {
         if (currentActivity != null) {
             Bundle args = getPageActivityBundle(currentActivity,
                     null,
@@ -8609,7 +8659,7 @@ public class AppCMSPresenter {
                         }
                     }).execute(url);
         } else {
-            launchErrorActivity(platformType);
+            launchBlankPage();
         }
     }
 
@@ -8802,7 +8852,7 @@ public class AppCMSPresenter {
                     } catch (Exception e) {
                         //Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
 //                                e.getMessage());
-                        launchErrorActivity(platformType);
+                        launchBlankPage();
                     }
                 });
             } else {
@@ -8822,7 +8872,7 @@ public class AppCMSPresenter {
                                     appCMSAndroidUI.getMetaPages() == null ||
                                     appCMSAndroidUI.getMetaPages().isEmpty()) {
                                 //Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
-                                launchErrorActivity(platformType);
+                                launchBlankPage();
                             } else if (isAppBelowMinVersion()) {
                                 //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                                 launchUpgradeAppActivity();
@@ -8840,7 +8890,10 @@ public class AppCMSPresenter {
                                     processMetaPagesQueue(loadFromFile,
                                             () -> {
                                                 if (!isNetworkConnected()) {
-                                                    openDownloadScreenForNetworkError(true);
+                                                    openDownloadScreenForNetworkError(true,
+                                                            () -> {
+                                                                getAppCMSAndroid(tryCount);
+                                                            });
                                                 } else {
                                                     if (appCMSMain.getServiceType()
                                                             .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
@@ -8862,7 +8915,7 @@ public class AppCMSPresenter {
                                                         if (!launchSuccess) {
                                                             //Log.e(TAG, "Failed to launch page: "
 //                                                                        + loginPage.getPageName());
-                                                            launchErrorActivity(platformType);
+                                                            launchBlankPage();
                                                         }
                                                     } else {
                                                         boolean launchSuccess = navigateToPage(homePage.getPageId(),
@@ -8877,7 +8930,7 @@ public class AppCMSPresenter {
                                                         if (!launchSuccess) {
                                                             //Log.e(TAG, "Failed to launch page: "
 //                                                                        + loginPage.getPageName());
-                                                            launchErrorActivity(platformType);
+                                                            launchBlankPage();
                                                         }
                                                     }
 
@@ -8887,17 +8940,17 @@ public class AppCMSPresenter {
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
-                            launchErrorActivity(platformType);
+                            launchBlankPage();
                         }
                     }).execute(params);
                 } catch (Exception e) {
                     //Log.e(TAG, "Failed to load Android json file: " + e.getMessage());
-                    launchErrorActivity(PlatformType.ANDROID);
+                    launchBlankPage();
                 }
             }
         } catch (Exception e) {
             //Log.e(TAG, "Failed to load Android json file: " + e.getMessage());
-            launchErrorActivity(PlatformType.ANDROID);
+            launchBlankPage();
         }
     }
 
@@ -9036,7 +9089,7 @@ public class AppCMSPresenter {
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "Error retrieving AppCMS Page UI: " + e.getMessage());
-                            launchErrorActivity(PlatformType.ANDROID);
+                            launchBlankPage();
                         }
                     },
                     loadFromFile);
@@ -9344,7 +9397,9 @@ public class AppCMSPresenter {
                                 if (appCMSPageAPI != null) {
                                     populateTVPage(appCMSPageAPI, appCMSPageUI, this.pageId, this.launchActivity, this.pageTitle, isTOSDialogPage, isLoginDialogPage, this.pagePath);
                                 } else {
-                                    sendStopLoadingPageAction();
+                                    sendStopLoadingPageAction(true, () -> {
+                                        navigateToTVPage(pageId, pageTitle, url, launchActivity, searchQuery, forcedDownload, isTOSDialogPage, isLoginDialogPage);
+                                    });
                                     setNavItemToCurrentAction(currentActivity);
                                 }
                                 loadingPage = false;
@@ -9526,7 +9581,10 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             //Log.e(TAG, "Error launching TV activity: " + e.getMessage());
         } finally {
-            sendStopLoadingPageAction();
+            sendStopLoadingPageAction(true,
+                    () -> {
+                        launchTVPageActivity(activity, appCMSPageUI, appCMSPageAPI, pageId, pageName, screenName, loadFromFile, appbarPresent, fullscreenEnabled, navbarPresent, searchQuery, isTosPage, isLoginPage);
+                    });
         }
     }
 
@@ -9671,7 +9729,10 @@ public class AppCMSPresenter {
                                     contentDatum,
                                     actionType);
                         });
-                sendStopLoadingPageAction();
+                sendStopLoadingPageAction(true,
+                        () -> {
+                            launchTVButtonSelectedAction(pagePath, action, filmTitle, extraData, closeLauncher, contentDatum);
+                        });
 
             } else if (actionType == AppCMSActionType.SHARE) {
                 if (extraData != null && extraData.length > 0) {
@@ -9788,7 +9849,10 @@ public class AppCMSPresenter {
                                         currentActivity.sendBroadcast(updatePageIntent);
                                     }
                                 } else {
-                                    sendStopLoadingPageAction();
+                                    sendStopLoadingPageAction(true,
+                                            () -> {
+                                                launchTVButtonSelectedAction(pagePath, action, filmTitle, extraData, closeLauncher, contentDatum);
+                                            });
                                 }
                                 loadingPage = false;
                             }

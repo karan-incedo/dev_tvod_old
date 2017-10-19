@@ -924,7 +924,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isNetworkConnected()) {
                 finish();
             } else {
-                appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID);
+                appCMSPresenter.launchBlankPage();
             }
         }
     }
@@ -1526,6 +1526,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             homePageNav.getTitle());
                 });
                 homeNavBarItemView.setTag(homePageNav.getPageId());
+                selectNavItem(homeNavBarItemView);
             }
         }
     }
@@ -1624,7 +1625,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     if (!appCMSPresenter.isNetworkConnected()) {
                         if (!appCMSPresenter.isUserLoggedIn()) {
                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                    () -> appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID),
+                                    () -> appCMSPresenter.launchBlankPage(),
                                     null);
                             return;
                         }

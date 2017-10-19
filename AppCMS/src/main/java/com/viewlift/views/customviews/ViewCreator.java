@@ -3075,7 +3075,7 @@ public class ViewCreator {
                 if (!appCMSPresenter.isNetworkConnected()) {
                     if (!appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                () -> appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID),
+                                () -> appCMSPresenter.launchBlankPage(),
                                 null);
                         return;
                     }

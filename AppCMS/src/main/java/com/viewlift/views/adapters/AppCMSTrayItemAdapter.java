@@ -108,10 +108,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
         this.setHasStableIds(false);
-
-        sortData();
-
-        resetData(listView);
     }
 
     private void sortData() {

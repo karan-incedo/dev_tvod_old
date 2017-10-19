@@ -65,7 +65,8 @@ public class GetAppCMSAPIAsyncTask {
         }
     }
 
-    public GetAppCMSAPIAsyncTask(AppCMSPageAPICall call, Action1<AppCMSPageAPI> readyAction) {
+    public GetAppCMSAPIAsyncTask(AppCMSPageAPICall call,
+                                 Action1<AppCMSPageAPI> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
     }
@@ -90,8 +91,11 @@ public class GetAppCMSAPIAsyncTask {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe((result) -> {
-                    if (params.appCMSPageAPILruCache != null) {
-                        params.appCMSPageAPILruCache.put(params.pageId, result);
+                    if (params.appCMSPageAPILruCache != null &&
+                            readyAction != null) {
+                        if (result != null) {
+                            params.appCMSPageAPILruCache.put(params.pageId, result);
+                        }
                         Observable.just(result).subscribe(readyAction);
                     }
                 });
