@@ -25,11 +25,11 @@ import java.util.List;
  */
 public class CSSCompiler {
 
-    public static interface StyleUpdater {
+    public interface StyleUpdater {
         Style updateStyle( Style style, HtmlSpanner spanner );
     }
 
-    public static interface TagNodeMatcher {
+    public interface TagNodeMatcher {
         boolean matches( TagNode tagNode );
     }
 

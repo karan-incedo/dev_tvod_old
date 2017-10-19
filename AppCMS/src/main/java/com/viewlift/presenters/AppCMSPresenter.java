@@ -7481,10 +7481,7 @@ public class AppCMSPresenter {
         }
 
         List<SubscriptionPlan> availableUpgradesForUser = availablePlans();
-        if (availableUpgradesForUser != null && !availableUpgradesForUser.isEmpty()) {
-            return true;
-        }
-        return false;
+        return availableUpgradesForUser != null && !availableUpgradesForUser.isEmpty();
     }
 
     public boolean isActionFacebook(String action) {

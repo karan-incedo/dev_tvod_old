@@ -293,13 +293,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             signatureCookie = args.getString(getString(R.string.signed_signature_key));
             keyPairIdCookie = args.getString(getString(R.string.signed_keypairid_key));
 
-            if (TextUtils.isEmpty(policyCookie) ||
+            refreshToken = !(TextUtils.isEmpty(policyCookie) ||
                     TextUtils.isEmpty(signatureCookie) ||
-                    TextUtils.isEmpty(keyPairIdCookie)) {
-                refreshToken = false;
-            } else {
-                refreshToken = true;
-            }
+                    TextUtils.isEmpty(keyPairIdCookie));
         }
 
         hlsUrl = hlsUrl.replaceAll(" ", "+");
