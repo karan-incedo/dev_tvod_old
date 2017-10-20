@@ -8287,10 +8287,14 @@ public class AppCMSPresenter {
     public void setCurrentActivity(Activity activity) {
         this.currentActivity = activity;
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
-        this.realmController = RealmController.with(currentActivity);
         this.downloadQueueThread = new DownloadQueueThread(this);
         this.clientId = activity.getString(R.string.default_web_client_id);
         this.serverClientId = activity.getString(R.string.server_client_id);
+        try {
+            this.realmController = RealmController.with(currentActivity);
+        } catch (Exception e) {
+
+        }
     }
 
     public void setCurrentContext(Context context) {
