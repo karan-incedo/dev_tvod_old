@@ -1081,6 +1081,7 @@ public class AppCMSPresenter {
                                               List<String> relateVideoIds) {
         boolean result = false;
         boolean isVideoOffline = false;
+
         try {
             isVideoOffline = Boolean.parseBoolean(extraData != null && extraData.length > 2 ? extraData[3] : "false");
         } catch (Exception e) {
@@ -1211,6 +1212,16 @@ public class AppCMSPresenter {
                                 }
                             }
 
+                            long entitlementCheckVideoWatchTime = -1L;
+                            if (entitlementPendingVideoData != null) {
+                                entitlementCheckVideoWatchTime = entitlementPendingVideoData.currentWatchedTime;
+                                entitlementPendingVideoData = null;
+                            }
+
+                            if (entitlementCheckVideoWatchTime != -1L) {
+                                contentDatum.getGist().setWatchedTime(entitlementCheckVideoWatchTime);
+                            }
+
                             if (contentDatum != null &&
                                     contentDatum.getGist() != null &&
                                     contentDatum.getGist().getWatchedTime() != 0) {
@@ -1304,7 +1315,7 @@ public class AppCMSPresenter {
                         entitlementPendingVideoData.filmTitle = filmTitle;
                         entitlementPendingVideoData.extraData = extraData;
                         entitlementPendingVideoData.relateVideoIds = relateVideoIds;
-                        navigateToHomeToRefresh = true;
+                        navigateToHomeToRefresh = false;
                         isVideoPlayerStarted = false;
 
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
@@ -5535,7 +5546,6 @@ public class AppCMSPresenter {
                                     entitlementPendingVideoData.closeLauncher = false;
                                     entitlementPendingVideoData.currentlyPlayingIndex = -1;
                                     entitlementPendingVideoData.relateVideoIds = null;
-                                    entitlementPendingVideoData = null;
                                 } else {
                                     sendCloseOthersAction(null, true, false);
                                     cancelInternalEvents();
@@ -5648,7 +5658,6 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.closeLauncher = false;
                                         entitlementPendingVideoData.currentlyPlayingIndex = -1;
                                         entitlementPendingVideoData.relateVideoIds = null;
-                                        entitlementPendingVideoData = null;
                                     } else {
                                         sendCloseOthersAction(null, true, false);
                                         cancelInternalEvents();
@@ -7265,7 +7274,6 @@ public class AppCMSPresenter {
             entitlementPendingVideoData.closeLauncher = false;
             entitlementPendingVideoData.currentlyPlayingIndex = -1;
             entitlementPendingVideoData.relateVideoIds = null;
-            entitlementPendingVideoData = null;
         } else {
             sendCloseOthersAction(null, true, false);
             cancelInternalEvents();
@@ -7422,7 +7430,9 @@ public class AppCMSPresenter {
                                 if (entitlementPendingVideoData != null) {
                                     navigateToHomeToRefresh = false;
                                     sendRefreshPageAction();
-                                    sendCloseOthersAction(null, true, false);
+                                    if (!loginFromNavPage) {
+                                        sendCloseOthersAction(null, true, !loginFromNavPage);
+                                    }
                                     launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                             entitlementPendingVideoData.action,
                                             entitlementPendingVideoData.filmTitle,
@@ -7439,7 +7449,6 @@ public class AppCMSPresenter {
                                     entitlementPendingVideoData.closeLauncher = false;
                                     entitlementPendingVideoData.currentlyPlayingIndex = -1;
                                     entitlementPendingVideoData.relateVideoIds = null;
-                                    entitlementPendingVideoData = null;
                                 } else {
                                     sendCloseOthersAction(null, true, false);
                                     cancelInternalEvents();
@@ -8062,7 +8071,9 @@ public class AppCMSPresenter {
                                         if (entitlementPendingVideoData != null) {
                                             navigateToHomeToRefresh = false;
                                             sendRefreshPageAction();
-                                            sendCloseOthersAction(null, true, false);
+                                            if (!loginFromNavPage) {
+                                                sendCloseOthersAction(null, true, !loginFromNavPage);
+                                            }
                                             launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                                     entitlementPendingVideoData.action,
                                                     entitlementPendingVideoData.filmTitle,
@@ -8079,9 +8090,10 @@ public class AppCMSPresenter {
                                             entitlementPendingVideoData.closeLauncher = false;
                                             entitlementPendingVideoData.currentlyPlayingIndex = -1;
                                             entitlementPendingVideoData.relateVideoIds = null;
-                                            entitlementPendingVideoData = null;
                                         } else {
-                                            sendCloseOthersAction(null, true, !loginFromNavPage);
+                                            if (!loginFromNavPage) {
+                                                sendCloseOthersAction(null, true, !loginFromNavPage);
+                                            }
                                             cancelInternalEvents();
                                             restartInternalEvents();
 
@@ -8112,7 +8124,9 @@ public class AppCMSPresenter {
                                     if (entitlementPendingVideoData != null) {
                                         navigateToHomeToRefresh = false;
                                         sendRefreshPageAction();
-                                        sendCloseOthersAction(null, true, true);
+                                        if (!loginFromNavPage) {
+                                            sendCloseOthersAction(null, true, !loginFromNavPage);
+                                        }
                                         launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                                 entitlementPendingVideoData.action,
                                                 entitlementPendingVideoData.filmTitle,
@@ -8129,9 +8143,10 @@ public class AppCMSPresenter {
                                         entitlementPendingVideoData.closeLauncher = false;
                                         entitlementPendingVideoData.currentlyPlayingIndex = -1;
                                         entitlementPendingVideoData.relateVideoIds = null;
-                                        entitlementPendingVideoData = null;
                                     } else {
-                                        sendCloseOthersAction(null, true, true);
+                                        if (!loginFromNavPage) {
+                                            sendCloseOthersAction(null, true, !loginFromNavPage);
+                                        }
                                         cancelInternalEvents();
                                         restartInternalEvents();
 
@@ -10751,7 +10766,7 @@ public class AppCMSPresenter {
         }
     }
 
-    private static class EntitlementPendingVideoData {
+    public static class EntitlementPendingVideoData {
         String pagePath;
         String action;
         String filmTitle;
@@ -10760,6 +10775,57 @@ public class AppCMSPresenter {
         boolean closeLauncher;
         int currentlyPlayingIndex;
         List<String> relateVideoIds;
+        long currentWatchedTime;
+
+        public static class Builder {
+            EntitlementPendingVideoData entitlementPendingVideoData;
+            public Builder() {
+                entitlementPendingVideoData = new EntitlementPendingVideoData();
+            }
+            public Builder pagePath(String pagePath) {
+                entitlementPendingVideoData.pagePath = pagePath;
+                return this;
+            }
+            public Builder action(String action) {
+                entitlementPendingVideoData.action = action;
+                return this;
+            }
+            public Builder filmTitle(String filmTitle) {
+                entitlementPendingVideoData.filmTitle = filmTitle;
+                return this;
+            }
+            public Builder extraData(String[] extraData) {
+                entitlementPendingVideoData.extraData = extraData;
+                return this;
+            }
+            public Builder contentDatum(ContentDatum contentDatum) {
+                entitlementPendingVideoData.contentDatum = contentDatum;
+                return this;
+            }
+            public Builder closerLauncher(boolean closeLauncher) {
+                entitlementPendingVideoData.closeLauncher = closeLauncher;
+                return this;
+            }
+            public Builder currentlyPlayingIndex(int currentlyPlayingIndex) {
+                entitlementPendingVideoData.currentlyPlayingIndex = currentlyPlayingIndex;
+                return this;
+            }
+            public Builder relatedVideoIds(List<String> relatedVideosIds) {
+                entitlementPendingVideoData.relateVideoIds = relatedVideosIds;
+                return this;
+            }
+            public Builder currentWatchedTime(long currentWatchedTime) {
+                entitlementPendingVideoData.currentWatchedTime = currentWatchedTime;
+                return this;
+            }
+            public EntitlementPendingVideoData build() {
+                return entitlementPendingVideoData;
+            }
+        }
+    }
+
+    public void setEntitlementPendingVideoData(EntitlementPendingVideoData entitlementPendingVideoData) {
+        this.entitlementPendingVideoData = entitlementPendingVideoData;
     }
 
     public static class SemVer {

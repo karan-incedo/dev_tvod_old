@@ -503,4 +503,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
         return null;
     }
+
+    @Override
+    public List<String> getCurrentRelatedVideoIds() {
+        if (binder != null && binder.getRelateVideoIds() != null) {
+            return binder.getRelateVideoIds();
+        }
+        return null;
+    }
+
+
 }
