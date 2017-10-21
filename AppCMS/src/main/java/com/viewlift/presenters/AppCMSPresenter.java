@@ -4396,16 +4396,27 @@ public class AppCMSPresenter {
                             if (forgotPasswordResponse != null
                                     && TextUtils.isEmpty(forgotPasswordResponse.getError())) {
                                 Log.d(TAG, "Successfully reset password for email: " + email);
-                                showDialog(DialogType.RESET_PASSWORD,
-                                        currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
-                                        false,
-                                        null);
+
+                                if (platformType == PlatformType.TV) {
+                                    openTVErrorDialog( currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
+                                            currentActivity.getString(R.string.app_cms_forgot_password_title));
+                                }else {
+                                    showDialog(DialogType.RESET_PASSWORD,
+                                            currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
+                                            false,
+                                            null);
+                                }
                             } else if (forgotPasswordResponse != null) {
                                 Log.e(TAG, "Failed to reset password for email: " + email);
-                                showDialog(DialogType.RESET_PASSWORD,
-                                        forgotPasswordResponse.getError(),
-                                        false,
-                                        null);
+                                if(platformType == PlatformType.TV) {
+                                    openTVErrorDialog(forgotPasswordResponse.getError(),
+                                            currentActivity.getString(R.string.app_cms_forgot_password_title));
+                                }else {
+                                    showDialog(DialogType.RESET_PASSWORD,
+                                            forgotPasswordResponse.getError(),
+                                            false,
+                                            null);
+                                }
                             }
                         } catch (Exception e) {
                             Log.e(TAG, "Error resetting password: " + e.getMessage());
@@ -7853,7 +7864,18 @@ public class AppCMSPresenter {
                             }
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         } else if (!TextUtils.isEmpty(signInResponse.getMessage()) || signInResponse.isErrorResponseSet()) {
-                            showDialog(DialogType.SIGNIN, signInResponse.getErrorResponse().getError(), false, null);
+                            if(platformType == PlatformType.TV){
+                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                try {
+                                    openTVErrorDialog(signInResponse.getErrorResponse().getError() ,
+                                            signup ? currentActivity.getString(R.string.app_cms_signup).toUpperCase() :
+                                                    currentActivity.getString(R.string.app_cms_login).toUpperCase() );
+                                } catch (Exception e) {
+                                    Log.e(TAG, "DialogType launching TV DialogType Activity");
+                                }
+                            }else{
+                                showDialog(DialogType.SIGNIN, signInResponse.getErrorResponse().getError(), false, null);
+                            }
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         } else {
                             String signResponseValue = gson.toJson(signInResponse, SignInResponse.class);
@@ -7936,15 +7958,33 @@ public class AppCMSPresenter {
                                             NavigationPrimary homePageNavItem = findHomePageNavItem();
                                             if (homePageNavItem != null) {
                                                 cancelInternalEvents();
-                                                navigateToPage(homePageNavItem.getPageId(),
-                                                        homePageNavItem.getTitle(),
-                                                        homePageNavItem.getUrl(),
-                                                        false,
-                                                        true,
-                                                        false,
-                                                        true,
-                                                        true,
-                                                        deeplinkSearchQuery);
+                                                if(platformType == PlatformType.ANDROID) {
+                                                    navigateToPage(homePageNavItem.getPageId(),
+                                                            homePageNavItem.getTitle(),
+                                                            homePageNavItem.getUrl(),
+                                                            false,
+                                                            true,
+                                                            false,
+                                                            true,
+                                                            true,
+                                                            deeplinkSearchQuery);
+                                                }else if(platformType == PlatformType.TV){
+                                                    if(getLaunchType() == LaunchType.LOGIN_AND_SIGNUP){
+                                                        Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                                        currentActivity.sendBroadcast(myProfileIntent);
+                                                    }else if(getLaunchType() == LaunchType.HOME) {
+                                                        navigateToTVPage(
+                                                                homePageNavItem.getPageId(),
+                                                                homePageNavItem.getTitle(),
+                                                                homePageNavItem.getUrl(),
+                                                                false,
+                                                                deeplinkSearchQuery,
+                                                                true,
+                                                                false,
+                                                                false
+                                                        );
+                                                    }
+                                                }
                                             }
                                         }
                                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
@@ -7983,15 +8023,34 @@ public class AppCMSPresenter {
                                         NavigationPrimary homePageNavItem = findHomePageNavItem();
                                         if (homePageNavItem != null) {
                                             cancelInternalEvents();
-                                            navigateToPage(homePageNavItem.getPageId(),
-                                                    homePageNavItem.getTitle(),
-                                                    homePageNavItem.getUrl(),
-                                                    false,
-                                                    true,
-                                                    false,
-                                                    true,
-                                                    true,
-                                                    deeplinkSearchQuery);
+
+                                            if(platformType == PlatformType.TV){
+                                                if(getLaunchType() == LaunchType.LOGIN_AND_SIGNUP){
+                                                    Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                                    currentActivity.sendBroadcast(myProfileIntent);
+                                                }else if(getLaunchType() == LaunchType.HOME) {
+                                                    navigateToTVPage(
+                                                            homePageNavItem.getPageId(),
+                                                            homePageNavItem.getTitle(),
+                                                            homePageNavItem.getUrl(),
+                                                            false,
+                                                            deeplinkSearchQuery,
+                                                            true,
+                                                            false,
+                                                            false
+                                                    );
+                                                }
+                                            }else{
+                                                navigateToPage(homePageNavItem.getPageId(),
+                                                        homePageNavItem.getTitle(),
+                                                        homePageNavItem.getUrl(),
+                                                        false,
+                                                        true,
+                                                        false,
+                                                        true,
+                                                        true,
+                                                        deeplinkSearchQuery);
+                                            }
                                         }
                                     }
                                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
@@ -9043,7 +9102,6 @@ public class AppCMSPresenter {
         }
     }
 
-
     public boolean navigateToTVPage(String pageId,
                                     String pageTitle,
                                     String url,
@@ -9060,9 +9118,7 @@ public class AppCMSPresenter {
             // Log.d(TAG, "Search query (optional): " + searchQuery);
 
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
-
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
-
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             if(forcedDownload){
                 appCMSPageAPI = null;
@@ -9481,7 +9537,7 @@ public class AppCMSPresenter {
                                     actionType);
                         });*/
                 sendStopLoadingPageAction();
-                Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
+                Intent playVideoIntent = new Intent();
                 try {
                     Class videoPlayer = Class.forName(tvVideoPlayerPackage);
                     playVideoIntent = new Intent(currentActivity, videoPlayer);
@@ -9489,7 +9545,13 @@ public class AppCMSPresenter {
                     e.printStackTrace();
                 }
                 String adsUrl;
-                boolean requestAds = true;
+
+                boolean svodServiceType =
+                        appCMSMain.getServiceType()
+                                .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
+
+                boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+
                 if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
                     if (pagePath != null && pagePath.contains(currentActivity
                             .getString(R.string.app_cms_action_qualifier_watchvideo_key))) {

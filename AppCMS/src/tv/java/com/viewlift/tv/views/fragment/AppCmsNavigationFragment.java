@@ -197,14 +197,14 @@ public class AppCmsNavigationFragment extends Fragment {
 
                     navigationVisibilityListener.showNavigation(false);
                     //getActivity().sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-                    ((AppCmsHomeActivity)getActivity()).pageLoading(true);
+                    Utils.pageLoading(true,getActivity());
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             if(primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))){
                                 appCmsPresenter.openSearch();
-                                ((AppCmsHomeActivity)getActivity()).pageLoading(false);
+                                Utils.pageLoading(false,getActivity());
                             }else if(primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label ,
                                     getString(R.string.profile_label)))){
 

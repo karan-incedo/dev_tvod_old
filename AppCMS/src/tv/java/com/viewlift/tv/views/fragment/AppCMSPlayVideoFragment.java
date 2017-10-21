@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
@@ -38,9 +39,14 @@ import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.customviews.VideoPlayerView;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import rx.functions.Action1;
 
@@ -49,7 +55,7 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.AdErrorListener,
-        AdEvent.AdEventListener, AppCmsTvErrorFragment.ErrorFragmentListener, VideoPlayerView.FinishListener{
+        AdEvent.AdEventListener, AppCmsTvErrorFragment.ErrorFragmentListener, VideoPlayerView.FinishListener {
     private static final String TAG = "PlayVideoFragment";
 
     private AppCMSPresenter appCMSPresenter;
@@ -90,6 +96,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private String mStreamId;
     private long runtime;
     private long videoPlayTime;
+    private TimerTask entitlementCheckTimerTask;
+    private Timer entitlementCheckTimer;
+    private boolean entitlementCheckCancelled;
+    private boolean freeContent;
 
     public interface OnClosePlayerEvent {
         void closePlayer();
@@ -185,7 +195,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                       long runtime,
                                                       String imageUrl,
                                                       String closedCaptionUrl,
-                                                      String parentalRating) {
+                                                      String parentalRating,
+                                                      boolean freeContent) {
 
         AppCMSPlayVideoFragment appCMSPlayVideoFragment = new AppCMSPlayVideoFragment();
         Bundle args = new Bundle();
@@ -204,6 +215,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         args.putString(context.getString(R.string.video_player_closed_caption_key), closedCaptionUrl);
         args.putBoolean(context.getString(R.string.video_player_is_trailer_key), isTrailer);
         args.putString(context.getString(R.string.video_player_content_rating_key), parentalRating);
+        args.putBoolean(context.getString(R.string.free_content_key), freeContent);
         appCMSPlayVideoFragment.setArguments(args);
         return appCMSPlayVideoFragment;
     }
@@ -246,6 +258,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             closedCaptionUrl = args.getString(getString(R.string.video_player_closed_caption_key));
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
+            freeContent = args.getBoolean(getString(R.string.free_content_key));
         }
 
         appCMSPresenter =
@@ -253,15 +266,13 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         .getAppCMSPresenterComponent()
                         .appCMSPresenter();
 
-        beaconMsgTimeoutMsec =
-                getActivity().getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
-
+        beaconMsgTimeoutMsec = getActivity().getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
         parentScreenName = getActivity().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
 
         setRetainInstance(true);
     }
 
-    private void preparePlayer(){
+    private void preparePlayer() {
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(false);
             videoPlayerView.getPlayerView().getSubtitleView()
@@ -296,7 +307,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             @Override
             public void call(VideoPlayerView.PlayerState playerState) {
                 String text = "";
-                switch(playerState.getPlaybackState()) {
+                switch (playerState.getPlaybackState()) {
                     case ExoPlayer.STATE_BUFFERING:
                         Log.d(TAG, "Video STATE_BUFFERING");
                         text += "buffering...";
@@ -396,15 +407,150 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         progressBar = (ProgressBar) rootView.findViewById(R.id.progress_bar);
 
         progressBar.getIndeterminateDrawable().
-                setColorFilter(Color.parseColor(Utils.getFocusColor(getActivity(),appCMSPresenter)) ,
+                setColorFilter(Color.parseColor(Utils.getFocusColor(getActivity(), appCMSPresenter)),
                         PorterDuff.Mode.MULTIPLY
                 );
+
+
+        if (appCMSPresenter.isAppSVOD() &&
+                !isTrailer &&
+                !freeContent &&
+                !appCMSPresenter.isUserSubscribed()) {
+            int entitlementCheckMultiplier = 5;
+            entitlementCheckCancelled = false;
+
+            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+            if (appCMSMain != null &&
+                    appCMSMain.getFeatures() != null &&
+                    appCMSMain.getFeatures().getFreePreview() != null &&
+                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
+                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
+                try {
+                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                }
+            }
+
+            final int maxPreviewSecs = entitlementCheckMultiplier * 60;
+            final boolean[] isSubscribe = {false};
+
+            appCMSPresenter.getUserData(userIdentity -> {
+                        if (null != userIdentity)
+                            isSubscribe[0] = userIdentity.isSubscribed();
+
+                        if (!isSubscribe[0]) {
+                            entitlementCheckTimerTask = new TimerTask() {
+                                @Override
+                                public void run() {
+                                    if (!entitlementCheckCancelled) {
+                                        int secsViewed = (int) videoPlayerView.getPlayer().getCurrentPosition() / 1000;
+                                        Log.d(TAG, "secsViewed  is = " + secsViewed + " totalPreviewTime = " + maxPreviewSecs);
+                                        if (maxPreviewSecs < secsViewed && !isSubscribe[0]) {
+                                            getActivity().runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    pauseVideo();
+                                                    if (videoPlayerView != null) {
+                                                        videoPlayerView.disableController();
+                                                    }
+                                                    videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
+                                                    if (!appCMSPresenter.isUserLoggedIn()) {
+                                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                                                getActivity(),
+                                                                appCMSPresenter,
+                                                                getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                                getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                                                getString(R.string.app_cms_login_required_title),
+                                                                getString(R.string.app_cms_login_required_message),
+                                                                getString(R.string.app_cms_login),
+                                                                getString(android.R.string.cancel),
+                                                                14
+                                                        );
+
+                                                       newFragment.setOnPositiveButtonClicked(new Action1<String>() {
+                                                           @Override
+                                                           public void call(String s) {
+                                                               Utils.pageLoading(true , getActivity());
+                                                               NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                                               appCMSPresenter.navigateToTVPage(
+                                                                       navigationUser.getPageId(),
+                                                                       navigationUser.getTitle(),
+                                                                       navigationUser.getUrl(),
+                                                                       false,
+                                                                       Uri.EMPTY,
+                                                                       false,
+                                                                       false,
+                                                                       true
+                                                               );
+                                                           }
+                                                       });
+
+                                                       newFragment.setOnNegativeButtonClicked(new Action1<String>() {
+                                                           @Override
+                                                           public void call(String s) {
+                                                               cancelTimer();
+                                                               getActivity().finish();
+                                                           }
+                                                       });
+
+                                                        newFragment.setOnBackKeyListener(new Action1<String>() {
+                                                            @Override
+                                                            public void call(String s) {
+                                                                cancelTimer();
+                                                                getActivity().finish();
+                                                            }
+                                                        });
+
+                                                     } else if (!isSubscribe[0]) {
+                                                        Log.d(TAG, "User is not Subscribe");
+                                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                                                getActivity(),
+                                                                appCMSPresenter,
+                                                                getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                                getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                                                getString(R.string.subscription_required),
+                                                                getString(R.string.subscription_not_purchased),
+                                                                getString(android.R.string.cancel),
+                                                                getString(R.string.blank_string),
+                                                                14
+                                                        );
+
+                                                        newFragment.setOnPositiveButtonClicked(new Action1<String>() {
+                                                            @Override
+                                                            public void call(String s) {
+                                                                getActivity().finish();
+                                                            }
+                                                        });
+
+                                                        newFragment.setOnBackKeyListener(new Action1<String>() {
+                                                            @Override
+                                                            public void call(String s) {
+                                                                cancelTimer();
+                                                                getActivity().finish();
+                                                            }
+                                                        });
+
+                                                    }
+                                                }
+                                            });
+                                            entitlementCheckCancelled = true;
+                                        }
+                                    }
+                                }
+                            };
+                            entitlementCheckTimer = new Timer();
+                            entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
+                        }
+                    }
+            );
+        }
 
         if (!shouldRequestAds) {
             videoPlayerView.getPlayer().setPlayWhenReady(true);
             preparePlayer();
         }
-
 
         beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
                 appCMSPresenter,
@@ -417,6 +563,44 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         return rootView;
     }
 
+
+    public void cancelTimer(){
+        if(null != entitlementCheckTimerTask){
+            entitlementCheckTimerTask.cancel();
+        }
+        if(null != entitlementCheckTimer){
+            entitlementCheckTimer.cancel();
+        }
+    }
+    private void pauseVideo() {
+       /* if (shouldRequestAds && adsManager != null && isAdDisplayed) {
+            adsManager.pause();
+        } else {
+            videoPlayerView.pausePlayer();
+        }*/
+
+        videoPlayerView.pausePlayer();
+
+        if (beaconMessageThread != null) {
+            beaconMessageThread.sendBeaconPing = false;
+        }
+
+    }
+
+    public void resumeVideo() {
+        {
+            if (videoPlayerView != null) {
+                videoPlayerView.enableController();
+            }
+            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+            videoPlayerView.startPlayer();
+            //videoPlayerView.resumePlayer();
+            if (beaconMessageThread != null) {
+                beaconMessageThread.sendBeaconPing = true;
+            }
+            Log.d(TAG, "Resuming playback");
+        }
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -447,12 +631,12 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }*/
 
 
-       if(shouldRequestAds && !isADPlay){
-           requestAds(adsUrl);
-           isADPlay = true;
-       }
+        if (shouldRequestAds && !isADPlay) {
+            requestAds(adsUrl);
+            isADPlay = true;
+        }
 
-        getActivity().registerReceiver(networkReciever , new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
+        getActivity().registerReceiver(networkReciever, new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));
 
         super.onResume();
     }
@@ -465,6 +649,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.pausePlayer();
         }
         getActivity().unregisterReceiver(networkReciever);
+        cancelTimer();
         super.onPause();
     }
 
@@ -473,8 +658,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
         videoPlayerView.getPlayer().setPlayWhenReady(true);
         preparePlayer();
-       // videoPlayerView.getPlayer().setPlayWhenReady(true);
-       // videoPlayerView.resumePlayer();
+        // videoPlayerView.getPlayer().setPlayWhenReady(true);
+        // videoPlayerView.resumePlayer();
     }
 
     @Override
@@ -530,13 +715,15 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }
     }
 
+
+
     @Override
     public void onDestroyView() {
         videoPlayerView.releasePlayer();
         beaconMessageThread.sendBeaconPing = false;
         beaconMessageThread.runBeaconPing = false;
         beaconMessageThread = null;
-	    onClosePlayerEvent = null;
+        onClosePlayerEvent = null;
         adsLoader = null;
         super.onDestroyView();
     }
@@ -572,23 +759,23 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }
     }
 
-    public boolean showController(KeyEvent event){
+    public boolean showController(KeyEvent event) {
         SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
-        if(playerView.getPlayer().getPlayWhenReady()){
+        if (playerView.getPlayer().getPlayWhenReady()) {
             playerView.showController();
             return playerView.dispatchMediaKeyEvent(event);
         }
-     return true;
+        return true;
     }
 
     BroadcastReceiver networkReciever = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if (action != null && action.equalsIgnoreCase("android.net.conn.CONNECTIVITY_CHANGE")){
-                if(appCMSPresenter.isNetworkConnected()){
+            if (action != null && action.equalsIgnoreCase("android.net.conn.CONNECTIVITY_CHANGE")) {
+                if (appCMSPresenter.isNetworkConnected()) {
                     //TODO:resume the video.
-                    if(networkConnect) {
+                    if (networkConnect) {
                         networkDisconnect = true;
                         if (!TextUtils.isEmpty(hlsUrl)) {
                             videoPlayerView.sendPlayerPosition(videoPlayerView.getPlayer().getCurrentPosition());
@@ -596,7 +783,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         }
                     }
                 } else {
-                    if(networkDisconnect) {
+                    if (networkDisconnect) {
                         networkConnect = true;
                         networkDisconnect = false;
                         Bundle bundle = new Bundle();

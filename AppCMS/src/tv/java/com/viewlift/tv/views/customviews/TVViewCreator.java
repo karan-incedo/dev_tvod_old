@@ -233,6 +233,7 @@ public class TVViewCreator {
         TVModuleView moduleView = null;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getView())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -243,6 +244,9 @@ public class TVViewCreator {
                             pageView, jsonValueKeyMap, appCMSPresenter, true);
                 }
             } else {
+                if(!module.getView().equalsIgnoreCase("AC ContinueWatching 01")){
+                    module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
+                }
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -343,8 +347,11 @@ public class TVViewCreator {
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
+            if("AC ResetPassword 01".equalsIgnoreCase(module.getView())){
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
+            }
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
-                // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+                 //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
 
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
@@ -465,7 +472,7 @@ public class TVViewCreator {
                             customHeaderItem.setFontFamily(component.getFontFamily());
                             customHeaderItem.setFontWeight(component.getFontWeight());
                             customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
-                            customHeaderItem.setmModuleId(moduleData.getId());
+                            customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
                         }
                         break;
                 }
@@ -477,7 +484,7 @@ public class TVViewCreator {
                 customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                 customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
                 customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                customHeaderItem.setmModuleId(moduleData.getId());
+                customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
             }
 
             if (moduleData != null) {
@@ -734,7 +741,7 @@ public class TVViewCreator {
                                                 }, !queued[0]);
                                     } else /*User is not logged in*/ {
 
-                                        ClearDialogFragment newFragment = getClearDialogFragment(
+                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
                                                 context,
                                                 appCMSPresenter,
                                                 context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
@@ -986,7 +993,7 @@ public class TVViewCreator {
                                 OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_MODULE_KEY:
-                                        ClearDialogFragment newFragment = getClearDialogFragment(
+                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
                                                 context,
                                                 appCMSPresenter,
                                                 context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
@@ -1010,7 +1017,7 @@ public class TVViewCreator {
                                         break;
 
                                     case PAGE_WATCHLIST_MODULE_KEY:
-                                        ClearDialogFragment newFragment1 = getClearDialogFragment(
+                                        ClearDialogFragment newFragment1 = Utils.getClearDialogFragment(
                                                 context,
                                                 appCMSPresenter,
                                                 context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
@@ -1935,38 +1942,6 @@ public class TVViewCreator {
         }
     }
 
-    @NonNull
-    private ClearDialogFragment getClearDialogFragment(Context context,
-                                                       AppCMSPresenter appCMSPresenter,
-                                                       int dialogWidth,
-                                                       int dialogHeight,
-                                                       String dialogTitle,
-                                                       String dialogMessage,
-                                                       String positiveButtonText,
-                                                       String negativeButtonText,
-                                                       float messageSize) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY, dialogWidth);
-        bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY, dialogHeight);
-        bundle.putFloat(ClearDialogFragment.DIALOG_MESSAGE__SIZE_KEY, messageSize);
-        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
-                Utils.getTextColor(context, appCMSPresenter));
-        bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, dialogTitle);
-        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY, dialogMessage);
-        bundle.putString(ClearDialogFragment.DIALOG_POSITIVE_BUTTON_TEXT_KEY,
-                positiveButtonText);
-        bundle.putString(ClearDialogFragment.DIALOG_NEGATIVE_BUTTON_TEXT_KEY,
-                negativeButtonText);
-        Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
-        args.putExtra(context.getString(R.string.dialog_item_key), bundle);
-        android.app.FragmentTransaction ft = appCMSPresenter
-                .getCurrentActivity().getFragmentManager()
-                .beginTransaction();
-        ClearDialogFragment newFragment =
-                ClearDialogFragment.newInstance(bundle);
-        newFragment.show(ft, DIALOG_FRAGMENT_TAG);
-        return newFragment;
-    }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60);

@@ -47,6 +47,8 @@ public class ClearDialogFragment extends AbsDialogFragment {
     public static final String DIALOG_NEGATIVE_BUTTON_VISIBILITY_KEY
             = "dialog_negative_button_visibility_key";
     private Action1<String> onPositiveButtonClicked;
+    private Action1<String> onNegativeButtonClicked;
+    private Action1<String> onBackKeyListener;
 
     public ClearDialogFragment() {
         super();
@@ -62,6 +64,14 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
     public void setOnPositiveButtonClicked (Action1<String> onPositiveButtonClicked){
         this.onPositiveButtonClicked = onPositiveButtonClicked;
+    }
+
+    public void setOnNegativeButtonClicked (Action1<String> onNegativeButtonClicked){
+        this.onNegativeButtonClicked = onNegativeButtonClicked;
+    }
+
+    public void setOnBackKeyListener(Action1<String> onBackKeyListener){
+       this.onBackKeyListener = onBackKeyListener;
     }
 
     @Nullable
@@ -95,6 +105,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         positiveButton.setText(positiveBtnText);
         negativeButton.setText(negativeBtnText);
+
         tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, messageSize);
 
         if (description == null) {
@@ -157,10 +168,26 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         positiveButton.requestFocus();
 
-        /*Set click listener*/
-        negativeButton.setOnClickListener(v -> dismiss());
+        if(positiveBtnText.length()==0){
+            positiveButton.setVisibility(View.GONE);
+            negativeButton.requestFocus();
+        }
 
-        negativeButton.setOnKeyListener((view, i, keyEvent) -> {
+        if(negativeBtnText.length()==0){
+            negativeButton.setVisibility(View.GONE);
+            positiveButton.requestFocus();
+        }
+
+        /*Set click listener*/
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onNegativeButtonClicked.call("");
+                dismiss();
+            }
+        });
+
+       /* negativeButton.setOnKeyListener((view, i, keyEvent) -> {
             int keyCode = keyEvent.getKeyCode();
             switch (keyCode) {
                 case KeyEvent.KEYCODE_DPAD_UP:
@@ -175,12 +202,27 @@ public class ClearDialogFragment extends AbsDialogFragment {
                     }
             }
             return false;
-        });
+        });*/
 
         positiveButton.setOnClickListener(v -> {
             onPositiveButtonClicked.call("");
             dismiss();
         });
+
+        mView.setOnKeyListener(
+                new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        if(keyCode == KeyEvent.KEYCODE_BACK
+                                && event.getAction() == KeyEvent.ACTION_DOWN){
+                            if(null != onBackKeyListener)
+                            onBackKeyListener.call("");
+                        }
+                        return false;
+                    }
+                }
+        );
+
         return mView;
     }
 

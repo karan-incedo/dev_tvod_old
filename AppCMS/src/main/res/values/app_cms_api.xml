@@ -398,7 +398,7 @@
     <string name="google_auth_provider_name_key">google</string>
 
     <!--reset password-->
-    <string name="app_cms_reset_password_cancel_button_key">cancelButton</string>
+    <string name="app_cms_reset_password_cancel_button_key">resetPasswordCancelButton</string>
     <string name="app_cms_reset_password_continue_button_key">resetPasswordButton</string>
     <string name="app_cms_forgotPasswordTitle_key">forgotPasswordTitle</string>
 
