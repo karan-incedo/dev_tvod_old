@@ -463,11 +463,11 @@ public class CastServiceProvider {
         mMediaRouteButton.setOnClickListener(v -> {
             if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
                 if (appCMSPresenter.isUserLoggedIn()) {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                            null);
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                    CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity()).getSessionManager().endCurrentSession(true);
                 } else {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
-                            null);
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
+                    CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity()).getSessionManager().endCurrentSession(true);
                 }
             } else {
                 try {

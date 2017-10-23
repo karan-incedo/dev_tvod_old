@@ -50,7 +50,7 @@ import rx.functions.Action1;
  */
 
 public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.AdErrorListener,
-        AdEvent.AdEventListener, AppCmsTvErrorFragment.ErrorFragmentListener, VideoPlayerView.FinishListener{
+        AdEvent.AdEventListener, AppCmsTvErrorFragment.ErrorFragmentListener, VideoPlayerView.ErrorEventListener{
     private static final String TAG = "PlayVideoFragment";
 
     private AppCMSPresenter appCMSPresenter;
@@ -606,6 +606,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     @Override
     public void onRetry(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onRefreshTokenCallback() {
 
     }
 

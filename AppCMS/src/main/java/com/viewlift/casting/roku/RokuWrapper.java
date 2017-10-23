@@ -189,7 +189,7 @@ public class RokuWrapper {
 
     public void setListener(RokuWrapperEventListener listener) {
         if (listener instanceof RokuWrapperEventListener)
-            mRokuWrapperEventListener = (RokuWrapperEventListener) listener;
+            mRokuWrapperEventListener = listener;
         else
             throw new RuntimeException(listener.getClass() + " must implement RokuWrapperEventListener");
     }
@@ -375,7 +375,7 @@ public class RokuWrapper {
     }
 
     public void setSelectedRokuDevice(RokuDevice selectedRokuDevice) {
-        this.selectedRokuDevice = selectedRokuDevice;
+        RokuWrapper.selectedRokuDevice = selectedRokuDevice;
     }
 
     public boolean isRokuDiscoveryTimerRunning() {

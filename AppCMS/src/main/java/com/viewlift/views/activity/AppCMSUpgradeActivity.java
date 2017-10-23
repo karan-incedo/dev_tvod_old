@@ -38,7 +38,7 @@ public class AppCMSUpgradeActivity extends AppCompatActivity {
         super.onResume();
         if (getApplication() instanceof AppCMSApplication) {
             AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
-            appCMSPresenter.sendCloseOthersAction(null, false);
+            appCMSPresenter.sendCloseOthersAction(null, false, false);
             appCMSPresenter.refreshAppCMSMain(appCMSMain -> {
                 appCMSPresenter.updateAppCMSMain(appCMSMain);
                 if (!appCMSPresenter.isAppBelowMinVersion()) {

@@ -350,7 +350,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 try {
-                    if (((binder.getContentData().getGist().getDownloadStatus() != null &&
+                    if (((binder != null &&
+                            binder.getContentData() != null &&
+                            binder.getContentData().getGist() != null &&
+                            binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
                             binder.getContentData().getGist().getDownloadStatus() == null) &&
@@ -362,7 +365,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 null);
                     }
                 } catch (Exception e) {
-                    if ((binder.getContentData().getGist().getDownloadStatus() != null &&
+                    if ((binder != null &&
+                            binder.getContentData() != null &&
+                            binder.getContentData().getGist() != null &&binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
                             binder.getContentData().getGist().getDownloadStatus() == null) {
@@ -413,12 +418,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
-        }
-
-        if (BaseView.isTablet(this)) {
-            appCMSPresenter.unrestrictPortraitOnly();
-        }else{
-            appCMSPresenter.restrictPortraitOnly();
         }
 
         super.onDestroy();
@@ -504,4 +503,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
         return null;
     }
+
+    @Override
+    public List<String> getCurrentRelatedVideoIds() {
+        if (binder != null && binder.getRelateVideoIds() != null) {
+            return binder.getRelateVideoIds();
+        }
+        return null;
+    }
+
+
 }

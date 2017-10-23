@@ -63,6 +63,10 @@ public class AppCMSApplication extends MultiDexApplication {
 
         Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
 
+        new Thread(() -> {
+            Fabric.with(AppCMSApplication.this, new Crashlytics());
+        }).run();
+
         closeAppMap = new HashMap<>();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
@@ -120,12 +124,6 @@ public class AppCMSApplication extends MultiDexApplication {
                 }
             }
         });
-
-        sendAnalytics();
-    }
-
-    private void sendAnalytics() {
-        Fabric.with(this, new Crashlytics());
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

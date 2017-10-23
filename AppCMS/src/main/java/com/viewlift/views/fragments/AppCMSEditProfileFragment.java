@@ -139,7 +139,9 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
-                            appCMSPresenter.sendCloseOthersAction(null, true);
+                            appCMSPresenter.sendCloseOthersAction(null,
+                                    true,
+                                    false);
                             appCMSPresenter.closeSoftKeyboardNoView();
                         }
                     });

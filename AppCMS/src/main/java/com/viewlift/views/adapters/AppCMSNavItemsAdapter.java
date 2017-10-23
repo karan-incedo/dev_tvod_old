@@ -121,8 +121,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                         }
 
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
-                            appCMSPresenter.navigateToSubscriptionPlansPage(null,
-                                    null);
+                            appCMSPresenter.navigateToSubscriptionPlansPage(true);
                         } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
@@ -188,7 +187,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                                    () -> appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID),
+                                                    () -> appCMSPresenter.launchBlankPage(),
                                                     null);
                                             return;
                                         }

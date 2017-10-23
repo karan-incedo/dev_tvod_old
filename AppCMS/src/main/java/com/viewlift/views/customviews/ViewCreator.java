@@ -22,7 +22,6 @@ import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1389,7 +1388,8 @@ public class ViewCreator {
                             component.getComponents(),
                             appCMSPresenter,
                             jsonValueKeyMap,
-                            viewType);
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
@@ -1983,13 +1983,13 @@ public class ViewCreator {
                             }
 
                             @Override
-                            public void setModuleId(String moduleId) {
-                                internalEventModuleId = moduleId;
+                            public String getModuleId() {
+                                return internalEventModuleId;
                             }
 
                             @Override
-                            public String getModuleId() {
-                                return internalEventModuleId;
+                            public void setModuleId(String moduleId) {
+                                internalEventModuleId = moduleId;
                             }
                         };
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
@@ -2032,7 +2032,9 @@ public class ViewCreator {
 
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
+                            if (!appCMSPresenter.sendCloseOthersAction(null,
+                                    true,
+                                    false)) {
                                 //Log.e(TAG, "Could not perform close action: " +
 //                                        " action: " +
 //                                        component.getAction());
@@ -2048,7 +2050,9 @@ public class ViewCreator {
                         if (jsonValueKeyMap.get(moduleAPI.getModuleType())
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                             componentViewResult.componentView.setOnClickListener(v -> {
-                                if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
+                                if (!appCMSPresenter.sendCloseOthersAction(null,
+                                        true,
+                                        false)) {
                                     //Log.e(TAG, "Could not perform close action: " +
 //                                            " action: " +
 //                                            component.getAction());
@@ -3075,7 +3079,7 @@ public class ViewCreator {
                 if (!appCMSPresenter.isNetworkConnected()) {
                     if (!appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                () -> appCMSPresenter.launchErrorActivity(AppCMSPresenter.PlatformType.ANDROID),
+                                () -> appCMSPresenter.launchBlankPage(),
                                 null);
                         return;
                     }

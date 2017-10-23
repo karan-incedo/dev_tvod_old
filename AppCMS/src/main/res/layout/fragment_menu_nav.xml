@@ -6,19 +6,20 @@
     android:layout_height="match_parent">
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/app_cms_nav_items_main_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:id="@+id/app_cms_nav_items_with_login_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:orientation="vertical">
             <FrameLayout
                 android:id="@+id/app_cms_nav_items_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical">
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/nav_items_list"
                     android:layout_width="match_parent"
