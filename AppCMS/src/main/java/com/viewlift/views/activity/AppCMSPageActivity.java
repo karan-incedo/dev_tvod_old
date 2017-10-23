@@ -225,6 +225,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction() != null
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION)) {
+                    if (!BaseView.isTablet(AppCMSPageActivity.this)) {
+                        appCMSPresenter.restrictPortraitOnly();
+                    } else {
+                        appCMSPresenter.unrestrictPortraitOnly();
+                    }
+
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
                         updatedAppCMSBinder =
