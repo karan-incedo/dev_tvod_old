@@ -90,7 +90,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String fontColor = binder.getFontColor();
 
                 if (binder.isOffline()) {
-                    launchVideoPlayer(gist, extra, useHls, videoUrl, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                    launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
                 } else {
                     appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                         title = "";
@@ -103,7 +103,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             appCMSSignedURLResult = new AppCMSSignedURLResult();
                             appCMSSignedURLResult.setSigned(hlsUrl);
 
-                            launchVideoPlayer(gist, extra, useHls, videoUrl, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, appCMSSignedURLResult);
+                            launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, appCMSSignedURLResult);
                         }
                     });
                 }
@@ -171,12 +171,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     public void launchVideoPlayer(Gist gist,
                                   String[] extra,
                                   boolean useHls,
-                                  String videoUrl,
                                   String fontColor,
                                   String defaultVideoResolution,
                                   Intent intent,
                                   FrameLayout appCMSPlayVideoPageContainer,
                                   AppCMSSignedURLResult appCMSSignedURLResult) {
+        String videoUrl = "";
         String closedCaptionUrl = null;
         if (!binder.isTrailer()) {
             title = gist.getTitle();
