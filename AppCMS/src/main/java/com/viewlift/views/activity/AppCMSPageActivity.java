@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -338,7 +339,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                    //
+                    DownloadManager downloadManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
+                    long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                    DownloadManager.Query downloadQuery = new DownloadManager.Query();
+                    downloadQuery.setFilterById(referenceId);
+                    Cursor cursor = downloadManager.query(downloadQuery);
+                    if (cursor.moveToFirst()) {
+                        try {
+                            String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_MEDIA_TYPE));
+                            int status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+                            if (mimeType.contains("mp4") &&
+                                    (status == DownloadManager.STATUS_SUCCESSFUL ||
+                                            status == DownloadManager.STATUS_FAILED)) {
+                                appCMSPresenter.startNextDownload();
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
                 }
             }
         };

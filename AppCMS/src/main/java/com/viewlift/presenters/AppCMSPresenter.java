@@ -10533,6 +10533,7 @@ public class AppCMSPresenter {
                     } else if (appCMSPresenter.getMegabytesAvailable() > file_size) {
                         appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
                                 downloadQueueItem.resultAction1);
+                        startNextDownload = false;
                     } else {
                         appCMSPresenter.currentActivity.runOnUiThread(() -> {
                             appCMSPresenter.showDialog(DialogType.DOWNLOAD_FAILED, appCMSPresenter.currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null);
