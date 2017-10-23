@@ -139,12 +139,13 @@ public class AppCMSPageFragment extends Fragment {
             shouldSendFirebaseViewItemEvent = false;
         }
 
-        if (!BaseView.isTablet(getActivity())) {
-            appCMSPresenter.restrictPortraitOnly();
-        } else {
-            appCMSPresenter.unrestrictPortraitOnly();
+        if (appCMSPresenter != null) {
+            if (!BaseView.isTablet(getActivity())) {
+                appCMSPresenter.restrictPortraitOnly();
+            } else {
+                appCMSPresenter.unrestrictPortraitOnly();
+            }
         }
-
 
         return pageView;
     }
