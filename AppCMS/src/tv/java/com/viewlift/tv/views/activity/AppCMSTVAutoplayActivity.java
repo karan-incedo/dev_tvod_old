@@ -105,7 +105,7 @@ public class AppCMSTVAutoplayActivity extends AppCmsBaseActivity
 
     @Override
     public void closeActivity() {
-        appCMSPresenter.sendCloseOthersAction(null, true);
+        appCMSPresenter.sendCloseOthersAction(null, true,false);
         finish();
     }
 

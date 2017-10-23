@@ -547,7 +547,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             fragmentTransaction.replace(R.id.home_placeholder ,appCMSPageFragment,tag).addToBackStack(tag).commitAllowingStateLoss();
         }else{
             if(null != appCMSPresenter)
-                appCMSPresenter.sendStopLoadingPageAction();
+                appCMSPresenter.sendStopLoadingPageAction(false,null);
         }
         selectNavItem(appCMSBinder.getPageId());
     }

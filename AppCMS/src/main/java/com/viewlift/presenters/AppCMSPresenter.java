@@ -42,6 +42,7 @@ import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -105,6 +106,7 @@ import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
@@ -8681,35 +8683,36 @@ public class AppCMSPresenter {
             ((AppCMSPlayVideoActivity) currentActivity).closePlayer();
         }
 
-       if (!cancelAllLoads){
-        Bundle args = getAutoplayActivityBundle(activity,
-                appCMSPageUI,
-                appCMSPageAPI,
-                pageId,
-                pageName,
-                screenName,
-                loadFromFile,
-                appbarPresent,
-                fullscreenEnabled,
-                navbarPresent,
-                sendCloseAction,
-                binder);
-        Intent intent;
-        if (platformType == PlatformType.ANDROID) {
-            intent = new Intent(currentActivity, AutoplayActivity.class);
-            intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
-            intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            currentActivity.startActivity(intent);
-        } else {
-            try {
-                intent = new Intent(currentActivity, Class.forName(tvAutoplayActivityPackage));
+        if (!cancelAllLoads) {
+            Bundle args = getAutoplayActivityBundle(activity,
+                    appCMSPageUI,
+                    appCMSPageAPI,
+                    pageId,
+                    pageName,
+                    screenName,
+                    loadFromFile,
+                    appbarPresent,
+                    fullscreenEnabled,
+                    navbarPresent,
+                    sendCloseAction,
+                    binder);
+            Intent intent;
+            if (platformType == PlatformType.ANDROID) {
+                intent = new Intent(currentActivity, AutoplayActivity.class);
                 intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
                 intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 currentActivity.startActivity(intent);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+            } else {
+                try {
+                    intent = new Intent(currentActivity, Class.forName(tvAutoplayActivityPackage));
+                    intent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), args);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                    currentActivity.startActivity(intent);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
 
+            }
         }
     }
 
@@ -9862,7 +9865,7 @@ public class AppCMSPresenter {
                                     contentDatum,
                                     actionType);
                         });*/
-                sendStopLoadingPageAction();
+                //sendStopLoadingPageAction();
                 Intent playVideoIntent = new Intent();
                 try {
                     Class videoPlayer = Class.forName(tvVideoPlayerPackage);
@@ -9944,7 +9947,7 @@ public class AppCMSPresenter {
                                 currentlyPlayingIndex,
                                 false);
                 if (closeLauncher) {
-                    sendCloseOthersAction(null, true);
+                    sendCloseOthersAction(null, true,false);
                 }
 
 
@@ -10071,7 +10074,7 @@ public class AppCMSPresenter {
                                 } else {
                                     sendStopLoadingPageAction(true,
                                             () -> {
-                                                launchTVButtonSelectedAction(pagePath, action, filmTitle, extraData, closeLauncher, contentDatum);
+                                                launchTVButtonSelectedAction(pagePath, action, filmTitle, extraData, contentDatum,closeLauncher, currentlyPlayingIndex,relateVideoIds);
                                             });
                                 }
                                 loadingPage = false;
@@ -11089,7 +11092,7 @@ public class AppCMSPresenter {
                     }, new Action1<AppCMSSubscriptionPlanResult>() {
                         @Override
                         public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
-                            AppCMSPresenter.this.sendCloseOthersAction(null, true);
+                            AppCMSPresenter.this.sendCloseOthersAction(null, true,false);
                             AppCMSPresenter.this.refreshSubscriptionData(() -> {
                                 AppCMSPresenter.this.sendRefreshPageAction();
                             }, true);
