@@ -2130,6 +2130,7 @@ public class AppCMSPresenter {
                     appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
+                                    getLoggedInUser(),
                                     appCMSSite.getGist().getSiteInternalName()),
                             R.string.app_cms_subscription_subscribed_plan_key,
                             null,
@@ -2675,8 +2676,7 @@ public class AppCMSPresenter {
 
             //Send Firebase Analytics when user is subscribed and user is Logged In
             sendFirebaseLoginSubscribeSuccess();
-            if (isPreferedStorageLocationSDCard() &&
-                    !hasWriteExternalStoragePermission()) {
+            if (!hasWriteExternalStoragePermission()) {
                 requestDownloadQualityScreen = true;
                 askForPermissionToDownloadToExternalStorage(true,
                         contentDatum,
@@ -7550,6 +7550,7 @@ public class AppCMSPresenter {
                                 appCMSSubscriptionPlanCall.call(
                                         currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                                 appCMSMain.getApiBaseUrl(),
+                                                getLoggedInUser(),
                                                 appCMSSite.getGist().getSiteInternalName()),
                                         R.string.app_cms_subscription_subscribed_plan_key,
                                         null,
