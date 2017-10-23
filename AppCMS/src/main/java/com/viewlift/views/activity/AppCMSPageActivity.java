@@ -1528,7 +1528,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             homePageNav.getTitle());
                 });
                 homeNavBarItemView.setTag(homePageNav.getPageId());
-                selectNavItem(homeNavBarItemView);
+                if (getSelectedNavItem() == null) {
+                    selectNavItem(homeNavBarItemView);
+                }
             }
         }
     }
