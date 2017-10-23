@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -152,12 +153,14 @@ public class WebViewActivity extends Activity {
 					try {
 						backPressFlag = true ;
 
-						AppsFlyerUtils.subscriptionEvent(WebViewActivity.this,
-								true,
-								getString(R.string.app_cms_appsflyer_dev_key),
-								String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)),
-								getIntent().getStringExtra(getString(R.string.app_cms_plan_id)),
-								mainIntent.getStringExtra(AvenuesParams.CURRENCY));
+						if (!TextUtils.isEmpty(appCMSPresenter.getAppsFlyerKey())) {
+							AppsFlyerUtils.subscriptionEvent(WebViewActivity.this,
+									true,
+									appCMSPresenter.getAppsFlyerKey(),
+									String.valueOf(mainIntent.getStringExtra(AvenuesParams.AMOUNT)),
+									getIntent().getStringExtra(getString(R.string.app_cms_plan_id)),
+									mainIntent.getStringExtra(AvenuesParams.CURRENCY));
+						}
 
 						Bundle bundle = new Bundle();
 						bundle.putString(FIREBASE_PLAN_ID, mainIntent.getStringExtra(getString(R.string.app_cms_plan_id)));
