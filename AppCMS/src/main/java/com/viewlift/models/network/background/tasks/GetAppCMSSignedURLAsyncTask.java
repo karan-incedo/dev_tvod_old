@@ -66,6 +66,10 @@ public class GetAppCMSSignedURLAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe((result) -> Observable.just(result).subscribe(appCMSSignedURLResultAction1));
+                .subscribe((result) -> {
+                    if (appCMSSignedURLResultAction1 != null && result != null) {
+                        Observable.just(result).subscribe(appCMSSignedURLResultAction1);
+                    }
+                });
     }
 }

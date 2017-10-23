@@ -3,6 +3,7 @@ package com.viewlift;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
+import android.support.multidex.MultiDexApplication;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
@@ -24,7 +25,7 @@ import io.fabric.sdk.android.Fabric;
  * Created by viewlift on 5/4/17.
  */
 
-public class AppCMSApplication extends Application {
+public class AppCMSApplication extends MultiDexApplication {
     private static String TAG = "AppCMSApp";
 
     private AppCMSPresenterComponent appCMSPresenterComponent;
@@ -61,6 +62,10 @@ public class AppCMSApplication extends Application {
         AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
 
         Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+
+        new Thread(() -> {
+            Fabric.with(AppCMSApplication.this, new Crashlytics());
+        }).run();
 
         closeAppMap = new HashMap<>();
 
@@ -119,12 +124,6 @@ public class AppCMSApplication extends Application {
                 }
             }
         });
-
-        sendAnalytics();
-    }
-
-    private void sendAnalytics() {
-        Fabric.with(this, new Crashlytics());
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

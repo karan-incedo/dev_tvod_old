@@ -104,11 +104,7 @@ public class Security {
             Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM);
             sig.initVerify(publicKey);
             sig.update(signedData.getBytes());
-            if (!sig.verify(signatureBytes)) {
-                //Log.e(TAG, "Signature verification failed.");
-                return false;
-            }
-            return true;
+            return sig.verify(signatureBytes);
         } catch (NoSuchAlgorithmException e) {
             //Log.e(TAG, "NoSuchAlgorithmException.");
         } catch (InvalidKeyException e) {

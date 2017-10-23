@@ -168,12 +168,17 @@ public class AppCMSSubscriptionPlanCall {
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Exception occurred when sending update subscription: " +
 //                                        e.getMessage());
-                                    if (response.errorBody() != null) {
-                                        AppCMSSubscriptionPlanResult errorResponse =
-                                                gson.fromJson(response.errorBody().toString(), AppCMSSubscriptionPlanResult.class);
-                                        Observable.just(errorResponse).subscribe(resultAction1);
+                                    try {
+                                        if (response.errorBody() != null) {
+                                            AppCMSSubscriptionPlanResult errorResponse =
+                                                    gson.fromJson(response.errorBody().string(), AppCMSSubscriptionPlanResult.class);
+                                            Observable.just(errorResponse).subscribe(resultAction1);
+                                        } else {
+                                            Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                        }
+                                    } catch (Exception e1) {
+                                        Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                     }
-                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                 }
                             }
 

@@ -8,7 +8,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +23,6 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.presenters.AppCMSPresenter;
 
@@ -195,10 +193,10 @@ public class LoginModule extends ModuleView {
                                 unselectChild(0);
                                 if (appCMSPresenter.isAppSVOD()) {
                                     if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
-                                        appCMSPresenter.navigateToSubscriptionPlansPage(null,
-                                                null);
+                                        appCMSPresenter.navigateToSubscriptionPlansPage(appCMSPresenter.getLoginFromNavPage());
                                         appCMSPresenter.sendCloseOthersAction(null,
-                                                true);
+                                                true,
+                                                false);
                                     } else {
                                         appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                                     }

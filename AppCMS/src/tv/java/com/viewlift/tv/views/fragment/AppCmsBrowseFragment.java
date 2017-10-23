@@ -98,12 +98,12 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title , rowData.contentData)) {
                     ((AppCmsHomeActivity)getActivity()).pageLoading(false);
                     //Log.e(TAG, "Could not launch play action: " +
-                            " filmId: " +
-                            filmId +
-                            " permaLink: " +
-                            permaLink +
-                            " title: " +
-                            title);
+//                            " filmId: " +
+//                            filmId +
+//                            " permaLink: " +
+//                            permaLink +
+//                            " title: " +
+//                            title);
                 }
             } else {
                 appCMSPresenter.showLoadingDialog(false);
@@ -150,12 +150,12 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         false,
                         data)) {
                     //Log.e(TAG, "Could not launch action: " +
-                            " permalink: " +
-                            permalink +
-                            " action: " +
-                            action +
-                            " hlsUrl: " +
-                            hlsUrl);
+//                            " permalink: " +
+//                            permalink +
+//                            " action: " +
+//                            action +
+//                            " hlsUrl: " +
+//                            hlsUrl);
                 }
             }
 

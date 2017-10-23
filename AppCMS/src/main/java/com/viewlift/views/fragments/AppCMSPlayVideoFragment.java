@@ -56,6 +56,7 @@ import com.viewlift.views.customviews.VideoPlayerView;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -293,13 +294,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             signatureCookie = args.getString(getString(R.string.signed_signature_key));
             keyPairIdCookie = args.getString(getString(R.string.signed_keypairid_key));
 
-            if (TextUtils.isEmpty(policyCookie) ||
+            refreshToken = !(TextUtils.isEmpty(policyCookie) ||
                     TextUtils.isEmpty(signatureCookie) ||
-                    TextUtils.isEmpty(keyPairIdCookie)) {
-                refreshToken = false;
-            } else {
-                refreshToken = true;
-            }
+                    TextUtils.isEmpty(keyPairIdCookie));
         }
 
         hlsUrl = hlsUrl.replaceAll(" ", "+");
@@ -373,8 +370,26 @@ public class AppCMSPlayVideoFragment extends Fragment
                         if (!entitlementCheckCancelled) {
                             int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
                             if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
+
+                                if (onUpdateContentDatumEvent != null) {
+                                    AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
+                                            = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
+                                            .action(getString(R.string.app_cms_page_play_key))
+                                            .closerLauncher(false)
+                                            .contentDatum(onUpdateContentDatumEvent.getCurrentContentDatum())
+                                            .currentlyPlayingIndex(playIndex)
+                                            .pagePath(permaLink)
+                                            .filmTitle(title)
+                                            .extraData(null)
+                                            .relatedVideoIds(onUpdateContentDatumEvent.getCurrentRelatedVideoIds())
+                                            .currentWatchedTime(videoPlayerView.getCurrentPosition() / 1000)
+                                            .build();
+                                    appCMSPresenter.setEntitlementPendingVideoData(entitlementPendingVideoData);
+                                }
+
                                 //Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
                                 pauseVideo();
+
                                 if (videoPlayerView != null) {
                                     videoPlayerView.disableController();
                                 }
@@ -1331,6 +1346,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public interface OnUpdateContentDatumEvent {
         void updateContentDatum(ContentDatum contentDatum);
         ContentDatum getCurrentContentDatum();
+        List<String> getCurrentRelatedVideoIds();
     }
 
     private static class BeaconPingThread extends Thread {

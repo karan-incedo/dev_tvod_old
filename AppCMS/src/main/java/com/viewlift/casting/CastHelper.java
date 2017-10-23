@@ -665,6 +665,7 @@ public class CastHelper {
         String filmIds = "";
         if (listRelatedVideosId != null && listRelatedVideosId.size() >= 5) {
             List<String> subList = listRelatedVideosId.subList(0, 5);
+
             filmIds = TextUtils.join(",", subList);
             subList.clear();
 
@@ -687,6 +688,9 @@ public class CastHelper {
                 if (listRelatedVideosId != null && listRelatedVideosId.size() > 0) {
                     callRelatedVideoData();
                 } else {
+                    if (appCMSPresenterComponenet.isAppSVOD() && !appCMSPresenterComponenet.isUserSubscribed()) {
+                        removeNonFreeVideos();
+                    }
                     castMediaListToRemoteLocation();
                     //Log.d(TAG, "Cast Media List ");
                 }
@@ -694,6 +698,27 @@ public class CastHelper {
         });
     }
 
+    private void removeNonFreeVideos() {
+        List<Integer> freeMovieIndices = new ArrayList<>();
+        List<ContentDatum> freeMovies = new ArrayList<>();
+        List<String> freeMovieIds = new ArrayList<>();
+        for (int i = 0; i < listRelatedVideosDetails.size(); i++) {
+            ContentDatum contentDatum = listRelatedVideosDetails.get(i);
+            if (contentDatum != null &&
+                    contentDatum.getGist() != null &&
+                    contentDatum.getGist().getFree()) {
+                freeMovieIndices.add(i);
+            }
+        }
+
+        for (int i = 0; i < freeMovieIndices.size(); i++) {
+            freeMovies.add(listRelatedVideosDetails.get(freeMovieIndices.get(i)));
+            freeMovieIds.add(listCompareRelatedVideosId.get(freeMovieIndices.get(i)));
+        }
+
+        listRelatedVideosDetails = freeMovies;
+        listCompareRelatedVideosId = freeMovieIds;
+    }
 
     private void castMediaListToRemoteLocation() {
         CastingUtils.isMediaQueueLoaded = true;
