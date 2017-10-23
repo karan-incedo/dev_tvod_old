@@ -96,7 +96,7 @@ public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragmen
             String oldPassword = oldPasswordInput.getText().toString().trim();
             String newPassword = newPasswordInput.getText().toString().trim();
             String confirmPassword = confirmPasswordInput.getText().toString().trim();
-
+            appCMSPresenter.closeSoftKeyboard();
             appCMSPresenter.updateUserPassword(oldPassword, newPassword, confirmPassword);
         });
 

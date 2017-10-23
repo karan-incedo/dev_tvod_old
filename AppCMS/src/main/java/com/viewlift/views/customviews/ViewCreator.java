@@ -897,7 +897,7 @@ public class ViewCreator {
             }
         }
         if (pageView == null || pageView.getContext() != context) {
-            pageView = new PageView(context, appCMSPageUI);
+            pageView = new PageView(context, appCMSPageUI, appCMSPresenter);
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
             if (appCMSPresenter.isPageAVideoPage(screenName)) {
                 appCMSPresenter.getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
@@ -912,7 +912,6 @@ public class ViewCreator {
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
             pageView.getChildrenContainer().removeAllViews();
-            Runtime.getRuntime().gc();
             componentViewResult = new ComponentViewResult();
             createPageView(context,
                     appCMSPageUI,
@@ -1391,7 +1390,8 @@ public class ViewCreator {
                             component.getComponents(),
                             appCMSPresenter,
                             jsonValueKeyMap,
-                            viewType);
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
@@ -1699,7 +1699,7 @@ public class ViewCreator {
                                 if (appCMSPresenter.isRemovableSDCardAvailable()) {
                                     appCMSPresenter.setPreferedStorageLocationSDCard(true);
                                 } else {
-                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null);
+                                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null, null);
                                     buttonView.setChecked(false);
                                 }
                             } else {
@@ -1898,6 +1898,7 @@ public class ViewCreator {
                     case PAGE_VIDEO_CLOSE_KEY:
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setPadding(0, 0, 0, 0);
                         int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                         ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
@@ -2004,12 +2005,12 @@ public class ViewCreator {
                                 //
                             }
                             @Override
-                            public void setModuleId(String moduleId) {
-                                internalEventModuleId = moduleId;
-                            }
-                            @Override
                             public String getModuleId() {
                                 return internalEventModuleId;
+                            }
+                            @Override
+                            public void setModuleId(String moduleId) {
+                                internalEventModuleId = moduleId;
                             }
                         };
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
@@ -2052,7 +2053,9 @@ public class ViewCreator {
 
                     case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
+                            if (!appCMSPresenter.sendCloseOthersAction(null,
+                                    true,
+                                    false)) {
                                 //Log.e(TAG, "Could not perform close action: " +
 //                                        " action: " +
 //                                        component.getAction());
@@ -2068,7 +2071,9 @@ public class ViewCreator {
                         if (jsonValueKeyMap.get(moduleAPI.getModuleType())
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                             componentViewResult.componentView.setOnClickListener(v -> {
-                                if (!appCMSPresenter.sendCloseOthersAction(null, true)) {
+                                if (!appCMSPresenter.sendCloseOthersAction(null,
+                                        true,
+                                        false)) {
                                     //Log.e(TAG, "Could not perform close action: " +
 //                                            " action: " +
 //                                            component.getAction());
@@ -2511,10 +2516,8 @@ public class ViewCreator {
                             break;
                     }
                 } else {
-                    if (component.getNumberOfLines() <= 1) {
                         ((TextView) componentViewResult.componentView).setSingleLine(true);
                         ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                    }
                 }
 
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -2963,6 +2966,7 @@ public class ViewCreator {
                                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE,
                                                 null,
                                                 false,
+                                                null,
                                                 null);
                                         buttonView.setChecked(false);
                                     }
@@ -3019,6 +3023,16 @@ public class ViewCreator {
     private Module matchModuleAPIToModuleUI(ModuleList module, AppCMSPageAPI appCMSPageAPI,
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
+            for (Module moduleAPI : appCMSPageAPI.getModules()) {
+                if (module.getId().equals(moduleAPI.getId())) {
+                    return moduleAPI;
+                } else if (jsonValueKeyMap.get(module.getType()) != null &&
+                        jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
+                        jsonValueKeyMap.get(module.getType()) ==
+                                jsonValueKeyMap.get(moduleAPI.getModuleType())) {
+                    return moduleAPI;
+                }
+            }
             if (jsonValueKeyMap.get(module.getView()) != null) {
                 switch (jsonValueKeyMap.get(module.getView())) {
                     case PAGE_HISTORY_MODULE_KEY:
@@ -3034,18 +3048,8 @@ public class ViewCreator {
 
                     default:
                         break;
-                }
-            }
 
-            for (Module moduleAPI : appCMSPageAPI.getModules()) {
-                if (module.getId().equals(moduleAPI.getId())) {
 
-                    return moduleAPI;
-                } else if (jsonValueKeyMap.get(module.getType()) != null &&
-                        jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
-                        jsonValueKeyMap.get(module.getType()) ==
-                                jsonValueKeyMap.get(moduleAPI.getModuleType())) {
-                    return moduleAPI;
                 }
             }
         }
@@ -3196,14 +3200,17 @@ public class ViewCreator {
             addClickListener = v -> {
                 if (!appCMSPresenter.isNetworkConnected()) {
                     if (!appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false, null);
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                () -> appCMSPresenter.launchBlankPage(),
+                                null);
                         return;
                     }
                     appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                             appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
                             true,
                             () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                    null, null, false));
+                                    null, null, false),
+                            null);
                     return;
                 }
                 if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||

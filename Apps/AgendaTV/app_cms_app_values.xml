@@ -21,4 +21,6 @@
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">772C797E</string>
+    <bool name="use_hls">true</bool>
+    <string name="default_video_resolution">360p</string>
 </resources>

@@ -9,6 +9,7 @@ buildscript {
     repositories {
         jcenter()
         maven { url 'https://maven.google.com' }
+        google()
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${gradleBuildVersion}"
@@ -48,11 +49,11 @@ allprojects {
         crashlyticsVersion = "2.6.8@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "3.4.1"
-        butterknifeVersion = "8.6.0"
+        butterknifeVersion = "8.8.1"
         stagVersion = "2.3.1"
         facebookSdkVersion = "[4,5)"
         urbanAirshipVersion = "8.3.2"
-        appsFlyerVersion = "4.7.4@aar"
+        appsFlyerVersion = "4.8.3"
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"
         jsoupVersion = "1.10.3"

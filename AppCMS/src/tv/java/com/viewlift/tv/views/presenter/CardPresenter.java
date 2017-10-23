@@ -191,9 +191,9 @@ public class CardPresenter extends Presenter {
                         progressBar.setProgressDrawable(Utils.getProgressDrawable(mContext , component.getUnprogressColor() ,mAppCmsPresenter));
                         int progress = (int)Math.ceil(Utils.getPercentage(contentData.getGist().getRuntime() , contentData.getGist().getWatchedTime()));
                         //Log.d("NITS>>>","Runtime = "+  contentData.getGist().getRuntime()
-                           + " WatchedTime = "+ contentData.getGist().getWatchedTime()
-                        +" Percentage = " + contentData.getGist().getWatchedPercentage()
-                        +" Progress = "+progress);
+//                           + " WatchedTime = "+ contentData.getGist().getWatchedTime()
+//                        +" Percentage = " + contentData.getGist().getWatchedPercentage()
+//                        +" Progress = "+progress);
                         progressBar.setProgress(progress);
                         progressBar.setFocusable(false);
                         parentLayout.addView(progressBar);

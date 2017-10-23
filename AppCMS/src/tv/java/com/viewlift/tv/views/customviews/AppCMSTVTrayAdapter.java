@@ -262,7 +262,7 @@ public class AppCMSTVTrayAdapter
                                 false,
                                 data)) {
                             //Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
-                                    + " action: " + action + " hlsUrl: " + hlsUrl);
+//                                    + " action: " + action + " hlsUrl: " + hlsUrl);
                         }
                     }
                 }
@@ -334,6 +334,13 @@ public class AppCMSTVTrayAdapter
 
     }
 
+    @Override
+    public void setModuleId(String moduleId) {
+    }
+    @Override
+    public String getModuleId() {
+        return null;
+    }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TVCollectionGridItemView componentView;
 

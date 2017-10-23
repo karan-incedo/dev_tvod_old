@@ -275,6 +275,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     String bgColor = binder.getBgColor();
                     int playIndex = binder.getCurrentPlayingVideoIndex();
                     long watchedTime = intent.getLongExtra(getString(R.string.watched_time_key), 0L);
+                    long duration = binder.getContentData().getGist().getRuntime();
+                    if (duration <= watchedTime) {
+                        watchedTime = 0L;
+                    }
                     if (gist.getPrimaryCategory() != null && gist.getPrimaryCategory().getTitle() != null) {
                         primaryCategory = gist.getPrimaryCategory().getTitle();
                     }
@@ -346,7 +350,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 try {
-                    if (((binder.getContentData().getGist().getDownloadStatus() != null &&
+                    if (((binder != null &&
+                            binder.getContentData() != null &&
+                            binder.getContentData().getGist() != null &&
+                            binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
                             binder.getContentData().getGist().getDownloadStatus() == null) &&
@@ -354,16 +361,20 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-                                false, () -> closePlayer());
+                                false, () -> closePlayer(),
+                                null);
                     }
                 } catch (Exception e) {
-                    if ((binder.getContentData().getGist().getDownloadStatus() != null &&
+                    if ((binder != null &&
+                            binder.getContentData() != null &&
+                            binder.getContentData().getGist() != null &&binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
                             binder.getContentData().getGist().getDownloadStatus() == null) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-                                false, () -> closePlayer());
+                                false, () -> closePlayer(),
+                                null);
                     }
                 }
             }
@@ -386,6 +397,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                     appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                     false,
+                    null,
                     null);
             finish();
         }
@@ -406,12 +418,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
-        }
 
-        if (BaseView.isTablet(this)) {
-            appCMSPresenter.unrestrictPortraitOnly();
-        }else{
-            appCMSPresenter.restrictPortraitOnly();
         }
 
         super.onDestroy();
@@ -494,6 +501,13 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     public ContentDatum getCurrentContentDatum() {
         if (binder != null && binder.getContentData() != null) {
             return binder.getContentData();
+        }
+        return null;
+    }
+    @Override
+    public List<String> getCurrentRelatedVideoIds() {
+        if (binder != null && binder.getRelateVideoIds() != null) {
+            return binder.getRelateVideoIds();
         }
         return null;
     }

@@ -582,12 +582,12 @@ public class TVViewCreator {
                                             moduleAPI.getContentData().get(0))) {
                                         appCMSPresenter.showLoadingDialog(false);
                                         //Log.e(TAG, "Could not launch action: " +
-                                                " permalink: " +
-                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                " action: " +
-                                                component.getAction() +
-                                                " hls URL: " +
-                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+//                                                " permalink: " +
+//                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                " action: " +
+//                                                component.getAction() +
+//                                                " hls URL: " +
+//                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                     }
 
                                     // Disable the button for 1 second and enable it back in handler
@@ -720,12 +720,12 @@ public class TVViewCreator {
                                                 false,
                                                 moduleAPI.getContentData().get(0))) {
                                             //Log.e(TAG, "Could not launch action: " +
-                                                    " permalink: " +
-                                                    moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                    " action: " +
-                                                    component.getAction() +
-                                                    " video URL: " +
-                                                    videoUrl);
+//                                                    " permalink: " +
+//                                                    moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                    " action: " +
+//                                                    component.getAction() +
+//                                                    " video URL: " +
+//                                                    videoUrl);
                                         }
                                     }
                                 }
@@ -760,8 +760,8 @@ public class TVViewCreator {
                                         false,
                                         null)) {
                                     //Log.e(TAG, "Could not launch action: " +
-                                            " action: " +
-                                            component.getAction());
+//                                            " action: " +
+//                                            component.getAction());
                                 }
                             }
                         });
@@ -1337,12 +1337,12 @@ public class TVViewCreator {
                                                     moduleAPI.getContentData().get(0))) {
                                                 appCMSPresenter.showLoadingDialog(false);
                                                 //Log.e(TAG, "Could not launch action: " +
-                                                        " permalink: " +
-                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                        " action: " +
-                                                        component.getAction() +
-                                                        " video URL: " +
-                                                        videoUrl);
+//                                                        " permalink: " +
+//                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                        " action: " +
+//                                                        component.getAction() +
+//                                                        " video URL: " +
+//                                                        videoUrl);
                                             }
                                         }
                                     } else {
@@ -1384,12 +1384,12 @@ public class TVViewCreator {
                                                     if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title, moduleAPI.getContentData().get(0))) {
                                                         appCMSPresenter.showLoadingDialog(false);
                                                         //Log.e(TAG, "Could not launch play action: " +
-                                                                " filmId: " +
-                                                                filmId +
-                                                                " permaLink: " +
-                                                                permaLink +
-                                                                " title: " +
-                                                                title);
+//                                                                " filmId: " +
+//                                                                filmId +
+//                                                                " permaLink: " +
+//                                                                permaLink +
+//                                                                " title: " +
+//                                                                title);
                                                     }
                                                     break;
                                                 }

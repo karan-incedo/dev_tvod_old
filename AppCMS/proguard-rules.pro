@@ -16,6 +16,7 @@
    public *;
 }
 
+-keep class com.viewlift.AppCMSApplication { *;}
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
@@ -24,8 +25,11 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+-dontwarn org.apache.tools.ant.**
+-dontwarn org.jaxen.**
+-dontwarn sun.misc.**
+-dontwarn com.google.android.gms.location.**
 -dontskipnonpubliclibraryclasses
--forceprocessing
 -optimizationpasses 5
 
 -keep class * extends android.app.Activity

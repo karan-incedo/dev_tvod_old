@@ -45,12 +45,14 @@ public class AppCMSGoogleLoginCall {
                 } else if (response.errorBody() != null) {
                     try {
                         GoogleLoginResponse googleLoginResponse =
-                                gson.fromJson(response.errorBody().toString(),
+                                gson.fromJson(response.errorBody().string(),
                                         GoogleLoginResponse.class);
                         Observable.just(googleLoginResponse).subscribe(responseAction1);
                     } catch (Exception e) {
                         Observable.just((GoogleLoginResponse) null).subscribe(responseAction1);
                     }
+                } else {
+                    Observable.just((GoogleLoginResponse) null).subscribe(responseAction1);
                 }
             }
 

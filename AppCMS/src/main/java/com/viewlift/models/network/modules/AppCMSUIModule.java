@@ -146,6 +146,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_watchlist_navigation_title),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
+                AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
@@ -925,8 +927,9 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSFacebookLoginCall providesAppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest) {
-        return new AppCMSFacebookLoginCall(appCMSFacebookLoginRest);
+    public AppCMSFacebookLoginCall providesAppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest,
+                                                                   Gson gson) {
+        return new AppCMSFacebookLoginCall(appCMSFacebookLoginRest, gson);
     }
 
     @Provides

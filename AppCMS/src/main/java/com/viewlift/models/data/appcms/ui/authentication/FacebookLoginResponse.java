@@ -35,6 +35,12 @@ public class FacebookLoginResponse {
     @Expose
     boolean isSubscribed;
 
+    @SerializedName("error")
+    @Expose
+    String error;
+    @SerializedName("message")
+    @Expose
+    String message;
     public String getAuthorizationToken() {
         return authorizationToken;
     }
@@ -81,5 +87,17 @@ public class FacebookLoginResponse {
 
     public void setSubscribed(boolean subscribed) {
         isSubscribed = subscribed;
+    }
+    public String getError() {
+        return error;
+    }
+    public void setError(String error) {
+        this.error = error;
+    }
+    public String getMessage() {
+        return message;
+    }
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

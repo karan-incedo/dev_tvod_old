@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -24,7 +25,7 @@ import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
-import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
+
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
@@ -42,6 +43,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (BaseView.isTablet(this)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
         setContentView(R.layout.activity_launch);
 
         handleIntent(getIntent());
@@ -50,6 +56,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         //Log.d(TAG, "Search query (optional): " + searchQuery);
         appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+
         appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
 
         if (!BaseView.isTablet(this)) {
@@ -90,9 +97,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 }
             }
         };
+
         UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+
+        AppsFlyerLib.getInstance().startTracking(getApplication());
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
-        sendAnalytics();
     }
 
     @Override
@@ -157,11 +166,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         if (appCMSPresenterComponent != null) {
             try {
-            appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                    getString(R.string.app_cms_app_name),
-                    searchQuery,
-                    AppCMSPresenter.PlatformType.ANDROID,
-                    forceReloadFromNetwork);
+                appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
+                        getString(R.string.app_cms_app_name),
+                        searchQuery,
+                        AppCMSPresenter.PlatformType.ANDROID,
+                        forceReloadFromNetwork);
             } catch (Exception e) {
                 //Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
             }
@@ -188,19 +197,16 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         try {
-            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
+            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false, false);
             ((AppCMSApplication) getApplication()).setCloseApp(this);
         } catch (Exception e) {
             //Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
         }
         finish();
-    }
-    private void sendAnalytics() {
-        AppsFlyerLib.getInstance().startTracking(getApplication(), getString(R.string.app_cms_appsflyer_dev_key));
-        trackInstallationEvent(getApplication());
     }
 }

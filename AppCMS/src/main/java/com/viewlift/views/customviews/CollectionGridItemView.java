@@ -15,7 +15,6 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -27,7 +26,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
-import com.bumptech.glide.signature.StringSignature;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -264,11 +262,14 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
+                        try {
                         Glide.with(context)
                                 .load(imageUrl)
                                 .override(childViewWidth, childViewHeight)
                                 .centerCrop()
                                 .into((ImageView) view);
+                        } catch (Exception e) {
+                        }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
@@ -277,11 +278,14 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
+                        try {
                         Glide.with(context)
                                 .load(imageUrl)
                                 .override(childViewWidth, childViewHeight)
                                 .centerCrop()
                                 .into((ImageView) view);
+                        } catch (Exception e) {
+                        }
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -356,10 +360,9 @@ public class CollectionGridItemView extends BaseView {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
                     } else if (data.getGist().getImageGist() != null &&
-                            !TextUtils.isEmpty(data.getGist().getImageGist()
-                                    .getBadgeImageUrl().get_3x4())) {
-                        Log.d(TAG, "Loading badge: " + data.getGist().getImageGist()
-                                .getBadgeImageUrl().get_3x4());
+                            data.getGist().getBadgeImages() != null &&
+                            data.getGist().getImageGist().get_3x4() != null &&
+                            data.getGist().getBadgeImages().get_3x4() != null) {
                     }
                     bringToFront = false;
                 }
