@@ -52,12 +52,12 @@ public class AppCMSIPGeoLocatorCall {
 
                 @Override
                 public void onFailure(Call<IPGeoLocatorResponse> call, Throwable t) {
-                    Log.e(TAG, "Failed to retrieve IP based Geolocation: " + t.getMessage());
+                    //Log.e(TAG, "Failed to retrieve IP based Geolocation: " + t.getMessage());
                     Observable.just((IPGeoLocatorResponse) null).subscribe(readyAction);
                 }
             });
         } catch (Exception e) {
-            Log.e(TAG, "Failed to retrieve IP based Geolocation: " + e.toString());
+            //Log.e(TAG, "Failed to retrieve IP based Geolocation: " + e.toString());
             Observable.just((IPGeoLocatorResponse) null).subscribe(readyAction);
         }
     }

@@ -69,7 +69,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
                 return cursor;
             }
         } catch (RuntimeException e) {
-            Log.w(TAG, "runQueryOnBackgroundThread: " + e.getMessage());
+            //Log.w(TAG, "runQueryOnBackgroundThread: " + e.getMessage());
         }
 
         return super.runQueryOnBackgroundThread(constraint);

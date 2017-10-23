@@ -5,6 +5,7 @@
     <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
 
         <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
+
     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
 
     <!-- x-api-key -->
@@ -22,4 +23,10 @@
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">0974224E</string>
+
+    <!-- flag to use HLS or not -->
+    <bool name="use_hls">false</bool>
+
+    <!-- Default video resolution -->
+    <string name="default_video_resolution">360p</string>
 </resources>

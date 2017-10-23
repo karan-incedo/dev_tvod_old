@@ -33,19 +33,19 @@ class RokuLaunchThread extends Thread {
             String str;
             switch (this.params.getContentType()) {
                 case RokuLaunchThreadParams.CONTENT_TYPE_SHOW:
-                    Log.d(TAG, "Request to play a show on Roku");
+                    //Log.d(TAG, "Request to play a show on Roku");
                     str = "http://" + this.params.getUrl().getAuthority() + "/launch/" + this.params.getRokuAppId();
                     str += "?contentID=" + this.params.getContentId()
                             + "&contentType=show&userID=" + this.params.getUserId();
                     break;
                 case RokuLaunchThreadParams.CONTENT_TYPE_FILM:
-                    Log.d(TAG, "Request to play a Film on Roku");
+                    //Log.d(TAG, "Request to play a Film on Roku");
                     str = "http://" + this.params.getUrl().getAuthority() + "/launch/" + this.params.getRokuAppId();
                     str += "?playID=" + this.params.getContentId()
                             + "&contentType=film&userID=" + this.params.getUserId();
                     break;
                 default:
-                    Log.d(TAG, "Request to launch app on Roku");
+                    //Log.d(TAG, "Request to launch app on Roku");
                     str = "http://" + this.params.getUrl().getAuthority() + "/launch/" + this.params.getRokuAppId();
                     break;
             }
@@ -72,7 +72,7 @@ class RokuLaunchThread extends Thread {
             msg.what = RokuWrapper.APP_LAUNCH_FAILED_MESSAGE_ID;
             msg.obj = e.getMessage();
             this.client.handler.sendMessage(msg);
-            Log.e(TAG, e.getLocalizedMessage());
+            //Log.e(TAG, e.getLocalizedMessage());
             e.printStackTrace();
         }
     }
@@ -230,7 +230,7 @@ class RokuLaunchThread extends Thread {
             msg.what = RokuWrapper.APP_STOPPED_MESSAGE_ID;
             this.client.handler.sendMessage(msg);
         } catch (Exception e) {
-            Log.e("RokuLaunchThread: ", e.getLocalizedMessage());
+            //Log.e("RokuLaunchThread: ", e.getLocalizedMessage());
             e.printStackTrace();
         }
     }

@@ -15,13 +15,17 @@
     <string name="fb_login_protocol_scheme">fb910134432450680</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">
-        831155c17a5b911a3d13140c1e00ff34a9b111182810a751c711b1c0ac1a86d2
-    </string>
+    <string name="app_cms_apptentive_api_key">831155c17a5b911a3d13140c1e00ff34a9b111182810a751c711b1c0ac1a86d2</string>
 
     <!-- apps flyer keys --> <!-- flyer key for now, will change in the future after proper setup-->
     <string name="app_cms_appsflyer_dev_key">5qcxTGtWfXSo746pkCDawf</string>
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">3D49630B</string>
+
+    <!-- flag to use HLS or not -->
+    <bool name="use_hls">true</bool>
+
+    <!-- Default video resolution -->
+    <string name="default_video_resolution">360p</string>
 </resources>

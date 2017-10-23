@@ -54,11 +54,11 @@ public class AppCMSSubscriptionCall {
                         @Override
                         public void onFailure(@NonNull Call<AppCMSSubscriptionResult> call,
                                               @NonNull Throwable t) {
-                            Log.e(TAG, "onFailure: " + t.getMessage());
+                            //Log.e(TAG, "onFailure: " + t.getMessage());
                         }
                     });
         } catch (Exception e) {
-            Log.e(TAG, "Failed to execute subscription " + url + ": " + e.toString());
+            //Log.e(TAG, "Failed to execute subscription " + url + ": " + e.toString());
         }
     }
 }

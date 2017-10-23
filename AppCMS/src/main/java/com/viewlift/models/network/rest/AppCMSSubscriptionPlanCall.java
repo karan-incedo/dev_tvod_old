@@ -52,7 +52,7 @@ public class AppCMSSubscriptionPlanCall {
                      final Action1<AppCMSUserSubscriptionPlanResult> userSubscriptionPlanResult)
             throws IOException {
 
-        Log.d(TAG, "URL: " + url);
+        //Log.d(TAG, "URL: " + url);
         authHeaders.clear();
         if (!TextUtils.isEmpty(apiKey) && !TextUtils.isEmpty(authToken)) {
             authHeaders.put("Authorization", authToken);
@@ -69,15 +69,15 @@ public class AppCMSSubscriptionPlanCall {
                                                    @NonNull Response<List<AppCMSSubscriptionPlanResult>> response) {
                                 try {
                                     String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
-                                    Log.d(TAG, "URL: " + response.raw().request().url().toString());
-                                    Log.d(TAG, "Request: " + request);
-                                    Log.d(TAG, "Response code: " + response.code());
+                                    //Log.d(TAG, "URL: " + response.raw().request().url().toString());
+                                    //Log.d(TAG, "Request: " + request);
+                                    //Log.d(TAG, "Response code: " + response.code());
                                     String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
-                                    Log.d(TAG, "Response: " + responseValue);
+                                    //Log.d(TAG, "Response: " + responseValue);
                                     Observable.just(response.body()).subscribe(planResultAction1);
                                 } catch (Exception e) {
-                                    Log.e(TAG, "Exception occurred when sending update subscription: " +
-                                            e.getMessage());
+                                    //Log.e(TAG, "Exception occurred when sending update subscription: " +
+//                                            e.getMessage());
                                     Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
                                 }
                             }
@@ -85,7 +85,7 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onFailure(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
                                                   @NonNull Throwable t) {
-                                Log.e(TAG, "onFailure: " + t.getMessage());
+                                //Log.e(TAG, "onFailure: " + t.getMessage());
                                 Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
                             }
                         });
@@ -97,29 +97,29 @@ public class AppCMSSubscriptionPlanCall {
                     public void onResponse(Call<AppCMSUserSubscriptionPlanResult> call, Response<AppCMSUserSubscriptionPlanResult> response) {
                         try {
                             String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
-                            Log.d(TAG, "URL: " + response.raw().request().url().toString());
-                            Log.d(TAG, "Request: " + request);
-                            Log.d(TAG, "Response code: " + response.code());
+                            //Log.d(TAG, "URL: " + response.raw().request().url().toString());
+                            //Log.d(TAG, "Request: " + request);
+                            //Log.d(TAG, "Response code: " + response.code());
                             String responseValue = gson.toJson(response.body(), AppCMSUserSubscriptionPlanResult.class);
-                            Log.d(TAG, "Response: " + responseValue);
+                            //Log.d(TAG, "Response: " + responseValue);
                             Observable.just(response.body()).subscribe(userSubscriptionPlanResult);
                         } catch (Exception e) {
-                            Log.e(TAG, "Exception occurred when sending update subscription: " +
-                                    e.getMessage());
+                            //Log.e(TAG, "Exception occurred when sending update subscription: " +
+//                                    e.getMessage());
                             Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AppCMSUserSubscriptionPlanResult> call, Throwable t) {
-                        Log.e(TAG, "onFailure: " + t.getMessage());
+                        //Log.e(TAG, "onFailure: " + t.getMessage());
                         Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                     }
                 });
                 break;
 
             case R.string.app_cms_subscription_plan_create_key:
-                Log.d(TAG, "Headers: " + authHeaders.toString());
+                //Log.d(TAG, "Headers: " + authHeaders.toString());
                 appCMSSubscriptionPlanRest.createPlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
@@ -127,15 +127,15 @@ public class AppCMSSubscriptionPlanCall {
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
                                 try {
                                     String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
-                                    Log.d(TAG, "URL: " + response.raw().request().url().toString());
-                                    Log.d(TAG, "Request: " + request);
-                                    Log.d(TAG, "Response code: " + response.code());
+                                    //Log.d(TAG, "URL: " + response.raw().request().url().toString());
+                                    //Log.d(TAG, "Request: " + request);
+                                    //Log.d(TAG, "Response code: " + response.code());
                                     String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
-                                    Log.d(TAG, "Response: " + responseValue);
+                                    //Log.d(TAG, "Response: " + responseValue);
                                     Observable.just(response.body()).subscribe(resultAction1);
                                 } catch (Exception e) {
-                                    Log.e(TAG, "Exception occurred when sending update subscription: " +
-                                            e.getMessage());
+                                    //Log.e(TAG, "Exception occurred when sending update subscription: " +
+//                                            e.getMessage());
                                     Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                 }
                             }
@@ -143,7 +143,7 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
-                                Log.e(TAG, "onFailure: " + t.getMessage());
+                                //Log.e(TAG, "onFailure: " + t.getMessage());
                                 Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
@@ -151,7 +151,7 @@ public class AppCMSSubscriptionPlanCall {
 
             case R.string.app_cms_subscription_plan_update_key:
                 authHeaders.put("Content-Type", "application/json");
-                Log.d(TAG, "Headers: " + authHeaders.toString());
+                //Log.d(TAG, "Headers: " + authHeaders.toString());
                 appCMSSubscriptionPlanRest.updatePlan(url, authHeaders, request)
                         .enqueue(new Callback<AppCMSSubscriptionPlanResult>() {
                             @Override
@@ -159,23 +159,33 @@ public class AppCMSSubscriptionPlanCall {
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
                                 try {
                                     String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
-                                    Log.d(TAG, "URL: " + response.raw().request().url().toString());
-                                    Log.d(TAG, "Request: " + request);
-                                    Log.d(TAG, "Response code: " + response.code());
+                                    //Log.d(TAG, "URL: " + response.raw().request().url().toString());
+                                    //Log.d(TAG, "Request: " + request);
+                                    //Log.d(TAG, "Response code: " + response.code());
                                     String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
-                                    Log.d(TAG, "Response: " + responseValue);
+                                    //Log.d(TAG, "Response: " + responseValue);
                                     Observable.just(response.body()).subscribe(resultAction1);
                                 } catch (Exception e) {
-                                    Log.e(TAG, "Exception occurred when sending update subscription: " +
-                                        e.getMessage());
-                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                    //Log.e(TAG, "Exception occurred when sending update subscription: " +
+//                                        e.getMessage());
+                                    try {
+                                        if (response.errorBody() != null) {
+                                            AppCMSSubscriptionPlanResult errorResponse =
+                                                    gson.fromJson(response.errorBody().string(), AppCMSSubscriptionPlanResult.class);
+                                            Observable.just(errorResponse).subscribe(resultAction1);
+                                        } else {
+                                            Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                        }
+                                    } catch (Exception e1) {
+                                        Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
+                                    }
                                 }
                             }
 
                             @Override
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
-                                Log.e(TAG, "onFailure: " + t.getMessage());
+                                //Log.e(TAG, "onFailure: " + t.getMessage());
                                 Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
@@ -189,10 +199,10 @@ public class AppCMSSubscriptionPlanCall {
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
                                 try {
                                     String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
-                                    Log.d(TAG, "Request: " + request);
-                                    Log.d(TAG, "Response code: " + response.code());
+                                    //Log.d(TAG, "Request: " + request);
+                                    //Log.d(TAG, "Response code: " + response.code());
                                     String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
-                                    Log.d(TAG, "Response: " + responseValue);
+                                    //Log.d(TAG, "Response: " + responseValue);
                                     Observable.just(response.body()).subscribe(resultAction1);
                                 } catch (Exception e) {
                                     Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
@@ -202,7 +212,7 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
-                                Log.e(TAG, "onFailure: " + t.getMessage());
+                                //Log.e(TAG, "onFailure: " + t.getMessage());
                                 Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
@@ -216,11 +226,11 @@ public class AppCMSSubscriptionPlanCall {
                                                    @NonNull Response<AppCMSSubscriptionPlanResult> response) {
                                 try {
                                     String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
-                                    Log.d(TAG, "URL: " + response.raw().request().url().toString());
-                                    Log.d(TAG, "Request: " + request);
-                                    Log.d(TAG, "Response code: " + response.code());
+                                    //Log.d(TAG, "URL: " + response.raw().request().url().toString());
+                                    //Log.d(TAG, "Request: " + request);
+                                    //Log.d(TAG, "Response code: " + response.code());
                                     String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
-                                    Log.d(TAG, "Response: " + responseValue);
+                                    //Log.d(TAG, "Response: " + responseValue);
                                     Observable.just(response.body()).subscribe(resultAction1);
                                 } catch (Exception e) {
                                     Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
@@ -230,7 +240,7 @@ public class AppCMSSubscriptionPlanCall {
                             @Override
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
-                                Log.e(TAG, "onFailure: " + t.getMessage());
+                                //Log.e(TAG, "onFailure: " + t.getMessage());
                                 Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });

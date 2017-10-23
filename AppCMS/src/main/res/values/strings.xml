@@ -415,6 +415,15 @@
     <string name="subscription_purchased_from_apple_msg">This subscription was purchased on Apple App Store. To modify it, please visit your account settings on your Apple device.</string>
     <string name="subscription_not_purchased">You are currently not a subscriber, please visit our website to purchase a subscription.</string>
 
+    <string name="signed_policy_key">signed_policy</string>
+    <string name="signed_signature_key">signed_signature</string>
+    <string name="signed_keypairid_key">signed_keypairid</string>
+    <string name="refreshing_data_text">Refreshing Data</string>
+    <string name="no_network_connectivity_message">No Network Connectivity</string>
+    <string name="app_cms_retry_text">RETRY</string>
+    <string name="app_cms_close_text">CLOSE</string>
+    <string name="close_one_page_key">close_one_page</string>
+
 </resources>
 
 

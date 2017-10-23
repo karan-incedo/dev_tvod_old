@@ -8,17 +8,21 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -66,7 +70,7 @@ public class AppCMSMainUICall {
         AppCMSMain main = null;
         AppCMSMain mainInStorage = null;
         try {
-            Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
+            //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
             final String hostName = new URL(appCMSMainUrl).getHost();
             ExecutorService executor = Executors.newCachedThreadPool();
@@ -75,43 +79,52 @@ public class AppCMSMainUICall {
             try {
                 future.get(connectionTimeout, TimeUnit.MILLISECONDS);
             } catch (TimeoutException e) {
-                Log.e(TAG, "Connection timed out: " + e.toString());
+                //Log.e(TAG, "Connection timed out: " + e.toString());
                 if (tryCount == 0) {
                     return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (InterruptedException e) {
-                Log.e(TAG, "Connection interrupted: " + e.toString());
+                //Log.e(TAG, "Connection interrupted: " + e.toString());
                 if (tryCount == 0) {
                     return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (ExecutionException e) {
-                Log.e(TAG, "Execution error: " + e.toString());
+                //Log.e(TAG, "Execution error: " + e.toString());
                 if (tryCount == 0) {
                     return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
+                }
+                try {
+                    return readMainFromFile(getResourceFilename(appCMSMainUrl));
+                } catch (Exception e1) {
+                    //Log.e(TAG, "Could not retrieve main.json from file: " +
+//                        e1.getMessage());
                 }
                 return null;
             } finally {
                 future.cancel(true);
             }
 
-            main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
+            try {
+                main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
+            } catch (Exception e) {
+                //Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
+            }
+
             String filename = getResourceFilename(appCMSMainUrl);
             try {
                 mainInStorage = readMainFromFile(filename);
-            } catch (IOException exception) {
+            } catch (Exception exception) {
                 Log.w(TAG, "Previous version of main.json file is not in storage");
             }
 
             boolean useExistingOldVersion = true;
 
-            if (mainInStorage != null) {
-                if (main != null && main.getOldVersion() != null) {
-                    useExistingOldVersion = main.getOldVersion().equals(main.getVersion());
-                    if (!forceReloadFromNetwork) {
-                        main.setLoadFromFile(useExistingOldVersion);
-                    }
+            if (mainInStorage != null && mainInStorage.getVersion() != null) {
+                if (main != null && main.getVersion() != null) {
+                    useExistingOldVersion = main.getVersion().equals(mainInStorage.getVersion());
+                    main.setLoadFromFile(useExistingOldVersion);
                     main.setOldVersion(main.getVersion());
                 } else if (main == null) {
                     main = mainInStorage;
@@ -125,7 +138,7 @@ public class AppCMSMainUICall {
 
             main = writeMainToFile(filename, main);
         } catch (Exception e) {
-            Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+            //Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
         }
 
         if (main == null && tryCount == 0) {
@@ -137,22 +150,21 @@ public class AppCMSMainUICall {
 
     private AppCMSMain writeMainToFile(String outputFilename, AppCMSMain main) throws IOException {
         OutputStream outputStream = new FileOutputStream(
-                new File(storageDirectory.toString() + outputFilename));
-        String output = gson.toJson(main, AppCMSMain.class);
-        outputStream.write(output.getBytes());
+                new File(storageDirectory.toString() +
+                        File.separatorChar +
+                        outputFilename));
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+        objectOutputStream.writeObject(main);
         outputStream.close();
         return main;
     }
 
-    private AppCMSMain readMainFromFile(String inputFilename) throws IOException {
-        InputStream inputStream = new FileInputStream(storageDirectory.toString() + inputFilename);
-        Scanner scanner = new Scanner(inputStream);
-        StringBuffer sb = new StringBuffer();
-        while (scanner.hasNextLine()) {
-            sb.append(scanner.nextLine());
-        }
-        AppCMSMain main = gson.fromJson(sb.toString(), AppCMSMain.class);
-        scanner.close();
+    private AppCMSMain readMainFromFile(String inputFilename) throws Exception {
+        InputStream inputStream = new FileInputStream(storageDirectory.toString() +
+                File.separatorChar +
+                inputFilename);
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+        AppCMSMain main = (AppCMSMain) objectInputStream.readObject();
         inputStream.close();
         return main;
     }

@@ -5,8 +5,10 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 @UseStag
-public class Gist {
+public class Gist implements Serializable {
 
     @SerializedName("id")
     @Expose
@@ -52,6 +54,14 @@ public class Gist {
     @Expose
     String videoImageUrl;
 
+    @SerializedName("imageGist")
+    @Expose
+    ImageGist imageGist;
+
+    @SerializedName("badgeImages")
+    @Expose
+    BadgeImages badgeImages;
+
     @SerializedName("addedDate")
     @Expose
     long addedDate;
@@ -85,7 +95,6 @@ public class Gist {
     int watchedPercentage;
 
     String downloadStatus;
-
     /**
      * This is to store the url of the downloaded file
      */
@@ -179,6 +188,14 @@ public class Gist {
         this.videoImageUrl = videoImageUrl;
     }
 
+    public BadgeImages getBadgeImages() {
+        return badgeImages;
+    }
+
+    public void setBadgeImages(BadgeImages badgeImages) {
+        this.badgeImages = badgeImages;
+    }
+
     public long getAddedDate() {
         return addedDate;
     }
@@ -244,7 +261,10 @@ public class Gist {
     }
 
     public DownloadStatus getDownloadStatus() {
-        return DownloadStatus.valueOf(downloadStatus);
+        if (downloadStatus != null) {
+            return DownloadStatus.valueOf(downloadStatus);
+        }
+        return DownloadStatus.STATUS_PENDING;
     }
 
     public void setDownloadStatus(DownloadStatus downloadStatus) {
@@ -257,5 +277,13 @@ public class Gist {
 
     public void setLocalFileUrl(String localFileUrl) {
         this.localFileUrl = localFileUrl;
+    }
+
+    public ImageGist getImageGist() {
+        return imageGist;
+    }
+
+    public void setImageGist(ImageGist imageGist) {
+        this.imageGist = imageGist;
     }
 }

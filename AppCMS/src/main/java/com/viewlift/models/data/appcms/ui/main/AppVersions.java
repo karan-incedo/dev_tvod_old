@@ -4,12 +4,14 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
+import java.io.Serializable;
+
 /**
  * Created by viewlift on 10/4/17.
  */
 
 @UseStag
-public class AppVersions {
+public class AppVersions implements Serializable {
     @SerializedName("ios")
     @Expose
     AppVersion iosAppVersion;

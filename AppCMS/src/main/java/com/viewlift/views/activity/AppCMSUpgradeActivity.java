@@ -1,13 +1,17 @@
 package com.viewlift.views.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.fragments.AppCMSUpgradeFragment;
 
 /**
@@ -33,7 +37,17 @@ public class AppCMSUpgradeActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if (getApplication() instanceof AppCMSApplication) {
-            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction(null, false);
+            AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+            appCMSPresenter.sendCloseOthersAction(null, false, false);
+            appCMSPresenter.refreshAppCMSMain(appCMSMain -> {
+                appCMSPresenter.updateAppCMSMain(appCMSMain);
+                if (!appCMSPresenter.isAppBelowMinVersion()) {
+                    Intent relaunchApp = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                    relaunchApp.putExtra(getString(R.string.force_reload_from_network_key), true);
+                    startActivity(relaunchApp);
+                    finish();
+                }
+            });
         }
     }
 }

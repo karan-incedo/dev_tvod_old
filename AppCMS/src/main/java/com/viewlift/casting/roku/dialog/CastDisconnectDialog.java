@@ -93,13 +93,13 @@ public class CastDisconnectDialog extends MediaRouteControllerDialog implements 
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        Log.d(TAG, "onAttachedToWindow");
+        //Log.d(TAG, "onAttachedToWindow");
     }
 
     @Override
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Log.d(TAG, "onDetachedFromWindow");
+        //Log.d(TAG, "onDetachedFromWindow");
     }
 
     public Object getToBeDisconnectDevice() {

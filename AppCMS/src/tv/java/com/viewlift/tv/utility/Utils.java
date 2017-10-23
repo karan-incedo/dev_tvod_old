@@ -461,19 +461,19 @@ public class Utils {
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
-                    Log.d("" , "setTypeFace===Opensans_Bold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    //Log.d("" , "setTypeFace===Opensans_Bold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
                     break;
                 case PAGE_TEXT_SEMIBOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
-                    Log.d("" , "setTypeFace===Opensans_SemiBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    //Log.d("" , "setTypeFace===Opensans_SemiBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
                     break;
                 case PAGE_TEXT_EXTRABOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
-                    Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
                     break;
                 default:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
-                    Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
             }
         }
         return face;
@@ -482,7 +482,7 @@ public class Utils {
 
     public static String getTextColor(Context context , AppCMSPresenter appCMSPresenter){
         String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , android.R.color.white)));
-        Log.d("Utils.java" , "getTextColor = "+color);
+        //Log.d("Utils.java" , "getTextColor = "+color);
         if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
             && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
@@ -495,7 +495,7 @@ public class Utils {
 
     public static String getTitleColor(Context context , AppCMSPresenter appCMSPresenter){
         String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , android.R.color.white)));
-        Log.d("Utils.java" , "getTitleColor = "+color);
+        //Log.d("Utils.java" , "getTitleColor = "+color);
         if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
                 && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
@@ -507,7 +507,7 @@ public class Utils {
 
     public static String getBackGroundColor(Context context  ,AppCMSPresenter appCMSPresenter){
         String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , R.color.dialog_bg_color)));
-        Log.d("Utils.java" , "getBackGroundColor = "+color);
+        //Log.d("Utils.java" , "getBackGroundColor = "+color);
         if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
                 && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
@@ -519,7 +519,7 @@ public class Utils {
 
     public static String getFocusColor(Context context  , AppCMSPresenter appCMSPresenter){
         String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , R.color.colorAccent)));
-        Log.d("Utils.java" , "getFocusColor = "+color);
+        //Log.d("Utils.java" , "getFocusColor = "+color);
         if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
                 && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()

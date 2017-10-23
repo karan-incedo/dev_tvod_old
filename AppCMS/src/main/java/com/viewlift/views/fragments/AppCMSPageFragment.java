@@ -82,7 +82,7 @@ public class AppCMSPageFragment extends Fragment {
 
                 shouldSendFirebaseViewItemEvent = true;
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         } else {
             throw new RuntimeException("Attached context must implement " +
@@ -110,7 +110,7 @@ public class AppCMSPageFragment extends Fragment {
             pageView = appCMSViewComponent.appCMSPageView();
         } else {
             pageView = null;
-            Log.e(TAG, "AppCMS page creation error");
+            //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
         }
 
@@ -118,14 +118,9 @@ public class AppCMSPageFragment extends Fragment {
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
-            if (!BaseView.isTablet(getContext())) {
-                appCMSPresenter.restrictPortraitOnly();
-            } else {
-                appCMSPresenter.unrestrictPortraitOnly();
-            }
             onPageCreation.onSuccess(appCMSBinder);
         } else {
-            Log.e(TAG, "AppCMS page creation error");
+            //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
         }
 
@@ -154,7 +149,7 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSBinder = (AppCMSBinder)
                         savedInstanceState.getBinder(getString(R.string.app_cms_binder_key));
             } catch (ClassCastException e) {
-                Log.e(TAG, "Could not attach fragment: " + e.toString());
+                //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
     }
@@ -195,6 +190,10 @@ public class AppCMSPageFragment extends Fragment {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
 
+        updateDataLists();
+    }
+
+    public void updateDataLists() {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
         }
@@ -272,6 +271,8 @@ public class AppCMSPageFragment extends Fragment {
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
+            pageView = null;
+
             pageView = viewCreator.generatePage(getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
@@ -281,10 +282,42 @@ public class AppCMSPageFragment extends Fragment {
                     appCMSPresenter,
                     modulesToIgnore);
 
-            if (pageViewGroup != null && pageView != null) {
-                pageViewGroup.removeAllViews();
+            if (pageViewGroup != null &&
+                    pageView != null &&
+                    pageView.getParent() == null) {
+                removeAllViews(pageViewGroup);
                 pageViewGroup.addView(pageView);
+                updateAllViews(pageViewGroup);
             }
         }
+    }
+
+    private void updateAllViews(ViewGroup pageViewGroup) {
+        if (pageViewGroup.getVisibility() == View.VISIBLE) {
+            pageViewGroup.setVisibility(View.GONE);
+            pageViewGroup.setVisibility(View.VISIBLE);
+        }
+        pageViewGroup.requestLayout();
+        for (int i = 0; i < pageViewGroup.getChildCount(); i++) {
+            View child = pageViewGroup.getChildAt(i);
+            if (child instanceof ViewGroup) {
+                updateAllViews((ViewGroup) child);
+            } else {
+                if (child.getVisibility() == View.VISIBLE) {
+                    child.setVisibility(View.GONE);
+                    child.setVisibility(View.VISIBLE);
+                }
+                child.requestLayout();
+            }
+        }
+    }
+
+    private void removeAllViews(ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
+                removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
+            }
+        }
+        viewGroup.removeAllViews();
     }
 }

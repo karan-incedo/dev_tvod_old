@@ -31,7 +31,7 @@ public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
         int width =  (int) Utils.getViewWidth(getContext(), module.getLayout(), LayoutParams.MATCH_PARENT);
         int height = (int) Utils.getViewHeight(getContext(), module.getLayout(), LayoutParams.WRAP_CONTENT);
 
-        Log.d(TAG, "Module Key: " + module.getView() + " Width: " + width + " Height; " + height);
+        //Log.d(TAG, "Module Key: " + module.getView() + " Width: " + width + " Height; " + height);
         LayoutParams layoutParams =
                 new LayoutParams(width, height);
         this.setLayoutParams(layoutParams);

@@ -122,7 +122,7 @@ public class AppCmsNavigationFragment extends Fragment {
     private String mSelectedPageId = null;
     public void setSelectedPageId(String selectedPageId) {
         this.mSelectedPageId = selectedPageId;
-        Log.d("" ,"Navigation setSelectedPageId = " + mSelectedPageId );
+        //Log.d("" ,"Navigation setSelectedPageId = " + mSelectedPageId );
     }
 
     public void notifiDataSetInvlidate() {
@@ -175,16 +175,16 @@ public class AppCmsNavigationFragment extends Fragment {
             final NavigationPrimary primary = (NavigationPrimary)getItem(position);
             holder.navItemView.setText(primary.getTitle().toString().toUpperCase());
             holder.navItemView.setTag(R.string.item_position , position);
-            Log.d("NavigationAdapter", primary.getTitle().toString());
+            //Log.d("NavigationAdapter", primary.getTitle().toString());
 
 
             if(null != mSelectedPageId){
                 if(primary.getPageId().equalsIgnoreCase(mSelectedPageId)){
                      holder.navItemlayout.requestFocus();
-                    Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----true ");
+                    //Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----true ");
                 }else{
                     holder.navItemlayout.clearFocus();
-                    Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----false");
+                    //Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----false");
                 }
             }
 
@@ -193,7 +193,7 @@ public class AppCmsNavigationFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
 
-                    Log.d("Navigation Click = ", primary.getTitle().toString());
+                    //Log.d("Navigation Click = ", primary.getTitle().toString());
 
                     navigationVisibilityListener.showNavigation(false);
                     //getActivity().sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
@@ -209,7 +209,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                     getString(R.string.profile_label)))){
 
                                 NavigationUser navigationUser = getNavigationUser();
-                                Log.d("","Selected Title = "+navigationUser.getTitle());
+                                //Log.d("","Selected Title = "+navigationUser.getTitle());
                                 if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
                                         .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
                                     appCmsPresenter.navigateToWatchlistPage(
@@ -286,7 +286,7 @@ public class AppCmsNavigationFragment extends Fragment {
                         int position = (int)navItemView.getTag(R.string.item_position);
                         selectedPosition = position;
 
-                        Log.d("TAG","Nav position = "+position);
+                        //Log.d("TAG","Nav position = "+position);
                         if (hasFocus) {
                             navItemView.setText(text.toUpperCase());
                             navItemView.setTypeface(extraBoldTypeFace);

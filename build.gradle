@@ -12,7 +12,7 @@ buildscript {
         google()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:${gradleBuildVersion}"
+        classpath 'com.android.tools.build:gradle:3.0.0-rc1'
         classpath "io.realm:realm-gradle-plugin:${realmVersion}"
         classpath "com.google.gms:google-services:${playServicesVersion}"
 
@@ -47,11 +47,11 @@ allprojects {
         crashlyticsVersion = "2.6.8@aar"
         leakcanaryVersion = "1.5.1"
         apptentiveVersion = "3.4.1"
-        butterknifeVersion = "8.6.0"
+        butterknifeVersion = "8.8.1"
         stagVersion = "2.3.1"
         facebookSdkVersion = "[4,5)"
         urbanAirshipVersion = "8.3.2"
-        appsFlyerVersion = "4.7.4@aar"
+        appsFlyerVersion = "4.8.3"
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"
         jsoupVersion = "1.10.3"

@@ -90,7 +90,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
                 " on " + formattedDate);
         getDataAsyncTask = new GetData() ;
         getDataAsyncTask.execute() ;
-        Log.v("apibaseurl",initialScreen.getStringExtra("api_base_url")) ;
+//        //Log.v("apibaseurl",initialScreen.getStringExtra("api_base_url")) ;
     }
 
     /**
@@ -144,7 +144,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
 
             String vJsonStr = sh.makeServiceCall(Constants.CCAVENUE_JSON_URL, ServiceHandler.POST, vParams);
 
-            Log.d("Response: ", "> " + vJsonStr);
+            //Log.d("Response: ", "> " + vJsonStr);
 
             if (vJsonStr!=null && !vJsonStr.equals("")) {
                 try {
@@ -171,10 +171,14 @@ public class PaymentOptionsActivity extends AppCompatActivity {
                                                 cardTypeDTO.setDataAcceptedAt(card.getString("dataAcceptedAt"));
                                                 cardTypeDTO.setStatus(card.getString("status"));
                                                 cardsList.get(vPaymentOption.getString("payOpt")).add(cardTypeDTO);
-                                            }catch (Exception e) { Log.e("ServiceHandler", "Error parsing cardType",e); }
+                                            }catch (Exception e) {
+                                                //Log.e("ServiceHandler", "Error parsing cardType",e);
+                                            }
                                         }
                                     }
-                                }catch (Exception e) { Log.e("ServiceHandler", "Error parsing payment option",e); }
+                                }catch (Exception e) {
+//                                    Log.e("ServiceHandler", "Error parsing payment option",e);
+                                }
                             }
                         }
                         if((jsonRespObj.getString("EmiBanks")!=null && jsonRespObj.getString("EmiBanks").length()>0) &&
@@ -184,10 +188,10 @@ public class PaymentOptionsActivity extends AppCompatActivity {
                         }
                     }
                 } catch (JSONException e) {
-                    Log.e("ServiceHandler", "Error fetching data from server",e);
+                    //Log.e("ServiceHandler", "Error fetching data from server",e);
                 }
             } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the url");
+                //Log.e("ServiceHandler", "Couldn't get any data from the url");
             }
             return null;
         }
@@ -290,7 +294,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
             }
             JsonResponse = buffer.toString();
             //response data
-            Log.i("TAG", JsonResponse);
+            //Log.i("TAG", JsonResponse);
             try {
                 JSONObject jsonObj = new JSONObject(JsonResponse);
                 rsaToken = jsonObj.getString("rsaToken");
@@ -311,7 +315,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
                 try {
                     reader.close();
                 } catch (final IOException e) {
-                    Log.e("TAG", "Error closing stream", e);
+                    //Log.e("TAG", "Error closing stream", e);
                 }
             }
         }
@@ -356,7 +360,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
         public PaymentOptionsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                        int viewType) {
             // create a new view
-            View v = (View) LayoutInflater.from(parent.getContext())
+            View v = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.payment_options_row, parent, false);
             // set the view's size, margins, paddings and layout parameters
             ViewHolder vh = new ViewHolder(v);

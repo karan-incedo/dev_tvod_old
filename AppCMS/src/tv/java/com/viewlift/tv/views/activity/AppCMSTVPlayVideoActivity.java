@@ -235,8 +235,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 }
                 else if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
-                   // Log.d(TAG, "Closing activity");
-                   // finish();
+
                 }
             }
         };

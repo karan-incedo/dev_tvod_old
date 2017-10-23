@@ -103,7 +103,7 @@ public class RokuWrapper {
                         String appId = getAppIdByParsingXMLResponse(getAllApps());
                         selectedRokuDevice.setRokuAppId(appId);
                     } catch (XmlPullParserException | IOException e) {
-                        Log.e("RokuWrapper:", "" + e.getLocalizedMessage());
+                        //Log.e("RokuWrapper:", "" + e.getLocalizedMessage());
                         e.printStackTrace();
                     }
                     if(mRokuWrapperEventListener!=null)
@@ -121,7 +121,7 @@ public class RokuWrapper {
                         String appId = getAppIdByParsingXMLResponse(getAllApps());
                         selectedRokuDevice.setRokuAppId(appId);
                     } catch (XmlPullParserException | IOException e) {
-                        Log.e(" RokuWrapper:", "" + e.getLocalizedMessage());
+                        //Log.e(" RokuWrapper:", "" + e.getLocalizedMessage());
                         e.printStackTrace();
                     }
 
@@ -137,7 +137,7 @@ public class RokuWrapper {
                         String appId = getAppIdByParsingXMLResponse(getAllApps());
                         selectedRokuDevice.setRokuAppId(appId);
                     } catch (XmlPullParserException | IOException e) {
-                        Log.e(" RokuWrapper:", "" + e.getLocalizedMessage());
+                        //Log.e(" RokuWrapper:", "" + e.getLocalizedMessage());
                         e.printStackTrace();
                     }
                     if(mRokuWrapperEventListener!=null)
@@ -168,7 +168,7 @@ public class RokuWrapper {
 
     public void startDiscoveryTimer() {
         if (isRokuDiscoveryTimerRunning) return;
-        Log.d(TAG, "Starting discovery timer");
+        //Log.d(TAG, "Starting discovery timer");
         discoveryTimer = new Timer();
         discoveryTimer.scheduleAtFixedRate(new DiscoveryTimerTask(), 0, 10000);
         isRokuDiscoveryTimerRunning = true;
@@ -176,7 +176,7 @@ public class RokuWrapper {
 
     public void stopDiscoveryTimer() {
         if (!isRokuDiscoveryTimerRunning) return;
-        Log.d(TAG, "Stopping discovery timer");
+        //Log.d(TAG, "Stopping discovery timer");
         discoveryTimer.cancel();
         isRokuDiscoveryTimerRunning = false;
 //        rokuDevices.clear();
@@ -189,7 +189,7 @@ public class RokuWrapper {
 
     public void setListener(RokuWrapperEventListener listener) {
         if (listener instanceof RokuWrapperEventListener)
-            mRokuWrapperEventListener = (RokuWrapperEventListener) listener;
+            mRokuWrapperEventListener = listener;
         else
             throw new RuntimeException(listener.getClass() + " must implement RokuWrapperEventListener");
     }
@@ -197,7 +197,7 @@ public class RokuWrapper {
         mRokuWrapperEventListener=null;
     }
     private void sendDiscoveryRequest() {
-        Log.d(TAG, "sending roku discovery request");
+        //Log.d(TAG, "sending roku discovery request");
         RokuThreadParams discoveryRokuThreadParams = new RokuThreadParams();
         discoveryRokuThreadParams.setAction(RokuWrapper.DISCOVER_DEVICE);
         discoveryRokuThreadParams.setIntData(3);
@@ -278,7 +278,7 @@ public class RokuWrapper {
             System.out.println(response.toString());
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(TAG, e.getLocalizedMessage());
+            //Log.e(TAG, e.getLocalizedMessage());
         }
         return appUrl;
     }
@@ -351,7 +351,7 @@ public class RokuWrapper {
 
     private void notifyAppUrlFound(RokuDevice rokuDevice) {
         localRokuDevices.add(rokuDevice);
-        Log.d(TAG, rokuDevice.getRokuDeviceName() + " added to local");
+        //Log.d(TAG, rokuDevice.getRokuDeviceName() + " added to local");
     }
 
     private void notifyAppStopped() {
@@ -375,7 +375,7 @@ public class RokuWrapper {
     }
 
     public void setSelectedRokuDevice(RokuDevice selectedRokuDevice) {
-        this.selectedRokuDevice = selectedRokuDevice;
+        RokuWrapper.selectedRokuDevice = selectedRokuDevice;
     }
 
     public boolean isRokuDiscoveryTimerRunning() {
@@ -471,12 +471,12 @@ public class RokuWrapper {
             //print result
             String res = response.toString();
 
-            Log.d("getAllApps response", res);
+            //Log.d("getAllApps response", res);
 
             return res;
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("getAllApps exception", e.toString());
+            //Log.d("getAllApps exception", e.toString());
 
             return "";
         }

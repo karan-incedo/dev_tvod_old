@@ -499,7 +499,7 @@ public class TVViewCreator {
                         rowData.uiComponentList = components;
                         rowData.action = component.getTrayClickAction();
                         listRowAdapter.add(rowData);
-                        Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
+                        //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                     }
                     mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
                 }
@@ -537,7 +537,7 @@ public class TVViewCreator {
                             rowData.uiComponentList = components;
                             rowData.action = component.getTrayClickAction();
                             traylistRowAdapter.add(rowData);
-                            Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
+                            //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                         }
                         mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                     }
@@ -679,13 +679,13 @@ public class TVViewCreator {
                                             -1,
                                             null)) {
                                         appCMSPresenter.showLoadingDialog(false);
-                                        Log.e(TAG, "Could not launch action: " +
-                                                " permalink: " +
-                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                " action: " +
-                                                component.getAction() +
-                                                " hls URL: " +
-                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+//                                        //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                " action: " +
+//                                                component.getAction() +
+//                                                " hls URL: " +
+//                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                     }
 
                                     // Disable the button for 1 second and enable it back in handler
@@ -715,7 +715,7 @@ public class TVViewCreator {
                                     userVideoStatusResponse -> {
                                         if (null != userVideoStatusResponse) {
                                             queued[0] = userVideoStatusResponse.getQueued();
-                                            Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
+                                            //Log.d(TAG, "appCMSAddToWatchlistResult: qued: " + queued[0]);
                                             if (queued[0]) {
                                                 btn.setText(context.getString(R.string.remove_from_watchlist));
                                             } else {
@@ -726,12 +726,12 @@ public class TVViewCreator {
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
-                                    Log.d(TAG, "appCMSAddToWatchlistResult: clicked");
+                                    //Log.d(TAG, "appCMSAddToWatchlistResult: clicked");
                                     if (appCMSPresenter.isUserLoggedIn()) {
                                         appCMSPresenter.editWatchlist(
                                                 moduleAPI.getContentData().get(0).getGist().getId(),
                                                 appCMSAddToWatchlistResult -> {
-                                                    Log.d(TAG, "appCMSAddToWatchlistResult");
+                                                    //Log.d(TAG, "appCMSAddToWatchlistResult");
                                                     queued[0] = !queued[0];
                                                     if (queued[0]) {
                                                         btn.setText(context.getString(R.string.remove_from_watchlist));
@@ -821,15 +821,15 @@ public class TVViewCreator {
                                                 extraData,
                                                 moduleAPI.getContentData().get(0),
                                                 false,
-                                                -1,
+                                                 -1,
                                                 null)) {
-                                            Log.e(TAG, "Could not launch action: " +
+                                        /*    Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
                                                     moduleAPI.getContentData().get(0).getGist().getPermalink() +
                                                     " action: " +
                                                     component.getAction() +
                                                     " video URL: " +
-                                                    videoUrl);
+                                                    videoUrl);  */
                                         }
                                     }
                                 }
@@ -865,9 +865,9 @@ public class TVViewCreator {
                                         false,
                                         -1,
                                         null)) {
-                                    Log.e(TAG, "Could not launch action: " +
-                                            " action: " +
-                                            component.getAction());
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                            " action: " +
+//                                            component.getAction());
                                 }
                             }
                         });
@@ -898,7 +898,7 @@ public class TVViewCreator {
                                             extraData,
                                             moduleAPI.getContentData().get(0),
                                             false)) {
-                                        Log.e(TAG, "Could not launch action: " +
+                                        //Log.e(TAG, "Could not launch action: " +
                                                 " permalink: " +
                                                 moduleAPI.getContentData().get(0).getGist().getPermalink() +
                                                 " action: " +
@@ -951,7 +951,7 @@ public class TVViewCreator {
                                     TVModuleView tvModuleView = (TVModuleView) pageView.getChildrenContainer().getChildAt(0);
                                     String emailId = ((EditText) tvModuleView.findViewById(R.id.email_edit_box)).getEditableText().toString();
                                     String password = ((EditText) tvModuleView.findViewById(R.id.password_edit_box)).getEditableText().toString();
-                                    Log.d(TAG, "emailid = " + emailId + "password = " + password);
+                                    //Log.d(TAG, "emailid = " + emailId + "password = " + password);
 
                                     if ((emailId != null && emailId.length() == 0)) {
                                         appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_email_error_msg),
@@ -1616,13 +1616,13 @@ public class TVViewCreator {
                                                     -1,
                                                     moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
                                                 appCMSPresenter.showLoadingDialog(false);
-                                                Log.e(TAG, "Could not launch action: " +
-                                                        " permalink: " +
-                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() +
-                                                        " action: " +
-                                                        component.getAction() +
-                                                        " video URL: " +
-                                                        videoUrl);
+                                                //Log.e(TAG, "Could not launch action: " +
+//                                                        " permalink: " +
+//                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                        " action: " +
+//                                                        component.getAction() +
+//                                                        " video URL: " +
+//                                                        videoUrl);
                                             }
                                         }
                                     } else {
@@ -1667,13 +1667,13 @@ public class TVViewCreator {
                                                          moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds(),
                                                          moduleAPI.getContentData().get(0).getGist().getWatchedTime())) {
                                                         appCMSPresenter.showLoadingDialog(false);
-                                                        Log.e(TAG, "Could not launch play action: " +
-                                                                " filmId: " +
-                                                                filmId +
-                                                                " permaLink: " +
-                                                                permaLink +
-                                                                " title: " +
-                                                                title);
+                                                        //Log.e(TAG, "Could not launch play action: " +
+//                                                                " filmId: " +
+//                                                                filmId +
+//                                                                " permaLink: " +
+//                                                                permaLink +
+//                                                                " title: " +
+//                                                                title);
                                                     }
                                                     break;
                                                 }
@@ -2036,19 +2036,19 @@ public class TVViewCreator {
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
-                    Log.d(TAG, "setTypeFace===Opensans_Bold" + " text = " + component.getKey().toString());
+                    //Log.d(TAG, "setTypeFace===Opensans_Bold" + " text = " + component.getKey().toString());
                     break;
                 case PAGE_TEXT_SEMIBOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
-                    Log.d(TAG, "setTypeFace===Opensans_SemiBold" + " text = " + component.getKey().toString());
+                    //Log.d(TAG, "setTypeFace===Opensans_SemiBold" + " text = " + component.getKey().toString());
                     break;
                 case PAGE_TEXT_EXTRABOLD_KEY:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
-                    Log.d(TAG, "setTypeFace===Opensans_ExtraBold" + " text = " + component.getKey().toString());
+                    //Log.d(TAG, "setTypeFace===Opensans_ExtraBold" + " text = " + component.getKey().toString());
                     break;
                 default:
                     face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
-                    Log.d(TAG, "setTypeFace===Opensans_RegularBold" + " text = " + component.getKey().toString());
+                    //Log.d(TAG, "setTypeFace===Opensans_RegularBold" + " text = " + component.getKey().toString());
             }
             textView.setTypeface(face);
         }

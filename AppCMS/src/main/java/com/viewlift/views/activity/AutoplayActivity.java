@@ -38,7 +38,7 @@ public class AutoplayActivity
                         = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
-                    Log.d(TAG, "Closing activity");
+                    //Log.d(TAG, "Closing activity");
                     finish();
                 }
             }
@@ -70,7 +70,7 @@ public class AutoplayActivity
             fragmentTransaction.addToBackStack(appCMSBinder.getContentData().getGist().getId());
             fragmentTransaction.commit();
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to add Fragment to back stack");
+            //Log.e(TAG, "Failed to add Fragment to back stack");
         }
     }
 

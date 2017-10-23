@@ -50,7 +50,7 @@ public class GetAppCMSRefreshIdentityAsyncTask {
                         try {
                             return call.call(params.url);
                         } catch (Exception e) {
-                            Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                            //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
                     }
                     return null;

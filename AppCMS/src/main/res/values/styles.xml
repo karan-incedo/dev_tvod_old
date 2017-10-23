@@ -58,6 +58,7 @@
     <!--removes white screen at app launch-->
     <style name="AppThemeTransparent" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowBackground">@drawable/logo</item>
     </style>
 
     <!--removes white screen at app launch-->

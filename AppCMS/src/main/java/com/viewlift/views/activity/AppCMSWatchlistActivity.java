@@ -67,13 +67,13 @@ public class AppCMSWatchlistActivity extends AppCompatActivity {
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
                         .appCMSPresenter();
 
-        Log.d(TAG, "handleIntent-getIntent: " + intent);
+        //Log.d(TAG, "handleIntent-getIntent: " + intent);
 
         final String url = getString(R.string.app_cms_watchlist_api_url,
                 appCMSPresenter.getAppCMSMain().getApiBaseUrl(),
                 appCMSPresenter.getAppCMSSite().getGist().getSiteInternalName(),
                 null);
-        Log.d(TAG, "handleIntent: " + url);
+        //Log.d(TAG, "handleIntent: " + url);
 
         new WatchlistAsyncTask(new Action1<List<AppCMSWatchlistResult>>() {
             @Override
@@ -101,7 +101,7 @@ public class AppCMSWatchlistActivity extends AppCompatActivity {
 //                try {
 //                    return appCMSWatchlistCall.call(params[0]);
 //                } catch (IOException e) {
-//                    Log.e(TAG, "doInBackground: " + params[0]);
+//                    //Log.e(TAG, "doInBackground: " + params[0]);
 //                }
             }
 

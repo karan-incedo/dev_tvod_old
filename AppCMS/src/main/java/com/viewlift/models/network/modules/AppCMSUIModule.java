@@ -43,6 +43,8 @@ import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseRest;
 import com.viewlift.models.network.rest.AppCMSSignInCall;
 import com.viewlift.models.network.rest.AppCMSSignInRest;
+import com.viewlift.models.network.rest.AppCMSSignedURLCall;
+import com.viewlift.models.network.rest.AppCMSSignedURLRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanCall;
 import com.viewlift.models.network.rest.AppCMSSubscriptionPlanRest;
 import com.viewlift.models.network.rest.AppCMSSubscriptionRest;
@@ -71,6 +73,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -88,6 +91,7 @@ public class AppCMSUIModule {
     private final long defaultWriteConnectionTimeout;
     private final long defaultReadConnectionTimeout;
     private final long unknownHostExceptionTimeout;
+    private final Cache cache;
 
     public AppCMSUIModule(Context context) {
         this.baseUrl = context.getString(R.string.app_cms_baseurl);
@@ -119,6 +123,9 @@ public class AppCMSUIModule {
 
         this.unknownHostExceptionTimeout =
                 context.getResources().getInteger(R.integer.app_cms_unknown_host_exception_connection_timeout_msec);
+
+        int cacheSize = 10 * 1024 * 1024; // 10 MB
+        cache = new Cache(context.getCacheDir(), cacheSize);
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -140,6 +147,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HISTORY_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_watchlist_navigation_title),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
+                AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
@@ -262,7 +271,7 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_forgotPasswordTitle_key),
                 AppCMSUIKeyType.RESET_PASSWORD_TITLE_KEY);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key) ,
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key),
                 AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
@@ -424,7 +433,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_ageLabel_key),
                 AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY);
-        jsonValueKeyMap.put(context.getString(R.string. app_cms_page_video_credits_director_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_credits_director_key),
                 AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_credits_directedby_key),
                 AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY);
@@ -559,7 +568,7 @@ public class AppCMSUIModule {
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_showscreen_key),
                 context.getString(R.string.app_cms_action_showvideopage_key));
 
-        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword) ,
+        this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword),
                 context.getString(R.string.app_cms_action_forgotpassword_key));
 
     }
@@ -573,7 +582,7 @@ public class AppCMSUIModule {
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_watchlistpage_key), null);
         this.actionToPageMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
-        this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key) , null);
+        this.actionToPageMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
     }
 
     private void createActionToPageAPIMap(Context context) {
@@ -583,7 +592,7 @@ public class AppCMSUIModule {
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_showvideopage_key), null);
         this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_watchvideo_key), null);
-        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_forgotpassword_key) , null);
+        this.actionToPageAPIMap.put(context.getString(R.string.app_cms_action_forgotpassword_key), null);
     }
 
     private void createActionToActionTypeMap(Context context) {
@@ -703,6 +712,7 @@ public class AppCMSUIModule {
                 .connectTimeout(defaultConnectionTimeout, TimeUnit.MILLISECONDS)
                 .writeTimeout(defaultWriteConnectionTimeout, TimeUnit.MILLISECONDS)
                 .readTimeout(defaultReadConnectionTimeout, TimeUnit.MILLISECONDS)
+                .cache(cache)
                 .build();
     }
 
@@ -868,6 +878,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSSignedURLRest providesAppCMSSignedURLRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSSignedURLRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -923,14 +939,16 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSFacebookLoginCall providesAppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest) {
-        return new AppCMSFacebookLoginCall(appCMSFacebookLoginRest);
+    public AppCMSFacebookLoginCall providesAppCMSFacebookLoginCall(AppCMSFacebookLoginRest appCMSFacebookLoginRest,
+                                                                   Gson gson) {
+        return new AppCMSFacebookLoginCall(appCMSFacebookLoginRest, gson);
     }
 
     @Provides
     @Singleton
-    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest) {
-        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest);
+    public AppCMSGoogleLoginCall providesAppCMSGoogleLoginCall(AppCMSGoogleLoginRest appCMSGoogleLoginRest,
+                                                               Gson gson) {
+        return new AppCMSGoogleLoginCall(appCMSGoogleLoginRest, gson);
     }
 
     @Provides
@@ -1008,6 +1026,12 @@ public class AppCMSUIModule {
     public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(Gson gson,
                                                                    AppCMSAndroidModuleRest appCMSAndroidModuleRest) {
         return new AppCMSAndroidModuleCall(gson, appCMSAndroidModuleRest, storageDirectory);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSSignedURLCall providesAppCMSSignedURLCall(AppCMSSignedURLRest appCMSSignedURLRest) {
+        return new AppCMSSignedURLCall(appCMSSignedURLRest);
     }
 
     @Provides
