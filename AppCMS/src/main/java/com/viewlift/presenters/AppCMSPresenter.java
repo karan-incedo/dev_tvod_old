@@ -1346,20 +1346,6 @@ public class AppCMSPresenter {
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
-                    if (pagePath == null) {
-                        NavigationPrimary homePageNav = findHomePageNavItem();
-                        if (navigateToPage(homePageNav.getPageId(),
-                                homePageNav.getTitle(),
-                                homePageNav.getUrl(),
-                                false,
-                                true,
-                                false,
-                                true,
-                                false,
-                                null)) {
-                            return true;
-                        }
-                    }
                     sendCloseOthersAction(null, true, false);
                 } else if (actionType == AppCMSActionType.LOGIN) {
                     //Log.d(TAG, "Login action selected: " + extraData[0]);
