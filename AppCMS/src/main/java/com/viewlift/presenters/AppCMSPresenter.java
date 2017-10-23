@@ -5501,7 +5501,7 @@ public class AppCMSPresenter {
                 facebookUserId,
                 facebookLoginResponse -> {
                     if (facebookLoginResponse != null) {
-                        if (!TextUtils.isEmpty(facebookLoginResponse.getAuthorizationToken())) {
+                        if (!TextUtils.isEmpty(facebookLoginResponse.getError())) {
                             showDialog(DialogType.SIGNIN, facebookLoginResponse.getError(), false, null, null);
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         } else {
