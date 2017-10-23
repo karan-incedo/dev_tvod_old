@@ -4,6 +4,7 @@ package com.viewlift.tv.views.fragment;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -199,20 +200,18 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
         });
 
 
-        view.setOnKeyListener(
-                new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        if(keyCode == KeyEvent.KEYCODE_BACK
-                                && event.getAction() == KeyEvent.ACTION_DOWN){
-                            if(null != onBackKeyListener)
-                                onBackKeyListener.call("");
-                        }
-                        return false;
-                    }
-                }
-        );
 
+     getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+         @Override
+         public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+             if(keyCode == KeyEvent.KEYCODE_BACK
+                     && event.getAction() == KeyEvent.ACTION_DOWN){
+                 if(null != onBackKeyListener)
+                     onBackKeyListener.call("");
+             }
+             return false;
+         }
+     });
 
         pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
         pageHolder.addView(tvPageView);

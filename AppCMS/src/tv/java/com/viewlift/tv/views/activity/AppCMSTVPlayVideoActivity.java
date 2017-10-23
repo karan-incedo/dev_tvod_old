@@ -24,6 +24,7 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.fragment.AppCMSPlayVideoFragment;
+import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsLoginDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSignUpDialogFragment;
@@ -190,12 +191,15 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         } else {
                             openLoginDialog(intent, true);
                         }
+                    }else if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
+                            AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
+                        openGenericDialog(intent , false);
                     }
                 }else if(intent.getAction().equals(AppCMSPresenter.CLOSE_DIALOG_ACTION)){
                     closeSignInDialog();
                     closeSignUpDialog();
-                    appCMSPlayVideoFragment.resumeVideo();
-                 /*   appCMSPresenter.getUserData(
+                  //  appCMSPlayVideoFragment.resumeVideo();
+                    appCMSPresenter.getUserData(
                             userIdentity -> {
                                 if(null != userIdentity){
                                     if(userIdentity.isSubscribed()){
@@ -212,7 +216,6 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                                                 getString(R.string.blank_string),
                                                 14
                                         );
-
                                         newFragment.setOnPositiveButtonClicked(new Action1<String>() {
                                             @Override
                                             public void call(String s) {
@@ -222,7 +225,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                                     }
                                 }
                             }
-                    );*/
+                    );
                     Utils.pageLoading(false , AppCMSTVPlayVideoActivity.this);
                 }else if(intent.getAction().equals(AppCMSPresenter.ACTION_RESET_PASSWORD)){
                     openResetPasswordScreen(intent);
@@ -261,7 +264,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         appCMSBinder);
                 loginDialog.show(ft, "DIALOG_FRAGMENT_TAG");
 
-                signUpDialog.setBackKeyListener(new Action1<String>() {
+                loginDialog.setBackKeyListener(new Action1<String>() {
                     @Override
                     public void call(String s) {
                         appCMSPlayVideoFragment.cancelTimer();
@@ -351,6 +354,25 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         newFragment.show(ft, "DIALOG_FRAGMENT_TAG");
         Utils.pageLoading(false , AppCMSTVPlayVideoActivity.this);
     }
+
+
+    private void openGenericDialog(Intent intent , boolean isLoginPage){
+        if(null != intent){
+            Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+            if(null != bundle){
+                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage",isLoginPage);
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                AppCmsGenericDialogFragment newFragment = AppCmsGenericDialogFragment.newInstance(
+                        appCMSBinder );
+                newFragment.show(ft, "DIALOG_FRAGMENT_TAG");
+                Utils.pageLoading(false , this);
+            }
+        }
+
+
+    }
+
 
 
     @Override

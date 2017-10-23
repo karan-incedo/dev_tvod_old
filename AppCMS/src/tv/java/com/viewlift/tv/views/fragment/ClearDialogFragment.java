@@ -1,5 +1,6 @@
 package com.viewlift.tv.views.fragment;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -187,42 +188,24 @@ public class ClearDialogFragment extends AbsDialogFragment {
             }
         });
 
-       /* negativeButton.setOnKeyListener((view, i, keyEvent) -> {
-            int keyCode = keyEvent.getKeyCode();
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_DPAD_UP:
-                    if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (scrollView.canScrollVertically(View.SCROLL_AXIS_VERTICAL)
-                                || scrollView.canScrollVertically(View.NO_ID)) {
-                            tvDescription.requestFocus();
-                        } else {
-                            negativeButton.requestFocus();
-                        }
-                        return true;
-                    }
-            }
-            return false;
-        });*/
 
         positiveButton.setOnClickListener(v -> {
             onPositiveButtonClicked.call("");
             dismiss();
         });
 
-        mView.setOnKeyListener(
-                new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        if(keyCode == KeyEvent.KEYCODE_BACK
-                                && event.getAction() == KeyEvent.ACTION_DOWN){
-                            if(null != onBackKeyListener)
-                            onBackKeyListener.call("");
-                        }
-                        return false;
-                    }
-                }
-        );
 
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK
+                        && event.getAction() == KeyEvent.ACTION_DOWN){
+                    if(null != onBackKeyListener)
+                        onBackKeyListener.call("");
+                }
+                return false;
+            }
+        });
         return mView;
     }
 
