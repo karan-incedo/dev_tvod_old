@@ -456,7 +456,12 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     && relateVideoIds != null
                     && currentlyPlayingIndex != relateVideoIds.size() - 1) {
                 binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                appCMSPresenter.openAutoPlayScreen(binder);
+                appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
+                    @Override
+                    public void call(Object o) {
+                        closePlayer();
+                    }
+                });
             } else {
                 closePlayer();
             }

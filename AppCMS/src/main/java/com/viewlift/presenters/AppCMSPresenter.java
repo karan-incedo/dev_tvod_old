@@ -120,7 +120,6 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
-import com.viewlift.models.data.appcms.ui.authentication.SignInResponse;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -3936,16 +3935,16 @@ public class AppCMSPresenter {
 
     /**
      * Method launches the autoplay screen
-     *
-     * @param pageId    pageId to get the Page UI from navigationPages
+     *  @param pageId    pageId to get the Page UI from navigationPages
      * @param pageTitle pageTitle
      * @param url       url of the API which gets the VideoDetails
      * @param binder    binder to share data
+     * @param action1
      */
     public void navigateToAutoplayPage(final String pageId,
                                        final String pageTitle,
                                        String url,
-                                       final AppCMSVideoPageBinder binder) {
+                                       final AppCMSVideoPageBinder binder, Action1<Object> action1) {
 
         if (currentActivity != null) {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
@@ -3981,13 +3980,20 @@ public class AppCMSPresenter {
                                                 true,
                                                 false,
                                                 false,
-                                                binder);
+                                                binder,
+                                                action1);
                                     }
                                 } else {
                                     //Log.e(TAG, "API issue in VideoDetail call");
+                                    if (platformType == PlatformType.TV) {
+                                        action1.call(null);
+                                    }
                                 }
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
+                                if (platformType == PlatformType.TV) {
+                                    action1.call(null);
+                                }
                             }
                         }).execute(params);
             } else {
@@ -4006,7 +4012,7 @@ public class AppCMSPresenter {
                             true,
                             false,
                             false,
-                            binder);
+                            binder, action1);
                 }
             }
         }
@@ -8678,11 +8684,13 @@ public class AppCMSPresenter {
                                         boolean fullscreenEnabled,
                                         boolean navbarPresent,
                                         boolean sendCloseAction,
-                                        AppCMSVideoPageBinder binder) {
+                                        AppCMSVideoPageBinder binder,
+                                        Action1<Object> action1) {
         if (currentActivity instanceof AppCMSPlayVideoActivity) {
             ((AppCMSPlayVideoActivity) currentActivity).closePlayer();
+        } else if (platformType == PlatformType.TV){
+            action1.call(null);
         }
-
         if (!cancelAllLoads) {
             Bundle args = getAutoplayActivityBundle(activity,
                     appCMSPageUI,
@@ -9770,8 +9778,9 @@ public class AppCMSPresenter {
      * Method opens the autoplay screen when one movie finishes playing
      *
      * @param binder binder to share data
+     * @param action1
      */
-    public void openAutoPlayScreen(final AppCMSVideoPageBinder binder) {
+    public void openAutoPlayScreen(final AppCMSVideoPageBinder binder, Action1<Object> action1) {
         String url = null;
         binder.setCurrentMovieName(binder.getContentData().getGist().getTitle());
         if (!binder.isOffline()) {
@@ -9799,7 +9808,8 @@ public class AppCMSPresenter {
             navigateToAutoplayPage(pageId,
                     currentActivity.getString(R.string.app_cms_page_autoplay_key),
                     url,
-                    binder);
+                    binder,
+                    action1);
         } else {
             //Log.e(TAG, "Can't find autoplay page ui in pageIdToPageNameMap");
         }
