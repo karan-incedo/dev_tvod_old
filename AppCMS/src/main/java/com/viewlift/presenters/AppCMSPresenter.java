@@ -9210,7 +9210,6 @@ public class AppCMSPresenter {
 //                                        + metaPage.getPageAPI());
                             }
                             if (!pagesToProcess.isEmpty()) {
-
                                 processMetaPagesQueue(loadFromFile,
                                         onPagesFinishedAction);
                             } else {
@@ -10033,7 +10032,7 @@ public class AppCMSPresenter {
                         pagePath);
 
                 getPageIdContent(apiUrl,
-                        actionToPageAPIUrlMap.get(action),
+                        pagePath,
                         new AppCMSPageAPIAction(appbarPresent,
                                 fullscreenEnabled,
                                 navbarPresent,
