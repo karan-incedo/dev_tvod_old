@@ -246,6 +246,7 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 					Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
+					backPressFlag = false;
 				}
 			});
 
