@@ -1,6 +1,8 @@
 package com.viewlift.tv.utility;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -14,6 +16,9 @@ import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.nfc.Tag;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -29,9 +34,13 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.tv.FireTV;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.views.activity.AppCmsBaseActivity;
+import com.viewlift.tv.views.fragment.ClearDialogFragment;
 
 import java.io.InputStream;
 import java.util.Map;
+
+import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
 /**
  * Created by nitin.tyagi on 7/3/2017.
@@ -525,5 +534,54 @@ public class Utils {
         percentage = ((double)watchedTime / (double) runtime ) * 100;
         return percentage;
     }
+
+
+    @NonNull
+    public static ClearDialogFragment getClearDialogFragment(Context context,
+                                                       AppCMSPresenter appCMSPresenter,
+                                                       int dialogWidth,
+                                                       int dialogHeight,
+                                                       String dialogTitle,
+                                                       String dialogMessage,
+                                                       String positiveButtonText,
+                                                       String negativeButtonText,
+                                                       float messageSize) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY, dialogWidth);
+        bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY, dialogHeight);
+        bundle.putFloat(ClearDialogFragment.DIALOG_MESSAGE__SIZE_KEY, messageSize);
+        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
+                Utils.getTextColor(context, appCMSPresenter));
+        bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, dialogTitle);
+        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY, dialogMessage);
+        bundle.putString(ClearDialogFragment.DIALOG_POSITIVE_BUTTON_TEXT_KEY,
+                positiveButtonText);
+        bundle.putString(ClearDialogFragment.DIALOG_NEGATIVE_BUTTON_TEXT_KEY,
+                negativeButtonText);
+        Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
+        args.putExtra(context.getString(R.string.dialog_item_key), bundle);
+        android.app.FragmentTransaction ft = appCMSPresenter
+                .getCurrentActivity().getFragmentManager()
+                .beginTransaction();
+        ClearDialogFragment newFragment =
+                ClearDialogFragment.newInstance(bundle);
+        newFragment.show(ft, DIALOG_FRAGMENT_TAG);
+        return newFragment;
+    }
+
+
+    public static void pageLoading(final boolean shouldShowProgress , Activity activity){
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                if(shouldShowProgress){
+                    CustomProgressBar.getInstance(activity).showProgressDialog(activity,"Loading...");
+                }else{
+                    CustomProgressBar.getInstance(activity).dismissProgressDialog();
+                }
+            }
+        });
+    }
+
 
 }

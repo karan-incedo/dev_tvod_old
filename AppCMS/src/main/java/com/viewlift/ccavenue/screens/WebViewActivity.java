@@ -3,7 +3,6 @@ package com.viewlift.ccavenue.screens;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -22,7 +21,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.google.android.exoplayer2.C;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -248,6 +246,7 @@ public class WebViewActivity extends Activity {
 				@Override
 				public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 					Toast.makeText(getApplicationContext(), "Oh no! " + description, Toast.LENGTH_SHORT).show();
+					backPressFlag = false;
 				}
 			});
 

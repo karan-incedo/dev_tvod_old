@@ -28,19 +28,5 @@ public abstract class AppCmsBaseActivity extends Activity {
         getFragmentManager().beginTransaction().add(getNavigationContaineer() ,navigationFragment , "nav" ).commit();
     }
 
-    public void pageLoading(final boolean shouldShowProgress){
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                if(shouldShowProgress){
-                    CustomProgressBar.getInstance(AppCmsBaseActivity.this).showProgressDialog(AppCmsBaseActivity.this,"Loading...");
-                }else{
-                    CustomProgressBar.getInstance(AppCmsBaseActivity.this).dismissProgressDialog();
-                }
-            }
-        });
-    }
-
-
     public abstract int getNavigationContaineer();
 }

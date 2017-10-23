@@ -4,6 +4,7 @@ package com.viewlift.tv.views.fragment;
 import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,12 +23,15 @@ import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
 import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
+
+import rx.functions.Action1;
 
 public class AppCmsLoginDialogFragment extends DialogFragment {
 
@@ -168,10 +172,28 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
         });
 
 
+
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK
+                        && event.getAction() == KeyEvent.ACTION_DOWN){
+                    if(null != onBackKeyListener)
+                        onBackKeyListener.call("");
+                }
+                return false;
+            }
+        });
+
         pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
         pageHolder.addView(tvPageView);
 
         return view;
+    }
+
+    private Action1<String> onBackKeyListener;
+    public void setBackKeyListener(Action1<String> onBackKeyListener){
+        this.onBackKeyListener = onBackKeyListener;
     }
 
 
@@ -208,7 +230,11 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
     @Override
     public void onResume() {
         super.onResume();
-        ((AppCmsHomeActivity) getActivity()).closeSignUpDialog();
+        if(null != getActivity() && getActivity() instanceof AppCmsHomeActivity){
+            ((AppCmsHomeActivity) getActivity()).closeSignUpDialog();
+        }else if(null != getActivity() && getActivity() instanceof AppCMSTVPlayVideoActivity){
+            ((AppCMSTVPlayVideoActivity) getActivity()).closeSignUpDialog();
+        }
     }
 
     private void setTypeFaceValue(AppCMSPresenter appCMSPresenter) {
