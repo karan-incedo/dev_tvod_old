@@ -24,4 +24,10 @@
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">9B761D16</string>
+
+    <!-- flag to use HLS or not -->
+    <bool name="use_hls">true</bool>
+
+    <!-- Default video resolution -->
+    <string name="default_video_resolution">360p</string>
 </resources>

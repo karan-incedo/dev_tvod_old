@@ -2,17 +2,22 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSBaseAdapter;
 
 import java.util.ArrayList;
@@ -32,13 +37,17 @@ public class PageView extends BaseView {
     private List<ViewWithComponentId> viewsWithComponentIds;
     private boolean userLoggedIn;
     private Map<String, ModuleView> moduleViewMap;
+    private AppCMSPresenter appCMSPresenter;
 
     @Inject
-    public PageView(Context context, AppCMSPageUI appCMSPageUI) {
+    public PageView(Context context,
+                    AppCMSPageUI appCMSPageUI,
+                    AppCMSPresenter appCMSPresenter) {
         super(context);
         this.appCMSPageUI = appCMSPageUI;
         this.viewsWithComponentIds = new ArrayList<>();
         this.moduleViewMap = new HashMap<>();
+        this.appCMSPresenter = appCMSPresenter;
         init();
     }
 
@@ -127,7 +136,21 @@ public class PageView extends BaseView {
                         LayoutParams.MATCH_PARENT);
         nestedScrollView.setLayoutParams(nestedScrollViewLayoutParams);
         nestedScrollView.addView(childrenContainer);
-        addView(nestedScrollView);
+
+        SwipeRefreshLayout swipeRefreshLayout = new SwipeRefreshLayout(getContext());
+        SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
+                new SwipeRefreshLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT);
+        swipeRefreshLayout.setLayoutParams(swipeRefreshLayoutParams);
+        swipeRefreshLayout.addView(nestedScrollView);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            appCMSPresenter.refreshAPIData(() -> {
+                        swipeRefreshLayout.setRefreshing(false);
+            },
+                    true);
+        });
+
+        addView(swipeRefreshLayout);
         return childrenContainer;
     }
 

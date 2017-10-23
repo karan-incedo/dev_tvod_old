@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -25,8 +26,6 @@ import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
 
-import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
-
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
@@ -44,6 +43,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (BaseView.isTablet(this)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+
         setContentView(R.layout.activity_launch);
 
         handleIntent(getIntent());
@@ -95,9 +99,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         };
 
         UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
-        //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
 
-        sendAnalytics();
+        AppsFlyerLib.getInstance().startTracking(getApplication());
+        //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
     @Override
@@ -198,16 +202,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         try {
-            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false);
+            ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter().sendCloseOthersAction("Error Screen", false, false);
             ((AppCMSApplication) getApplication()).setCloseApp(this);
         } catch (Exception e) {
             //Log.e(TAG, "Caught exception attempting to send close others action: " + e.getMessage());
         }
         finish();
-    }
-
-    private void sendAnalytics() {
-        AppsFlyerLib.getInstance().startTracking(getApplication(), getString(R.string.app_cms_appsflyer_dev_key));
-        trackInstallationEvent(getApplication());
     }
 }

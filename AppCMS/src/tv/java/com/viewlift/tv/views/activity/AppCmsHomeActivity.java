@@ -169,7 +169,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                        pageLoading(false);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION)) {
                     //Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
-                            intent.getStringExtra(getString(R.string.navigation_item_key)));
+//                            intent.getStringExtra(getString(R.string.navigation_item_key)));
                   //  selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION)) {
                     if (intent.getData() != null) {

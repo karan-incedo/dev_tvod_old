@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -74,7 +73,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                  List<Component> components,
                                  AppCMSPresenter appCMSPresenter,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                 String viewType) {
+                                 String viewType,
+                                 RecyclerView listView) {
         this.adapterData = adapterData;
         this.sortData();
         this.components = components;
@@ -108,8 +108,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
         this.setHasStableIds(false);
-
-        sortData();
     }
 
     private void sortData() {
@@ -118,8 +116,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
                         o2.getAddedDate()));
             } else if (isHistory) {
-                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getUpdateDate(),
-                        o2.getUpdateDate()));
+                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
+                        o2.getGist().getUpdateDate()));
 
                 // To make the last watched item appear at the top of the list
                 Collections.reverse(adapterData);
@@ -378,7 +376,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
-        long lastWatched = contentDatum.getUpdateDate();
+        long lastWatched = contentDatum.getGist().getUpdateDate();
+
+        if (currentTime == 0) {
+            lastWatched = 0;
+        }
 
         long seconds = TimeUnit.MILLISECONDS.toSeconds(currentTime - lastWatched);
         long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);
@@ -483,6 +485,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
                     null,
                     false,
+                    null,
                     null);
             return;
         }
@@ -545,13 +548,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
     @Override
-    public void setModuleId(String moduleId) {
-        this.moduleId = moduleId;
+    public String getModuleId() {
+        return moduleId;
     }
 
     @Override
-    public String getModuleId() {
-        return moduleId;
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
@@ -723,43 +726,17 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (isHistory) {
             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
                 if (appCMSHistoryResult != null) {
-                    listView.setAdapter(null);
-                    List<ContentDatum> adapterDataTmp;
                     adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules()
                             .get(0).getContentData();
-                    if (adapterData != null) {
-                        adapterDataTmp = new ArrayList<>(adapterData);
-                    } else {
-                        adapterDataTmp = new ArrayList<>();
-                    }
-                    adapterData = null;
-                    notifyDataSetChanged();
-                    adapterData = adapterDataTmp;
                     sortData();
                     notifyDataSetChanged();
-                    listView.setAdapter(this);
-                    listView.invalidate();
                 }
             });
         } else if (isWatchlist) {
             appCMSPresenter.getWatchlistData(appCMSWatchlistResult -> {
                 if (appCMSWatchlistResult != null) {
-                    listView.setAdapter(null);
-                    List<ContentDatum> adapterDataTmp;
-                    adapterData = appCMSWatchlistResult.convertToAppCMSPageAPI(null).getModules()
-                            .get(0).getContentData();
-                    if (adapterData != null) {
-                        adapterDataTmp = new ArrayList<>(adapterData);
-                    } else {
-                        adapterDataTmp = new ArrayList<>();
-                    }
-                    adapterData = null;
-                    notifyDataSetChanged();
-                    adapterData = adapterDataTmp;
                     sortData();
                     notifyDataSetChanged();
-                    listView.setAdapter(this);
-                    listView.invalidate();
                 }
             });
         } else if (isDownload) {
@@ -859,7 +836,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         notifyItemRangeRemoved(position, getItemCount());
                                         adapterData.remove(contentDatum);
                                         notifyItemRangeChanged(position, getItemCount());
-                                    }));
+                                    }),
+                    null);
         }
 
         if ((isWatchlist) && (contentDatum.getGist() != null)) {

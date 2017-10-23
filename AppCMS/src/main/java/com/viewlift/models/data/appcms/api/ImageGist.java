@@ -27,10 +27,6 @@ public class ImageGist {
     @Expose
     String _1x1;
 
-    @SerializedName("badgeImageUrls")
-    @Expose
-    BadgeImageUrl badgeImageUrl;
-
     public String get_32x9() {
         return _32x9;
     }
@@ -69,13 +65,5 @@ public class ImageGist {
 
     public void set_1x1(String _1x1) {
         this._1x1 = _1x1;
-    }
-
-    public BadgeImageUrl getBadgeImageUrl() {
-        return badgeImageUrl;
-    }
-
-    public void setBadgeImageUrl(BadgeImageUrl badgeImageUrl) {
-        this.badgeImageUrl = badgeImageUrl;
     }
 }
