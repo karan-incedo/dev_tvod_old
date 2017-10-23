@@ -92,20 +92,22 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 if (binder.isOffline()) {
                     launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
                 } else {
-                    appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
-                        title = "";
+                    // TODO: This call is getting stuck in some devices indefinitely and therefore the resulting video screen is always blank because the fragment is being created
+//                    appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
+//                        title = "";
+//
+//                        if (appCMSSignedURLResult == null ||
+//                                TextUtils.isEmpty(appCMSSignedURLResult.getSigned()) &&
+//                                        (TextUtils.isEmpty(appCMSSignedURLResult.getPolicy()) ||
+//                                                TextUtils.isEmpty(appCMSSignedURLResult.getSignature()) ||
+//                                                TextUtils.isEmpty(appCMSSignedURLResult.getKeyPairId()))) {
+//                            appCMSSignedURLResult = new AppCMSSignedURLResult();
+//                            appCMSSignedURLResult.setSigned(hlsUrl);
 
-                        if (appCMSSignedURLResult == null ||
-                                TextUtils.isEmpty(appCMSSignedURLResult.getSigned()) &&
-                                        (TextUtils.isEmpty(appCMSSignedURLResult.getPolicy()) ||
-                                                TextUtils.isEmpty(appCMSSignedURLResult.getSignature()) ||
-                                                TextUtils.isEmpty(appCMSSignedURLResult.getKeyPairId()))) {
-                            appCMSSignedURLResult = new AppCMSSignedURLResult();
-                            appCMSSignedURLResult.setSigned(hlsUrl);
-
-                            launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, appCMSSignedURLResult);
-                        }
-                    });
+//                            launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, appCMSSignedURLResult);
+//                        }
+//                    });
+                    launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
                 }
             }
         } catch (ClassCastException e) {
