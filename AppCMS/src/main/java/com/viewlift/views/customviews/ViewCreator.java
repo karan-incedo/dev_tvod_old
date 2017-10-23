@@ -3120,6 +3120,7 @@ public class ViewCreator {
                 switch (userVideoDownloadStatus.getDownloadStatus()) {
                     case STATUS_FAILED:
                         appCMSPresenter.setDownloadInProgress(false);
+                        appCMSPresenter.startNextDownload();
                         break;
 
                     case STATUS_PAUSED:
