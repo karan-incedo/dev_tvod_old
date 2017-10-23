@@ -63,10 +63,9 @@ public class AppCMSApplication extends MultiDexApplication {
             }
         };
 
-        Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
-
         new Thread(() -> {
             Fabric.with(AppCMSApplication.this, new Crashlytics());
+            Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
         }).run();
 
         closeAppMap = new HashMap<>();
