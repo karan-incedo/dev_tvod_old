@@ -66,7 +66,7 @@
           "fontWeight": "Semibold",
           "key": "logout button"
         },
-        /*{
+        {
           "layout": {
             "ftv": {
               "yAxis": 293,
@@ -84,7 +84,7 @@
           "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "autoplayToggleSwitch"
-        },*/
+        },
         {
           "layout": {
             "ftv": {
@@ -103,6 +103,84 @@
           "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "closedCaptionToggleSwitch"
-        }
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 655,
+              "topMargin": 529,
+              "width": 220,
+              "fontSize": 16.5,
+              "height": 45
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "left",
+          "letterSpacing": 1.2,
+          "text": "Subscription",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
+          "key": "subscriptionLabel"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "rightMargin": 650,
+              "topMargin": 538,
+              "width": 360,
+              "fontSize": 13,
+              "height": 36
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "right",
+          "letterSpacing": 4.3,
+          "text": "-",
+          "type": "label",
+          "textColor": "#ffffff",
+          "key": "subscriptionDurationLabel"
+        }, {
+          "layout": {
+            "ftv": {
+              "leftMargin": 1010,
+              "topMargin": 590,
+              "width": 260,
+              "fontSize": 9,
+              "height": 60
+            }
+          },
+          "borderColor": "ffffff",
+          "fontFamily": "OpenSans",
+          "borderWidth": 4,
+          "action": "manageSubcription",
+          "text": "MANAGE SUBSCRIPTION",
+          "selectedStateText": "SUBSCRIBE NOW",
+          "opacity": 100,
+          "type": "button",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
+          "key": "manageSubscriptionButton"
+        }/*, {
+          "layout": {
+            "ftv": {
+              "leftMargin": 0,
+              "topMargin": 60,
+              "width": 1920,
+              "fontSize": 27,
+              "height": 36
+            }
+          },
+          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "textAlignment": "center",
+          "letterSpacing": 4.3,
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
+          "key": "userEmailIdLabel"
+        }*/
       ]
     }

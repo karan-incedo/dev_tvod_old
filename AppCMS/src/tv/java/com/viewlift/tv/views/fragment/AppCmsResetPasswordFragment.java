@@ -13,6 +13,7 @@ import android.widget.EditText;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
@@ -82,34 +83,35 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
             Button cancelButton = ((Button)tvModuleView.findViewById(R.id.reset_password_cancel_button)) ;
             Button continueButton = ((Button)tvModuleView.findViewById(R.id.reset_password_continue_button)) ;
 
-            cancelButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    dismiss();
-                }
-            });
-
-            continueButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    if( emailId.getEditableText().toString().length() == 0)
-                           {
-                        appCMSPresenter.openTVErrorDialog(getString(R.string.blank_email_error_msg) ,
-                                getString(R.string.app_cms_forgot_password_title));
-                        return;
+            if(null != cancelButton) {
+                cancelButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dismiss();
                     }
+                });
+            }
 
-                    ((AppCmsHomeActivity)getActivity()).pageLoading(true);
-                    appCMSPresenter.resetPassword(emailId.getEditableText().toString());
-                }
-            });
+            if(null != continueButton) {
+                continueButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        if (emailId.getEditableText().toString().length() == 0) {
+                            appCMSPresenter.openTVErrorDialog(getString(R.string.blank_email_error_msg),
+                                    getString(R.string.app_cms_forgot_password_title));
+                            return;
+                        }
+
+                        Utils.pageLoading(true,getActivity());
+                        appCMSPresenter.resetPassword(emailId.getEditableText().toString());
+                    }
+                });
+            }
 
         }
 
-
         tvPageView.setBackgroundResource(R.drawable.home_screen_background);
-
         return tvPageView;
     }
 

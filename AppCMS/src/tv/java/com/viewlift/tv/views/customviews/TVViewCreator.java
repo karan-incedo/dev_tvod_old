@@ -58,6 +58,7 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -232,6 +233,7 @@ public class TVViewCreator {
         TVModuleView moduleView = null;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getView())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -242,6 +244,9 @@ public class TVViewCreator {
                             pageView, jsonValueKeyMap, appCMSPresenter, true);
                 }
             } else {
+                if(!module.getView().equalsIgnoreCase("AC ContinueWatching 01")){
+                    module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
+                }
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -253,13 +258,100 @@ public class TVViewCreator {
                 }
             }
             return null;
+        } else if ("AC UserManagement 01".equalsIgnoreCase(module.getView())) {
+            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+            moduleView = new TVModuleView<>(context, module);
+            ViewGroup childrenContainer = moduleView.getChildrenContainer();
+            final TVPageView finalPageView = pageView;
+            if (module.getComponents() != null) {
+                for (int i = 0; i < module.getComponents().size(); i++) {
+                    Component component = module.getComponents().get(i);
+                    createComponentView(context,
+                            component,
+                            module.getLayout(),
+                            moduleAPI,
+                            pageView,
+                            module.getSettings(),
+                            jsonValueKeyMap,
+                            appCMSPresenter,
+                            false,
+                            module.getView(),
+                            isFromLoginDialog);
+                    if (componentViewResult.onInternalEvent != null) {
+                        appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
+                    }
+
+                    View componentView = componentViewResult.componentView;
+                    if (componentView != null) {
+                        childrenContainer.addView(componentView);
+                        moduleView.setComponentHasView(i, true);
+
+                        moduleView.setViewMarginsFromComponent(component,
+                                componentView,
+                                moduleView.getLayout(),
+                                childrenContainer,
+                                jsonValueKeyMap,
+                                componentViewResult.useMarginsAsPercentagesOverride,
+                                componentViewResult.useWidthOfScreen,
+                                module.getView());
+
+                    } else {
+                        moduleView.setComponentHasView(i, false);
+                    }
+                }
+            }
+        } else if (context.getResources().getString(R.string.app_cms_page_autoplay_module_key).equalsIgnoreCase(module.getView())) {
+            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "autoplay_module.json"), ModuleList.class);
+            moduleView = new TVModuleView<>(context, module);
+            ViewGroup childrenContainer = moduleView.getChildrenContainer();
+            final TVPageView finalPageView = pageView;
+            if (module.getComponents() != null) {
+                for (int i = 0; i < module.getComponents().size(); i++) {
+                    Component component = module.getComponents().get(i);
+                    createComponentView(context,
+                            component,
+                            module.getLayout(),
+                            moduleAPI,
+                            pageView,
+                            module.getSettings(),
+                            jsonValueKeyMap,
+                            appCMSPresenter,
+                            false,
+                            module.getView(),
+                            isFromLoginDialog);
+                    if (componentViewResult.onInternalEvent != null) {
+                        appCMSPresenter.addInternalEvent(componentViewResult.onInternalEvent);
+                    }
+
+                    View componentView = componentViewResult.componentView;
+                    if (componentView != null) {
+                        childrenContainer.addView(componentView);
+                        moduleView.setComponentHasView(i, true);
+
+                        moduleView.setViewMarginsFromComponent(component,
+                                componentView,
+                                moduleView.getLayout(),
+                                childrenContainer,
+                                jsonValueKeyMap,
+                                componentViewResult.useMarginsAsPercentagesOverride,
+                                componentViewResult.useWidthOfScreen,
+                                module.getView());
+
+                    } else {
+                        moduleView.setComponentHasView(i, false);
+                    }
+                }
+            }
         } else {
 
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
+            if("AC ResetPassword 01".equalsIgnoreCase(module.getView())){
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
+            }
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
-                // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+                 //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
 
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
@@ -380,7 +472,7 @@ public class TVViewCreator {
                             customHeaderItem.setFontFamily(component.getFontFamily());
                             customHeaderItem.setFontWeight(component.getFontWeight());
                             customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
-                            customHeaderItem.setmModuleId(moduleData.getId());
+                            customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
                         }
                         break;
                 }
@@ -392,7 +484,7 @@ public class TVViewCreator {
                 customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                 customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
                 customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                customHeaderItem.setmModuleId(moduleData.getId());
+                customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
             }
 
             if (moduleData != null) {
@@ -483,6 +575,10 @@ public class TVViewCreator {
         }
 
         switch (componentType) {
+            case PAGE_AUTOPLAY_ROTATING_LOADER_VIEW_KEY:
+                componentViewResult.componentView = new AppCMSTVAutoplayCustomLoader(context,component);
+                componentViewResult.componentView.setId(R.id.autoplay_rotating_loader_view_id);
+                break;
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 componentViewResult.componentView.setFocusable(false);
@@ -578,8 +674,10 @@ public class TVViewCreator {
                                             component.getAction(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
+                                            moduleAPI.getContentData().get(0),
                                             false,
-                                            moduleAPI.getContentData().get(0))) {
+                                            -1,
+                                            null)) {
                                         appCMSPresenter.showLoadingDialog(false);
 //                                        //Log.e(TAG, "Could not launch action: " +
 //                                                " permalink: " +
@@ -643,7 +741,7 @@ public class TVViewCreator {
                                                 }, !queued[0]);
                                     } else /*User is not logged in*/ {
 
-                                        ClearDialogFragment newFragment = getClearDialogFragment(
+                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
                                                 context,
                                                 appCMSPresenter,
                                                 context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
@@ -706,26 +804,32 @@ public class TVViewCreator {
                                         extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                         extraData[1] = videoUrl;
                                         extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                                        if (null != moduleAPI.getContentData().get(0).getContentDetails()
-                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null
-                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0) != null
-                                                && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                                            extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                        if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                                moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null) {
+                                            for (ClosedCaptions closedCaption :
+                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions()) {
+                                                if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                                                    extraData[3] = closedCaption.getUrl();
+                                                    break;
+                                                }
+                                            }
                                         }
 
                                         if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                 component.getAction(),
                                                 moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                 extraData,
+                                                moduleAPI.getContentData().get(0),
                                                 false,
-                                                moduleAPI.getContentData().get(0))) {
-                                            //Log.e(TAG, "Could not launch action: " +
-//                                                    " permalink: " +
-//                                                    moduleAPI.getContentData().get(0).getGist().getPermalink() +
-//                                                    " action: " +
-//                                                    component.getAction() +
-//                                                    " video URL: " +
-//                                                    videoUrl);
+                                                 -1,
+                                                null)) {
+                                        /*    Log.e(TAG, "Could not launch action: " +
+                                                    " permalink: " +
+                                                    moduleAPI.getContentData().get(0).getGist().getPermalink() +
+                                                    " action: " +
+                                                    component.getAction() +
+                                                    " video URL: " +
+                                                    videoUrl);  */
                                         }
                                     }
                                 }
@@ -757,7 +861,9 @@ public class TVViewCreator {
                                         component.getAction(),
                                         null,
                                         null,
+                                        null,
                                         false,
+                                        -1,
                                         null)) {
                                     //Log.e(TAG, "Could not launch action: " +
 //                                            " action: " +
@@ -812,11 +918,14 @@ public class TVViewCreator {
 
                                 String[] extraData = new String[1];
                                 extraData[0] = component.getKey();
-                                appCMSPresenter.launchTVButtonSelectedAction(null,
+                                appCMSPresenter.launchTVButtonSelectedAction(
+                                        null,
                                         component.getAction(),
                                         null,
                                         extraData,
+                                        null,
                                         false,
+                                        0,
                                         null
                                 );
                             }
@@ -824,8 +933,11 @@ public class TVViewCreator {
                         break;
 
                     case RESET_PASSWORD_CANCEL_BUTTON_KEY:
-                    case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.reset_password_cancel_button);
+                        break;
+                    case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
+                        componentViewResult.componentView.setId(R.id.autoplay_cancel_countdown_button);
+                        componentViewResult.componentView.requestFocus();
                         break;
                     case RESET_PASSWORD_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.reset_password_continue_button);
@@ -859,7 +971,9 @@ public class TVViewCreator {
                                             component.getAction(),
                                             null,
                                             authData,
+                                            null,
                                             false,
+                                            0,
                                             null);
                                 }
                             }
@@ -879,7 +993,7 @@ public class TVViewCreator {
                                 OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
                                 switch (jsonValueKeyMap.get(viewType)) {
                                     case PAGE_HISTORY_MODULE_KEY:
-                                        ClearDialogFragment newFragment = getClearDialogFragment(
+                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
                                                 context,
                                                 appCMSPresenter,
                                                 context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
@@ -903,7 +1017,7 @@ public class TVViewCreator {
                                         break;
 
                                     case PAGE_WATCHLIST_MODULE_KEY:
-                                        ClearDialogFragment newFragment1 = getClearDialogFragment(
+                                        ClearDialogFragment newFragment1 = Utils.getClearDialogFragment(
                                                 context,
                                                 appCMSPresenter,
                                                 context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
@@ -930,6 +1044,50 @@ public class TVViewCreator {
                             });
                         } else {
                             componentViewResult.componentView.setFocusable(false);
+                        }
+                        break;
+
+                    case PAGE_SETTINGS_MANAGE_SUBSCRIPTION_BUTTON_KEY:
+                        if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                if (appCMSPresenter.getActiveSubscriptionPlatform() == null) {
+                                    appCMSPresenter.getSubscriptionData(
+                                            appCMSUserSubscriptionPlanResult -> {
+                                                String platform;
+                                                String varMessage = "";
+                                                if (appCMSUserSubscriptionPlanResult != null
+                                                        && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
+                                                        && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
+                                                    platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
+                                                    if (platform.equalsIgnoreCase("web_browser")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_web_msg);
+                                                    } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_android_msg);
+                                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")) {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_apple_msg);
+                                                    }
+                                                    appCMSPresenter.setActiveSubscriptionPlatform(platform);
+                                                } else {
+                                                    varMessage = context.getString(R.string.subscription_not_purchased);
+                                                }
+                                                appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription));
+                                            }
+                                    );
+                                } else {
+                                    String platform = appCMSPresenter.getActiveSubscriptionPlatform();
+                                    String varMessage = "";
+                                    if (platform.equalsIgnoreCase("web_browser")) {
+                                        varMessage = context.getString(R.string.subscription_purchased_from_web_msg);
+                                    } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
+                                        varMessage = context.getString(R.string.subscription_purchased_from_android_msg);
+                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")) {
+                                        varMessage = context.getString(R.string.subscription_purchased_from_apple_msg);
+                                    }
+                                    appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription));
+                                }
+                            });
+                        } else {
+                            componentViewResult.componentView.setVisibility(View.INVISIBLE);
                         }
                         break;
 
@@ -1084,8 +1242,32 @@ public class TVViewCreator {
                             });
                             componentViewResult.componentView.setTag("VIDEO_DESC_KEY");
                             break;
+                        case PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY:
 
+                            String autoplayVideoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+
+                            if(null == autoplayVideoDescription){
+                                autoplayVideoDescription = moduleAPI.getContentData().get(0).getGist().getTitle();
+                            }
+                            if (!TextUtils.isEmpty(autoplayVideoDescription)) {
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription));
+                                } else {
+                                    ((TextView) componentViewResult.componentView).setText(Html.fromHtml(autoplayVideoDescription, Html.FROM_HTML_MODE_COMPACT));
+                                }
+                            }
+                            ViewTreeObserver Vto = componentViewResult.componentView.getViewTreeObserver();
+                            final ViewCreatorMultiLineLayoutListener layoutListener =
+                                    new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            autoplayVideoDescription,
+                                            appCMSPresenter,
+                                            true,
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                            Vto.addOnGlobalLayoutListener(layoutListener);
+                            break;
                         case PAGE_VIDEO_TITLE_KEY:
+                        case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
                             }
@@ -1095,9 +1277,12 @@ public class TVViewCreator {
                                     new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                             ((TextView) componentViewResult.componentView).setSingleLine(true);
-                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                            componentViewResult.componentView.setFocusable(false);
-                            componentViewResult.componentView.setTag("VIDEO_TITLE_KEY");
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                            ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
+                            componentViewResult.componentView.setSelected(true);
+                            break;
+                        case PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY:
+                           componentViewResult.componentView.setId(R.id.autoplay_finished_movie_title);
                             break;
 
                         case PAGE_VIDEO_SUBTITLE_KEY:
@@ -1220,6 +1405,56 @@ public class TVViewCreator {
                             textView.setText(spannableString);
                             textView.setMovementMethod(LinkMovementMethod.getInstance());
                             break;
+
+                        case PAGE_AUTOPLAY_MOVIE_PLAYING_IN_LABEL_KEY:
+                            ((TextView) componentViewResult.componentView).setText(component.getText());
+                            componentViewResult.componentView.setId(R.id.up_next_text_view_id);
+                            break;
+                        case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
+                            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                TextView tv = (TextView) componentViewResult.componentView;
+                                if (appCMSPresenter.getActiveSubscriptionStatus() == null
+                                        || appCMSPresenter.getActiveSubscriptionPlanName() == null) {
+                                    appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                                        try {
+                                            if (appCMSUserSubscriptionPlanResult != null) {
+                                                String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                    String planName = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName();
+                                                    appCMSPresenter.setActiveSubscriptionStatus(subscriptionStatus);
+                                                    appCMSPresenter.setActiveSubscriptionPlanName(planName);
+                                                    appCMSPresenter.setActiveSubscriptionPlatform(appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform());
+                                                    tv.setText(planName);
+                                                } else {
+                                                    tv.setText(context.getString(R.string.no_active_subscription));
+                                                }
+                                            }else {
+                                                tv.setText(context.getString(R.string.no_active_subscription));
+                                            }
+                                        } catch (Exception e) {
+                                            tv.setText(context.getString(R.string.no_active_subscription));
+                                        }
+                                    });
+                                } else {
+                                    String activeSubscriptionStatus = appCMSPresenter.getActiveSubscriptionStatus();
+                                    if (activeSubscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                            activeSubscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                        tv.setText(appCMSPresenter.getActiveSubscriptionPlanName());
+                                    } else {
+                                        tv.setText(context.getString(R.string.no_active_subscription));
+                                    }
+                                }
+                            }
+                            break;
+
+                        case PAGE_SETTINGS_SUBSCRIPTION_LABEL_KEY:
+                            if(appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))){
+                                if (!TextUtils.isEmpty(component.getText())) {
+                                    ((TextView) componentViewResult.componentView).setText(component.getText());
+                                }
+                            }
+                            break;
                         default:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
@@ -1249,6 +1484,45 @@ public class TVViewCreator {
                     componentViewResult.componentView = new ImageView(context);
                 }
                 switch (componentKey) {
+                    case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
+                        String movieBorderColor = Utils.getFocusColor(context,appCMSPresenter);
+                        componentViewResult.componentView.setBackground(Utils.getTrayBorder(context,movieBorderColor,component));
+                        int imageViewWidth = (int) Utils.getViewWidth(context,
+                                component.getLayout(),
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+
+                        int imageViewHeight = (int) Utils.getViewHeight(context,
+                                component.getLayout(),
+                                ViewGroup.LayoutParams.WRAP_CONTENT);
+                        ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_XY);
+
+                        if (imageViewHeight > 0 && imageViewWidth > 0 && imageViewHeight > imageViewWidth) {
+                            Glide.with(context)
+                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context , R.drawable.poster_image_placeholder))
+                                    .into(((ImageView) componentViewResult.componentView));
+                        } else if (imageViewWidth > 0) {
+                            Glide.with(context)
+                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context , R.drawable.video_image_placeholder))
+                                    .into(((ImageView) componentViewResult.componentView));
+                        } else {
+                            Glide.with(context)
+                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context , R.drawable.video_image_placeholder))
+                                    .into(((ImageView) componentViewResult.componentView));
+                        }
+                        componentViewResult.componentView.setTag(context.getString(R.string.video_image_key));
+                        componentViewResult.componentView.setFocusable(true);
+
+
+                        componentViewResult.componentView.setBackground(Utils.getTrayBorder(context, Utils.getFocusColor(context, appCMSPresenter), component));
+                        componentViewResult.componentView.setId(R.id.autoplay_play_movie_image);
+                        break;
                     case PAGE_VIDEO_IMAGE_KEY:
                         ImageView imageView = new ImageView(componentViewResult.componentView.getContext());
 
@@ -1324,17 +1598,23 @@ public class TVViewCreator {
                                             extraData[1] = videoUrl;
                                             extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
                                             if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0) != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl() != null) {
-                                                extraData[3] = moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().get(0).getUrl();
+                                                    moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null) {
+                                                for (ClosedCaptions closedCaption :
+                                                        moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions()) {
+                                                    if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                                                        extraData[3] = closedCaption.getUrl();
+                                                        break;
+                                                    }
+                                                }
                                             }
                                             if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                                     component.getAction(),
                                                     moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                     extraData,
+                                                    moduleAPI.getContentData().get(0),
                                                     false,
-                                                    moduleAPI.getContentData().get(0))) {
+                                                    -1,
+                                                    moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
                                                 appCMSPresenter.showLoadingDialog(false);
                                                 //Log.e(TAG, "Could not launch action: " +
 //                                                        " permalink: " +
@@ -1381,7 +1661,11 @@ public class TVViewCreator {
                                                     String permaLink = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                                     String title = moduleAPI.getContentData().get(0).getGist().getTitle();
 
-                                                    if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title, moduleAPI.getContentData().get(0))) {
+                                                 if (!appCMSPresenter.launchTVVideoPlayer(
+                                                         moduleAPI.getContentData().get(0),
+                                                         -1,
+                                                         moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds(),
+                                                         moduleAPI.getContentData().get(0).getGist().getWatchedTime())) {
                                                         appCMSPresenter.showLoadingDialog(false);
                                                         //Log.e(TAG, "Could not launch play action: " +
 //                                                                " filmId: " +
@@ -1658,38 +1942,6 @@ public class TVViewCreator {
         }
     }
 
-    @NonNull
-    private ClearDialogFragment getClearDialogFragment(Context context,
-                                                       AppCMSPresenter appCMSPresenter,
-                                                       int dialogWidth,
-                                                       int dialogHeight,
-                                                       String dialogTitle,
-                                                       String dialogMessage,
-                                                       String positiveButtonText,
-                                                       String negativeButtonText,
-                                                       float messageSize) {
-        Bundle bundle = new Bundle();
-        bundle.putInt(ClearDialogFragment.DIALOG_WIDTH_KEY, dialogWidth);
-        bundle.putInt(ClearDialogFragment.DIALOG_HEIGHT_KEY, dialogHeight);
-        bundle.putFloat(ClearDialogFragment.DIALOG_MESSAGE__SIZE_KEY, messageSize);
-        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_TEXT_COLOR_KEY,
-                Utils.getTextColor(context, appCMSPresenter));
-        bundle.putString(ClearDialogFragment.DIALOG_TITLE_KEY, dialogTitle);
-        bundle.putString(ClearDialogFragment.DIALOG_MESSAGE_KEY, dialogMessage);
-        bundle.putString(ClearDialogFragment.DIALOG_POSITIVE_BUTTON_TEXT_KEY,
-                positiveButtonText);
-        bundle.putString(ClearDialogFragment.DIALOG_NEGATIVE_BUTTON_TEXT_KEY,
-                negativeButtonText);
-        Intent args = new Intent(AppCMSPresenter.PRESENTER_DIALOG_ACTION);
-        args.putExtra(context.getString(R.string.dialog_item_key), bundle);
-        android.app.FragmentTransaction ft = appCMSPresenter
-                .getCurrentActivity().getFragmentManager()
-                .beginTransaction();
-        ClearDialogFragment newFragment =
-                ClearDialogFragment.newInstance(bundle);
-        newFragment.show(ft, DIALOG_FRAGMENT_TAG);
-        return newFragment;
-    }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60);
@@ -1740,6 +1992,12 @@ public class TVViewCreator {
             if (AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY == jsonValueKeyMap.get(module.getView())
                     || AppCMSUIKeyType.PAGE_CONTACT_US_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
                 return new Module();
+            }
+
+            if (AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+                if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
+                    return appCMSPageAPI.getModules().get(0);
+                }
             }
 
             for (Module moduleAPI : appCMSPageAPI.getModules()) {

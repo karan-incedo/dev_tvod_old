@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -30,7 +29,6 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
-import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.List;
@@ -437,14 +435,22 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         && relateVideoIds != null
                         && currentlyPlayingIndex != relateVideoIds.size() - 1) {
                     binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                    appCMSPresenter.openAutoPlayScreen(binder);
+                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                        }
+                    });
                 } else {
                     closePlayer();
                 }
             } else {
                 if (binder.getRelateVideoIds() != null
                         && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-                    appCMSPresenter.openAutoPlayScreen(binder);
+                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                        }
+                    });
                 } else {
                     closePlayer();
                 }

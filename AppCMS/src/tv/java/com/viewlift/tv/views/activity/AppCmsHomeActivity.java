@@ -29,6 +29,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
@@ -164,9 +165,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
                     }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
-                        pageLoading(true);
+                    Utils.pageLoading(true , AppCmsHomeActivity.this);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION)) {
-                       pageLoading(false);
+                    Utils.pageLoading(false , AppCmsHomeActivity.this);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION)) {
                     //Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
 //                            intent.getStringExtra(getString(R.string.navigation_item_key)));
@@ -186,7 +187,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 }else if (intent.getAction().equals(AppCMSPresenter.SEARCH_ACTION)) {
                    openSearchFragment();
                 }else if(intent.getAction().equals(AppCMSPresenter.CLOSE_DIALOG_ACTION)){
-                    pageLoading(false);
+                    Utils.pageLoading(false , AppCmsHomeActivity.this);
                     closeSignInDialog();
                     closeSignUpDialog();
                 }else if(intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
@@ -201,18 +202,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
             }
         };
-        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
-        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_DIALOG_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.SEARCH_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.CLOSE_DIALOG_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
-
     }
 
     private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {
@@ -252,10 +241,26 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     protected void onResume() {
         super.onResume();
         isActive = true;
+        registerReceivers();
+    }
+
+    private void registerReceivers() {
+        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
+        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+        registerReceiver(presenterActionReceiver,new IntentFilter(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_DIALOG_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_CLEAR_DIALOG_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.SEARCH_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.CLOSE_DIALOG_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
     }
 
     @Override
     protected void onPause() {
+        unregisterReceiver(presenterActionReceiver);
         super.onPause();
         isActive = false;
     }
@@ -274,7 +279,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private void openErrorDialog(Intent intent){
-        pageLoading(false);
+        Utils.pageLoading(false , this);
         Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
         bundle.putBoolean(getString(R.string.retry_key) , bundle.getBoolean(getString(R.string.retry_key)));
         bundle.putBoolean(getString(R.string.register_internet_receiver_key) , bundle.getBoolean(getString(R.string.register_internet_receiver_key)));
@@ -289,7 +294,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private void openResetPasswordScreen(Intent intent){
-
         if(null != intent){
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
             if(null != bundle){
@@ -298,11 +302,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 appCmsResetPasswordFragment = AppCmsResetPasswordFragment.newInstance(
                         appCMSBinder);
                 appCmsResetPasswordFragment.show(ft, DIALOG_FRAGMENT_TAG);
-                pageLoading(false);
+                Utils.pageLoading(false , this);
             }
         }
-
-
     }
 
 
@@ -318,7 +320,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 loginDialog = AppCmsLoginDialogFragment.newInstance(
                         appCMSBinder);
                 loginDialog.show(ft, DIALOG_FRAGMENT_TAG);
-                pageLoading(false);
+                Utils.pageLoading(false , this);
             }
         }
     }
@@ -332,7 +334,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 signUpDialog = AppCmsSignUpDialogFragment.newInstance(
                         appCMSBinder);
                 signUpDialog.show(ft, DIALOG_FRAGMENT_TAG);
-                pageLoading(false);
+                Utils.pageLoading(false , this);
             }
         }
     }
@@ -348,7 +350,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 AppCmsGenericDialogFragment newFragment = AppCmsGenericDialogFragment.newInstance(
                         appCMSBinder );
                 newFragment.show(ft, DIALOG_FRAGMENT_TAG);
-                pageLoading(false);
+                Utils.pageLoading(false , this);
             }
         }
 
@@ -378,17 +380,21 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         retryCallBinder.getAction(),
                         retryCallBinder.getFilmTitle(),
                         retryCallBinder.getExtraData(),
+                        retryCallBinder.getContentDatum(),
                         retryCallBinder.isCloselauncher(),
-                        retryCallBinder.getContentDatum()
+                        -1,
+                        null
                 );
                 break;
             case VIDEO_ACTION:
                 appCMSPresenter.launchTVVideoPlayer(
-                        retryCallBinder.getFilmId(),
-                        retryCallBinder.getPagePath(),
-                        retryCallBinder.getFilmTitle(),
-                        retryCallBinder.getContentDatum()
-                );
+                        retryCallBinder.getContentDatum(),
+                        -1,
+                        retryCallBinder.getContentDatum().getContentDetails() != null
+                                ? retryCallBinder.getContentDatum().getContentDetails().getRelatedVideoIds()
+                                : null,
+                        retryCallBinder.getContentDatum().getGist().getWatchedTime()
+                        );
 
                 break;
             case PAGE_ACTION:
@@ -460,7 +466,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     @Override
     protected void onDestroy() {
-        unregisterReceiver(presenterActionReceiver);
         super.onDestroy();
     }
 
@@ -542,7 +547,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             fragmentTransaction.replace(R.id.home_placeholder ,appCMSPageFragment,tag).addToBackStack(tag).commitAllowingStateLoss();
         }else{
             if(null != appCMSPresenter)
-                appCMSPresenter.sendStopLoadingPageAction();
+                appCMSPresenter.sendStopLoadingPageAction(false,null);
         }
         selectNavItem(appCMSBinder.getPageId());
     }
@@ -561,6 +566,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         handleNavigationVisibility();
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                    case KeyEvent.KEYCODE_MEDIA_PLAY:
                         handlePlayRemoteKey();
                         break;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
