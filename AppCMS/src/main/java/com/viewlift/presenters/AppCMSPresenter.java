@@ -57,6 +57,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.AccessToken;
 import com.facebook.FacebookRequestError;
@@ -71,6 +72,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
@@ -324,6 +326,7 @@ public class AppCMSPresenter {
     private static final String USER_DOWNLOAD_SDCARD_SHARED_PREF_NAME = "user_download_sd_card_pref";
     private static final String USER_AUTH_PROVIDER_SHARED_PREF_NAME = "user_auth_provider_shared_pref_name";
     private static final String GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME = "google_play_app_store_version_pref_name";
+    private static final String APPS_FLYER_KEY_PREF_NAME = "apps_flyer_pref_name_key";
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
@@ -2399,12 +2402,14 @@ public class AppCMSPresenter {
                                     sendRefreshPageAction();
                                 }, true);
 
-                                AppsFlyerUtils.subscriptionEvent(currentActivity,
-                                        false,
-                                        currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
-                                        getActiveSubscriptionPrice(),
-                                        subscriptionRequest.getPlanId(),
-                                        subscriptionRequest.getCurrencyCode());
+                                if (!TextUtils.isEmpty(getAppsFlyerKey())) {
+                                    AppsFlyerUtils.subscriptionEvent(currentActivity,
+                                            false,
+                                            getAppsFlyerKey(),
+                                            getActiveSubscriptionPrice(),
+                                            subscriptionRequest.getPlanId(),
+                                            subscriptionRequest.getCurrencyCode());
+                                }
 
                                 //Subscription Succes Firebase Log Event
                                 Bundle bundle = new Bundle();
@@ -5439,6 +5444,24 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public boolean setAppsFlyerKey(String appsFlyerKey) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs =
+                    currentContext.getSharedPreferences(APPS_FLYER_KEY_PREF_NAME, 0);
+            return sharedPrefs.edit().putString(APPS_FLYER_KEY_PREF_NAME, appsFlyerKey).commit();
+        }
+        return false;
+    }
+
+    public String getAppsFlyerKey() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs =
+                    currentContext.getSharedPreferences(APPS_FLYER_KEY_PREF_NAME, 0);
+            return sharedPrefs.getString(APPS_FLYER_KEY_PREF_NAME, null);
+        }
+        return null;
+    }
+
     public boolean setNetworkConnected(boolean networkConnected, String pageId) {
         if (currentContext != null) {
             if (networkConnected) {
@@ -6172,6 +6195,18 @@ public class AppCMSPresenter {
             }
         }
         return false;
+    }
+
+    public void initAppsFlyer(AppCMSAndroidUI appCMSAndroidUI) {
+        if (currentContext != null &&
+                currentContext instanceof AppCMSApplication) {
+            if (appCMSAndroidUI != null &&
+                    appCMSAndroidUI.getAnalytics() != null &&
+                    !TextUtils.isEmpty(appCMSAndroidUI.getAnalytics().getAppflyerDevKey())) {
+                setAppsFlyerKey(appCMSAndroidUI.getAnalytics().getAppflyerDevKey());
+                ((AppCMSApplication) currentContext).initAppsFlyer(appCMSAndroidUI.getAnalytics().getAppflyerDevKey());
+            }
+        }
     }
 
     public boolean isPagePrimary(String pageId) {
@@ -7252,12 +7287,14 @@ public class AppCMSPresenter {
                             }
                             setActiveSubscriptionSku(skuToPurchase);
                             setActiveSubscriptionCountryCode(countryCode);
-                            AppsFlyerUtils.subscriptionEvent(currentActivity,
-                                    true,
-                                    currentActivity.getString(R.string.app_cms_appsflyer_dev_key),
-                                    String.valueOf(planToPurchasePrice),
-                                    subscriptionRequest.getPlanId(),
-                                    subscriptionRequest.getCurrencyCode());
+                            if (!TextUtils.isEmpty(getAppsFlyerKey())) {
+                                AppsFlyerUtils.subscriptionEvent(currentActivity,
+                                        true,
+                                        getAppsFlyerKey(),
+                                        String.valueOf(planToPurchasePrice),
+                                        subscriptionRequest.getPlanId(),
+                                        subscriptionRequest.getCurrencyCode());
+                            }
 
                             System.out.println("Plan to purchase-" + planToPurchasePrice);
                             //Subscription Succes Firebase Log Event
@@ -7800,8 +7837,10 @@ public class AppCMSPresenter {
                             }
 
                             if (signup) {
-                                AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),
-                                        currentActivity.getString(R.string.app_cms_appsflyer_dev_key));
+                                if (!TextUtils.isEmpty(getAppsFlyerKey())) {
+                                    AppsFlyerUtils.registrationEvent(currentActivity, signInResponse.getUserId(),
+                                            getAppsFlyerKey());
+                                }
                             } else {
                                 AppsFlyerUtils.loginEvent(currentActivity, signInResponse.getUserId());
                             }
@@ -8736,6 +8775,7 @@ public class AppCMSPresenter {
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;
                                     initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+                                    initAppsFlyer(appCMSAndroidUI);
                                     navigation = appCMSAndroidUI.getNavigation();
                                     new SoftReference<>(navigation, referenceQueue);
                                     queueMetaPages(appCMSAndroidUI.getMetaPages());

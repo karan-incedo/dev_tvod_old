@@ -450,12 +450,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onCreate()");
 
         appCMSPresenter.setCancelAllLoads(false);
-
-        sendAnalytics();
-    }
-
-    private void sendAnalytics() {
-        trackInstallationEvent(getApplication());
     }
 
     private void initPageActivity() {
