@@ -1214,12 +1214,16 @@ public class AppCMSPresenter {
 
                             long entitlementCheckVideoWatchTime = -1L;
                             if (entitlementPendingVideoData != null) {
-                                entitlementCheckVideoWatchTime = entitlementPendingVideoData.currentWatchedTime;
-                                entitlementPendingVideoData = null;
+                                if (isUserSubscribed()) {
+                                    entitlementCheckVideoWatchTime = entitlementPendingVideoData.currentWatchedTime;
+                                    entitlementPendingVideoData = null;
+                                }
                             }
 
                             if (entitlementCheckVideoWatchTime != -1L) {
-                                contentDatum.getGist().setWatchedTime(entitlementCheckVideoWatchTime);
+                                if (isUserSubscribed()) {
+                                    contentDatum.getGist().setWatchedTime(entitlementCheckVideoWatchTime);
+                                }
                             }
 
                             if (contentDatum != null &&
@@ -8120,7 +8124,8 @@ public class AppCMSPresenter {
                                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                     }, true);
                                 } else {
-                                    refreshAPIData(() -> {}, false);
+                                    refreshAPIData(() -> {
+                                    }, false);
                                     if (entitlementPendingVideoData != null) {
                                         navigateToHomeToRefresh = false;
                                         sendRefreshPageAction();
@@ -10783,45 +10788,56 @@ public class AppCMSPresenter {
 
         public static class Builder {
             EntitlementPendingVideoData entitlementPendingVideoData;
+
             public Builder() {
                 entitlementPendingVideoData = new EntitlementPendingVideoData();
             }
+
             public Builder pagePath(String pagePath) {
                 entitlementPendingVideoData.pagePath = pagePath;
                 return this;
             }
+
             public Builder action(String action) {
                 entitlementPendingVideoData.action = action;
                 return this;
             }
+
             public Builder filmTitle(String filmTitle) {
                 entitlementPendingVideoData.filmTitle = filmTitle;
                 return this;
             }
+
             public Builder extraData(String[] extraData) {
                 entitlementPendingVideoData.extraData = extraData;
                 return this;
             }
+
             public Builder contentDatum(ContentDatum contentDatum) {
                 entitlementPendingVideoData.contentDatum = contentDatum;
                 return this;
             }
+
             public Builder closerLauncher(boolean closeLauncher) {
                 entitlementPendingVideoData.closeLauncher = closeLauncher;
                 return this;
             }
+
             public Builder currentlyPlayingIndex(int currentlyPlayingIndex) {
                 entitlementPendingVideoData.currentlyPlayingIndex = currentlyPlayingIndex;
                 return this;
             }
+
             public Builder relatedVideoIds(List<String> relatedVideosIds) {
                 entitlementPendingVideoData.relateVideoIds = relatedVideosIds;
                 return this;
             }
+
             public Builder currentWatchedTime(long currentWatchedTime) {
                 entitlementPendingVideoData.currentWatchedTime = currentWatchedTime;
                 return this;
             }
+
             public EntitlementPendingVideoData build() {
                 return entitlementPendingVideoData;
             }
