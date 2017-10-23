@@ -283,8 +283,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     boolean closeSelf = intent.getBooleanExtra(getString(R.string.close_self_key),
                             false);
-                    boolean closeOnePage = intent.getBooleanExtra(getString(R.string.close_one_page_key),
-                            false);
+                    boolean closeOnePage = intent.getBooleanExtra(getString(R.string.close_one_page_key), false);
                     if (closeSelf && !handlingClose && appCMSBinderStack.size() > 1) {
                         handlingClose = true;
                         handleCloseAction(closeOnePage);
