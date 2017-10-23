@@ -1562,6 +1562,9 @@ public class AppCMSPresenter {
                                             loadingPage = false;
                                         }
                                     });
+                        }else{
+                            loadingPage = false;
+
                         }
                     }
                 }
