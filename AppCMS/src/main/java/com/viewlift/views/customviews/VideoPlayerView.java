@@ -103,6 +103,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private String signatureCookie;
     private String keyPairIdCookie;
 
+    private boolean playerJustInitialized;
+
     public VideoPlayerView(Context context) {
         super(context);
         initializeView(context);
@@ -261,6 +263,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private void initializeView(Context context) {
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
         playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
+        playerJustInitialized = true;
     }
 
     public void init(Context context) {
@@ -310,6 +313,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         setFillBasedOnOrientation();
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
+
+        if (playerJustInitialized) {
+            player.setPlayWhenReady(true);
+            playerJustInitialized = false;
+        }
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
