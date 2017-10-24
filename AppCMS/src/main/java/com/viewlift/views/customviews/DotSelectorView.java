@@ -34,6 +34,7 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     private volatile  boolean cancelled;
 
     private String moduleId;
+
     public DotSelectorView(Context context,
                            Component component,
                            int selectedColor,
@@ -181,10 +182,12 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
+
     @Override
     public String getModuleId() {
         return moduleId;
     }
+
     @Override
     protected Component getChildComponent(int index) {
         return null;

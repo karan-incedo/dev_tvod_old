@@ -100,6 +100,7 @@ public class GetAppCMSAPIAsyncTask {
                     }
                 });
     }
+
     public void deleteAll(Action0 onDelete) {
         Observable
                 .fromCallable(() -> {

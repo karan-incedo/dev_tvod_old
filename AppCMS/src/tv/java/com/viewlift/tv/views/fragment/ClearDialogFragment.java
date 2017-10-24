@@ -1,5 +1,6 @@
 package com.viewlift.tv.views.fragment;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -47,6 +48,8 @@ public class ClearDialogFragment extends AbsDialogFragment {
     public static final String DIALOG_NEGATIVE_BUTTON_VISIBILITY_KEY
             = "dialog_negative_button_visibility_key";
     private Action1<String> onPositiveButtonClicked;
+    private Action1<String> onNegativeButtonClicked;
+    private Action1<String> onBackKeyListener;
 
     public ClearDialogFragment() {
         super();
@@ -62,6 +65,14 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
     public void setOnPositiveButtonClicked (Action1<String> onPositiveButtonClicked){
         this.onPositiveButtonClicked = onPositiveButtonClicked;
+    }
+
+    public void setOnNegativeButtonClicked (Action1<String> onNegativeButtonClicked){
+        this.onNegativeButtonClicked = onNegativeButtonClicked;
+    }
+
+    public void setOnBackKeyListener(Action1<String> onBackKeyListener){
+       this.onBackKeyListener = onBackKeyListener;
     }
 
     @Nullable
@@ -95,6 +106,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         positiveButton.setText(positiveBtnText);
         negativeButton.setText(negativeBtnText);
+
         tvDescription.setTextSize(TypedValue.COMPLEX_UNIT_SP, messageSize);
 
         if (description == null) {
@@ -157,29 +169,42 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         positiveButton.requestFocus();
 
-        /*Set click listener*/
-        negativeButton.setOnClickListener(v -> dismiss());
+        if(positiveBtnText.length()==0){
+            positiveButton.setVisibility(View.GONE);
+            negativeButton.requestFocus();
+        }
 
-        negativeButton.setOnKeyListener((view, i, keyEvent) -> {
-            int keyCode = keyEvent.getKeyCode();
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_DPAD_UP:
-                    if (keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                        if (scrollView.canScrollVertically(View.SCROLL_AXIS_VERTICAL)
-                                || scrollView.canScrollVertically(View.NO_ID)) {
-                            tvDescription.requestFocus();
-                        } else {
-                            negativeButton.requestFocus();
-                        }
-                        return true;
-                    }
+        if(negativeBtnText.length()==0){
+            negativeButton.setVisibility(View.GONE);
+            positiveButton.requestFocus();
+        }
+
+        /*Set click listener*/
+        negativeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onNegativeButtonClicked.call("");
+                dismiss();
             }
-            return false;
         });
+
 
         positiveButton.setOnClickListener(v -> {
             onPositiveButtonClicked.call("");
             dismiss();
+        });
+
+
+        getDialog().setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK
+                        && event.getAction() == KeyEvent.ACTION_DOWN){
+                    if(null != onBackKeyListener)
+                        onBackKeyListener.call("");
+                }
+                return false;
+            }
         });
         return mView;
     }

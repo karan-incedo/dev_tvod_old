@@ -16,11 +16,13 @@
 
 buildscript {
     repositories {
+        jcenter()
+        google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:3.0.0-rc2'
     }
 }
 
@@ -37,9 +39,9 @@ apply plugin: 'com.android.application'
 dependencies {
     compile project(':library')
     //compile 'com.github.amlcurran.showcaseview:library:5.0.0-SNAPSHOT'
-    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:support-v4:26.1.0'
     compile 'com.nineoldandroids:library:2.4.0'
-    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:appcompat-v7:26.1.0'
 }
 
 android {
@@ -49,7 +51,7 @@ android {
     defaultConfig {
         versionName "5.4.3"
         versionCode 1
-        targetSdkVersion 25
+        targetSdkVersion 26
         minSdkVersion 21
     }
 

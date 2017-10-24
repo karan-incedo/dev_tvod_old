@@ -401,11 +401,20 @@
     <string name="close">Close</string>
     <string name="yes">YES</string>
     <string name="sign_in_text">SIGN IN</string>
+    <string name="blank_string"></string>
 
     <string name="no_inernet_error">There is an error loading %1$s. Please check your Internet Connection and try again later</string>
     <string name="api_error_message">We are having trouble connecting to %1$s, please try again later.</string>
 
     <string name="app_connectivity_dialog_title">App Connectivity</string>
+    <string name="no_active_subscription">NO ACTIVE SUBSCRIPTION</string>
+    <string name="app_cms_autoplay_finished_movie_title_key">finishedMovieNameTitle</string>
+    <string name="subscription">SUBSCRIPTION</string>
+    <string name="subscription_required">SUBSCRIPTION REQUIRED</string>
+     <string name="subscription_purchased_from_web_msg">This subscription was purchased on our website. To modify it, please visit your account settings in a browser.</string>
+    <string name="subscription_purchased_from_android_msg">This subscription was purchased on Google Play Store. To modify it, please visit your account settings on your Android device.</string>
+    <string name="subscription_purchased_from_apple_msg">This subscription was purchased on Apple App Store. To modify it, please visit your account settings on your Apple device.</string>
+    <string name="subscription_not_purchased">You are currently not a subscriber, please visit our website to purchase a subscription.</string>
     <string name="signed_policy_key">signed_policy</string>
     <string name="signed_signature_key">signed_signature</string>
     <string name="signed_keypairid_key">signed_keypairid</string>

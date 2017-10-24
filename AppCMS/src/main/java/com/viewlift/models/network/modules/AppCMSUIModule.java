@@ -464,6 +464,8 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_title_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TITLE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_finished_movie_title_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_movie_subheading_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY);
 
@@ -518,6 +520,16 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_HISTORY_LAST_ADDED_LABEL_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_signup_footer_label_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_FOOTER_LABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_up_next_loader_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_UP_NEXT_LOADER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_rotating_loader_view),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_ROTATING_LOADER_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_subscription_duration_label),
+                AppCMSUIKeyType.PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_manage_subscription_button_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_MANAGE_SUBSCRIPTION_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_subscription_label_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_SUBSCRIPTION_LABEL_KEY);
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
 

@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -30,7 +29,6 @@ import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
-import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.List;
@@ -87,21 +85,86 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     && binder.getContentData() != null
                     && binder.getContentData().getGist() != null) {
 
-                appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                     Gist gist = binder.getContentData().getGist();
                     String videoUrl = "";
                     String fontColor = binder.getFontColor();
-                    title = "";
 
-                    if (appCMSSignedURLResult == null ||
-                            TextUtils.isEmpty(appCMSSignedURLResult.getSigned()) &&
-                                    (TextUtils.isEmpty(appCMSSignedURLResult.getPolicy()) ||
-                                            TextUtils.isEmpty(appCMSSignedURLResult.getSignature()) ||
-                                            TextUtils.isEmpty(appCMSSignedURLResult.getKeyPairId()))) {
-                        appCMSSignedURLResult = new AppCMSSignedURLResult();
-                        appCMSSignedURLResult.setSigned(hlsUrl);
+                if (binder.isOffline()) {
+                    launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                } else {
+
+//                        if (appCMSSignedURLResult == null ||
+//                                TextUtils.isEmpty(appCMSSignedURLResult.getSigned()) &&
+//                                        (TextUtils.isEmpty(appCMSSignedURLResult.getPolicy()) ||
+//                                                TextUtils.isEmpty(appCMSSignedURLResult.getSignature()) ||
+//                                                TextUtils.isEmpty(appCMSSignedURLResult.getKeyPairId()))) {
+//                            appCMSSignedURLResult = new AppCMSSignedURLResult();
+//                            appCMSSignedURLResult.setSigned(hlsUrl);
+                    launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                }
+            }
+        } catch (ClassCastException e) {
+        }
+        handoffReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String sendingPage = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
+                if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
+                        (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
+                    finish();
+                }
+            }
+        };
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        networkConnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+                try {
+                    if (((binder != null &&
+                            binder.getContentData() != null &&
+                            binder.getContentData().getGist() != null &&
+                            binder.getContentData().getGist().getDownloadStatus() != null &&
+                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
+                            binder.getContentData().getGist().getDownloadStatus() == null) &&
+                            (activeNetwork == null ||
+                            !activeNetwork.isConnectedOrConnecting())) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
+                                false, () -> closePlayer(),
+                                null);
                     }
+                } catch (Exception e) {
+                    if ((binder != null &&
+                            binder.getContentData() != null &&
+                            binder.getContentData().getGist() != null &&binder.getContentData().getGist().getDownloadStatus() != null &&
+                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
+                            binder.getContentData().getGist().getDownloadStatus() == null) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                                appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
+                                false, () -> closePlayer(),
+                                null);
+                    }
+                }
+            }
+        };
 
+        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        appCMSPresenter.setCancelAllLoads(false);
+    }
+    public void launchVideoPlayer(Gist gist,
+                                  String[] extra,
+                                  boolean useHls,
+                                  String fontColor,
+                                  String defaultVideoResolution,
+                                  Intent intent,
+                                  FrameLayout appCMSPlayVideoPageContainer,
+                                  AppCMSSignedURLResult appCMSSignedURLResult) {
+        String videoUrl = "";
                     String closedCaptionUrl = null;
                     if (!binder.isTrailer()) {
                         title = gist.getTitle();
@@ -326,66 +389,13 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             getString(R.string.video_fragment_tag_key));
                     fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
                     fragmentTransaction.commit();
-                });
-            }
-        } catch (ClassCastException e) {
             //Log.e(TAG, e.getMessage());
-        }
 
-        handoffReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String sendingPage = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
-                if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
-                        (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
                     //Log.d(TAG, "Closing activity");
-                    finish();
-                }
-            }
-        };
 
-        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        networkConnectedReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-                try {
-                    if (((binder != null &&
-                            binder.getContentData() != null &&
-                            binder.getContentData().getGist() != null &&
-                            binder.getContentData().getGist().getDownloadStatus() != null &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null) &&
-                            (activeNetwork == null ||
-                            !activeNetwork.isConnectedOrConnecting())) {
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                                appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-                                false, () -> closePlayer(),
-                                null);
-                    }
-                } catch (Exception e) {
-                    if ((binder != null &&
-                            binder.getContentData() != null &&
-                            binder.getContentData().getGist() != null &&binder.getContentData().getGist().getDownloadStatus() != null &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null) {
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                                appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
-                                false, () -> closePlayer(),
-                                null);
-                    }
-                }
-            }
-        };
 
-        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        appCMSPresenter.setCancelAllLoads(false);
     }
 
     @Override
@@ -438,14 +448,22 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         && relateVideoIds != null
                         && currentlyPlayingIndex != relateVideoIds.size() - 1) {
                     binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                    appCMSPresenter.openAutoPlayScreen(binder);
+                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                        }
+                    });
                 } else {
                     closePlayer();
                 }
             } else {
                 if (binder.getRelateVideoIds() != null
                         && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-                    appCMSPresenter.openAutoPlayScreen(binder);
+                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                        }
+                    });
                 } else {
                     closePlayer();
                 }

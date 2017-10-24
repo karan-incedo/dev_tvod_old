@@ -96,6 +96,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private int fullscreenResizeMode;
     private Uri closedCaptionUri;
+
     private String policyCookie;
     private String signatureCookie;
     private String keyPairIdCookie;
@@ -254,6 +255,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     keyPairIdCookie);
         }
     }
+
     private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         initializePlayer(context, attrs, defStyleAttr);
         playerState = new PlayerState();
@@ -311,6 +313,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.signatureCookie = signatureCookie;
             ((UpdatedUriDataSourceFactory) mediaDataSourceFactory).signatureCookies.keyPairIdCookie = keyPairIdCookie;
         }
+
         Format textFormat = Format.createTextSampleFormat(null,
                 MimeTypes.APPLICATION_SUBRIP,
                 C.SELECTION_FLAG_DEFAULT,
@@ -324,6 +327,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 mediaDataSourceFactory,
                 textFormat,
                 C.TIME_UNSET);
+
         // Plays the video with the side-loaded subtitle.
         return new MergingMediaSource(videoSource, subtitleSource);
     }
@@ -417,7 +421,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onPlayerError(ExoPlaybackException e) {
-
         mCurrentPlayerPosition = player.getCurrentPosition();
     }
 
@@ -439,6 +442,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onLoadStarted(DataSpec dataSpec, int dataType, int trackType, Format trackFormat,
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
+        //Log.d(TAG, "Load started");
         bitrate = (trackFormat.bitrate / 1000);
     }
 
@@ -455,7 +459,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                long bytesLoaded) {
-
+        //Log.d(TAG, "Load cancelled");
     }
 
     @Override
@@ -532,21 +536,27 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public String getPolicyCookie() {
         return policyCookie;
     }
+
     public void setPolicyCookie(String policyCookie) {
         this.policyCookie = policyCookie;
     }
+
     public String getSignatureCookie() {
         return signatureCookie;
     }
+
     public void setSignatureCookie(String signatureCookie) {
         this.signatureCookie = signatureCookie;
     }
+
     public String getKeyPairIdCookie() {
         return keyPairIdCookie;
     }
+
     public void setKeyPairIdCookie(String keyPairIdCookie) {
         this.keyPairIdCookie = keyPairIdCookie;
     }
+
     public interface ErrorEventListener {
         void onRefreshTokenCallback();
         void onFinishCallback(String message);
@@ -570,6 +580,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         String signatureCookie;
         String keyPairIdCookie;
     }
+
     private static class UpdatedUriDataSourceFactory implements Factory {
         private final Context context;
         private final TransferListener<? super DataSource> listener;
@@ -602,7 +613,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          * @param listener              An optional listener.
          * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
          *                              for {@link DefaultDataSource}.
-         * @param cdnCookie             The cookie used for accessing CDN protected data.
+         * @param policyCookie             The cookie used for accessing CDN protected data.
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
@@ -611,7 +622,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             this.context = context.getApplicationContext();
             this.listener = listener;
             this.baseDataSourceFactory = baseDataSourceFactory;
+
             signatureCookies = new SignatureCookies();
+
             signatureCookies.policyCookie = policyCookie;
             signatureCookies.signatureCookie = signatureCookie;
             signatureCookies.keyPairIdCookie = keyPairIdCookie;
@@ -722,7 +735,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
 
             Uri updatedUri = Uri.parse(dataSpec.uri.toString().replaceAll(" ", "%20"));
+
             boolean useHls = dataSpec.uri.toString().contains("m3u8");
+
             if (useHls && updatedUri.toString().contains("?")) {
                 updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
             }
@@ -730,6 +745,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     dataSpec.absoluteStreamPosition,
                     dataSpec.length,
                     dataSpec.key);
+
             if (useHls && dataSource instanceof DefaultHttpDataSource) {
                 if (!TextUtils.isEmpty(signatureCookies.policyCookie) &&
                         !TextUtils.isEmpty(signatureCookies.signatureCookie) &&
@@ -751,6 +767,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             try {
                 return dataSource.open(updatedDataSpec);
             } catch (Exception e) {
+                //Log.e(TAG, "Failed to load video: " + e.getMessage());
             }
             return 0L;
         }

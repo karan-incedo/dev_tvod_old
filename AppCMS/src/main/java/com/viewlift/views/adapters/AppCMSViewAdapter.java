@@ -108,7 +108,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice());
                 } catch (Exception e) {
                     //Log.e(TAG, "Failed to parse double value for subscription price");
-
                 }
             }
         }
@@ -133,6 +132,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.watchTrailerQuailifier = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
 
         this.appCMSAndroidModules = appCMSAndroidModules;
+
         sortPlansInDescendingOrderByPrice();
     }
 
@@ -304,7 +304,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     subscriptionPrice = Double.parseDouble(appCMSPresenter.getActiveSubscriptionPrice());
                 } catch (Exception e) {
                     //Log.e(TAG, "Failed to parse double value for subscription price");
-
                 }
             }
         }
@@ -405,18 +404,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     contentType = data.getGist().getContentType();
                                 }
 
-                                    switch (contentType) {
-                                        case "SHOW":
-                                            action = showAction;
-                                            break;
+                                switch (contentType) {
+                                    case "SHOW":
+                                        action = showAction;
+                                        break;
 
-                                        case "VIDEO":
-                                            action = videoAction;
-                                            break;
+                                    case "VIDEO":
+                                        action = videoAction;
+                                        break;
 
-                                        default:
-                                            break;
-                                    }
+                                    default:
+                                        break;
+                                }
 
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {

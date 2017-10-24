@@ -93,6 +93,8 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             navItemsList.setAdapter(appCMSNavItemsAdapter);
             if (!BaseView.isTablet(getContext())) {
                 appCMSPresenter.restrictPortraitOnly();
+            }else{
+                appCMSPresenter.unrestrictPortraitOnly();
             }
 
             NestedScrollView nestedScrollView = (NestedScrollView) view.findViewById(R.id.app_cms_nav_items_main_view);
@@ -160,8 +162,10 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (!BaseView.isTablet(getContext())) {
+        if (BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
+        }else{
+            appCMSPresenter.restrictPortraitOnly();
         }
     }
 

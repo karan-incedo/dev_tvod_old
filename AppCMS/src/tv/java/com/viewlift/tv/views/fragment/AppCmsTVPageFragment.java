@@ -114,7 +114,7 @@ public class AppCmsTVPageFragment extends Fragment {
         super.onResume();
         requestFocus();
         if (null != appCMSPresenter)
-            appCMSPresenter.sendStopLoadingPageAction();
+            appCMSPresenter.sendStopLoadingPageAction(false,null);
     }
 
     @Override

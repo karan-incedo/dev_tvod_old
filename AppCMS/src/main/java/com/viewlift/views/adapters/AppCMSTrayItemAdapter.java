@@ -108,7 +108,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
         this.setHasStableIds(false);
-
     }
 
     private void sortData() {
@@ -378,6 +377,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
         long lastWatched = contentDatum.getGist().getUpdateDate();
+
         if (currentTime == 0) {
             lastWatched = 0;
         }

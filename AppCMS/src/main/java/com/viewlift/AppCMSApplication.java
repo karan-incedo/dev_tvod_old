@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import io.fabric.sdk.android.Fabric;
 
+import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
 /**
  * Created by viewlift on 5/4/17.
@@ -31,11 +32,12 @@ public class AppCMSApplication extends MultiDexApplication {
     private AppCMSPresenterComponent appCMSPresenterComponent;
 
     private Map<Activity, Integer> closeAppMap;
+    private AppsFlyerConversionListener conversionDataListener;
     @Override
     public void onCreate() {
         super.onCreate();
 
-        AppsFlyerConversionListener conversionDataListener = new AppsFlyerConversionListener() {
+        conversionDataListener = new AppsFlyerConversionListener() {
             @Override
             public void onInstallConversionDataLoaded(Map<String, String> map) {
             }
@@ -49,10 +51,10 @@ public class AppCMSApplication extends MultiDexApplication {
             public void onAttributionFailure(String s) {
             }
         };
-        AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
-        Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+
         new Thread(() -> {
             Fabric.with(AppCMSApplication.this, new Crashlytics());
+            Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
         }).run();
         closeAppMap = new HashMap<>();
 
@@ -120,5 +122,12 @@ public class AppCMSApplication extends MultiDexApplication {
     }
     public void setCloseApp(Activity activity) {
         closeAppMap.put(activity, 1);
+    }
+    public void initAppsFlyer(String appsFlyerKey) {
+        AppsFlyerLib.getInstance().init(appsFlyerKey, conversionDataListener);
+        sendAnalytics();
+    }
+    private void sendAnalytics() {
+        trackInstallationEvent(this);
     }
 }

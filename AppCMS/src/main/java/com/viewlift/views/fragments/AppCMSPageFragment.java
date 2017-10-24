@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
@@ -123,6 +124,7 @@ public class AppCMSPageFragment extends Fragment {
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
+			if (appCMSPresenter != null) {
             if (!BaseView.isTablet(getContext())) {
                 appCMSPresenter.restrictPortraitOnly();
             } else {
@@ -192,7 +194,7 @@ public class AppCMSPageFragment extends Fragment {
         }else if (appCMSPresenter.pipPlayerVisible){
             appCMSPresenter.dismissPopupWindowPlayer();
         }
-
+}
         return pageView;
     }
 

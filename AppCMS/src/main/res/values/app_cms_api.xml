@@ -287,6 +287,7 @@
     <string name="app_cms_action_signup_key">signup</string>
     <string name="app_cms_action_logout_key">logout</string>
     <string name="app_cms_action_qualifier_watchvideo_key">trailer</string>
+    <string name="app_cms_action_qualifier_watchvideo_teaser_key">teaser</string>
     <string name="app_cms_action_start_trial_key">startTrial</string>
     <string name="app_cms_action_signin_key">signIn</string>
     <string name="app_cms_action_browse_key">browse</string>
@@ -334,7 +335,7 @@
     <string name="app_cms_cancel_subscription_api_url">%1$s/subscription/cancel?site=%2$s&amp;platform=%3$s</string>
 
     <!-- AppCMS Get Current Subscription API -->
-    <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?site=%2$s</string>
+    <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userid=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Navigation menu -->
     <string name="app_cms_menu_icon_name">menu_</string>
@@ -387,6 +388,11 @@
     <string name="app_cms_delete_item_button">deleteItemButton</string>
     <string name="app_cms_history_last_added_label">historyLastAddedLabel</string>
     <string name="app_cms_signup_footer_label_key">signupfooterview</string>
+    <string name="app_cms_autoplay_up_next_loader_key">upNextLoader</string>
+    <string name="app_cms_autoplay_rotating_loader_view">rotatingLoaderView</string>
+    <string name="app_cms_settings_subscription_duration_label">subscriptionDurationLabel</string>
+    <string name="app_cms_settings_manage_subscription_button_key">manageSubscriptionButton</string>
+    <string name="app_cms_settings_subscription_label_key">subscriptionLabel</string>
     <!-- AppCMS Payment Processor values -->
     <string name="subscription_ios_payment_processor">iOS</string>
     <string name="subscription_ios_payment_processor_friendly">iTunes</string>
@@ -401,7 +407,7 @@
     <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
     <string name="facebook_auth_provider_name_key">facebook</string>
     <string name="google_auth_provider_name_key">google</string>
-    <string name="app_cms_reset_password_cancel_button_key">cancelButton</string>
+    <string name="app_cms_reset_password_cancel_button_key">resetPasswordCancelButton</string>
     <string name="app_cms_reset_password_continue_button_key">resetPasswordButton</string>
     <string name="app_cms_forgotPasswordTitle_key">forgotPasswordTitle</string>
     <string name="contact_us">Contact Us</string>

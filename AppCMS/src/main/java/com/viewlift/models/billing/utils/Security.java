@@ -105,7 +105,6 @@ public class Security {
             sig.initVerify(publicKey);
             sig.update(signedData.getBytes());
             return sig.verify(signatureBytes);
-                //Log.e(TAG, "Signature verification failed.");
         } catch (NoSuchAlgorithmException e) {
             //Log.e(TAG, "NoSuchAlgorithmException.");
         } catch (InvalidKeyException e) {

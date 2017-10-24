@@ -100,6 +100,7 @@ public class AppCMSPresenterModule {
                                                    AppCMSAndroidModuleCall appCMSAndroidModuleCall,
 
                                                    AppCMSSignedURLCall appCMSSignedURLCall,
+
                                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                                    Map<String, String> pageNameToActionMap,
                                                    Map<String, AppCMSPageUI> actionToPageMap,
@@ -144,6 +145,7 @@ public class AppCMSPresenterModule {
                 appCMSAndroidModuleCall,
 
                 appCMSSignedURLCall,
+
                 appCMSAddToWatchlistCall,
 
                 appCMSCCAvenueCall,

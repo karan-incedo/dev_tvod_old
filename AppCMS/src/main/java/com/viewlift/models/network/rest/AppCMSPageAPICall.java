@@ -22,8 +22,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 
-
-
 import retrofit2.Response;
 
 /**
@@ -63,36 +61,39 @@ public class AppCMSPageAPICall {
         //Log.d(TAG, "URL: " + urlWithContent);
         String filename = getResourceFilename(pageId);
         AppCMSPageAPI appCMSPageAPI = null;
+
         if (loadFromFile) {
             try {
                 appCMSPageAPI = readPageFromFile(filename);
             } catch (Exception e) {
+
             }
         }
+
         if (appCMSPageAPI == null) {
-        try {
-            headersMap.clear();
-            if (!TextUtils.isEmpty(apiKey)) {
-                headersMap.put("x-api-key", apiKey);
-            }
-            if (!TextUtils.isEmpty(authToken)) {
-                headersMap.put("Authorization", authToken);
-            }
-            //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
-            Response<AppCMSPageAPI> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
-            appCMSPageAPI = response.body();
+            try {
+                headersMap.clear();
+                if (!TextUtils.isEmpty(apiKey)) {
+                    headersMap.put("x-api-key", apiKey);
+                }
+                if (!TextUtils.isEmpty(authToken)) {
+                    headersMap.put("Authorization", authToken);
+                }
+                //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
+                Response<AppCMSPageAPI> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
+                appCMSPageAPI = response.body();
 
-            if (!response.isSuccessful()) {
-                //Log.e(TAG, "Response error: " + response.errorBody().string());
-            }
+                if (!response.isSuccessful()) {
+                    //Log.e(TAG, "Response error: " + response.errorBody().string());
+                }
 
-            if (filename != null) {
-                appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
-            }
-        } catch (JsonSyntaxException e) {
-            //Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());
-        } catch (Exception e) {
-            //Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+                if (filename != null) {
+                    appCMSPageAPI = writePageToFile(filename, appCMSPageAPI);
+                }
+            } catch (JsonSyntaxException e) {
+                //Log.w(TAG, "Error trying to parse input JSON " + urlWithContent + ": " + e.toString());
+            } catch (Exception e) {
+                //Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
             }
         }
 
@@ -106,6 +107,7 @@ public class AppCMSPageAPICall {
 
         return appCMSPageAPI;
     }
+
     public void deleteAllFiles() {
         String fileToDeleteFilenamePattern = API_SUFFIX;
         File savedFileDirectory = new File(storageDirectory.toString());
@@ -116,9 +118,15 @@ public class AppCMSPageAPICall {
                     File fileToDelete = new File(storageDirectory, existingFilename);
                     try {
                         if (fileToDelete.delete()) {
+//                            //Log.i(TAG, "Successfully deleted pre-existing file: " + fileToDelete);
                         } else {
+                            //Log.e(TAG, "Failed to delete pre-existing file: " + fileToDelete);
                         }
                     } catch (Exception e) {
+                        //Log.e(TAG, "Could not delete file: " +
+//                                fileToDelete +
+//                                " - " +
+//                                e.getMessage());
                     }
                 }
             }

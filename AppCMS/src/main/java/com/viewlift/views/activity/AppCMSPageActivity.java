@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -43,7 +44,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
 import com.appsflyer.AppsFlyerLib;
@@ -64,7 +64,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
@@ -112,10 +111,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         FragmentManager.OnBackStackChangedListener,
         GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "AppCMSPageActivity";
-    private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
-    private final String LOGIN_STATUS_KEY = "logged_in_status";
-    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
-    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     private static final int DEFAULT_NAV_MENU_PAGE_INDEX = 0;
     private static final int DEFAULT_HOME_PAGE_INDEX = 1;
@@ -124,7 +119,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int DEFAULT_NAV_LIVE_PAGE_INDEX = 4;
     private static final int NO_NAV_MENU_PAGE_INDEX = -1;
 
+
+
+
     private static final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     @BindView(R.id.app_cms_parent_layout)
     RelativeLayout appCMSParentLayout;
@@ -207,7 +209,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (BaseView.isTablet(this)) {
+        if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
         setContentView(R.layout.activity_appcms_page);
@@ -299,8 +301,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     boolean closeSelf = intent.getBooleanExtra(getString(R.string.close_self_key),
                             false);
-                    boolean closeOnePage = intent.getBooleanExtra(getString(R.string.close_one_page_key),
-                            false);
+                    boolean closeOnePage = intent.getBooleanExtra(getString(R.string.close_one_page_key), false);
                     if (closeSelf && !handlingClose && appCMSBinderStack.size() > 1) {
                         handlingClose = true;
                         handleCloseAction(closeOnePage);
@@ -354,7 +355,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                    //
+                    DownloadManager downloadManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
+                    long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                    DownloadManager.Query downloadQuery = new DownloadManager.Query();
+                    downloadQuery.setFilterById(referenceId);
+                    Cursor cursor = downloadManager.query(downloadQuery);
+                    if (cursor.moveToFirst()) {
+                        try {
+                            String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_MEDIA_TYPE));
+                            int status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+                            if (mimeType.contains("mp4") &&
+                                    (status == DownloadManager.STATUS_SUCCESSFUL ||
+                                            status == DownloadManager.STATUS_FAILED)) {
+                                appCMSPresenter.startNextDownload();
+                            }
+                        } catch (Exception e) {
+                        }
+                    }
                 }
             }
         };
@@ -461,10 +478,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.sendCloseOthersAction(null, false, false);
 //        Log.d(TAG, "onCreate()");
         appCMSPresenter.setCancelAllLoads(false);
-        sendAnalytics();
-    }
-    private void sendAnalytics() {
-        trackInstallationEvent(getApplication());
     }
 
     private void initPageActivity() {
@@ -1562,7 +1575,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             homePageNav.getTitle());
                 });
                 homeNavBarItemView.setTag(homePageNav.getPageId());
+                if (getSelectedNavItem() == null) {
                 selectNavItem(homeNavBarItemView);
+                }
             }
         }
     }

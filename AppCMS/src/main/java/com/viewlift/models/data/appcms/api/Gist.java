@@ -61,6 +61,7 @@ public class Gist implements Serializable {
     @SerializedName("badgeImages")
     @Expose
     BadgeImages badgeImages;
+
     @SerializedName("addedDate")
     @Expose
     long addedDate;
@@ -190,9 +191,11 @@ public class Gist implements Serializable {
     public BadgeImages getBadgeImages() {
         return badgeImages;
     }
+
     public void setBadgeImages(BadgeImages badgeImages) {
         this.badgeImages = badgeImages;
     }
+
     public long getAddedDate() {
         return addedDate;
     }

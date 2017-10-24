@@ -131,112 +131,113 @@ public class LoginModule extends ModuleView {
                 module.setView(moduleInfo.getView());
                 module.setBlockName(moduleInfo.getBlockName());
             }
+
             if (module != null && module.getComponents() != null) {
-            for (Component component : module.getComponents()) {
-                if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY &&
-                        (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                        launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
-                    buttonSelectors[0] = new Button(getContext());
-                    LinearLayout.LayoutParams loginSelectorLayoutParams =
-                            new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    loginSelectorLayoutParams.weight = 1;
-                    buttonSelectors[0].setText(R.string.app_cms_log_in_pager_title);
-                    buttonSelectors[0].setTextColor(textColor);
-                    buttonSelectors[0].setBackgroundColor(bgColor);
-                    buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
-
-                    buttonSelectors[0].setOnClickListener((v) -> {
-                        selectChild(0);
-                        unselectChild(1);
-                    });
-
-                    underlineViews[0] = new GradientDrawable();
-                    underlineViews[0].setShape(GradientDrawable.LINE);
-                    buttonSelectors[0].setCompoundDrawablePadding(loginBorderPadding);
-                    Rect textBounds = new Rect();
-                    Paint textPaint = buttonSelectors[0].getPaint();
-                    textPaint.getTextBounds(buttonSelectors[0].getText().toString(),
-                            0,
-                            buttonSelectors[0].getText().length(),
-                            textBounds);
-                    Rect bounds = new Rect(0,
-                            textBounds.top,
-                            textBounds.width() + loginBorderPadding,
-                            textBounds.bottom);
-                    underlineViews[0].setBounds(bounds);
-                    buttonSelectors[0].setCompoundDrawables(null, null, null, underlineViews[0]);
-                    loginModuleSwitcherContainer.addView(buttonSelectors[0]);
-
-                    ModuleView moduleView = new ModuleView<>(getContext(), component, false);
-                    setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
-                    childViews[0] = moduleView;
-                        addChildComponents(moduleView, component, 0, appCMSAndroidModules);
-                    topLayoutContainer.addView(moduleView);
-                } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
-                        (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
-                            launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                            launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
-                    if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
-                            launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
-                        buttonSelectors[1] = new Button(getContext());
-                        LinearLayout.LayoutParams signupSelectorLayoutParams =
+                for (Component component : module.getComponents()) {
+                    if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_LOGIN_COMPONENT_KEY &&
+                            (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                                    launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
+                        buttonSelectors[0] = new Button(getContext());
+                        LinearLayout.LayoutParams loginSelectorLayoutParams =
                                 new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        signupSelectorLayoutParams.weight = 1;
-                        buttonSelectors[1].setText(R.string.app_cms_sign_up_pager_title);
-                        buttonSelectors[1].setTextColor(textColor);
-                        buttonSelectors[1].setBackgroundColor(bgColor);
-                        signupSelectorLayoutParams.gravity = Gravity.END;
-                        buttonSelectors[1].setLayoutParams(signupSelectorLayoutParams);
-                        buttonSelectors[1].setOnClickListener((v) -> {
-                            selectChild(1);
-                            unselectChild(0);
-                            if (appCMSPresenter.isAppSVOD()) {
-                                if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
-                                        appCMSPresenter.navigateToSubscriptionPlansPage(appCMSPresenter.getLoginFromNavPage());
-                                    appCMSPresenter.sendCloseOthersAction(null,
-                                                true,
-                                                false);
-                                } else {
-                                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                                }
-                            }
+                        loginSelectorLayoutParams.weight = 1;
+                        buttonSelectors[0].setText(R.string.app_cms_log_in_pager_title);
+                        buttonSelectors[0].setTextColor(textColor);
+                        buttonSelectors[0].setBackgroundColor(bgColor);
+                        buttonSelectors[0].setLayoutParams(loginSelectorLayoutParams);
+
+                        buttonSelectors[0].setOnClickListener((v) -> {
+                            selectChild(0);
+                            unselectChild(1);
                         });
 
-                        underlineViews[1] = new GradientDrawable();
-                        underlineViews[1].setShape(GradientDrawable.LINE);
-                        buttonSelectors[1].setCompoundDrawablePadding(loginBorderPadding);
+                        underlineViews[0] = new GradientDrawable();
+                        underlineViews[0].setShape(GradientDrawable.LINE);
+                        buttonSelectors[0].setCompoundDrawablePadding(loginBorderPadding);
                         Rect textBounds = new Rect();
-                        Paint textPaint = buttonSelectors[1].getPaint();
-                        textPaint.getTextBounds(buttonSelectors[1].getText().toString(),
+                        Paint textPaint = buttonSelectors[0].getPaint();
+                        textPaint.getTextBounds(buttonSelectors[0].getText().toString(),
                                 0,
-                                buttonSelectors[1].getText().length(),
+                                buttonSelectors[0].getText().length(),
                                 textBounds);
                         Rect bounds = new Rect(0,
                                 textBounds.top,
                                 textBounds.width() + loginBorderPadding,
                                 textBounds.bottom);
-                        underlineViews[1].setBounds(bounds);
-                        buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
-                        loginModuleSwitcherContainer.addView(buttonSelectors[1]);
-                    } else {
-                        TextView signUpTitle = new TextView(getContext());
-                        LinearLayout.LayoutParams signUpSelectorLayoutParams =
-                                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.WRAP_CONTENT);
-                        signUpSelectorLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                        signUpTitle.setLayoutParams(signUpSelectorLayoutParams);
-                        signUpTitle.setText(R.string.app_cms_sign_up_pager_title);
-                        signUpTitle.setTextColor(textColor);
-                        signUpTitle.setBackgroundColor(bgColor);
-                        signUpTitle.setGravity(Gravity.CENTER_HORIZONTAL);
-                        loginModuleSwitcherContainer.addView(signUpTitle);
-                    }
+                        underlineViews[0].setBounds(bounds);
+                        buttonSelectors[0].setCompoundDrawables(null, null, null, underlineViews[0]);
+                        loginModuleSwitcherContainer.addView(buttonSelectors[0]);
 
-                    ModuleView moduleView = new ModuleView<>(getContext(), component, false);
-                    setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
-                    childViews[1] = moduleView;
+                        ModuleView moduleView = new ModuleView<>(getContext(), component, false);
+                        setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
+                        childViews[0] = moduleView;
+                        addChildComponents(moduleView, component, 0, appCMSAndroidModules);
+                        topLayoutContainer.addView(moduleView);
+                    } else if (jsonValueKeyMap.get(component.getType()) == AppCMSUIKeyType.PAGE_SIGNUP_COMPONENT_KEY &&
+                            (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE ||
+                                    launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                                    launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP)) {
+                        if (launchType == AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP ||
+                                launchType == AppCMSPresenter.LaunchType.INIT_SIGNUP) {
+                            buttonSelectors[1] = new Button(getContext());
+                            LinearLayout.LayoutParams signupSelectorLayoutParams =
+                                    new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            signupSelectorLayoutParams.weight = 1;
+                            buttonSelectors[1].setText(R.string.app_cms_sign_up_pager_title);
+                            buttonSelectors[1].setTextColor(textColor);
+                            buttonSelectors[1].setBackgroundColor(bgColor);
+                            signupSelectorLayoutParams.gravity = Gravity.END;
+                            buttonSelectors[1].setLayoutParams(signupSelectorLayoutParams);
+                            buttonSelectors[1].setOnClickListener((v) -> {
+                                selectChild(1);
+                                unselectChild(0);
+                                if (appCMSPresenter.isAppSVOD()) {
+                                    if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
+                                        appCMSPresenter.navigateToSubscriptionPlansPage(appCMSPresenter.getLoginFromNavPage());
+                                        appCMSPresenter.sendCloseOthersAction(null,
+                                                true,
+                                                false);
+                                    } else {
+                                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                                    }
+                                }
+                            });
+
+                            underlineViews[1] = new GradientDrawable();
+                            underlineViews[1].setShape(GradientDrawable.LINE);
+                            buttonSelectors[1].setCompoundDrawablePadding(loginBorderPadding);
+                            Rect textBounds = new Rect();
+                            Paint textPaint = buttonSelectors[1].getPaint();
+                            textPaint.getTextBounds(buttonSelectors[1].getText().toString(),
+                                    0,
+                                    buttonSelectors[1].getText().length(),
+                                    textBounds);
+                            Rect bounds = new Rect(0,
+                                    textBounds.top,
+                                    textBounds.width() + loginBorderPadding,
+                                    textBounds.bottom);
+                            underlineViews[1].setBounds(bounds);
+                            buttonSelectors[1].setCompoundDrawables(null, null, null, underlineViews[1]);
+                            loginModuleSwitcherContainer.addView(buttonSelectors[1]);
+                        } else {
+                            TextView signUpTitle = new TextView(getContext());
+                            LinearLayout.LayoutParams signUpSelectorLayoutParams =
+                                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                            ViewGroup.LayoutParams.WRAP_CONTENT);
+                            signUpSelectorLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                            signUpTitle.setLayoutParams(signUpSelectorLayoutParams);
+                            signUpTitle.setText(R.string.app_cms_sign_up_pager_title);
+                            signUpTitle.setTextColor(textColor);
+                            signUpTitle.setBackgroundColor(bgColor);
+                            signUpTitle.setGravity(Gravity.CENTER_HORIZONTAL);
+                            loginModuleSwitcherContainer.addView(signUpTitle);
+                        }
+
+                        ModuleView moduleView = new ModuleView<>(getContext(), component, false);
+                        setViewHeight(getContext(), component.getLayout(), LayoutParams.MATCH_PARENT);
+                        childViews[1] = moduleView;
                         addChildComponents(moduleView, component, 1, appCMSAndroidModules);
-                    topLayoutContainer.addView(moduleView);
+                        topLayoutContainer.addView(moduleView);
 
                     }
                 }
@@ -258,26 +259,26 @@ public class LoginModule extends ModuleView {
         if (childViews != null &&
                 childIndex < childViews.length &&
                 childViews[childIndex] != null) {
-        childViews[childIndex].setVisibility(VISIBLE);
-        buttonSelectors[childIndex].setAlpha(1.0f);
-        applyUnderlineToComponent(underlineViews[childIndex], underlineColor);
-        visibleEmailInputView = emailInputViews[childIndex];
-        visiblePasswordInputView = passwordInputViews[childIndex];
+            childViews[childIndex].setVisibility(VISIBLE);
+            buttonSelectors[childIndex].setAlpha(1.0f);
+            applyUnderlineToComponent(underlineViews[childIndex], underlineColor);
+            visibleEmailInputView = emailInputViews[childIndex];
+            visiblePasswordInputView = passwordInputViews[childIndex];
 
-        if (childIndex == 1) {
-            visibleEmailInputView.setText("");
-            visiblePasswordInputView.setText("");
+            if (childIndex == 1) {
+                visibleEmailInputView.setText("");
+                visiblePasswordInputView.setText("");
+            }
         }
-    }
     }
 
     private void unselectChild(int childIndex) {
         if (childViews != null&&
                 childIndex < childViews.length &&
                 childViews[childIndex] != null) {
-        childViews[childIndex].setVisibility(GONE);
-        buttonSelectors[childIndex].setAlpha(0.6f);
-        applyUnderlineToComponent(underlineViews[childIndex], bgColor);
+            childViews[childIndex].setVisibility(GONE);
+            buttonSelectors[childIndex].setAlpha(0.6f);
+            applyUnderlineToComponent(underlineViews[childIndex], bgColor);
         }
     }
 

@@ -108,7 +108,7 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
     public void onResume() {
         super.onResume();
         if (null != appCMSPresenter)
-            appCMSPresenter.sendStopLoadingPageAction();
+            appCMSPresenter.sendStopLoadingPageAction(false,null);
     }
 
     private void setSubNavigationFragment() {

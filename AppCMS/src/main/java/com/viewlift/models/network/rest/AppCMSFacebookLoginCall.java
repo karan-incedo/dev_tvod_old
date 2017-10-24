@@ -41,7 +41,7 @@ public class AppCMSFacebookLoginCall {
             @Override
             public void onResponse(Call<FacebookLoginResponse> call, Response<FacebookLoginResponse> response) {
                 if (response.body() != null) {
-                Observable.just(response.body()).subscribe(readyAction);
+                    Observable.just(response.body()).subscribe(readyAction);
                 } else if (response.errorBody() != null) {
                     try {
                         FacebookLoginResponse facebookLoginResponse =
