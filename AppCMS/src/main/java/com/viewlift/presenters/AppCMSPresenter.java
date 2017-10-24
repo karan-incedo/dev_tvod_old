@@ -3695,6 +3695,8 @@ public class AppCMSPresenter {
             if (installAppSemVer.patch > latestAppSemVer.patch) {
                 return false;
             }
+
+            return true;
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
         }
