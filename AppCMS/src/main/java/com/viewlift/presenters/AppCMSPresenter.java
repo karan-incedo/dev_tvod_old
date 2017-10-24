@@ -975,12 +975,11 @@ public class AppCMSPresenter {
             appCMSUpdateWatchHistoryCall.call(url, getAuthToken(),
                     updateHistoryRequest, s -> {
                         try {
-                            //Log.d(TAG, " Successfully updated watched time for film with filmID: " +
-//                                    filmId +
-//                                    " watchedTime: " +
-//                                    watchedTime);
+                            if (currentActivity != null) {
+                                sendUpdateHistoryAction();
+                            }
                         } catch (Exception e) {
-                            //Log.e(TAG, "Error updating watched time: " + e.getMessage());
+                            Log.e(TAG, "Error updating watched time: " + e.getMessage());
                         }
                     });
             currentActivity.runOnUiThread(() -> {
@@ -1002,15 +1001,13 @@ public class AppCMSPresenter {
                 }
             });
 
-            sendUpdateHistoryAction();
-        }
+         }
     }
 
     public void sendUpdateHistoryAction() {
         Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
         currentActivity.sendBroadcast(updateHistoryIntent);
-        //Log.d(TAG, "Updated watched history");
-    }
+     }
 
     public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
         if (shouldRefreshAuthToken()) {
@@ -4968,7 +4965,6 @@ public class AppCMSPresenter {
     public void getPageIdContent(String urlWithContent,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
-
         AppCMSPageAPI appCMSPageAPI = getPageAPILruCache().get(pageId);
         if (appCMSPageAPI == null) {
             if (shouldRefreshAuthToken()) {
@@ -9208,6 +9204,8 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             if (forcedDownload) {
                 appCMSPageAPI = null;
+                if(null != pageId)
+                getPageAPILruCache().remove(pageId);
             }
 
             if (appCMSPageAPI == null) {
@@ -9252,7 +9250,37 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSPageAPI appCMSPageAPI) {
                                 if (appCMSPageAPI != null) {
-                                    populateTVPage(appCMSPageAPI, appCMSPageUI, this.pageId, this.launchActivity, this.pageTitle, isTOSDialogPage, isLoginDialogPage, this.pagePath);
+                                    boolean isHistoryUpdate = false;
+                                    if (isUserLoggedIn()) {
+                                        if (appCMSPageAPI.getModules() != null) {
+                                            List<Module> modules = appCMSPageAPI.getModules();
+                                            for (int i = 0; i < modules.size(); i++) {
+                                                Module module = modules.get(i);
+                                                AppCMSUIKeyType moduleType = getJsonValueKeyMap().get(module.getModuleType());
+                                                if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
+                                                    if (module.getContentData() != null &&
+                                                            !module.getContentData().isEmpty()) {
+                                                        int finalI = i;
+                                                        isHistoryUpdate = true;
+                                                        getHistoryData(appCMSHistoryResult -> {
+                                                            if (appCMSHistoryResult != null) {
+                                                                AppCMSPageAPI historyAPI =
+                                                                        appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                    historyAPI.getModules().get(0).setId(module.getId());
+                                                                    historyAPI.getModules().get(0).setTitle(module.getTitle());
+                                                                   /* appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);*/
+                                                                   modules.set(finalI,historyAPI.getModules().get(0));
+                                                                populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTOSDialogPage,isLoginDialogPage,this.pagePath);
+                                                                return;
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if(!isHistoryUpdate)
+                                    populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTOSDialogPage,isLoginDialogPage,this.pagePath);
                                 } else {
                                     sendStopLoadingPageAction(true, () -> {
                                         navigateToTVPage(pageId, pageTitle, url, launchActivity, searchQuery, forcedDownload, isTOSDialogPage, isLoginDialogPage);
@@ -9690,7 +9718,7 @@ public class AppCMSPresenter {
                         appCMSVideoPageBinder);
                 playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
 
-                currentActivity.startActivity(playVideoIntent);
+                currentActivity.startActivityForResult(playVideoIntent, PLAYER_REQUEST_CODE);
             } else if (actionType == AppCMSActionType.SHARE) {
                 if (extraData != null && extraData.length > 0) {
                     Intent sendIntent = new Intent();
