@@ -16,7 +16,6 @@ import android.support.percent.PercentLayoutHelper;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +100,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     Runnable mProgressRunnable;
     long mTotalVideoDuration;
     Animation animSequential, animFadeIn, animFadeOut, animTranslate;
-    boolean isStreamStart, isStream25, isStream50, isStream75,isStream100;
+    boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
     private AppCMSPresenter appCMSPresenter;
     private String fontColor;
     private String title;
@@ -139,7 +138,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String policyCookie;
     private String signatureCookie;
     private String keyPairIdCookie;
-    private boolean isVideoLoaded=false;
+    private boolean isVideoLoaded = false;
 
     private BeaconBufferingThread beaconBufferingThread;
     private long beaconBufferingTimeoutMsec;
@@ -174,11 +173,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
-
-    private boolean refreshToken;
-    private Timer refreshTokenTimer;
-    private TimerTask refreshTokenTimerTask;
-
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -195,7 +189,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
-
+    private boolean refreshToken;
+    private Timer refreshTokenTimer;
+    private TimerTask refreshTokenTimerTask;
     private Timer entitlementCheckTimer;
     private TimerTask entitlementCheckTimerTask;
     private boolean entitlementCheckCancelled;
@@ -396,14 +392,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 if (appCMSPresenter.isUserLoggedIn()) {
                                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER,
                                             () -> {
-                                                if(onClosePlayerEvent!=null) {
+                                                if (onClosePlayerEvent != null) {
                                                     onClosePlayerEvent.closePlayer();
                                                 }
                                             });
                                 } else {
                                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
                                             () -> {
-                                                if(onClosePlayerEvent!=null) {
+                                                if (onClosePlayerEvent != null) {
                                                     onClosePlayerEvent.closePlayer();
                                                 }
                                             });
@@ -488,31 +484,31 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
-        System.out.println("videoPlayerView run time-"+ videoPlayerView.getDuration());
+        System.out.println("videoPlayerView run time-" + videoPlayerView.getDuration());
 
-        setCurrentWatchProgress(runTime,watchedTime);
+        setCurrentWatchProgress(runTime, watchedTime);
 
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (beaconMessageThread != null) {
                 beaconMessageThread.playbackState = playerState.getPlaybackState();
             }
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
-                System.out.println("videoPlayerView run time onready-"+ videoPlayerView.getDuration());
+                System.out.println("videoPlayerView run time onready-" + videoPlayerView.getDuration());
                 long updatedRunTime = 0;
                 try {
-                     updatedRunTime = videoPlayerView.getDuration() / 1000;
-                }catch(Exception e){
+                    updatedRunTime = videoPlayerView.getDuration() / 1000;
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 setCurrentWatchProgress(updatedRunTime, watchedTime);
 
-                if(!isVideoLoaded) {
+                if (!isVideoLoaded) {
                     videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
-                    if (!isTrailer ) {
+                    if (!isTrailer) {
                         appCMSPresenter.updateWatchedTime(filmId,
                                 videoPlayerView.getCurrentPosition() / 1000);
                     }
-                    isVideoLoaded=true;
+                    isVideoLoaded = true;
                 }
                 if (shouldRequestAds && !isAdDisplayed) {
                     requestAds(adsUrl);
@@ -665,7 +661,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void setCurrentWatchProgress(long runTime, long watchedTime) {
-        System.out.println("videoPlayerView run time on setcurrent progress-"+ runTime+" watch time-"+watchedTime);
+        System.out.println("videoPlayerView run time on setcurrent progress-" + runTime + " watch time-" + watchedTime);
 
         if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
             long playDifference = runTime - watchedTime;
@@ -677,7 +673,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             } else {
                 videoPlayTime = watchedTime;
             }
-        }else{
+        } else {
             videoPlayTime = 0;
         }
 
@@ -1100,8 +1096,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                         }
 
                         videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
-                            appCMSSignedURLResult.getSignature(),
-                            appCMSSignedURLResult.getKeyPairId());
+                                appCMSSignedURLResult.getSignature(),
+                                appCMSSignedURLResult.getKeyPairId());
 
                         if (foundMatchingMpeg) {
                             videoPlayerView.setUri(Uri.parse(hlsUrl),
@@ -1140,7 +1136,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 0d,
                 0,
                 isVideoDownloaded);
-        if(onClosePlayerEvent!=null){
+        if (onClosePlayerEvent != null) {
             onClosePlayerEvent.closePlayer();
         }
         if (!TextUtils.isEmpty(message)) {
@@ -1370,9 +1366,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case AudioManager.AUDIOFOCUS_GAIN:
-                if(videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
+                if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
                     videoPlayerView.startPlayer();
-                }else{
+                } else {
                     videoPlayerView.pausePlayer();
                 }
                 break;
@@ -1404,7 +1400,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     public interface OnUpdateContentDatumEvent {
         void updateContentDatum(ContentDatum contentDatum);
+
         ContentDatum getCurrentContentDatum();
+
         List<String> getCurrentRelatedVideoIds();
     }
 
