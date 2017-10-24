@@ -34,6 +34,8 @@
             android:label="AppCmsHomeActivity"/>
 
         <activity android:name="com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity"/>
+        <activity android:name="com.viewlift.tv.views.activity.AppCMSTVAutoplayActivity" />
+
     </application>
 
 </manifest>
