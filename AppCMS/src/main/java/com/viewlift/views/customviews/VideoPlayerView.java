@@ -177,7 +177,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void resumePlayer() {
         if (player != null) {
-            player.setPlayWhenReady(player.getPlayWhenReady());
+            if (playerJustInitialized) {
+                player.setPlayWhenReady(true);
+                playerJustInitialized = false;
+            } else {
+                player.setPlayWhenReady(player.getPlayWhenReady());
+            }
         }
     }
 
@@ -313,11 +318,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         setFillBasedOnOrientation();
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
-
-        if (playerJustInitialized) {
-            player.setPlayWhenReady(true);
-            playerJustInitialized = false;
-        }
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
