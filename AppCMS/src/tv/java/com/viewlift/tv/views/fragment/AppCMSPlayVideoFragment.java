@@ -264,7 +264,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                             beaconBufferingThread.sendBeaconBuffering = true;
                             if (!beaconBufferingThread.isAlive()) {
                                 beaconBufferingThread.start();
-                            }
+                             }
                         }
 
                         break;
@@ -290,7 +290,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                             if (!sentBeaconFirstFrame) {
                                 mStopBufferMilliSec = new Date().getTime();
                                 ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                                appCMSPresenter.sendBeaconMessage(filmId,
+                                 appCMSPresenter.sendBeaconMessage(filmId,
                                         permaLink,
                                         parentScreenName,
                                         videoPlayerView.getCurrentPosition(),
@@ -541,7 +541,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
 
         if (!sentBeaconPlay) {
-            appCMSPresenter.sendBeaconMessage(filmId,
+             appCMSPresenter.sendBeaconMessage(filmId,
                     permaLink,
                     parentScreenName,
                     videoPlayerView.getCurrentPosition(),
@@ -701,7 +701,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 }
 
                 if (appCMSPresenter != null) {
-                    appCMSPresenter.sendBeaconMessage(filmId,
+                     appCMSPresenter.sendBeaconMessage(filmId,
                             permaLink,
                             parentScreenName,
                             videoPlayerView.getCurrentPosition(),
@@ -728,7 +728,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 if (appCMSPresenter != null) {
                     mStopBufferMilliSec = new Date().getTime();
                     ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                    appCMSPresenter.sendBeaconMessage(filmId,
+                     appCMSPresenter.sendBeaconMessage(filmId,
                             permaLink,
                             parentScreenName,
                             videoPlayerView.getCurrentPosition(),
@@ -824,7 +824,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
             apod += 1;
             if (appCMSPresenter != null) {
-                appCMSPresenter.sendBeaconMessage(filmId,
+                 appCMSPresenter.sendBeaconMessage(filmId,
                         permaLink,
                         parentScreenName,
                         videoPlayerView.getCurrentPosition(),
@@ -911,7 +911,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             event = AppCMSPresenter.BeaconEvent.FAILED_TO_START;
         }
 
-        appCMSPresenter.sendBeaconMessage(filmId,
+         appCMSPresenter.sendBeaconMessage(filmId,
                 permaLink,
                 parentScreenName,
                 videoPlayerView.getCurrentPosition(),
@@ -974,12 +974,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     if (sendBeaconPing) {
 
                         long currentTime = videoPlayerView.getCurrentPosition() / 1000;
-                        if (appCMSPresenter != null && videoPlayerView != null
+                        playbackState = videoPlayerView.getPlayer().getPlaybackState();
+                        boolean pingCondition = appCMSPresenter != null && videoPlayerView != null
                                 && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
-                                && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0) { // For not to sent PIN in PAUSE mode
-
-                            Log.d(TAG, "Beacon Message Request position: " + currentTime);
-
+                                && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0;
+                        if (pingCondition) { // For not to sent PIN in PAUSE mode
                             appCMSPresenter.sendBeaconMessage(filmId,
                                     permaLink,
                                     parentScreenName,
@@ -1045,7 +1044,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (appCMSPresenter != null && videoPlayerView != null &&
                                 videoPlayerView.getPlayer().getPlayWhenReady() &&
                                 videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) { // For not to sent PIN in PAUSE mode
-                            appCMSPresenter.sendBeaconMessage(filmId,
+                             appCMSPresenter.sendBeaconMessage(filmId,
                                     permaLink,
                                     parentScreenName,
                                     videoPlayerView.getCurrentPosition(),
