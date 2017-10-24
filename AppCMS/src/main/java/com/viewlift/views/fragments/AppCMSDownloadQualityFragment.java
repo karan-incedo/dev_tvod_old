@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,7 +30,8 @@ import com.viewlift.views.modules.AppCMSPageViewModule;
  * Created by sandeep.singh on 7/28/2017.
  */
 
-public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDownloadRadioAdapter.ItemClickListener<Mpeg> {
+public class AppCMSDownloadQualityFragment extends Fragment
+        implements AppCMSDownloadRadioAdapter.ItemClickListener<Mpeg> {
 
     private static final String TAG = AppCMSDownloadQualityFragment.class.getSimpleName();
     private AppCMSDownloadQualityBinder binder;
@@ -112,7 +112,7 @@ public class AppCMSDownloadQualityFragment extends Fragment implements AppCMSDow
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
             continueButton.setOnClickListener(v -> {
-                appCMSPresenter.setUserDownloadQualityPref(downloadQuality); // fix for SVFA-1724
+                appCMSPresenter.setUserDownloadQualityPref(downloadQuality);
                 if (binder != null &&
                         binder.getContentDatum() != null &&
                         binder.getResultAction1() != null) {

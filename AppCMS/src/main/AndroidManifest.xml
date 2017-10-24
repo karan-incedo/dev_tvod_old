@@ -118,6 +118,9 @@
             android:theme="@style/Translucent"
             tools:replace="android:theme" />
         <activity android:name=".ccavenue.screens.EnterMobileNumberActivity"></activity>
+        <!-- This activity declaration should be in the AppCMS/src/tv/AndroidManifest.xml
+        <activity android:name=".tv.views.activity.AppCMSTVAutoplayActivity" />
+        -->
     </application>
 
 </manifest>

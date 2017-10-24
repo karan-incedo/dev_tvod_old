@@ -3,8 +3,6 @@ package com.viewlift.tv.views.presenter;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
-import android.support.design.widget.TabLayout;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
@@ -19,6 +17,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -28,8 +27,6 @@ import com.viewlift.tv.utility.Utils;
 
 import java.util.List;
 import java.util.Map;
-
-import com.viewlift.R;
 
 /**
  * Created by nitin.tyagi on 6/29/2017.
@@ -132,10 +129,12 @@ public class CardPresenter extends Presenter {
                         ImageView imageView = new ImageView(parentLayout.getContext());
                         switch(componentKey){
                             case PAGE_THUMBNAIL_IMAGE_KEY:
+                                Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
                                 FrameLayout.LayoutParams parms = new FrameLayout.LayoutParams(
 
-                                        Utils.getViewXAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getWidth())),
-                                        Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getHeight())));
+                                        Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
+                                        Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
 
                                 imageView.setLayoutParams(parms);
                                 imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
@@ -143,10 +142,19 @@ public class CardPresenter extends Presenter {
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
 
-                                Glide.with(mContext)
-                                        .load(contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE).placeholder(R.drawable.poster_image_placeholder)
-                                        .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
-                                        .into(imageView);
+                                if (itemWidth > itemHeight) {
+                                    Glide.with(mContext)
+                                            .load(contentData.getGist().getVideoImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .placeholder(R.drawable.video_image_placeholder)
+                                            .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
+                                            .into(imageView);
+                                } else {
+                                    Glide.with(mContext)
+                                            .load(contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .placeholder(R.drawable.poster_image_placeholder)
+                                            .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
+                                            .into(imageView);
+                                }
 
                                 //Log.d("TAG" , "Url = "+contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight);
                                 parentLayout.addView(imageView);

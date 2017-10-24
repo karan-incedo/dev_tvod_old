@@ -38,6 +38,7 @@ public class AppCMSVideoPageBinder extends Binder {
     private boolean isLoggedIn;
     private boolean isSubscribed;
     private int currentPlayingVideoIndex;
+    private String currentMovieName;
 
     public AppCMSVideoPageBinder(
             AppCMSPageUI appCMSPageUI,
@@ -256,5 +257,13 @@ public class AppCMSVideoPageBinder extends Binder {
 
     public void setOffline(boolean offline) {
         isOffline = offline;
+    }
+
+    public String getCurrentMovieName() {
+        return currentMovieName;
+    }
+
+    public void setCurrentMovieName(String currentMovieName) {
+        this.currentMovieName = currentMovieName;
     }
 }

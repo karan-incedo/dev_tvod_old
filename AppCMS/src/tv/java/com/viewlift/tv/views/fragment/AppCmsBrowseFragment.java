@@ -17,9 +17,11 @@ import android.view.ViewGroup;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
+import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 
 /**
@@ -87,7 +89,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     long clickedTime;
     public void pushedPlayKey() {
         if (null != rowData) {
-            ((AppCmsHomeActivity)getActivity()).pageLoading(true);
+            Utils.pageLoading(true,getActivity());
             String filmId = rowData.contentData.getGist().getId();
             String permaLink = rowData.contentData.getGist().getPermalink();
             String title = rowData.contentData.getGist().getTitle();
@@ -95,15 +97,19 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                if (!appCMSPresenter.launchTVVideoPlayer(filmId, permaLink, title , rowData.contentData)) {
-                    ((AppCmsHomeActivity)getActivity()).pageLoading(false);
-                    //Log.e(TAG, "Could not launch play action: " +
-//                            " filmId: " +
-//                            filmId +
-//                            " permaLink: " +
-//                            permaLink +
-//                            " title: " +
-//                            title);
+                 if (!appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
+                        -1,
+                        null,
+                        rowData.contentData.getGist().getWatchedTime())){
+                    Utils.pageLoading(false,getActivity());
+                  /*  Log.e(TAG, "Could not launch play action: " +
+                            " filmId: " +
+                            filmId +
+                            " permaLink: " +
+                            permaLink +
+                            " title: " +
+                            title); */
+ 
                 }
             } else {
                 appCMSPresenter.showLoadingDialog(false);
@@ -136,28 +142,49 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 extraData[0] = permalink;
                 extraData[1] = hlsUrl;
                 extraData[2] = data.getGist().getId();
-                if (null != data.getContentDetails()
-                        && null != data.getContentDetails().getClosedCaptions()
-                        && null != data.getContentDetails().getClosedCaptions().get(0)
-                        && null != data.getContentDetails().getClosedCaptions().get(0).getUrl()) {
-                    extraData[3] = data.getContentDetails().getClosedCaptions().get(0).getUrl();
+                if (data.getContentDetails() != null &&
+                       data.getContentDetails().getClosedCaptions() != null) {
+                    for (ClosedCaptions closedCaption :
+                            data.getContentDetails().getClosedCaptions()) {
+                        if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                            extraData[3] = closedCaption.getUrl();
+                            break;
+                        }
+                    }
                 }
                 //Log.d(TAG, "Launching " + permalink + ": " + action);
                 if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
                         action,
                         title,
                         extraData,
-                        false,
-                        data)) {
-                    //Log.e(TAG, "Could not launch action: " +
-//                            " permalink: " +
-//                            permalink +
-//                            " action: " +
-//                            action +
-//                            " hlsUrl: " +
-//                            hlsUrl);
+
+                        data,
+                        false,-1, null)) {
+             /*       Log.e(TAG, "Could not launch action: " +
+                            " permalink: " +
+                            permalink +
+                            " action: " +
+                            action +
+                            " hlsUrl: " +
+                            hlsUrl);  */
                 }
             }
+            /*if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
+                        action,
+                        title,
+                        extraData,
+                        data,
+                        false,
+                        -1,
+                        null)) {
+                    Log.e(TAG, "Could not launch action: " +
+                            " permalink: " +
+                            permalink +
+                            " action: " +
+                            action +
+                            " hlsUrl: " +
+                            hlsUrl);
+                }*/
 
             itemViewHolder.view.setClickable(false);
             new Handler().postDelayed(() -> itemViewHolder.view.setClickable(true), 3000);
