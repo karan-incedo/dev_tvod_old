@@ -3684,10 +3684,16 @@ public class AppCMSPresenter {
             SemVer latestAppSemVer = new SemVer();
             latestAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getLatest());
 
-            if (installAppSemVer.major < latestAppSemVer.major ||
-                    installAppSemVer.minor < latestAppSemVer.minor ||
-                    installAppSemVer.patch < latestAppSemVer.patch) {
-                return true;
+            if (installAppSemVer.major > latestAppSemVer.major) {
+                return false;
+            }
+
+            if (installAppSemVer.minor > latestAppSemVer.minor) {
+                return false;
+            }
+
+            if (installAppSemVer.patch > latestAppSemVer.patch) {
+                return false;
             }
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
@@ -3702,11 +3708,19 @@ public class AppCMSPresenter {
             SemVer minAppVersion = new SemVer();
             minAppVersion.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getMinimum());
 
-            if (installAppSemVer.major < minAppVersion.major ||
-                    installAppSemVer.minor < minAppVersion.minor ||
-                    installAppSemVer.patch < minAppVersion.patch) {
-                return true;
+            if (installAppSemVer.major > minAppVersion.major) {
+                return false;
             }
+
+            if (installAppSemVer.minor > minAppVersion.minor) {
+                return false;
+            }
+
+            if (installAppSemVer.patch > minAppVersion.patch) {
+                return false;
+            }
+
+            return true;
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
         }
