@@ -491,7 +491,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         System.out.println("videoPlayerView run time-"+ videoPlayerView.getDuration());
        
         setCurrentWatchProgress(runTime,watchedTime);
-        
+
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (beaconMessageThread != null) {
                 beaconMessageThread.playbackState = playerState.getPlaybackState();
