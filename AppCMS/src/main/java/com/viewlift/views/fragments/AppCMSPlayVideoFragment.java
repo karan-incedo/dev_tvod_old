@@ -46,9 +46,7 @@ import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
-import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
@@ -454,7 +452,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton = (ImageButton) rootView.findViewById(R.id.app_cms_video_player_done_button);
         videoPlayerViewDoneButton.setOnClickListener(v -> {
             if (onClosePlayerEvent != null) {
-                videoPlayerView.releasePlayer();
                 onClosePlayerEvent.closePlayer();
             }
         });
@@ -567,7 +564,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                 if (onClosePlayerEvent != null &&
                         permaLink.contains(
                                 getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
-                    videoPlayerView.releasePlayer();
                     onClosePlayerEvent.closePlayer();
                     return;
                 }
@@ -721,6 +717,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onPause() {
         pauseVideo();
+        videoPlayerView.releasePlayer();
         super.onPause();
     }
 
@@ -887,7 +884,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onDestroyView() {
         videoPlayerView.setOnPlayerStateChanged(null);
-        videoPlayerView.releasePlayer();
         beaconMessageThread.sendBeaconPing = false;
         beaconMessageThread.runBeaconPing = false;
         beaconMessageThread.videoPlayerView = null;
@@ -1086,7 +1082,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                 0d,
                 0,
                 isVideoDownloaded);
-        videoPlayerView.releasePlayer();
         if(onClosePlayerEvent!=null){
             onClosePlayerEvent.closePlayer();
         }
