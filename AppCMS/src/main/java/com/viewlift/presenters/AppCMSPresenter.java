@@ -2814,8 +2814,7 @@ public class AppCMSPresenter {
         //Send Firebase Analytics when user is subscribed and user is Logged In
         sendFirebaseLoginSubscribeSuccess();
 
-        if (getUserDownloadLocationPref() &&
-                !hasWriteExternalStoragePermission()) {
+        if (!hasWriteExternalStoragePermission()) {
             requestDownloadQualityScreen = false;
             askForPermissionToDownloadToExternalStorage(true,
                     contentDatum,
