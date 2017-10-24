@@ -520,7 +520,6 @@ public class AppCMSPresenter {
     private LruCache<String, AppCMSPageAPI> pageAPILruCache;
     private EntitlementPendingVideoData entitlementPendingVideoData;
     private List<SubscriptionPlan> subscriptionPlans;
-    private boolean navigateToHomeToRefresh;
     private boolean configurationChanged;
     private FirebaseAnalytics mFireBaseAnalytics;
     private boolean runUpdateDownloadIconTimer;
@@ -1327,7 +1326,6 @@ public class AppCMSPresenter {
                         entitlementPendingVideoData.filmTitle = filmTitle;
                         entitlementPendingVideoData.extraData = extraData;
                         entitlementPendingVideoData.relateVideoIds = relateVideoIds;
-                        navigateToHomeToRefresh = false;
                         isVideoPlayerStarted = false;
 
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
@@ -4895,13 +4893,8 @@ public class AppCMSPresenter {
 
     public void sendRefreshPageAction() {
         if (currentActivity != null) {
-            if (navigateToHomeToRefresh) {
-                navigateToHomePage();
-                navigateToHomeToRefresh = false;
-            } else {
-                Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
-                currentActivity.sendBroadcast(refreshPageIntent);
-            }
+            Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
+            currentActivity.sendBroadcast(refreshPageIntent);
         }
     }
 
@@ -5940,8 +5933,6 @@ public class AppCMSPresenter {
             if (googleApiClient != null && googleApiClient.isConnected()) {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
             }
-
-            navigateToHomeToRefresh = true;
 
             refreshAPIData(null, false);
 
@@ -7173,7 +7164,6 @@ public class AppCMSPresenter {
 
         if (entitlementPendingVideoData != null) {
             isVideoPlayerStarted = false;
-            navigateToHomeToRefresh = false;
             sendRefreshPageAction();
             sendCloseOthersAction(null, true, false);
             launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
@@ -7348,7 +7338,6 @@ public class AppCMSPresenter {
                                 setIsUserSubscribed(true);
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
                                 if (entitlementPendingVideoData != null) {
-                                    navigateToHomeToRefresh = false;
                                     sendRefreshPageAction();
                                     if (!loginFromNavPage) {
                                         sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -7871,7 +7860,6 @@ public class AppCMSPresenter {
                 checkUpgradeFlag = false;
                 refreshSubscriptionData(() -> {
                     if (entitlementPendingVideoData != null) {
-                        navigateToHomeToRefresh = false;
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -7936,7 +7924,6 @@ public class AppCMSPresenter {
                 refreshAPIData(() -> {
                 }, false);
                 if (entitlementPendingVideoData != null) {
-                    navigateToHomeToRefresh = false;
                     sendRefreshPageAction();
                     if (!loginFromNavPage) {
                         sendCloseOthersAction(null, true, !loginFromNavPage);
