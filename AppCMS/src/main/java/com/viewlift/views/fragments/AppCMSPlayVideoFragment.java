@@ -139,6 +139,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String policyCookie;
     private String signatureCookie;
     private String keyPairIdCookie;
+    private boolean isVideoLoaded=false;
 
     private BeaconBufferingThread beaconBufferingThread;
     private long beaconBufferingTimeoutMsec;
@@ -498,24 +499,34 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
-        if (runTime > 0 && watchedTime > 0) {
-            long playDifference = runTime - watchedTime;
-            long playTimePercentage = ((watchedTime * 100) / runTime);
-
-            // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
-            if (playTimePercentage >= 98 && playDifference <= 30) {
-                videoPlayTime = 0;
-            } else {
-                videoPlayTime = watchedTime;
-            }
-        }
+        System.out.println("videoPlayerView run time-"+ videoPlayerView.getDuration());
+       
+        setCurrentWatchProgress(runTime,watchedTime);
 
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
+
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (beaconMessageThread != null) {
                 beaconMessageThread.playbackState = playerState.getPlaybackState();
             }
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
+                System.out.println("videoPlayerView run time onready-"+ videoPlayerView.getDuration());
+                long updatedRunTime = 0;
+                try {
+                     updatedRunTime = videoPlayerView.getDuration() / 1000;
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+                setCurrentWatchProgress(updatedRunTime, watchedTime);
+
+                if(!isVideoLoaded) {
+                    videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
+                    if (!isTrailer ) {
+                        appCMSPresenter.updateWatchedTime(filmId,
+                                videoPlayerView.getCurrentPosition() / 1000);
+                    }
+                    isVideoLoaded=true;
+                }
                 if (shouldRequestAds && !isAdDisplayed) {
                     requestAds(adsUrl);
                 } else {
@@ -664,6 +675,25 @@ public class AppCMSPlayVideoFragment extends Fragment
         }*/
 
         return rootView;
+
+    }
+
+    private void setCurrentWatchProgress(long runTime, long watchedTime) {
+        System.out.println("videoPlayerView run time on setcurrent progress-"+ runTime+" watch time-"+watchedTime);
+
+        if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
+            long playDifference = runTime - watchedTime;
+            long playTimePercentage = ((watchedTime * 100) / runTime);
+
+            // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
+            if (playTimePercentage >= 98 && playDifference <= 30) {
+                videoPlayTime = 0;
+            } else {
+                videoPlayTime = watchedTime;
+            }
+        }else{
+            videoPlayTime = 0;
+        }
 
     }
 

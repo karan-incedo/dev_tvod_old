@@ -713,7 +713,7 @@ public class CastHelper {
 
         for (int i = 0; i < freeMovieIndices.size(); i++) {
             freeMovies.add(listRelatedVideosDetails.get(freeMovieIndices.get(i)));
-            freeMovieIds.add(listCompareRelatedVideosId.get(freeMovieIndices.get(i)));
+            freeMovieIds.add(listRelatedVideosDetails.get(freeMovieIndices.get(i)).getGist().getId());
         }
 
         listRelatedVideosDetails = freeMovies;
