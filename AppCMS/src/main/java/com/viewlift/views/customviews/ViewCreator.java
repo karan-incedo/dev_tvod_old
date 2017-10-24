@@ -3146,7 +3146,6 @@ public class ViewCreator {
                         appCMSPresenter.cancelDownloadIconTimerTask();
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
-                        appCMSPresenter.startNextDownload();
                         appCMSPresenter.notifyDownloadHasCompleted();
                         break;
 

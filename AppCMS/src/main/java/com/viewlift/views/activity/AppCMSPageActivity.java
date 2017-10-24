@@ -13,6 +13,7 @@ import android.content.ServiceConnection;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -190,7 +191,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (BaseView.isTablet(this)) {
+        if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
@@ -225,6 +226,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction() != null
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION)) {
+
                     Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
                     try {
                         updatedAppCMSBinder =
@@ -283,8 +285,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     boolean closeSelf = intent.getBooleanExtra(getString(R.string.close_self_key),
                             false);
-                    boolean closeOnePage = intent.getBooleanExtra(getString(R.string.close_one_page_key),
-                            false);
+                    boolean closeOnePage = intent.getBooleanExtra(getString(R.string.close_one_page_key), false);
                     if (closeSelf && !handlingClose && appCMSBinderStack.size() > 1) {
                         handlingClose = true;
                         handleCloseAction(closeOnePage);
@@ -338,7 +339,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-                    //
+                    DownloadManager downloadManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
+                    long referenceId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+                    DownloadManager.Query downloadQuery = new DownloadManager.Query();
+                    downloadQuery.setFilterById(referenceId);
+                    Cursor cursor = downloadManager.query(downloadQuery);
+                    if (cursor.moveToFirst()) {
+                        try {
+                            String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_MEDIA_TYPE));
+                            int status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
+                            if (mimeType.contains("mp4") &&
+                                    (status == DownloadManager.STATUS_SUCCESSFUL ||
+                                            status == DownloadManager.STATUS_FAILED)) {
+                                appCMSPresenter.startNextDownload();
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
                 }
             }
         };
@@ -450,12 +468,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //        Log.d(TAG, "onCreate()");
 
         appCMSPresenter.setCancelAllLoads(false);
-
-        sendAnalytics();
-    }
-
-    private void sendAnalytics() {
-        trackInstallationEvent(getApplication());
     }
 
     private void initPageActivity() {
@@ -1528,7 +1540,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             homePageNav.getTitle());
                 });
                 homeNavBarItemView.setTag(homePageNav.getPageId());
-                selectNavItem(homeNavBarItemView);
+                if (getSelectedNavItem() == null) {
+                    selectNavItem(homeNavBarItemView);
+                }
             }
         }
     }
