@@ -3385,6 +3385,8 @@ public class AppCMSPresenter {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
             }
+
+            iv2.requestLayout();
         }
     }
 

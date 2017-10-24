@@ -105,14 +105,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public VideoPlayerView(Context context) {
         super(context);
+        initializeView(context);
     }
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        initializeView(context);
     }
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        initializePlayer(context);
     }
 
     public SimpleExoPlayer getPlayer() {
@@ -255,6 +258,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
+    private void initializeView(Context context) {
+        LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
+        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
+    }
+
     public void init(Context context) {
         initializePlayer(context);
         playerState = new PlayerState();
@@ -264,8 +272,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private void initializePlayer(Context context) {
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
-        LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
         ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);

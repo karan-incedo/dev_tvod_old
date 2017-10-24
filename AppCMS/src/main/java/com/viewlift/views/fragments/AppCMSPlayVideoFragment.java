@@ -489,7 +489,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
         System.out.println("videoPlayerView run time-"+ videoPlayerView.getDuration());
-       
+
         setCurrentWatchProgress(runTime,watchedTime);
 
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
@@ -551,7 +551,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                     }
                 }
                 videoLoadingProgress.setVisibility(View.GONE);
-                requestAudioFocus();
             } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
                 //Log.d(TAG, "Video ended");
                 if (shouldRequestAds && adsLoader != null) {
@@ -726,6 +725,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
     @Override
     public void onResume() {
+        videoPlayerMainContainer.requestLayout();
         videoPlayerView.init(getContext());
         videoPlayerView.enableController();
         if (!TextUtils.isEmpty(hlsUrl)) {
@@ -741,7 +741,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 
         requestAudioFocus();
-//        resumeVideo();
+        resumeVideo();
         super.onResume();
     }
 
