@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
+import android.view.TextureView;
 import android.widget.FrameLayout;
 import android.widget.ToggleButton;
 
@@ -103,17 +105,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public VideoPlayerView(Context context) {
         super(context);
-        init(context, null, 0);
     }
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        init(context, attrs, 0);
     }
 
     public VideoPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs, defStyleAttr);
     }
 
     public SimpleExoPlayer getPlayer() {
@@ -256,13 +255,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
-    private void init(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        initializePlayer(context, attrs, defStyleAttr);
+    public void init(Context context) {
+        initializePlayer(context);
         playerState = new PlayerState();
         failedMediaSourceLoads = new HashMap<>();
     }
 
-    private void initializePlayer(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    private void initializePlayer(Context context) {
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
@@ -295,7 +294,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 onPlayerControlsStateChanged.call(visibility);
             }
         });
-//        player.addVideoListener(this);
+        player.addVideoListener(this);
 
         AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
@@ -422,6 +421,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
+        if (mErrorEventListener != null) {
+            mErrorEventListener.onRefreshTokenCallback();
+        }
     }
 
     @Override
@@ -459,7 +461,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                                int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                                long mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs,
                                long bytesLoaded) {
-        //Log.d(TAG, "Load cancelled");
+        Log.d(TAG, "Load cancelled");
     }
 
     @Override
@@ -741,10 +743,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             if (useHls && updatedUri.toString().contains("?")) {
                 updatedUri = Uri.parse(updatedUri.toString().substring(0, dataSpec.uri.toString().indexOf("?")));
             }
-            final DataSpec updatedDataSpec = new DataSpec(updatedUri,
-                    dataSpec.absoluteStreamPosition,
-                    dataSpec.length,
-                    dataSpec.key);
 
             if (useHls && dataSource instanceof DefaultHttpDataSource) {
                 if (!TextUtils.isEmpty(signatureCookies.policyCookie) &&
@@ -762,6 +760,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     ((DefaultHttpDataSource) dataSource).setRequestProperty("Cookie", cookies.toString());
                 }
             }
+
+            final DataSpec updatedDataSpec = new DataSpec(updatedUri,
+                    dataSpec.absoluteStreamPosition,
+                    dataSpec.length,
+                    dataSpec.key);
 
             // Open the source and return.
             try {
