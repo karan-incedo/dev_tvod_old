@@ -8568,6 +8568,7 @@ public class AppCMSPresenter {
                                                                     pageViewLruCache != null) {
                                                                 navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                                                                 pageViewLruCache.evictAll();
+                                                                getPageAPILruCache().evictAll();
 
                                                                 String action = pageNameToActionMap.get(metaPage.getPageName());
                                                                 if (action != null && actionToPageMap.containsKey(action)) {
@@ -8593,6 +8594,7 @@ public class AppCMSPresenter {
                                             if (appCMSAndroidModules.isLoadedFromNetwork() &&
                                                     pageViewLruCache != null) {
                                                 pageViewLruCache.evictAll();
+                                                getPageAPILruCache().evictAll();
                                             }
 
                                             if (onreadyAction != null) {
