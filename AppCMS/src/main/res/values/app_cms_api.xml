@@ -203,6 +203,7 @@
     <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
     <string name="app_cms_page_api_title_key">title</string>
+    <string name="app_cms_page_title_key">pageTitle</string>
     <string name="app_cms_page_api_show_title_key">showTitle</string>
     <string name="app_cms_page_api_episode_title_key">episodeTitle</string>
     <string name="app_cms_page_api_description_key">description</string>

@@ -112,7 +112,7 @@ public class AppCMSDownloadQualityFragment extends Fragment
             ((AppCMSDownloadQualityAdapter) listDownloadQuality.getAdapter()).setItemClickListener(this);
 
             continueButton.setOnClickListener(v -> {
-                appCMSPresenter.setUserDownloadQualityPref(downloadQuality); // fix for SVFA-1724
+                appCMSPresenter.setUserDownloadQualityPref(downloadQuality);
                 if (binder != null &&
                         binder.getContentDatum() != null &&
                         binder.getResultAction1() != null) {

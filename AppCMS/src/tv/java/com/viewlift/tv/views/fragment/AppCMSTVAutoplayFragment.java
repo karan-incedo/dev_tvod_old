@@ -1,18 +1,18 @@
-package com.viewlift.views.fragments;
+package com.viewlift.tv.views.fragment;
 
-
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -22,50 +22,51 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.tv.views.component.AppCMSTVViewComponent;
+import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
+import com.viewlift.tv.views.customviews.AppCMSTVAutoplayCustomLoader;
+import com.viewlift.tv.views.customviews.TVPageView;
+import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
-import com.viewlift.views.components.AppCMSViewComponent;
-import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
-import com.viewlift.views.modules.AppCMSPageViewModule;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-/**
- * This fragment is the manifestation of the autoplay screen which opens whenever a movie gets
- * completed and a new movie is to be played
- */
-public class AutoplayFragment extends Fragment {
+public class AppCMSTVAutoplayFragment extends Fragment {
+
     private static final String TAG = "AutoplayFragment";
-    private static final int TOTAL_COUNTDOWN_IN_MILLIS = 13000;
-    private static final int COUNTDOWN_INTERVAL_IN_MILLIS = 1000;
     private FragmentInteractionListener fragmentInteractionListener;
     private AppCMSVideoPageBinder binder;
     private AppCMSPresenter appCMSPresenter;
-    private AppCMSViewComponent appCMSViewComponent;
-    private PageView pageView;
+    private AppCMSTVViewComponent appCMSViewComponent;
+    private TVPageView pageView;
     private OnPageCreation onPageCreation;
     private CountDownTimer countdownTimer;
-    private TextView tvCountdown;
 
-    public AutoplayFragment() {
-        // Required empty public constructor
+    private final int totalCountdownInMillis = 13000;
+    private final int countDownIntervalInMillis = 1000;
+    private TextView tvCountdown;
+    private Context context;
+    private boolean cancelCountdown = true;
+
+    public interface OnPageCreation {
+        void onSuccess(AppCMSVideoPageBinder binder);
+
+        void onError(AppCMSVideoPageBinder binder);
     }
 
-    public static AutoplayFragment newInstance(Context context, AppCMSVideoPageBinder binder) {
-        AutoplayFragment fragment = new AutoplayFragment();
-        Bundle args = new Bundle();
-        args.putBinder(context.getString(R.string.fragment_page_bundle_key), binder);
-        fragment.setArguments(args);
-        return fragment;
+    public AppCMSTVAutoplayFragment() {
+        // Required empty public constructor
     }
 
     @Override
     public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
         if (context instanceof OnPageCreation) {
             try {
                 onPageCreation = (OnPageCreation) context;
-                super.onAttach(context);
                 this.fragmentInteractionListener = (FragmentInteractionListener) getActivity();
                 binder = (AppCMSVideoPageBinder)
                         getArguments().getBinder(context.getString(R.string.fragment_page_bundle_key));
@@ -74,7 +75,30 @@ public class AutoplayFragment extends Fragment {
                         .appCMSPresenter();
                 appCMSViewComponent = buildAppCMSViewComponent();
             } catch (ClassCastException e) {
-                //Log.e(TAG, "Could not attach fragment: " + e.toString());
+                Log.e(TAG, "Could not attach fragment: " + e.toString());
+            }
+        } else {
+            throw new RuntimeException("Attached context must implement " +
+                    OnPageCreation.class.getCanonicalName());
+        }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        this.context = activity;
+        if (activity instanceof OnPageCreation) {
+            try {
+                onPageCreation = (OnPageCreation) activity;
+                this.fragmentInteractionListener = (FragmentInteractionListener) getActivity();
+                binder = (AppCMSVideoPageBinder)
+                        getArguments().getBinder(activity.getString(R.string.fragment_page_bundle_key));
+                appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+                        .getAppCMSPresenterComponent()
+                        .appCMSPresenter();
+                appCMSViewComponent = buildAppCMSViewComponent();
+            } catch (ClassCastException e) {
+                Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         } else {
             throw new RuntimeException("Attached context must implement " +
@@ -96,7 +120,7 @@ public class AutoplayFragment extends Fragment {
         }
 
         if (appCMSViewComponent != null) {
-            pageView = appCMSViewComponent.appCMSPageView();
+            pageView = appCMSViewComponent.appCMSTVPageView();
         } else {
             pageView = null;
         }
@@ -105,7 +129,7 @@ public class AutoplayFragment extends Fragment {
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
-            if (!BaseView.isTablet(getContext())) {
+            if (!BaseView.isTablet(context)) {
                 appCMSPresenter.restrictPortraitOnly();
             } else {
                 appCMSPresenter.unrestrictPortraitOnly();
@@ -118,30 +142,54 @@ public class AutoplayFragment extends Fragment {
 
         if (pageView != null) {
             tvCountdown = (TextView) pageView.findViewById(R.id.countdown_id);
-            Button playButton = (Button) pageView.findViewById(R.id.autoplay_play_button);
+            ImageView movieImage = (ImageView) pageView.findViewById(R.id.autoplay_play_movie_image);
+            Button cancelCountdownButton = (Button) pageView.findViewById(R.id.autoplay_cancel_countdown_button);
+            TextView finishedMovieTitle = (TextView) pageView.findViewById(R.id.autoplay_finished_movie_title);
+            TextView upNextTextView = (TextView) pageView.findViewById(R.id.up_next_text_view_id);
+            AppCMSTVAutoplayCustomLoader appCMSTVAutoplayCustomLoader = (AppCMSTVAutoplayCustomLoader) pageView.findViewById(R.id.autoplay_rotating_loader_view_id);
 
-            if (playButton != null) {
-                playButton.setOnClickListener(v -> {
+            if (movieImage != null) {
+                movieImage.setOnClickListener(v -> {
                     if (isAdded() && isVisible()) {
                         fragmentInteractionListener.onCountdownFinished();
                     }
                 });
             }
+
+            if (cancelCountdownButton != null) {
+                cancelCountdownButton.requestFocus();
+                cancelCountdownButton.setOnClickListener(v -> {
+                    if (cancelCountdown) {
+                        stopCountdown();
+                        cancelCountdownButton.setText(getString(R.string.back));
+                        cancelCountdown = false;
+                        if (appCMSTVAutoplayCustomLoader != null) {
+                            appCMSTVAutoplayCustomLoader.setVisibility(View.GONE);
+                        }
+                        if (upNextTextView != null) {
+                            upNextTextView.setVisibility(View.GONE);
+                        }
+                    } else {
+                        fragmentInteractionListener.closeActivity();
+                    }
+                });
+            }
+
+            if (finishedMovieTitle != null) {
+                finishedMovieTitle.setText(binder.getCurrentMovieName());
+            }
             if (pageView.getChildAt(0) != null) {
-                pageView.getChildAt(0)
-                        .setBackgroundColor(Color.parseColor(
-                                appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                                        .getBackgroundColor().replace("#", "#DD")));
+                pageView.getChildAt(0).setBackgroundResource(R.drawable.autoplay_overlay);
             }
             String imageUrl;
-            if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+            if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                 imageUrl = binder.getContentData().getGist().getVideoImageUrl();
             } else {
                 imageUrl = binder.getContentData().getGist().getPosterImageUrl();
             }
 
-            Glide.with(getContext()).load(imageUrl)
-                    .bitmapTransform(new BlurTransformation(getContext()))
+            Glide.with(context).load(imageUrl)
+                    .bitmapTransform(new BlurTransformation(context, 5))
                     .into(new SimpleTarget<GlideDrawable>() {
                         @Override
                         public void onResourceReady(GlideDrawable resource,
@@ -157,14 +205,13 @@ public class AutoplayFragment extends Fragment {
     }
 
     private void startCountdown() {
-        countdownTimer = new CountDownTimer(TOTAL_COUNTDOWN_IN_MILLIS, COUNTDOWN_INTERVAL_IN_MILLIS) {
+        countdownTimer = new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
 
             @Override
             public void onTick(long millisUntilFinished) {
                 if (isAdded() && isVisible() && tvCountdown != null) {
                     int quantity = (int) (millisUntilFinished / 1000);
-                    tvCountdown.setText(getResources().getQuantityString(R.plurals.countdown_seconds,
-                            quantity, quantity));
+                    tvCountdown.setText(Integer.toString(quantity));
                 }
             }
 
@@ -177,6 +224,10 @@ public class AutoplayFragment extends Fragment {
         }.start();
     }
 
+    private void stopCountdown() {
+        countdownTimer.cancel();
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -184,7 +235,7 @@ public class AutoplayFragment extends Fragment {
             try {
                 binder = (AppCMSVideoPageBinder) savedInstanceState.getBinder(getString(R.string.app_cms_video_player_binder_key));
             } catch (ClassCastException e) {
-                //Log.e(TAG, "Could not attach fragment: " + e.toString());
+                Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
         if (countdownTimer == null) {
@@ -195,12 +246,12 @@ public class AutoplayFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (PageView.isTablet(getContext()) || (binder != null && binder.isFullscreenEnabled())) {
+        if (PageView.isTablet(context) || (binder != null && binder.isFullscreenEnabled())) {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
 
         if (pageView == null) {
-            //Log.e(TAG, "AppCMS page creation error");
+            Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(binder);
         } else {
             pageView.notifyAdaptersOfUpdate();
@@ -221,10 +272,16 @@ public class AutoplayFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
-        if (binder != null && appCMSViewComponent.viewCreator() != null) {
-            appCMSPresenter.removeLruCacheItem(getContext(), binder.getPageID());
+        if (binder != null && appCMSViewComponent.tvviewCreator() != null) {
+            appCMSPresenter.removeLruCacheItem(context, binder.getPageID());
         }
         if (countdownTimer != null) {
             countdownTimer.cancel();
@@ -247,16 +304,12 @@ public class AutoplayFragment extends Fragment {
         handleOrientation(newConfig.orientation);
     }
 
-    public AppCMSViewComponent buildAppCMSViewComponent() {
-        return DaggerAppCMSViewComponent.builder()
-                .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
-                        binder.getAppCMSPageUI(),
-                        binder.getAppCMSPageAPI(),
-                        appCMSPresenter.getAppCMSAndroidModules(),
-                        binder.getScreenName(),
-                        binder.getJsonValueKeyMap(),
-                        appCMSPresenter))
-                .build();
+    public static AppCMSTVAutoplayFragment newInstance(Context context, AppCMSVideoPageBinder binder) {
+        AppCMSTVAutoplayFragment fragment = new AppCMSTVAutoplayFragment();
+        Bundle args = new Bundle();
+        args.putBinder(context.getString(R.string.fragment_page_bundle_key), binder);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -265,13 +318,19 @@ public class AutoplayFragment extends Fragment {
         fragmentInteractionListener = null;
     }
 
-    public interface OnPageCreation {
-        void onSuccess(AppCMSVideoPageBinder binder);
-
-        void onError(AppCMSVideoPageBinder binder);
-    }
-
     public interface FragmentInteractionListener {
         void onCountdownFinished();
+
+        void closeActivity();
+    }
+
+    public AppCMSTVViewComponent buildAppCMSViewComponent() {
+        return DaggerAppCMSTVViewComponent.builder()
+                .appCMSTVPageViewModule(new AppCMSTVPageViewModule(context,
+                        binder.getAppCMSPageUI(),
+                        binder.getAppCMSPageAPI(),
+                        binder.getJsonValueKeyMap(),
+                        appCMSPresenter))
+                .build();
     }
 }

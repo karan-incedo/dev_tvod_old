@@ -98,6 +98,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             }
 
             NestedScrollView nestedScrollView = (NestedScrollView) view.findViewById(R.id.app_cms_nav_items_main_view);
+
             LinearLayout appCMSNavLoginContainer = (LinearLayout) view.findViewById(R.id.app_cms_nav_login_container);
             if (appCMSPresenter.isUserLoggedIn()) {
                 appCMSNavLoginContainer.setVisibility(View.GONE);
@@ -166,6 +167,7 @@ public class AppCMSNavItemsFragment extends DialogFragment {
             appCMSPresenter.unrestrictPortraitOnly();
         }else{
             appCMSPresenter.restrictPortraitOnly();
+
         }
     }
 

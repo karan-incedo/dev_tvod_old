@@ -258,9 +258,11 @@ public class AppCMSVideoPageBinder extends Binder {
     public void setOffline(boolean offline) {
         isOffline = offline;
     }
+
     public String getCurrentMovieName() {
         return currentMovieName;
     }
+
     public void setCurrentMovieName(String currentMovieName) {
         this.currentMovieName = currentMovieName;
     }

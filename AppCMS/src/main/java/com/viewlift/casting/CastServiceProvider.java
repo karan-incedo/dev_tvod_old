@@ -38,6 +38,7 @@ import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 
 import java.util.List;
 
+import rx.functions.Action0;
 /**
  * A singleton to manage the different casting options such as chromecast and roku , on different activities.
  * google cast and roku instances creates single time here and on activity change instance of activity and cast icon view pass here.
@@ -462,12 +463,18 @@ public class CastServiceProvider {
 
         mMediaRouteButton.setOnClickListener(v -> {
             if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
+                CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity()).getSessionManager().endCurrentSession(true);
                 if (appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
-                    CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity()).getSessionManager().endCurrentSession(true);
                 } else {
-                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
-                    CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity()).getSessionManager().endCurrentSession(true);
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, new Action0() {
+                        @Override
+                        public void call() {
+                            if (mActivity instanceof AppCMSPlayVideoActivity) {
+                                mActivity.finish();
+                            }
+                        }
+                    });
                 }
             } else {
                 try {

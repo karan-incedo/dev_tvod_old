@@ -3298,6 +3298,7 @@ public class ViewCreator {
     public static  VideoPlayerView playerView(Context context){
 
         VideoPlayerView videoPlayerView = new VideoPlayerView(context);
+        videoPlayerView.init(context);
         // it should be dynamic when live url come from api
         videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
                 null);

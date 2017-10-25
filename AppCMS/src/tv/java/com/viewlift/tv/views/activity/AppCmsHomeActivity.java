@@ -64,6 +64,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private FrameLayout shadowView;
     AppCmsNavigationFragment navigationFragment;
     private BroadcastReceiver presenterActionReceiver;
+    private BroadcastReceiver updateHistoryDataReciever;
     AppCMSBinder updatedAppCMSBinder;
     AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
@@ -128,6 +129,15 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             appCMSBinder.getAppCMSSearchCall()))
                     .build();
         }
+        updateHistoryDataReciever = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
+                    updateData();
+                }
+            }
+        };
+        registerReceiver(updateHistoryDataReciever , new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
 
         presenterActionReceiver = new BroadcastReceiver() {
             @Override
@@ -240,8 +250,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        isActive = true;
         registerReceivers();
+        isActive = true;
     }
 
     private void registerReceivers() {
@@ -255,7 +265,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.CLOSE_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
-        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
     }
 
     @Override
@@ -466,6 +475,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     @Override
     protected void onDestroy() {
+        unregisterReceiver(updateHistoryDataReciever);
         super.onDestroy();
     }
 
@@ -744,6 +754,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 appCMSSite.getGist().getSiteInternalName(),
                                 appCMSBinder.getPagePath());
 
+                        appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 appCMSPageAPI -> {

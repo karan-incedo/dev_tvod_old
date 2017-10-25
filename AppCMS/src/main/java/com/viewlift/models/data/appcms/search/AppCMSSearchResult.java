@@ -36,14 +36,19 @@ public class AppCMSSearchResult {
         this.contentDetails = contentDetails;
     }
 
+    public StreamingInfo getStreamingInfo() {
+        return streamingInfo;
+    }
+    public void setStreamingInfo(StreamingInfo streamingInfo) {
+        this.streamingInfo = streamingInfo;
+    }
+    @SerializedName("streamingInfo")
+    @Expose
+    StreamingInfo streamingInfo;
     public ContentDatum getContent(){
         ContentDatum contentDatum = new ContentDatum();
-        Gist gist = new Gist();
-        gist.setTitle(gist.getTitle());
-        gist.setPosterImageUrl(gist.getPosterImageUrl());
-        gist.setPermalink(gist.getPermalink());
-        gist.setId(gist.getId());
-        contentDatum.setGist(gist);
+        contentDatum.setStreamingInfo(getStreamingInfo());
+        contentDatum.setGist(getGist());
         return contentDatum;
     }
 }
