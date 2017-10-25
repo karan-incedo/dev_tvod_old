@@ -54,6 +54,7 @@ public class AppCMSWatchlistCall {
                 public void onFailure(@NonNull Call<AppCMSWatchlistResult> call,
                                       @NonNull Throwable t) {
                     //Log.e(TAG, "onFailure: " + t.getMessage());
+                    watchlistResultAction1.call(null);
                 }
             });
         } catch (Exception e) {
