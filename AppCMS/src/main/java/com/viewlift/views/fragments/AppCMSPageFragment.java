@@ -15,6 +15,7 @@ import android.view.ViewParent;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
@@ -136,6 +137,14 @@ public class AppCMSPageFragment extends Fragment {
         if (shouldSendFirebaseViewItemEvent) {
             sendFirebaseAnalyticsEvents(appCMSBinder);
             shouldSendFirebaseViewItemEvent = false;
+        }
+
+        if (appCMSPresenter != null) {
+            if (!BaseView.isTablet(getActivity())) {
+                appCMSPresenter.restrictPortraitOnly();
+            } else {
+                appCMSPresenter.unrestrictPortraitOnly();
+            }
         }
 
         return pageView;
