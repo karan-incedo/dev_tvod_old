@@ -445,6 +445,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
+                AppCMSUIKeyType.PAGE_API_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_title_key),
+                AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_show_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),

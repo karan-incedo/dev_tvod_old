@@ -19,6 +19,7 @@ import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -100,13 +101,14 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     // TODO: 7/27/2017 Implement CC for multiple languages.
                     if (binder.getContentData() != null
                             && binder.getContentData().getContentDetails() != null
-                            && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                            && binder.getContentData().getContentDetails().getClosedCaptions().size() > 0
-                            && binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl() != null
-                            && !binder.getContentData().getContentDetails().getClosedCaptions()
-                            .get(0).getUrl().equalsIgnoreCase(
-                                    getString(R.string.download_file_prefix))) {
-                        closedCaptionUrl = binder.getContentData().getContentDetails().getClosedCaptions().get(0).getUrl();
+                            && binder.getContentData().getContentDetails().getClosedCaptions() != null) {
+                        for (ClosedCaptions closedCaption :
+                                binder.getContentData().getContentDetails().getClosedCaptions()) {
+                            if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                                closedCaptionUrl = closedCaption.getUrl();
+                                break;
+                            }
+                        }
                     }
                 } else {
                     if (binder.getContentData().getContentDetails() != null
