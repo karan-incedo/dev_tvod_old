@@ -4972,7 +4972,10 @@ public class AppCMSPresenter {
     public void getPageIdContent(String urlWithContent,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
-        AppCMSPageAPI appCMSPageAPI = getPageAPILruCache().get(pageId);
+        AppCMSPageAPI appCMSPageAPI = null;
+        if(platformType == PlatformType.ANDROID) {
+            appCMSPageAPI = getPageAPILruCache().get(pageId);
+        }
         if (appCMSPageAPI == null) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(),
@@ -9607,7 +9610,7 @@ public class AppCMSPresenter {
         if (!isNetworkConnected()) {
             RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, action,
                     filmTitle, extraData,
-                    null, closeLauncher, null, BUTTON_ACTION);
+                    contentDatum, closeLauncher, null, BUTTON_ACTION);
             Bundle bundle = new Bundle();
             bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
             bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
