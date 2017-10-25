@@ -2323,12 +2323,22 @@ public class AppCMSPresenter {
                         //Log.v("got result", "got result");
                     }, appCMSSubscriptionPlanResults -> {
                         if (appCMSSubscriptionPlanResults != null &&
-                                !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
-                            showDialog(DialogType.SUBSCRIBE,
-                                    appCMSSubscriptionPlanResults.getMessage(),
-                                    false,
-                                    null,
-                                    null);
+                                (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage()) ||
+                                !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getError()))) {
+                            if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
+                                showDialog(DialogType.SUBSCRIBE,
+                                        appCMSSubscriptionPlanResults.getMessage(),
+                                        false,
+                                        null,
+                                        null);
+                            } else {
+                                showDialog(DialogType.SUBSCRIBE,
+                                        appCMSSubscriptionPlanResults.getError(),
+                                        false,
+                                        null,
+                                        null);
+                            }
+                            showLoadingDialog(false);
                         } else {
                             sendCloseOthersAction(null, true, false);
                             refreshSubscriptionData(() -> {
