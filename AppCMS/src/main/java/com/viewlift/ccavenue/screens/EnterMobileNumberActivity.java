@@ -35,10 +35,10 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        if (!BaseView.isTablet(this)) {
-            appCMSPresenter.restrictPortraitOnly();
-        } else {
+        if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
+        } else {
+            appCMSPresenter.restrictPortraitOnly();
         }
         id_et_mobile_number = (EditText) findViewById(R.id.id_et_mobile_number) ;
         id_btn_checkout = (Button) findViewById(R.id.id_btn_checkout) ;

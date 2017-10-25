@@ -415,14 +415,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-        playerState.playWhenReady = playWhenReady;
-        playerState.playbackState = playbackState;
+        if (playerState != null) {
+            playerState.playWhenReady = playWhenReady;
+            playerState.playbackState = playbackState;
 
-        if (onPlayerStateChanged != null) {
-            try {
-                Observable.just(playerState).subscribe(onPlayerStateChanged);
-            } catch (Exception e) {
-                //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
+            if (onPlayerStateChanged != null) {
+                try {
+                    Observable.just(playerState).subscribe(onPlayerStateChanged);
+                } catch (Exception e) {
+                    //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
+                }
             }
         }
     }
@@ -575,6 +577,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public interface ErrorEventListener {
         void onRefreshTokenCallback();
+
         void onFinishCallback(String message);
     }
 
@@ -629,7 +632,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          * @param listener              An optional listener.
          * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
          *                              for {@link DefaultDataSource}.
-         * @param policyCookie             The cookie used for accessing CDN protected data.
+         * @param policyCookie          The cookie used for accessing CDN protected data.
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,

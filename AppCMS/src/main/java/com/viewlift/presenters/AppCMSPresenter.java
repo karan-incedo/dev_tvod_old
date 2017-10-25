@@ -1314,8 +1314,9 @@ public class AppCMSPresenter {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
 
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-
                         currentActivity.startActivity(playVideoIntent);
+
+//                        sendCloseOthersAction(null, true, false);
                     } else {
                         entitlementPendingVideoData = new EntitlementPendingVideoData();
                         entitlementPendingVideoData.action = action;
