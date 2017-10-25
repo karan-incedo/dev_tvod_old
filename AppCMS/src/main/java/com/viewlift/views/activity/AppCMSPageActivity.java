@@ -1006,6 +1006,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setPageLoading(true);
         } else {
             appCMSPresenter.setMainFragmentTransparency(1.0f);
+            if (appCMSPresenter.isAddOnFragmentVisible()) {
+                appCMSPresenter.showAddOnFragment(true, 0.2f);
+            }
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
