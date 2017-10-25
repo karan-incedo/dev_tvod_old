@@ -77,7 +77,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private static double ttfirstframe = 0d;
     private static int apod = 0;
     private static boolean isVideoDownloaded;
-    //Setting the Key Values for Firebase Player Events
     private final String FIREBASE_STREAM_START = "stream_start";
     private final String FIREBASE_STREAM_25 = "stream_25_pct";
     private final String FIREBASE_STREAM_50 = "stream_50_pct";
@@ -147,12 +146,14 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
         adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
         adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
         adsManager.init();
     };
+
     private String mStreamId;
     private long mStartBufferMilliSec;
     private long mStopBufferMilliSec;
@@ -173,6 +174,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -189,6 +191,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
+
     private boolean refreshToken;
     private Timer refreshTokenTimer;
     private TimerTask refreshTokenTimerTask;
@@ -744,6 +747,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onPause() {
         pauseVideo();
+        videoPlayTime = videoPlayerView.getCurrentPosition() / SECS_TO_MSECS;
         videoPlayerView.releasePlayer();
         super.onPause();
     }
@@ -788,8 +792,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (castProvider != null) {
             castProvider.onActivityResume();
         }
-
-
     }
 
     @Override
@@ -893,6 +895,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             if (entitlementCheckTimerTask != null) {
                 entitlementCheckTimerTask.cancel();
             }
+
             if (entitlementCheckTimer != null) {
                 entitlementCheckTimer.cancel();
             }
@@ -902,6 +905,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             if (refreshTokenTimerTask != null) {
                 refreshTokenTimerTask.cancel();
             }
+
             if (refreshTokenTimer != null) {
                 refreshTokenTimer.cancel();
             }
@@ -915,6 +919,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconMessageThread.runBeaconPing = false;
         beaconMessageThread.videoPlayerView = null;
         beaconMessageThread = null;
+
         if (mProgressHandler != null) {
             mProgressHandler.removeCallbacks(mProgressRunnable);
             mProgressHandler = null;
@@ -924,7 +929,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         beaconBufferingThread.runBeaconBuffering = false;
         beaconBufferingThread.videoPlayerView = null;
         beaconBufferingThread = null;
-
 
         onClosePlayerEvent = null;
         if (adsLoader != null) {
@@ -978,9 +982,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                 appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
                 isStreamStart = true;
             }
+
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
             isStream25 = true;
-
         }
 
         if (progressPercent >= 50 && progressPercent < 75 && !isStream50) {
@@ -988,6 +992,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
                 isStream25 = true;
             }
+
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
             isStream50 = true;
         }
@@ -1002,6 +1007,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
                 isStream50 = true;
             }
+
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
             isStream75 = true;
         }
@@ -1021,11 +1027,11 @@ public class AppCMSPlayVideoFragment extends Fragment
                 appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
                 isStream75 = true;
             }
+
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_100, bundle);
             isStream100 = true;
         }
     }
-
 
     private void requestAds(String adTagUrl) {
         if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null) {
@@ -1114,7 +1120,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onFinishCallback(String message) {
 
         AppCMSPresenter.BeaconEvent event;
-        if (message.contains("Unable")) {// If video position is something else then 0 It is dropped in between playing
+        if (message.contains("Unable")) {
             event = AppCMSPresenter.BeaconEvent.DROPPED_STREAM;
         } else if (message.contains("Response")) {
             event = AppCMSPresenter.BeaconEvent.FAILED_TO_START;
@@ -1139,10 +1145,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (onClosePlayerEvent != null) {
             onClosePlayerEvent.closePlayer();
         }
+
         if (!TextUtils.isEmpty(message)) {
             Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
         }
-
     }
 
     private void initViewForCRW(View rootView) {
@@ -1243,7 +1249,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void getPercentageFromResource() {
-
         float heightPercent = getResources().getFraction(R.fraction.mainContainerHeightPercent, 1, 1);
         float widthPercent = getResources().getFraction(R.fraction.mainContainerWidthPercent, 1, 1);
         float bottomMarginPercent = getResources().getFraction(R.fraction.app_cms_content_rating_progress_bar_margin_bottom_percent, 1, 1);
