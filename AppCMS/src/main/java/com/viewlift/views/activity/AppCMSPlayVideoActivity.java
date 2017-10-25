@@ -138,7 +138,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             (binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null) &&
+                            binder.getContentData().getGist().getDownloadStatus() == null)) &&
                             (activeNetwork == null ||
                             !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
