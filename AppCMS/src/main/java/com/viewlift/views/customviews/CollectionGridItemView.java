@@ -409,7 +409,8 @@ public class CollectionGridItemView extends BaseView {
                         int planIndex = 0;
 
                         for (int i = 0; i < data.getPlanDetails().size(); i++) {
-                            if (data.getPlanDetails().get(i).getIsDefault()) {
+                            if (data.getPlanDetails().get(i) != null &&
+                                    data.getPlanDetails().get(i).getIsDefault()) {
                                 planIndex = i;
                             }
                         }
@@ -426,7 +427,10 @@ public class CollectionGridItemView extends BaseView {
                             }
                         }
 
-                        if (data.getPlanDetails().get(planIndex).getStrikeThroughPrice() != 0) {
+                        if (data.getPlanDetails() != null &&
+                                !data.getPlanDetails().isEmpty() &&
+                                data.getPlanDetails().get(planIndex) != null &&
+                                data.getPlanDetails().get(planIndex).getStrikeThroughPrice() != 0) {
 
                             double recurringPaymentAmount = data.getPlanDetails().get(planIndex).getRecurringPaymentAmount();
                             String formattedRecurringPaymentAmount = context.getString(R.string.cost_with_fraction,

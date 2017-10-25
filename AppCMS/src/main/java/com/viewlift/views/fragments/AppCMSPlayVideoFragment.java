@@ -950,7 +950,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                 if (totalVideoDurationMod4 > 0) {
                     long mPercentage = (long)
                             (((float) (videoPlayerView.getCurrentPosition() / 1000) / mTotalVideoDuration) * 100);
-                    sendProgressAnalyticEvents(mPercentage);
+                    if (appCMSPresenter.getmFireBaseAnalytics() != null) {
+                        sendProgressAnalyticEvents(mPercentage);
+                    }
                 }
                 mProgressHandler.postDelayed(this, 1000);
             }
