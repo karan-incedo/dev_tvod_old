@@ -2867,7 +2867,7 @@ public class AppCMSPresenter {
             } catch (Exception e) {
                 //Log.e(TAG, "Error trying to download: " + e.getMessage());
             }
-            if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId());) {
+            if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
                 createLocalCopyForUser(contentDatum, resultAction1);
             } else if (getMegabytesAvailable() > file_size) {
                 startDownload(contentDatum,
