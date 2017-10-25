@@ -449,6 +449,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 appCMSPresenter.resetPassword(retryCallBinder.getFilmTitle()); //filmtitle here means emailid.
                 break;
 
+            case LOGOUT_ACTION:
+                appCMSPresenter.logoutTV();
+                break;
+
         }
     }
 

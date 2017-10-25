@@ -250,6 +250,7 @@ import rx.schedulers.Schedulers;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.LOGOUT_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_RETRY;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
@@ -6109,6 +6110,21 @@ public class AppCMSPresenter {
     }
 
     public void logoutTV() {
+        if (!isNetworkConnected()) {
+            RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
+                    null, null,
+                    null, false, null, LOGOUT_ACTION);
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+            bundle.putBoolean(currentActivity.getString(R.string.is_tos_dialog_page_key), false);
+            bundle.putBoolean(currentActivity.getString(R.string.is_login_dialog_page_key), false);
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            currentActivity.sendBroadcast(args);
+            return;
+        }
         if (currentActivity != null) {
             setLoggedInUser(null);
             setLoggedInUserName(null);
@@ -10651,7 +10667,7 @@ public class AppCMSPresenter {
     }
 
     public enum RETRY_TYPE {
-        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY
+        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION
     }
 
     public enum ExtraScreenType {
