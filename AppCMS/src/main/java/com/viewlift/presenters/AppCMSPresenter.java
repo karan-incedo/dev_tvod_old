@@ -825,22 +825,24 @@ public class AppCMSPresenter {
 
     public void refreshVideoData(final ContentDatum contentDatum,
                                  Action1<ContentDatum> readyAction) {
-        String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
-                appCMSMain.getApiBaseUrl(),
-                contentDatum.getGist().getId(),
-                appCMSSite.getGist().getSiteInternalName());
-        GetAppCMSVideoDetailAsyncTask.Params params =
-                new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                        .authToken(getAuthToken()).build();
+        if (currentActivity != null) {
+            String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    contentDatum.getGist().getId(),
+                    appCMSSite.getGist().getSiteInternalName());
+            GetAppCMSVideoDetailAsyncTask.Params params =
+                    new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+                            .authToken(getAuthToken()).build();
 
-        new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                appCMSVideoDetail -> {
-                    if (appCMSVideoDetail != null &&
-                            appCMSVideoDetail.getRecords() != null &&
-                            appCMSVideoDetail.getRecords().get(0) != null) {
-                        readyAction.call(appCMSVideoDetail.getRecords().get(0));
-                    }
-                }).execute(params);
+            new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                    appCMSVideoDetail -> {
+                        if (appCMSVideoDetail != null &&
+                                appCMSVideoDetail.getRecords() != null &&
+                                appCMSVideoDetail.getRecords().get(0) != null) {
+                            readyAction.call(appCMSVideoDetail.getRecords().get(0));
+                        }
+                    }).execute(params);
+        }
     }
 
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
@@ -953,11 +955,13 @@ public class AppCMSPresenter {
 
     public void updateAllOfflineWatchTime() {
         if (getLoggedInUser() != null) {
-            currentActivity.runOnUiThread(() -> {
-                for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
-                    updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
-                }
-            });
+            if (currentActivity != null) {
+                currentActivity.runOnUiThread(() -> {
+                    for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
+                        updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                    }
+                });
+            }
         }
     }
 
@@ -1001,13 +1005,13 @@ public class AppCMSPresenter {
                 }
             });
 
-         }
+        }
     }
 
     public void sendUpdateHistoryAction() {
         Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
         currentActivity.sendBroadcast(updateHistoryIntent);
-     }
+    }
 
     public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
         if (shouldRefreshAuthToken()) {
@@ -9231,8 +9235,8 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             if (forcedDownload) {
                 appCMSPageAPI = null;
-                if(null != pageId)
-                getPageAPILruCache().remove(pageId);
+                if (null != pageId)
+                    getPageAPILruCache().remove(pageId);
             }
 
             if (appCMSPageAPI == null) {
@@ -9293,11 +9297,11 @@ public class AppCMSPresenter {
                                                             if (appCMSHistoryResult != null) {
                                                                 AppCMSPageAPI historyAPI =
                                                                         appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                    historyAPI.getModules().get(0).setId(module.getId());
-                                                                    historyAPI.getModules().get(0).setTitle(module.getTitle());
+                                                                historyAPI.getModules().get(0).setId(module.getId());
+                                                                historyAPI.getModules().get(0).setTitle(module.getTitle());
                                                                    /* appCMSPresenter.mergeData(historyAPI, appCMSPageAPI);*/
-                                                                   modules.set(finalI,historyAPI.getModules().get(0));
-                                                                populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTOSDialogPage,isLoginDialogPage,this.pagePath);
+                                                                modules.set(finalI, historyAPI.getModules().get(0));
+                                                                populateTVPage(appCMSPageAPI, appCMSPageUI, this.pageId, this.launchActivity, this.pageTitle, isTOSDialogPage, isLoginDialogPage, this.pagePath);
                                                                 return;
                                                             }
                                                         });
@@ -9306,8 +9310,8 @@ public class AppCMSPresenter {
                                             }
                                         }
                                     }
-                                    if(!isHistoryUpdate)
-                                    populateTVPage(appCMSPageAPI , appCMSPageUI ,this.pageId ,this.launchActivity ,this.pageTitle,isTOSDialogPage,isLoginDialogPage,this.pagePath);
+                                    if (!isHistoryUpdate)
+                                        populateTVPage(appCMSPageAPI, appCMSPageUI, this.pageId, this.launchActivity, this.pageTitle, isTOSDialogPage, isLoginDialogPage, this.pagePath);
                                 } else {
                                     sendStopLoadingPageAction(true, () -> {
                                         navigateToTVPage(pageId, pageTitle, url, launchActivity, searchQuery, forcedDownload, isTOSDialogPage, isLoginDialogPage);
