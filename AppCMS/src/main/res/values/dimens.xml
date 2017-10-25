@@ -29,7 +29,7 @@
     <dimen name="app_cms_video_player_title_view_text_size">24sp</dimen>
     <dimen name="close_button_margin">8dp</dimen>
     <dimen name="close_button_size">16dp</dimen>
-    <dimen name="new_version_available_close_button_size">16dp</dimen>
+    <dimen name="new_version_available_close_button_size">24dp</dimen>
     <dimen name="app_cms_search_bar_width">480dp</dimen>
     <dimen name="app_cms_searchbar_top_margin">300dp</dimen>
     <dimen name="app_cms_searchbar_top_margin_land">140dp</dimen>

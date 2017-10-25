@@ -2126,6 +2126,7 @@ public class AppCMSPresenter {
             //Log.d(TAG, "Initiating CCAvenue purchase");
             if (isUserSubscribed()) {
                 try {
+                    showLoadingDialog(true);
                     appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
@@ -2137,13 +2138,16 @@ public class AppCMSPresenter {
                             getAuthToken(),
                             listResult -> {
                                 //Log.v("currentActivity", "currentActivity");
+                                showLoadingDialog(false);
                             }, appCMSSubscriptionPlanResults -> {
+                                showLoadingDialog(false);
                                 sendCloseOthersAction(null, true, false);
                                 refreshSubscriptionData(() -> {
                                     sendRefreshPageAction();
                                 }, true);
                             },
                             appCMSSubscriptionPlanResult -> {
+                                showLoadingDialog(false);
                                 try {
                                     if (appCMSSubscriptionPlanResult != null) {
                                         upgradePlanAPICall();
