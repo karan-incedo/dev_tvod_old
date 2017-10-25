@@ -4985,7 +4985,7 @@ public class AppCMSPresenter {
                                         .urlWithContent(urlWithContent)
                                         .authToken(getAuthToken())
                                         .pageId(pageId)
-                                        .loadFromFile(appCMSMain.shouldLoadFromFile())
+                                        .loadFromFile( (platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile())
                                         .appCMSPageAPILruCache(getPageAPILruCache())
                                         .build();
                                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
@@ -5001,7 +5001,7 @@ public class AppCMSPresenter {
                         .urlWithContent(urlWithContent)
                         .authToken(getAuthToken())
                         .pageId(pageId)
-                        .loadFromFile(appCMSMain.shouldLoadFromFile())
+                        .loadFromFile( (platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile() )
                         .appCMSPageAPILruCache(getPageAPILruCache())
                         .build();
                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
