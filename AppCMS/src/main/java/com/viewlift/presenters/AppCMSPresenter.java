@@ -3684,15 +3684,22 @@ public class AppCMSPresenter {
             SemVer latestAppSemVer = new SemVer();
             latestAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getLatest());
 
-            int installAppSemVerSum = installAppSemVer.major * 100 +
-                    installAppSemVer.minor * 10 +
-                    installAppSemVer.patch;
+            if (installAppSemVer.major > latestAppSemVer.major) {
+                return false;
+            }
 
-            int latestAppSemVerSum = latestAppSemVer.major * 100 +
-                    latestAppSemVer.minor * 10 +
-                    latestAppSemVer.patch;
+            if (installAppSemVer.major == latestAppSemVer.major &&
+                    installAppSemVer.minor > latestAppSemVer.minor) {
+                return false;
+            }
 
-            return installAppSemVerSum < latestAppSemVerSum;
+            if (installAppSemVer.major == latestAppSemVer.major &&
+                    installAppSemVer.minor == latestAppSemVer.minor &&
+                    installAppSemVer.patch >= latestAppSemVer.patch) {
+                return false;
+            }
+
+            return true;
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
         }
@@ -3706,15 +3713,22 @@ public class AppCMSPresenter {
             SemVer minAppSemVer = new SemVer();
             minAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getMinimum());
 
-            int installAppSemVerSum = installAppSemVer.major * 100 +
-                    installAppSemVer.minor * 10 +
-                    installAppSemVer.patch;
+            if (installAppSemVer.major > minAppSemVer.major) {
+                return false;
+            }
 
-            int minAppSemVerSum = minAppSemVer.major * 100 +
-                    minAppSemVer.minor * 10 +
-                    minAppSemVer.patch;
+            if (installAppSemVer.major == minAppSemVer.major &&
+                    installAppSemVer.minor > minAppSemVer.minor) {
+                return false;
+            }
 
-            return installAppSemVerSum < minAppSemVerSum;
+            if (installAppSemVer.major == minAppSemVer.major &&
+                    installAppSemVer.minor == minAppSemVer.minor &&
+                    installAppSemVer.patch >= minAppSemVer.patch) {
+                return false;
+            }
+
+            return true;
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
         }
