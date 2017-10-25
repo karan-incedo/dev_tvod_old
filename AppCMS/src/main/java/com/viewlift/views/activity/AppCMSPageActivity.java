@@ -211,14 +211,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSBinderMap = new HashMap<>();
 
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
-        try {
-            updatedAppCMSBinder =
-                    (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-            if (updatedAppCMSBinder != null) {
-                shouldSendCloseOthersAction = updatedAppCMSBinder.shouldSendCloseAction();
+        if (args != null) {
+            try {
+                updatedAppCMSBinder =
+                        (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                if (updatedAppCMSBinder != null) {
+                    shouldSendCloseOthersAction = updatedAppCMSBinder.shouldSendCloseAction();
+                }
+            } catch (ClassCastException e) {
+                //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
             }
-        } catch (ClassCastException e) {
-            //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
         }
 
         presenterActionReceiver = new BroadcastReceiver() {
@@ -847,49 +849,51 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                String message = null;
-                int statusCode = result.getStatus().getStatusCode();
-                switch (statusCode) {
-                    case CommonStatusCodes.API_NOT_CONNECTED:
-                        message = "The API is not connected.";
-                        break;
-                    case CommonStatusCodes.CANCELED:
-                        break;
-                    case CommonStatusCodes.DEVELOPER_ERROR:
-                        message = "The app is configured incorrectly.";
-                        break;
-                    case CommonStatusCodes.ERROR:
-                        message = "An error has occurred.";
-                        break;
-                    case CommonStatusCodes.INTERNAL_ERROR:
-                        message = "An internal server error has occurred.";
-                        break;
-                    case CommonStatusCodes.INTERRUPTED:
-                        message = "The login attempt was interrupted.";
-                        break;
-                    case CommonStatusCodes.INVALID_ACCOUNT:
-                        message = "An invalid account is being used.";
-                        break;
-                    case CommonStatusCodes.NETWORK_ERROR:
-                        message = "A network error has occurred.";
-                        break;
-                    case CommonStatusCodes.RESOLUTION_REQUIRED:
-                        message = "Additional resolution is required.";
-                        break;
-                    case CommonStatusCodes.SIGN_IN_REQUIRED:
-                        message = "Sign In is required.";
-                        break;
-                    case CommonStatusCodes.TIMEOUT:
-                        message = "A timeout has occurred.";
-                        break;
-                }
-                if (!TextUtils.isEmpty(message)) {
-                    //Log.e(TAG, "Google Signin Status Message: " + message);
-                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SIGNIN,
-                            message,
-                            false,
-                            null,
-                            null);
+                if (result != null) {
+                    String message = null;
+                    int statusCode = result.getStatus().getStatusCode();
+                    switch (statusCode) {
+                        case CommonStatusCodes.API_NOT_CONNECTED:
+                            message = "The API is not connected.";
+                            break;
+                        case CommonStatusCodes.CANCELED:
+                            break;
+                        case CommonStatusCodes.DEVELOPER_ERROR:
+                            message = "The app is configured incorrectly.";
+                            break;
+                        case CommonStatusCodes.ERROR:
+                            message = "An error has occurred.";
+                            break;
+                        case CommonStatusCodes.INTERNAL_ERROR:
+                            message = "An internal server error has occurred.";
+                            break;
+                        case CommonStatusCodes.INTERRUPTED:
+                            message = "The login attempt was interrupted.";
+                            break;
+                        case CommonStatusCodes.INVALID_ACCOUNT:
+                            message = "An invalid account is being used.";
+                            break;
+                        case CommonStatusCodes.NETWORK_ERROR:
+                            message = "A network error has occurred.";
+                            break;
+                        case CommonStatusCodes.RESOLUTION_REQUIRED:
+                            message = "Additional resolution is required.";
+                            break;
+                        case CommonStatusCodes.SIGN_IN_REQUIRED:
+                            message = "Sign In is required.";
+                            break;
+                        case CommonStatusCodes.TIMEOUT:
+                            message = "A timeout has occurred.";
+                            break;
+                    }
+                    if (!TextUtils.isEmpty(message)) {
+                        //Log.e(TAG, "Google Signin Status Message: " + message);
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SIGNIN,
+                                message,
+                                false,
+                                null,
+                                null);
+                    }
                 }
             }
         }
@@ -1942,7 +1946,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!castDisabled) {
             if ((appCMSPresenter.findHomePageNavItem() != null &&
                     !TextUtils.isEmpty(appCMSPresenter.findHomePageNavItem().getPageId()) &&
-                    appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId))||
+                    appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) ||
                     (appCMSPresenter.findMoviesPageNavItem() != null &&
                             !TextUtils.isEmpty(appCMSPresenter.findMoviesPageNavItem().getPageId()) &&
                             appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId))) {
