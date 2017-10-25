@@ -250,6 +250,7 @@ import rx.schedulers.Schedulers;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.LOGOUT_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_RETRY;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
@@ -3500,31 +3501,35 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
                     true,
                     () -> {
-                        final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
-                                appCMSMain.getApiBaseUrl(),
-                                appCMSSite.getGist().getSiteInternalName(),
-                                getLoggedInUser());
-
-                        try {
-                            AddToWatchlistRequest request = new AddToWatchlistRequest();
-                            request.setUserId(getLoggedInUser());
-                            request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
-                            request.setPosition(1L);
-                            appCMSAddToWatchlistCall.call(url, getAuthToken(),
-                                    addToWatchlistResult -> {
-                                        try {
-                                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
-                                        } catch (Exception e) {
-                                            //Log.e(TAG, "Error deleting all watchlist items: " + e.getMessage());
-                                        }
-                                    }, request, false);
-                        } catch (Exception e) {
-                            //Log.e(TAG, "Error clearing watchlist: " + e.getMessage());
-                        }
+                        makeClearWatchlistRequest(resultAction1);
                     },
                     null);
         } catch (Exception e) {
             //Log.e(TAG, "clearWatchlistContent: " + e.toString());
+        }
+    }
+
+    public void makeClearWatchlistRequest(Action1<AppCMSAddToWatchlistResult> resultAction1) {
+        final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
+                appCMSMain.getApiBaseUrl(),
+                appCMSSite.getGist().getSiteInternalName(),
+                getLoggedInUser());
+
+        try {
+            AddToWatchlistRequest request = new AddToWatchlistRequest();
+            request.setUserId(getLoggedInUser());
+            request.setContentType(currentActivity.getString(R.string.add_to_watchlist_content_type_video));
+            request.setPosition(1L);
+            appCMSAddToWatchlistCall.call(url, getAuthToken(),
+                    addToWatchlistResult -> {
+                        try {
+                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                        } catch (Exception e) {
+                            //Log.e(TAG, "Error deleting all watchlist items: " + e.getMessage());
+                        }
+                    }, request, false);
+        } catch (Exception e) {
+            //Log.e(TAG, "Error clearing watchlist: " + e.getMessage());
         }
     }
 
@@ -3820,27 +3825,7 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                     true,
                     () -> {
-                        final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
-                                appCMSMain.getApiBaseUrl(),
-                                getLoggedInUser(),
-                                appCMSSite.getGist().getSiteInternalName());
-                        try {
-                            DeleteHistoryRequest request = new DeleteHistoryRequest();
-                            request.setUserId(getLoggedInUser());
-                            request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
-                            request.setPosition(1L);
-                            appCMSDeleteHistoryCall.call(url, getAuthToken(),
-                                    appCMSDeleteHistoryResult -> {
-                                        try {
-                                            sendUpdateHistoryAction();
-                                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
-                                        } catch (Exception e) {
-                                            //Log.e(TAG, "Error deleting all history items: " + e.getMessage());
-                                        }
-                                    }, request, false);
-                        } catch (Exception e) {
-                            //Log.e(TAG, "Error clearing history: " + e.getMessage());
-                        }
+                        makeClearHistoryRequest(resultAction1);
 
                     },
                     null);
@@ -3848,6 +3833,30 @@ public class AppCMSPresenter {
             //Log.e(TAG, "clearHistoryContent: " + e.toString());
         }
 
+    }
+
+    public void makeClearHistoryRequest(Action1<AppCMSDeleteHistoryResult> resultAction1) {
+        final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
+                appCMSMain.getApiBaseUrl(),
+                getLoggedInUser(),
+                appCMSSite.getGist().getSiteInternalName());
+        try {
+            DeleteHistoryRequest request = new DeleteHistoryRequest();
+            request.setUserId(getLoggedInUser());
+            request.setContentType(currentActivity.getString(R.string.delete_history_content_type_video));
+            request.setPosition(1L);
+            appCMSDeleteHistoryCall.call(url, getAuthToken(),
+                    appCMSDeleteHistoryResult -> {
+                        try {
+                            sendUpdateHistoryAction();
+                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                        } catch (Exception e) {
+                            //Log.e(TAG, "Error deleting all history items: " + e.getMessage());
+                        }
+                    }, request, false);
+        } catch (Exception e) {
+            //Log.e(TAG, "Error clearing history: " + e.getMessage());
+        }
     }
 
     public void getWatchlistData(final Action1<AppCMSWatchlistResult> appCMSWatchlistResultAction) {
@@ -5034,42 +5043,43 @@ public class AppCMSPresenter {
     public void getPageIdContent(String urlWithContent,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
-        if (pageId != null) {
-            AppCMSPageAPI appCMSPageAPI = getPageAPILruCache().get(pageId);
-            if (appCMSPageAPI == null) {
-                if (shouldRefreshAuthToken()) {
-                    refreshIdentity(getRefreshToken(),
-                            () -> {
-                                try {
-                                    GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
-                                            .urlWithContent(urlWithContent)
-                                            .authToken(getAuthToken())
-                                            .pageId(pageId)
-                                            .loadFromFile(appCMSMain.shouldLoadFromFile())
-                                            .appCMSPageAPILruCache(getPageAPILruCache())
-                                            .build();
-                                    new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
-                                            readyAction)
-                                            .execute(params);
-                                } catch (Exception e) {
-                                    //Log.e(TAG, "Error retrieving page ID content: " + e.getMessage());
-                                    showDialog(DialogType.NETWORK, null, false, null, null);
-                                }
-                            });
-                } else {
-                    GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
-                            .urlWithContent(urlWithContent)
-                            .authToken(getAuthToken())
-                            .pageId(pageId)
-                            .loadFromFile(appCMSMain.shouldLoadFromFile())
-                            .appCMSPageAPILruCache(getPageAPILruCache())
-                            .build();
-                    new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
-                }
+        AppCMSPageAPI appCMSPageAPI = null;
+        if(platformType == PlatformType.ANDROID) {
+            appCMSPageAPI = getPageAPILruCache().get(pageId);
+        }
+        if (appCMSPageAPI == null) {
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(),
+                        () -> {
+                            try {
+                                GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                                        .urlWithContent(urlWithContent)
+                                        .authToken(getAuthToken())
+                                        .pageId(pageId)
+                                        .loadFromFile( (platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile())
+                                        .appCMSPageAPILruCache(getPageAPILruCache())
+                                        .build();
+                                new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
+                                        readyAction)
+                                        .execute(params);
+                            } catch (Exception e) {
+                                //Log.e(TAG, "Error retrieving page ID content: " + e.getMessage());
+                                showDialog(DialogType.NETWORK, null, false, null, null);
+                            }
+                        });
             } else {
-                if (readyAction != null) {
-                    Observable.just(appCMSPageAPI).subscribe(readyAction);
-                }
+                GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                        .urlWithContent(urlWithContent)
+                        .authToken(getAuthToken())
+                        .pageId(pageId)
+                        .loadFromFile( (platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile() )
+                        .appCMSPageAPILruCache(getPageAPILruCache())
+                        .build();
+                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
+            }
+        } else {
+            if (readyAction != null) {
+                Observable.just(appCMSPageAPI).subscribe(readyAction);
             }
         }
     }
@@ -6028,6 +6038,21 @@ public class AppCMSPresenter {
     }
 
     public void logoutTV() {
+        if (!isNetworkConnected()) {
+            RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
+                    null, null,
+                    null, false, null, LOGOUT_ACTION);
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+            bundle.putBoolean(currentActivity.getString(R.string.is_tos_dialog_page_key), false);
+            bundle.putBoolean(currentActivity.getString(R.string.is_login_dialog_page_key), false);
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            currentActivity.sendBroadcast(args);
+            return;
+        }
         if (currentActivity != null) {
             setLoggedInUser(null);
             setLoggedInUserName(null);
@@ -9673,7 +9698,7 @@ public class AppCMSPresenter {
         if (!isNetworkConnected()) {
             RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, action,
                     filmTitle, extraData,
-                    null, closeLauncher, null, BUTTON_ACTION);
+                    contentDatum, closeLauncher, null, BUTTON_ACTION);
             Bundle bundle = new Bundle();
             bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
             bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
@@ -10394,7 +10419,16 @@ public class AppCMSPresenter {
     public boolean getLoginFromNavPage() {
         return loginFromNavPage;
     }
-
+  
+    public void openErrorDialog() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
+        bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+        Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+        currentActivity.sendBroadcast(args);
+    }
+  
     public void setEntitlementPendingVideoData(EntitlementPendingVideoData entitlementPendingVideoData) {
         this.entitlementPendingVideoData = entitlementPendingVideoData;
     }
@@ -10474,7 +10508,7 @@ public class AppCMSPresenter {
     }
 
     public enum RETRY_TYPE {
-        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY
+        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION
     }
 
     public enum ExtraScreenType {
