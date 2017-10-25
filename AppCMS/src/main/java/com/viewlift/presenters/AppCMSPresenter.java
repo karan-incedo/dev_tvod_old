@@ -2320,11 +2320,27 @@ public class AppCMSPresenter {
                                 (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage()) ||
                                 !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getError()))) {
                             if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
-                                showDialog(DialogType.SUBSCRIBE,
-                                        appCMSSubscriptionPlanResults.getMessage(),
-                                        false,
-                                        null,
-                                        null);
+                                if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getSubscriptionStatus())) {
+                                    if (appCMSSubscriptionPlanResults.getSubscriptionStatus().equalsIgnoreCase("COMPLETED") &&
+                                            !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
+                                        showDialog(DialogType.SUBSCRIBE,
+                                                appCMSSubscriptionPlanResults.getMessage(),
+                                                false,
+                                                null,
+                                                null);
+                                    }
+                                    sendCloseOthersAction(null, true, false);
+
+                                    refreshSubscriptionData(() -> {
+                                        sendRefreshPageAction();
+                                    }, true);
+                                } else {
+                                    showDialog(DialogType.SUBSCRIBE,
+                                            appCMSSubscriptionPlanResults.getMessage(),
+                                            false,
+                                            null,
+                                            null);
+                                }
                             } else {
                                 showDialog(DialogType.SUBSCRIBE,
                                         appCMSSubscriptionPlanResults.getError(),
@@ -2335,18 +2351,6 @@ public class AppCMSPresenter {
                             showLoadingDialog(false);
                         } else {
                             sendCloseOthersAction(null, true, false);
-
-                            if (appCMSSubscriptionPlanResults != null &&
-                                    !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getSubscriptionStatus())) {
-                                if (appCMSSubscriptionPlanResults.getSubscriptionStatus().equalsIgnoreCase("COMPLETED") &&
-                                        !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
-                                    showDialog(DialogType.SUBSCRIBE,
-                                            appCMSSubscriptionPlanResults.getMessage(),
-                                            false,
-                                            null,
-                                            null);
-                                }
-                            }
 
                             refreshSubscriptionData(() -> {
                                 sendRefreshPageAction();
