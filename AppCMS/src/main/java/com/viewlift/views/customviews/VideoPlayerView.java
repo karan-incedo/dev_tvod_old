@@ -61,7 +61,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
-import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -777,7 +776,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             int result = 0;
             if (dataSource instanceof FileDataSource) {
                 try {
-                    long bytesRead = ((FileDataSource) dataSource).getBytesRead();
+                    long bytesRead = 0 ; // ((FileDataSource) dataSource).getBytesRead();
                     result = dataSource.read(buffer, offset, readLength);
                     for (int i = 0; i < 10 - bytesRead && i < readLength; i++) {
                         if (~buffer[i] >= -128 && ~buffer[i] <= 127) {
