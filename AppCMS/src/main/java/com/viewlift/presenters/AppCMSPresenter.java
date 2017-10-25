@@ -2334,7 +2334,8 @@ public class AppCMSPresenter {
                         } else {
                             sendCloseOthersAction(null, true, false);
 
-                            if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getSubscriptionStatus())) {
+                            if (appCMSSubscriptionPlanResults != null &&
+                                    !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getSubscriptionStatus())) {
                                 if (appCMSSubscriptionPlanResults.getSubscriptionStatus().equalsIgnoreCase("COMPLETED") &&
                                         !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
                                     showDialog(DialogType.SUBSCRIBE,
