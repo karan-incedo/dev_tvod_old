@@ -1940,15 +1940,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void setMediaRouterButtonVisibility(String pageId) {
         if (!castDisabled) {
-            if (appCMSPresenter.findHomePageNavItem() != null &&
+            if ((appCMSPresenter.findHomePageNavItem() != null &&
                     !TextUtils.isEmpty(appCMSPresenter.findHomePageNavItem().getPageId()) &&
-                    appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) {
+                    appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId))||
+                    (appCMSPresenter.findMoviesPageNavItem() != null &&
+                            !TextUtils.isEmpty(appCMSPresenter.findMoviesPageNavItem().getPageId()) &&
+                            appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId))) {
                 ll_media_route_button.setVisibility(View.VISIBLE);
                 CastServiceProvider.getInstance(this).isHomeScreen(true);
             } else {
                 ll_media_route_button.setVisibility(View.GONE);
                 CastServiceProvider.getInstance(this).isHomeScreen(false);
-
             }
 
             if (CastServiceProvider.getInstance(this).isOverlayVisible()) {

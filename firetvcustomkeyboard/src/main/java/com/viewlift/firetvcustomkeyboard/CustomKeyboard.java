@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,14 +28,12 @@ public class CustomKeyboard
     private final TextView tvSelectLc;
     private final TextView tvSelectNum;
     private final TextView tvSelectSc;
-
+    Typeface face;
     private LinearLayout keyboardSelectLayout;
-
     private LinearLayout specialCharLayout;
     private LinearLayout upperCaseLayout;
     private LinearLayout lowerCaseLayout;
     private LinearLayout numberLayout;
-
     private CurrentlySelectedKeyboardLayoutEnum currentLayoutEnum =
             CurrentlySelectedKeyboardLayoutEnum.UPPERCASE;
     private boolean isRetainSelectedLayout = true;
@@ -52,21 +49,21 @@ public class CustomKeyboard
 
         CharSequence text = ((TextView) keyboardView.findViewById(R.id.tv_select_uc)).getText();
 
-        tvSelectUc = (TextView) keyboardView.findViewById(R.id.tv_select_uc);
-        tvSelectLc = (TextView) keyboardView.findViewById(R.id.tv_select_lc);
-        tvSelectNum = (TextView) keyboardView.findViewById(R.id.tv_select_num);
-        tvSelectSc = (TextView) keyboardView.findViewById(R.id.tv_select_sc);
+        tvSelectUc = keyboardView.findViewById(R.id.tv_select_uc);
+        tvSelectLc = keyboardView.findViewById(R.id.tv_select_lc);
+        tvSelectNum = keyboardView.findViewById(R.id.tv_select_num);
+        tvSelectSc = keyboardView.findViewById(R.id.tv_select_sc);
 
-        upperCaseLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_uc_keyboard_layout);
-        lowerCaseLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_lc_keyboard_layout);
-        numberLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_num_keyboard_layout);
-        specialCharLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_sc_keyboard_layout);
+        upperCaseLayout = keyboardView.findViewById(R.id.appcms_uc_keyboard_layout);
+        lowerCaseLayout = keyboardView.findViewById(R.id.appcms_lc_keyboard_layout);
+        numberLayout = keyboardView.findViewById(R.id.appcms_num_keyboard_layout);
+        specialCharLayout = keyboardView.findViewById(R.id.appcms_sc_keyboard_layout);
         setFontFamily(upperCaseLayout);
         setFontFamily(lowerCaseLayout);
         setFontFamily(numberLayout);
         setFontFamily(specialCharLayout);
 
-        keyboardSelectLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_keyboard_select_layout);
+        keyboardSelectLayout = keyboardView.findViewById(R.id.appcms_keyboard_select_layout);
 
         tvSelectUc.setOnFocusChangeListener(this);
         tvSelectLc.setOnFocusChangeListener(this);
@@ -80,8 +77,8 @@ public class CustomKeyboard
 
     }
 
-    public void setFocusOnGroup(){
-        if(null != tvSelectUc){
+    public void setFocusOnGroup() {
+        if (null != tvSelectUc) {
             tvSelectUc.requestFocus();
         }
     }
@@ -206,7 +203,6 @@ public class CustomKeyboard
         toBeShown.setVisibility(View.VISIBLE);
     }
 
-
     /**
      * Method is used to manage the focus on the keyboard selector layout.
      */
@@ -223,6 +219,7 @@ public class CustomKeyboard
                 ((TextView) keyboardSelectLayout.getChildAt(3))
                         .setTextColor(getResources().getColor(android.R.color.black));
                 break;
+
             case LOWERCASE:
                 ((TextView) keyboardSelectLayout.getChildAt(1))
                         .setTextColor(getResources().getColor(android.R.color.white));
@@ -233,6 +230,7 @@ public class CustomKeyboard
                 ((TextView) keyboardSelectLayout.getChildAt(3))
                         .setTextColor(getResources().getColor(android.R.color.black));
                 break;
+
             case NUMBER:
                 ((TextView) keyboardSelectLayout.getChildAt(2))
                         .setTextColor(getResources().getColor(android.R.color.white));
@@ -243,6 +241,7 @@ public class CustomKeyboard
                 ((TextView) keyboardSelectLayout.getChildAt(3))
                         .setTextColor(getResources().getColor(android.R.color.black));
                 break;
+
             case SPECIAL_CHARACTERS:
                 ((TextView) keyboardSelectLayout.getChildAt(3))
                         .setTextColor(getResources().getColor(android.R.color.white));
@@ -253,6 +252,9 @@ public class CustomKeyboard
                 ((TextView) keyboardSelectLayout.getChildAt(2))
                         .setTextColor(getResources().getColor(android.R.color.black));
                 break;
+
+            default:
+                break;
         }
     }
 
@@ -262,31 +264,30 @@ public class CustomKeyboard
     }
 
     public void setFocusColor(String color) {
-       GradientDrawable gradientDrawable =
-               (GradientDrawable) ContextCompat.getDrawable(context , R.drawable.appcms_search_key_background_focused);
+        GradientDrawable gradientDrawable =
+                (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.appcms_search_key_background_focused);
         gradientDrawable.setColor(Color.parseColor(color));
         gradientDrawable.mutate();
 
         GradientDrawable buttonDrawable =
-                (GradientDrawable) ContextCompat.getDrawable(context , R.drawable.btn_bg_focused);
+                (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.btn_bg_focused);
         buttonDrawable.setColor(Color.parseColor(color));
         buttonDrawable.mutate();
         invalidate();
     }
 
-    Typeface face;
-    public void setFontFamily(LinearLayout linearLayout){
-        if(null == face){
+    public void setFontFamily(LinearLayout linearLayout) {
+        if (null == face) {
             face = Typeface.createFromAsset(context.getAssets(),
                     "SanFranciscoDisplay-Regular.otf");
         }
 
         int childCount = linearLayout.getChildCount();
-        for(int i=0;i<childCount;i++){
-            if( linearLayout.getChildAt(i) instanceof  TextView ||
-                    linearLayout.getChildAt(i) instanceof  Button){
-                ((TextView)linearLayout.getChildAt(i)).setTypeface(face);
-                ((TextView)linearLayout.getChildAt(i)).setLetterSpacing(LETTER_SPACING);
+        for (int i = 0; i < childCount; i++) {
+            if (linearLayout.getChildAt(i) instanceof TextView ||
+                    linearLayout.getChildAt(i) instanceof Button) {
+                ((TextView) linearLayout.getChildAt(i)).setTypeface(face);
+                ((TextView) linearLayout.getChildAt(i)).setLetterSpacing(LETTER_SPACING);
             }
         }
     }
