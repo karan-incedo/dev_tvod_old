@@ -810,7 +810,7 @@ public class CastHelper {
 
         if (listRelatedVideosDetails != null && listRelatedVideosDetails.size() > 0) {
             int currentVideoDetailIndex = getCurrentIndex(listRelatedVideosDetails, CastingUtils.castingMediaId);
-            if (currentVideoDetailIndex >= listRelatedVideosDetails.size()) {
+            if (currentVideoDetailIndex <= listRelatedVideosDetails.size()) {
                 isFinish = true;
             }
         } else {
