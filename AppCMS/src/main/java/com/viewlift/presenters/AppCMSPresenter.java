@@ -7537,8 +7537,15 @@ public class AppCMSPresenter {
                                             SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
                                             subscriptionPlan.setSku(contentDatum.getIdentifier());
                                             subscriptionPlan.setPlanId(contentDatum.getId());
-                                            subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
-                                            if (!contentDatum.getPlanDetails().isEmpty()) {
+                                            if (contentDatum.getPlanDetails() != null &&
+                                                    !contentDatum.getPlanDetails().isEmpty() &&
+                                                    contentDatum.getPlanDetails().get(0) != null &&
+                                                    !TextUtils.isEmpty(contentDatum.getPlanDetails().get(0).getCountryCode())) {
+                                                subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
+                                            }
+                                            if (contentDatum.getPlanDetails() != null &&
+                                                    !contentDatum.getPlanDetails().isEmpty() &&
+                                                    contentDatum.getPlanDetails().get(0) != null) {
                                                 subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getStrikeThroughPrice());
                                             }
                                             subscriptionPlan.setPlanName(contentDatum.getName());
