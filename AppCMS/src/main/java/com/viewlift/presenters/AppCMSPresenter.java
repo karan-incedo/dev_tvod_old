@@ -10615,6 +10615,15 @@ public class AppCMSPresenter {
         return loginFromNavPage;
     }
 
+    public void openErrorDialog() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
+        bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+        Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+        currentActivity.sendBroadcast(args);
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, HOME
     }
