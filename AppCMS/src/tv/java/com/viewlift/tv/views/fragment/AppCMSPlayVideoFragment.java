@@ -645,9 +645,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onResume() {
         videoPlayerView.setListener(this);
-       /* if (shouldRequestAds && adsManager != null && isAdDisplayed) {
+       if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
-        } else {
+        }  /*else {
             videoPlayerView.resumePlayer();
             Log.d(TAG, "Resuming playback");
         }*/
@@ -859,8 +859,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             final String action = intent.getAction();
             if (action != null && action.equalsIgnoreCase("android.net.conn.CONNECTIVITY_CHANGE")) {
                 if (appCMSPresenter.isNetworkConnected()) {
-                    //TODO:resume the video.
-                    if (networkConnect) {
+                     if (networkConnect) {
                         networkDisconnect = true;
                         if (!TextUtils.isEmpty(hlsUrl)) {
                             videoPlayerView.sendPlayerPosition(videoPlayerView.getPlayer().getCurrentPosition());
@@ -873,6 +872,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         networkDisconnect = false;
                         Bundle bundle = new Bundle();
                         bundle.putBoolean(getString(R.string.retry_key), false);
+                        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , true);
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
                         errorActivityFragment = AppCmsTvErrorFragment.newInstance(
                                 bundle);

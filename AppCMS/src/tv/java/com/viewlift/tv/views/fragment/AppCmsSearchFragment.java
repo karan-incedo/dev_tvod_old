@@ -289,6 +289,8 @@ public class AppCmsSearchFragment extends Fragment {
         setFocusSequence();
         if(mRowsAdapter == null || (mRowsAdapter != null && mRowsAdapter.size() == 0))
         customKeyboard.requestFocus();
+
+        Utils.pageLoading(false,getActivity());
     }
 
 
