@@ -96,11 +96,11 @@ public class AppCMSSubscriptionPlanCall {
                     @Override
                     public void onResponse(Call<AppCMSUserSubscriptionPlanResult> call, Response<AppCMSUserSubscriptionPlanResult> response) {
                         try {
-                            String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
+//                            String request = gson.toJson(response.raw().request().body(), SubscriptionRequest.class);
                             //Log.d(TAG, "URL: " + response.raw().request().url().toString());
                             //Log.d(TAG, "Request: " + request);
                             //Log.d(TAG, "Response code: " + response.code());
-                            String responseValue = gson.toJson(response.body(), AppCMSUserSubscriptionPlanResult.class);
+//                            String responseValue = gson.toJson(response.body(), AppCMSUserSubscriptionPlanResult.class);
                             //Log.d(TAG, "Response: " + responseValue);
                             Observable.just(response.body()).subscribe(userSubscriptionPlanResult);
                         } catch (Exception e) {
