@@ -216,7 +216,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             } else {
                 queryTerm = intent.getStringExtra(SearchManager.QUERY);
                 searchTerm = queryTerm;
-                if (!TextUtils.isEmpty(searchTerm)) {
+                if (!TextUtils.isEmpty(searchTerm) && appCMSSearchUrlData!=null ) {
                     appCMSSearchView.setQuery(queryTerm, false);
                     //Send Search Term in Firebase Analytics Logs
                     Bundle bundle = new Bundle();
