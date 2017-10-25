@@ -2852,6 +2852,32 @@ public class AppCMSPresenter {
                     downloadQueueThread.start();
                 }
             }
+
+            String downloadURL = "";
+            long file_size = 0L;
+            try {// Fix for SVFA-1963
+                downloadURL = getDownloadURL(contentDatum);
+                URL url = new URL(downloadURL);
+                URLConnection urlConnection = url.openConnection();
+                urlConnection.connect();
+                //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
+                file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
+                file_size = ((file_size / 1000) / 1000);
+
+            } catch (Exception e) {
+                //Log.e(TAG, "Error trying to download: " + e.getMessage());
+            }
+            if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId());) {
+                createLocalCopyForUser(contentDatum, resultAction1);
+            } else if (getMegabytesAvailable() > file_size) {
+                startDownload(contentDatum,
+                        resultAction1);
+//                        startNextDownload = false;
+            } else {
+                currentActivity.runOnUiThread(() -> {
+                    showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null);
+                });
+            }
         }
     }
 
@@ -10605,37 +10631,7 @@ public class AppCMSPresenter {
         public void run() {
             running = true;
             while (running) {
-                if (!filmDownloadQueue.isEmpty() && startNextDownload) {
-                    DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
 
-                    if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
-                        filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
-                    }
-
-                    try {// Fix for SVFA-1963
-                        downloadURL = appCMSPresenter.getDownloadURL(downloadQueueItem.contentDatum);
-                        URL url = new URL(downloadURL);
-                        URLConnection urlConnection = url.openConnection();
-                        urlConnection.connect();
-                        //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
-                        file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
-                        file_size = ((file_size / 1000) / 1000);
-
-                    } catch (Exception e) {
-                        //Log.e(TAG, "Error trying to download: " + e.getMessage());
-                    }
-                    if (downloadQueueItem.isDownloadedFromOther) {
-                        appCMSPresenter.createLocalCopyForUser(downloadQueueItem.contentDatum, downloadQueueItem.resultAction1);
-                    } else if (appCMSPresenter.getMegabytesAvailable() > file_size) {
-                        appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
-                                downloadQueueItem.resultAction1);
-//                        startNextDownload = false;
-                    } else {
-                        appCMSPresenter.currentActivity.runOnUiThread(() -> {
-                            appCMSPresenter.showDialog(DialogType.DOWNLOAD_FAILED, appCMSPresenter.currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null);
-                        });
-                    }
-                }
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
