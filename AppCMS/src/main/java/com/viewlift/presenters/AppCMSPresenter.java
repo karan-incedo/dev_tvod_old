@@ -2335,11 +2335,14 @@ public class AppCMSPresenter {
                             sendCloseOthersAction(null, true, false);
 
                             if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getSubscriptionStatus())) {
-                                showDialog(DialogType.SUBSCRIBE,
-                                        appCMSSubscriptionPlanResults.getSubscriptionStatus(),
-                                        false,
-                                        null,
-                                        null);
+                                if (appCMSSubscriptionPlanResults.getSubscriptionStatus().equalsIgnoreCase("COMPLETED") &&
+                                        !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
+                                    showDialog(DialogType.SUBSCRIBE,
+                                            appCMSSubscriptionPlanResults.getMessage(),
+                                            false,
+                                            null,
+                                            null);
+                                }
                             }
 
                             refreshSubscriptionData(() -> {
