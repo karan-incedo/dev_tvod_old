@@ -2146,13 +2146,7 @@ public class AppCMSPresenter {
                             appCMSSubscriptionPlanResult -> {
                                 try {
                                     if (appCMSSubscriptionPlanResult != null) {
-                                        String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId();
-                                        if (paymentUniqueId != null && paymentUniqueId.length() > 0) {
-//                                            checkCCAvenueUpgradeStatus(paymentUniqueId);
-                                            upgradePlanAPICall();
-                                        } else {
-                                            showDialog(DialogType.SUBSCRIBE, "Cannot Upgrade", false, null, null);
-                                        }
+                                        upgradePlanAPICall();
                                     }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
