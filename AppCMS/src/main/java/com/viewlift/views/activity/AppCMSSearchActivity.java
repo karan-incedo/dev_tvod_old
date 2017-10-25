@@ -247,11 +247,13 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     private void updateNoResultsDisplay(AppCMSPresenter appCMSPresenter,
                                         List<AppCMSSearchResult> data) {
         if (data == null || data.isEmpty()) {
-            noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                    .getBrand()
-                    .getGeneral()
-                    .getTextColor()));
-            noResultsTextview.setVisibility(View.VISIBLE);
+            if (appCMSPresenter.getAppCMSMain().getBrand() != null) {
+                noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                        .getBrand()
+                        .getGeneral()
+                        .getTextColor()));
+                noResultsTextview.setVisibility(View.VISIBLE);
+            }
         } else {
             noResultsTextview.setVisibility(View.GONE);
         }
