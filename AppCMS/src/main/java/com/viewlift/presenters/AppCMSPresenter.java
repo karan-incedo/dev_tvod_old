@@ -2335,6 +2335,15 @@ public class AppCMSPresenter {
                             showLoadingDialog(false);
                         } else {
                             sendCloseOthersAction(null, true, false);
+
+                            if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getSubscriptionStatus())) {
+                                showDialog(DialogType.SUBSCRIBE,
+                                        appCMSSubscriptionPlanResults.getSubscriptionStatus(),
+                                        false,
+                                        null,
+                                        null);
+                            }
+
                             refreshSubscriptionData(() -> {
                                 sendRefreshPageAction();
                             }, true);
