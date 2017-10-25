@@ -1006,7 +1006,7 @@ public class TVViewCreator {
 
                                         );
                                         newFragment.setOnPositiveButtonClicked(s ->
-                                                appCMSPresenter.clearHistory(
+                                                appCMSPresenter.makeClearHistoryRequest(
                                                         appCMSDeleteHistoryResult -> {
                                                             onInternalEvent.sendEvent(null);
                                                             buttonRemoveAll.setFocusable(false);
@@ -1029,7 +1029,7 @@ public class TVViewCreator {
                                                 22.5f
                                         );
                                         newFragment1.setOnPositiveButtonClicked(s ->
-                                                appCMSPresenter.clearWatchlist(
+                                                appCMSPresenter.makeClearWatchlistRequest(
                                                         appCMSAddToWatchlistResult -> {
                                                             onInternalEvent.sendEvent(null);
                                                             buttonRemoveAll.setFocusable(false);
