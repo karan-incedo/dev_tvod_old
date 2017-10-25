@@ -57,7 +57,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.vending.billing.IInAppBillingService;
-import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.facebook.AccessToken;
 import com.facebook.FacebookRequestError;
@@ -108,7 +107,6 @@ import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
-import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.subscriptions.PlanDetail;
@@ -10321,7 +10319,7 @@ public class AppCMSPresenter {
                 title,
                 null,
                 null,
-                true,
+                false,
                 0,
                 null)) {
             //Log.e(TAG, "Could not launch action: " +
@@ -10353,6 +10351,33 @@ public class AppCMSPresenter {
 
     public boolean getLoginFromNavPage() {
         return loginFromNavPage;
+    }
+
+    public void setEntitlementPendingVideoData(EntitlementPendingVideoData entitlementPendingVideoData) {
+        this.entitlementPendingVideoData = entitlementPendingVideoData;
+    }
+
+    public void getSubscriptionData(Action1<AppCMSUserSubscriptionPlanResult> action1) {
+        try {
+            appCMSSubscriptionPlanCall.call(
+                    currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            getLoggedInUser(),
+                            appCMSSite.getGist().getSiteInternalName()),
+                    R.string.app_cms_subscription_subscribed_plan_key,
+                    null,
+                    apikey,
+                    getAuthToken(),
+                    listResult -> Log.v("currentActivity", "currentActivity"),
+                    appCMSSubscriptionPlanResults -> {
+                        AppCMSPresenter.this.sendCloseOthersAction(null, true, false);
+                        AppCMSPresenter.this.refreshSubscriptionData(
+                                AppCMSPresenter.this::sendRefreshPageAction, true);
+                    }, action1
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public enum LaunchType {
@@ -10855,10 +10880,6 @@ public class AppCMSPresenter {
         }
     }
 
-    public void setEntitlementPendingVideoData(EntitlementPendingVideoData entitlementPendingVideoData) {
-        this.entitlementPendingVideoData = entitlementPendingVideoData;
-    }
-
     public static class SemVer {
         private static final String SEMVER_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
         int major;
@@ -10883,37 +10904,6 @@ public class AppCMSPresenter {
                     patch = Integer.parseInt(semverMatcher.group(3));
                 }
             }
-        }
-    }
-
-    public void getSubscriptionData(Action1<AppCMSUserSubscriptionPlanResult> action1) {
-        try {
-            appCMSSubscriptionPlanCall.call(
-                    currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
-                            appCMSMain.getApiBaseUrl(),
-                            getLoggedInUser(),
-                            appCMSSite.getGist().getSiteInternalName()),
-                    R.string.app_cms_subscription_subscribed_plan_key,
-                    null,
-                    apikey,
-                    getAuthToken(),
-                    new Action1<List<AppCMSSubscriptionPlanResult>>() {
-                        @Override
-                        public void call(List<AppCMSSubscriptionPlanResult> listResult) {
-                            Log.v("currentActivity", "currentActivity");
-                        }
-                    }, new Action1<AppCMSSubscriptionPlanResult>() {
-                        @Override
-                        public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
-                            AppCMSPresenter.this.sendCloseOthersAction(null, true, false);
-                            AppCMSPresenter.this.refreshSubscriptionData(() -> {
-                                AppCMSPresenter.this.sendRefreshPageAction();
-                            }, true);
-                        }
-                    }, action1
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
