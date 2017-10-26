@@ -217,6 +217,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private void preparePlayer() {
+        videoPlayerView.init(getActivity());
+        videoPlayerView.getPlayer().setPlayWhenReady(true);
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(false);
             videoPlayerView.getPlayerView().getSubtitleView()
@@ -388,6 +390,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
+
+
         playBackStateLayout = (RelativeLayout) rootView.findViewById(R.id.playback_state_layout);
         playBackStateTextView = (TextView) rootView.findViewById(R.id.playback_state_text);
         playBackStateTextView.setTextColor(Color.parseColor(fontColor));
@@ -535,7 +539,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }
 
         if (!shouldRequestAds) {
-            videoPlayerView.getPlayer().setPlayWhenReady(true);
+            //videoPlayerView.getPlayer().setPlayWhenReady(true);
             preparePlayer();
         }
 

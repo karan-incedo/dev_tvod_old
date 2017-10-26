@@ -107,6 +107,7 @@ public class RESTUnitTest {
         AppCMSPageAPI appCMSPageAPI = appCMSPageAPICall.call(null,
                 null,
                 null,
+                false,
                 0);
         assertNotNull(appCMSPageAPI);
     }

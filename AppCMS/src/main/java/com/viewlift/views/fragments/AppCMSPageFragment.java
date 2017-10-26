@@ -139,14 +139,6 @@ public class AppCMSPageFragment extends Fragment {
             shouldSendFirebaseViewItemEvent = false;
         }
 
-        if (appCMSPresenter != null) {
-            if (!BaseView.isTablet(getActivity())) {
-                appCMSPresenter.restrictPortraitOnly();
-            } else {
-                appCMSPresenter.unrestrictPortraitOnly();
-            }
-        }
-
         return pageView;
     }
 
@@ -165,6 +157,8 @@ public class AppCMSPageFragment extends Fragment {
 
     private void sendFirebaseAnalyticsEvents(AppCMSBinder appCMSVideoPageBinder) {
         if (appCMSVideoPageBinder == null)
+            return;
+        if (appCMSPresenter.getmFireBaseAnalytics() == null)
             return;
 
         if (appCMSVideoPageBinder.getScreenName() == null ||

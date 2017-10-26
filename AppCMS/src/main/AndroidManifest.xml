@@ -39,6 +39,7 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".views.activity.AppCMSPlayVideoActivity"
+            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".views.activity.AppCMSSearchActivity"

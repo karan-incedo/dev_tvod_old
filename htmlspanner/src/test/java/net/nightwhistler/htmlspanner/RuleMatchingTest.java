@@ -1,17 +1,7 @@
 package net.nightwhistler.htmlspanner;
 
-import com.osbcp.cssparser.CSSParser;
-import com.osbcp.cssparser.Rule;
-
-import net.nightwhistler.htmlspanner.css.CSSCompiler;
-import net.nightwhistler.htmlspanner.css.CompiledRule;
-import org.htmlcleaner.TagNode;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import java.util.List;
-
-import static junit.framework.Assert.*;
+//import org.junit.Test;
+//import org.junit.runner.RunWith;
 
 public class RuleMatchingTest {
 

@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
 
-    <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
-    <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
+    <!--<string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>-->
 
     <!-- x-api-key -->
-    <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
+    <string name="x_api_key">7arSnLdRpj8mtRj5Ruv0V1GK9PE0zOyC76KcfTi8</string>
 
     <!-- AppCMS Facebook Login values -->
-    <string name="facebook_app_id">1324523080924996</string>
-    <string name="fb_login_protocol_scheme">fb1324523080924996</string>
+    <string name="facebook_app_id">227991737252697</string>
+    <string name="fb_login_protocol_scheme">fb227991737252697</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
+    <string name="app_cms_apptentive_api_key">
+        b662ac9b5b55b2d40c803ba80cc2e3e5a239c4270b872a9b04d6eb7b8157ccc4
+    </string>
+
+    <!-- apps flyer keys -->
+    <string name="app_cms_appsflyer_dev_key"></string>
 
     <!-- cast receiver -->
-    <string name="chromecast_receiver_app_id">0974224E</string>
+    <string name="chromecast_receiver_app_id">9B761D16</string>
 
     <!-- flag to use HLS or not -->
-    <bool name="use_hls">false</bool>
+    <bool name="use_hls">true</bool>
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
