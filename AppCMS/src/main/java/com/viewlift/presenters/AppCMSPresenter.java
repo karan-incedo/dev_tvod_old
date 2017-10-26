@@ -5059,7 +5059,7 @@ public class AppCMSPresenter {
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
         AppCMSPageAPI appCMSPageAPI = null;
-        if (platformType == PlatformType.ANDROID) {
+        if (platformType == PlatformType.ANDROID && pageId != null) {
             appCMSPageAPI = getPageAPILruCache().get(pageId);
         }
         if (appCMSPageAPI == null) {
