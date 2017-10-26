@@ -816,6 +816,9 @@ public class CastHelper {
             isFinish = true;
         }
 
+        if(getRemoteMediaClient()==null){
+            return;
+        }
         int status = getRemoteMediaClient().getPlayerState();
         int idleReason = getRemoteMediaClient().getIdleReason();
         String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
