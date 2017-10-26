@@ -3352,7 +3352,7 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error rendering circular image bar");
                                 }
                             });
-                            if ((downloaded >= totalSize || downloadPercent > 100)) {
+                            if ((downloaded >= totalSize || downloadPercent > 100) && totalSize > 0) {
                                 if (currentActivity != null && isUserLoggedIn())
                                     currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
                                             .call(filmId, presenter, responseAction, getLoggedInUser()));
