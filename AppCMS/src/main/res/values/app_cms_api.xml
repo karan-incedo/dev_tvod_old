@@ -385,6 +385,7 @@
     <string name="app_cms_settings_subscription_duration_label">subscriptionDurationLabel</string>
     <string name="app_cms_settings_manage_subscription_button_key">manageSubscriptionButton</string>
     <string name="app_cms_settings_subscription_label_key">subscriptionLabel</string>
+    <string name="app_cms_settings_user_email_label_key">userEmailKey</string>
 
 
     <!-- AppCMS Payment Processor values -->

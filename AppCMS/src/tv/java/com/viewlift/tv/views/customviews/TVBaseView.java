@@ -195,6 +195,9 @@ public abstract class TVBaseView extends FrameLayout {
                         break;
                     case PAGE_TEXTALIGNMENT_CENTER_KEY:
                         gravity = Gravity.CENTER;
+                        if(componentKey == AppCMSUIKeyType.PAGE_SETTINGS_USER_EMAIL_LABEL_KEY){
+                            gravity = Gravity.CENTER_HORIZONTAL;
+                        }
                         break;
                 }
                 ((TextView) view).setGravity(gravity);

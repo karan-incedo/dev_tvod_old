@@ -163,6 +163,20 @@
           "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "manageSubscriptionButton"
+        }, {
+          "layout": {
+            "ftv": {
+              "topMargin": 680,
+              "fontSize": 12,
+              "height": 45
+            }
+          },
+          "textAlignment" : "center",
+          "fontFamily": "OpenSans",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
+          "key": "userEmailKey"
         }/*, {
           "layout": {
             "ftv": {
