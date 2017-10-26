@@ -691,8 +691,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else {
                     pageLoading(false);
                 }
-                updateData(appCMSBinder, () -> {
-                    appCMSPresenter.sendRefreshPageAction();
+                updateData(appCMSBinder, (shouldRefresh) -> {
+                    if (shouldRefresh) {
+                        appCMSPresenter.sendRefreshPageAction();
+                    }
                 });
             } else {
                 pageLoading(false);
@@ -1776,7 +1778,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.resetDeeplinkQuery();
     }
 
-    private void updateData(AppCMSBinder appCMSBinder, Action0 readyAction) {
+    private void updateData(AppCMSBinder appCMSBinder, Action1<Boolean> readyAction) {
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
         final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
@@ -1792,10 +1794,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     //Log.d(TAG, "Updated watched history for loaded displays");
 
                     if (readyAction != null) {
-                        readyAction.call();
+                        readyAction.call(true);
                     }
                 } else if (readyAction != null) {
-                    readyAction.call();
+                    readyAction.call(false);
                 }
             });
         } else if (appCMSPresenter.isWatchlistPage(appCMSBinder.getPageId())) {
@@ -1810,10 +1812,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     //Log.d(TAG, "Updated watched history for loaded displays");
 
                     if (readyAction != null) {
-                        readyAction.call();
+                        readyAction.call(true);
                     }
                 } else if (readyAction != null) {
-                    readyAction.call();
+                    readyAction.call(false);
                 }
             });
         } else {
@@ -1844,11 +1846,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                             }
                             if (readyAction != null) {
-                                readyAction.call();
+                                readyAction.call(true);
                             }
                         });
             } else if (readyAction != null) {
-                readyAction.call();
+                readyAction.call(false);
             }
         }
     }
