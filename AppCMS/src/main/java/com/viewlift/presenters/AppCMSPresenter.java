@@ -2150,7 +2150,7 @@ public class AppCMSPresenter {
                                 showLoadingDialog(false);
                                 try {
                                     if (appCMSSubscriptionPlanResult != null) {
-                                       // upgradePlanAPICall();
+                                        // upgradePlanAPICall();
                                     }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
@@ -2322,7 +2322,7 @@ public class AppCMSPresenter {
                     }, appCMSSubscriptionPlanResults -> {
                         if (appCMSSubscriptionPlanResults != null &&
                                 (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage()) ||
-                                !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getError()))) {
+                                        !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getError()))) {
                             if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
                                 if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getSubscriptionStatus())) {
                                     if (appCMSSubscriptionPlanResults.getSubscriptionStatus().equalsIgnoreCase("COMPLETED") &&
@@ -3002,8 +3002,10 @@ public class AppCMSPresenter {
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
                     .setVisibleInDownloadsUi(false)
-                    .setShowRunningNotification(true);
+                    .setShowRunningNotification(false);
 
+
+//
             if (getUserDownloadLocationPref()) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "thumbs"),
                         filename + MEDIA_SURFIX_JPG)));
@@ -3041,7 +3043,7 @@ public class AppCMSPresenter {
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
                     .setVisibleInDownloadsUi(false)
-                    .setShowRunningNotification(true);
+                    .setShowRunningNotification(false);
 
             if (getUserDownloadLocationPref()) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "posters"),
@@ -3071,7 +3073,8 @@ public class AppCMSPresenter {
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
                     .setVisibleInDownloadsUi(false)
-                    .setShowRunningNotification(true);
+                    .setShowRunningNotification(false);
+
 
             if (getUserDownloadLocationPref()) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "closedCaptions"),
@@ -3306,6 +3309,7 @@ public class AppCMSPresenter {
         }
     }
 
+
     @UiThread
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
@@ -3341,7 +3345,14 @@ public class AppCMSPresenter {
                             int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                             //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
                             //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
-                            if (downloaded >= totalSize || downloadPercent > 100) {
+                            currentActivity.runOnUiThread(() -> {
+                                try {
+                                    circularImageBar(imageView, 1);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error rendering circular image bar");
+                                }
+                            });
+                            if ((downloaded >= totalSize || downloadPercent > 100)) {
                                 if (currentActivity != null && isUserLoggedIn())
                                     currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
                                             .call(filmId, presenter, responseAction, getLoggedInUser()));
@@ -5054,7 +5065,7 @@ public class AppCMSPresenter {
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
         AppCMSPageAPI appCMSPageAPI = null;
-        if(platformType == PlatformType.ANDROID) {
+        if (platformType == PlatformType.ANDROID) {
             appCMSPageAPI = getPageAPILruCache().get(pageId);
         }
         if (appCMSPageAPI == null) {
@@ -5066,7 +5077,7 @@ public class AppCMSPresenter {
                                         .urlWithContent(urlWithContent)
                                         .authToken(getAuthToken())
                                         .pageId(pageId)
-                                        .loadFromFile( (platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile())
+                                        .loadFromFile((platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile())
                                         .appCMSPageAPILruCache(getPageAPILruCache())
                                         .build();
                                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
@@ -5082,7 +5093,7 @@ public class AppCMSPresenter {
                         .urlWithContent(urlWithContent)
                         .authToken(getAuthToken())
                         .pageId(pageId)
-                        .loadFromFile( (platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile() )
+                        .loadFromFile((platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile())
                         .appCMSPageAPILruCache(getPageAPILruCache())
                         .build();
                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
@@ -10429,7 +10440,7 @@ public class AppCMSPresenter {
     public boolean getLoginFromNavPage() {
         return loginFromNavPage;
     }
-  
+
     public void openErrorDialog() {
         Bundle bundle = new Bundle();
         bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
@@ -10438,7 +10449,7 @@ public class AppCMSPresenter {
         args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
         currentActivity.sendBroadcast(args);
     }
-  
+
     public void setEntitlementPendingVideoData(EntitlementPendingVideoData entitlementPendingVideoData) {
         this.entitlementPendingVideoData = entitlementPendingVideoData;
     }
