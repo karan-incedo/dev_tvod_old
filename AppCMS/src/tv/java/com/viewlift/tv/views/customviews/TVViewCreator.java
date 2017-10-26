@@ -1460,6 +1460,10 @@ public class TVViewCreator {
                                 }
                             }
                             break;
+
+                        case PAGE_SETTINGS_USER_EMAIL_LABEL_KEY:
+                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.logged_in_as, appCMSPresenter.getLoggedInUserEmail()));
+                            break;
                         default:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText());
