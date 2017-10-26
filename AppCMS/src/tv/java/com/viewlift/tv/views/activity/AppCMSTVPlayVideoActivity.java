@@ -424,9 +424,16 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+
         boolean result = false;
         if(event.getAction() == KeyEvent.ACTION_DOWN ){
-            result =  appCMSPlayVideoFragment.showController(event);
+            if(null != appCMSPlayVideoFragment ){
+                if(appCMSPlayVideoFragment.isAdsPlaying()){
+                    return true;
+                }
+            }
+
+            appCMSPlayVideoFragment.showController(event);
             switch (event.getKeyCode()){
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     if(null != appCMSPlayVideoPageContainer){
@@ -449,7 +456,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     break;
             }
         }
-        return super.dispatchKeyEvent(event) || result;
+        return super.dispatchKeyEvent(event);
     }
     @Override
     public void onMovieFinished() {

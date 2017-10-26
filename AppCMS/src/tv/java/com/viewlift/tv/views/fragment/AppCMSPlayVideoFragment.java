@@ -111,6 +111,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean sentBeaconFirstFrame;
     private long mTotalVideoDuration;
 
+
+    public VideoPlayerView getVideoPlayerView() {
+        return videoPlayerView;
+    }
+
     public interface OnClosePlayerEvent {
         void closePlayer();
 
@@ -353,6 +358,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     .setVisibility(isChecked ? View.VISIBLE : View.GONE);
             appCMSPresenter.setClosedCaptionPreference(isChecked);
         });
+    }
+
+    private boolean isAdsDisplaying = false;
+    public boolean isAdsPlaying() {
+        return isAdsDisplaying;
     }
 
 
@@ -684,6 +694,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
         videoPlayerView.getPlayer().setPlayWhenReady(true);
         preparePlayer();
+        isAdsDisplaying = false;
         // videoPlayerView.getPlayer().setPlayWhenReady(true);
         // videoPlayerView.resumePlayer();
     }
@@ -697,6 +708,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 playBackStateLayout.setVisibility(View.GONE);
                 videoPlayerInfoContainer.setVisibility(View.GONE); //to hide the player controls.
                 adsManager.start();
+                isAdsDisplaying = true;
                 break;
             case CONTENT_PAUSE_REQUESTED:
                 isAdDisplayed = true;
@@ -759,6 +771,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     adsManager.destroy();
                     adsManager = null;
                 }
+                isAdsDisplaying = false;
                 preparePlayer();
                 videoPlayerInfoContainer.setVisibility(View.VISIBLE); //show player controlls.
                 break;
@@ -825,6 +838,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             });
 
             adsLoader.requestAds(request);
+            isAdsDisplaying = true;
 
             apod += 1;
             if (appCMSPresenter != null) {
@@ -849,10 +863,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     public boolean showController(KeyEvent event) {
-        SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
-        if (playerView.getPlayer().getPlayWhenReady()) {
-            playerView.showController();
-            return playerView.dispatchMediaKeyEvent(event);
+        if(null != videoPlayerView) {
+            SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
+            if (null != playerView) {
+                if(null != playerView.getPlayer()){
+                    if( playerView.getPlayer().getPlayWhenReady() ) {
+                        playerView.showController();
+                        return playerView.dispatchMediaKeyEvent(event);
+                    }
+                }
+            }
         }
         return true;
     }
