@@ -49,21 +49,21 @@ public class CustomKeyboard
 
         CharSequence text = ((TextView) keyboardView.findViewById(R.id.tv_select_uc)).getText();
 
-        tvSelectUc = keyboardView.findViewById(R.id.tv_select_uc);
-        tvSelectLc = keyboardView.findViewById(R.id.tv_select_lc);
-        tvSelectNum = keyboardView.findViewById(R.id.tv_select_num);
-        tvSelectSc = keyboardView.findViewById(R.id.tv_select_sc);
+        tvSelectUc = (TextView) keyboardView.findViewById(R.id.tv_select_uc);
+        tvSelectLc = (TextView) keyboardView.findViewById(R.id.tv_select_lc);
+        tvSelectNum = (TextView) keyboardView.findViewById(R.id.tv_select_num);
+        tvSelectSc = (TextView) keyboardView.findViewById(R.id.tv_select_sc);
 
-        upperCaseLayout = keyboardView.findViewById(R.id.appcms_uc_keyboard_layout);
-        lowerCaseLayout = keyboardView.findViewById(R.id.appcms_lc_keyboard_layout);
-        numberLayout = keyboardView.findViewById(R.id.appcms_num_keyboard_layout);
-        specialCharLayout = keyboardView.findViewById(R.id.appcms_sc_keyboard_layout);
+        upperCaseLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_uc_keyboard_layout);
+        lowerCaseLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_lc_keyboard_layout);
+        numberLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_num_keyboard_layout);
+        specialCharLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_sc_keyboard_layout);
         setFontFamily(upperCaseLayout);
         setFontFamily(lowerCaseLayout);
         setFontFamily(numberLayout);
         setFontFamily(specialCharLayout);
 
-        keyboardSelectLayout = keyboardView.findViewById(R.id.appcms_keyboard_select_layout);
+        keyboardSelectLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_keyboard_select_layout);
 
         tvSelectUc.setOnFocusChangeListener(this);
         tvSelectLc.setOnFocusChangeListener(this);
