@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -37,6 +36,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 
@@ -45,23 +46,40 @@ import rx.functions.Action1;
  */
 
 public class AppCMSSearchActivity extends AppCompatActivity {
+
     private static final String TAG = "SearchActivity";
-
-    @Inject
-    AppCMSSearchUrlData appCMSSearchUrlData;
-    @Inject
-    AppCMSSearchCall appCMSSearchCall;
-
-    private SearchView appCMSSearchView;
-    private TextView noResultsTextview;
-
-    private AppCMSSearchItemAdapter appCMSSearchItemAdapter;
-    private BroadcastReceiver handoffReceiver;
-
     private final String FIREBASE_SEARCH_EVENT = "search";
     private final String FIREBASE_SEARCH_TERM = "search_term";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     private final String FIREBASE_SCREEN_NAME = "Search Result Screen";
+
+    @BindView(R.id.app_cms_search_results)
+    RecyclerView appCMSSearchResultsView;
+
+    @BindView(R.id.app_cms_page_loading_progressbar)
+    ProgressBar progressBar;
+
+    @BindView(R.id.app_cms_searchbar)
+    SearchView appCMSSearchView;
+
+    @BindView(R.id.app_cms_search_results_container)
+    LinearLayout appCMSSearchResultsContainer;
+
+    @BindView(R.id.no_results_textview)
+    TextView noResultsTextview;
+
+    @BindView(R.id.app_cms_close_button)
+    ImageButton appCMSCloseButton;
+
+    @Inject
+    AppCMSSearchUrlData appCMSSearchUrlData;
+
+    @Inject
+    AppCMSSearchCall appCMSSearchCall;
+
+    private String searchQuery;
+    private AppCMSSearchItemAdapter appCMSSearchItemAdapter;
+    private BroadcastReceiver handoffReceiver;
     private AppCMSPresenter appCMSPresenter;
 
     @Override
@@ -69,14 +87,12 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        RecyclerView appCMSSearchResultsView = (RecyclerView) findViewById(R.id.app_cms_search_results);
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.search_page_loading_progressbar);
+        ButterKnife.bind(this);
 
-        appCMSSearchItemAdapter =
-                new AppCMSSearchItemAdapter(this,
-                        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
-                                .appCMSPresenter(),
-                        null);
+        appCMSSearchItemAdapter = new AppCMSSearchItemAdapter(this,
+                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent()
+                        .appCMSPresenter(),
+                null);
         appCMSSearchResultsView.setAdapter(appCMSSearchItemAdapter);
         sendFirebaseAnalyticsEvents();
 
@@ -113,7 +129,6 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         registerReceiver(handoffReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        appCMSSearchView = (SearchView) findViewById(R.id.app_cms_searchbar);
         appCMSSearchView.setQueryHint(getString(R.string.search_films));
         //noinspection ConstantConditions
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -134,8 +149,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 return false;
             }
         });
-        LinearLayout appCMSSearchResultsContainer =
-                (LinearLayout) findViewById(R.id.app_cms_search_results_container);
+
         if (appCMSMain != null &&
                 appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&
@@ -145,15 +159,10 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                     .getBackgroundColor()));
         }
 
-        noResultsTextview = (TextView) findViewById(R.id.no_results_textview);
-
-        ImageButton appCMSCloseButton = (ImageButton) findViewById(R.id.app_cms_close_button);
         appCMSCloseButton.setOnClickListener(v -> finish());
 
         handleIntent(getIntent());
         appCMSSearchItemAdapter.handleProgress((object) -> progressBar.setVisibility(View.VISIBLE));
-
-
     }
 
     private void sendFirebaseAnalyticsEvents() {
@@ -167,6 +176,13 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             //Sets whether analytics collection is enabled for this app on this device.
             appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString("demo", searchQuery);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -190,6 +206,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         finish();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void handleIntent(Intent intent) {
         final AppCMSPresenter appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
@@ -216,7 +233,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             } else {
                 queryTerm = intent.getStringExtra(SearchManager.QUERY);
                 searchTerm = queryTerm;
-                if (!TextUtils.isEmpty(searchTerm)) {
+                if (!TextUtils.isEmpty(searchTerm) && appCMSSearchUrlData!=null ) {
                     appCMSSearchView.setQuery(queryTerm, false);
                     //Send Search Term in Firebase Analytics Logs
                     Bundle bundle = new Bundle();
@@ -228,17 +245,13 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                             appCMSSearchUrlData.getSiteName(),
                             searchTerm);
                     //Log.d(TAG, "Search URL: " + url);
-                    new SearchAsyncTask(new Action1<List<AppCMSSearchResult>>() {
-                        @Override
-                        public void call(List<AppCMSSearchResult> data) {
-                            if (data != null) {
-                                appCMSSearchItemAdapter.setData(data);
-                                updateNoResultsDisplay(appCMSPresenter, data);
-                            }
+                    new SearchAsyncTask(data -> {
+                        if (data != null) {
+                            appCMSSearchItemAdapter.setData(data);
+                            updateNoResultsDisplay(appCMSPresenter, data);
                         }
-                    },
-                            appCMSSearchCall,
-                            appCMSPresenter.getApiKey()).execute(url, appCMSPresenter.getApiKey());
+                    }, appCMSSearchCall, appCMSPresenter.getApiKey()).execute(url,
+                            appCMSPresenter.getApiKey());
                 }
             }
         }

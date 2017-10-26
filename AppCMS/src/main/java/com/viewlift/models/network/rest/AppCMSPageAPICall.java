@@ -19,6 +19,7 @@ import java.util.Observable;
 import javax.inject.Inject;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 
@@ -80,8 +81,10 @@ public class AppCMSPageAPICall {
                     headersMap.put("Authorization", authToken);
                 }
                 //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
-                Response<AppCMSPageAPI> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
-                appCMSPageAPI = response.body();
+                Response<JsonElement> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
+                if (response != null && response.body() != null) {
+                    appCMSPageAPI = gson.fromJson(response.body(), AppCMSPageAPI.class);
+                }
 
                 if (!response.isSuccessful()) {
                     //Log.e(TAG, "Response error: " + response.errorBody().string());
