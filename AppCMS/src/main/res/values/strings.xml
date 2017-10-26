@@ -411,7 +411,7 @@
     <string name="subscription">SUBSCRIPTION</string>
     <string name="subscription_required">SUBSCRIPTION REQUIRED</string>
      <string name="subscription_purchased_from_web_msg">This subscription was purchased on our website. To modify it, please visit your account settings in a browser.</string>
-    <string name="subscription_purchased_from_android_msg">This subscription was purchased on Google Play Store. To modify it, please visit your account settings on your Android device.</string>
+    <string name="subscription_purchased_from_android_msg">This subscription was purchased on an Android device. To modify it, please visit your account settings on your Android device.</string>
     <string name="subscription_purchased_from_apple_msg">This subscription was purchased on Apple App Store. To modify it, please visit your account settings on your Apple device.</string>
     <string name="subscription_not_purchased">You are currently not a subscriber, please visit our website to purchase a subscription.</string>
 
