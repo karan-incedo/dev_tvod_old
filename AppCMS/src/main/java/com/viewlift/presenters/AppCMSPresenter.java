@@ -6072,6 +6072,8 @@ public class AppCMSPresenter {
             setActiveSubscriptionSku(null);
             setActiveSubscriptionPlanName(null);
             setActiveSubscriptionReceipt(null);
+            setActiveSubscriptionPlatform(null);
+            setActiveSubscriptionStatus(null);
             setRefreshToken(null);
             setAuthToken(null);
             setIsUserSubscribed(false);
