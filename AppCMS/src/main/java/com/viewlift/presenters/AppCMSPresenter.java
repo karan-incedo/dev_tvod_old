@@ -3002,8 +3002,10 @@ public class AppCMSPresenter {
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
                     .setVisibleInDownloadsUi(false)
-                    .setShowRunningNotification(true);
+                    .setShowRunningNotification(false);
 
+
+//
             if (getUserDownloadLocationPref()) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "thumbs"),
                         filename + MEDIA_SURFIX_JPG)));
@@ -3041,7 +3043,7 @@ public class AppCMSPresenter {
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
                     .setVisibleInDownloadsUi(false)
-                    .setShowRunningNotification(true);
+                    .setShowRunningNotification(false);
 
             if (getUserDownloadLocationPref()) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "posters"),
@@ -3071,7 +3073,8 @@ public class AppCMSPresenter {
                     .setDescription(filename)
                     .setAllowedOverRoaming(false)
                     .setVisibleInDownloadsUi(false)
-                    .setShowRunningNotification(true);
+                    .setShowRunningNotification(false);
+
 
             if (getUserDownloadLocationPref()) {
                 downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, "closedCaptions"),
@@ -3306,6 +3309,7 @@ public class AppCMSPresenter {
         }
     }
 
+
     @UiThread
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
@@ -3341,7 +3345,8 @@ public class AppCMSPresenter {
                             int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                             //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
                             //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
-                            if (downloaded >= totalSize || downloadPercent > 100) {
+
+                            if ((downloaded >= totalSize || downloadPercent > 100) && totalSize > 0) {
                                 if (currentActivity != null && isUserLoggedIn())
                                     currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
                                             .call(filmId, presenter, responseAction, getLoggedInUser()));

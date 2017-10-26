@@ -2035,13 +2035,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-            appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
-                    + BaseView.isLandscape(this));
-            handleLaunchPageAction(appCMSBinder,
-                    false,
-                    leavingExtraPage,
-                    appCMSBinder.getExtraScreenType()
-                            == AppCMSPresenter.ExtraScreenType.SEARCH);
+            if (appCMSPresenter != null && appCMSBinder != null) {
+                appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
+                        + BaseView.isLandscape(this));
+
+                handleLaunchPageAction(appCMSBinder,
+                        false,
+                        leavingExtraPage,
+                        appCMSBinder.getExtraScreenType()
+                                == AppCMSPresenter.ExtraScreenType.SEARCH);
+            }
             isActive = true;
         } else {
             isActive = false;

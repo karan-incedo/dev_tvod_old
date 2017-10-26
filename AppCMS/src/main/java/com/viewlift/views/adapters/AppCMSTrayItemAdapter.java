@@ -163,7 +163,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                 holder.appCMSContinueWatchingSize.setVisibility(View.VISIBLE);
                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
-
                 if (contentDatum.getGist() != null) {
                     switch (contentDatum.getGist().getDownloadStatus()) {
                         case STATUS_PENDING:
