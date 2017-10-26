@@ -3345,13 +3345,7 @@ public class AppCMSPresenter {
                             int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                             //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
                             //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
-                            currentActivity.runOnUiThread(() -> {
-                                try {
-                                    circularImageBar(imageView, 1);
-                                } catch (Exception e) {
-                                    //Log.e(TAG, "Error rendering circular image bar");
-                                }
-                            });
+
                             if ((downloaded >= totalSize || downloadPercent > 100) && totalSize > 0) {
                                 if (currentActivity != null && isUserLoggedIn())
                                     currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
