@@ -2547,16 +2547,23 @@ public class AppCMSPresenter {
 
     public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
         if (isNetworkConnected()) {
-            getPageAPILruCache().evictAll();
-            invalidateLoggedInTime();
             showLoadingDialog(true);
-            new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
-                if (currentActivity != null && sendRefreshPageDataAction) {
-                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
-                }
-                if (onRefreshFinished != null) {
-                    onRefreshFinished.call();
-                }
+            getPageAPILruCache().evictAll();
+            getUserData((userIdentity) -> {
+
+                setLoggedInUser(userIdentity.getUserId());
+                setLoggedInUserEmail(userIdentity.getEmail());
+                setLoggedInUserName(userIdentity.getName());
+                setIsUserSubscribed(userIdentity.isSubscribed());
+
+                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
+                    if (currentActivity != null && sendRefreshPageDataAction) {
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+                    }
+                    if (onRefreshFinished != null) {
+                        onRefreshFinished.call();
+                    }
+                });
             });
         } else {
             if (onRefreshFinished != null) {
@@ -5414,15 +5421,6 @@ public class AppCMSPresenter {
             return sharedPrefs.getLong(USER_LOGGED_IN_TIME_PREF_NAME, -1L);
         }
         return -1L;
-    }
-
-    public boolean invalidateLoggedInTime() {
-        if (currentContext != null) {
-            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
-            Date now = new Date();
-            return sharedPrefs.edit().putLong(USER_LOGGED_IN_TIME_PREF_NAME, 0L).commit();
-        }
-        return false;
     }
 
     public boolean setLoggedInTime() {

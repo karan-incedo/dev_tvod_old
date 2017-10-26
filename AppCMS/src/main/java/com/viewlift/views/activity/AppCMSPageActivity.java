@@ -1835,7 +1835,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         endPoint,
                         siteId,
                         appCMSBinder.getPagePath());
-                appCMSPresenter.invalidateLoggedInTime();
                 appCMSPresenter.getPageIdContent(apiUrl,
                         appCMSBinder.getPagePath(),
                         appCMSPageAPI -> {
