@@ -1121,7 +1121,7 @@ public class AppCMSPresenter {
         } else if (!cancelAllLoads) {
             //Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
-            refreshPages(null);
+            refreshPages(null, false, 0, 0);
 
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
@@ -4824,7 +4824,7 @@ public class AppCMSPresenter {
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            refreshPages(null);
+            refreshPages(null, false, 0, 0);
 
             loadingPage = true;
             //Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
@@ -8640,7 +8640,10 @@ public class AppCMSPresenter {
         }
     }
 
-    public void refreshPages(Action0 onreadyAction) {
+    public void refreshPages(Action0 onReadyAction,
+                             boolean attemptRetry,
+                             int retryAttempts,
+                             int maxRetryAttempts) {
         //Log.d(TAG, "Refreshing pages");
         if (currentActivity != null && launched) {
             //Log.d(TAG, "Refreshing main.json");
@@ -8649,79 +8652,88 @@ public class AppCMSPresenter {
                 refreshAppCMSMain((appCMSMain) -> {
                     if (appCMSMain != null) {
                         //Log.d(TAG, "Refreshed main.json");
-                        this.appCMSMain = appCMSMain;
-                        try {
-                            refreshAppCMSAndroid((appCMSAndroid) -> {
-                                if (appCMSAndroid != null) {
-                                    for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
-                                        //Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+                        if (this.appCMSMain.getVersion().equals(appCMSMain.getVersion()) &&
+                                attemptRetry &&
+                                retryAttempts < maxRetryAttempts) {
+                            refreshPages(onReadyAction,
+                                    attemptRetry,
+                                    retryAttempts + 1,
+                                    maxRetryAttempts);
+                        } else {
+                            this.appCMSMain = appCMSMain;
+                            try {
+                                refreshAppCMSAndroid((appCMSAndroid) -> {
+                                    if (appCMSAndroid != null) {
+                                        for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
+                                            //Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
 //                                                " " +
 //                                                metaPage.getPageId() +
 //                                                " " +
 //                                                metaPage.getPageUI());
-                                        if (currentActivity != null) {
-                                            try {
-                                                getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                                        metaPage.getPageUI()),
-                                                        appCMSPageUI -> {
-                                                            if (appCMSPageUI != null) {
-                                                                boolean updatePage = false;
-                                                                if (navigationPages.containsKey(metaPage.getPageId())) {
-                                                                    String oldVersion = navigationPages.get(metaPage.getPageId()).getVersion();
-                                                                    String newVersion = appCMSPageUI.getVersion();
-                                                                    if (!TextUtils.isEmpty(oldVersion)) {
-                                                                        updatePage = !oldVersion.equals(newVersion);
+                                            if (currentActivity != null) {
+                                                try {
+                                                    getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                                                            metaPage.getPageUI()),
+                                                            appCMSPageUI -> {
+                                                                if (appCMSPageUI != null) {
+                                                                    boolean updatePage = false;
+                                                                    if (navigationPages.containsKey(metaPage.getPageId())) {
+                                                                        String oldVersion = navigationPages.get(metaPage.getPageId()).getVersion();
+                                                                        String newVersion = appCMSPageUI.getVersion();
+                                                                        if (!TextUtils.isEmpty(oldVersion)) {
+                                                                            updatePage = !oldVersion.equals(newVersion);
+                                                                        }
+                                                                    }
+
+                                                                    if (updatePage &&
+                                                                            pageViewLruCache != null) {
+                                                                        navigationPages.put(metaPage.getPageId(), appCMSPageUI);
+                                                                        pageViewLruCache.evictAll();
+                                                                        getPageAPILruCache().evictAll();
+
+                                                                        String action = pageNameToActionMap.get(metaPage.getPageName());
+                                                                        if (action != null && actionToPageMap.containsKey(action)) {
+                                                                            actionToPageMap.put(action, appCMSPageUI);
+                                                                        }
                                                                     }
                                                                 }
 
-                                                                if (updatePage &&
-                                                                        pageViewLruCache != null) {
-                                                                    navigationPages.put(metaPage.getPageId(), appCMSPageUI);
-                                                                    pageViewLruCache.evictAll();
-                                                                    getPageAPILruCache().evictAll();
-
-                                                                    String action = pageNameToActionMap.get(metaPage.getPageName());
-                                                                    if (action != null && actionToPageMap.containsKey(action)) {
-                                                                        actionToPageMap.put(action, appCMSPageUI);
-                                                                    }
-                                                                }
-                                                            }
-
-                                                        },
-                                                        false);
-                                            } catch (Exception e) {
-                                                //Log.e(TAG, "Failed to refresh AppCMS page " +
+                                                            },
+                                                            false);
+                                                } catch (Exception e) {
+                                                    //Log.e(TAG, "Failed to refresh AppCMS page " +
 //                                                    metaPage.getPageName() +
 //                                                " " +
 //                                                e.getMessage());
+                                                }
                                             }
                                         }
-                                    }
 
-                                    try {
-                                        getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
-                                            if (appCMSAndroidModules != null) {
-                                                //Log.d(TAG, "Received and refreshed module list");
-                                                this.appCMSAndroidModules = appCMSAndroidModules;
-                                                if (appCMSAndroidModules.isLoadedFromNetwork() &&
-                                                        pageViewLruCache != null) {
-                                                    pageViewLruCache.evictAll();
-                                                    getPageAPILruCache().evictAll();
-                                                }
+                                        try {
+                                            getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
+                                                if (appCMSAndroidModules != null) {
+                                                    //Log.d(TAG, "Received and refreshed module list");
+                                                    this.appCMSAndroidModules = appCMSAndroidModules;
+                                                    if (appCMSAndroidModules.isLoadedFromNetwork() &&
+                                                            pageViewLruCache != null) {
+                                                        pageViewLruCache.evictAll();
+                                                        getPageAPILruCache().evictAll();
+                                                    }
 
-                                                if (onreadyAction != null) {
-                                                    onreadyAction.call();
+                                                    if (onReadyAction != null) {
+                                                        onReadyAction.call();
+                                                    }
                                                 }
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        //Log.e(TAG, "Failed to refresh AppCMS modules: " +
+                                            });
+                                        } catch (Exception e) {
+                                            //Log.e(TAG, "Failed to refresh AppCMS modules: " +
 //                                            e.getMessage());
+                                        }
                                     }
-                                }
-                            });
-                        } catch (Exception e) {
-                            //Log.e(TAG, "Failed to refresh android.json: " + e.getMessage());
+                                });
+                            } catch (Exception e) {
+                                //Log.e(TAG, "Failed to refresh android.json: " + e.getMessage());
+                            }
                         }
                     } else {
                         //Log.w(TAG, "Resulting main.json from refresh is null");

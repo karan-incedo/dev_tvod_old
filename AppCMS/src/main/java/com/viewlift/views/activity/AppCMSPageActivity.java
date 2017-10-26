@@ -567,9 +567,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                        e.getMessage());
             }
         }
-        newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
-                getString(R.string.app_cms_app_version),
-                appCMSPresenter.getGooglePlayAppStoreVersion()));
+
+        newVersionAvailableTextView.setVisibility(View.GONE);
 
         newVersionAvailableTextView.setOnClickListener((v) -> {
             Intent googlePlayStoreUpgradeAppIntent = new Intent(Intent.ACTION_VIEW,
@@ -675,7 +674,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.setVisibility(View.GONE);
                 refreshPageData();
             }
-        });
+        }, true, 0, 3);
     }
 
     private void refreshPageData() {
@@ -691,10 +690,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else {
                     pageLoading(false);
                 }
-                updateData(appCMSBinder, (shouldRefresh) -> {
-                    if (shouldRefresh) {
-                        appCMSPresenter.sendRefreshPageAction();
-                    }
+                updateData(appCMSBinder, () -> {
+                    appCMSPresenter.sendRefreshPageAction();
                 });
             } else {
                 pageLoading(false);
@@ -1522,11 +1519,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (createFragment) {
                 createScreenFromAppCMSBinder(appCMSBinder);
             } else {
-                int lastFragment = getSupportFragmentManager().getFragments().size();
-                Fragment fragment = getSupportFragmentManager().getFragments().get(lastFragment - 1);
-                if (fragment instanceof AppCMSPageFragment) {
-                    ((AppCMSPageFragment) fragment).refreshView(appCMSBinder);
-                }
+                int lastFragment = getSupportFragmentManager().getFragments();
+                getSupportFragmentManager().getFragments().get()
                 pageLoading(false);
             }
         }
@@ -1778,7 +1772,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.resetDeeplinkQuery();
     }
 
-    private void updateData(AppCMSBinder appCMSBinder, Action1<Boolean> readyAction) {
+    private void updateData(AppCMSBinder appCMSBinder, Action0 readyAction) {
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
         final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
@@ -1794,10 +1788,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     //Log.d(TAG, "Updated watched history for loaded displays");
 
                     if (readyAction != null) {
-                        readyAction.call(true);
+                        readyAction.call();
                     }
                 } else if (readyAction != null) {
-                    readyAction.call(false);
+                    readyAction.call();
                 }
             });
         } else if (appCMSPresenter.isWatchlistPage(appCMSBinder.getPageId())) {
@@ -1812,10 +1806,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     //Log.d(TAG, "Updated watched history for loaded displays");
 
                     if (readyAction != null) {
-                        readyAction.call(true);
+                        readyAction.call();
                     }
                 } else if (readyAction != null) {
-                    readyAction.call(false);
+                    readyAction.call();
                 }
             });
         } else {
@@ -1846,11 +1840,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                             }
                             if (readyAction != null) {
-                                readyAction.call(true);
+                                readyAction.call();
                             }
                         });
             } else if (readyAction != null) {
-                readyAction.call(false);
+                readyAction.call();
             }
         }
     }
