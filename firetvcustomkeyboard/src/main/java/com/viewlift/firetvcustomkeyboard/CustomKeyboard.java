@@ -16,9 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CustomKeyboard
-        extends RelativeLayout
-        implements View.OnFocusChangeListener,
+public class CustomKeyboard extends RelativeLayout implements View.OnFocusChangeListener,
         View.OnKeyListener {
 
     private static final float LETTER_SPACING = 0.01f;
@@ -78,7 +76,6 @@ public class CustomKeyboard
         tvSelectLc.setOnKeyListener(this);
         tvSelectNum.setOnKeyListener(this);
         tvSelectSc.setOnKeyListener(this);
-
     }
 
     @SuppressWarnings("unused")

@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.viewlift.AppCMSApplication;
@@ -24,13 +23,12 @@ import com.viewlift.views.customviews.ViewCreator;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
+/*
  * Created by viewlift on 6/20/17.
  */
 
 public class AppCMSSearchFragment extends DialogFragment {
-    private static final String TAG = "SearchFragment";
-    LinearLayout searchLayout;
+//    private static final String TAG = "SearchFragment";
 
     @BindView(R.id.app_cms_search_fragment)
     RelativeLayout appCMSNavigationMenuMainLayout;
@@ -114,6 +112,7 @@ public class AppCMSSearchFragment extends DialogFragment {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
                 String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
                 appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                appCMSSearchView.setQuery("", false);
                 return true;
             }
         });
@@ -124,7 +123,7 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSGoButton.setOnClickListener(v ->
                 appCMSPresenter.launchSearchResultsPage(appCMSSearchView.getQuery().toString()));
 
-        setBgColor((int) bgColor, view);
+        setBgColor((int) bgColor);
 
         if (!BaseView.isTablet(getContext())) {
             appCMSPresenter.restrictPortraitOnly();
@@ -151,9 +150,11 @@ public class AppCMSSearchFragment extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
         if (!BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
+
         appCMSPresenter.closeSoftKeyboard();
         appCMSSearchView.clearFocus();
         if (onSaveSearchQuery != null) {
@@ -162,7 +163,7 @@ public class AppCMSSearchFragment extends DialogFragment {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void setBgColor(int bgColor, View view) {
+    private void setBgColor(int bgColor) {
         appCMSNavigationMenuMainLayout.setBackgroundColor(bgColor);
     }
 

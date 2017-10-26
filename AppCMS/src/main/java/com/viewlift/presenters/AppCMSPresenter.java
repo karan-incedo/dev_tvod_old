@@ -3746,13 +3746,9 @@ public class AppCMSPresenter {
                 return false;
             }
 
-            if (installAppSemVer.major == latestAppSemVer.major &&
+            return !(installAppSemVer.major == latestAppSemVer.major &&
                     installAppSemVer.minor == latestAppSemVer.minor &&
-                    installAppSemVer.patch >= latestAppSemVer.patch) {
-                return false;
-            }
-
-            return true;
+                    installAppSemVer.patch >= latestAppSemVer.patch);
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
         }
@@ -3775,13 +3771,9 @@ public class AppCMSPresenter {
                 return false;
             }
 
-            if (installAppSemVer.major == minAppSemVer.major &&
+            return !(installAppSemVer.major == minAppSemVer.major &&
                     installAppSemVer.minor == minAppSemVer.minor &&
-                    installAppSemVer.patch >= minAppSemVer.patch) {
-                return false;
-            }
-
-            return true;
+                    installAppSemVer.patch >= minAppSemVer.patch);
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
         }
@@ -5047,7 +5039,7 @@ public class AppCMSPresenter {
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
         AppCMSPageAPI appCMSPageAPI = null;
-        if (platformType == PlatformType.ANDROID && pageId != null) {
+        if (platformType == PlatformType.ANDROID) {
             try {
                 appCMSPageAPI = getPageAPILruCache().get(pageId);
             } catch (Exception e) {
@@ -5063,7 +5055,7 @@ public class AppCMSPresenter {
                                         .urlWithContent(urlWithContent)
                                         .authToken(getAuthToken())
                                         .pageId(pageId)
-                                        .loadFromFile((platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile())
+                                        .loadFromFile(platformType != PlatformType.TV && appCMSMain.shouldLoadFromFile())
                                         .appCMSPageAPILruCache(getPageAPILruCache())
                                         .build();
                                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
@@ -5079,7 +5071,7 @@ public class AppCMSPresenter {
                         .urlWithContent(urlWithContent)
                         .authToken(getAuthToken())
                         .pageId(pageId)
-                        .loadFromFile((platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile())
+                        .loadFromFile(platformType != PlatformType.TV && appCMSMain.shouldLoadFromFile())
                         .appCMSPageAPILruCache(getPageAPILruCache())
                         .build();
                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
