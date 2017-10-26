@@ -8656,24 +8656,26 @@ public class AppCMSPresenter {
                                                 getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                                         metaPage.getPageUI()),
                                                         appCMSPageUI -> {
-                                                            boolean updatePage = false;
-                                                            if (navigationPages.containsKey(metaPage.getPageId())) {
-                                                                String oldVersion = navigationPages.get(metaPage.getPageId()).getVersion();
-                                                                String newVersion = appCMSPageUI.getVersion();
-                                                                if (!TextUtils.isEmpty(oldVersion)) {
-                                                                    updatePage = !oldVersion.equals(newVersion);
+                                                            if (appCMSPageUI != null) {
+                                                                boolean updatePage = false;
+                                                                if (navigationPages.containsKey(metaPage.getPageId())) {
+                                                                    String oldVersion = navigationPages.get(metaPage.getPageId()).getVersion();
+                                                                    String newVersion = appCMSPageUI.getVersion();
+                                                                    if (!TextUtils.isEmpty(oldVersion)) {
+                                                                        updatePage = !oldVersion.equals(newVersion);
+                                                                    }
                                                                 }
-                                                            }
 
-                                                            if (updatePage &&
-                                                                    pageViewLruCache != null) {
-                                                                navigationPages.put(metaPage.getPageId(), appCMSPageUI);
-                                                                pageViewLruCache.evictAll();
-                                                                getPageAPILruCache().evictAll();
+                                                                if (updatePage &&
+                                                                        pageViewLruCache != null) {
+                                                                    navigationPages.put(metaPage.getPageId(), appCMSPageUI);
+                                                                    pageViewLruCache.evictAll();
+                                                                    getPageAPILruCache().evictAll();
 
-                                                                String action = pageNameToActionMap.get(metaPage.getPageName());
-                                                                if (action != null && actionToPageMap.containsKey(action)) {
-                                                                    actionToPageMap.put(action, appCMSPageUI);
+                                                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                                                        actionToPageMap.put(action, appCMSPageUI);
+                                                                    }
                                                                 }
                                                             }
 
@@ -8690,16 +8692,18 @@ public class AppCMSPresenter {
 
                                     try {
                                         getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
-                                            //Log.d(TAG, "Received and refreshed module list");
-                                            this.appCMSAndroidModules = appCMSAndroidModules;
-                                            if (appCMSAndroidModules.isLoadedFromNetwork() &&
-                                                    pageViewLruCache != null) {
-                                                pageViewLruCache.evictAll();
-                                                getPageAPILruCache().evictAll();
-                                            }
+                                            if (appCMSAndroidModules != null) {
+                                                //Log.d(TAG, "Received and refreshed module list");
+                                                this.appCMSAndroidModules = appCMSAndroidModules;
+                                                if (appCMSAndroidModules.isLoadedFromNetwork() &&
+                                                        pageViewLruCache != null) {
+                                                    pageViewLruCache.evictAll();
+                                                    getPageAPILruCache().evictAll();
+                                                }
 
-                                            if (onreadyAction != null) {
-                                                onreadyAction.call();
+                                                if (onreadyAction != null) {
+                                                    onreadyAction.call();
+                                                }
                                             }
                                         });
                                     } catch (Exception e) {
