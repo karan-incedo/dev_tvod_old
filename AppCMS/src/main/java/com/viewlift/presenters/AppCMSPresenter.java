@@ -2853,17 +2853,6 @@ public class AppCMSPresenter {
             showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null);
             //Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
         } else {
-            if (downloadQueueThread != null) {
-                DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
-                downloadQueueItem.contentDatum = contentDatum;
-                downloadQueueItem.resultAction1 = resultAction1;
-                downloadQueueItem.isDownloadedFromOther = isVideoDownloadedByOtherUser(contentDatum.getGist().getId());
-                downloadQueueThread.addToQueue(downloadQueueItem);
-                if (!downloadQueueThread.running()) {
-                    downloadQueueThread.start();
-                }
-            }
-
             String downloadURL = "";
             long file_size = 0L;
             try {// Fix for SVFA-1963
