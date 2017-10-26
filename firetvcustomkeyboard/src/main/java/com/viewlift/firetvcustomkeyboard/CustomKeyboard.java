@@ -1,5 +1,6 @@
 package com.viewlift.firetvcustomkeyboard;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -38,32 +39,35 @@ public class CustomKeyboard
             CurrentlySelectedKeyboardLayoutEnum.UPPERCASE;
     private boolean isRetainSelectedLayout = true;
 
+    @SuppressLint("CutPasteId")
+    @SuppressWarnings("ConstantConditions")
     public CustomKeyboard(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         System.out.println("anas2");
 
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         View keyboardView = inflater.inflate(R.layout.custom_keyboard_layout, this, true);
 
+        @SuppressWarnings("unused")
         CharSequence text = ((TextView) keyboardView.findViewById(R.id.tv_select_uc)).getText();
 
-        tvSelectUc = keyboardView.findViewById(R.id.tv_select_uc);
-        tvSelectLc = keyboardView.findViewById(R.id.tv_select_lc);
-        tvSelectNum = keyboardView.findViewById(R.id.tv_select_num);
-        tvSelectSc = keyboardView.findViewById(R.id.tv_select_sc);
+        tvSelectUc = (TextView) keyboardView.findViewById(R.id.tv_select_uc);
+        tvSelectLc = (TextView) keyboardView.findViewById(R.id.tv_select_lc);
+        tvSelectNum = (TextView) keyboardView.findViewById(R.id.tv_select_num);
+        tvSelectSc = (TextView) keyboardView.findViewById(R.id.tv_select_sc);
 
-        upperCaseLayout = keyboardView.findViewById(R.id.appcms_uc_keyboard_layout);
-        lowerCaseLayout = keyboardView.findViewById(R.id.appcms_lc_keyboard_layout);
-        numberLayout = keyboardView.findViewById(R.id.appcms_num_keyboard_layout);
-        specialCharLayout = keyboardView.findViewById(R.id.appcms_sc_keyboard_layout);
+        upperCaseLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_uc_keyboard_layout);
+        lowerCaseLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_lc_keyboard_layout);
+        numberLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_num_keyboard_layout);
+        specialCharLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_sc_keyboard_layout);
         setFontFamily(upperCaseLayout);
         setFontFamily(lowerCaseLayout);
         setFontFamily(numberLayout);
         setFontFamily(specialCharLayout);
 
-        keyboardSelectLayout = keyboardView.findViewById(R.id.appcms_keyboard_select_layout);
+        keyboardSelectLayout = (LinearLayout) keyboardView.findViewById(R.id.appcms_keyboard_select_layout);
 
         tvSelectUc.setOnFocusChangeListener(this);
         tvSelectLc.setOnFocusChangeListener(this);
@@ -77,6 +81,7 @@ public class CustomKeyboard
 
     }
 
+    @SuppressWarnings("unused")
     public void setFocusOnGroup() {
         if (null != tvSelectUc) {
             tvSelectUc.requestFocus();
@@ -263,6 +268,7 @@ public class CustomKeyboard
         return false;
     }
 
+    @SuppressWarnings("unused")
     public void setFocusColor(String color) {
         GradientDrawable gradientDrawable =
                 (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.appcms_search_key_background_focused);
