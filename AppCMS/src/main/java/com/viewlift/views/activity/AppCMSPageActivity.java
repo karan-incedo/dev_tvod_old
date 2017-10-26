@@ -1406,7 +1406,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
             }
         } else {
-            boolean refreshFragment = true;
+            boolean createFragment = true;
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 1;
@@ -1423,7 +1423,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
-                    refreshFragment = false;
+                    createFragment = false;
                 } catch (IllegalStateException e) {
                     //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
@@ -1463,22 +1463,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     case SEARCH:
                         //Log.d(TAG, "Popping stack to getList to page item");
                         try {
-                            refreshFragment = false;
+                            createFragment = false;
                             if (!isBinderStackEmpty() &&
                                     !isBinderStackTopNull() &&
                                     appCMSBinderStack.peek().equals(appCMSBinder.getPageId()) &&
                                     !keepPage) {
                                 getSupportFragmentManager().popBackStackImmediate();
-                                refreshFragment = true;
+                                createFragment = true;
                             }
 
                             if (poppedStack) {
                                 appCMSBinderStack.push(appCMSBinder.getPageId());
                                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-                                refreshFragment = appCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                                createFragment = appCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
                             }
 
-                            if (!refreshFragment) {
+                            if (!createFragment) {
                                 handleToolbar(appCMSBinder.isAppbarPresent(),
                                         appCMSBinder.getAppCMSMain(),
                                         appCMSBinder.getPageId());
@@ -1517,9 +1517,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.requestLayout();
             }
 
-            if (refreshFragment) {
+            if (createFragment) {
                 createScreenFromAppCMSBinder(appCMSBinder);
             } else {
+                int lastFragment = getSupportFragmentManager().getFragments().size();
+                Fragment fragment = getSupportFragmentManager().getFragments().get(lastFragment - 1);
+                if (fragment instanceof AppCMSPageFragment) {
+                    ((AppCMSPageFragment) fragment).refreshView(appCMSBinder);
+                }
                 pageLoading(false);
             }
         }

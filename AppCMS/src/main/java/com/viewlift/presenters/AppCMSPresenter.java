@@ -5060,7 +5060,11 @@ public class AppCMSPresenter {
                                  Action1<AppCMSPageAPI> readyAction) {
         AppCMSPageAPI appCMSPageAPI = null;
         if (platformType == PlatformType.ANDROID && pageId != null) {
-            appCMSPageAPI = getPageAPILruCache().get(pageId);
+            try {
+                appCMSPageAPI = getPageAPILruCache().get(pageId);
+            } catch (Exception e) {
+                appCMSPageAPI = null;
+            }
         }
         if (appCMSPageAPI == null) {
             if (shouldRefreshAuthToken()) {
@@ -6025,6 +6029,11 @@ public class AppCMSPresenter {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
             }
 
+            try {
+                getPageViewLruCache().evictAll();
+            } catch (Exception e) {
+
+            }
             refreshAPIData(this::navigateToHomePage, false);
 
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
@@ -7984,50 +7993,58 @@ public class AppCMSPresenter {
                                 entitlementPendingVideoData.currentlyPlayingIndex,
                                 entitlementPendingVideoData.relateVideoIds);
                     } else {
-                        if (!loginFromNavPage) {
-                            sendCloseOthersAction(null, true, !loginFromNavPage);
-                        }
-                        cancelInternalEvents();
-                        restartInternalEvents();
+                        try {
+                            getPageViewLruCache().evictAll();
+                        } catch (Exception e) {
 
-                        if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
-                            setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                         }
 
-                        if (loginFromNavPage) {
-                            NavigationPrimary homePageNavItem = findHomePageNavItem();
-                            if (homePageNavItem != null) {
-                                cancelInternalEvents();
-                                if (platformType == PlatformType.ANDROID) {
+                        refreshAPIData(() -> {
+                            if (!loginFromNavPage) {
+                                sendCloseOthersAction(null, true, !loginFromNavPage);
+                            }
+                            cancelInternalEvents();
+                            restartInternalEvents();
 
-                                    navigateToPage(homePageNavItem.getPageId(),
-                                            homePageNavItem.getTitle(),
-                                            homePageNavItem.getUrl(),
-                                            false,
-                                            true,
-                                            false,
-                                            true,
-                                            true,
-                                            deeplinkSearchQuery);
-                                } else if (platformType == PlatformType.TV) {
-                                    if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
-                                        Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
-                                        currentActivity.sendBroadcast(myProfileIntent);
-                                    } else if (getLaunchType() == LaunchType.HOME) {
-                                        navigateToTVPage(
-                                                homePageNavItem.getPageId(),
+                            if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
+                                setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
+                            }
+
+                            if (loginFromNavPage) {
+                                NavigationPrimary homePageNavItem = findHomePageNavItem();
+                                if (homePageNavItem != null) {
+                                    cancelInternalEvents();
+                                    if (platformType == PlatformType.ANDROID) {
+
+                                        navigateToPage(homePageNavItem.getPageId(),
                                                 homePageNavItem.getTitle(),
                                                 homePageNavItem.getUrl(),
                                                 false,
-                                                deeplinkSearchQuery,
                                                 true,
                                                 false,
-                                                false
-                                        );
+                                                true,
+                                                true,
+                                                deeplinkSearchQuery);
+                                    } else if (platformType == PlatformType.TV) {
+                                        if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
+                                            Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                            currentActivity.sendBroadcast(myProfileIntent);
+                                        } else if (getLaunchType() == LaunchType.HOME) {
+                                            navigateToTVPage(
+                                                    homePageNavItem.getPageId(),
+                                                    homePageNavItem.getTitle(),
+                                                    homePageNavItem.getUrl(),
+                                                    false,
+                                                    deeplinkSearchQuery,
+                                                    true,
+                                                    false,
+                                                    false
+                                            );
+                                        }
                                     }
                                 }
                             }
-                        }
+                        }, false);
                     }
                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                 }, true);
