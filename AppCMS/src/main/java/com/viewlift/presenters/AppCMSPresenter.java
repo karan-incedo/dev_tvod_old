@@ -5415,6 +5415,15 @@ public class AppCMSPresenter {
         return -1L;
     }
 
+    public boolean invalidateLoggedInTime() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
+            Date now = new Date();
+            return sharedPrefs.edit().putLong(USER_LOGGED_IN_TIME_PREF_NAME, 0L).commit();
+        }
+        return false;
+    }
+
     public boolean setLoggedInTime() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_LOGGED_IN_TIME_PREF_NAME, 0);
