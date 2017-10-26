@@ -124,10 +124,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (((binder != null &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
-                            binder.getContentData().getGist().getDownloadStatus() != null &&
+                            (binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null) &&
+                            binder.getContentData().getGist().getDownloadStatus() == null)) &&
                             (activeNetwork == null ||
                             !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
@@ -138,10 +138,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 } catch (Exception e) {
                     if ((binder != null &&
                             binder.getContentData() != null &&
-                            binder.getContentData().getGist() != null &&binder.getContentData().getGist().getDownloadStatus() != null &&
+                            binder.getContentData().getGist() != null &&
+                            (binder.getContentData().getGist().getDownloadStatus() != null &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                             binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null) {
+                            binder.getContentData().getGist().getDownloadStatus() == null)) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer(),

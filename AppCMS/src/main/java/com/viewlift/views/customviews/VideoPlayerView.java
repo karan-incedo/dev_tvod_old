@@ -413,6 +413,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+        if (playerState != null) {
         playerState.playWhenReady = playWhenReady;
         playerState.playbackState = playbackState;
 
@@ -421,6 +422,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 Observable.just(playerState).subscribe(onPlayerStateChanged);
             } catch (Exception e) {
                 //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
+                }
             }
         }
     }

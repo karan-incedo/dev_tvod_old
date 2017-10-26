@@ -214,6 +214,8 @@ public class AppCMSPageFragment extends Fragment {
     private void sendFirebaseAnalyticsEvents(AppCMSBinder appCMSVideoPageBinder) {
         if (appCMSVideoPageBinder == null)
             return;
+        if (appCMSPresenter.getmFireBaseAnalytics() == null)
+            return;
 
         if (appCMSVideoPageBinder.getScreenName() == null ||
                 appCMSVideoPageBinder.getScreenName().equalsIgnoreCase(authentication_screen_name))

@@ -379,9 +379,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     public void onRetry(Bundle bundle) {
         RetryCallBinder retryCallBinder = (RetryCallBinder)bundle.getBinder(getString(R.string.retryCallBinderKey));
-        AppCMSPresenter.RETRY_TYPE retryType = retryCallBinder.getRetry_type();
+        AppCMSPresenter.RETRY_TYPE retryType = retryCallBinder != null ? retryCallBinder.getRetry_type() : null;
         boolean isTosPage = bundle.getBoolean(getString(R.string.is_tos_dialog_page_key));
         boolean isLoginPage = bundle.getBoolean(getString(R.string.is_login_dialog_page_key));
+        if (retryType != null) {
         switch(retryType){
             case BUTTON_ACTION:
                 appCMSPresenter.launchTVButtonSelectedAction(
@@ -448,6 +449,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 appCMSPresenter.resetPassword(retryCallBinder.getFilmTitle()); //filmtitle here means emailid.
                 break;
 
+                case LOGOUT_ACTION:
+                    appCMSPresenter.logoutTV();
+                    break;
+            }
         }
     }
 

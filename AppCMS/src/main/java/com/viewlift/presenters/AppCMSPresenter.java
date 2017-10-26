@@ -307,6 +307,7 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_AC
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.LOGOUT_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_RETRY;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
@@ -573,7 +574,6 @@ public class AppCMSPresenter {
     private LruCache<String, AppCMSPageAPI> pageAPILruCache;
     private EntitlementPendingVideoData entitlementPendingVideoData;
     private List<SubscriptionPlan> subscriptionPlans;
-    private boolean navigateToHomeToRefresh;
     private boolean configurationChanged;
     private FirebaseAnalytics mFireBaseAnalytics;
     private boolean runUpdateDownloadIconTimer;
@@ -865,6 +865,7 @@ public class AppCMSPresenter {
 
     public void refreshVideoData(final ContentDatum contentDatum,
                                  Action1<ContentDatum> readyAction) {
+        if (currentActivity != null) {
         String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                 appCMSMain.getApiBaseUrl(),
                 contentDatum.getGist().getId(),
@@ -880,6 +881,7 @@ public class AppCMSPresenter {
                         readyAction.call(appCMSVideoDetail.getRecords().get(0));
                     }
                 }).execute(params);
+    }
     }
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
                                      final int currentlyPlayingIndex,
@@ -993,11 +995,13 @@ public class AppCMSPresenter {
 
     public void updateAllOfflineWatchTime() {
         if (getLoggedInUser() != null) {
+            if (currentActivity != null) {
             currentActivity.runOnUiThread(() -> {
                 for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
                     updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
                 }
             });
+            }
         }
     }
 
@@ -1020,7 +1024,7 @@ public class AppCMSPresenter {
                             }
 //                                    watchedTime);
                         } catch (Exception e) {
-                            //Log.e(TAG, "Error updating watched time: " + e.getMessage());
+                            Log.e(TAG, "Error updating watched time: " + e.getMessage());
                         }
                     });
             currentActivity.runOnUiThread(() -> {
@@ -2201,6 +2205,7 @@ public class AppCMSPresenter {
             //Log.d(TAG, "Initiating CCAvenue purchase");
             if (isUserSubscribed()) {
                 try {
+                    showLoadingDialog(true);
                     appCMSSubscriptionPlanCall.call(
                             currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
                                     appCMSMain.getApiBaseUrl(),
@@ -2212,21 +2217,19 @@ public class AppCMSPresenter {
                             getAuthToken(),
                             listResult -> {
                                 //Log.v("currentActivity", "currentActivity");
+                                showLoadingDialog(false);
                             }, appCMSSubscriptionPlanResults -> {
+                                showLoadingDialog(false);
                                 sendCloseOthersAction(null, true, false);
                                 refreshSubscriptionData(() -> {
                                     sendRefreshPageAction();
                                 }, true);
                             },
                             appCMSSubscriptionPlanResult -> {
+                                showLoadingDialog(false);
                                 try {
                                     if (appCMSSubscriptionPlanResult != null) {
-                                        String paymentUniqueId = appCMSSubscriptionPlanResult.getSubscriptionInfo().getPaymentUniqueId();
-                                        if (paymentUniqueId.length() > 0) {
-                                            checkCCAvenueUpgradeStatus(paymentUniqueId);
-                                        } else {
-                                            showDialog(DialogType.SUBSCRIBE, "Cannot Upgrade", false, null, null);
-                                        }
+                                       // upgradePlanAPICall();
                                     }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
@@ -2397,12 +2400,37 @@ public class AppCMSPresenter {
                         //Log.v("got result", "got result");
                     }, appCMSSubscriptionPlanResults -> {
                         if (appCMSSubscriptionPlanResults != null &&
+                                (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage()) ||
+                                !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getError()))) {
+                            if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
+                                if (!TextUtils.isEmpty(appCMSSubscriptionPlanResults.getSubscriptionStatus())) {
+                                    if (appCMSSubscriptionPlanResults.getSubscriptionStatus().equalsIgnoreCase("COMPLETED") &&
                                 !TextUtils.isEmpty(appCMSSubscriptionPlanResults.getMessage())) {
                             showDialog(DialogType.SUBSCRIBE,
                                     appCMSSubscriptionPlanResults.getMessage(),
                                     false,
                                     null,
                                     null);
+                                    }
+                                    sendCloseOthersAction(null, true, false);
+                                    refreshSubscriptionData(() -> {
+                                        sendRefreshPageAction();
+                                    }, true);
+                                } else {
+                                    showDialog(DialogType.SUBSCRIBE,
+                                            appCMSSubscriptionPlanResults.getMessage(),
+                                            false,
+                                            null,
+                                            null);
+                                }
+                            } else {
+                                showDialog(DialogType.SUBSCRIBE,
+                                        appCMSSubscriptionPlanResults.getError(),
+                                        false,
+                                        null,
+                                        null);
+                            }
+                            showLoadingDialog(false);
                         } else {
                             sendCloseOthersAction(null, true, false);
                         refreshSubscriptionData(() -> {
@@ -2908,6 +2936,27 @@ public class AppCMSPresenter {
                 if (!downloadQueueThread.running()) {
                     downloadQueueThread.start();
                 }
+            }
+            String downloadURL = "";
+            long file_size = 0L;
+            try {// Fix for SVFA-1963
+                downloadURL = getDownloadURL(contentDatum);
+                URL url = new URL(downloadURL);
+                URLConnection urlConnection = url.openConnection();
+                urlConnection.connect();
+                file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
+                file_size = ((file_size / 1000) / 1000);
+            } catch (Exception e) {
+            }
+            if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
+                createLocalCopyForUser(contentDatum, resultAction1);
+            } else if (getMegabytesAvailable() > file_size) {
+                startDownload(contentDatum,
+                        resultAction1);
+            } else {
+                currentActivity.runOnUiThread(() -> {
+                    showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null);
+                });
             }
         }
     }
@@ -3530,6 +3579,13 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
                     true,
                     () -> {
+                        makeClearWatchlistRequest(resultAction1);
+                    },
+                    null);
+        } catch (Exception e) {
+        }
+    }
+    public void makeClearWatchlistRequest(Action1<AppCMSAddToWatchlistResult> resultAction1) {
                         final String url = currentActivity.getString(R.string.app_cms_clear_watchlist_api_url,
                                 appCMSMain.getApiBaseUrl(),
                                 appCMSSite.getGist().getSiteInternalName(),
@@ -3550,10 +3606,6 @@ public class AppCMSPresenter {
                                     }, request, false);
                         } catch (Exception e) {
                             //Log.e(TAG, "Error clearing watchlist: " + e.getMessage());
-                        }
-                    },
-                    null);
-        } catch (Exception e) {
             //Log.e(TAG, "clearWatchlistContent: " + e.toString());
         }
     }
@@ -3758,14 +3810,20 @@ public class AppCMSPresenter {
             SemVer latestAppSemVer = new SemVer();
             latestAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getLatest());
 
-            int installAppSemVerSum = installAppSemVer.major * 100 +
-                    installAppSemVer.minor * 10 +
-                    installAppSemVer.patch;
-            int latestAppSemVerSum = latestAppSemVer.major * 100 +
-                    latestAppSemVer.minor * 10 +
-                    latestAppSemVer.patch;
+            if (installAppSemVer.major > latestAppSemVer.major) {
+                return false;
+            }
+            if (installAppSemVer.major == latestAppSemVer.major &&
+                    installAppSemVer.minor > latestAppSemVer.minor) {
+                return false;
+            }
 
-            return installAppSemVerSum < latestAppSemVerSum;
+            if (installAppSemVer.major == latestAppSemVer.major &&
+                    installAppSemVer.minor == latestAppSemVer.minor &&
+                    installAppSemVer.patch >= latestAppSemVer.patch) {
+                return false;
+            }
+            return true;
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
         }
@@ -3779,15 +3837,21 @@ public class AppCMSPresenter {
             SemVer minAppSemVer = new SemVer();
             minAppSemVer.parse(appCMSMain.getAppVersions().getAndroidAppVersion().getMinimum());
 
-            int installAppSemVerSum = installAppSemVer.major * 100 +
-                    installAppSemVer.minor * 10 +
-                    installAppSemVer.patch;
+            if (installAppSemVer.major > minAppSemVer.major) {
+                return false;
+            }
 
-            int minAppSemVerSum = minAppSemVer.major * 100 +
-                    minAppSemVer.minor * 10 +
-                    minAppSemVer.patch;
+            if (installAppSemVer.major == minAppSemVer.major &&
+                    installAppSemVer.minor > minAppSemVer.minor) {
+                return false;
+            }
 
-            return installAppSemVerSum < minAppSemVerSum;
+            if (installAppSemVer.major == minAppSemVer.major &&
+                    installAppSemVer.minor == minAppSemVer.minor &&
+                    installAppSemVer.patch >= minAppSemVer.patch) {
+                return false;
+            }
+            return true;
         } catch (Exception e) {
             //Log.e(TAG, "Error attempting to retrieve app version");
         }
@@ -3833,6 +3897,13 @@ public class AppCMSPresenter {
                     currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
                     true,
                     () -> {
+                        makeClearHistoryRequest(resultAction1);
+                    },
+                    null);
+        } catch (Exception e) {
+        }
+    }
+    public void makeClearHistoryRequest(Action1<AppCMSDeleteHistoryResult> resultAction1) {
                         final String url = currentActivity.getString(R.string.app_cms_clear_history_api_url,
                                 appCMSMain.getApiBaseUrl(),
                                 getLoggedInUser(),
@@ -3853,11 +3924,7 @@ public class AppCMSPresenter {
                                     }, request, false);
                         } catch (Exception e) {
                             //Log.e(TAG, "Error clearing history: " + e.getMessage());
-                        }
 
-                    },
-                    null);
-        } catch (Exception e) {
             //Log.e(TAG, "clearHistoryContent: " + e.toString());
         }
 
@@ -5033,8 +5100,10 @@ public class AppCMSPresenter {
     public void getPageIdContent(String urlWithContent,
                                  String pageId,
                                  Action1<AppCMSPageAPI> readyAction) {
-        if (pageId != null) {
-        AppCMSPageAPI appCMSPageAPI = getPageAPILruCache().get(pageId);
+        AppCMSPageAPI appCMSPageAPI = null;
+        if(platformType == PlatformType.ANDROID) {
+            appCMSPageAPI = getPageAPILruCache().get(pageId);
+        }
         if (appCMSPageAPI == null) {
         if (shouldRefreshAuthToken()) {
             refreshIdentity(getRefreshToken(),
@@ -5044,7 +5113,7 @@ public class AppCMSPresenter {
                                     .urlWithContent(urlWithContent)
                                     .authToken(getAuthToken())
                                     .pageId(pageId)
-                                    .loadFromFile(appCMSMain.shouldLoadFromFile())
+                                        .loadFromFile( (platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile())
                                         .appCMSPageAPILruCache(getPageAPILruCache())
                                     .build();
                                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
@@ -5060,7 +5129,7 @@ public class AppCMSPresenter {
                     .urlWithContent(urlWithContent)
                     .authToken(getAuthToken())
                     .pageId(pageId)
-                    .loadFromFile(appCMSMain.shouldLoadFromFile())
+                        .loadFromFile( (platformType == PlatformType.TV) ? false : appCMSMain.shouldLoadFromFile() )
                         .appCMSPageAPILruCache(getPageAPILruCache())
                     .build();
             new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
@@ -5068,7 +5137,6 @@ public class AppCMSPresenter {
         } else {
             if (readyAction != null) {
                 Observable.just(appCMSPageAPI).subscribe(readyAction);
-                }
             }
         }
     }
@@ -6033,6 +6101,21 @@ public class AppCMSPresenter {
     }
 
     public void logoutTV() {
+        if (!isNetworkConnected()) {
+            RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
+                    null, null,
+                    null, false, null, LOGOUT_ACTION);
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
+            bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+            bundle.putBoolean(currentActivity.getString(R.string.is_tos_dialog_page_key), false);
+            bundle.putBoolean(currentActivity.getString(R.string.is_login_dialog_page_key), false);
+            bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
+            Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+            args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            currentActivity.sendBroadcast(args);
+            return;
+        }
         if (currentActivity != null) {
             setLoggedInUser(null);
             setLoggedInUserName(null);
@@ -7588,8 +7671,15 @@ public class AppCMSPresenter {
                                                         SubscriptionPlan subscriptionPlan = new SubscriptionPlan();
                                                         subscriptionPlan.setSku(contentDatum.getIdentifier());
                                                         subscriptionPlan.setPlanId(contentDatum.getId());
+                                            if (contentDatum.getPlanDetails() != null &&
+                                                    !contentDatum.getPlanDetails().isEmpty() &&
+                                                    contentDatum.getPlanDetails().get(0) != null &&
+                                                    !TextUtils.isEmpty(contentDatum.getPlanDetails().get(0).getCountryCode())) {
                                                         subscriptionPlan.setCountryCode(contentDatum.getPlanDetails().get(0).getCountryCode());
-                                                        if (!contentDatum.getPlanDetails().isEmpty()) {
+                                            }
+                                            if (contentDatum.getPlanDetails() != null &&
+                                                    !contentDatum.getPlanDetails().isEmpty() &&
+                                                    contentDatum.getPlanDetails().get(0) != null) {
                                                             subscriptionPlan.setSubscriptionPrice(contentDatum.getPlanDetails().get(0).getStrikeThroughPrice());
                                                         }
                                                         subscriptionPlan.setPlanName(contentDatum.getName());
@@ -9633,7 +9723,7 @@ public class AppCMSPresenter {
         if (!isNetworkConnected()) {
             RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, action,
                     filmTitle, extraData,
-                    null, closeLauncher, null, BUTTON_ACTION);
+                    contentDatum, closeLauncher, null, BUTTON_ACTION);
             Bundle bundle = new Bundle();
             bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
             bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
@@ -10301,7 +10391,7 @@ public class AppCMSPresenter {
                 title,
                 null,
                 null,
-                true,
+                false,
                 0,
                 null)) {
             //Log.e(TAG, "Could not launch action: " +
@@ -10327,6 +10417,39 @@ public class AppCMSPresenter {
     }
     public boolean getLoginFromNavPage() {
         return loginFromNavPage;
+    }
+    public void openErrorDialog() {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
+        bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+        Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+        currentActivity.sendBroadcast(args);
+    }
+    public void setEntitlementPendingVideoData(EntitlementPendingVideoData entitlementPendingVideoData) {
+        this.entitlementPendingVideoData = entitlementPendingVideoData;
+    }
+    public void getSubscriptionData(Action1<AppCMSUserSubscriptionPlanResult> action1) {
+        try {
+            appCMSSubscriptionPlanCall.call(
+                    currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
+                            appCMSMain.getApiBaseUrl(),
+                            getLoggedInUser(),
+                            appCMSSite.getGist().getSiteInternalName()),
+                    R.string.app_cms_subscription_subscribed_plan_key,
+                    null,
+                    apikey,
+                    getAuthToken(),
+                    listResult -> Log.v("currentActivity", "currentActivity"),
+                    appCMSSubscriptionPlanResults -> {
+                        AppCMSPresenter.this.sendCloseOthersAction(null, true, false);
+                        AppCMSPresenter.this.refreshSubscriptionData(
+                                AppCMSPresenter.this::sendRefreshPageAction, true);
+                    }, action1
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public enum LaunchType {
@@ -10381,7 +10504,7 @@ public class AppCMSPresenter {
     }
 
     public enum RETRY_TYPE {
-        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY
+        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION
     }
 
     public enum ExtraScreenType {
@@ -10538,36 +10661,11 @@ public class AppCMSPresenter {
         public void run() {
             running = true;
             while (running) {
-                if (!filmDownloadQueue.isEmpty() && startNextDownload) {
-                    DownloadQueueItem downloadQueueItem = filmDownloadQueue.remove();
 
-                    if (filmsInQueue.contains(downloadQueueItem.contentDatum.getGist().getTitle())) {
-                        filmsInQueue.remove(downloadQueueItem.contentDatum.getGist().getTitle());
-                    }
-                    try {// Fix for SVFA-1963
-                        downloadURL = appCMSPresenter.getDownloadURL(downloadQueueItem.contentDatum);
-                        URL url = new URL(downloadURL);
-                        URLConnection urlConnection = url.openConnection();
-                        urlConnection.connect();
                         //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
-                        file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
-                        file_size = ((file_size / 1000) / 1000);
 
-                    } catch (Exception e) {
                         //Log.e(TAG, "Error trying to download: " + e.getMessage());
-                    }
-                    if (downloadQueueItem.isDownloadedFromOther) {
-                        appCMSPresenter.createLocalCopyForUser(downloadQueueItem.contentDatum, downloadQueueItem.resultAction1);
-                    } else if (appCMSPresenter.getMegabytesAvailable() > file_size) {
-                        appCMSPresenter.startDownload(downloadQueueItem.contentDatum,
-                                downloadQueueItem.resultAction1);
 //                        startNextDownload = false;
-                    } else {
-                        appCMSPresenter.currentActivity.runOnUiThread(() -> {
-                            appCMSPresenter.showDialog(DialogType.DOWNLOAD_FAILED, appCMSPresenter.currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null);
-                        });
-                    }
-                }
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -10816,9 +10914,6 @@ public class AppCMSPresenter {
         }
     }
 
-    public void setEntitlementPendingVideoData(EntitlementPendingVideoData entitlementPendingVideoData) {
-        this.entitlementPendingVideoData = entitlementPendingVideoData;
-    }
 
     public static class SemVer {
         private static final String SEMVER_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
@@ -10845,36 +10940,6 @@ public class AppCMSPresenter {
                     patch = Integer.parseInt(semverMatcher.group(3));
                 }
             }
-        }
-    }
-	public void getSubscriptionData(Action1<AppCMSUserSubscriptionPlanResult> action1){
-        try {
-            appCMSSubscriptionPlanCall.call(
-                    currentActivity.getString(R.string.app_cms_get_current_subscription_api_url,
-                            appCMSMain.getApiBaseUrl(),
-                            getLoggedInUser(),
-                            appCMSSite.getGist().getSiteInternalName()),
-                    R.string.app_cms_subscription_subscribed_plan_key,
-                    null,
-                    apikey,
-                    getAuthToken(),
-                    new Action1<List<AppCMSSubscriptionPlanResult>>() {
-                        @Override
-                        public void call(List<AppCMSSubscriptionPlanResult> listResult) {
-                            Log.v("currentActivity", "currentActivity");
-                        }
-                    }, new Action1<AppCMSSubscriptionPlanResult>() {
-                        @Override
-                        public void call(AppCMSSubscriptionPlanResult appCMSSubscriptionPlanResults) {
-                            AppCMSPresenter.this.sendCloseOthersAction(null, true,false);
-                            AppCMSPresenter.this.refreshSubscriptionData(() -> {
-                                AppCMSPresenter.this.sendRefreshPageAction();
-                            }, true);
-                        }
-                    },action1
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

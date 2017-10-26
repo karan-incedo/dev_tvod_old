@@ -69,6 +69,9 @@ public class AppCMSSubscriptionPlanResult {
     @Expose
     String message;
 
+    @SerializedName("subscriptionStatus")
+    @Expose
+    String subscriptionStatus;
     public String getId() {
         return id;
     }
@@ -179,5 +182,11 @@ public class AppCMSSubscriptionPlanResult {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+    public String getSubscriptionStatus() {
+        return subscriptionStatus;
+    }
+    public void setSubscriptionStatus(String subscriptionStatus) {
+        this.subscriptionStatus = subscriptionStatus;
     }
 }

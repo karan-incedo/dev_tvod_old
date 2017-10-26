@@ -109,7 +109,8 @@ import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 public class AppCMSPageActivity extends AppCompatActivity implements
         AppCMSPageFragment.OnPageCreation,
         FragmentManager.OnBackStackChangedListener,
-        GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.OnConnectionFailedListener,
+        AppCMSSearchFragment.OnSaveSearchQuery {
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int DEFAULT_NAV_MENU_PAGE_INDEX = 0;
@@ -172,6 +173,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.app_cms_profile_btn)
     ImageButton mProfileTopButton;
+	
+	@BindView(R.id.app_cms_toolbar)
+    Toolbar toolbar;
+	
 
     private int navMenuPageIndex;
     private int homePageIndex;
@@ -205,6 +210,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private WifiManager wifiManager;
     private String FIREBASE_SEARCH_SCREEN = "Search Screen";
     private String FIREBASE_MENU_SCREEN = "MENU";
+    private String searchQuery;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -228,6 +234,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSBinderMap = new HashMap<>();
 
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
+        if (args != null) {
         try {
             updatedAppCMSBinder =
                     (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
@@ -236,6 +243,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         } catch (ClassCastException e) {
             //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
+            }
         }
 
         presenterActionReceiver = new BroadcastReceiver() {
@@ -438,9 +446,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         try {
                                             username = user.getString("name");
                                             email = user.getString("email");
-                                        } catch (JSONException e) {
+                                        } catch (JSONException | NullPointerException e) {
                                             //Log.e(TAG, "Error parsing Facebook Graph JSON: " + e.getMessage());
-                                        } catch (NullPointerException npe) {
                                             //Log.e(TAG, "Null pointer exception attempting to parse JSON: " + npe.getMessage());
                                         }
                                         if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
@@ -916,6 +923,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     case CommonStatusCodes.TIMEOUT:
                         message = "A timeout has occurred.";
                         break;
+                    default:
+                        break;
                 }
                 if (!TextUtils.isEmpty(message)) {
                     //Log.e(TAG, "Google Signin Status Message: " + message);
@@ -1017,6 +1026,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setPageLoading(true);
         } else {
             appCMSPresenter.setMainFragmentTransparency(1.0f);
+            if (appCMSPresenter.isAddOnFragmentVisible()) {
+                appCMSPresenter.showAddOnFragment(true, 0.2f);
+            }
             appCMSFragment.setEnabled(true);
             appCMSTabNavContainer.setEnabled(true);
             loadingProgressBar.setVisibility(View.GONE);
@@ -1120,8 +1132,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 && !isBinderStackTopNull()
                 && ((!TextUtils.isEmpty(newPageId) && appCMSPresenter.isPagePrimary(newPageId))
                 && !appCMSPresenter.isPagePrimary(appCMSBinderStack.peek())
+                && appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH)
                 && !waitingForSubscriptionFinalization()
-                && !atMostOneUserPageOnTopStack(newPageId));
+                && !atMostOneUserPageOnTopStack(newPageId);
     }
 
     private boolean isBinderStackEmpty() {
@@ -1354,7 +1367,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!appbarPresent) {
             appBarLayout.setVisibility(View.GONE);
         } else {
-            Toolbar toolbar = (Toolbar) findViewById(R.id.app_cms_toolbar);
             try {
                 toolbar.setTitleTextColor(Color.parseColor(appCMSMain
                         .getBrand()
@@ -1416,9 +1428,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
             }
         } else {
+            boolean refreshFragment = true;
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
-            int i = 0;
+            int i = 1;
             while (((i < distanceFromStackTop && !configurationChanged) ||
                     ((i < distanceFromStackTop &&
                             (!isBinderStackEmpty() &&
@@ -1432,6 +1445,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
+                    refreshFragment = false;
                 } catch (IllegalStateException e) {
                     //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
@@ -1465,7 +1479,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             }
 
-            boolean refreshFragment = true;
             if (distanceFromStackTop >= 0) {
                 switch (appCMSBinder.getExtraScreenType()) {
                     case NAVIGATION:
@@ -1484,7 +1497,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             if (poppedStack) {
                                 appCMSBinderStack.push(appCMSBinder.getPageId());
                                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-                                refreshFragment = true;
+                                refreshFragment = appCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
                             }
 
                             if (!refreshFragment) {
@@ -1527,6 +1540,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (refreshFragment) {
                 createScreenFromAppCMSBinder(appCMSBinder);
+            } else {
+                pageLoading(false);
             }
         }
     }
@@ -2029,7 +2044,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handleLaunchPageAction(appCMSBinder,
                     false,
                     leavingExtraPage,
-                    false);
+                    appCMSBinder.getExtraScreenType()
+                            == AppCMSPresenter.ExtraScreenType.SEARCH);
             isActive = true;
         } else {
             isActive = false;
@@ -2039,6 +2055,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter != null) {
             appCMSPresenter.restartInternalEvents();
         }
+    }
+    @Override
+    public void saveQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
+    @Override
+    public String restoreQuery() {
+        return searchQuery;
     }
 
     private static class RefreshAppCMSBinderAction implements Action1<AppCMSPageAPI> {
