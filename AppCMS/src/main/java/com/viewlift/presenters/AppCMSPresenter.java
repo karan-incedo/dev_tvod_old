@@ -10361,24 +10361,18 @@ public class AppCMSPresenter {
 
         if (downloadQualityRendition != null) {
             if (downloadURL == null && downloadQualityRendition.contains("360")) {
-                if (urlRenditionMap.get("720p") != null) {
-                    downloadURL = urlRenditionMap.get("720p");
-                } else if (urlRenditionMap.get("1080p") != null) {
-                    downloadURL = urlRenditionMap.get("1080p");
+                if (urlRenditionMap.get("360p") != null) {
+                    downloadURL = urlRenditionMap.get("360p");
                 }
 
             } else if (downloadURL == null && downloadQualityRendition.contains("720")) {
-                if (urlRenditionMap.get("360p") != null) {
-                    downloadURL = urlRenditionMap.get("360p");
-                } else if (urlRenditionMap.get("1080p") != null) {
-                    downloadURL = urlRenditionMap.get("1080p");
+                if (urlRenditionMap.get("720p") != null) {
+                    downloadURL = urlRenditionMap.get("720p");
                 }
 
             } else if (downloadURL == null && downloadQualityRendition.contains("1080")) {
-                if (urlRenditionMap.get("720p") != null) {
-                    downloadURL = urlRenditionMap.get("720p");
-                } else if (urlRenditionMap.get("360p") != null) {
-                    downloadURL = urlRenditionMap.get("360p");
+                if (urlRenditionMap.get("1080p") != null) {
+                    downloadURL = urlRenditionMap.get("1080p");
                 }
             } else if (downloadURL == null) {
                 //noinspection SuspiciousMethodCalls
