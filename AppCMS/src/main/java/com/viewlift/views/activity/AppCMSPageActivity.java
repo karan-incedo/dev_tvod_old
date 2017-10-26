@@ -1562,12 +1562,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 homeNavBarItemView.setOnClickListener(v -> {
                     if (getSelectedNavItem() == homeNavBarItemView)
                         return;
+
                     currentMenuTabIndex = homePageIndex;
                     appCMSPresenter.showMainFragmentView(true);
                     selectNavItemAndLaunchPage(homeNavBarItemView,
                             homePageNav.getPageId(),
                             homePageNav.getTitle());
                 });
+
                 homeNavBarItemView.setTag(homePageNav.getPageId());
                 if (getSelectedNavItem() == null) {
                     selectNavItem(homeNavBarItemView);
