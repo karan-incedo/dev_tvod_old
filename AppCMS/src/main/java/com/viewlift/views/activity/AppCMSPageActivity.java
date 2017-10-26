@@ -1519,8 +1519,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (createFragment) {
                 createScreenFromAppCMSBinder(appCMSBinder);
             } else {
-                int lastFragment = getSupportFragmentManager().getFragments();
-                getSupportFragmentManager().getFragments().get()
+                int lastFragment = getSupportFragmentManager().getFragments().size();
+                Fragment fragment = getSupportFragmentManager().getFragments().get(lastFragment - 1);
+                if (fragment instanceof AppCMSPageFragment) {
+                    ((AppCMSPageFragment) fragment).refreshView(appCMSBinder);
+                }
                 pageLoading(false);
             }
         }
