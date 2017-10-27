@@ -97,7 +97,7 @@
           },
           "borderColor": "ffffff",
           "fontFamily": "OpenSans",
-          "text": "Captioning",
+          "text": "Closed Captioning",
           "opacity": 100,
           "type": "toggleSwitch",
           "textColor": "#ffffff",
