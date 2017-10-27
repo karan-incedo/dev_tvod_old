@@ -2,7 +2,6 @@ package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -282,15 +281,28 @@ public class AppCMSTVTrayAdapter
                 @Override
                 public void delete(Component childComponent, ContentDatum data) {
                     //Log.d(TAG, "Deleting watchlist item: " + data.getGist().getTitle());
-                    appCMSPresenter.editWatchlist(data.getGist().getId(),
-                            addToWatchlistResult -> {
-                                adapterData.remove(data);
-                                View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
-                                if (view != null) {
-                                    view.setFocusable(adapterData.size() != 0);
-                                }
-                                notifyDataSetChanged();
-                            }, false);
+                    if (appCMSPresenter.isNetworkConnected()) {
+                        appCMSPresenter.editWatchlist(data.getGist().getId(),
+                                addToWatchlistResult -> {
+                                    adapterData.remove(data);
+                                    View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    if (view != null) {
+                                        view.setFocusable(adapterData.size() != 0);
+                                    }
+                                    notifyDataSetChanged();
+                                }, false);
+                    } else {
+                        appCMSPresenter.openErrorDialog(data.getGist().getId(),
+                                true,
+                                appCMSAddToWatchlistResult -> {
+                                    adapterData.remove(data);
+                                    View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    if (view != null) {
+                                        view.setFocusable(adapterData.size() != 0);
+                                    }
+                                    notifyDataSetChanged();
+                                });
+                    }
                 }
             };
         }
