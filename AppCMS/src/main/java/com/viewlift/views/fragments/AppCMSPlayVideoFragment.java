@@ -16,6 +16,7 @@ import android.support.percent.PercentLayoutHelper;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1206,10 +1207,14 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void createContentRatingView() throws Exception {
-        if (!isTrailer && getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_eighteen)) && watchedTime == 0) {
+        if (!isTrailer &&
+                !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
+                !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
+                watchedTime == 0) {
             videoPlayerMainContainer.setVisibility(View.GONE);
             contentRatingMainContainer.setVisibility(View.VISIBLE);
             //animateView();
+            videoPlayerView.pausePlayer();
             startCountdown();
         } else {
             contentRatingMainContainer.setVisibility(View.GONE);
@@ -1219,7 +1224,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private String getParentalRating() {
-        if (!TextUtils.isEmpty(parentalRating) && !parentalRating.contentEquals(getString(R.string.age_rating_converted_eighteen))) {
+        if (!isTrailer &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
+                !parentalRating.equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
+                watchedTime == 0) {
             contentRatingTitleView.setText(parentalRating);
         }
         return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
@@ -1230,7 +1238,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             @Override
             public void onTick(long millisUntilFinished) {
                 long progress = (long) (100.0 * (1.0 - (double) millisUntilFinished / (double) totalCountdownInMillis));
-                //Log.d(TAG, "CRW Progress:"  + progress);
+                Log.d(TAG, "CRW Progress:"  + progress);
                 progressBar.setProgress((int) progress);
             }
 
