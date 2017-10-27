@@ -2556,7 +2556,7 @@ public class AppCMSPresenter {
                     setLoggedInUserName(userIdentity.getName());
                     setIsUserSubscribed(userIdentity.isSubscribed());
                 } catch (Exception e) {
-a
+
                 }
 
                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
