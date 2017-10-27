@@ -285,6 +285,10 @@ public class AppCMSTVTrayAdapter
                     appCMSPresenter.editWatchlist(data.getGist().getId(),
                             addToWatchlistResult -> {
                                 adapterData.remove(data);
+                                View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                if (view != null) {
+                                    view.setFocusable(adapterData.size() != 0);
+                                }
                                 notifyDataSetChanged();
                             }, false);
                 }

@@ -135,12 +135,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (((binder != null &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
-                            binder.getContentData().getGist().getDownloadStatus() != null &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null) &&
+                            (binder.getContentData().getGist().getDownloadStatus() != null &&
+                                    binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                                    binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
+                            binder.getContentData().getGist().getDownloadStatus() == null)) &&
                             (activeNetwork == null ||
-                            !activeNetwork.isConnectedOrConnecting())) {
+                                    !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer(),
@@ -149,10 +149,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 } catch (Exception e) {
                     if ((binder != null &&
                             binder.getContentData() != null &&
-                            binder.getContentData().getGist() != null &&binder.getContentData().getGist().getDownloadStatus() != null &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
-                            binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null) {
+                            binder.getContentData().getGist() != null &&
+                            (binder.getContentData().getGist().getDownloadStatus() != null &&
+                                    binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
+                                    binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
+                            binder.getContentData().getGist().getDownloadStatus() == null)) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer(),
@@ -197,7 +198,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
                     && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
                 videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
-            } else if (binder.getContentData().getStreamingInfo() != null &&
+            } else if (binder.getContentData() != null &&
+                    binder.getContentData().getStreamingInfo() != null &&
                     binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
                 VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
                 if (useHls) {
@@ -257,7 +259,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
                     && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus().equals(DownloadStatus.STATUS_SUCCESSFUL)) {
                 videoUrl = appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getLocalURI();
-            } else if (binder.getContentData().getContentDetails() != null
+            } else if (binder.getContentData() != null
+                    && binder.getContentData().getContentDetails() != null
                     && binder.getContentData().getContentDetails().getTrailers() != null
                     && !binder.getContentData().getContentDetails().getTrailers().isEmpty()
                     && binder.getContentData().getContentDetails().getTrailers().get(0) != null
@@ -343,9 +346,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         videoImageUrl = gist.getVideoImageUrl();
         if (binder.getContentData() != null && binder.getContentData().getGist() != null) {
             filmId = binder.getContentData().getGist().getId();
-        }
-        if (binder.getContentData() != null &&
-                binder.getContentData().getGist() != null) {
             videoRunTime = binder.getContentData().getGist().getRuntime();
         }
         String adsUrl = binder.getAdsUrl();

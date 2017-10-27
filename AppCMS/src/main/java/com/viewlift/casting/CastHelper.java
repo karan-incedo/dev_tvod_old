@@ -362,7 +362,6 @@ public class CastHelper {
 
         Toast.makeText(mAppContext, mAppContext.getString(R.string.loading_vid_on_casting), Toast.LENGTH_SHORT).show();
         this.appCMSPresenterComponenet = appCMSPresenter;
-        listRelatedVideosDetails = new ArrayList<ContentDatum>();
         if (binder.getContentData().getContentDetails() != null
                 && binder.getContentData().getContentDetails().getTrailers() != null
                 && binder.getContentData().getContentDetails().getTrailers().get(0) != null
@@ -817,6 +816,9 @@ public class CastHelper {
             isFinish = true;
         }
 
+        if(getRemoteMediaClient()==null){
+            return;
+        }
         int status = getRemoteMediaClient().getPlayerState();
         int idleReason = getRemoteMediaClient().getIdleReason();
         String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);

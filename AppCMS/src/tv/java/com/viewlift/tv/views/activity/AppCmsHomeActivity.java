@@ -380,75 +380,81 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     public void onRetry(Bundle bundle) {
         RetryCallBinder retryCallBinder = (RetryCallBinder)bundle.getBinder(getString(R.string.retryCallBinderKey));
-        AppCMSPresenter.RETRY_TYPE retryType = retryCallBinder.getRetry_type();
+        AppCMSPresenter.RETRY_TYPE retryType = retryCallBinder != null ? retryCallBinder.getRetry_type() : null;
         boolean isTosPage = bundle.getBoolean(getString(R.string.is_tos_dialog_page_key));
         boolean isLoginPage = bundle.getBoolean(getString(R.string.is_login_dialog_page_key));
-        switch(retryType){
-            case BUTTON_ACTION:
-                appCMSPresenter.launchTVButtonSelectedAction(
-                        retryCallBinder.getPagePath(),
-                        retryCallBinder.getAction(),
-                        retryCallBinder.getFilmTitle(),
-                        retryCallBinder.getExtraData(),
-                        retryCallBinder.getContentDatum(),
-                        retryCallBinder.isCloselauncher(),
-                        -1,
-                        null
-                );
-                break;
-            case VIDEO_ACTION:
-                appCMSPresenter.launchTVVideoPlayer(
-                        retryCallBinder.getContentDatum(),
-                        -1,
-                        retryCallBinder.getContentDatum().getContentDetails() != null
-                                ? retryCallBinder.getContentDatum().getContentDetails().getRelatedVideoIds()
-                                : null,
-                        retryCallBinder.getContentDatum().getGist().getWatchedTime()
-                        );
+        if (retryType != null) {
+            switch(retryType){
+                case BUTTON_ACTION:
+                    appCMSPresenter.launchTVButtonSelectedAction(
+                            retryCallBinder.getPagePath(),
+                            retryCallBinder.getAction(),
+                            retryCallBinder.getFilmTitle(),
+                            retryCallBinder.getExtraData(),
+                            retryCallBinder.getContentDatum(),
+                            retryCallBinder.isCloselauncher(),
+                            -1,
+                            null
+                    );
+                    break;
+                case VIDEO_ACTION:
+                    appCMSPresenter.launchTVVideoPlayer(
+                            retryCallBinder.getContentDatum(),
+                            -1,
+                            retryCallBinder.getContentDatum().getContentDetails() != null
+                                    ? retryCallBinder.getContentDatum().getContentDetails().getRelatedVideoIds()
+                                    : null,
+                            retryCallBinder.getContentDatum().getGist().getWatchedTime()
+                            );
 
-                break;
-            case PAGE_ACTION:
-                appCMSPresenter.navigateToTVPage(
-                        retryCallBinder.getFilmId(),
-                        retryCallBinder.getFilmTitle(),
-                        retryCallBinder.getPagePath(),
-                        retryCallBinder.isCloselauncher(),
-                        Uri.EMPTY,
-                        false,
-                        isTosPage,
-                        isLoginPage
-                );
-                break;
+                    break;
+                case PAGE_ACTION:
+                    appCMSPresenter.navigateToTVPage(
+                            retryCallBinder.getFilmId(),
+                            retryCallBinder.getFilmTitle(),
+                            retryCallBinder.getPagePath(),
+                            retryCallBinder.isCloselauncher(),
+                            Uri.EMPTY,
+                            false,
+                            isTosPage,
+                            isLoginPage
+                    );
+                    break;
 
-            case SEARCH_RETRY_ACTION:
-                String tag = getString(R.string.app_cms_search_label);
-                Fragment fragment = getFragmentManager().findFragmentByTag(tag);
-                if(fragment instanceof AppCmsSearchFragment){
-                    ((AppCmsSearchFragment) fragment).searchResult(retryCallBinder.getFilmTitle());
-                }
-                break;
+                case SEARCH_RETRY_ACTION:
+                    String tag = getString(R.string.app_cms_search_label);
+                    Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                    if(fragment instanceof AppCmsSearchFragment){
+                        ((AppCmsSearchFragment) fragment).searchResult(retryCallBinder.getFilmTitle());
+                    }
+                    break;
 
-            case WATCHLIST_RETRY_ACTION:
-                appCMSPresenter.showLoadingDialog(true);
-                appCMSPresenter.navigateToWatchlistPage(
-                        retryCallBinder.getPageId(),
-                        retryCallBinder.getFilmTitle(),
-                        retryCallBinder.getPagePath(),
-                        false);
-                break;
-            case HISTORY_RETRY_ACTION:
-                appCMSPresenter.showLoadingDialog(true);
-                appCMSPresenter.navigateToHistoryPage(
-                        retryCallBinder.getPageId(),
-                        retryCallBinder.getFilmTitle(),
-                        retryCallBinder.getPagePath(),
-                        false);
-                break;
-            case RESET_PASSWORD_RETRY:
-                appCMSPresenter.showLoadingDialog(true);
-                appCMSPresenter.resetPassword(retryCallBinder.getFilmTitle()); //filmtitle here means emailid.
-                break;
+                case WATCHLIST_RETRY_ACTION:
+                    appCMSPresenter.showLoadingDialog(true);
+                    appCMSPresenter.navigateToWatchlistPage(
+                            retryCallBinder.getPageId(),
+                            retryCallBinder.getFilmTitle(),
+                            retryCallBinder.getPagePath(),
+                            false);
+                    break;
+                case HISTORY_RETRY_ACTION:
+                    appCMSPresenter.showLoadingDialog(true);
+                    appCMSPresenter.navigateToHistoryPage(
+                            retryCallBinder.getPageId(),
+                            retryCallBinder.getFilmTitle(),
+                            retryCallBinder.getPagePath(),
+                            false);
+                    break;
+                case RESET_PASSWORD_RETRY:
+                    appCMSPresenter.showLoadingDialog(true);
+                    appCMSPresenter.resetPassword(retryCallBinder.getFilmTitle()); //filmtitle here means emailid.
+                    break;
 
+                case LOGOUT_ACTION:
+                    appCMSPresenter.logoutTV();
+                    break;
+
+            }
         }
     }
 
