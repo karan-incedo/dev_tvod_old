@@ -1501,20 +1501,27 @@ public class ViewCreator {
                         }
 
                         if (parentViewType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                            AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
-                                    new AppCMSTraySeasonItemAdapter(context,
-                                            moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
-                                            component.getComponents(),
-                                            appCMSPresenter,
-                                            jsonValueKeyMap,
-                                            viewType);
-                            ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTraySeasonItemAdapter);
-                            if (pageView != null) {
-                                pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                        .adapter(appCMSTraySeasonItemAdapter)
-                                        .listview((RecyclerView) componentViewResult.componentView)
-                                        .id(moduleAPI.getId() + component.getKey())
-                                        .build());
+                            if (moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getSeason() != null &&
+                                    !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
+                                    moduleAPI.getContentData().get(0).getSeason().get(0) != null) {
+                                AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
+                                        new AppCMSTraySeasonItemAdapter(context,
+                                                moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
+                                                component.getComponents(),
+                                                appCMSPresenter,
+                                                jsonValueKeyMap,
+                                                viewType);
+                                ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTraySeasonItemAdapter);
+                                if (pageView != null) {
+                                    pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                            .adapter(appCMSTraySeasonItemAdapter)
+                                            .listview((RecyclerView) componentViewResult.componentView)
+                                            .id(moduleAPI.getId() + component.getKey())
+                                            .build());
+                                }
                             }
                         } else {
                             appCMSViewAdapter = new AppCMSViewAdapter(context,
