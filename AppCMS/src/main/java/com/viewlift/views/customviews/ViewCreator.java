@@ -1683,7 +1683,7 @@ public class ViewCreator {
 
                 switch (componentKey) {
                     case PAGE_BUTTON_SWITCH_KEY:
-                        if (appCMSPresenter.isPreferedStorageLocationSDCard()) {
+                        if (appCMSPresenter.isPreferredStorageLocationSDCard()) {
                             ((Switch) componentViewResult.componentView).setChecked(true);
                         } else {
                             ((Switch) componentViewResult.componentView).setChecked(false);
@@ -1692,13 +1692,13 @@ public class ViewCreator {
                         ((Switch) componentViewResult.componentView).setOnCheckedChangeListener((buttonView, isChecked) -> {
                             if (isChecked) {
                                 if (appCMSPresenter.isRemovableSDCardAvailable()) {
-                                    appCMSPresenter.setPreferedStorageLocationSDCard(true);
+                                    appCMSPresenter.setPreferredStorageLocationSDCard(true);
                                 } else {
                                     appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null, null);
                                     buttonView.setChecked(false);
                                 }
                             } else {
-                                appCMSPresenter.setPreferedStorageLocationSDCard(false);
+                                appCMSPresenter.setPreferredStorageLocationSDCard(false);
                             }
 
                         });
