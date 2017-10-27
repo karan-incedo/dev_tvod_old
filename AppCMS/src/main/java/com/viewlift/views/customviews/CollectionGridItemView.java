@@ -226,7 +226,8 @@ public class CollectionGridItemView extends BaseView {
             if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -255,7 +256,8 @@ public class CollectionGridItemView extends BaseView {
                     if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
-                            !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
+                            !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
+                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getPosterImageUrl(),
                                 childViewWidth,
@@ -272,7 +274,8 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
                                 childViewWidth,
@@ -287,7 +290,8 @@ public class CollectionGridItemView extends BaseView {
                         } catch (Exception e) {
 
                         }
-                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
@@ -363,9 +367,17 @@ public class CollectionGridItemView extends BaseView {
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             data.getGist().getImageGist().get_3x4() != null &&
-                            data.getGist().getBadgeImages().get_3x4() != null) {
+                            data.getGist().getBadgeImages().get_3x4() != null &&
+                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getBadgeImages().get_3x4(),
+                                childViewWidth,
+                                childViewHeight);
 
-                        // TODO: 10/19/17 - Finish badge implementation.
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .override(childViewWidth, childViewHeight)
+                                .into((ImageView) view);
                     }
                     bringToFront = false;
                 }
