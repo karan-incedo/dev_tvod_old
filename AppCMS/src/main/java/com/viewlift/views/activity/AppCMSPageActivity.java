@@ -1521,6 +1521,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 createScreenFromAppCMSBinder(appCMSBinder);
             } else {
                 pageLoading(false);
+                handleToolbar(appCMSBinder.isAppbarPresent(),
+                        appCMSBinder.getAppCMSMain(),
+                        appCMSBinder.getPageId());
             }
         }
     }
