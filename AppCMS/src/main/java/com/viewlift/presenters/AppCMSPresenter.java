@@ -249,6 +249,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
+import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.LOGOUT_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.PAGE_ACTION;
@@ -2601,15 +2602,20 @@ public class AppCMSPresenter {
 
             appCMSAddToWatchlistCall.call(url, getAuthToken(),
                     addToWatchlistResult -> {
-                        try {
-                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
-                            if (add) {
-                                displayWatchlistToast("Added to Watchlist");
-                            } else {
-                                displayWatchlistToast("Removed from Watchlist");
+                        if (platformType == PlatformType.ANDROID || addToWatchlistResult != null) {
+                            try {
+                                Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                                if (add) {
+                                    displayWatchlistToast("Added to Watchlist");
+                                } else {
+                                    displayWatchlistToast("Removed from Watchlist");
+                                }
+                            } catch (Exception e) {
+                                //Log.e(TAG, "addToWatchlistContent: " + e.toString());
+                                Toast.makeText(currentActivity, "inside ecxption 1", Toast.LENGTH_SHORT).show();
                             }
-                        } catch (Exception e) {
-                            //Log.e(TAG, "addToWatchlistContent: " + e.toString());
+                        } else {
+                            Toast.makeText(currentActivity, "Failed to " + (add ? "add to " : "remove from ") + "watchlist.", Toast.LENGTH_SHORT).show();
                         }
                     }, request, add);
         } catch (Exception e) {
@@ -10432,11 +10438,21 @@ public class AppCMSPresenter {
         return loginFromNavPage;
     }
   
-    public void openErrorDialog() {
+    public void openErrorDialog(String filmId,
+                                boolean queued,
+                                Action1<AppCMSAddToWatchlistResult> action1) {
+
+        RetryCallBinder retryCallBinder = getRetryCallBinder(null, null,
+                null, null,
+                null, false, filmId, EDIT_WATCHLIST);
+        retryCallBinder.setCallback(action1);
         Bundle bundle = new Bundle();
-        bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
+        bundle.putBoolean(currentActivity.getString(R.string.retry_key), true);
         bundle.putBoolean(currentActivity.getString(R.string.register_internet_receiver_key), true);
+        bundle.putBoolean("queued", queued);
         Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
+        args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+        bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
         args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
         currentActivity.sendBroadcast(args);
     }
@@ -10467,7 +10483,6 @@ public class AppCMSPresenter {
             e.printStackTrace();
         }
     }
-
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, HOME
     }
@@ -10520,7 +10535,7 @@ public class AppCMSPresenter {
     }
 
     public enum RETRY_TYPE {
-        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION
+        VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION, HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION, EDIT_WATCHLIST
     }
 
     public enum ExtraScreenType {

@@ -1,7 +1,6 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -12,9 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ListRow;
@@ -34,7 +31,6 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -93,7 +89,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_API_DESCRIPTION;
-import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
 /**
  * Created by viewlift on 5/5/17.
@@ -726,54 +721,62 @@ public class TVViewCreator {
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
+                                    if (appCMSPresenter.isNetworkConnected()) {
+                                        if (appCMSPresenter.isUserLoggedIn()) {
+                                            appCMSPresenter.editWatchlist(
+                                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                                                    appCMSAddToWatchlistResult -> {
+                                                        //Log.d(TAG, "appCMSAddToWatchlistResult");
+                                                        queued[0] = !queued[0];
+                                                        if (queued[0]) {
+                                                            btn.setText(context.getString(R.string.remove_from_watchlist));
+                                                        } else {
+                                                            btn.setText(context.getString(R.string.add_to_watchlist));
+                                                        }
+                                                    }, !queued[0]);
+                                        } else /*User is not logged in*/ {
 
-                        if (appCMSPresenter.isNetworkConnected()) {
+                                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                                    context,
+                                                    appCMSPresenter,
+                                                    context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                    context.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                                    context.getString(R.string.add_to_watchlist),
+                                                    context.getString(R.string.add_to_watchlist_dialog_text),
+                                                    context.getString(R.string.sign_in_text),
+                                                    context.getString(android.R.string.cancel),
+                                                    14
 
-                            if (appCMSPresenter.isUserLoggedIn()) {
-                                appCMSPresenter.editWatchlist(
-                                        moduleAPI.getContentData().get(0).getGist().getId(),
-                                        appCMSAddToWatchlistResult -> {
-                                            //Log.d(TAG, "appCMSAddToWatchlistResult");
-                                            queued[0] = !queued[0];
-                                            if (queued[0]) {
-                                                btn.setText(context.getString(R.string.remove_from_watchlist));
-                                            } else {
-                                                btn.setText(context.getString(R.string.add_to_watchlist));
-                                            }
-                                        }, !queued[0]);
-                            } else /*User is not logged in*/ {
+                                            );
+                                            newFragment.setOnPositiveButtonClicked(s -> {
 
-                                ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                        context,
-                                        appCMSPresenter,
-                                        context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                        context.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                        context.getString(R.string.add_to_watchlist),
-                                        context.getString(R.string.add_to_watchlist_dialog_text),
-                                        context.getString(R.string.sign_in_text),
-                                        context.getString(android.R.string.cancel),
-                                        14
-
-                                );
-                                newFragment.setOnPositiveButtonClicked(s -> {
-
-                                    NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                                    appCMSPresenter.navigateToTVPage(
-                                            navigationUser.getPageId(),
-                                            navigationUser.getTitle(),
-                                            navigationUser.getUrl(),
-                                            false,
-                                            Uri.EMPTY,
-                                            false,
-                                            false,
-                                            true
-                                    );
-                                });
-                            }
-                        } else {
-                            appCMSPresenter.openErrorDialog();
-                        }
-                    }
+                                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                                appCMSPresenter.navigateToTVPage(
+                                                        navigationUser.getPageId(),
+                                                        navigationUser.getTitle(),
+                                                        navigationUser.getUrl(),
+                                                        false,
+                                                        Uri.EMPTY,
+                                                        false,
+                                                        false,
+                                                        true
+                                                );
+                                            });
+                                        }
+                                    } else {
+                                        appCMSPresenter.openErrorDialog(
+                                                moduleAPI.getContentData().get(0).getGist().getId(),
+                                                queued[0],
+                                                appCMSAddToWatchlistResult -> {
+                                                    queued[0] = !queued[0];
+                                                    if (queued[0]) {
+                                                        btn.setText(context.getString(R.string.remove_from_watchlist));
+                                                    } else {
+                                                        btn.setText(context.getString(R.string.add_to_watchlist));
+                                                    }
+                                                });
+                                    }
+                                }
                         );
                         break;
 
