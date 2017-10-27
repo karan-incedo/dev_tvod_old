@@ -5528,7 +5528,8 @@ public class AppCMSPresenter {
 
                             finalizeLogin(forceSubscribed,
                                     facebookLoginResponse.isSubscribed(),
-                                    launchType == LaunchType.INIT_SIGNUP,
+                                    launchType == LaunchType.INIT_SIGNUP ||
+                                    launchType == LaunchType.SUBSCRIBE,
                                     refreshSubscriptionData);
                         }
                     }
@@ -5578,7 +5579,8 @@ public class AppCMSPresenter {
 
                                 finalizeLogin(forceSubscribed,
                                         googleLoginResponse.isSubscribed(),
-                                        launchType == LaunchType.INIT_SIGNUP,
+                                        launchType == LaunchType.INIT_SIGNUP ||
+                                        launchType == LaunchType.SUBSCRIBE,
                                         refreshSubscriptionData);
                             }
                         }
