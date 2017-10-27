@@ -364,57 +364,59 @@ public class AppCMSPlayVideoFragment extends Fragment
             entitlementCheckTimerTask = new TimerTask() {
                 @Override
                 public void run() {
-                    appCMSPresenter.getUserData(userIdentity -> {
-                        //Log.d(TAG, "Video player entitlement check triggered");
-                        if (!entitlementCheckCancelled) {
-                            int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
-                            if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
+                    if (isAdded()) {
+                        appCMSPresenter.getUserData(userIdentity -> {
+                            //Log.d(TAG, "Video player entitlement check triggered");
+                            if (!entitlementCheckCancelled) {
+                                int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
+                                if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
 
-                                if (onUpdateContentDatumEvent != null) {
-                                    AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
-                                            = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
-                                            .action(getString(R.string.app_cms_page_play_key))
-                                            .closerLauncher(false)
-                                            .contentDatum(onUpdateContentDatumEvent.getCurrentContentDatum())
-                                            .currentlyPlayingIndex(playIndex)
-                                            .pagePath(permaLink)
-                                            .filmTitle(title)
-                                            .extraData(null)
-                                            .relatedVideoIds(onUpdateContentDatumEvent.getCurrentRelatedVideoIds())
-                                            .currentWatchedTime(videoPlayerView.getCurrentPosition() / 1000)
-                                            .build();
-                                    appCMSPresenter.setEntitlementPendingVideoData(entitlementPendingVideoData);
-                                }
+                                    if (onUpdateContentDatumEvent != null) {
+                                        AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
+                                                = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
+                                                .action(getString(R.string.app_cms_page_play_key))
+                                                .closerLauncher(false)
+                                                .contentDatum(onUpdateContentDatumEvent.getCurrentContentDatum())
+                                                .currentlyPlayingIndex(playIndex)
+                                                .pagePath(permaLink)
+                                                .filmTitle(title)
+                                                .extraData(null)
+                                                .relatedVideoIds(onUpdateContentDatumEvent.getCurrentRelatedVideoIds())
+                                                .currentWatchedTime(videoPlayerView.getCurrentPosition() / 1000)
+                                                .build();
+                                        appCMSPresenter.setEntitlementPendingVideoData(entitlementPendingVideoData);
+                                    }
 
-                                //Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
-                                pauseVideo();
+                                    //Log.d(TAG, "User is not subscribed - pausing video and showing Subscribe dialog");
+                                    pauseVideo();
 
-                                if (videoPlayerView != null) {
-                                    videoPlayerView.disableController();
-                                }
-                                videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-                                if (appCMSPresenter.isUserLoggedIn()) {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER,
-                                            () -> {
-                                                if (onClosePlayerEvent != null) {
-                                                    onClosePlayerEvent.closePlayer();
-                                                }
-                                            });
+                                    if (videoPlayerView != null) {
+                                        videoPlayerView.disableController();
+                                    }
+                                    videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                                    if (appCMSPresenter.isUserLoggedIn()) {
+                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED_PLAYER,
+                                                () -> {
+                                                    if (onClosePlayerEvent != null) {
+                                                        onClosePlayerEvent.closePlayer();
+                                                    }
+                                                });
+                                    } else {
+                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
+                                                () -> {
+                                                    if (onClosePlayerEvent != null) {
+                                                        onClosePlayerEvent.closePlayer();
+                                                    }
+                                                });
+                                    }
+                                    cancel();
+                                    entitlementCheckCancelled = true;
                                 } else {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
-                                            () -> {
-                                                if (onClosePlayerEvent != null) {
-                                                    onClosePlayerEvent.closePlayer();
-                                                }
-                                            });
+                                    //Log.d(TAG, "User is subscribed - resuming video");
                                 }
-                                cancel();
-                                entitlementCheckCancelled = true;
-                            } else {
-                                //Log.d(TAG, "User is subscribed - resuming video");
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             };
 
