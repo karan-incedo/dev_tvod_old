@@ -3202,10 +3202,6 @@ public class AppCMSPresenter {
 
                         String downloadURL;
 
-                        String downloadURL;
-
-                        int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
-
                         int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 
                         downloadURL = getDownloadURL(updateContentDatum);
