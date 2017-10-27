@@ -690,12 +690,20 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     @Override
+    public void onStop() {
+        super.onStop();
+        videoPlayerView.stopPlayer();
+    }
+
+    @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
         if(videoPlayerView.getPlayer() != null){
             videoPlayerView.getPlayer().setPlayWhenReady(true);
         }
-        preparePlayer();
+        if (isAdded() && isVisible()) {
+            preparePlayer();
+        }
         isAdsDisplaying = false;
         // videoPlayerView.getPlayer().setPlayWhenReady(true);
         // videoPlayerView.resumePlayer();
@@ -774,7 +782,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     adsManager = null;
                 }
                 isAdsDisplaying = false;
-                preparePlayer();
+                if (isVisible() && isAdded()) {
+                    preparePlayer();
+                }
                 videoPlayerInfoContainer.setVisibility(View.VISIBLE); //show player controlls.
                 break;
             default:

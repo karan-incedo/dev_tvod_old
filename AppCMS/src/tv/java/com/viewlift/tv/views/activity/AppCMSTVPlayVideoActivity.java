@@ -481,6 +481,12 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        appCMSPlayVideoFragment.getVideoPlayerView().stopPlayer();
+    }
+
+    @Override
     public void onErrorScreenClose() {
 
     }
