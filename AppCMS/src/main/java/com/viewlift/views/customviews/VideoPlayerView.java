@@ -10,8 +10,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Surface;
-import android.view.TextureView;
 import android.widget.FrameLayout;
 import android.widget.ToggleButton;
 
@@ -63,7 +61,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
-import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
