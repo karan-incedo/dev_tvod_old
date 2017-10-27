@@ -42,9 +42,11 @@ public class AppCMSErrorActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+
         setContentView(R.layout.activity_error);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -96,6 +98,7 @@ public class AppCMSErrorActivity extends AppCompatActivity {
                 }
             }
         };
+
     }
 
     @Override

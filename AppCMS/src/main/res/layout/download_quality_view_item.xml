@@ -18,6 +18,7 @@
         android:layout_margin="8dp"
         android:button="@drawable/ic_radio_bg"
         app:layout_constraintEnd_toStartOf="@id/verticalGuideline" />
+
     <TextView
         android:id="@+id/download_quality_text"
         android:layout_width="wrap_content"

@@ -104,6 +104,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private String keyPairIdCookie;
 
     private boolean playerJustInitialized;
+
     public VideoPlayerView(Context context) {
         super(context);
         initializeView(context);
@@ -180,7 +181,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 player.setPlayWhenReady(true);
                 playerJustInitialized = false;
             } else {
-            player.setPlayWhenReady(player.getPlayWhenReady());
+                player.setPlayWhenReady(player.getPlayWhenReady());
             }
         }
     }
@@ -269,6 +270,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         playerJustInitialized = true;
     }
+
     public void init(Context context) {
         initializePlayer(context);
         playerState = new PlayerState();
@@ -414,14 +416,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         if (playerState != null) {
-        playerState.playWhenReady = playWhenReady;
-        playerState.playbackState = playbackState;
+            playerState.playWhenReady = playWhenReady;
+            playerState.playbackState = playbackState;
 
-        if (onPlayerStateChanged != null) {
-            try {
-                Observable.just(playerState).subscribe(onPlayerStateChanged);
-            } catch (Exception e) {
-                //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
+            if (onPlayerStateChanged != null) {
+                try {
+                    Observable.just(playerState).subscribe(onPlayerStateChanged);
+                } catch (Exception e) {
+                    //Log.e(TAG, "Failed to update player state change status: " + e.getMessage());
                 }
             }
         }
@@ -575,6 +577,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public interface ErrorEventListener {
         void onRefreshTokenCallback();
+
         void onFinishCallback(String message);
     }
 
@@ -629,7 +632,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
          * @param listener              An optional listener.
          * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
          *                              for {@link DefaultDataSource}.
-         * @param policyCookie             The cookie used for accessing CDN protected data.
+         * @param policyCookie          The cookie used for accessing CDN protected data.
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
@@ -774,6 +777,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     ((DefaultHttpDataSource) dataSource).setRequestProperty("Cookie", cookies.toString());
                 }
             }
+
             final DataSpec updatedDataSpec = new DataSpec(updatedUri,
                     dataSpec.absoluteStreamPosition,
                     dataSpec.length,

@@ -26,7 +26,6 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
     private AppCMSDownloadQualityBinder binder;
     private AppCMSDownloadQualityFragment downloadQualityFragment;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +45,6 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
         if (downloadQualityFragment == null) {
             createFragment(binder);
         }
-
     }
 
     private void createFragment(AppCMSDownloadQualityBinder appCMSBinder) {
@@ -73,6 +71,4 @@ public class AppCMSDownloadQualityActivity extends AppCompatActivity {
         super.onBackPressed();
         finish();
     }
-
-
 }

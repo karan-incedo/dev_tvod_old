@@ -157,7 +157,6 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         action,
                         title,
                         extraData,
-
                         data,
                         false,-1, null)) {
              /*       Log.e(TAG, "Could not launch action: " +

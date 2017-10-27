@@ -36,15 +36,19 @@ public class AppCMSSearchResult {
         this.contentDetails = contentDetails;
     }
 
+
     public StreamingInfo getStreamingInfo() {
         return streamingInfo;
     }
+
     public void setStreamingInfo(StreamingInfo streamingInfo) {
         this.streamingInfo = streamingInfo;
     }
+
     @SerializedName("streamingInfo")
     @Expose
     StreamingInfo streamingInfo;
+
     public ContentDatum getContent(){
         ContentDatum contentDatum = new ContentDatum();
         contentDatum.setStreamingInfo(getStreamingInfo());

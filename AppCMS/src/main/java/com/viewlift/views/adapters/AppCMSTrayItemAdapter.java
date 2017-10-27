@@ -163,7 +163,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                 holder.appCMSContinueWatchingSize.setVisibility(View.VISIBLE);
                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
-
                 if (contentDatum.getGist() != null) {
                     switch (contentDatum.getGist().getDownloadStatus()) {
                         case STATUS_PENDING:
@@ -477,6 +476,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         return contentDatumList;
     }
+
+
 
     private void playDownloaded(ContentDatum data, Context context, int position) {
         List<String> relatedVideoIds = getListOfUpcomingMovies(position,DownloadStatus.STATUS_SUCCESSFUL);

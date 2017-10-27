@@ -39,6 +39,7 @@ import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import java.util.List;
 
 import rx.functions.Action0;
+
 /**
  * A singleton to manage the different casting options such as chromecast and roku , on different activities.
  * google cast and roku instances creates single time here and on activity change instance of activity and cast icon view pass here.
@@ -51,7 +52,7 @@ public class CastServiceProvider {
     private ImageButton mMediaRouteButton;
     private CastHelper mCastHelper;
     private RokuWrapper rokuWrapper;
-    private boolean isHomeScreen=false;
+    private boolean isHomeScreen = false;
     private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
     private AnimationDrawable castAnimDrawable;
@@ -187,7 +188,7 @@ public class CastServiceProvider {
             mCastHelper.routes.addAll(mCastHelper.mMediaRouter.getRoutes());
         }
 
-	mCastHelper.routes.addAll(rokuWrapper.getRokuDevices());
+        mCastHelper.routes.addAll(rokuWrapper.getRokuDevices());
         mCastHelper.onFilterRoutes(mCastHelper.routes);
         castChooserDialog.setRoutes(mCastHelper.routes);
     }
@@ -381,7 +382,7 @@ public class CastServiceProvider {
     }
 
     public void isHomeScreen(boolean fromHomePage) {
-        isHomeScreen=fromHomePage;
+        isHomeScreen = fromHomePage;
     }
 
 

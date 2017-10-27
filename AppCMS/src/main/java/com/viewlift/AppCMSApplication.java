@@ -18,6 +18,7 @@ import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import io.fabric.sdk.android.Fabric;
 
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
@@ -32,23 +33,33 @@ public class AppCMSApplication extends MultiDexApplication {
     private AppCMSPresenterComponent appCMSPresenterComponent;
 
     private Map<Activity, Integer> closeAppMap;
+
     private AppsFlyerConversionListener conversionDataListener;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
         conversionDataListener = new AppsFlyerConversionListener() {
+
             @Override
             public void onInstallConversionDataLoaded(Map<String, String> map) {
+
             }
+
             @Override
             public void onInstallConversionFailure(String s) {
+
             }
+
             @Override
             public void onAppOpenAttribution(Map<String, String> map) {
+
             }
+
             @Override
             public void onAttributionFailure(String s) {
+
             }
         };
 
@@ -56,6 +67,7 @@ public class AppCMSApplication extends MultiDexApplication {
             Fabric.with(AppCMSApplication.this, new Crashlytics());
             Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
         }).run();
+
         closeAppMap = new HashMap<>();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
@@ -113,20 +125,21 @@ public class AppCMSApplication extends MultiDexApplication {
                 }
             }
         });
-
     }
-
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
         return appCMSPresenterComponent;
     }
+
     public void setCloseApp(Activity activity) {
         closeAppMap.put(activity, 1);
     }
+
     public void initAppsFlyer(String appsFlyerKey) {
         AppsFlyerLib.getInstance().init(appsFlyerKey, conversionDataListener);
         sendAnalytics();
     }
+
     private void sendAnalytics() {
         trackInstallationEvent(this);
     }

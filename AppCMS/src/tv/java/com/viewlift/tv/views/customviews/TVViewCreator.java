@@ -726,53 +726,54 @@ public class TVViewCreator {
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
-                                    //Log.d(TAG, "appCMSAddToWatchlistResult: clicked");
+
                         if (appCMSPresenter.isNetworkConnected()) {
-                                    if (appCMSPresenter.isUserLoggedIn()) {
-                                        appCMSPresenter.editWatchlist(
-                                                moduleAPI.getContentData().get(0).getGist().getId(),
-                                                appCMSAddToWatchlistResult -> {
-                                                    //Log.d(TAG, "appCMSAddToWatchlistResult");
-                                                    queued[0] = !queued[0];
-                                                    if (queued[0]) {
-                                                        btn.setText(context.getString(R.string.remove_from_watchlist));
-                                                    } else {
-                                                        btn.setText(context.getString(R.string.add_to_watchlist));
-                                                    }
-                                                }, !queued[0]);
-                                    } else /*User is not logged in*/ {
 
-                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                                context,
-                                                appCMSPresenter,
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                                context.getString(R.string.add_to_watchlist),
-                                                context.getString(R.string.add_to_watchlist_dialog_text),
-                                                context.getString(R.string.sign_in_text),
-                                                context.getString(android.R.string.cancel),
-                                                14
+                            if (appCMSPresenter.isUserLoggedIn()) {
+                                appCMSPresenter.editWatchlist(
+                                        moduleAPI.getContentData().get(0).getGist().getId(),
+                                        appCMSAddToWatchlistResult -> {
+                                            //Log.d(TAG, "appCMSAddToWatchlistResult");
+                                            queued[0] = !queued[0];
+                                            if (queued[0]) {
+                                                btn.setText(context.getString(R.string.remove_from_watchlist));
+                                            } else {
+                                                btn.setText(context.getString(R.string.add_to_watchlist));
+                                            }
+                                        }, !queued[0]);
+                            } else /*User is not logged in*/ {
 
-                                        );
-                                        newFragment.setOnPositiveButtonClicked(s -> {
+                                ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                        context,
+                                        appCMSPresenter,
+                                        context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                        context.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                        context.getString(R.string.add_to_watchlist),
+                                        context.getString(R.string.add_to_watchlist_dialog_text),
+                                        context.getString(R.string.sign_in_text),
+                                        context.getString(android.R.string.cancel),
+                                        14
 
-                                            NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                                            appCMSPresenter.navigateToTVPage(
-                                                    navigationUser.getPageId(),
-                                                    navigationUser.getTitle(),
-                                                    navigationUser.getUrl(),
-                                                    false,
-                                                    Uri.EMPTY,
-                                                    false,
-                                                    false,
-                                                    true
-                                            );
-                                        });
+                                );
+                                newFragment.setOnPositiveButtonClicked(s -> {
+
+                                    NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                    appCMSPresenter.navigateToTVPage(
+                                            navigationUser.getPageId(),
+                                            navigationUser.getTitle(),
+                                            navigationUser.getUrl(),
+                                            false,
+                                            Uri.EMPTY,
+                                            false,
+                                            false,
+                                            true
+                                    );
+                                });
                             }
                         } else {
                             appCMSPresenter.openErrorDialog();
-                                    }
-                                }
+                        }
+                    }
                         );
                         break;
 

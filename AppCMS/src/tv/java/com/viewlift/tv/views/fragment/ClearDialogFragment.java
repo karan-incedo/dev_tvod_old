@@ -184,7 +184,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
             @Override
             public void onClick(View v) {
                 if(null != onNegativeButtonClicked) {
-                onNegativeButtonClicked.call("");
+                    onNegativeButtonClicked.call("");
                 }
                 dismiss();
             }
@@ -193,7 +193,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
 
         positiveButton.setOnClickListener(v -> {
             if(null != onPositiveButtonClicked) {
-            onPositiveButtonClicked.call("");
+                onPositiveButtonClicked.call("");
             }
             dismiss();
         });

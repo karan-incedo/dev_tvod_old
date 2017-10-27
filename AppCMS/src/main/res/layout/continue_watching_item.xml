@@ -108,6 +108,7 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:padding="2dp" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -126,6 +127,7 @@
                 android:layout_marginBottom="@dimen/app_cms_continue_watching_progressbar_height"
                 android:scaleType="fitCenter"
                 android:visibility="gone" />
+
             <TextView
                 android:id="@+id/app_cms_continue_watching_last_viewed"
                 android:layout_width="wrap_content"
@@ -134,12 +136,14 @@
                 android:layout_marginTop="2dp"
                 android:maxLines="1"
                 android:padding="2dp" />
+
             <FrameLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center_horizontal"
                 android:layout_marginBottom="2dp"
                 android:layout_marginTop="8dp">
+
                 <ImageButton
                     android:id="@+id/app_cms_continue_watching_delete_button"
                     android:layout_width="24dp"
@@ -157,7 +161,6 @@
                 android:layout_marginTop="4dp"
                 android:maxLines="1"
                 android:padding="2dp" />
-
 
         </LinearLayout>
 
