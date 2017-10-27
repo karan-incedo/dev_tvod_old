@@ -2550,11 +2550,14 @@ public class AppCMSPresenter {
             showLoadingDialog(true);
             getPageAPILruCache().evictAll();
             getUserData((userIdentity) -> {
-
-                setLoggedInUser(userIdentity.getUserId());
-                setLoggedInUserEmail(userIdentity.getEmail());
-                setLoggedInUserName(userIdentity.getName());
-                setIsUserSubscribed(userIdentity.isSubscribed());
+                try {
+                    setLoggedInUser(userIdentity.getUserId());
+                    setLoggedInUserEmail(userIdentity.getEmail());
+                    setLoggedInUserName(userIdentity.getName());
+                    setIsUserSubscribed(userIdentity.isSubscribed());
+                } catch (Exception e) {
+a
+                }
 
                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
                     if (currentActivity != null && sendRefreshPageDataAction) {
