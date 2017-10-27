@@ -426,6 +426,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        appCMSPresenter.setEntitlementPendingVideoData(null);
     }
 
     @Override

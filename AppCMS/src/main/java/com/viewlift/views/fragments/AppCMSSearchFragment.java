@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.adapters.SearchSuggestionsAdapter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;

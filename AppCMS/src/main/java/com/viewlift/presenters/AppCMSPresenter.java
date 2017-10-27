@@ -6512,6 +6512,8 @@ public class AppCMSPresenter {
                 builder.setOnKeyListener((arg0, keyCode, event) -> {
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         if (onCloseAction != null) {
+                            //if user press back key without doing login subscription ,clear saved data 
+                            setEntitlementPendingVideoData(null);
                             onCloseAction.call();
                         }
                     }

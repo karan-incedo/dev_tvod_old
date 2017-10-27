@@ -487,7 +487,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
-        System.out.println("videoPlayerView run time-" + videoPlayerView.getDuration());
 
         setCurrentWatchProgress(runTime, watchedTime);
 
