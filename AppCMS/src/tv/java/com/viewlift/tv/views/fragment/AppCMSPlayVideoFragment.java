@@ -692,7 +692,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
-        videoPlayerView.getPlayer().setPlayWhenReady(true);
+        if(videoPlayerView.getPlayer() != null){
+            videoPlayerView.getPlayer().setPlayWhenReady(true);
+        }
         preparePlayer();
         isAdsDisplaying = false;
         // videoPlayerView.getPlayer().setPlayWhenReady(true);
@@ -995,7 +997,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             while (runBeaconPing) {
                 try {
                     Thread.sleep(beaconMsgTimeoutMsec);
-                    if (sendBeaconPing) {
+                    if (sendBeaconPing && videoPlayerView.getPlayer() != null) {
 
                         long currentTime = videoPlayerView.getCurrentPosition() / 1000;
                         playbackState = videoPlayerView.getPlayer().getPlaybackState();

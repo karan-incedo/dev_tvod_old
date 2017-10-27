@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -429,11 +428,13 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         if(event.getAction() == KeyEvent.ACTION_DOWN ){
             if(null != appCMSPlayVideoFragment ){
                 if(appCMSPlayVideoFragment.isAdsPlaying()){
-                    return true;
+                    if (event.getKeyCode() != KeyEvent.KEYCODE_BACK ) {
+                        return true;
+                    }
                 }
+                appCMSPlayVideoFragment.showController(event);
             }
 
-            appCMSPlayVideoFragment.showController(event);
             switch (event.getKeyCode()){
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     if(null != appCMSPlayVideoPageContainer){
