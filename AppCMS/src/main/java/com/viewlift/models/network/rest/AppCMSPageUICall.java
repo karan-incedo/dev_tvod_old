@@ -41,23 +41,37 @@ public class AppCMSPageUICall {
     }
 
     @WorkerThread
-    public AppCMSPageUI call(String url, long timeStamp) throws IOException {
+    public AppCMSPageUI call(String url, long timeStamp, boolean loadFromFile) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSPageUI appCMSPageUI = null;
-        try {
-            appCMSPageUI = readPageFromFile(filename);
-            appCMSPageUI.setLoadedFromNetwork(false);
-        } catch (Exception e) {
-            //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+        if (loadFromFile) {
             try {
-                deletePreviousFiles(url);
-                appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
-                        .execute().body());
-                appCMSPageUI.setLoadedFromNetwork(true);
-            } catch (Exception e2) {
-                //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
+                appCMSPageUI = readPageFromFile(filename);
+                appCMSPageUI.setLoadedFromNetwork(false);
+            } catch (Exception e) {
+                //Log.e(TAG, "Error reading file AppCMS UI JSON file: " + e.getMessage());
+                try {
+                    loadFromNetwork(url, filename);
+                } catch (Exception e2) {
+                    //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
 //                        e2.getMessage());
+                }
             }
+        } else {
+            appCMSPageUI = loadFromNetwork(url, filename);
+        }
+        return appCMSPageUI;
+    }
+
+    private AppCMSPageUI loadFromNetwork(String url, String filename) {
+        AppCMSPageUI appCMSPageUI = null;
+        try {
+            deletePreviousFiles(url);
+            appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
+                    .execute().body());
+            appCMSPageUI.setLoadedFromNetwork(true);
+        } catch (Exception e) {
+
         }
         return appCMSPageUI;
     }

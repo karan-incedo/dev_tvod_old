@@ -55,6 +55,7 @@ public class AppCMSAndroidModuleCall {
 
     public void call(String bundleUrl,
                      String version,
+                     boolean forceLoadFromNetwork,
                      Action1<AppCMSAndroidModules> readyAction) {
         //Log.d(TAG, "Retrieving list of modules at URL: " + bundleUrl);
 
@@ -62,6 +63,7 @@ public class AppCMSAndroidModuleCall {
 
         readModuleListFromFile(bundleUrl,
                 version,
+                forceLoadFromNetwork,
                 (moduleDataMap) -> {
                     appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setLoadedFromNetwork(moduleDataMap.loadedFromNetwork);
@@ -87,7 +89,7 @@ public class AppCMSAndroidModuleCall {
         }
     }
 
-    private void deletePreviousFiles(String url) {
+    public void deletePreviousFiles(String url) {
         String fileToDeleteFilenamePattern = getResourceFilenameWithJsonOnly(url);
         File savedFileDirectory = new File(storageDirectory.toString());
         if (savedFileDirectory.isDirectory()) {
@@ -112,46 +114,59 @@ public class AppCMSAndroidModuleCall {
         }
     }
 
+    private ModuleDataMap readModuleListFromNetwork(ModuleDataMap moduleDataMap,
+                                                    String blocksBaseUrl,
+                                                    String version) {
+        try {
+            Response<JsonElement> moduleListResponse =
+                    appCMSAndroidModuleRest.get(blocksBaseUrl).execute();
+            if (moduleListResponse != null &&
+                    moduleListResponse.body() != null) {
+                moduleDataMap.appCMSAndroidModule = gson.fromJson(moduleListResponse.body(),
+                        new TypeToken<Map<String, ModuleList>>() {
+                        }.getType());
+                moduleDataMap.loadedFromNetwork = true;
+                deletePreviousFiles(getResourceFilenameWithJsonOnly(blocksBaseUrl));
+                writeModuleToFile(getResourceFilename(blocksBaseUrl, version), moduleDataMap.appCMSAndroidModule);
+            }
+        } catch (Exception e1) {
+            //Log.e(TAG, "Failed to load block modules from file: " + e1.getMessage());
+        }
+        return moduleDataMap;
+    }
+
     private void readModuleListFromFile(String blocksBaseUrl,
                                         String version,
+                                        boolean forceLoadFromNetwork,
                                         Action1<ModuleDataMap> readyAction) {
         Observable.fromCallable(() -> {
             ModuleDataMap moduleDataMap = new ModuleDataMap();
             moduleDataMap.loadedFromNetwork = false;
 
-            try {
-                InputStream inputStream = new FileInputStream(
-                        new File(storageDirectory.toString() +
-                                File.separatorChar +
-                                getResourceFilename(blocksBaseUrl, version)));
+            if (forceLoadFromNetwork) {
+                moduleDataMap = readModuleListFromNetwork(moduleDataMap, blocksBaseUrl, version);
+            } else {
 
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                long startTime = new Date().getTime();
-                Log.d(TAG, "Start time: " + startTime);
-                ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
-                moduleDataMap.appCMSAndroidModule = (HashMap<String, ModuleList>) objectInputStream.readObject();
-                long endTime = new Date().getTime();
-                Log.d(TAG, "End time: " + endTime);
-                Log.d(TAG, "Time elapsed: " + (endTime - startTime));
-                objectInputStream.close();
-                bufferedInputStream.close();
-                inputStream.close();
-            } catch (Exception e) {
-                //Log.w(TAG, "Failed to load block modules from file: " + e.getMessage());
                 try {
-                    Response<JsonElement> moduleListResponse =
-                            appCMSAndroidModuleRest.get(blocksBaseUrl).execute();
-                    if (moduleListResponse != null &&
-                            moduleListResponse.body() != null) {
-                        moduleDataMap.appCMSAndroidModule = gson.fromJson(moduleListResponse.body(),
-                                new TypeToken<Map<String, ModuleList>>() {
-                                }.getType());
-                        moduleDataMap.loadedFromNetwork = true;
-                        deletePreviousFiles(getResourceFilenameWithJsonOnly(blocksBaseUrl));
-                        writeModuleToFile(getResourceFilename(blocksBaseUrl, version), moduleDataMap.appCMSAndroidModule);
-                    }
-                } catch (Exception e1) {
-                    //Log.e(TAG, "Failed to load block modules from file: " + e1.getMessage());
+                    InputStream inputStream = new FileInputStream(
+                            new File(storageDirectory.toString() +
+                                    File.separatorChar +
+                                    getResourceFilename(blocksBaseUrl, version)));
+
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                    long startTime = new Date().getTime();
+                    Log.d(TAG, "Start time: " + startTime);
+                    ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
+                    moduleDataMap.appCMSAndroidModule = (HashMap<String, ModuleList>) objectInputStream.readObject();
+                    long endTime = new Date().getTime();
+                    Log.d(TAG, "End time: " + endTime);
+                    Log.d(TAG, "Time elapsed: " + (endTime - startTime));
+                    objectInputStream.close();
+                    bufferedInputStream.close();
+                    inputStream.close();
+                } catch (Exception e) {
+                    //Log.w(TAG, "Failed to load block modules from file: " + e.getMessage());
+                    moduleDataMap = readModuleListFromNetwork(moduleDataMap, blocksBaseUrl, version);
                 }
             }
 

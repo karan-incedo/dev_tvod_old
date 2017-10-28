@@ -2115,7 +2115,7 @@ public class AppCMSPresenter {
                                 showLoadingDialog(false);
                                 try {
                                     if (appCMSSubscriptionPlanResult != null) {
-                                        // upgradePlanAPICall();
+                                         upgradePlanAPICall();
                                     }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
@@ -8566,18 +8566,21 @@ public class AppCMSPresenter {
             //Log.d(TAG, "Refreshing main.json");
 
             try {
-                refreshAppCMSMain((appCMSMain) -> {
-                    if (appCMSMain != null) {
+                refreshAppCMSMain((appCMSMainUpdated) -> {
+                    if (appCMSMainUpdated != null) {
                         //Log.d(TAG, "Refreshed main.json");
-                        if (this.appCMSMain.getVersion().equals(appCMSMain.getVersion()) &&
+                        Log.d(TAG, "Current main.json version: " + appCMSMain.getVersion());
+                        Log.d(TAG, "Received main.json version: " + appCMSMainUpdated.getVersion());
+                        if (appCMSMainUpdated.getVersion().equals(appCMSMain.getVersion()) &&
                                 attemptRetry &&
                                 retryAttempts < maxRetryAttempts) {
                             refreshPages(onReadyAction,
                                     attemptRetry,
                                     retryAttempts + 1,
                                     maxRetryAttempts);
-                        } else {
-                            this.appCMSMain = appCMSMain;
+                        } else if (!appCMSMainUpdated.getVersion().equals(appCMSMain.getVersion())) {
+                            Log.d(TAG, "Reloading page data");
+                            this.appCMSMain = appCMSMainUpdated;
                             try {
                                 refreshAppCMSAndroid((appCMSAndroid) -> {
                                     if (appCMSAndroid != null) {
@@ -8593,25 +8596,14 @@ public class AppCMSPresenter {
                                                             metaPage.getPageUI()),
                                                             appCMSPageUI -> {
                                                                 if (appCMSPageUI != null) {
-                                                                    boolean updatePage = false;
-                                                                    if (navigationPages.containsKey(metaPage.getPageId())) {
-                                                                        String oldVersion = navigationPages.get(metaPage.getPageId()).getVersion();
-                                                                        String newVersion = appCMSPageUI.getVersion();
-                                                                        if (!TextUtils.isEmpty(oldVersion)) {
-                                                                            updatePage = !oldVersion.equals(newVersion);
-                                                                        }
-                                                                    }
+                                                                    navigationPages.put(metaPage.getPageId(), appCMSPageUI);
 
-                                                                    if (updatePage &&
-                                                                            pageViewLruCache != null) {
-                                                                        navigationPages.put(metaPage.getPageId(), appCMSPageUI);
-                                                                        pageViewLruCache.evictAll();
-                                                                        getPageAPILruCache().evictAll();
+                                                                    Log.d(TAG, "Clearing page cache");
+                                                                    pageViewLruCache.evictAll();
 
-                                                                        String action = pageNameToActionMap.get(metaPage.getPageName());
-                                                                        if (action != null && actionToPageMap.containsKey(action)) {
-                                                                            actionToPageMap.put(action, appCMSPageUI);
-                                                                        }
+                                                                    String action = pageNameToActionMap.get(metaPage.getPageName());
+                                                                    if (action != null && actionToPageMap.containsKey(action)) {
+                                                                        actionToPageMap.put(action, appCMSPageUI);
                                                                     }
                                                                 }
 
@@ -8627,19 +8619,23 @@ public class AppCMSPresenter {
                                         }
 
                                         try {
-                                            getAppCMSModules(appCMSAndroid, (appCMSAndroidModules) -> {
+                                            getAppCMSModules(appCMSAndroid, true, (appCMSAndroidModules) -> {
                                                 if (appCMSAndroidModules != null) {
                                                     //Log.d(TAG, "Received and refreshed module list");
                                                     this.appCMSAndroidModules = appCMSAndroidModules;
                                                     if (appCMSAndroidModules.isLoadedFromNetwork() &&
                                                             pageViewLruCache != null) {
+                                                        Log.d(TAG, "Clearing page cache");
                                                         pageViewLruCache.evictAll();
-                                                        getPageAPILruCache().evictAll();
                                                     }
 
-                                                    if (onReadyAction != null) {
-                                                        onReadyAction.call();
-                                                    }
+                                                    Log.d(TAG, "Refreshing API Data");
+                                                    refreshAPIData(() -> {
+                                                                if (onReadyAction != null) {
+                                                                    onReadyAction.call();
+                                                                }
+                                                            },
+                                                            true);
                                                 }
                                             });
                                         } catch (Exception e) {
@@ -8653,7 +8649,7 @@ public class AppCMSPresenter {
                             }
                         }
                     } else {
-                        //Log.w(TAG, "Resulting main.json from refresh is null");
+                        Log.w(TAG, "Resulting main.json from refresh is null");
                     }
                 });
             } catch (Exception e) {
@@ -8680,14 +8676,14 @@ public class AppCMSPresenter {
                                         .forceReloadFromNetwork(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
-                                    //Log.d(TAG, "Refreshed main.json");
+                                    Log.d(TAG, "Refreshed main.json");
                                     if (readyAction != null) {
-                                        //Log.d(TAG, "Notifying listeners that main.json has been updated");
+                                        Log.d(TAG, "Notifying listeners that main.json has been updated");
                                         Observable.just(main).subscribe(readyAction);
                                     }
                                 }).execute(params);
                             } catch (Exception e) {
-                                //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
+                                Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
                                 Observable.just((AppCMSMain) null).subscribe(readyAction);
                             }
                         });
@@ -8699,14 +8695,14 @@ public class AppCMSPresenter {
                             .forceReloadFromNetwork(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
-                        //Log.d(TAG, "Refreshed main.json");
+                        Log.d(TAG, "Refreshed main.json");
                         if (readyAction != null) {
-                            //Log.d(TAG, "Notifying listeners that main.json has been updated");
+                            Log.d(TAG, "Notifying listeners that main.json has been updated");
                             Observable.just(main).subscribe(readyAction);
                         }
                     }).execute(params);
                 } catch (Exception e) {
-                    //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
+                    Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
                     Observable.just((AppCMSMain) null).subscribe(readyAction);
                 }
             }
@@ -8719,7 +8715,7 @@ public class AppCMSPresenter {
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
                             .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                     appCMSMain.getAndroid()))
-                            .loadFromFile(appCMSMain.shouldLoadFromFile())
+                            .loadFromFile(false)
                             .build();
             try {
                 new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
@@ -8789,7 +8785,7 @@ public class AppCMSPresenter {
                                 //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                                 launchUpgradeAppActivity();
                             } else {
-                                getAppCMSModules(appCMSAndroidUI, (appCMSAndroidModules) -> {
+                                getAppCMSModules(appCMSAndroidUI, false, (appCMSAndroidModules) -> {
                                     launchBlankPage();
 
                                     //Log.d(TAG, "Received module list");
@@ -8865,10 +8861,13 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getAppCMSModules(AppCMSAndroidUI appCMSAndroidUI, Action1<AppCMSAndroidModules> readyAction) {
+    private void getAppCMSModules(AppCMSAndroidUI appCMSAndroidUI,
+                                  boolean forceLoadFromNetwork,
+                                  Action1<AppCMSAndroidModules> readyAction) {
         if (currentActivity != null) {
             appCMSAndroidModuleCall.call(appCMSAndroidUI.getBlocksBundleUrl(),
                     appCMSAndroidUI.getVersion(),
+                    forceLoadFromNetwork,
                     readyAction);
         }
     }
