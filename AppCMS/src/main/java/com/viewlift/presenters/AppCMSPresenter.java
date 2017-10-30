@@ -506,7 +506,7 @@ public class AppCMSPresenter {
 
     private AppCMSAndroidModules appCMSAndroidModules;
 
-    private Toast watchlistToast;
+    private Toast customToast;
 
     private boolean pageLoading;
 
@@ -2547,7 +2547,7 @@ public class AppCMSPresenter {
             }
             navigateToDownloadPage(getDownloadPageId(),
                     null, null, false);
-            Toast.makeText(currentContext, R.string.no_network_connectivity_message, Toast.LENGTH_LONG).show();
+            displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
             return;
         }
 
@@ -2576,9 +2576,9 @@ public class AppCMSPresenter {
                         try {
                             Observable.just(addToWatchlistResult).subscribe(resultAction1);
                             if (add) {
-                                displayWatchlistToast("Added to Watchlist");
+                                displayCustomToast("Added to Watchlist");
                             } else {
-                                displayWatchlistToast("Removed from Watchlist");
+                                displayCustomToast("Removed from Watchlist");
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
@@ -2589,24 +2589,24 @@ public class AppCMSPresenter {
         }
     }
 
-    private void displayWatchlistToast(String toastMessage) {
+    private void displayCustomToast(String toastMessage) {
         LayoutInflater inflater = currentActivity.getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast_layout,
                 (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
 
-        TextView watchlistToastMessage = (TextView) layout.findViewById(R.id.custom_toast_message);
-        watchlistToastMessage.setText(toastMessage);
+        TextView customToastMessage = (TextView) layout.findViewById(R.id.custom_toast_message);
+        customToastMessage.setText(toastMessage);
 
-        watchlistToast = new Toast(currentActivity.getApplicationContext());
-        watchlistToast.setDuration(Toast.LENGTH_SHORT);
-        watchlistToast.setView(layout);
-        watchlistToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
-        watchlistToast.show();
+        customToast = new Toast(currentActivity.getApplicationContext());
+        customToast.setDuration(Toast.LENGTH_SHORT);
+        customToast.setView(layout);
+        customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
+        customToast.show();
     }
 
-    public void cancelWatchlistToast() {
-        if (watchlistToast != null) {
-            watchlistToast.cancel();
+    public void cancelCustomToast() {
+        if (customToast != null) {
+            customToast.cancel();
         }
     }
 
@@ -5490,20 +5490,24 @@ public class AppCMSPresenter {
                 updateAllOfflineWatchTime();
             }
 
+            SharedPreferences sharedPrefs =
+                    currentContext.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
+
             String downloadPageId = getDownloadPageId();
             boolean onDownloadPage = false;
             if (!TextUtils.isEmpty(downloadPageId)) {
                 onDownloadPage = downloadPageId.equals(pageId);
             }
-            if (!networkConnected &&
-                    (downloadInProgress || !onDownloadPage) && launched) {
+            if (!networkConnected && (downloadInProgress || !onDownloadPage)) {
                 navigateToDownloadPage(getDownloadPageId(),
                         null, null, false);
-                Toast.makeText(currentContext, R.string.no_network_connectivity_message, Toast.LENGTH_LONG).show();
+                displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
             }
 
-            SharedPreferences sharedPrefs =
-                    currentContext.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
+            if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
+                navigateToHomePage();
+            }
+
             return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();
         }
         return false;
@@ -6670,7 +6674,7 @@ public class AppCMSPresenter {
 
             navigateToDownloadPage(getDownloadPageId(),
                     null, null, launchActivity);
-            Toast.makeText(currentContext, R.string.no_network_connectivity_message, Toast.LENGTH_LONG).show();
+            displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
         } catch (Exception e) {
             launchBlankPage();// Fix for SVFA-1435 after killing app
             sendStopLoadingPageAction(false, null);
@@ -8937,6 +8941,7 @@ public class AppCMSPresenter {
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
                         .url(url)
                         .timeStamp(timeStamp)
+                        .loadFromFile(loadFromFile)
                         .build();
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
     }

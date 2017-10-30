@@ -714,7 +714,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         isActive = false;
 
         appCMSPresenter.closeSoftKeyboard();
-        appCMSPresenter.cancelWatchlistToast();
+        appCMSPresenter.cancelCustomToast();
     }
 
     @Override
