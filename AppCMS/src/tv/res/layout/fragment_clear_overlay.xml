@@ -10,6 +10,7 @@
     android:focusableInTouchMode="true">
 
     <TextView
+        android:focusable="false"
         android:id="@+id/text_overlay_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -685,7 +685,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.pausePlayer();
         }
         getActivity().unregisterReceiver(networkReciever);
-        cancelTimer();
         super.onPause();
     }
 
@@ -819,8 +818,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }
         adsLoader = null;
 
+        cancelTimer();
         super.onDestroyView();
-
     }
 
     private void requestAds(String adTagUrl) {

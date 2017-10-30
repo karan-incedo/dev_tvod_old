@@ -95,15 +95,16 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         }
                         if (TextUtils.isEmpty(videoUrl)) {
                             if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
-                                if (videoAssets.getMpeg().get(0) != null) {
-                                    videoUrl = videoAssets.getMpeg().get(0).getUrl();
-                                }
+
                                 for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
                                     if (videoAssets.getMpeg().get(i) != null &&
                                             videoAssets.getMpeg().get(i).getRenditionValue() != null &&
                                             videoAssets.getMpeg().get(i).getRenditionValue().contains(defaultVideoResolution)) {
                                         videoUrl = videoAssets.getMpeg().get(i).getUrl();
                                     }
+                                }
+                                if (videoAssets.getMpeg().get(0) != null && TextUtils.isEmpty(videoUrl)) {
+                                    videoUrl = videoAssets.getMpeg().get(0).getUrl();
                                 }
                             }
                         }
