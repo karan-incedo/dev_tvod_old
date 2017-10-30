@@ -228,7 +228,8 @@ public class CollectionGridItemView extends BaseView {
             if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -256,37 +257,43 @@ public class CollectionGridItemView extends BaseView {
                     if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
-                            !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
+                            !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
+                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getPosterImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
-                                .centerCrop()
-                                .into((ImageView) view);
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(childViewWidth, childViewHeight)
+                                    .centerCrop()
+                                    .into((ImageView) view);
                         } catch (Exception e) {
                         }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
-                                .centerCrop()
-                                .into((ImageView) view);
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(childViewWidth, childViewHeight)
+                                    .centerCrop()
+                                    .into((ImageView) view);
                         } catch (Exception e) {
                         }
-                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
@@ -362,7 +369,16 @@ public class CollectionGridItemView extends BaseView {
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             data.getGist().getImageGist().get_3x4() != null &&
-                            data.getGist().getBadgeImages().get_3x4() != null) {
+                            data.getGist().getBadgeImages().get_3x4() != null &&
+                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getBadgeImages().get_3x4(),
+                                childViewWidth,
+                                childViewHeight);
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .override(childViewWidth, childViewHeight)
+                                .into((ImageView) view);
                     }
                     bringToFront = false;
                 }
@@ -383,7 +399,7 @@ public class CollectionGridItemView extends BaseView {
 
                 view.setOnClickListener(v ->
                         onClickHandler.click(CollectionGridItemView.this,
-                        childComponent, data));
+                                childComponent, data));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
@@ -398,7 +414,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo=getDateFormat(data.getGist().getPublishDate(),"MMM dd");
+                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
                         ((TextView) view).setText(data.getGist().getTitle());
@@ -569,7 +585,7 @@ public class CollectionGridItemView extends BaseView {
         }
     }
 
-    private String getDateFormat(long timeMilliSeconds,String dateFormat) {
+    private String getDateFormat(long timeMilliSeconds, String dateFormat) {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 
         // Create a calendar object that will convert the date and time value in milliseconds to date.
