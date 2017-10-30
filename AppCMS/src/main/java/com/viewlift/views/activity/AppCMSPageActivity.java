@@ -2009,7 +2009,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                + getSupportFragmentManager().getBackStackEntryCount());
         if (!appCMSBinderStack.isEmpty()) {
             try {
-                getSupportFragmentManager().popBackStackImmediate();
+                int lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                String lastBackStackEntryName = getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount)
+                        .getName();
+                String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
+                        lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
+                        lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
+                        lastBackStackEntryName.length());
+                while (lastBackStackCount > 0 &&
+                        getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
+                    getSupportFragmentManager().popBackStackImmediate();
+                    lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                }
             } catch (IllegalStateException e) {
                 //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
