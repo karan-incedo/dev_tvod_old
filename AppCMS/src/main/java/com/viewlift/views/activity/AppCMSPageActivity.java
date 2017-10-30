@@ -1093,9 +1093,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             shouldSendCloseOthersAction = false;
         }
 
-        if (!castDisabled) {
-            setCastingInstance();
-        }
+        setCastingInstance();
+
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -1998,14 +1997,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void setCastingInstance() {
-        if (!castDisabled) {
-            try {
-                CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-                CastServiceProvider.getInstance(this).onActivityResume();
-            } catch (Exception e) {
-                //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
-            }
+        try {
+            CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+            CastServiceProvider.getInstance(this).onActivityResume();
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }
+
     }
 
     private void handleCloseAction(boolean closeOnePage) {
