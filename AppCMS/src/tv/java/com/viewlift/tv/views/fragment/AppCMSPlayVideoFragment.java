@@ -690,12 +690,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        videoPlayerView.stopPlayer();
-    }
-
-    @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
         if(videoPlayerView.getPlayer() != null){
