@@ -419,7 +419,7 @@
     <string name="signed_signature_key">signed_signature</string>
     <string name="signed_keypairid_key">signed_keypairid</string>
     <string name="refreshing_data_text">Refreshing Data</string>
-    <string name="no_network_connectivity_message">No Network Connection</string>
+    <string name="no_network_connectivity_message">No Internet Connection</string>
     <string name="app_cms_retry_text">RETRY</string>
     <string name="app_cms_close_text">CLOSE</string>
     <string name="close_one_page_key">close_one_page</string>
