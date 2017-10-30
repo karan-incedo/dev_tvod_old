@@ -4807,7 +4807,6 @@ public class AppCMSPresenter {
                             @Override
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
-                                appCMSPageAPIAction.launchActivity = true ;
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
                                     pushActionInternalEvents(appCMSPageAPIAction.pageId
