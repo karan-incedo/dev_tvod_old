@@ -1749,6 +1749,7 @@ public class AppCMSPresenter {
                     (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
             return addOnFragment != null && addOnFragment.getVisibility() == View.VISIBLE;
         }
+        return false;
     }
 
     public void showAddOnFragment(boolean showMainFragment, float mainFragmentTransparency) {
