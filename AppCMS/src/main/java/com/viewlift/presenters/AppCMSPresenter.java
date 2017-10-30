@@ -8568,7 +8568,7 @@ public class AppCMSPresenter {
                              int maxRetryAttempts) {
         //Log.d(TAG, "Refreshing pages");
         if (currentActivity != null) {
-            //Log.d(TAG, "Refreshing main.json");
+            Log.d(TAG, "Refreshing main.json version: " + appCMSMain.getVersion());
 
             try {
                 refreshAppCMSMain((appCMSMainUpdated) -> {
@@ -8688,7 +8688,7 @@ public class AppCMSPresenter {
                                         .forceReloadFromNetwork(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
-                                    Log.d(TAG, "Refreshed main.json");
+                                    Log.d(TAG, "Refreshed main.json with update version: " + main.getVersion());
                                     if (readyAction != null) {
                                         Log.d(TAG, "Notifying listeners that main.json has been updated");
                                         Observable.just(main).subscribe(readyAction);

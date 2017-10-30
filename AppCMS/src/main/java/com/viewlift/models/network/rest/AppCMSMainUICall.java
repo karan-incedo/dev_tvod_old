@@ -121,7 +121,7 @@ public class AppCMSMainUICall {
             }
 
             if (main != null && mainInStorage != null) {
-                main.setLoadFromFile(true);
+                main.setLoadFromFile(main.getVersion().equals(mainInStorage.getVersion()));
             }
 
             if (main != null) {
