@@ -1744,21 +1744,25 @@ public class AppCMSPresenter {
     }
 
     public boolean isAddOnFragmentVisible() {
-        FrameLayout addOnFragment =
-                (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
-        return addOnFragment != null && addOnFragment.getVisibility() == View.VISIBLE;
+        if (currentActivity != null) {
+            FrameLayout addOnFragment =
+                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+            return addOnFragment != null && addOnFragment.getVisibility() == View.VISIBLE;
+        }
     }
 
     public void showAddOnFragment(boolean showMainFragment, float mainFragmentTransparency) {
-        showMainFragmentView(showMainFragment);
-        setMainFragmentTransparency(mainFragmentTransparency);
-        FrameLayout addOnFragment =
-                (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
-        if (addOnFragment != null) {
-            addOnFragment.setVisibility(View.VISIBLE);
-            addOnFragment.bringToFront();
+        if (currentActivity != null) {
+            showMainFragmentView(showMainFragment);
+            setMainFragmentTransparency(mainFragmentTransparency);
+            FrameLayout addOnFragment =
+                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+            if (addOnFragment != null) {
+                addOnFragment.setVisibility(View.VISIBLE);
+                addOnFragment.bringToFront();
+            }
+            setMainFragmentEnabled(false);
         }
-        setMainFragmentEnabled(false);
     }
 
     private boolean isAdditionalFragmentViewAvailable() {

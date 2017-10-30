@@ -78,11 +78,15 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     protected void onNewIntent(Intent intent) {
-        Fragment FragmentPlayer = getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container);
-        if (FragmentPlayer != null) {
-            getSupportFragmentManager()
-                    .beginTransaction().
-                    remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commitAllowingStateLoss();
+        try {
+            Fragment fragmentPlayer = getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container);
+            if (fragmentPlayer != null) {
+                getSupportFragmentManager()
+                        .beginTransaction().
+                        remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commitAllowingStateLoss();
+            }
+        } catch (Exception e) {
+
         }
         getBundleData();
         super.onNewIntent(intent);
@@ -115,8 +119,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     handler.postDelayed(new Runnable(){
                         @Override
                         public void run(){
-                            launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                            try {
+                                launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                            } catch (Exception e) {
 
+                            }
                         }
                     }, 500);
                 } else {

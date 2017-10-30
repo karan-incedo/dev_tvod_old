@@ -529,10 +529,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                     if (beaconMessageThread != null) {
                         beaconMessageThread.sendBeaconPing = true;
                         if (!beaconMessageThread.isAlive()) {
-                            beaconMessageThread.start();
-                            mTotalVideoDuration = videoPlayerView.getDuration() / 1000;
-                            mTotalVideoDuration -= mTotalVideoDuration % 4;
-                            mProgressHandler.post(mProgressRunnable);
+                            try {
+                                beaconMessageThread.start();
+                                mTotalVideoDuration = videoPlayerView.getDuration() / 1000;
+                                mTotalVideoDuration -= mTotalVideoDuration % 4;
+                                mProgressHandler.post(mProgressRunnable);
+                            } catch (Exception e) {
+
+                            }
                         }
                         if (!sentBeaconFirstFrame) {
                             mStopBufferMilliSec = new Date().getTime();
