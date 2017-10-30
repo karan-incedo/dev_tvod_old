@@ -6164,7 +6164,14 @@ public class AppCMSPresenter {
                         //Log.d(TAG, "OldVersion: " + oldVersion);
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
-                        getAppCMSSite(platformType);
+                        if (!loadFromFile) {
+                            refreshAPIData(() -> {
+                                        getAppCMSSite(platformType);
+                                    },
+                                    false);
+                        } else {
+                            getAppCMSSite(platformType);
+                        }
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());

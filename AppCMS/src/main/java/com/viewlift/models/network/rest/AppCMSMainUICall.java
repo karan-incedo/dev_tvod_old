@@ -121,6 +121,7 @@ public class AppCMSMainUICall {
             }
 
             if (main != null && mainInStorage != null) {
+                Log.d(TAG, "Read main.json in storage version: " + mainInStorage.getVersion());
                 main.setLoadFromFile(main.getVersion().equals(mainInStorage.getVersion()));
             }
 
