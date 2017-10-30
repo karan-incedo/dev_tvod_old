@@ -568,8 +568,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        newVersionAvailableTextView.setVisibility(View.GONE);
-
         newVersionAvailableTextView.setOnClickListener((v) -> {
             Intent googlePlayStoreUpgradeAppIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse(getString(R.string.google_play_store_upgrade_app_url,
@@ -664,11 +662,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             } else if (appCMSPresenter.isAppUpgradeAvailable()) {
-                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                newVersionAvailableTextView.setText("");
                 newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
                         getString(R.string.app_cms_app_version),
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionUpgradeAvailable.requestLayout();
             } else {
                 newVersionUpgradeAvailable.setVisibility(View.GONE);
@@ -1509,10 +1508,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             } else if (appCMSPresenter.isAppUpgradeAvailable()) {
-                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+                newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                newVersionAvailableTextView.setText("");
                 newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
                         getString(R.string.app_cms_app_version),
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionUpgradeAvailable.requestLayout();
             }
 

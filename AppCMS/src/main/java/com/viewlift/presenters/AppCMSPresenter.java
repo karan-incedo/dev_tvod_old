@@ -1087,7 +1087,9 @@ public class AppCMSPresenter {
         } else if (!cancelAllLoads) {
             //Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
 
-            refreshPages(null, false, 0, 0);
+            if (launched) {
+                refreshPages(null, false, 0, 0);
+            }
 
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
@@ -4762,7 +4764,10 @@ public class AppCMSPresenter {
                                   final Uri searchQuery) {
         boolean result = false;
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
-            refreshPages(null, false, 0, 0);
+
+            if (launched) {
+                refreshPages(null, false, 0, 0);
+            }
 
             loadingPage = true;
             //Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
@@ -8562,7 +8567,7 @@ public class AppCMSPresenter {
                              int retryAttempts,
                              int maxRetryAttempts) {
         //Log.d(TAG, "Refreshing pages");
-        if (currentActivity != null && launched) {
+        if (currentActivity != null) {
             //Log.d(TAG, "Refreshing main.json");
 
             try {
@@ -8630,13 +8635,13 @@ public class AppCMSPresenter {
                                                     }
 
                                                     Log.d(TAG, "Refreshing API Data");
-                                                    refreshAPIData(() -> {
-                                                                if (onReadyAction != null) {
-                                                                    onReadyAction.call();
-                                                                }
-                                                            },
-                                                            true);
                                                 }
+                                                refreshAPIData(() -> {
+                                                            if (onReadyAction != null) {
+                                                                onReadyAction.call();
+                                                            }
+                                                        },
+                                                        true);
                                             });
                                         } catch (Exception e) {
                                             //Log.e(TAG, "Failed to refresh AppCMS modules: " +
@@ -8647,9 +8652,16 @@ public class AppCMSPresenter {
                             } catch (Exception e) {
                                 //Log.e(TAG, "Failed to refresh android.json: " + e.getMessage());
                             }
+                        } else {
+                            if (onReadyAction != null) {
+                                onReadyAction.call();
+                            }
                         }
                     } else {
                         Log.w(TAG, "Resulting main.json from refresh is null");
+                        if (onReadyAction != null) {
+                            onReadyAction.call();
+                        }
                     }
                 });
             } catch (Exception e) {
