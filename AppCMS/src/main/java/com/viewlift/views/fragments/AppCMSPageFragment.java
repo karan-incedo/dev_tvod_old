@@ -274,6 +274,11 @@ public class AppCMSPageFragment extends Fragment {
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
+            boolean updatePage = false;
+            if (pageView != null) {
+                updatePage = pageView.getParent() != null;
+            }
+
             pageView = null;
 
             pageView = viewCreator.generatePage(getContext(),
@@ -290,7 +295,9 @@ public class AppCMSPageFragment extends Fragment {
                     pageView.getParent() == null) {
                 removeAllViews(pageViewGroup);
                 pageViewGroup.addView(pageView);
-                updateAllViews(pageViewGroup);
+                if (updatePage) {
+                    updateAllViews(pageViewGroup);
+                }
             }
         }
     }

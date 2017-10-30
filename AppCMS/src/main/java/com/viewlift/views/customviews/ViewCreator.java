@@ -1501,20 +1501,27 @@ public class ViewCreator {
                         }
 
                         if (parentViewType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                            AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
-                                    new AppCMSTraySeasonItemAdapter(context,
-                                            moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
-                                            component.getComponents(),
-                                            appCMSPresenter,
-                                            jsonValueKeyMap,
-                                            viewType);
-                            ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTraySeasonItemAdapter);
-                            if (pageView != null) {
-                                pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                        .adapter(appCMSTraySeasonItemAdapter)
-                                        .listview((RecyclerView) componentViewResult.componentView)
-                                        .id(moduleAPI.getId() + component.getKey())
-                                        .build());
+                            if (moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getSeason() != null &&
+                                    !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
+                                    moduleAPI.getContentData().get(0).getSeason().get(0) != null) {
+                                AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
+                                        new AppCMSTraySeasonItemAdapter(context,
+                                                moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
+                                                component.getComponents(),
+                                                appCMSPresenter,
+                                                jsonValueKeyMap,
+                                                viewType);
+                                ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTraySeasonItemAdapter);
+                                if (pageView != null) {
+                                    pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                            .adapter(appCMSTraySeasonItemAdapter)
+                                            .listview((RecyclerView) componentViewResult.componentView)
+                                            .id(moduleAPI.getId() + component.getKey())
+                                            .build());
+                                }
                             }
                         } else {
                             appCMSViewAdapter = new AppCMSViewAdapter(context,
@@ -1611,9 +1618,10 @@ public class ViewCreator {
                 break;
 
             case PAGE_BUTTON_KEY:
-                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY &&
-                        componentKey != AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY &&
-                        componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
+                if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
+                    componentViewResult.componentView = new ResponsiveButton(context);
+                } else if (componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {

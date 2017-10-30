@@ -107,9 +107,10 @@ public class AppCMSMainUICall {
             }
 
             try {
+                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
                 main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
             } catch (Exception e) {
-                //Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
+                Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
             }
 
             String filename = getResourceFilename(appCMSMainUrl);
@@ -119,21 +120,12 @@ public class AppCMSMainUICall {
                 Log.w(TAG, "Previous version of main.json file is not in storage");
             }
 
-            boolean useExistingOldVersion = true;
-
-            if (mainInStorage != null && mainInStorage.getVersion() != null) {
-                if (main != null && main.getVersion() != null) {
-                    useExistingOldVersion = main.getVersion().equals(mainInStorage.getVersion());
-                    main.setLoadFromFile(useExistingOldVersion);
-                    main.setOldVersion(main.getVersion());
-                } else if (main == null) {
-                    main = mainInStorage;
-                    main.setOldVersion(mainInStorage.getOldVersion());
-                }
+            if (main != null && mainInStorage != null) {
+                main.setLoadFromFile(true);
             }
 
-            if (main != null && useExistingOldVersion) {
-                main.setOldVersion(main.getVersion());
+            if (main != null) {
+                Log.d(TAG, "Read main.json version: " + main.getVersion());
             }
 
             main = writeMainToFile(filename, main);
