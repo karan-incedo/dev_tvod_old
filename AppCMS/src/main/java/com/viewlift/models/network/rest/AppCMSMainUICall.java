@@ -107,7 +107,7 @@ public class AppCMSMainUICall {
             }
 
             try {
-                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
+//                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
                 main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
             } catch (Exception e) {
                 Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
