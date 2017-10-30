@@ -771,7 +771,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 appCMSSite.getGist().getSiteInternalName(),
                                 appCMSBinder.getPagePath());
 
-                        appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
+                        //appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 appCMSPageAPI -> {
