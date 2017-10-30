@@ -56,7 +56,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     @BindView(R.id.app_cms_search_results)
     RecyclerView appCMSSearchResultsView;
 
-    @BindView(R.id.app_cms_page_loading_progressbar)
+    @BindView(R.id.search_page_loading_progressbar)
     ProgressBar progressBar;
 
     @BindView(R.id.app_cms_searchbar)
@@ -179,13 +179,6 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putString("demo", searchQuery);
-
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(handoffReceiver);
@@ -223,8 +216,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
         if (Intent.ACTION_VIEW.equals(intent.getAction()) ||
                 Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String searchTerm = null;
-            String queryTerm = null;
+            String searchTerm;
+            String queryTerm;
 
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                 String[] searchHintResult = intent.getDataString().split(",");
@@ -233,7 +226,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             } else {
                 queryTerm = intent.getStringExtra(SearchManager.QUERY);
                 searchTerm = queryTerm;
-                if (!TextUtils.isEmpty(searchTerm) && appCMSSearchUrlData!=null ) {
+                if (!TextUtils.isEmpty(searchTerm) && appCMSSearchUrlData != null) {
                     appCMSSearchView.setQuery(queryTerm, false);
                     //Send Search Term in Firebase Analytics Logs
                     Bundle bundle = new Bundle();

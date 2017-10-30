@@ -25,6 +25,7 @@ public class GetAppCMSPageUIAsyncTask {
     public static class Params {
         String url;
         long timeStamp;
+        boolean loadFromFile;
         public static class Builder {
             private Params params;
             public Builder() {
@@ -36,6 +37,10 @@ public class GetAppCMSPageUIAsyncTask {
             }
             public Builder timeStamp(long timeStamp) {
                 params.timeStamp = timeStamp;
+                return this;
+            }
+            public Builder loadFromFile(boolean loadFromFile) {
+                params.loadFromFile = loadFromFile;
                 return this;
             }
             public Params build() {
@@ -54,7 +59,7 @@ public class GetAppCMSPageUIAsyncTask {
             Observable
                     .fromCallable(() -> {
                         try {
-                            return call.call(params.url, params.timeStamp);
+                            return call.call(params.url, params.timeStamp, params.loadFromFile);
                         } catch (IOException e) {
                             //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
                         }
