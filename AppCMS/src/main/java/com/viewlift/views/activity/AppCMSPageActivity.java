@@ -848,8 +848,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             appCMSPresenter.sendCloseOthersAction(null, true, false);
                         }
                     });
-                } else {
-                    appCMSPresenter.sendCloseOthersAction(null, true, false);
                 }
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
