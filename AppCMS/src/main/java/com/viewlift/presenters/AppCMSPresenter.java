@@ -5191,7 +5191,7 @@ public class AppCMSPresenter {
     private String getSubscriptionStatus() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(SUBSCRIPTION_STATUS, 0);
-            return sharedPrefs.getString(SUBSCRIPTION_STATUS, null)
+            return sharedPrefs.getString(SUBSCRIPTION_STATUS, null);
         }
         return null;
     }
