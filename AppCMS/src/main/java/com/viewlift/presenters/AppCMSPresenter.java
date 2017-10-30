@@ -6164,6 +6164,16 @@ public class AppCMSPresenter {
                         //Log.d(TAG, "OldVersion: " + oldVersion);
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
+                        apikey = currentActivity.getString(R.string.x_api_key);
+                        AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
+                                .appCMSAPIModule(new AppCMSAPIModule(currentActivity,
+                                        appCMSMain.getApiBaseUrl(),
+                                        apikey))
+                                .build();
+                        appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
+                        appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
+                        appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
+
                         if (!loadFromFile) {
                             refreshAPIData(() -> {
                                         getAppCMSSite(platformType);
@@ -8530,21 +8540,14 @@ public class AppCMSPresenter {
                         try {
                             if (appCMSSite != null) {
                                 this.appCMSSite = appCMSSite;
-                                apikey = currentActivity.getString(R.string.x_api_key);
-                                AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
-                                        .appCMSAPIModule(new AppCMSAPIModule(currentActivity,
-                                                appCMSMain.getApiBaseUrl(),
-                                                apikey))
-                                        .build();
+
                                 appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
                                         .appCMSSearchUrlModule(new AppCMSSearchUrlModule(appCMSMain.getApiBaseUrl(),
                                                 appCMSSite.getGist().getSiteInternalName(),
                                                 apikey,
                                                 appCMSSearchCall))
                                         .build();
-                                appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
-                                appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
-                                appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
+
                                 clearMaps();
                                 switch (platformType) {
                                     case ANDROID:
