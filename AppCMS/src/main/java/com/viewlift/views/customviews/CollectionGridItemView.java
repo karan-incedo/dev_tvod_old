@@ -257,8 +257,8 @@ public class CollectionGridItemView extends BaseView {
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
-                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
+                            (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                                    componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getPosterImageUrl(),
                                 childViewWidth,
@@ -276,8 +276,8 @@ public class CollectionGridItemView extends BaseView {
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
                             !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
-                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
-                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
+                            (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                                    componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
                                 childViewWidth,
@@ -293,7 +293,6 @@ public class CollectionGridItemView extends BaseView {
 
                         }
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
-                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
