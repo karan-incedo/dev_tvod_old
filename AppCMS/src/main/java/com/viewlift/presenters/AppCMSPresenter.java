@@ -8580,11 +8580,14 @@ public class AppCMSPresenter {
                              int maxRetryAttempts) {
         //Log.d(TAG, "Refreshing pages");
         if (currentActivity != null) {
-            Log.d(TAG, "Refreshing main.json version: " + appCMSMain.getVersion());
+
+            if (appCMSMain != null) {
+                Log.d(TAG, "Refreshing main.json version: " + appCMSMain.getVersion());
+            }
 
             try {
                 refreshAppCMSMain((appCMSMainUpdated) -> {
-                    if (appCMSMainUpdated != null) {
+                    if (appCMSMainUpdated != null && appCMSMain != null) {
                         //Log.d(TAG, "Refreshed main.json");
                         Log.d(TAG, "Current main.json version: " + appCMSMain.getVersion());
                         Log.d(TAG, "Received main.json version: " + appCMSMainUpdated.getVersion());
