@@ -47,6 +47,7 @@ import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
@@ -147,6 +148,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+    private boolean showEntitlementDialog=false;
 
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
@@ -175,7 +177,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
-
+    private UserIdentity userIdentityObj;
+    int maxPreviewSecs=0;
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -198,7 +201,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private TimerTask refreshTokenTimerTask;
     private Timer entitlementCheckTimer;
     private TimerTask entitlementCheckTimerTask;
-    private boolean entitlementCheckCancelled;
+    private boolean entitlementCheckCancelled=false;
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String primaryCategory,
@@ -359,13 +362,15 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
             }
 
-            final int maxPreviewSecs = entitlementCheckMultiplier * 60;
+            maxPreviewSecs = entitlementCheckMultiplier * 60;
 
             entitlementCheckTimerTask = new TimerTask() {
                 @Override
                 public void run() {
                     if (isAdded()) {
                         appCMSPresenter.getUserData(userIdentity -> {
+
+                            userIdentityObj=userIdentity;
                             //Log.d(TAG, "Video player entitlement check triggered");
                             if (!entitlementCheckCancelled) {
                                 int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
@@ -566,8 +571,16 @@ public class AppCMSPlayVideoFragment extends Fragment
                     return;
                 }
 
-                if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
-                    // tell the activity that the movie is finished
+                //if user is not subscribe or ot login than on seek to end dont open autoplay screen# fix for SVFA-2403
+                if (appCMSPresenter.isAppSVOD() &&
+                        !isTrailer &&
+                        !freeContent &&
+                        !appCMSPresenter.isUserSubscribed()&& !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
+                    showEntitlementDialog=true;
+                }
+                if (onClosePlayerEvent != null && playerState.isPlayWhenReady() && !showEntitlementDialog) {
+
+                            // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
                 if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {
