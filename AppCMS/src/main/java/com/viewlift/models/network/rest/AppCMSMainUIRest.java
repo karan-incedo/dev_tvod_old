@@ -13,6 +13,6 @@ import retrofit2.http.Url;
 
 public interface AppCMSMainUIRest {
     @GET
-    @Headers("Cache-Control: max-age=0")
+    @Headers("Cache-Control: max-age=0, no-cache, no-store")
     Call<AppCMSMain> get(@Url String url);
 }
