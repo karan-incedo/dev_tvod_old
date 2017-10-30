@@ -1973,6 +1973,7 @@ public class ViewCreator {
                                 for (OnInternalEvent internalEvent : receivers) {
                                     internalEvent.receiveEvent(null);
                                 }
+                                removeAllButton.setVisibility(View.GONE);
                             }
 
                             @Override
