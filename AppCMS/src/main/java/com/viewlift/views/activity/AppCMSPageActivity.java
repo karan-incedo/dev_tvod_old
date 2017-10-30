@@ -677,7 +677,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void refreshPageData() {
-        pageLoading(true);
+        boolean cancelLoadingOnFinish = false;
+        if (!appCMSPresenter.isPageLoading()) {
+            pageLoading(true);
+            cancelLoadingOnFinish = true;
+        }
         if (appCMSBinderMap != null &&
                 appCMSBinderStack != null &&
                 !appCMSBinderStack.isEmpty()) {
@@ -686,16 +690,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
                 if (appCMSPageUI != null) {
                     appCMSBinder.setAppCMSPageUI(appCMSPageUI);
-                } else {
+                } else if (cancelLoadingOnFinish) {
                     pageLoading(false);
                 }
                 updateData(appCMSBinder, () -> {
                     appCMSPresenter.sendRefreshPageAction();
                 });
-            } else {
+            } else if (cancelLoadingOnFinish) {
                 pageLoading(false);
             }
-        } else {
+        } else if(cancelLoadingOnFinish) {
             pageLoading(false);
         }
     }
