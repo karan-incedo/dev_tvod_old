@@ -2547,7 +2547,6 @@ public class AppCMSPresenter {
             }
             navigateToDownloadPage(getDownloadPageId(),
                     null, null, false);
-            displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
             return;
         }
 
@@ -5482,6 +5481,12 @@ public class AppCMSPresenter {
         }
     }
 
+    public void showNoNetworkConnectivityToast() {
+        if (currentContext != null) {
+            displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
+        }
+    }
+
     @SuppressWarnings("UnusedReturnValue")
     public boolean setNetworkConnected(boolean networkConnected, String pageId) {
         if (currentContext != null) {
@@ -5501,7 +5506,6 @@ public class AppCMSPresenter {
             if (!networkConnected && (downloadInProgress || !onDownloadPage)) {
                 navigateToDownloadPage(getDownloadPageId(),
                         null, null, false);
-                displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
             }
 
             if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
@@ -6674,7 +6678,6 @@ public class AppCMSPresenter {
 
             navigateToDownloadPage(getDownloadPageId(),
                     null, null, launchActivity);
-            displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
         } catch (Exception e) {
             launchBlankPage();// Fix for SVFA-1435 after killing app
             sendStopLoadingPageAction(false, null);

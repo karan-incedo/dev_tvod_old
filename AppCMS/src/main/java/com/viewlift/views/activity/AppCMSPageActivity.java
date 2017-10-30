@@ -674,6 +674,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 refreshPageData();
             }
         }, true, 0, 3);
+
+        if (!appCMSPresenter.isNetworkConnected()) {
+            appCMSPresenter.showNoNetworkConnectivityToast();
+        }
     }
 
     private void refreshPageData() {
@@ -1970,6 +1974,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed());
             appCMSPresenter.refreshSubscriptionData(null, false);
         }
+
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
 
