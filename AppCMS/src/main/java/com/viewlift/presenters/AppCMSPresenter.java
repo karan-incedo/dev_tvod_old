@@ -5958,8 +5958,6 @@ public class AppCMSPresenter {
             setFacebookAccessToken(null, null, null, null, false, false);
             setGoogleAccessToken(null, null, null, null, false, false);
 
-            sendUpdateHistoryAction();
-
             signinAnonymousUser();
 
             if (googleApiClient != null && googleApiClient.isConnected()) {
@@ -5967,7 +5965,6 @@ public class AppCMSPresenter {
             }
 
             refreshAPIData(this::navigateToHomePage, true);
-            sendCloseOthersAction(null, true, false);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
         }
