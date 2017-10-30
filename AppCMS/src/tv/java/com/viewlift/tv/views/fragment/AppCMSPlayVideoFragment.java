@@ -555,7 +555,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
 
         if (!sentBeaconPlay) {
-             appCMSPresenter.sendBeaconMessage(filmId,
+            appCMSPresenter.sendBeaconMessage(filmId,
                     permaLink,
                     parentScreenName,
                     videoPlayerView.getCurrentPosition(),

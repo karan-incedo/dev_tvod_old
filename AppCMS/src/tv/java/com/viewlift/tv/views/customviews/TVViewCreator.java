@@ -1673,20 +1673,12 @@ public class TVViewCreator {
                                                     String permaLink = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                                     String title = moduleAPI.getContentData().get(0).getGist().getTitle();
 
-                                                 if (!appCMSPresenter.launchTVVideoPlayer(
+                                                appCMSPresenter.launchTVVideoPlayer(
                                                          moduleAPI.getContentData().get(0),
                                                          -1,
                                                          moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds(),
-                                                         moduleAPI.getContentData().get(0).getGist().getWatchedTime())) {
-                                                        appCMSPresenter.showLoadingDialog(false);
-                                                        //Log.e(TAG, "Could not launch play action: " +
-//                                                                " filmId: " +
-//                                                                filmId +
-//                                                                " permaLink: " +
-//                                                                permaLink +
-//                                                                " title: " +
-//                                                                title);
-                                                    }
+                                                         moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+
                                                     break;
                                                 }
                                             }
