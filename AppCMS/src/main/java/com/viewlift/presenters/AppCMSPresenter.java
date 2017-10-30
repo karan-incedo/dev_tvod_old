@@ -7961,7 +7961,7 @@ public class AppCMSPresenter {
                             }
                         }, false);
                     }
-                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+//                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                 }, true);
             } else {
                 refreshAPIData(() -> {
