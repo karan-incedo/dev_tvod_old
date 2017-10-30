@@ -325,6 +325,7 @@ public class AppCMSPresenter {
     private static final String GOOGLE_PLAY_APP_STORE_VERSION_PREF_NAME = "google_play_app_store_version_pref_name";
     private static final String APPS_FLYER_KEY_PREF_NAME = "apps_flyer_pref_name_key";
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
+    private static final String SUBSCRIPTION_STATUS = "subscription_status_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -5179,6 +5180,22 @@ public class AppCMSPresenter {
         }
     }
 
+    private boolean setSubscriptionStatus(String subscriptionStatus) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(SUBSCRIPTION_STATUS, 0);
+            return sharedPrefs.edit().putString(SUBSCRIPTION_STATUS, subscriptionStatus).commit();
+        }
+        return false;
+    }
+
+    private String getSubscriptionStatus() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(SUBSCRIPTION_STATUS, 0);
+            return sharedPrefs.getString(SUBSCRIPTION_STATUS, null)
+        }
+        return null;
+    }
+
     public boolean setCastOverLay() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(CASTING_OVERLAY_PREF_NAME, 0);
@@ -7459,6 +7476,10 @@ public class AppCMSPresenter {
             return upgradesAvailable;
         }
 
+        if (useCCAvenue()) {
+            return "COMPLETED".equals(getSubscriptionStatus());
+        }
+
         List<SubscriptionPlan> availableUpgradesForUser = availablePlans();
         return availableUpgradesForUser != null && !availableUpgradesForUser.isEmpty();
     }
@@ -7650,6 +7671,10 @@ public class AppCMSPresenter {
                                                             setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
                                                                     appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
                                                         }
+                                                    }
+
+                                                    if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null) {
+                                                        setSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
                                                     }
 
                                                     if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null &&
