@@ -44,8 +44,8 @@ public class CustomKeyboard extends RelativeLayout implements View.OnFocusChange
         this.context = context;
         System.out.println("anas2");
 
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         View keyboardView = inflater.inflate(R.layout.custom_keyboard_layout, this, true);
 
         @SuppressWarnings("unused")
