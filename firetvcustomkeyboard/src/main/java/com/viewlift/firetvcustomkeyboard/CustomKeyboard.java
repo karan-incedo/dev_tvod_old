@@ -1,5 +1,6 @@
 package com.viewlift.firetvcustomkeyboard;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -15,9 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class CustomKeyboard
-        extends RelativeLayout
-        implements View.OnFocusChangeListener,
+public class CustomKeyboard extends RelativeLayout implements View.OnFocusChangeListener,
         View.OnKeyListener {
 
     private static final float LETTER_SPACING = 0.01f;
@@ -38,15 +37,18 @@ public class CustomKeyboard
             CurrentlySelectedKeyboardLayoutEnum.UPPERCASE;
     private boolean isRetainSelectedLayout = true;
 
+    @SuppressLint("CutPasteId")
+    @SuppressWarnings("ConstantConditions")
     public CustomKeyboard(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
         System.out.println("anas2");
 
-        LayoutInflater inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         View keyboardView = inflater.inflate(R.layout.custom_keyboard_layout, this, true);
 
+        @SuppressWarnings("unused")
         CharSequence text = ((TextView) keyboardView.findViewById(R.id.tv_select_uc)).getText();
 
         tvSelectUc = (TextView) keyboardView.findViewById(R.id.tv_select_uc);
@@ -74,9 +76,9 @@ public class CustomKeyboard
         tvSelectLc.setOnKeyListener(this);
         tvSelectNum.setOnKeyListener(this);
         tvSelectSc.setOnKeyListener(this);
-
     }
 
+    @SuppressWarnings("unused")
     public void setFocusOnGroup() {
         if (null != tvSelectUc) {
             tvSelectUc.requestFocus();
@@ -263,6 +265,7 @@ public class CustomKeyboard
         return false;
     }
 
+    @SuppressWarnings("unused")
     public void setFocusColor(String color) {
         GradientDrawable gradientDrawable =
                 (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.appcms_search_key_background_focused);

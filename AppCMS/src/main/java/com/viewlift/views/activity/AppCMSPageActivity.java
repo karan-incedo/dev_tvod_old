@@ -567,9 +567,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                        e.getMessage());
             }
         }
-        newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
-                getString(R.string.app_cms_app_version),
-                appCMSPresenter.getGooglePlayAppStoreVersion()));
 
         newVersionAvailableTextView.setOnClickListener((v) -> {
             Intent googlePlayStoreUpgradeAppIntent = new Intent(Intent.ACTION_VIEW,
@@ -665,17 +662,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             } else if (appCMSPresenter.isAppUpgradeAvailable()) {
-                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                newVersionAvailableTextView.setText("");
                 newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
                         getString(R.string.app_cms_app_version),
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionUpgradeAvailable.requestLayout();
             } else {
                 newVersionUpgradeAvailable.setVisibility(View.GONE);
                 refreshPageData();
             }
-        });
+        }, true, 0, 3);
     }
 
     private void refreshPageData() {
@@ -1406,7 +1404,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.e(TAG, "Error attempting to restart screen: " + appCMSBinder.getScreenName());
             }
         } else {
-            boolean refreshFragment = true;
+            boolean createFragment = true;
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 1;
@@ -1423,7 +1421,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
-                    refreshFragment = false;
+                    createFragment = false;
                 } catch (IllegalStateException e) {
                     //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
@@ -1463,22 +1461,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     case SEARCH:
                         //Log.d(TAG, "Popping stack to getList to page item");
                         try {
-                            refreshFragment = false;
+                            createFragment = false;
                             if (!isBinderStackEmpty() &&
                                     !isBinderStackTopNull() &&
                                     appCMSBinderStack.peek().equals(appCMSBinder.getPageId()) &&
                                     !keepPage) {
                                 getSupportFragmentManager().popBackStackImmediate();
-                                refreshFragment = true;
+                                createFragment = true;
                             }
 
                             if (poppedStack) {
                                 appCMSBinderStack.push(appCMSBinder.getPageId());
                                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-                                refreshFragment = appCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                                createFragment = appCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
                             }
 
-                            if (!refreshFragment) {
+                            if (!createFragment) {
                                 handleToolbar(appCMSBinder.isAppbarPresent(),
                                         appCMSBinder.getAppCMSMain(),
                                         appCMSBinder.getPageId());
@@ -1510,17 +1508,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             } else if (appCMSPresenter.isAppUpgradeAvailable()) {
-                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+                newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                newVersionAvailableTextView.setText("");
                 newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
                         getString(R.string.app_cms_app_version),
                         appCMSPresenter.getGooglePlayAppStoreVersion()));
+                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
                 newVersionUpgradeAvailable.requestLayout();
             }
 
-            if (refreshFragment) {
+            if (createFragment) {
                 createScreenFromAppCMSBinder(appCMSBinder);
             } else {
+                int lastFragment = getSupportFragmentManager().getFragments().size();
+                Fragment fragment = getSupportFragmentManager().getFragments().get(lastFragment - 1);
+                if (fragment instanceof AppCMSPageFragment) {
+                    ((AppCMSPageFragment) fragment).refreshView(appCMSBinder);
+                }
                 pageLoading(false);
+                handleToolbar(appCMSBinder.isAppbarPresent(),
+                        appCMSBinder.getAppCMSMain(),
+                        appCMSBinder.getPageId());
             }
         }
     }
@@ -1562,12 +1570,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 homeNavBarItemView.setOnClickListener(v -> {
                     if (getSelectedNavItem() == homeNavBarItemView)
                         return;
+
                     currentMenuTabIndex = homePageIndex;
                     appCMSPresenter.showMainFragmentView(true);
                     selectNavItemAndLaunchPage(homeNavBarItemView,
                             homePageNav.getPageId(),
                             homePageNav.getTitle());
                 });
+
                 homeNavBarItemView.setTag(homePageNav.getPageId());
                 if (getSelectedNavItem() == null) {
                     selectNavItem(homeNavBarItemView);
@@ -1829,7 +1839,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         endPoint,
                         siteId,
                         appCMSBinder.getPagePath());
-
                 appCMSPresenter.getPageIdContent(apiUrl,
                         appCMSBinder.getPagePath(),
                         appCMSPageAPI -> {
@@ -2033,13 +2042,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-            appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
-                    + BaseView.isLandscape(this));
-            handleLaunchPageAction(appCMSBinder,
-                    false,
-                    leavingExtraPage,
-                    appCMSBinder.getExtraScreenType()
-                            == AppCMSPresenter.ExtraScreenType.SEARCH);
+            if (appCMSPresenter != null && appCMSBinder != null) {
+                appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
+                        + BaseView.isLandscape(this));
+
+                handleLaunchPageAction(appCMSBinder,
+                        false,
+                        leavingExtraPage,
+                        appCMSBinder.getExtraScreenType()
+                                == AppCMSPresenter.ExtraScreenType.SEARCH);
+            }
             isActive = true;
         } else {
             isActive = false;

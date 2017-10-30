@@ -1501,20 +1501,27 @@ public class ViewCreator {
                         }
 
                         if (parentViewType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                            AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
-                                    new AppCMSTraySeasonItemAdapter(context,
-                                            moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
-                                            component.getComponents(),
-                                            appCMSPresenter,
-                                            jsonValueKeyMap,
-                                            viewType);
-                            ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTraySeasonItemAdapter);
-                            if (pageView != null) {
-                                pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                        .adapter(appCMSTraySeasonItemAdapter)
-                                        .listview((RecyclerView) componentViewResult.componentView)
-                                        .id(moduleAPI.getId() + component.getKey())
-                                        .build());
+                            if (moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getSeason() != null &&
+                                    !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
+                                    moduleAPI.getContentData().get(0).getSeason().get(0) != null) {
+                                AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
+                                        new AppCMSTraySeasonItemAdapter(context,
+                                                moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
+                                                component.getComponents(),
+                                                appCMSPresenter,
+                                                jsonValueKeyMap,
+                                                viewType);
+                                ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTraySeasonItemAdapter);
+                                if (pageView != null) {
+                                    pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                            .adapter(appCMSTraySeasonItemAdapter)
+                                            .listview((RecyclerView) componentViewResult.componentView)
+                                            .id(moduleAPI.getId() + component.getKey())
+                                            .build());
+                                }
                             }
                         } else {
                             appCMSViewAdapter = new AppCMSViewAdapter(context,
@@ -1611,9 +1618,10 @@ public class ViewCreator {
                 break;
 
             case PAGE_BUTTON_KEY:
-                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY &&
-                        componentKey != AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY &&
-                        componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
+                if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
+                    componentViewResult.componentView = new ResponsiveButton(context);
+                } else if (componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {
@@ -1683,7 +1691,7 @@ public class ViewCreator {
 
                 switch (componentKey) {
                     case PAGE_BUTTON_SWITCH_KEY:
-                        if (appCMSPresenter.isPreferedStorageLocationSDCard()) {
+                        if (appCMSPresenter.isPreferredStorageLocationSDCard()) {
                             ((Switch) componentViewResult.componentView).setChecked(true);
                         } else {
                             ((Switch) componentViewResult.componentView).setChecked(false);
@@ -1692,13 +1700,13 @@ public class ViewCreator {
                         ((Switch) componentViewResult.componentView).setOnCheckedChangeListener((buttonView, isChecked) -> {
                             if (isChecked) {
                                 if (appCMSPresenter.isRemovableSDCardAvailable()) {
-                                    appCMSPresenter.setPreferedStorageLocationSDCard(true);
+                                    appCMSPresenter.setPreferredStorageLocationSDCard(true);
                                 } else {
                                     appCMSPresenter.showDialog(AppCMSPresenter.DialogType.SD_CARD_NOT_AVAILABLE, null, false, null, null);
                                     buttonView.setChecked(false);
                                 }
                             } else {
-                                appCMSPresenter.setPreferedStorageLocationSDCard(false);
+                                appCMSPresenter.setPreferredStorageLocationSDCard(false);
                             }
 
                         });
@@ -2191,8 +2199,15 @@ public class ViewCreator {
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                                ((TextView) componentViewResult.componentView)
-                                        .setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
+                                if (moduleAPI.getContentData() != null &&
+                                        !moduleAPI.getContentData().isEmpty() &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getSeason() != null &&
+                                        !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
+                                        moduleAPI.getContentData().get(0).getSeason().get(0) != null) {
+                                    ((TextView) componentViewResult.componentView)
+                                            .setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
+                                }
                             }
                             break;
 
@@ -2514,8 +2529,8 @@ public class ViewCreator {
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) ||
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) ||
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()))) {
                             int viewWidth = (int) BaseView.getViewWidth(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
