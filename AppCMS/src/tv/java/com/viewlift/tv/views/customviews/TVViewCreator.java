@@ -1147,7 +1147,8 @@ public class TVViewCreator {
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                                     textView.setText(Html.fromHtml(moduleAPI.getRawText()));
                                 } else {
-                                    textView.setText(Html.fromHtml(moduleAPI.getRawText(), Html.FROM_HTML_MODE_COMPACT));
+                                    String htmlStyleRegex= "<style([\\s\\S]+?)</style>";
+                                    textView.setText( Html.fromHtml(moduleAPI.getRawText().replaceAll(htmlStyleRegex,"") , Html.FROM_HTML_MODE_COMPACT));
                                 }
 
                                 textView.setFocusable(true);
