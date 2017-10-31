@@ -68,8 +68,6 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         setContentView(R.layout.activity_tv_video_player_page);
         appCMSPlayVideoPageContainer =
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
-        boolean useHls = getResources().getBoolean(R.bool.use_hls);
-        String defaultVideoResolution = getString(R.string.default_video_resolution);
         Intent intent = getIntent();
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
 
@@ -90,24 +88,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     if (binder.getContentData().getStreamingInfo() != null &&
                             binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
                         VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
-                        if (useHls) {
-                            videoUrl = videoAssets.getHls();
-                        }
-                        if (TextUtils.isEmpty(videoUrl)) {
-                            if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
-
-                                for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                                    if (videoAssets.getMpeg().get(i) != null &&
-                                            videoAssets.getMpeg().get(i).getRenditionValue() != null &&
-                                            videoAssets.getMpeg().get(i).getRenditionValue().contains(defaultVideoResolution)) {
-                                        videoUrl = videoAssets.getMpeg().get(i).getUrl();
-                                    }
-                                }
-                                if (videoAssets.getMpeg().get(0) != null && TextUtils.isEmpty(videoUrl)) {
-                                    videoUrl = videoAssets.getMpeg().get(0).getUrl();
-                                }
-                            }
-                        }
+                        videoUrl = getVideoUrl(videoAssets);
                     }
 
                     // TODO: 7/27/2017 Implement CC for multiple languages.
@@ -129,12 +110,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                             && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
                         title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
                         VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
-                        videoUrl = videoAssets.getHls();
-                        if (TextUtils.isEmpty(videoUrl)) {
-                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                                videoUrl = videoAssets.getMpeg().get(i).getUrl();
-                            }
-                        }
+                        videoUrl = getVideoUrl(videoAssets);
                     }
                 }
                 String permaLink = gist.getPermalink();
@@ -263,6 +239,38 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
+    /**
+     * Method is used to find and return to-be-played url. Based on the selection and availability,
+     * the method computes the HLS or MP4 url of a particular movie.
+     *
+     * @param videoAssets assets in which all the url data is present
+     * @return to-be-played url
+     */
+    @Nullable
+    private String getVideoUrl(VideoAssets videoAssets) {
+        boolean useHls = getResources().getBoolean(R.bool.use_hls);
+        String defaultVideoResolution = getString(R.string.default_video_resolution);
+        String videoUrl = null;
+        if (useHls) {
+            videoUrl = videoAssets.getHls();
+        }
+        if (TextUtils.isEmpty(videoUrl)) {
+            if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
+
+                for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                    if (videoAssets.getMpeg().get(i) != null &&
+                            videoAssets.getMpeg().get(i).getRenditionValue() != null &&
+                            videoAssets.getMpeg().get(i).getRenditionValue().contains(defaultVideoResolution)) {
+                        videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                    }
+                }
+                if (videoAssets.getMpeg().get(0) != null && TextUtils.isEmpty(videoUrl)) {
+                    videoUrl = videoAssets.getMpeg().get(0).getUrl();
+                }
+            }
+        }
+        return videoUrl;
+    }
 
 
     AppCmsLoginDialogFragment loginDialog;
