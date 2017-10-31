@@ -2483,6 +2483,7 @@ public class ViewCreator {
 
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
                     setTypeFace(context,
+                            appCMSPresenter,
                             jsonValueKeyMap,
                             component,
                             (TextView) componentViewResult.componentView);
@@ -2797,7 +2798,7 @@ public class ViewCreator {
                 }
                 textInputEditText.setTextColor(ContextCompat.getColor(context, android.R.color.black));
                 textInputEditText.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
-                setTypeFace(context, jsonValueKeyMap, component, textInputEditText);
+                setTypeFace(context, appCMSPresenter, jsonValueKeyMap, component, textInputEditText);
                 int loginInputHorizontalMargin = context.getResources().getInteger(
                         R.integer.app_cms_login_input_horizontal_margin);
                 textInputEditText.setPadding(loginInputHorizontalMargin,
@@ -2980,6 +2981,7 @@ public class ViewCreator {
     }
 
     private void setTypeFace(Context context,
+                             AppCMSPresenter appCMSPresenter,
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Component component,
                              TextView textView) {
@@ -2991,23 +2993,39 @@ public class ViewCreator {
             Typeface face;
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(),
-                            context.getString(R.string.opensans_bold_ttf));
+                    face = appCMSPresenter.getBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_bold_ttf));
+                        appCMSPresenter.setBoldTypeFace(face);
+                    }
                     break;
 
                 case PAGE_TEXT_SEMIBOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(),
-                            context.getString(R.string.opensans_semibold_ttf));
+                    face = appCMSPresenter.getSemiBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_semibold_ttf));
+                        appCMSPresenter.setSemiBoldTypeFace(face);
+                    }
                     break;
 
                 case PAGE_TEXT_EXTRABOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(),
-                            context.getString(R.string.opensans_extrabold_ttf));
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_extrabold_ttf));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
                     break;
 
                 default:
-                    face = Typeface.createFromAsset(context.getAssets(),
-                            context.getString(R.string.opensans_regular_ttf));
+                    face = appCMSPresenter.getRegularFontFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_regular_ttf));
+                        appCMSPresenter.setRegularFontFace(face);
+                    }
                     break;
             }
             textView.setTypeface(face);
