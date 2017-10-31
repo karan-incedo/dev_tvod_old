@@ -1071,8 +1071,10 @@ public class TVViewCreator {
                                                         varMessage = context.getString(R.string.subscription_purchased_from_web_msg);
                                                     } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
                                                         varMessage = context.getString(R.string.subscription_purchased_from_android_msg);
-                                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")) {
+                                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")|| platform.contains("ios_apple_tv")) {
                                                         varMessage = context.getString(R.string.subscription_purchased_from_apple_msg);
+                                                    } else {
+                                                        varMessage = context.getString(R.string.subscription_purchased_from_unknown_msg);
                                                     }
                                                     appCMSPresenter.setActiveSubscriptionPlatform(platform);
                                                 } else {
@@ -1088,8 +1090,10 @@ public class TVViewCreator {
                                         varMessage = context.getString(R.string.subscription_purchased_from_web_msg);
                                     } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
                                         varMessage = context.getString(R.string.subscription_purchased_from_android_msg);
-                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")) {
+                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")|| platform.contains("ios_apple_tv")) {
                                         varMessage = context.getString(R.string.subscription_purchased_from_apple_msg);
+                                    } else {
+                                        varMessage = context.getString(R.string.subscription_purchased_from_unknown_msg);
                                     }
                                     appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription));
                                 }
