@@ -117,7 +117,7 @@ public class AppCMSPageFragment extends Fragment {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
             onPageCreation.onSuccess(appCMSBinder);
-            videoPlayerView = pageView.findViewById(R.id.video_player_id);
+            videoPlayerView = (VideoPlayerView) pageView.findViewById(R.id.video_player_id);
         } else {
             //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
