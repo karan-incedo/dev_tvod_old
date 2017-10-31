@@ -127,22 +127,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         }
                     }, 500);
                 } else {
-                    // TODO: This call is getting stuck in some devices indefinitely and therefore the resulting video screen is always blank because the fragment is being created
-//                    appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
-//                        title = "";
-//
-//                        if (appCMSSignedURLResult == null ||
-//                                TextUtils.isEmpty(appCMSSignedURLResult.getSigned()) &&
-//                                        (TextUtils.isEmpty(appCMSSignedURLResult.getPolicy()) ||
-//                                                TextUtils.isEmpty(appCMSSignedURLResult.getSignature()) ||
-//                                                TextUtils.isEmpty(appCMSSignedURLResult.getKeyPairId()))) {
-//                            appCMSSignedURLResult = new AppCMSSignedURLResult();
-//                            appCMSSignedURLResult.setSigned(hlsUrl);
+                    appCMSPresenter.refreshVideoData(binder.getContentData(),
+                            updatedContentDatum -> {
+                                binder.setContentData(updatedContentDatum);
+                                launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
 
-//                            launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, appCMSSignedURLResult);
-//                        }
-//                    });
-                    launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                            });
                 }
             }
         } catch (ClassCastException e) {
