@@ -701,9 +701,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 refreshPageData();
             }
         }, true, 0, 3);
+        if (!appCMSPresenter.isNetworkConnected()) {
+            appCMSPresenter.showNoNetworkConnectivityToast();
+        }
     }
     private void refreshPageData() {
+        boolean cancelLoadingOnFinish = false;
+        if (!appCMSPresenter.isPageLoading()) {
         pageLoading(true);
+            cancelLoadingOnFinish = true;
+        }
                 if (appCMSBinderMap != null &&
                         appCMSBinderStack != null &&
                         !appCMSBinderStack.isEmpty()) {
@@ -712,16 +719,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
                         if (appCMSPageUI != null) {
                             appCMSBinder.setAppCMSPageUI(appCMSPageUI);
-                } else {
+                } else if (cancelLoadingOnFinish) {
                     pageLoading(false);
                         }
                         updateData(appCMSBinder, () -> {
                             appCMSPresenter.sendRefreshPageAction();
                         });
-            } else {
+            } else if (cancelLoadingOnFinish) {
                 pageLoading(false);
                 }
-        } else {
+        } else if(cancelLoadingOnFinish) {
             pageLoading(false);
             }
 
@@ -738,7 +745,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         isActive = false;
 
         appCMSPresenter.closeSoftKeyboard();
-        appCMSPresenter.cancelWatchlistToast();
+        appCMSPresenter.cancelCustomToast();
         appCMSPresenter.pausePIP();
     }
 
@@ -877,8 +884,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             appCMSPresenter.sendCloseOthersAction(null, true, false);
                         }
                     });
-                } else {
-                    appCMSPresenter.sendCloseOthersAction(null, true, false);
                 }
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -1109,9 +1114,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             shouldSendCloseOthersAction = false;
         }
 
-        if (!castDisabled) {
             setCastingInstance();
-        }
+
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -2000,14 +2004,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void setCastingInstance() {
-        if (!castDisabled) {
             try {
                 CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
                 CastServiceProvider.getInstance(this).onActivityResume();
             } catch (Exception e) {
                 //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
             }
-        }
+
     }
 
     private void handleCloseAction(boolean closeOnePage) {
@@ -2015,7 +2018,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                + getSupportFragmentManager().getBackStackEntryCount());
         if (!appCMSBinderStack.isEmpty()) {
             try {
+                int lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                String lastBackStackEntryName = getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount)
+                        .getName();
+                String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
+                        lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
+                        lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
+                        lastBackStackEntryName.length());
+                while (lastBackStackCount > 0 &&
+                        getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
                 getSupportFragmentManager().popBackStackImmediate();
+                    lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                }
             } catch (IllegalStateException e) {
                 //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }

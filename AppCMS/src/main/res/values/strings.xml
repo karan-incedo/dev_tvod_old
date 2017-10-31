@@ -58,15 +58,17 @@
     <string name="app_cms_ok_alert_dialog_button_text">OK</string>
 
     <!-- Age rating values -->
+    <string name="age_rating_g">G</string>
     <string name="age_rating_y">Y</string>
     <string name="age_rating_y7">Y7</string>
-    <string name="age_rating_g">G</string>
+    <string name="age_rating_ua">UA</string>
     <string name="age_rating_pg">PG</string>
-    <string name="age_raging_r">R</string>
     <string name="age_rating_fourteen">14</string>
+    <string name="age_raging_r">R</string>
+    <string name="age_rating_converted_g">0+</string>
     <string name="age_rating_converted_y">2+</string>
     <string name="age_rating_converted_y7">7+</string>
-    <string name="age_rating_converted_g">0+</string>
+    <string name="age_rating_converted_ua">12+</string>
     <string name="age_rating_converted_pg">13+</string>
     <string name="age_rating_converted_fourteen">14+</string>
     <string name="age_rating_converted_eighteen">18+</string>

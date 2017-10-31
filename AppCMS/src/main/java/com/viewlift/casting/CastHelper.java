@@ -86,6 +86,7 @@ public class CastHelper {
     private boolean sentBeaconFirstFrame;
     private boolean sendBeaconPing;
 
+    private boolean onAppDisConnectCalled = false;
     private Action1<OnApplicationEnded> onApplicationEndedAction;
     private String imageUrl = "";
     private String title = "";
@@ -418,6 +419,7 @@ public class CastHelper {
                     customData,
                     mAppContext), true, currentPosition);
             getRemoteMediaClient().addListener(remoteListener);
+            onAppDisConnectCalled = false;
         }
 
     }
@@ -579,8 +581,9 @@ public class CastHelper {
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
                 CastingUtils.isMediaQueueLoaded = true;
-                if (callBackRemoteListener != null && mActivity!=null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null) {
-
+                onAppDisConnectCalled=false;
+                if (callBackRemoteListener != null && mActivity != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null && !onAppDisConnectCalled) {
+                    onAppDisConnectCalled = true;
                     //if player activity already opened than finish it
                     if (onApplicationEndedAction != null) {
                         Observable.just(onApplicationEnded).subscribe(onApplicationEndedAction);
@@ -730,7 +733,7 @@ public class CastHelper {
                     MediaStatus.REPEAT_MODE_REPEAT_OFF, currentMediaPosition, null);
             getRemoteMediaClient().addListener(remoteListener);
             getRemoteMediaClient().addProgressListener(progressListener, 1000);
-
+            onAppDisConnectCalled = false;
         } else if (binderPlayScreen != null && binderPlayScreen.getContentData() != null) {
 
             videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
@@ -809,7 +812,7 @@ public class CastHelper {
 
         if (listRelatedVideosDetails != null && listRelatedVideosDetails.size() > 0) {
             int currentVideoDetailIndex = getCurrentIndex(listRelatedVideosDetails, CastingUtils.castingMediaId);
-            if (currentVideoDetailIndex <= listRelatedVideosDetails.size()) {
+            if (currentVideoDetailIndex >= listRelatedVideosDetails.size()) {
                 isFinish = true;
             }
         } else {
