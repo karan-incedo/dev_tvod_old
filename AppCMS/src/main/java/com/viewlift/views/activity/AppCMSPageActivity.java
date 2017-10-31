@@ -279,7 +279,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                        pageLoading(false);
+                        if(!appCMSPresenter.isSignUpFromFacebook()){
+                            pageLoading(false);
+                        }
                         handleLaunchPageAction(appCMSBinder,
                                 false,
                                 false,
@@ -1394,7 +1396,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            pageLoading(false);
+            if(!appCMSPresenter.isSignUpFromFacebook()){
+                pageLoading(false);
+            }
+
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
                 handleToolbar(appCMSBinder.isAppbarPresent(),

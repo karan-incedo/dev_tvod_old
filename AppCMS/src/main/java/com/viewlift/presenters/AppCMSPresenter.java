@@ -1953,6 +1953,9 @@ public class AppCMSPresenter {
         }
     }
 
+    public boolean isSignUpFromFacebook(){
+        return isSignupFromFacebook;
+    }
     private void loginGoogle() {
         if (currentActivity != null) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
