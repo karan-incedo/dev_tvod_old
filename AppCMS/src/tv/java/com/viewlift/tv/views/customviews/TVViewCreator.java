@@ -1148,12 +1148,8 @@ public class TVViewCreator {
                         case PAGE_API_DESCRIPTION:
                             if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
                                 TextView textView = new TextView(context);
-                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                                    textView.setText(Html.fromHtml(moduleAPI.getRawText()));
-                                } else {
-                                    String htmlStyleRegex= "<style([\\s\\S]+?)</style>";
-                                    textView.setText( Html.fromHtml(moduleAPI.getRawText().replaceAll(htmlStyleRegex,"") , Html.FROM_HTML_MODE_COMPACT));
-                                }
+                                String htmlStyleRegex= "<style([\\s\\S]+?)</style>";
+                                textView.setText(Html.fromHtml(moduleAPI.getRawText().replaceAll(htmlStyleRegex,"")), TextView.BufferType.SPANNABLE);
 
                                 textView.setFocusable(true);
                                 //  componentViewResult.componentView.setTag("API_DSECRIPTION");
