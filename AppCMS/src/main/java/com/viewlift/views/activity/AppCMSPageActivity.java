@@ -407,8 +407,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION));
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         registerReceiver(wifiConnectedReceiver,
                 new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
         registerReceiver(downloadReceiver,
@@ -652,6 +650,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         resume();
 
+        try {
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        } catch (Exception e) {
+
+        }
+
         appCMSPresenter.setCancelAllLoads(false);
 
         appCMSPresenter.setCurrentActivity(this);
@@ -721,6 +726,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.closeSoftKeyboard();
         appCMSPresenter.cancelCustomToast();
+
+        try {
+            unregisterReceiver(networkConnectedReceiver);
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
@@ -766,7 +777,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         unregisterReceiver(presenterActionReceiver);
-        unregisterReceiver(networkConnectedReceiver);
         unregisterReceiver(wifiConnectedReceiver);
         unregisterReceiver(downloadReceiver);
         unregisterReceiver(notifyUpdateListsReceiver);
