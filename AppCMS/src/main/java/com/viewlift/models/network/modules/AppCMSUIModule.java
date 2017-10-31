@@ -939,8 +939,9 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSResetPasswordCall providesAppCMSPasswordCall(AppCMSResetPasswordRest appCMSResetPasswordRest) {
-        return new AppCMSResetPasswordCall(appCMSResetPasswordRest);
+    public AppCMSResetPasswordCall providesAppCMSPasswordCall(AppCMSResetPasswordRest appCMSResetPasswordRest,
+                                                              Gson gson) {
+        return new AppCMSResetPasswordCall(appCMSResetPasswordRest, gson);
     }
 
     @Provides

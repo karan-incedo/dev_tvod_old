@@ -1,5 +1,6 @@
 package com.viewlift.models.network.rest;
 
+import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordRequest;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
 
@@ -17,10 +18,13 @@ import rx.functions.Action1;
 
 public class AppCMSResetPasswordCall {
     private AppCMSResetPasswordRest appCMSResetPasswordRest;
+    private Gson gson;
 
     @Inject
-    public AppCMSResetPasswordCall(AppCMSResetPasswordRest appCMSResetPasswordRest) {
+    public AppCMSResetPasswordCall(AppCMSResetPasswordRest appCMSResetPasswordRest,
+                                   Gson gson) {
         this.appCMSResetPasswordRest = appCMSResetPasswordRest;
+        this.gson = gson;
     }
 
     public void call(String url, String email, final Action1<ForgotPasswordResponse> readyAction) {
@@ -29,12 +33,29 @@ public class AppCMSResetPasswordCall {
         appCMSResetPasswordRest.resetPassword(url, forgotPasswordRequest).enqueue(new Callback<ForgotPasswordResponse>() {
             @Override
             public void onResponse(Call<ForgotPasswordResponse> call, Response<ForgotPasswordResponse> response) {
-                Observable.just(response.body()).subscribe(readyAction);
+                if (readyAction != null) {
+                    if (response.body() != null) {
+                        Observable.just(response.body()).subscribe(readyAction);
+                    } else if (response.errorBody() != null) {
+                        try {
+                            ForgotPasswordResponse forgotPasswordResponse =
+                                    gson.fromJson(response.errorBody().string(),
+                                            ForgotPasswordResponse.class);
+                            Observable.just(forgotPasswordResponse).subscribe(readyAction);
+                        } catch (Exception e) {
+                            Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
+                        }
+                    } else {
+                        Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
+                    }
+                }
             }
 
             @Override
             public void onFailure(Call<ForgotPasswordResponse> call, Throwable t) {
-                Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
+                if (readyAction != null) {
+                    Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
+                }
             }
         });
     }
