@@ -1426,7 +1426,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
-                    createFragment = false;
                 } catch (IllegalStateException e) {
                     //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
@@ -1439,6 +1438,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     poppedStack = true;
                 }
                 i++;
+            }
+
+            if (!appCMSBinderStack.isEmpty()) {
+                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
             }
 
             if (distanceFromStackTop < 0 ||
