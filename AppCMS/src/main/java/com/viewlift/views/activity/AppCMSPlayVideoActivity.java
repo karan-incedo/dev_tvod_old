@@ -189,7 +189,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         };
 
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -444,6 +443,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             finish();
         }
 
+        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         appCMSPresenter.restrictLandscapeOnly();
     }
 
@@ -458,7 +459,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onDestroy() {
         try {
             unregisterReceiver(handoffReceiver);
-            unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }
@@ -502,6 +502,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         } else {
             closePlayer();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(networkConnectedReceiver);
+        } catch (Exception e) {
+
         }
     }
 

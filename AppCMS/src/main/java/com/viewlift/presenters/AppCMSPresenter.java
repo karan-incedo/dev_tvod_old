@@ -5519,6 +5519,7 @@ public class AppCMSPresenter {
 
             if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
                 navigateToHomePage();
+                sendCloseOthersAction(null, true, true);
             }
 
             return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();
