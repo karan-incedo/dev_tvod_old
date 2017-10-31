@@ -20,6 +20,7 @@
     <string name="navigation_item_key">navigation_item</string>
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
+    <string name="min_abbreviation">MIN</string>
     <string name="mins_abbreviation">MINS</string>
     <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
@@ -412,7 +413,7 @@
     <string name="app_cms_autoplay_finished_movie_title_key">finishedMovieNameTitle</string>
     <string name="subscription">SUBSCRIPTION</string>
     <string name="subscription_required">SUBSCRIPTION REQUIRED</string>
-     <string name="subscription_purchased_from_web_msg">This subscription was purchased on our website. To modify it, please visit your account settings in a browser.</string>
+    <string name="subscription_purchased_from_web_msg">This subscription was purchased on our website. To modify it, please visit your account settings in a browser.</string>
     <string name="subscription_purchased_from_android_msg">This subscription was purchased on Google Play Store. To modify it, please visit your account settings on your Android device.</string>
     <string name="subscription_purchased_from_apple_msg">This subscription was purchased on Apple App Store. To modify it, please visit your account settings on your Apple device.</string>
     <string name="subscription_not_purchased">You are currently not a subscriber, please visit our website to purchase a subscription.</string>
