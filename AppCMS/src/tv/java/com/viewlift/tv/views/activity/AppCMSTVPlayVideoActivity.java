@@ -467,13 +467,13 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
-                        return true;
+                        return super.dispatchKeyEvent(event);
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
-                        return true;
+                        return super.dispatchKeyEvent(event);
                     }
                     break;
             }
