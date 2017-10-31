@@ -1804,24 +1804,24 @@ public class AppCMSPresenter {
 
     public boolean isAddOnFragmentVisible() {
         if (currentActivity != null) {
-        FrameLayout addOnFragment =
-                (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
-        return addOnFragment != null && addOnFragment.getVisibility() == View.VISIBLE;
+            FrameLayout addOnFragment =
+                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+            return addOnFragment != null && addOnFragment.getVisibility() == View.VISIBLE;
         }
         return false;
     }
 
     public void showAddOnFragment(boolean showMainFragment, float mainFragmentTransparency) {
         if (currentActivity != null) {
-        showMainFragmentView(showMainFragment);
-        setMainFragmentTransparency(mainFragmentTransparency);
-        FrameLayout addOnFragment =
-                (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
-        if (addOnFragment != null) {
-            addOnFragment.setVisibility(View.VISIBLE);
-            addOnFragment.bringToFront();
-        }
-        setMainFragmentEnabled(false);
+            showMainFragmentView(showMainFragment);
+            setMainFragmentTransparency(mainFragmentTransparency);
+            FrameLayout addOnFragment =
+                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+            if (addOnFragment != null) {
+                addOnFragment.setVisibility(View.VISIBLE);
+                addOnFragment.bringToFront();
+            }
+            setMainFragmentEnabled(false);
         }
     }
 
@@ -5227,6 +5227,7 @@ public class AppCMSPresenter {
         }
         return false;
     }
+
     private String getSubscriptionStatus() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(SUBSCRIPTION_STATUS, 0);
@@ -5234,6 +5235,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public boolean setCastOverLay() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(CASTING_OVERLAY_PREF_NAME, 0);
@@ -5522,6 +5524,7 @@ public class AppCMSPresenter {
             displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
         }
     }
+
     @SuppressWarnings("UnusedReturnValue")
     public boolean setNetworkConnected(boolean networkConnected, String pageId) {
         if (currentContext != null) {
@@ -6240,7 +6243,7 @@ public class AppCMSPresenter {
                         appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
                         if (!loadFromFile) {
                             refreshAPIData(() -> {
-                        getAppCMSSite(platformType);
+                                        getAppCMSSite(platformType);
                                     },
                                     false);
                         } else {
@@ -7145,10 +7148,12 @@ public class AppCMSPresenter {
         beaconRequest.setVpos(String.valueOf(currentPositionSecs));
         beaconRequest.setApos(String.valueOf(currentPositionSecs));
         beaconRequest.setEnvironment(getEnvironment());
-        beaconRequest.setBitrate(bitrte);
         beaconRequest.setResolutionheight(resolutionHeight);
         beaconRequest.setResolutionwidth(resolutionWidth);
-        if (event == BeaconEvent.FIRST_FRAME) {
+        if (bitrte != null) {
+            beaconRequest.setBitrate(bitrte);
+        }
+        if (event == BeaconEvent.FIRST_FRAME && ttfirstframe != 0d) {
             beaconRequest.setTtfirstframe(String.format("%.2f", ttfirstframe));
         }
         if (event == BeaconEvent.AD_IMPRESSION || event == BeaconEvent.AD_REQUEST) {
