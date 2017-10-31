@@ -416,6 +416,8 @@ public class ViewCreator {
                                                 convertedRating = context.getString(R.string.age_rating_converted_y7);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_y);
+                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_ua))) {
+                                                convertedRating = context.getString(R.string.age_rating_converted_ua);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
                                                 convertedRating = context.getString(R.string.age_rating_converted_pg);
                                             } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
@@ -1991,6 +1993,7 @@ public class ViewCreator {
                                 for (OnInternalEvent internalEvent : receivers) {
                                     internalEvent.receiveEvent(null);
                                 }
+                                removeAllButton.setVisibility(View.GONE);
                             }
 
                             @Override
@@ -2414,6 +2417,8 @@ public class ViewCreator {
                                     convertedRating = context.getString(R.string.age_rating_converted_y7);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_y);
+                                } else if (parentalRating.contains(context.getString(R.string.age_rating_ua))) {
+                                    convertedRating = context.getString(R.string.age_rating_converted_ua);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
                                     convertedRating = context.getString(R.string.age_rating_converted_pg);
                                 } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
