@@ -4,10 +4,6 @@
     android:background="@color/backgroundColor"
     android:padding="@dimen/castview_padding">
 
-
-
-
-
     <ImageView
         android:id="@+id/splash_logo"
         android:layout_width="wrap_content"

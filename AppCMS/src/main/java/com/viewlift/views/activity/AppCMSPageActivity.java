@@ -555,6 +555,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
         );
 
+        //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
         mProfileTopButton.setOnClickListener(v -> {
             if (appCMSPresenter.isUserLoggedIn()){
                 appCMSPresenter.launchNavigationPage();
@@ -1456,6 +1457,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     poppedStack = true;
                 }
                 i++;
+            }
+            if (!appCMSBinderStack.isEmpty()) {
+                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
             }
 
             if (distanceFromStackTop < 0 ||
