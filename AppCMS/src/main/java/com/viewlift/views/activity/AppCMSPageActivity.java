@@ -1241,6 +1241,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));
                 fragmentTransaction.addToBackStack(appCMSBinder.getPageId() + BaseView.isLandscape(this));
                 fragmentTransaction.commit();
+                getSupportFragmentManager().executePendingTransactions();
             }
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Failed to add Fragment to back stack");
