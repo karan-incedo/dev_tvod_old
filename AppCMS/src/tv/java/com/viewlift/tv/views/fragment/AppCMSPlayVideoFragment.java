@@ -685,14 +685,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.pausePlayer();
         }
         getActivity().unregisterReceiver(networkReciever);
-        cancelTimer();
         super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        videoPlayerView.stopPlayer();
     }
 
     @Override
@@ -825,8 +818,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }
         adsLoader = null;
 
+        cancelTimer();
         super.onDestroyView();
-
     }
 
     private void requestAds(String adTagUrl) {

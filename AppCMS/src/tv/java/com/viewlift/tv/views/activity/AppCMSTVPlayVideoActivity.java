@@ -68,7 +68,8 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         setContentView(R.layout.activity_tv_video_player_page);
         appCMSPlayVideoPageContainer =
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
-
+        boolean useHls = getResources().getBoolean(R.bool.use_hls);
+        String defaultVideoResolution = getString(R.string.default_video_resolution);
         Intent intent = getIntent();
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
 
@@ -89,10 +90,22 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     if (binder.getContentData().getStreamingInfo() != null &&
                             binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
                         VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
-                        videoUrl = videoAssets.getHls();
+                        if (useHls) {
+                            videoUrl = videoAssets.getHls();
+                        }
                         if (TextUtils.isEmpty(videoUrl)) {
-                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                                videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                            if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
+
+                                for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                    if (videoAssets.getMpeg().get(i) != null &&
+                                            videoAssets.getMpeg().get(i).getRenditionValue() != null &&
+                                            videoAssets.getMpeg().get(i).getRenditionValue().contains(defaultVideoResolution)) {
+                                        videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                                    }
+                                }
+                                if (videoAssets.getMpeg().get(0) != null && TextUtils.isEmpty(videoUrl)) {
+                                    videoUrl = videoAssets.getMpeg().get(0).getUrl();
+                                }
                             }
                         }
                     }
@@ -478,12 +491,6 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         } else {
             closePlayer();
         }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        appCMSPlayVideoFragment.getVideoPlayerView().stopPlayer();
     }
 
     @Override
