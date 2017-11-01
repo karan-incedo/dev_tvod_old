@@ -4777,7 +4777,7 @@ public class AppCMSPresenter {
                                   boolean sendCloseAction,
                                   final Uri searchQuery) {
         boolean result = false;
-        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+        if (currentActivity != null && !TextUtils.isEmpty(pageId) && !cancelAllLoads) {
 
             if (launched) {
                 refreshPages(null, false, 0, 0);
