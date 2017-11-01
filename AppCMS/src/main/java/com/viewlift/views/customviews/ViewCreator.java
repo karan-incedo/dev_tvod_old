@@ -321,7 +321,7 @@ public class ViewCreator {
                                                     appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
                                                             currentPlayingIndex,
                                                             relatedVideoIds,
-                                                            -1L,
+                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
                                                             component.getAction());
 
                                                 }
@@ -1874,7 +1874,7 @@ public class ViewCreator {
                                     appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
                                             currentPlayingIndex,
                                             relatedVideoIds,
-                                            -1L,
+                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),,
                                             component.getAction());
 
                                 }
