@@ -6003,7 +6003,9 @@ public class AppCMSPresenter {
             setActiveSubscriptionId(null);
             setActiveSubscriptionSku(null);
             setActiveSubscriptionPlanName(null);
+            setActiveSubscriptionStatus(null);
             setActiveSubscriptionReceipt(null);
+            setActiveSubscriptionPlatform(null);
             setRefreshToken(null);
             setAuthToken(null);
             setIsUserSubscribed(false);
@@ -8030,7 +8032,9 @@ public class AppCMSPresenter {
                         }
                     }
                 }
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                if (platformType.equals(PlatformType.ANDROID)) {
+                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                }
             }
         }
     }
