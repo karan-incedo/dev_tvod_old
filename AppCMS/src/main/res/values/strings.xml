@@ -194,6 +194,7 @@
 
     <!-- Google Cancel Subscription API -->
     <string name="google_cancel_subscription_api">https://www.googleapis.com/androidpublisher/v2/applications/$1%s/purchases/subscriptions/$2%s/tokens/$3%s:cancel</string>
+    <string name="minute_for_runtime">MIN</string>
     <string name="minutes_for_runtime">MINS</string>
 
     <!-- apps flyer keys -->
@@ -403,7 +404,6 @@
     <string name="close">Close</string>
     <string name="yes">YES</string>
     <string name="sign_in_text">SIGN IN</string>
-    <string name="blank_string"></string>
 
     <string name="no_inernet_error">There is an error loading %1$s. Please check your Internet Connection and try again later</string>
     <string name="api_error_message">We are having trouble connecting to %1$s, please try again later.</string>

@@ -7,11 +7,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.viewlift.R;
@@ -19,7 +17,7 @@ import com.viewlift.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
+/*
  * Created by viewlift on 7/25/17.
  */
 
@@ -48,13 +46,22 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
     }
 
     @Override
+    @SuppressWarnings("StringBufferReplaceableByString")
     public void bindView(View view, Context context, Cursor cursor) {
         ButterKnife.bind(this, view);
 
         filmTitle.setText(cursor.getString(1));
-        runtime.setText(new StringBuilder().append(cursor.getString(2))
-                .append(" ")
-                .append(context.getString(R.string.minutes_for_runtime)).toString());
+        int runtimeAsInteger = Integer.valueOf(cursor.getString(2));
+
+        if (runtimeAsInteger > 0 && runtimeAsInteger < 2) {
+            runtime.setText(new StringBuilder().append(cursor.getString(2))
+                    .append(" ")
+                    .append(context.getString(R.string.minute_for_runtime)).toString());
+        } else {
+            runtime.setText(new StringBuilder().append(cursor.getString(2))
+                    .append(" ")
+                    .append(context.getString(R.string.minutes_for_runtime)).toString());
+        }
     }
 
     @Override
@@ -75,6 +82,7 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
         return super.runQueryOnBackgroundThread(constraint);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private Cursor getSearchManagerSuggestions(SearchableInfo searchable, String query, int limit) {
         if (searchable == null) {
             return null;
@@ -97,18 +105,13 @@ public class SearchSuggestionsAdapter extends CursorAdapter {
             uriBuilder.appendEncodedPath(contentPath);
         }
 
-        // append standard suggestion query path
         uriBuilder.appendPath(SearchManager.SUGGEST_URI_PATH_QUERY);
-
-        // get the query selection, may be null
         String selection = searchable.getSuggestSelection();
-
-        // inject query, either as selection args or inline
         String[] selArgs = null;
 
-        if (selection != null) {    // use selection if provided
+        if (selection != null) {
             selArgs = new String[]{query};
-        } else {                    // no selection, use REST pattern
+        } else {
             uriBuilder.appendPath(query);
         }
 
