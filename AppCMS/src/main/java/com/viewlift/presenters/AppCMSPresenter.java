@@ -23,6 +23,8 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 
 import com.google.gson.GsonBuilder;
+import com.viewlift.models.network.background.tasks.GetAppCMSFloodLightAsyncTask;
+import com.viewlift.models.network.rest.AppCMSFloodLightRest;
 import com.viewlift.views.customviews.PopupMenu;
 
 import android.graphics.PointF;
@@ -388,6 +390,7 @@ public class AppCMSPresenter {
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
+    private static final String FLOODLIGHT_STATUS_PREF_NAME = "floodlight_status_pref_key";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
     private static final long MILLISECONDS_PER_SECOND = 1000L;
     private static final long SECONDS_PER_MINUTE = 60L;
@@ -5130,6 +5133,11 @@ public class AppCMSPresenter {
         return getIsUserSubscribed();
     }
 
+    public boolean isFloodLightSend() {
+        return getFloodLightStatus();
+    }
+
+
     private String getClosedCaptionsPath(String fileName) {
         return currentActivity.getFilesDir().getAbsolutePath() + File.separator
                 + "closedCaptions" + File.separator + fileName + MEDIA_SUFFIX_SRT;
@@ -5706,6 +5714,21 @@ public class AppCMSPresenter {
         }
     }
 
+    private boolean getFloodLightStatus() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(FLOODLIGHT_STATUS_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(FLOODLIGHT_STATUS_PREF_NAME, false);
+        }
+        return false;
+    }
+
+    private void saveFloodLightStatus(boolean floodlightStatus) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(FLOODLIGHT_STATUS_PREF_NAME, 0);
+            sharedPrefs.edit().putBoolean(FLOODLIGHT_STATUS_PREF_NAME, floodlightStatus).apply();
+        }
+    }
+
     @SuppressWarnings("unused")
     public String getExistingGooglePlaySubscriptionDescription() {
         if (currentContext != null) {
@@ -6237,6 +6260,24 @@ public class AppCMSPresenter {
         }).execute(params);
         } catch (Exception e) {
         }
+    }
+
+    //https://ad.doubleclick.net/ddm/activity/src=6070801;cat=appco0;type=msnbm0;dc_rdid=ced2c961-972c-4b8a-bb04-fdc0d2437179;dc_lat=;tag_for_child_directed_treatment=;ord=4
+
+    public void getAppCMSFloodLight(Context context){
+        AppCMSAPIModule appCMSAPIModule = new AppCMSAPIModule(context,currentActivity.getString(R.string.app_cms_floodlight_url_base),"");
+        AppCMSFloodLightRest appCMSFloodLightRest = appCMSAPIModule.appCMSFloodLightRest(appCMSAPIModule.providesRetrofit(appCMSAPIModule.providesGson()));
+        new GetAppCMSFloodLightAsyncTask(appCMSFloodLightRest, context, new Action1() {
+            @Override
+            public void call(Object o) {
+                String res = (String) o;
+                Toast.makeText(context,res,Toast.LENGTH_LONG).show();
+                System.out.println("Res ----" + res);
+                if(res != null){
+                    saveFloodLightStatus(true);
+                }
+            }
+        }).execute();
     }
 
     public AppCMSMain getAppCMSMain() {

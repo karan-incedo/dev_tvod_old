@@ -1893,6 +1893,20 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                            if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                            } else {
+                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
+                            }
+                        });
+
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                        } else {
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                        }
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
@@ -3295,19 +3309,19 @@ public class ViewCreator {
         }
     }
 
-    public static  VideoPlayerView playerView(Context context){
+    public static VideoPlayerView playerView(Context context) {
 
         VideoPlayerView videoPlayerView = new VideoPlayerView(context);
         videoPlayerView.init(context);
         // it should be dynamic when live url come from api
-        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
+        videoPlayerView.setUri(Uri.parse("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"),
                 null);
         videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
             public void onVisibilityChange(int i) {
-                if(i == 0) {
+                if (i == 0) {
                     videoPlayerView.getPlayerView().hideController();
                 }
             }

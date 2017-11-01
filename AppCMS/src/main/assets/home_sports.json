@@ -80,21 +80,21 @@
             "tabletLandscape": {
               "yAxis": 0,
               "xAxis": 0,
-              "width": 179,
-              "height": 100
+              "width": 74,
+              "height": 80
             },
             "tabletPortrait": {
               "yAxis": 0,
               "xAxis": 0,
-              "width": 179,
-              "height": 100
+              "width": 74,
+              "height": 80
             }
           },
-          "isVisibleForTablet": false,
+          "isVisibleForTablet": true,
           "action": "watchVideo",
           "isVisibleForPhone": true,
           "type": "button",
-          "key": "playImage"
+          "key": "playLiveImage"
         },
         {
           "layout": {
