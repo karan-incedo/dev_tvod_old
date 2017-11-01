@@ -20,6 +20,7 @@
     <string name="navigation_item_key">navigation_item</string>
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
+    <string name="min_abbreviation">MIN</string>
     <string name="mins_abbreviation">MINS</string>
     <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
@@ -58,15 +59,17 @@
     <string name="app_cms_ok_alert_dialog_button_text">OK</string>
 
     <!-- Age rating values -->
+    <string name="age_rating_g">G</string>
     <string name="age_rating_y">Y</string>
     <string name="age_rating_y7">Y7</string>
-    <string name="age_rating_g">G</string>
+    <string name="age_rating_ua">UA</string>
     <string name="age_rating_pg">PG</string>
-    <string name="age_raging_r">R</string>
     <string name="age_rating_fourteen">14</string>
+    <string name="age_raging_r">R</string>
+    <string name="age_rating_converted_g">0+</string>
     <string name="age_rating_converted_y">2+</string>
     <string name="age_rating_converted_y7">7+</string>
-    <string name="age_rating_converted_g">0+</string>
+    <string name="age_rating_converted_ua">12+</string>
     <string name="age_rating_converted_pg">13+</string>
     <string name="age_rating_converted_fourteen">14+</string>
     <string name="age_rating_converted_eighteen">18+</string>
@@ -191,6 +194,7 @@
 
     <!-- Google Cancel Subscription API -->
     <string name="google_cancel_subscription_api">https://www.googleapis.com/androidpublisher/v2/applications/$1%s/purchases/subscriptions/$2%s/tokens/$3%s:cancel</string>
+    <string name="minute_for_runtime">MIN</string>
     <string name="minutes_for_runtime">MINS</string>
 
     <!-- apps flyer keys -->
@@ -400,7 +404,6 @@
     <string name="close">Close</string>
     <string name="yes">YES</string>
     <string name="sign_in_text">SIGN IN</string>
-    <string name="blank_string"></string>
 
     <string name="no_inernet_error">There is an error loading %1$s. Please check your Internet Connection and try again later</string>
     <string name="api_error_message">We are having trouble connecting to %1$s, please try again later.</string>
@@ -410,8 +413,10 @@
     <string name="app_cms_autoplay_finished_movie_title_key">finishedMovieNameTitle</string>
     <string name="subscription">SUBSCRIPTION</string>
     <string name="subscription_required">SUBSCRIPTION REQUIRED</string>
-     <string name="subscription_purchased_from_web_msg">This subscription was purchased on our website. To modify it, please visit your account settings in a browser.</string>
+
+    <string name="subscription_purchased_from_web_msg">This subscription was purchased on our website. To modify it, please visit your account settings in a browser.</string>
     <string name="subscription_purchased_from_android_msg">This subscription was purchased on an Android device. To modify it, please visit your account settings on your Android device.</string>
+
     <string name="subscription_purchased_from_apple_msg">This subscription was purchased on Apple App Store. To modify it, please visit your account settings on your Apple device.</string>
     <string name="subscription_purchased_from_unknown_msg">This subscription was not purchased on this platform. To modify it, please visit your account settings on the platform you used to purchase the subscription.</string>
     <string name="subscription_not_purchased">You are currently not a subscriber, please visit our website to purchase a subscription.</string>

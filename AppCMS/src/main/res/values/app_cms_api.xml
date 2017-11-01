@@ -126,6 +126,7 @@
     <string name="app_cms_page_passwordtextfield2_key">password label</string>
     <string name="app_cms_page_forgotpassword_key">forgot password button</string>
     <string name="app_cms_page_login_key">login button</string>
+    <string name="app_cms_page_signup_key">signup button</string>
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
