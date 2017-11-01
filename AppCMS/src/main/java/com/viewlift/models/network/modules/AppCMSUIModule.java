@@ -273,6 +273,8 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_login_key),
                 AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_key),
+                AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
@@ -937,8 +939,9 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSResetPasswordCall providesAppCMSPasswordCall(AppCMSResetPasswordRest appCMSResetPasswordRest) {
-        return new AppCMSResetPasswordCall(appCMSResetPasswordRest);
+    public AppCMSResetPasswordCall providesAppCMSPasswordCall(AppCMSResetPasswordRest appCMSResetPasswordRest,
+                                                              Gson gson) {
+        return new AppCMSResetPasswordCall(appCMSResetPasswordRest, gson);
     }
 
     @Provides
