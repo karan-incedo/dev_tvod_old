@@ -106,34 +106,39 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             binder = (AppCMSVideoPageBinder)
                     bundleExtra.getBinder(getString(R.string.app_cms_video_player_binder_key));
+            String fontColor = "0xffffffff";
+            if (binder != null) {
+                fontColor = binder.getFontColor();
+            }
             if (binder != null
                     && binder.getContentData() != null
-                    && binder.getContentData().getGist() != null) {
+                    && binder.getContentData().getGist() != null && !binder.isTrailer()) {
 
                 Gist gist = binder.getContentData().getGist();
-                String videoUrl = "";
-                String fontColor = binder.getFontColor();
 
                 if (binder.isOffline()) {
                     Handler handler = new Handler();
+                    String finalFontColor = fontColor;
                     handler.postDelayed(new Runnable(){
                         @Override
                         public void run(){
                             try {
-                                launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                                launchVideoPlayer(gist, extra, useHls, finalFontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
                             } catch (Exception e) {
 
                             }
                         }
                     }, 500);
                 } else {
+                    String finalFontColor1 = fontColor;
                     appCMSPresenter.refreshVideoData(binder.getContentData(),
                             updatedContentDatum -> {
                                 binder.setContentData(updatedContentDatum);
-                                launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
-
+                                launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
                             });
                 }
+            } else if (binder.isTrailer()) {
+                launchVideoPlayer(binder.getContentData().getGist(), extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
             }
         } catch (ClassCastException e) {
             //Log.e(TAG, e.getMessage());
@@ -291,13 +296,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
 
                 title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
-                VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
                 if (useHls) {
                     videoUrl = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
                 }
                 if (TextUtils.isEmpty(videoUrl)) {
                     if (binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg() != null &&
-                            binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().isEmpty() &&
+                            !binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().isEmpty() &&
                             binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(0) != null &&
                             binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(0).getUrl() != null) {
                         videoUrl = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(0).getUrl();
@@ -308,54 +312,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                     binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(i).getUrl().contains(defaultVideoResolution)) {
                                 videoUrl =  binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(i).getUrl();
                             }
-                        }
-                    }
-                }
-            } else {
-                if (gist != null) {
-                    title = gist.getTitle();
-                }
-                if (binder.getContentData() != null &&
-                        binder.getContentData().getStreamingInfo() != null &&
-                        binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
-                    VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
-                    if (useHls) {
-                        videoUrl = videoAssets.getHls();
-                    }
-                    if (TextUtils.isEmpty(videoUrl)) {
-                        if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
-                            if (videoAssets.getMpeg().get(0) != null) {
-                                videoUrl = videoAssets.getMpeg().get(0).getUrl();
-                            }
-                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                                if (videoAssets.getMpeg().get(i) != null &&
-                                        videoAssets.getMpeg().get(i).getRenditionValue() != null &&
-                                        videoAssets.getMpeg().get(i).getRenditionValue().contains(defaultVideoResolution)) {
-                                    videoUrl = videoAssets.getMpeg().get(i).getUrl();
-                                }
-                            }
-                        }
-                    }
-
-                    if (useHls && videoAssets.getMpeg() != null && videoAssets.getMpeg().size() > 0) {
-                        if (videoAssets.getMpeg().get(0).getUrl() != null &&
-                                videoAssets.getMpeg().get(0).getUrl().indexOf("?") > 0) {
-                            videoUrl = videoUrl + videoAssets.getMpeg().get(0).getUrl().substring(videoAssets.getMpeg().get(0).getUrl().indexOf("?"));
-                        }
-                    }
-                }
-
-                // TODO: 7/27/2017 Implement CC for multiple languages.
-                if (binder.getContentData() != null
-                        && binder.getContentData().getContentDetails() != null
-                        && binder.getContentData().getContentDetails().getClosedCaptions() != null
-                        && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()) {
-                    for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
-                        if (cc.getUrl() != null &&
-                                !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
-                                cc.getFormat() != null &&
-                                cc.getFormat().equalsIgnoreCase("SRT")) {
-                            closedCaptionUrl = cc.getUrl();
                         }
                     }
                 }
