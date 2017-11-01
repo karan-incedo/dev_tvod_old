@@ -5988,6 +5988,8 @@ public class AppCMSPresenter {
 
             signinAnonymousUser();
 
+            setEntitlementPendingVideoData(null);
+
             if (googleApiClient != null && googleApiClient.isConnected()) {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
             }

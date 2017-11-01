@@ -33,13 +33,15 @@ public class AppCMSApplication extends MultiDexApplication {
 
     private AppCMSPresenterComponent appCMSPresenterComponent;
 
-    private Map<Activity, Integer> closeAppMap;
-
     private AppsFlyerConversionListener conversionDataListener;
+
+    private int openActivities;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        openActivities = 0;
 
         conversionDataListener = new AppsFlyerConversionListener() {
 
@@ -70,8 +72,6 @@ public class AppCMSApplication extends MultiDexApplication {
             Fresco.initialize(this);
         }).run();
 
-        closeAppMap = new HashMap<>();
-
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
                 .appCMSUIModule(new AppCMSUIModule(this))
@@ -85,10 +85,7 @@ public class AppCMSApplication extends MultiDexApplication {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
-                if (closeAppMap.containsKey(activity)) {
-                    activity.finish();
-                    closeAppMap.remove(activity);
-                }
+                openActivities++;
             }
 
             @Override
@@ -110,6 +107,9 @@ public class AppCMSApplication extends MultiDexApplication {
             @Override
             public void onActivityStopped(Activity activity) {
                 //Log.d(TAG, "Activity being stopped: " + activity.getLocalClassName());
+                if (openActivities == 1) {
+                    appCMSPresenterComponent.appCMSPresenter().setCancelAllLoads(true);
+                }
             }
 
             @Override
@@ -122,19 +122,13 @@ public class AppCMSApplication extends MultiDexApplication {
                 //Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
                 appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
-                if (closeAppMap.containsKey(activity)) {
-                    closeAppMap.remove(activity);
-                }
+                openActivities--;
             }
         });
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
         return appCMSPresenterComponent;
-    }
-
-    public void setCloseApp(Activity activity) {
-        closeAppMap.put(activity, 1);
     }
 
     public void initAppsFlyer(String appsFlyerKey) {

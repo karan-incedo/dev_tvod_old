@@ -196,8 +196,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        appCMSPresenter.setCancelAllLoads(false);
     }
 
     public void launchVideoPlayer(Gist gist,
@@ -398,6 +396,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         appCMSPresenter.restrictLandscapeOnly();
+
+        appCMSPresenter.setCancelAllLoads(false);
     }
 
     @Override

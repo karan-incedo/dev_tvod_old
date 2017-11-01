@@ -619,6 +619,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+        appCMSPresenter.setEntitlementPendingVideoData(null);
         if (!handlingClose && !isPageLoading()) {
             if (appCMSPresenter.isAddOnFragmentVisible()) {
                 for (Fragment fragment : getSupportFragmentManager().getFragments()) {
@@ -783,8 +784,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isUserLoggedIn()) {
             handleCloseAction(true);
         }
-
-        appCMSPresenter.setCancelAllLoads(true);
     }
 
     @Override
