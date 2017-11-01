@@ -196,6 +196,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private String FIREBASE_SEARCH_SCREEN = "Search Screen";
     private String FIREBASE_MENU_SCREEN = "MENU";
     private String searchQuery;
+    private boolean isDownloadPageOpen = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -295,7 +296,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction() != null
+                if (intent != null && intent.getAction() != null
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     boolean closeSelf = intent.getBooleanExtra(getString(R.string.close_self_key),
                             false);
@@ -333,6 +334,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
+                }
+                if (!isConnected) {
+                    appCMSPresenter.showNoNetworkConnectivityToast();
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
@@ -684,7 +688,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }, true, 0, 3);
 
-        if (!appCMSPresenter.isNetworkConnected()) {
+        if (appCMSBinderMap != null && !appCMSBinderMap.isEmpty() && appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+            if (appCMSBinder != null && appCMSBinder.getPageId().equalsIgnoreCase(appCMSPresenter.getDownloadPageId())) {
+                isDownloadPageOpen = true;
+            } else {
+                isDownloadPageOpen = false;
+            }
+        }
+
+        if (!appCMSPresenter.isNetworkConnected() && !isDownloadPageOpen) {
             appCMSPresenter.showNoNetworkConnectivityToast();
         }
     }
