@@ -1566,7 +1566,7 @@ public class AppCMSPresenter {
             // ADD WATCHLIST API CALLING
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             if (isUserLoggedIn()) {
-                editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
+                editWatchlist(contentDatum.getGist().getId(), appCMSAddToWatchlistResult -> {
                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
                 }, isAddedOrNot);
