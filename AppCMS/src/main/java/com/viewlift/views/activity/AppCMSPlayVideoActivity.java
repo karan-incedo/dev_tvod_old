@@ -430,6 +430,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        appCMSPresenter.setCancelAllLoads(false);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -446,6 +452,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         appCMSPresenter.restrictLandscapeOnly();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        appCMSPresenter.setCancelAllLoads(true);
     }
 
     @Override

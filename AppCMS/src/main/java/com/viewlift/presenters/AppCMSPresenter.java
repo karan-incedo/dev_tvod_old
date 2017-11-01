@@ -6508,10 +6508,10 @@ public class AppCMSPresenter {
                             try {
                                 dialog.dismiss();
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
-                                navigateToLoginPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
+                                navigateToLoginPage(false);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
                             }
@@ -6520,10 +6520,10 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToSubscriptionPlansPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
+                                navigateToSubscriptionPlansPage(false);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
                             }
@@ -6538,10 +6538,10 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToLoginPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
+                                navigateToLoginPage(false);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error closing login required dialog: " + e.getMessage());
                             }
@@ -6577,10 +6577,10 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToSubscriptionPlansPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
+                                navigateToSubscriptionPlansPage(false);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error closing navigate to subscription dialog: " + e.getMessage());
                             }
@@ -6591,9 +6591,9 @@ public class AppCMSPresenter {
                 builder.setOnKeyListener((arg0, keyCode, event) -> {
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         if (onCloseAction != null) {
-                            //if user press back key without doing login subscription ,clear saved data 
-                            setEntitlementPendingVideoData(null);
                             onCloseAction.call();
+                            //if user press back key without doing login subscription ,clear saved data
+                            setEntitlementPendingVideoData(null);
                         }
                     }
                     return true;
