@@ -196,6 +196,12 @@ public class AppCMSPageFragment extends Fragment {
         updateDataLists();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        updateDataLists();
+    }
+
     public void updateDataLists() {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();

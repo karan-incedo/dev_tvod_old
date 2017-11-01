@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.SpannableString;
@@ -26,6 +27,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.request.BasePostprocessor;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -56,6 +63,7 @@ public class CollectionGridItemView extends BaseView {
     private boolean selectable;
     private boolean createMultipleContainersForChildren;
     private boolean createRoundedCorners;
+    private GradientPostProcessor gradientPostProcessor;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -75,6 +83,7 @@ public class CollectionGridItemView extends BaseView {
         this.viewsToUpdateOnClickEvent = new ArrayList<>();
         this.createMultipleContainersForChildren = createMultipleContainersForChildren;
         this.createRoundedCorners = createRoundedCorners;
+        this.gradientPostProcessor = new GradientPostProcessor();
         init();
     }
 
@@ -265,11 +274,15 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(childViewWidth, childViewHeight)
-                                    .centerCrop()
-                                    .into((ImageView) view);
+                            if (view instanceof SimpleDraweeView) {
+                                ((SimpleDraweeView) view).setImageURI(imageUrl);
+                            } else {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) view);
+                            }
                         } catch (Exception e) {
 
                         }
@@ -284,11 +297,15 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(childViewWidth, childViewHeight)
-                                    .centerCrop()
-                                    .into((ImageView) view);
+                            if (view instanceof SimpleDraweeView) {
+                                ((SimpleDraweeView) view).setImageURI(imageUrl);
+                            } else {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) view);
+                            }
                         } catch (Exception e) {
 
                         }
@@ -304,65 +321,81 @@ public class CollectionGridItemView extends BaseView {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
 
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .transform(new BitmapTransformation(context) {
-                                        @Override
-                                        public String getId() {
-                                            return imageUrl;
-                                        }
+                            if (view instanceof SimpleDraweeView) {
+                                gradientPostProcessor.imageWidth = imageWidth;
+                                gradientPostProcessor.imageHeight = imageHeight;
+                                ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(imageUrl))
+                                        .setPostprocessor(gradientPostProcessor)
+                                        .build();
 
-                                        @Override
-                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
-                                                                   int outWidth, int outHeight) {
-                                            int width = toTransform.getWidth();
-                                            int height = toTransform.getHeight();
-
-                                            boolean scaleImageUp = false;
-
-                                            Bitmap sourceWithGradient;
-                                            if (width < imageWidth &&
-                                                    height < imageHeight) {
-                                                scaleImageUp = true;
-                                                float widthToHeightRatio =
-                                                        (float) width / (float) height;
-                                                width = (int) (imageHeight * widthToHeightRatio);
-                                                height = imageHeight;
-                                                sourceWithGradient =
-                                                        Bitmap.createScaledBitmap(toTransform,
-                                                                width,
-                                                                height,
-                                                                false);
-                                            } else {
-                                                sourceWithGradient =
-                                                        Bitmap.createBitmap(width,
-                                                                height,
-                                                                Bitmap.Config.ARGB_8888);
+                                DraweeController draweeController = Fresco.newDraweeControllerBuilder()
+                                        .setImageRequest(imageRequest)
+                                        .build();
+                                view.getLayoutParams().width = imageWidth;
+                                view.getLayoutParams().height = imageHeight;
+                                ((SimpleDraweeView) view).setController(draweeController);
+//                                ((SimpleDraweeView) view).setImageURI(imageUrl);
+                            } else {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                        .transform(new BitmapTransformation(context) {
+                                            @Override
+                                            public String getId() {
+                                                return imageUrl;
                                             }
 
-                                            Canvas canvas = new Canvas(sourceWithGradient);
-                                            if (!scaleImageUp) {
-                                                canvas.drawBitmap(toTransform, 0, 0, null);
-                                            }
+                                            @Override
+                                            protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+                                                                       int outWidth, int outHeight) {
+                                                int width = toTransform.getWidth();
+                                                int height = toTransform.getHeight();
 
-                                            Paint paint = new Paint();
-                                            LinearGradient shader = new LinearGradient(0,
-                                                    0,
-                                                    0,
-                                                    height,
-                                                    0xFFFFFFFF,
-                                                    0xFF000000,
-                                                    Shader.TileMode.CLAMP);
-                                            paint.setShader(shader);
-                                            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-                                            canvas.drawRect(0, 0, width, height, paint);
-                                            toTransform.recycle();
-                                            paint = null;
-                                            return sourceWithGradient;
-                                        }
-                                    })
-                                    .into((ImageView) view);
+                                                boolean scaleImageUp = false;
+
+                                                Bitmap sourceWithGradient;
+                                                if (width < imageWidth &&
+                                                        height < imageHeight) {
+                                                    scaleImageUp = true;
+                                                    float widthToHeightRatio =
+                                                            (float) width / (float) height;
+                                                    width = (int) (imageHeight * widthToHeightRatio);
+                                                    height = imageHeight;
+                                                    sourceWithGradient =
+                                                            Bitmap.createScaledBitmap(toTransform,
+                                                                    width,
+                                                                    height,
+                                                                    false);
+                                                } else {
+                                                    sourceWithGradient =
+                                                            Bitmap.createBitmap(width,
+                                                                    height,
+                                                                    Bitmap.Config.ARGB_8888);
+                                                }
+
+                                                Canvas canvas = new Canvas(sourceWithGradient);
+                                                if (!scaleImageUp) {
+                                                    canvas.drawBitmap(toTransform, 0, 0, null);
+                                                }
+
+                                                Paint paint = new Paint();
+                                                LinearGradient shader = new LinearGradient(0,
+                                                        0,
+                                                        0,
+                                                        height,
+                                                        0xFFFFFFFF,
+                                                        0xFF000000,
+                                                        Shader.TileMode.CLAMP);
+                                                paint.setShader(shader);
+                                                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+                                                canvas.drawRect(0, 0, width, height, paint);
+                                                toTransform.recycle();
+                                                paint = null;
+                                                return sourceWithGradient;
+                                            }
+                                        })
+                                        .into((ImageView) view);
+                            }
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
@@ -376,10 +409,14 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
-                                .into((ImageView) view);
+                        if (view instanceof SimpleDraweeView) {
+                            ((SimpleDraweeView) view).setImageURI(imageUrl);
+                        } else {
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(childViewWidth, childViewHeight)
+                                    .into((ImageView) view);
+                        }
                     }
                     bringToFront = false;
                 }
@@ -575,6 +612,39 @@ public class CollectionGridItemView extends BaseView {
             public ItemContainer build() {
                 return itemContainer;
             }
+        }
+    }
+
+    private static class GradientPostProcessor extends BasePostprocessor {
+        int imageWidth;
+        int imageHeight;
+
+
+
+        @Override
+        public void process(Bitmap bitmap) {
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+
+            boolean scaleImageUp = false;
+
+            Canvas canvas = new Canvas(bitmap);
+            if (!scaleImageUp) {
+                canvas.drawBitmap(bitmap, 0, 0, null);
+            }
+
+            Paint paint = new Paint();
+            LinearGradient shader = new LinearGradient(0,
+                    0,
+                    0,
+                    height,
+                    0xFFFFFFFF,
+                    0xFF000000,
+                    Shader.TileMode.CLAMP);
+            paint.setShader(shader);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+            canvas.drawRect(0, 0, width, height, paint);
+            paint = null;
         }
     }
 }

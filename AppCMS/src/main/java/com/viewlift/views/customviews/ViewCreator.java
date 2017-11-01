@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -1050,7 +1051,8 @@ public class ViewCreator {
                 AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView);
                 if (module.getComponents() != null) {
-                    for (int i = 0; i < module.getComponents().size(); i++) {
+                    int size = module.getComponents().size();
+                    for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
 
                         createComponentView(context,
@@ -1161,7 +1163,8 @@ public class ViewCreator {
                         List<ModuleView.ChildComponentAndView> childComponentAndViewList =
                                 moduleView.getChildComponentAndViewList();
 
-                        for (int j = 0; j < childComponentAndViewList.size(); j++) {
+                        int componentViewListSize = childComponentAndViewList.size();
+                        for (int j = 0; j < componentViewListSize; j++) {
                             ModuleView.ChildComponentAndView childComponentAndView = childComponentAndViewList.get(j);
 
                             ViewGroup.MarginLayoutParams childLayoutParams =
@@ -1254,7 +1257,8 @@ public class ViewCreator {
                 createRoundedCorners);
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
-        for (int i = 0; i < component.getComponents().size(); i++) {
+        int size = component.getComponents().size();
+        for (int i = 0; i < size; i++) {
             Component childComponent = component.getComponents().get(i);
             createComponentView(context,
                     childComponent,
@@ -2462,7 +2466,7 @@ public class ViewCreator {
                 break;
 
             case PAGE_IMAGE_KEY:
-                componentViewResult.componentView = new ImageView(context);
+                componentViewResult.componentView = new SimpleDraweeView(context);
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
@@ -2478,20 +2482,32 @@ public class ViewCreator {
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                                Glide.with(context)
-                                        .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
-                                        .override(viewWidth, viewHeight)
-                                        .into((ImageView) componentViewResult.componentView);
+                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
+                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl());
+                                } else {
+                                    Glide.with(context)
+                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+                                            .override(viewWidth, viewHeight)
+                                            .into((ImageView) componentViewResult.componentView);
+                                }
                             } else if (viewWidth > 0) {
-                                Glide.with(context)
-                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                        .override(viewWidth, viewHeight)
-                                        .centerCrop()
-                                        .into((ImageView) componentViewResult.componentView);
+                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
+                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
+                                } else {
+                                    Glide.with(context)
+                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                            .override(viewWidth, viewHeight)
+                                            .centerCrop()
+                                            .into((ImageView) componentViewResult.componentView);
+                                }
                             } else {
-                                Glide.with(context)
-                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                        .into((ImageView) componentViewResult.componentView);
+                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
+                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
+                                } else {
+                                    Glide.with(context)
+                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                            .into((ImageView) componentViewResult.componentView);
+                                }
                             }
                             componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = false;
@@ -2545,10 +2561,15 @@ public class ViewCreator {
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
-                            Glide.with(context)
-                                    .load(component.getImageName())
-                                    .into((ImageView) componentViewResult.componentView);
+                            if (componentViewResult.componentView instanceof SimpleDraweeView) {
+                                ((SimpleDraweeView) componentViewResult.componentView).setImageURI(component.getImageName());
+                            } else {
+                                Glide.with(context)
+                                        .load(component.getImageName())
+                                        .into((ImageView) componentViewResult.componentView);
+                            }
                         }
+
                         ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         break;
                 }
