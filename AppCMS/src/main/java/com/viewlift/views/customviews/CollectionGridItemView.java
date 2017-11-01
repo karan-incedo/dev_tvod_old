@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -46,10 +47,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-/**
+/*
  * Created by viewlift on 5/5/17.
  */
 
+@SuppressLint("ViewConstructor")
 public class CollectionGridItemView extends BaseView {
     private static final String TAG = "CollectionItemView";
 
@@ -284,7 +286,7 @@ public class CollectionGridItemView extends BaseView {
                                         .into((ImageView) view);
                             }
                         } catch (Exception e) {
-
+                            //
                         }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
@@ -307,7 +309,7 @@ public class CollectionGridItemView extends BaseView {
                                         .into((ImageView) view);
                             }
                         } catch (Exception e) {
-
+                            //
                         }
                     } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
@@ -567,13 +569,12 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public Component matchComponentToView(View view) {
-        Component result = null;
         for (ItemContainer itemContainer : childItems) {
             if (itemContainer.childView == view) {
                 return itemContainer.component;
             }
         }
-        return result;
+        return null;
     }
 
     public List<View> getViewsToUpdateOnClickEvent() {
@@ -599,7 +600,7 @@ public class CollectionGridItemView extends BaseView {
                 itemContainer = new ItemContainer();
             }
 
-            public Builder childView(View childView) {
+            Builder childView(View childView) {
                 itemContainer.childView = childView;
                 return this;
             }
@@ -618,7 +619,6 @@ public class CollectionGridItemView extends BaseView {
     private static class GradientPostProcessor extends BasePostprocessor {
         int imageWidth;
         int imageHeight;
-
 
 
         @Override
