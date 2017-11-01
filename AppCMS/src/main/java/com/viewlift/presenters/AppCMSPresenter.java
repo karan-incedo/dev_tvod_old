@@ -883,6 +883,9 @@ public class AppCMSPresenter {
                                     updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
                                 }
 
+                                Log.d(TAG, "Existing watched time: " + contentDatum.getGist().getWatchedTime());
+                                Log.d(TAG, "Updated watched time: " + appCMSVideoDetail.getRecords().get(0).getGist().getWatchedTime());
+
                                 appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
                                 appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
 
@@ -6305,6 +6308,10 @@ public class AppCMSPresenter {
             }
         }
         return false;
+    }
+
+    public boolean isPageLoginPage(String pageId) {
+        return loginPage != null && !TextUtils.isEmpty(pageId) && !TextUtils.isEmpty(loginPage.getPageId()) && loginPage.getPageId().equals(pageId);
     }
 
     @SuppressWarnings("unused")
