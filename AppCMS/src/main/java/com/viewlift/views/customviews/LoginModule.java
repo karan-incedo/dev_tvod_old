@@ -59,8 +59,8 @@ public class LoginModule extends ModuleView {
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
     private AppCMSAndroidModules appCMSAndroidModules;
-    private String loginAction;
-    private String signupAction;
+    //    private String loginAction;
+    private String loginInSignUpAction;
     // variable to track event time
 
     public LoginModule(Context context,
@@ -342,10 +342,9 @@ public class LoginModule extends ModuleView {
                     }
                     switch (componentType) {
                         case PAGE_BUTTON_KEY:
-                            if (componentKey == AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY) {
-                                loginAction = component.getAction();
-                            } else if (componentKey == AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY) {
-                                signupAction = component.getAction();
+                            if (componentKey == AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY ||
+                                    (componentKey == AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY)) {
+                                loginInSignUpAction = component.getAction();
                             }
 
                             componentView.setOnClickListener(v -> {
@@ -381,43 +380,6 @@ public class LoginModule extends ModuleView {
                                     break;
 
                                 case PAGE_PASSWORDTEXTFIELD_KEY:
-                                    passwordInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
-                                    passwordInputViews[childIndex]
-                                            .setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                                    passwordInputViews[childIndex].setImeOptions(EditorInfo.IME_ACTION_SEND);
-                                    passwordInputViews[childIndex]
-                                            .setTransformationMethod(PasswordTransformationMethod.getInstance());
-
-                                    passwordInputViews[childIndex].setOnEditorActionListener((v, actionId, event) -> {
-                                        boolean isImeActionSent = false;
-                                        if (actionId == EditorInfo.IME_ACTION_SEND) {
-                                            if (!appCMSPresenter.isPageLoading() &&
-                                                    visibleEmailInputView != null &&
-                                                    visiblePasswordInputView != null) {
-                                                appCMSPresenter.showLoadingDialog(true);
-                                                String[] authData = new String[2];
-                                                authData[0] = visibleEmailInputView.getText().toString();
-                                                authData[1] = visiblePasswordInputView.getText().toString();
-                                                appCMSPresenter.launchButtonSelectedAction(null,
-                                                        signupAction,
-                                                        null,
-                                                        authData,
-                                                        null,
-                                                        true,
-                                                        0,
-                                                        null);
-                                            }
-                                            isImeActionSent = true;
-                                        }
-                                        return isImeActionSent;
-                                    });
-
-                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], con);
-                                    if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                                        visiblePasswordInputView = passwordInputViews[1];
-                                    }
-                                    break;
-
                                 case PAGE_PASSWORDTEXTFIELD2_KEY:
                                     passwordInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
                                     passwordInputViews[childIndex]
@@ -437,7 +399,7 @@ public class LoginModule extends ModuleView {
                                                 authData[0] = visibleEmailInputView.getText().toString();
                                                 authData[1] = visiblePasswordInputView.getText().toString();
                                                 appCMSPresenter.launchButtonSelectedAction(null,
-                                                        signupAction,
+                                                        loginInSignUpAction,
                                                         null,
                                                         authData,
                                                         null,
