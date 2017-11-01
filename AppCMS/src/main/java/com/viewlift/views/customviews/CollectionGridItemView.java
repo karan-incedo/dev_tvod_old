@@ -628,6 +628,15 @@ public class CollectionGridItemView extends BaseView {
 
             boolean scaleImageUp = false;
 
+            if (width < imageWidth &&
+                    height < imageHeight) {
+                scaleImageUp = true;
+                float widthToHeightRatio =
+                        (float) width / (float) height;
+                width = (int) (imageHeight * widthToHeightRatio);
+                height = imageHeight;
+            }
+
             Canvas canvas = new Canvas(bitmap);
             if (!scaleImageUp) {
                 canvas.drawBitmap(bitmap, 0, 0, null);
