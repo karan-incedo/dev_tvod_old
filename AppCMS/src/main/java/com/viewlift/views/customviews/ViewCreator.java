@@ -1874,7 +1874,7 @@ public class ViewCreator {
                                     appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
                                             currentPlayingIndex,
                                             relatedVideoIds,
-                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),,
+                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
                                             component.getAction());
 
                                 }
