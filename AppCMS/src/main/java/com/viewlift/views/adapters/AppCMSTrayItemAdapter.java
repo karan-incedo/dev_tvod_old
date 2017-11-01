@@ -738,6 +738,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         } else if (isWatchlist) {
             appCMSPresenter.getWatchlistData(appCMSWatchlistResult -> {
                 if (appCMSWatchlistResult != null) {
+                    adapterData = appCMSWatchlistResult.convertToAppCMSPageAPI(null).getModules()
+                            .get(0).getContentData();
                     sortData();
                     notifyDataSetChanged();
                 }
