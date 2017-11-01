@@ -77,7 +77,6 @@ import rx.functions.Action1;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private ComponentViewResult componentViewResult;
-    private int idOfComponentAboveRemoveAllButton;
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60L);
@@ -1410,8 +1409,6 @@ public class ViewCreator {
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
-
-                    idOfComponentAboveRemoveAllButton = componentViewResult.componentView.getId();
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
@@ -3230,6 +3227,8 @@ public class ViewCreator {
                 } else if (buttonStatus == View.GONE) {
                     removeAllButton.setVisibility(View.GONE);
                 }
+
+                removeAllButton.requestLayout();
             }
         }
 
