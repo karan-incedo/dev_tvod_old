@@ -1252,6 +1252,8 @@ public class ViewCreator {
                 defaultHeight,
                 createMultipleContainersForChildren,
                 createRoundedCorners);
+
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
         int size = component.getComponents().size();
@@ -1977,25 +1979,27 @@ public class ViewCreator {
                                     case PAGE_HISTORY_MODULE_KEY:
                                         appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
                                             onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
                                         });
                                         break;
 
                                     case PAGE_DOWNLOAD_MODULE_KEY:
                                         appCMSPresenter.clearDownload(appCMSAddToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
                                         });
                                         break;
 
                                     case PAGE_WATCHLIST_MODULE_KEY:
                                         appCMSPresenter.clearWatchlist(addToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
                                         });
                                         break;
 
                                     default:
                                         break;
                                 }
-                                v.setVisibility(View.GONE);
                             }
                         });
                         break;
