@@ -77,7 +77,6 @@ import rx.functions.Action1;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private ComponentViewResult componentViewResult;
-    private int idOfComponentAboveRemoveAllButton;
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60L);
@@ -1253,6 +1252,8 @@ public class ViewCreator {
                 defaultHeight,
                 createMultipleContainersForChildren,
                 createRoundedCorners);
+
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
         int size = component.getComponents().size();
@@ -1410,8 +1411,6 @@ public class ViewCreator {
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
-
-                    idOfComponentAboveRemoveAllButton = componentViewResult.componentView.getId();
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
@@ -1980,25 +1979,27 @@ public class ViewCreator {
                                     case PAGE_HISTORY_MODULE_KEY:
                                         appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
                                             onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
                                         });
                                         break;
 
                                     case PAGE_DOWNLOAD_MODULE_KEY:
                                         appCMSPresenter.clearDownload(appCMSAddToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
                                         });
                                         break;
 
                                     case PAGE_WATCHLIST_MODULE_KEY:
                                         appCMSPresenter.clearWatchlist(addToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
+                                            v.setVisibility(View.GONE);
                                         });
                                         break;
 
                                     default:
                                         break;
                                 }
-                                v.setVisibility(View.GONE);
                             }
                         });
                         break;
@@ -3230,6 +3231,8 @@ public class ViewCreator {
                 } else if (buttonStatus == View.GONE) {
                     removeAllButton.setVisibility(View.GONE);
                 }
+
+                removeAllButton.requestLayout();
             }
         }
 

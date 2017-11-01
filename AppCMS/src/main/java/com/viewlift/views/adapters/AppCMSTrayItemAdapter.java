@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
+/*
  * Created by viewlift on 7/7/17.
  */
 
@@ -51,15 +51,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private static final String TAG = "AppCMSTrayAdapter";
 
     private static final int SECONDS_PER_MINS = 60;
-    protected List<ContentDatum> adapterData;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
-    protected String defaultAction;
-    protected boolean isHistory;
-    protected boolean isDownload;
-    protected boolean isWatchlist;
     RecyclerView mRecyclerView;
+    private List<ContentDatum> adapterData;
+    private String defaultAction;
+    private boolean isHistory;
+    private boolean isDownload;
+    private boolean isWatchlist;
     private List<OnInternalEvent> receivers;
     private int tintColor;
     private String userId;
@@ -226,7 +226,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                             contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
-                            appCMSPresenter.sendRefreshPageAction();
+//                            appCMSPresenter.sendRefreshPageAction();
                             break;
 
                         case STATUS_INTERRUPTED:
@@ -441,6 +441,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return lastWatchedMessage;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private ContentDatum getNextContentDatum(int position) {
         if (position + 1 == adapterData.size()) {
             return null;
@@ -492,7 +493,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             return;
         }
 
+        @SuppressWarnings("unused")
         boolean networkAvailable = appCMSPresenter.isNetworkConnected();
+
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist() != null ? data.getGist().getTitle() : null;
@@ -813,6 +816,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return context.getString(R.string.app_cms_action_detailvideopage_key);
     }
 
+    @SuppressWarnings("unused")
     private void showDelete(ContentDatum contentDatum) {
         //Log.d(TAG, "Show delete button");
     }
