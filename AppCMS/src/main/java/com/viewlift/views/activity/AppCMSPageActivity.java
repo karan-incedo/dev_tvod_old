@@ -32,6 +32,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -279,7 +280,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                        if(!appCMSPresenter.isSignUpFromFacebook()){
+                        if (!appCMSPresenter.isSignUpFromFacebook()) {
                             pageLoading(false);
                         }
                         handleLaunchPageAction(appCMSBinder,
@@ -421,7 +422,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         shouldSendCloseOthersAction = false;
 
         callbackManager = CallbackManager.Factory.create();
-
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -461,13 +461,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     @Override
                     public void onCancel() {
                         // App code
-                        //Log.e(TAG, "Facebook login was cancelled");
+//                        Log.e(TAG, "Facebook login was cancelled");
+                        pageLoading(false);
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         // App code
-                        //Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+//                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+                        pageLoading(false);
                     }
                 });
 
@@ -710,7 +712,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else if (cancelLoadingOnFinish) {
                 pageLoading(false);
             }
-        } else if(cancelLoadingOnFinish) {
+        } else if (cancelLoadingOnFinish) {
             pageLoading(false);
         }
     }
@@ -859,6 +861,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
         } else if (resultCode == RESULT_CANCELED) {
+            pageLoading(false);
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku())) {
                     appCMSPresenter.showConfirmCancelSubscriptionDialog(retry -> {
@@ -1407,7 +1410,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            if(!appCMSPresenter.isSignUpFromFacebook()){
+            if (!appCMSPresenter.isSignUpFromFacebook()) {
                 pageLoading(false);
             }
 
@@ -2042,8 +2045,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         .getName();
                 String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
                         lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
-                        lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
-                        lastBackStackEntryName.length());
+                                lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
+                                        lastBackStackEntryName.length());
                 while (lastBackStackCount > 0 &&
                         getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
                     getSupportFragmentManager().popBackStackImmediate();
