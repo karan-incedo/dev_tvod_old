@@ -8,7 +8,9 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -59,16 +61,35 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String primaryCategory;
     private String contentRating;
     private long videoRunTime;
+    private FrameLayout appCMSPlayVideoPageContainer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        setFullScreenFocus();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player_page);
 
         appCMSPresenter = ((AppCMSApplication) getApplication()).
                 getAppCMSPresenterComponent().appCMSPresenter();
 
-        FrameLayout appCMSPlayVideoPageContainer =
+        getBundleData();
+    }
+    @Override
+    protected void onNewIntent(Intent intent) {
+        try {
+            Fragment fragmentPlayer = getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container);
+            if (fragmentPlayer != null) {
+                getSupportFragmentManager()
+                        .beginTransaction().
+                        remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commitAllowingStateLoss();
+            }
+        } catch (Exception e) {
+        }
+        getBundleData();
+        super.onNewIntent(intent);
+    }
+    private void getBundleData() {
+        appCMSPlayVideoPageContainer =
                 (FrameLayout) findViewById(R.id.app_cms_play_video_page_container);
 
         Intent intent = getIntent();
@@ -90,7 +111,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 String fontColor = binder.getFontColor();
 
                 if (binder.isOffline()) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable(){
+                        @Override
+                        public void run(){
+                            try {
                     launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                            } catch (Exception e) {
+                            }
+                        }
+                    }, 500);
                 } else {
                     // TODO: This call is getting stuck in some devices indefinitely and therefore the resulting video screen is always blank because the fragment is being created
 //                    appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
@@ -121,7 +151,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
                     //Log.d(TAG, "Closing activity");
-                    finish();
+//                    finish();
                 }
             }
         };
@@ -426,6 +456,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+        appCMSPresenter.setEntitlementPendingVideoData(null);
     }
 
     @Override

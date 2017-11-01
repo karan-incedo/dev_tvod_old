@@ -25,7 +25,7 @@
     <string name="text_separator">&#160;|&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>
-    <string name="string_with_ellipse_and_more">%1$s&#8230;MORE</string>
+    <string name="string_with_ellipse_and_more">%1$s&#8230; MORE</string>
     <string name="text_with_color"><![CDATA[<font color=\'#%1$s\'>%2$s</font>]]></string>
     <string name="video_player_hls_url_key">video_player_hls_url</string>
     <string name="video_layer_film_id_key">film_id</string>
@@ -58,15 +58,17 @@
     <string name="app_cms_ok_alert_dialog_button_text">OK</string>
 
     <!-- Age rating values -->
+    <string name="age_rating_g">G</string>
     <string name="age_rating_y">Y</string>
     <string name="age_rating_y7">Y7</string>
-    <string name="age_rating_g">G</string>
+    <string name="age_rating_ua">UA</string>
     <string name="age_rating_pg">PG</string>
-    <string name="age_raging_r">R</string>
     <string name="age_rating_fourteen">14</string>
+    <string name="age_raging_r">R</string>
+    <string name="age_rating_converted_g">0+</string>
     <string name="age_rating_converted_y">2+</string>
     <string name="age_rating_converted_y7">7+</string>
-    <string name="age_rating_converted_g">0+</string>
+    <string name="age_rating_converted_ua">12+</string>
     <string name="age_rating_converted_pg">13+</string>
     <string name="age_rating_converted_fourteen">14+</string>
     <string name="age_rating_converted_eighteen">18+</string>
@@ -179,7 +181,7 @@
     <string name="app_cms_more_title_key">app_cms_more_title</string>
     <string name="more_page_action">MorePage</string>
 
-
+    <!-- AppCMS Apptentive API -->
     <string name="app_cms_button_color_key">app_cms_button_color</string>
 
     <!-- Google Authentication API -->
@@ -193,7 +195,7 @@
     <string name="google_cancel_subscription_api">https://www.googleapis.com/androidpublisher/v2/applications/$1%s/purchases/subscriptions/$2%s/tokens/$3%s:cancel</string>
     <string name="minutes_for_runtime">MINS</string>
 
-
+    <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
     <string name="app_cms_appsflyer_film_id">af_film_id</string>
     <string name="app_cms_appsflyer_course_id">af_course_id</string>
@@ -304,7 +306,6 @@
     <string name="app_cms_negative_confirmation_button_text">NO</string>
     <string name="download_file_prefix">file:///</string>
 
-    <!-- cast receiver -->
     <string name="app_cms_signup_invalid_email_and_password_message">Please enter a non-blank email and password.</string>
     <string name="app_cms_signup_invalid_email_message">Please enter a non-blank email.</string>
     <string name="app_cms_signup_blank_password_message">Please enter a non-blank password.</string>
@@ -415,6 +416,7 @@
     <string name="subscription_purchased_from_android_msg">This subscription was purchased on Google Play Store. To modify it, please visit your account settings on your Android device.</string>
     <string name="subscription_purchased_from_apple_msg">This subscription was purchased on Apple App Store. To modify it, please visit your account settings on your Apple device.</string>
     <string name="subscription_not_purchased">You are currently not a subscriber, please visit our website to purchase a subscription.</string>
+
     <string name="signed_policy_key">signed_policy</string>
     <string name="signed_signature_key">signed_signature</string>
     <string name="signed_keypairid_key">signed_keypairid</string>
@@ -423,6 +425,7 @@
     <string name="app_cms_retry_text">RETRY</string>
     <string name="app_cms_close_text">CLOSE</string>
     <string name="close_one_page_key">close_one_page</string>
+
 </resources>
 
 

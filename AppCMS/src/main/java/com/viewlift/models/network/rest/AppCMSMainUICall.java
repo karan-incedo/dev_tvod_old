@@ -104,7 +104,7 @@ public class AppCMSMainUICall {
             }
 
             try {
-                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
+//                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
                 main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
             } catch (Exception e) {
                 Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
@@ -119,7 +119,8 @@ public class AppCMSMainUICall {
 
 
             if (main != null && mainInStorage != null) {
-                main.setLoadFromFile(true);
+                Log.d(TAG, "Read main.json in storage version: " + mainInStorage.getVersion());
+                main.setLoadFromFile(main.getVersion().equals(mainInStorage.getVersion()));
             }
 
             if (main != null) {

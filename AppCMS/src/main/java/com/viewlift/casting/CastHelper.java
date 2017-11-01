@@ -86,6 +86,7 @@ public class CastHelper {
     private boolean sentBeaconFirstFrame;
     private boolean sendBeaconPing;
 
+    private boolean onAppDisConnectCalled = false;
     private Action1<OnApplicationEnded> onApplicationEndedAction;
     private String imageUrl = "";
     private String title = "";
@@ -93,7 +94,7 @@ public class CastHelper {
     private String paramLink = "";
 
     private static String mStreamId;
-    private long mStartBufferMilliSec;
+    private long mStartBufferMilliSec = 0l;
     private long mStopBufferMilliSec;
     private static double ttfirstframe = 0d;
     private long beaconBufferingTime;
@@ -352,8 +353,6 @@ public class CastHelper {
             }
 
 
-
-
         }
     }
 
@@ -418,6 +417,7 @@ public class CastHelper {
                     customData,
                     mAppContext), true, currentPosition);
             getRemoteMediaClient().addListener(remoteListener);
+            onAppDisConnectCalled = false;
         }
 
     }
@@ -579,8 +579,9 @@ public class CastHelper {
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
                 CastingUtils.isMediaQueueLoaded = true;
-                if (callBackRemoteListener != null && mActivity!=null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null) {
-
+                onAppDisConnectCalled = false;
+                if (callBackRemoteListener != null && mActivity != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null && !onAppDisConnectCalled) {
+                    onAppDisConnectCalled = true;
                     //if player activity already opened than finish it
                     if (onApplicationEndedAction != null) {
                         Observable.just(onApplicationEnded).subscribe(onApplicationEndedAction);
@@ -632,7 +633,7 @@ public class CastHelper {
                     String currentRemoteMediaId = CastingUtils.getRemoteMediaId(mAppContext);
                     String currentMediaParamKey = CastingUtils.getRemoteParamKey(mAppContext);
 
-                    System.out.println("on progress update media id- "+currentRemoteMediaId);
+                    System.out.println("on progress update media id- " + currentRemoteMediaId);
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                         appCMSPresenterComponenet.updateWatchedTime(currentRemoteMediaId,
                                 castCurrentDuration);
@@ -730,7 +731,7 @@ public class CastHelper {
                     MediaStatus.REPEAT_MODE_REPEAT_OFF, currentMediaPosition, null);
             getRemoteMediaClient().addListener(remoteListener);
             getRemoteMediaClient().addProgressListener(progressListener, 1000);
-
+            onAppDisConnectCalled = false;
         } else if (binderPlayScreen != null && binderPlayScreen.getContentData() != null) {
 
             videoUrl = CastingUtils.getPlayingUrl(binderPlayScreen.getContentData());
@@ -809,14 +810,14 @@ public class CastHelper {
 
         if (listRelatedVideosDetails != null && listRelatedVideosDetails.size() > 0) {
             int currentVideoDetailIndex = getCurrentIndex(listRelatedVideosDetails, CastingUtils.castingMediaId);
-            if (currentVideoDetailIndex <= listRelatedVideosDetails.size()) {
+            if (currentVideoDetailIndex >= listRelatedVideosDetails.size()) {
                 isFinish = true;
             }
         } else {
             isFinish = true;
         }
 
-        if(getRemoteMediaClient()==null){
+        if (getRemoteMediaClient() == null) {
             return;
         }
         int status = getRemoteMediaClient().getPlayerState();
@@ -829,7 +830,6 @@ public class CastHelper {
             mStartBufferMilliSec = new Date().getTime();
             if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                 mStopBufferMilliSec = new Date().getTime();
-                ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                 appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
                         currentMediaParamKey,
                         beaconScreenName,
@@ -841,7 +841,7 @@ public class CastHelper {
                         null,
                         null,
                         mStreamId,
-                        ttfirstframe,
+                        0d,
                         0,
                         isVideoDownloaded);
                 sentBeaconPlay = true;
@@ -854,7 +854,7 @@ public class CastHelper {
 
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                         mStopBufferMilliSec = new Date().getTime();
-                        ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                        ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                         appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
@@ -884,9 +884,9 @@ public class CastHelper {
 
             case MediaStatus.PLAYER_STATE_BUFFERING:
                 sendBeaconPing = false;
-                if ( ((System.currentTimeMillis()- beaconBufferingTime)/1000)>=5) {
+                if (((System.currentTimeMillis() - beaconBufferingTime) / 1000) >= 5) {
                     beaconBufferingTime = System.currentTimeMillis();
-                    if (appCMSPresenterComponenet != null ) {
+                    if (appCMSPresenterComponenet != null) {
                         appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
@@ -907,7 +907,6 @@ public class CastHelper {
 
 
                 }
-
 
 
                 break;
