@@ -64,6 +64,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
     protected AppCMSAndroidModules appCMSAndroidModules;
+    private boolean viewAvailable;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -132,6 +133,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.watchTrailerQuailifier = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
 
         this.appCMSAndroidModules = appCMSAndroidModules;
+
+        this.viewAvailable = false;
 
         sortPlansInDescendingOrderByPrice();
     }
@@ -272,12 +275,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return (adapterData != null ? adapterData.size() : 0);
+        if (viewAvailable) {
+            return (adapterData != null ? adapterData.size() : 0);
+        }
+        return 0;
     }
 
     @Override
     public void resetData(RecyclerView listView) {
-
+        viewAvailable = !viewAvailable;
+        notifyDataSetChanged();
     }
 
     @Override

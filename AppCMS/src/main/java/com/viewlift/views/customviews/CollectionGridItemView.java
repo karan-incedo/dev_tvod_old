@@ -26,6 +26,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -265,11 +266,15 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(childViewWidth, childViewHeight)
-                                    .centerCrop()
-                                    .into((ImageView) view);
+                            if (view instanceof SimpleDraweeView) {
+                                ((SimpleDraweeView) view).setImageURI(imageUrl);
+                            } else {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) view);
+                            }
                         } catch (Exception e) {
 
                         }
@@ -284,11 +289,15 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(childViewWidth, childViewHeight)
-                                    .centerCrop()
-                                    .into((ImageView) view);
+                            if (view instanceof SimpleDraweeView) {
+                                ((SimpleDraweeView) view).setImageURI(imageUrl);
+                            } else {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) view);
+                            }
                         } catch (Exception e) {
 
                         }
@@ -376,10 +385,14 @@ public class CollectionGridItemView extends BaseView {
                                 childViewWidth,
                                 childViewHeight);
 
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
-                                .into((ImageView) view);
+                        if (view instanceof SimpleDraweeView) {
+                            ((SimpleDraweeView) view).setImageURI(imageUrl);
+                        } else {
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(childViewWidth, childViewHeight)
+                                    .into((ImageView) view);
+                        }
                     }
                     bringToFront = false;
                 }

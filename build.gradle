@@ -55,6 +55,7 @@ allprojects {
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"
         jsoupVersion = "1.10.3"
+        frescoVersion = "1.5.0"
     }
 }
 

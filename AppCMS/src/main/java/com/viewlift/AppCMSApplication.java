@@ -9,6 +9,7 @@ import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
@@ -66,6 +67,7 @@ public class AppCMSApplication extends MultiDexApplication {
         new Thread(() -> {
             Fabric.with(AppCMSApplication.this, new Crashlytics());
             Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+            Fresco.initialize(this);
         }).run();
 
         closeAppMap = new HashMap<>();
