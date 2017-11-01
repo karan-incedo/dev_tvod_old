@@ -289,30 +289,26 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     && !binder.getContentData().getContentDetails().getTrailers().isEmpty()
                     && binder.getContentData().getContentDetails().getTrailers().get(0) != null
                     && binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+
                 title = binder.getContentData().getContentDetails().getTrailers().get(0).getTitle();
                 VideoAssets videoAssets = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets();
                 if (useHls) {
-                    videoUrl = videoAssets.getHls();
+                    videoUrl = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
                 }
                 if (TextUtils.isEmpty(videoUrl)) {
-                    if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
-                        if (videoAssets.getMpeg().get(0) != null) {
-                            videoUrl = videoAssets.getMpeg().get(0).getUrl();
-                        }
-                        for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                            if (videoAssets.getMpeg().get(i) != null &&
-                                    videoAssets.getMpeg().get(i).getRenditionValue() != null &&
-                                    videoAssets.getMpeg().get(i).getRenditionValue().contains(defaultVideoResolution)) {
-                                videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                    if (binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg() != null &&
+                            binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().isEmpty() &&
+                            binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(0) != null &&
+                            binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(0).getUrl() != null) {
+                        videoUrl = binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(0).getUrl();
+                        for (int i = 0; i < binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                            if (binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg() != null &&
+                                    binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(i) != null &&
+                                    binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(i).getUrl() != null &&
+                                    binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(i).getUrl().contains(defaultVideoResolution)) {
+                                videoUrl =  binder.getContentData().getContentDetails().getTrailers().get(0).getVideoAssets().getMpeg().get(i).getUrl();
                             }
                         }
-                    }
-                }
-
-                if (useHls && videoAssets.getMpeg() != null && videoAssets.getMpeg().size() > 0) {
-                    if (videoAssets.getMpeg().get(0).getUrl() != null &&
-                            videoAssets.getMpeg().get(0).getUrl().indexOf("?") > 0) {
-                        videoUrl = videoUrl + videoAssets.getMpeg().get(0).getUrl().substring(videoAssets.getMpeg().get(0).getUrl().indexOf("?"));
                     }
                 }
             } else {
@@ -430,12 +426,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        appCMSPresenter.setCancelAllLoads(false);
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
 
@@ -452,12 +442,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         appCMSPresenter.restrictLandscapeOnly();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        appCMSPresenter.setCancelAllLoads(true);
     }
 
     @Override
