@@ -77,7 +77,7 @@ public class ViewCreator {
     private static final String TAG = "ViewCreator";
     ComponentViewResult componentViewResult;
 
-    public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+    static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60L);
 
         String year = data.getGist().getYear();
@@ -89,25 +89,32 @@ public class ViewCreator {
                 && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
         boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
                 && !TextUtils.isEmpty(primaryCategory);
-        StringBuffer infoText = new StringBuffer();
-        if (runtime > 0) {
-            infoText.append(runtime + " " + context.getString(R.string.mins_abbreviation));
+
+        StringBuilder infoText = new StringBuilder();
+        if (runtime > 0 && runtime < 2) {
+            infoText.append(runtime).append(" ").append(context.getString(R.string.min_abbreviation));
+        } else if (runtime > 0) {
+            infoText.append(runtime).append(" ").append(context.getString(R.string.mins_abbreviation));
         } else {
-            infoText.append("0 " + context.getString(R.string.mins_abbreviation));
-            infoText.append(context.getString(R.string.text_separator));
+            infoText.append("0 ").append(context.getString(R.string.mins_abbreviation)).append(context.getString(R.string.text_separator));
         }
+
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));
         }
+
         if (!TextUtils.isEmpty(year)) {
             infoText.append(year);
         }
+
         if (appendSecondSep) {
             infoText.append(context.getString(R.string.text_separator));
         }
+
         if (!TextUtils.isEmpty(primaryCategory)) {
             infoText.append(primaryCategory.toUpperCase());
         }
+
         ((TextView) view).setText(infoText.toString());
         view.setAlpha(0.6f);
     }
@@ -120,14 +127,14 @@ public class ViewCreator {
         return color1;
     }
 
-    public void refreshPageView(PageView pageView,
-                                Context context,
-                                AppCMSPageUI appCMSPageUI,
-                                AppCMSPageAPI appCMSPageAPI,
-                                AppCMSAndroidModules appCMSAndroidModules,
-                                Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                AppCMSPresenter appCMSPresenter,
-                                List<String> modulesToIgnore) {
+    private void refreshPageView(PageView pageView,
+                                 Context context,
+                                 AppCMSPageUI appCMSPageUI,
+                                 AppCMSPageAPI appCMSPageAPI,
+                                 AppCMSAndroidModules appCMSAndroidModules,
+                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                 AppCMSPresenter appCMSPresenter,
+                                 List<String> modulesToIgnore) {
         if (appCMSPageUI == null) {
             return;
         }
@@ -907,6 +914,7 @@ public class ViewCreator {
             }
             newView = true;
         }
+
         if (newView ||
                 (!appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
@@ -935,18 +943,18 @@ public class ViewCreator {
         return pageView;
     }
 
-    public ComponentViewResult getComponentViewResult() {
+    ComponentViewResult getComponentViewResult() {
         return componentViewResult;
     }
 
-    protected void createPageView(Context context,
-                                  AppCMSPageUI appCMSPageUI,
-                                  AppCMSPageAPI appCMSPageAPI,
-                                  AppCMSAndroidModules appCMSAndroidModules,
-                                  PageView pageView,
-                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                  AppCMSPresenter appCMSPresenter,
-                                  List<String> modulesToIgnore) {
+    private void createPageView(Context context,
+                                AppCMSPageUI appCMSPageUI,
+                                AppCMSPageAPI appCMSPageAPI,
+                                AppCMSAndroidModules appCMSAndroidModules,
+                                PageView pageView,
+                                Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                AppCMSPresenter appCMSPresenter,
+                                List<String> modulesToIgnore) {
         appCMSPresenter.clearOnInternalEvents();
         pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
@@ -976,8 +984,8 @@ public class ViewCreator {
                 if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                         jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
                         jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
-
                 }
+
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
                 View childView = createModuleView(context, module, moduleAPI,
                         appCMSAndroidModules,
@@ -1008,13 +1016,13 @@ public class ViewCreator {
         }
     }
 
-    public <T extends ModuleWithComponents> View createModuleView(final Context context,
-                                                                  final T module,
-                                                                  final Module moduleAPI,
-                                                                  AppCMSAndroidModules appCMSAndroidModules,
-                                                                  PageView pageView,
-                                                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                                                  AppCMSPresenter appCMSPresenter) {
+    private <T extends ModuleWithComponents> View createModuleView(final Context context,
+                                                                   final T module,
+                                                                   final Module moduleAPI,
+                                                                   AppCMSAndroidModules appCMSAndroidModules,
+                                                                   PageView pageView,
+                                                                   Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                                                   AppCMSPresenter appCMSPresenter) {
         ModuleView moduleView = null;
         if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY) {
             moduleView = new LoginModule(context,
@@ -1288,18 +1296,18 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
-    public void createComponentView(final Context context,
-                                    final Component component,
-                                    final Layout parentLayout,
-                                    final Module moduleAPI,
-                                    final AppCMSAndroidModules appCMSAndroidModules,
-                                    @Nullable final PageView pageView,
-                                    final Settings settings,
-                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                                    final AppCMSPresenter appCMSPresenter,
-                                    boolean gridElement,
-                                    final String viewType,
-                                    String moduleId) {
+    void createComponentView(final Context context,
+                             final Component component,
+                             final Layout parentLayout,
+                             final Module moduleAPI,
+                             final AppCMSAndroidModules appCMSAndroidModules,
+                             @Nullable final PageView pageView,
+                             final Settings settings,
+                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                             final AppCMSPresenter appCMSPresenter,
+                             boolean gridElement,
+                             final String viewType,
+                             String moduleId) {
         componentViewResult.componentView = null;
         componentViewResult.useMarginsAsPercentagesOverride = true;
         componentViewResult.useWidthOfScreen = false;
@@ -2475,6 +2483,7 @@ public class ViewCreator {
 
                 if (!TextUtils.isEmpty(component.getFontFamily())) {
                     setTypeFace(context,
+                            appCMSPresenter,
                             jsonValueKeyMap,
                             component,
                             (TextView) componentViewResult.componentView);
@@ -2535,7 +2544,7 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                 (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) ||
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()))) {
+                                        !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()))) {
                             int viewWidth = (int) BaseView.getViewWidth(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -2789,7 +2798,7 @@ public class ViewCreator {
                 }
                 textInputEditText.setTextColor(ContextCompat.getColor(context, android.R.color.black));
                 textInputEditText.setBackgroundColor(ContextCompat.getColor(context, android.R.color.white));
-                setTypeFace(context, jsonValueKeyMap, component, textInputEditText);
+                setTypeFace(context, appCMSPresenter, jsonValueKeyMap, component, textInputEditText);
                 int loginInputHorizontalMargin = context.getResources().getInteger(
                         R.integer.app_cms_login_input_horizontal_margin);
                 textInputEditText.setPadding(loginInputHorizontalMargin,
@@ -2972,6 +2981,7 @@ public class ViewCreator {
     }
 
     private void setTypeFace(Context context,
+                             AppCMSPresenter appCMSPresenter,
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Component component,
                              TextView textView) {
@@ -2983,23 +2993,39 @@ public class ViewCreator {
             Typeface face;
             switch (fontWeight) {
                 case PAGE_TEXT_BOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(),
-                            context.getString(R.string.opensans_bold_ttf));
+                    face = appCMSPresenter.getBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_bold_ttf));
+                        appCMSPresenter.setBoldTypeFace(face);
+                    }
                     break;
 
                 case PAGE_TEXT_SEMIBOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(),
-                            context.getString(R.string.opensans_semibold_ttf));
+                    face = appCMSPresenter.getSemiBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_semibold_ttf));
+                        appCMSPresenter.setSemiBoldTypeFace(face);
+                    }
                     break;
 
                 case PAGE_TEXT_EXTRABOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(),
-                            context.getString(R.string.opensans_extrabold_ttf));
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_extrabold_ttf));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
                     break;
 
                 default:
-                    face = Typeface.createFromAsset(context.getAssets(),
-                            context.getString(R.string.opensans_regular_ttf));
+                    face = appCMSPresenter.getRegularFontFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_regular_ttf));
+                        appCMSPresenter.setRegularFontFace(face);
+                    }
                     break;
             }
             textView.setTypeface(face);
@@ -3012,7 +3038,7 @@ public class ViewCreator {
         ADJUST_OTHERS
     }
 
-    public static class ComponentViewResult {
+    static class ComponentViewResult {
         View componentView;
         OnInternalEvent onInternalEvent;
         boolean useMarginsAsPercentagesOverride;
@@ -3030,8 +3056,8 @@ public class ViewCreator {
         private View.OnClickListener addClickListener;
         private View.OnClickListener removeClickListener;
 
-        public UpdateImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                     String filmId) {
+        UpdateImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                              String filmId) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.filmId = filmId;
@@ -3088,8 +3114,8 @@ public class ViewCreator {
         private ImageButton imageButton;
         private View.OnClickListener addClickListener;
 
-        public UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                             ContentDatum contentDatum, String userId) {
+        UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                                      ContentDatum contentDatum, String userId) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
@@ -3099,7 +3125,7 @@ public class ViewCreator {
                 if (!appCMSPresenter.isNetworkConnected()) {
                     if (!appCMSPresenter.isUserLoggedIn()) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                () -> appCMSPresenter.launchBlankPage(),
+                                appCMSPresenter::launchBlankPage,
                                 null);
                         return;
                     }

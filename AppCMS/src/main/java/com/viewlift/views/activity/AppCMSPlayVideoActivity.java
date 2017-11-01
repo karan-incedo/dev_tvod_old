@@ -127,22 +127,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         }
                     }, 500);
                 } else {
-                    // TODO: This call is getting stuck in some devices indefinitely and therefore the resulting video screen is always blank because the fragment is being created
-//                    appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
-//                        title = "";
-//
-//                        if (appCMSSignedURLResult == null ||
-//                                TextUtils.isEmpty(appCMSSignedURLResult.getSigned()) &&
-//                                        (TextUtils.isEmpty(appCMSSignedURLResult.getPolicy()) ||
-//                                                TextUtils.isEmpty(appCMSSignedURLResult.getSignature()) ||
-//                                                TextUtils.isEmpty(appCMSSignedURLResult.getKeyPairId()))) {
-//                            appCMSSignedURLResult = new AppCMSSignedURLResult();
-//                            appCMSSignedURLResult.setSigned(hlsUrl);
+                    appCMSPresenter.refreshVideoData(binder.getContentData(),
+                            updatedContentDatum -> {
+                                binder.setContentData(updatedContentDatum);
+                                launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
 
-//                            launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, appCMSSignedURLResult);
-//                        }
-//                    });
-                    launchVideoPlayer(gist, extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                            });
                 }
             }
         } catch (ClassCastException e) {
@@ -199,7 +189,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         };
 
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
@@ -454,6 +443,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             finish();
         }
 
+        registerReceiver(networkConnectedReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
         appCMSPresenter.restrictLandscapeOnly();
     }
 
@@ -468,7 +459,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onDestroy() {
         try {
             unregisterReceiver(handoffReceiver);
-            unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }
@@ -512,6 +502,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
         } else {
             closePlayer();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            unregisterReceiver(networkConnectedReceiver);
+        } catch (Exception e) {
+
         }
     }
 

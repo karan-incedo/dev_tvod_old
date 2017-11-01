@@ -279,7 +279,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                        pageLoading(false);
+                        if(!appCMSPresenter.isSignUpFromFacebook()){
+                            pageLoading(false);
+                        }
                         handleLaunchPageAction(appCMSBinder,
                                 false,
                                 false,
@@ -405,8 +407,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION));
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         registerReceiver(wifiConnectedReceiver,
                 new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
         registerReceiver(downloadReceiver,
@@ -650,6 +650,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         resume();
 
+        try {
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        } catch (Exception e) {
+
+        }
+
         appCMSPresenter.setCancelAllLoads(false);
 
         appCMSPresenter.setCurrentActivity(this);
@@ -719,6 +726,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.closeSoftKeyboard();
         appCMSPresenter.cancelCustomToast();
+
+        try {
+            unregisterReceiver(networkConnectedReceiver);
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
@@ -764,7 +777,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         unregisterReceiver(presenterActionReceiver);
-        unregisterReceiver(networkConnectedReceiver);
         unregisterReceiver(wifiConnectedReceiver);
         unregisterReceiver(downloadReceiver);
         unregisterReceiver(notifyUpdateListsReceiver);
@@ -1239,6 +1251,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));
                 fragmentTransaction.addToBackStack(appCMSBinder.getPageId() + BaseView.isLandscape(this));
                 fragmentTransaction.commit();
+                getSupportFragmentManager().executePendingTransactions();
             }
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Failed to add Fragment to back stack");
@@ -1394,7 +1407,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            pageLoading(false);
+            if(!appCMSPresenter.isSignUpFromFacebook()){
+                pageLoading(false);
+            }
+
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
                 handleToolbar(appCMSBinder.isAppbarPresent(),
@@ -1426,7 +1442,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
-                    createFragment = false;
                 } catch (IllegalStateException e) {
                     //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
@@ -1439,6 +1454,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     poppedStack = true;
                 }
                 i++;
+            }
+
+            if (!appCMSBinderStack.isEmpty()) {
+                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
             }
 
             if (distanceFromStackTop < 0 ||

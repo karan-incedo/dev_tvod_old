@@ -18,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -517,6 +518,11 @@ public class AppCMSPresenter {
     private boolean downloadInProgress;
 
     private boolean loginFromNavPage;
+
+    private Typeface regularFontFace;
+    private Typeface boldTypeFace;
+    private Typeface semiBoldTypeFace;
+    private Typeface extraBoldTypeFace;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -1953,6 +1959,9 @@ public class AppCMSPresenter {
         }
     }
 
+    public boolean isSignUpFromFacebook(){
+        return isSignupFromFacebook;
+    }
     private void loginGoogle() {
         if (currentActivity != null) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
@@ -5510,6 +5519,7 @@ public class AppCMSPresenter {
 
             if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
                 navigateToHomePage();
+                sendCloseOthersAction(null, true, true);
             }
 
             return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();
@@ -10980,5 +10990,37 @@ public class AppCMSPresenter {
                 }
             }
         }
+    }
+
+    public Typeface getRegularFontFace() {
+        return regularFontFace;
+    }
+
+    public void setRegularFontFace(Typeface regularFontFace) {
+        this.regularFontFace = regularFontFace;
+    }
+
+    public Typeface getBoldTypeFace() {
+        return boldTypeFace;
+    }
+
+    public void setBoldTypeFace(Typeface boldTypeFace) {
+        this.boldTypeFace = boldTypeFace;
+    }
+
+    public Typeface getSemiBoldTypeFace() {
+        return semiBoldTypeFace;
+    }
+
+    public void setSemiBoldTypeFace(Typeface semiBoldTypeFace) {
+        this.semiBoldTypeFace = semiBoldTypeFace;
+    }
+
+    public Typeface getExtraBoldTypeFace() {
+        return extraBoldTypeFace;
+    }
+
+    public void setExtraBoldTypeFace(Typeface extraBoldTypeFace) {
+        this.extraBoldTypeFace = extraBoldTypeFace;
     }
 }
