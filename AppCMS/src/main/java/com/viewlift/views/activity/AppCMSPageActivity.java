@@ -32,6 +32,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -195,6 +196,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private String FIREBASE_SEARCH_SCREEN = "Search Screen";
     private String FIREBASE_MENU_SCREEN = "MENU";
     private String searchQuery;
+    private boolean isDownloadPageOpen = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -279,7 +281,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                        if(!appCMSPresenter.isSignUpFromFacebook()){
+                        if (!appCMSPresenter.isSignUpFromFacebook()) {
                             pageLoading(false);
                         }
                         handleLaunchPageAction(appCMSBinder,
@@ -294,7 +296,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent.getAction() != null
+                if (intent != null && intent.getAction() != null
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     boolean closeSelf = intent.getBooleanExtra(getString(R.string.close_self_key),
                             false);
@@ -332,6 +334,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
+                }
+                if (!isConnected) {
+                    appCMSPresenter.showNoNetworkConnectivityToast();
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
@@ -421,7 +426,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         shouldSendCloseOthersAction = false;
 
         callbackManager = CallbackManager.Factory.create();
-
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -461,13 +465,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     @Override
                     public void onCancel() {
                         // App code
-                        //Log.e(TAG, "Facebook login was cancelled");
+//                        Log.e(TAG, "Facebook login was cancelled");
+                        pageLoading(false);
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
                         // App code
-                        //Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+//                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+                        pageLoading(false);
                     }
                 });
 
@@ -682,7 +688,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }, true, 0, 3);
 
-        if (!appCMSPresenter.isNetworkConnected()) {
+        if (appCMSBinderMap != null && !appCMSBinderMap.isEmpty() && appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+            if (appCMSBinder != null && appCMSBinder.getPageId().equalsIgnoreCase(appCMSPresenter.getDownloadPageId())) {
+                isDownloadPageOpen = true;
+            } else {
+                isDownloadPageOpen = false;
+            }
+        }
+
+        if (!appCMSPresenter.isNetworkConnected() && !isDownloadPageOpen) {
             appCMSPresenter.showNoNetworkConnectivityToast();
         }
     }
@@ -710,7 +725,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else if (cancelLoadingOnFinish) {
                 pageLoading(false);
             }
-        } else if(cancelLoadingOnFinish) {
+        } else if (cancelLoadingOnFinish) {
             pageLoading(false);
         }
     }
@@ -1408,7 +1423,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            if(!appCMSPresenter.isSignUpFromFacebook()){
+            if (!appCMSPresenter.isSignUpFromFacebook()) {
                 pageLoading(false);
             }
 
@@ -2043,8 +2058,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         .getName();
                 String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
                         lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
-                        lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
-                        lastBackStackEntryName.length());
+                                lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
+                                        lastBackStackEntryName.length());
                 while (lastBackStackCount > 0 &&
                         getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
                     getSupportFragmentManager().popBackStackImmediate();
