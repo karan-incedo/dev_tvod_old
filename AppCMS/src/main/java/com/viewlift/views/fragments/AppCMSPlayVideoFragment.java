@@ -1550,7 +1550,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 videoPlayerView.getPlayer().getPlayWhenReady() &&
                                 videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) { // For not to sent PIN in PAUSE mode
                             bufferCount++;
-                            System.out.println(" Beacon Data :- "+bufferCount);
                             if (bufferCount>=5) {
 
                                 appCMSPresenter.sendBeaconMessage(filmId,
