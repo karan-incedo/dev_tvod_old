@@ -1203,7 +1203,7 @@ public class AppCMSPresenter {
                             }
 
                             if (entitlementCheckVideoWatchTime != -1L) {
-                                if (isUserSubscribed()) {
+                                if (isUserSubscribed() && contentDatum.getGist().getWatchedTime() == 0L) {
                                     contentDatum.getGist().setWatchedTime(entitlementCheckVideoWatchTime);
                                 }
                             }
