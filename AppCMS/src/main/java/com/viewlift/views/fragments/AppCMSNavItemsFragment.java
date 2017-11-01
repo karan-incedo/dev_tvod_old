@@ -161,6 +161,14 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        appCMSNavItemsAdapter.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
+        appCMSNavItemsAdapter.setUserSubscribed(appCMSPresenter.isUserSubscribed());
+        appCMSNavItemsAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         if (BaseView.isTablet(getContext())) {
