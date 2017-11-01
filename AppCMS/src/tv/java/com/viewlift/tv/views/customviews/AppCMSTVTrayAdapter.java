@@ -255,7 +255,7 @@ public class AppCMSTVTrayAdapter
                             play(childComponent,data);
                         }
                         else if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
-                                /*action*/"lectureDetailPage",
+                                action/*"lectureDetailPage"*/,
                                 title,
                                 extraData,
                                  data,
