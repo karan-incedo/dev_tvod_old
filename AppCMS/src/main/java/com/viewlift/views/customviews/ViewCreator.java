@@ -69,13 +69,14 @@ import java.util.Map;
 
 import rx.functions.Action1;
 
-/**
+/*
  * Created by viewlift on 5/5/17.
  */
 
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
-    ComponentViewResult componentViewResult;
+    private ComponentViewResult componentViewResult;
+    private int idOfComponentAboveRemoveAllButton;
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60L);
@@ -127,6 +128,7 @@ public class ViewCreator {
         return color1;
     }
 
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     private void refreshPageView(PageView pageView,
                                  Context context,
                                  AppCMSPageUI appCMSPageUI,
@@ -1016,6 +1018,7 @@ public class ViewCreator {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private <T extends ModuleWithComponents> View createModuleView(final Context context,
                                                                    final T module,
                                                                    final Module moduleAPI,
@@ -1296,6 +1299,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
+    @SuppressWarnings({"StringBufferReplaceableByString", "ConstantConditions"})
     void createComponentView(final Context context,
                              final Component component,
                              final Layout parentLayout,
@@ -1404,6 +1408,8 @@ public class ViewCreator {
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
+
+                    idOfComponentAboveRemoveAllButton = componentViewResult.componentView.getId();
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
@@ -1966,51 +1972,8 @@ public class ViewCreator {
 
                         componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
 
-                        componentViewResult.onInternalEvent = new OnInternalEvent() {
-                            final View removeAllButton = componentViewResult.componentView;
-                            private List<OnInternalEvent> receivers = new ArrayList<>();
-                            private String internalEventModuleId = moduleId;
-
-                            @Override
-                            public void addReceiver(OnInternalEvent e) {
-                                receivers.add(e);
-                            }
-
-                            @Override
-                            public void sendEvent(InternalEvent<?> event) {
-                                for (OnInternalEvent internalEvent : receivers) {
-                                    internalEvent.receiveEvent(null);
-                                }
-                                removeAllButton.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void receiveEvent(InternalEvent<?> event) {
-                                if (event != null && event.getEventData() != null && event.getEventData() instanceof Integer) {
-                                    int buttonStatus = (Integer) event.getEventData();
-                                    if (buttonStatus == View.VISIBLE) {
-                                        removeAllButton.setVisibility(View.VISIBLE);
-                                    } else if (buttonStatus == View.GONE) {
-                                        removeAllButton.setVisibility(View.GONE);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void cancel(boolean cancel) {
-                                //
-                            }
-
-                            @Override
-                            public String getModuleId() {
-                                return internalEventModuleId;
-                            }
-
-                            @Override
-                            public void setModuleId(String moduleId) {
-                                internalEventModuleId = moduleId;
-                            }
-                        };
+                        componentViewResult.onInternalEvent = new OnRemoveAllInternalEvent(moduleId,
+                                componentViewResult.componentView);
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
 
@@ -2090,7 +2053,8 @@ public class ViewCreator {
                     default:
                         if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                             if (!appCMSPresenter.isUserSubscribed()) {
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
+                                ((TextView) componentViewResult.componentView)
+                                        .setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                             } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
@@ -2535,7 +2499,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_BADGE_IMAGE_KEY:
-                        int t = 0;
+                        //
                         break;
 
                     case PAGE_VIDEO_IMAGE_KEY:
@@ -3215,6 +3179,61 @@ public class ViewCreator {
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.setOnClickListener(addClickListener);
             }
+        }
+    }
+
+    private static class OnRemoveAllInternalEvent implements OnInternalEvent {
+        final View removeAllButton;
+        private final String moduleId;
+        private List<OnInternalEvent> receivers;
+        private String internalEventModuleId;
+
+        OnRemoveAllInternalEvent(String moduleId, View removeAllButton) {
+            this.moduleId = moduleId;
+            this.removeAllButton = removeAllButton;
+            receivers = new ArrayList<>();
+            internalEventModuleId = moduleId;
+        }
+
+        @Override
+        public void addReceiver(OnInternalEvent e) {
+            receivers.add(e);
+        }
+
+        @Override
+        public void sendEvent(InternalEvent<?> event) {
+            for (OnInternalEvent internalEvent : receivers) {
+                internalEvent.receiveEvent(null);
+            }
+            removeAllButton.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void receiveEvent(InternalEvent<?> event) {
+            if (event != null && event.getEventData() != null
+                    && event.getEventData() instanceof Integer) {
+                int buttonStatus = (Integer) event.getEventData();
+                if (buttonStatus == View.VISIBLE) {
+                    removeAllButton.setVisibility(View.VISIBLE);
+                } else if (buttonStatus == View.GONE) {
+                    removeAllButton.setVisibility(View.GONE);
+                }
+            }
+        }
+
+        @Override
+        public void cancel(boolean cancel) {
+            //
+        }
+
+        @Override
+        public String getModuleId() {
+            return internalEventModuleId;
+        }
+
+        @Override
+        public void setModuleId(String moduleId) {
+            internalEventModuleId = moduleId;
         }
     }
 }
