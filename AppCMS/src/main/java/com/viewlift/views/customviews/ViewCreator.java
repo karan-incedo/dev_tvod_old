@@ -303,29 +303,27 @@ public class ViewCreator {
                                                         videoUrl = videoAssets.getMpeg().get(i).getUrl();
                                                     }
                                                 }
-                                                if (moduleAPI.getContentData().get(0).getGist() != null &&
-                                                        moduleAPI.getContentData().get(0).getGist().getId() != null &&
-                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                                    String[] extraData = new String[3];
-                                                    extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
-                                                    extraData[1] = videoUrl;
-                                                    extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                                            component.getAction(),
-                                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                                            extraData,
-                                                            moduleAPI.getContentData().get(0),
-                                                            false,
-                                                            -1,
-                                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                                                        //Log.e(TAG, "Could not launch action: " +
-//                                                                " permalink: " +
-//                                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-//                                                                " action: " +
-//                                                                component.getAction() +
-//                                                                " video URL: " +
-//                                                                videoUrl);
+                                                if (moduleAPI.getContentData() != null &&
+                                                        !moduleAPI.getContentData().isEmpty() &&
+                                                        moduleAPI.getContentData().get(0) != null &&
+                                                        moduleAPI.getContentData().get(0).getContentDetails() != null) {
+
+                                                    List<String> relatedVideoIds = null;
+                                                    if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
+                                                        relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
                                                     }
+                                                    int currentPlayingIndex = -1;
+                                                    if (relatedVideoIds == null) {
+                                                        currentPlayingIndex = 0;
+                                                    }
+
+                                                    appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
+                                                            currentPlayingIndex,
+                                                            relatedVideoIds,
+                                                            -1L,
+                                                            component.getAction());
+
                                                 }
                                             }
                                         });
@@ -1861,29 +1859,24 @@ public class ViewCreator {
                                 if (moduleAPI.getContentData() != null &&
                                         !moduleAPI.getContentData().isEmpty() &&
                                         moduleAPI.getContentData().get(0) != null &&
-                                        moduleAPI.getContentData().get(0).getGist() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getId() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                    String[] extraData = new String[3];
-                                    extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
-                                    extraData[1] = videoUrl;
-                                    extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                            component.getAction(),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            extraData,
-                                            moduleAPI.getContentData().get(0),
-                                            false,
-                                            -1,
-                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                                        //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-//                                                " action: " +
-//                                                component.getAction() +
-//                                                " video URL: " +
-//                                                videoUrl);
+                                        moduleAPI.getContentData().get(0).getContentDetails() != null) {
+
+                                    List<String> relatedVideoIds = null;
+                                    if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
+                                        relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
                                     }
+                                    int currentPlayingIndex = -1;
+                                    if (relatedVideoIds == null) {
+                                        currentPlayingIndex = 0;
+                                    }
+
+                                    appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
+                                            currentPlayingIndex,
+                                            relatedVideoIds,
+                                            -1L,
+                                            component.getAction());
+
                                 }
                             }
                         });
