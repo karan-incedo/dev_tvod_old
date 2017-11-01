@@ -23,7 +23,8 @@
           "numberOfLines": 1,
           "layout": {
             "ftv": {
-              "width": 960,
+              "width": 920,
+              "leftMargin": 20,
               "topMargin": 471,
               "rightMargin": 1.46,
               "fontSize": 17.4
@@ -41,8 +42,8 @@
           "numberOfLines": 2,
           "layout": {
             "ftv": {
-              "width": 960,
-              "rightMargin": 0,
+              "width": 920,
+              "leftMargin": 20,
               "fontSize": 35.4,
               "topMargin": 507
             }
