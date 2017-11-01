@@ -4890,15 +4890,17 @@ public class AppCMSPresenter {
             if (Apptentive.canShowMessageCenter()) {
                 Apptentive.showMessageCenter(currentActivity);
             }
-        } else if (!isNetworkConnected()) {
+        } else if (!cancelAllLoads && !isNetworkConnected()) {
             showDialog(DialogType.NETWORK, null, false, null, null);
-        } else {
+        } else if (!cancelAllLoads) {
             if (launched) {
                 //Log.d(TAG, "Resetting page navigation to previous tab");
                 setNavItemToCurrentAction(currentActivity);
             } else {
                 launchBlankPage();
             }
+        } else {
+            showLoadingDialog(false);
         }
 
         return result;

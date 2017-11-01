@@ -283,7 +283,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @Override
     public void resetData(RecyclerView listView) {
-        viewAvailable = !viewAvailable;
+        viewAvailable = true;
         notifyDataSetChanged();
     }
 
