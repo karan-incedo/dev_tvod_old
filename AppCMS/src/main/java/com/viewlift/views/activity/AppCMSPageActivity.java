@@ -777,6 +777,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         appCMSPresenter.cancelInternalEvents();
+        pageLoading(false);
 
         if (!appCMSBinderStack.isEmpty() &&
                 isPageLoading() &&
