@@ -1018,6 +1018,7 @@ public class TVViewCreator {
                                                         appCMSDeleteHistoryResult -> {
                                                             onInternalEvent.sendEvent(null);
                                                             buttonRemoveAll.setFocusable(false);
+                                                            buttonRemoveAll.setVisibility(View.INVISIBLE);
 
                                                         }
                                                 )
@@ -1041,6 +1042,7 @@ public class TVViewCreator {
                                                         appCMSAddToWatchlistResult -> {
                                                             onInternalEvent.sendEvent(null);
                                                             buttonRemoveAll.setFocusable(false);
+                                                            buttonRemoveAll.setVisibility(View.INVISIBLE);
                                                         }
                                                 )
                                         );
@@ -1052,6 +1054,7 @@ public class TVViewCreator {
                             });
                         } else {
                             componentViewResult.componentView.setFocusable(false);
+                            componentViewResult.componentView.setVisibility(View.INVISIBLE);
                         }
                         break;
 
