@@ -777,6 +777,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         appCMSPresenter.cancelInternalEvents();
+        pageLoading(false);
 
         if (!appCMSBinderStack.isEmpty() &&
                 isPageLoading() &&
@@ -1482,7 +1483,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 i++;
             }
 
-            if (!appCMSBinderStack.isEmpty()) {
+            if (!appCMSBinderStack.isEmpty() && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
                 createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
             }
 

@@ -1110,9 +1110,7 @@ public class AppCMSPresenter {
                     return false;
                 }
                 result = true;
-                boolean isTrailer = (actionType == AppCMSActionType.WATCH_TRAILER ||
-                        (pagePath != null &&
-                                pagePath.contains(currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))));
+                boolean isTrailer = actionType == AppCMSActionType.WATCH_TRAILER;
                 if ((actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                         actionType == AppCMSActionType.WATCH_TRAILER) &&
                         contentDatum != null &&

@@ -112,7 +112,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
             if (binder != null
                     && binder.getContentData() != null
-                    && binder.getContentData().getGist() != null && !binder.isTrailer()) {
+                    && binder.getContentData().getGist() != null
+                    && !binder.isTrailer()) {
 
                 Gist gist = binder.getContentData().getGist();
 
@@ -131,11 +132,15 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     }, 500);
                 } else {
                     String finalFontColor1 = fontColor;
-                    appCMSPresenter.refreshVideoData(binder.getContentData(),
-                            updatedContentDatum -> {
-                                binder.setContentData(updatedContentDatum);
-                                launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
-                            });
+                    if (binder.getContentData().getGist().getPermalink().contains(getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                        launchVideoPlayer(binder.getContentData().getGist(), extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                    } else {
+                        appCMSPresenter.refreshVideoData(binder.getContentData(),
+                                updatedContentDatum -> {
+                                    binder.setContentData(updatedContentDatum);
+                                    launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                                });
+                    }
                 }
             } else if (binder.isTrailer()) {
                 launchVideoPlayer(binder.getContentData().getGist(), extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
