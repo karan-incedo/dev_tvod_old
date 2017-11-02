@@ -1107,6 +1107,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         popActionStack);
             }
         }
+
+        if (updatedAppCMSBinder != null) {
+            handleToolbar(updatedAppCMSBinder.isAppbarPresent(),
+                    updatedAppCMSBinder.getAppCMSMain(),
+                    updatedAppCMSBinder.getPageId());
+            handleNavbar(updatedAppCMSBinder);
+        }
     }
 
     private void resume() {
@@ -1452,6 +1459,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         } else {
             boolean createFragment = true;
+
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 1;
@@ -1525,7 +1533,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             if (poppedStack) {
                                 appCMSBinderStack.push(appCMSBinder.getPageId());
                                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-                                createFragment = appCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
                             }
 
                             if (!createFragment) {
