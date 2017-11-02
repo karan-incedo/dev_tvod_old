@@ -200,9 +200,9 @@ public class LoginModule extends ModuleView {
                                 unselectChild(0);
                                 if (appCMSPresenter.isAppSVOD()) {
                                     if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
-                                        appCMSPresenter.sendCloseOthersAction(null,
-                                                true,
-                                                false);
+                                        //appCMSPresenter.sendCloseOthersAction(null,
+                                                //true,
+                                                //false);
                                         appCMSPresenter.navigateToSubscriptionPlansPage(appCMSPresenter.getLoginFromNavPage());
 
                                     } else {
