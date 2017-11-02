@@ -441,7 +441,6 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         finish();
     }
 
-
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
 
@@ -450,10 +449,10 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             if(null != appCMSPlayVideoFragment ){
                 if(appCMSPlayVideoFragment.isAdsPlaying()){
                     if (event.getKeyCode() != KeyEvent.KEYCODE_BACK ) {
+                        appCMSPlayVideoFragment.showController(event);
                         return true;
                     }
                 }
-                appCMSPlayVideoFragment.showController(event);
             }
 
             switch (event.getKeyCode()){
@@ -461,7 +460,13 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     if(null != appCMSPlayVideoPageContainer){
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
-                        return false;
+                        if (appCMSPlayVideoFragment != null
+                                && appCMSPlayVideoFragment.getVideoPlayerView() != null
+                                && appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView() != null) {
+                            return super.dispatchKeyEvent(event)
+                                    || appCMSPlayVideoFragment.getVideoPlayerView().getPlayerView()
+                                    .dispatchKeyEvent(event);
+                        }
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
