@@ -449,9 +449,10 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             if(null != appCMSPlayVideoFragment ){
                 if(appCMSPlayVideoFragment.isAdsPlaying()){
                     if (event.getKeyCode() != KeyEvent.KEYCODE_BACK ) {
-                        appCMSPlayVideoFragment.showController(event);
                         return true;
                     }
+                } else {
+                    appCMSPlayVideoFragment.showController(event);
                 }
             }
 

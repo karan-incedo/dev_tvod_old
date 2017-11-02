@@ -9762,112 +9762,70 @@ public class AppCMSPresenter {
             if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE ||
                     actionType == AppCMSActionType.WATCH_TRAILER) {
 
-                /*getUserVideoStatus(contentDatum.getGist().getId(),
+                getUserVideoStatus(contentDatum.getGist().getId(),
                         userVideoStatusResponse -> {
                             if (userVideoStatusResponse != null) {
                                 contentDatum.getGist().setWatchedTime
                                         (userVideoStatusResponse.getWatchedTime());
                             }
-                            LaunchTVVideoPlayerActivity(
-                                    pagePath,
-                                    filmTitle,
-                                    extraData,
-                                    closeLauncher,
-                                    contentDatum,
-                                    actionType);
-                        });*/
+                            Intent playVideoIntent = new Intent();
+                            try {
+                                Class videoPlayer = Class.forName(tvVideoPlayerPackage);
+                                playVideoIntent = new Intent(currentActivity, videoPlayer);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            String adsUrl;
+
+                            boolean svodServiceType = appCMSMain.getServiceType().equals(
+                                    currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
+
+                            boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+
+                            Date now = new Date();
+                            adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
+                                    getPermalinkCompletePath(pagePath),
+                                    now.getTime(),
+                                    appCMSMain.getSite());
+
+                            String backgroundColor = appCMSMain.getBrand()
+                                    .getGeneral()
+                                    .getBackgroundColor();
+                            AppCMSVideoPageBinder appCMSVideoPageBinder =
+                                    getAppCMSVideoPageBinder(currentActivity,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            false,
+                                            false,
+                                            false,
+                                            false,
+                                            false,
+                                            requestAds,
+                                            appCMSMain.getBrand().getGeneral().getTextColor(),
+                                            backgroundColor,
+                                            adsUrl,
+                                            contentDatum,
+                                            isTrailer,
+                                            relateVideoIds,
+                                            currentlyPlayingIndex,
+                                            false);
+                            if (closeLauncher) {
+                                sendCloseOthersAction(null, true, false);
+                            }
+
+
+                            Bundle bundle = new Bundle();
+                            bundle.putBinder(currentActivity.getString(R.string.app_cms_video_player_binder_key),
+                                    appCMSVideoPageBinder);
+                            playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
+
+                            currentActivity.startActivityForResult(playVideoIntent, PLAYER_REQUEST_CODE);
+                        });
                 //sendStopLoadingPageAction();
-                Intent playVideoIntent = new Intent();
-                try {
-                    Class videoPlayer = Class.forName(tvVideoPlayerPackage);
-                    playVideoIntent = new Intent(currentActivity, videoPlayer);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                String adsUrl;
 
-                boolean svodServiceType =
-                        appCMSMain.getServiceType()
-                                .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
-
-                boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
-
-                if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
-                    if (pagePath != null && pagePath.contains(currentActivity
-                            .getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
-                        requestAds = false;
-                        playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key),
-                                0);
-                    } else {
-                        if (contentDatum != null &&
-                                contentDatum.getGist() != null &&
-                                contentDatum.getGist().getWatchedTime() != 0) {
-                            playVideoIntent.putExtra(currentActivity.getString(R.string.watched_time_key),
-                                    contentDatum.getGist().getWatchedTime());
-                        }
-                    }
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), requestAds);
-                } else {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.play_ads_key), false);
-                }
-
-                if (contentDatum != null &&
-                        contentDatum.getGist() != null &&
-                        contentDatum.getGist().getVideoImageUrl() != null) {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url),
-                            contentDatum.getGist().getVideoImageUrl());
-                } else {
-                    playVideoIntent.putExtra(currentActivity.getString(R.string.played_movie_image_url), "");
-                }
-
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_font_color_key),
-                        appCMSMain.getBrand().getGeneral().getTextColor());
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_title_key),
-                        filmTitle);
-                playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
-                        extraData);
-
-                Date now = new Date();
-                adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
-                        getPermalinkCompletePath(pagePath),
-                        now.getTime(),
-                        appCMSMain.getSite());
-
-                String backgroundColor = appCMSMain.getBrand()
-                        .getGeneral()
-                        .getBackgroundColor();
-                AppCMSVideoPageBinder appCMSVideoPageBinder =
-                        getAppCMSVideoPageBinder(currentActivity,
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                false,
-                                false,
-                                false,
-                                false,
-                                false,
-                                requestAds,
-                                appCMSMain.getBrand().getGeneral().getTextColor(),
-                                backgroundColor,
-                                adsUrl,
-                                contentDatum,
-                                isTrailer,
-                                relateVideoIds,
-                                currentlyPlayingIndex,
-                                false);
-                if (closeLauncher) {
-                    sendCloseOthersAction(null, true, false);
-                }
-
-
-                Bundle bundle = new Bundle();
-                bundle.putBinder(currentActivity.getString(R.string.app_cms_video_player_binder_key),
-                        appCMSVideoPageBinder);
-                playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
-
-                currentActivity.startActivityForResult(playVideoIntent, PLAYER_REQUEST_CODE);
             } else if (actionType == AppCMSActionType.SHARE) {
                 if (extraData != null && extraData.length > 0) {
                     Intent sendIntent = new Intent();

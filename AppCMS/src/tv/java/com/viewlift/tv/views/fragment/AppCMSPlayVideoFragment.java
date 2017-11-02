@@ -874,7 +874,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 if(null != playerView.getPlayer()){
                     if( playerView.getPlayer().getPlayWhenReady() ) {
                         playerView.showController();
-                        return playerView.dispatchMediaKeyEvent(event);
+//                        return playerView.dispatchMediaKeyEvent(event);
                     }
                 }
             }
