@@ -32,7 +32,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -897,56 +896,59 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
                 String message = null;
-                int statusCode = result.getStatus().getStatusCode();
+                if (result.getStatus() == null) {
+                    message = "Additional resolution is required.";
+                } else {
+                    int statusCode = result.getStatus().getStatusCode();
 
-                switch (statusCode) {
-                    case CommonStatusCodes.API_NOT_CONNECTED:
-                        message = "The API is not connected.";
-                        break;
+                    switch (statusCode) {
+                        case CommonStatusCodes.API_NOT_CONNECTED:
+                            message = "The API is not connected.";
+                            break;
 
-                    case CommonStatusCodes.CANCELED:
-                        break;
+                        case CommonStatusCodes.CANCELED:
+                            break;
 
-                    case CommonStatusCodes.DEVELOPER_ERROR:
-                        message = "The app is configured incorrectly.";
-                        break;
+                        case CommonStatusCodes.DEVELOPER_ERROR:
+                            message = "The app is configured incorrectly.";
+                            break;
 
-                    case CommonStatusCodes.ERROR:
-                        message = "An error has occurred.";
-                        break;
+                        case CommonStatusCodes.ERROR:
+                            message = "An error has occurred.";
+                            break;
 
-                    case CommonStatusCodes.INTERNAL_ERROR:
-                        message = "An internal server error has occurred.";
-                        break;
+                        case CommonStatusCodes.INTERNAL_ERROR:
+                            message = "An internal server error has occurred.";
+                            break;
 
-                    case CommonStatusCodes.INTERRUPTED:
-                        message = "The login attempt was interrupted.";
-                        break;
+                        case CommonStatusCodes.INTERRUPTED:
+                            message = "The login attempt was interrupted.";
+                            break;
 
-                    case CommonStatusCodes.INVALID_ACCOUNT:
-                        message = "An invalid account is being used.";
-                        break;
+                        case CommonStatusCodes.INVALID_ACCOUNT:
+                            message = "An invalid account is being used.";
+                            break;
 
-                    case CommonStatusCodes.NETWORK_ERROR:
-                        message = "A network error has occurred.";
-                        break;
+                        case CommonStatusCodes.NETWORK_ERROR:
+                            message = "A network error has occurred.";
+                            break;
 
-                    case CommonStatusCodes.RESOLUTION_REQUIRED:
-                        message = "Additional resolution is required.";
-                        break;
+                        case CommonStatusCodes.RESOLUTION_REQUIRED:
+                            message = "Additional resolution is required.";
+                            break;
 
-                    case CommonStatusCodes.SIGN_IN_REQUIRED:
-                        message = "Sign In is required.";
-                        break;
+                        case CommonStatusCodes.SIGN_IN_REQUIRED:
+                            message = "Sign In is required.";
+                            break;
 
-                    case CommonStatusCodes.TIMEOUT:
-                        message = "A timeout has occurred.";
-                        break;
+                        case CommonStatusCodes.TIMEOUT:
+                            message = "A timeout has occurred.";
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
                 if (!TextUtils.isEmpty(message)) {
                     //Log.e(TAG, "Google Signin Status Message: " + message);
