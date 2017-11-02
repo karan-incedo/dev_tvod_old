@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
+/*
  * Created by viewlift on 7/7/17.
  */
 
@@ -51,15 +51,15 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private static final String TAG = "AppCMSTrayAdapter";
 
     private static final int SECONDS_PER_MINS = 60;
-    protected List<ContentDatum> adapterData;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
-    protected String defaultAction;
-    protected boolean isHistory;
-    protected boolean isDownload;
-    protected boolean isWatchlist;
     RecyclerView mRecyclerView;
+    private List<ContentDatum> adapterData;
+    private String defaultAction;
+    private boolean isHistory;
+    private boolean isDownload;
+    private boolean isWatchlist;
     private List<OnInternalEvent> receivers;
     private int tintColor;
     private String userId;
@@ -226,7 +226,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                             contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
-                            appCMSPresenter.sendRefreshPageAction();
+//                            appCMSPresenter.sendRefreshPageAction();
                             break;
 
                         case STATUS_INTERRUPTED:
@@ -370,6 +370,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
             holder.appCMSContinueWatchingProgress.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.GONE);
+
+            sendEvent(hideRemoveAllButtonEvent);
         }
     }
 
@@ -439,6 +441,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return lastWatchedMessage;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private ContentDatum getNextContentDatum(int position) {
         if (position + 1 == adapterData.size()) {
             return null;
@@ -460,7 +463,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
      * @param position position after which movies are to be fetched for autoplay
      * @return list of ids of upcoming completed movies
      */
-    private List<String> getListOfUpcomingMovies(int position,Object downloadStatus) {
+    private List<String> getListOfUpcomingMovies(int position, Object downloadStatus) {
         if (position + 1 == adapterData.size()) {
             return Collections.emptyList();
         }
@@ -478,9 +481,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     }
 
 
-
     private void playDownloaded(ContentDatum data, Context context, int position) {
-        List<String> relatedVideoIds = getListOfUpcomingMovies(position,DownloadStatus.STATUS_SUCCESSFUL);
+        List<String> relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_SUCCESSFUL);
         if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                 data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_INCOMPLETE,
@@ -491,7 +493,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             return;
         }
 
+        @SuppressWarnings("unused")
         boolean networkAvailable = appCMSPresenter.isNetworkConnected();
+
         String permalink = data.getGist().getPermalink();
         String action = context.getString(R.string.app_cms_action_watchvideo_key);
         String title = data.getGist() != null ? data.getGist().getTitle() : null;
@@ -504,7 +508,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         extraData[3] = "true"; // to know that this is an offline video
         //Log.d(TAG, "Launching " + permalink + ": " + action + ":File:" + data.getGist().getLocalFileUrl());
         if (Boolean.parseBoolean(extraData[3])) {
-            relatedVideoIds = getListOfUpcomingMovies(position,DownloadStatus.STATUS_COMPLETED);
+            relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_COMPLETED);
         }
         if (permalink == null ||
                 hlsUrl == null ||
@@ -536,7 +540,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void addReceiver(OnInternalEvent e) {
         receivers.add(e);
-        if (adapterData == null || adapterData.isEmpty()) {
+        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 1) {
             sendEvent(hideRemoveAllButtonEvent);
         } else {
             sendEvent(showRemoveAllButtonEvent);
@@ -812,6 +816,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return context.getString(R.string.app_cms_action_detailvideopage_key);
     }
 
+    @SuppressWarnings("unused")
     private void showDelete(ContentDatum contentDatum) {
         //Log.d(TAG, "Show delete button");
     }
