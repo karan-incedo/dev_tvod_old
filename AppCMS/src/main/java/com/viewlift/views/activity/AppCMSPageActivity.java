@@ -2085,23 +2085,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
 
-            boolean leavingExtraPage = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() !=
-                    AppCMSPresenter.ExtraScreenType.NONE;
+            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+            if (appCMSBinder != null) {
+                boolean leavingExtraPage = appCMSBinder.getExtraScreenType() !=
+                        AppCMSPresenter.ExtraScreenType.NONE;
 
-            boolean recurse = !closeOnePage &&
-                    appCMSPresenter.isPageAVideoPage(appCMSBinderMap.get(appCMSBinderStack.peek()).getScreenName());
+                boolean recurse = !closeOnePage &&
+                        appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName());
+                
+                handleBack(true,
+                        false,
+                        recurse,
+                        true);
 
-            handleBack(true,
-                    false,
-                    recurse,
-                    true);
+            }
 
             if (appCMSBinderStack.isEmpty()) {
                 finishAffinity();
                 return;
             }
 
-            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+            appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
             if (appCMSPresenter != null && appCMSBinder != null) {
                 appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
