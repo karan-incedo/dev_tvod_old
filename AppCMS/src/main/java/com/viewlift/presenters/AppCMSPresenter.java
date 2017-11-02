@@ -884,6 +884,9 @@ public class AppCMSPresenter {
                                     updatedAction = currentContext.getString(R.string.app_cms_action_videopage_key);
                                 }
 
+                                Log.d(TAG, "Existing watched time: " + contentDatum.getGist().getWatchedTime());
+                                Log.d(TAG, "Updated watched time: " + appCMSVideoDetail.getRecords().get(0).getGist().getWatchedTime());
+
                                 appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
                                 appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
 
@@ -1204,7 +1207,7 @@ public class AppCMSPresenter {
                             }
 
                             if (entitlementCheckVideoWatchTime != -1L) {
-                                if (isUserSubscribed()) {
+                                if (isUserSubscribed() && contentDatum.getGist().getWatchedTime() == 0L) {
                                     contentDatum.getGist().setWatchedTime(entitlementCheckVideoWatchTime);
                                 }
                             }
@@ -4778,7 +4781,7 @@ public class AppCMSPresenter {
                                   boolean sendCloseAction,
                                   final Uri searchQuery) {
         boolean result = false;
-        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+        if (currentActivity != null && !TextUtils.isEmpty(pageId) && !cancelAllLoads) {
 
             if (launched) {
                 refreshPages(null, false, 0, 0);
@@ -4891,15 +4894,17 @@ public class AppCMSPresenter {
             if (Apptentive.canShowMessageCenter()) {
                 Apptentive.showMessageCenter(currentActivity);
             }
-        } else if (!isNetworkConnected()) {
+        } else if (!cancelAllLoads && !isNetworkConnected()) {
             showDialog(DialogType.NETWORK, null, false, null, null);
-        } else {
+        } else if (!cancelAllLoads) {
             if (launched) {
                 //Log.d(TAG, "Resetting page navigation to previous tab");
                 setNavItemToCurrentAction(currentActivity);
             } else {
                 launchBlankPage();
             }
+        } else {
+            showLoadingDialog(false);
         }
 
         return result;
@@ -5984,6 +5989,8 @@ public class AppCMSPresenter {
 
             signinAnonymousUser();
 
+            setEntitlementPendingVideoData(null);
+
             if (googleApiClient != null && googleApiClient.isConnected()) {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
             }
@@ -6308,6 +6315,10 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isPageLoginPage(String pageId) {
+        return loginPage != null && !TextUtils.isEmpty(pageId) && !TextUtils.isEmpty(loginPage.getPageId()) && loginPage.getPageId().equals(pageId);
+    }
+
     @SuppressWarnings("unused")
     public boolean isPageSplashPage(String pageId) {
         return splashPage != null && !TextUtils.isEmpty(pageId) && !TextUtils.isEmpty(splashPage.getPageId()) && splashPage.getPageId().equals(pageId);
@@ -6502,10 +6513,10 @@ public class AppCMSPresenter {
                             try {
                                 dialog.dismiss();
                                 launchType = LaunchType.LOGIN_AND_SIGNUP;
-                                navigateToLoginPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
+                                navigateToLoginPage(false);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
                             }
@@ -6514,10 +6525,10 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToSubscriptionPlansPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
+                                navigateToSubscriptionPlansPage(false);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
                             }
@@ -6532,10 +6543,10 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToLoginPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
+                                navigateToLoginPage(false);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error closing login required dialog: " + e.getMessage());
                             }
@@ -6571,10 +6582,10 @@ public class AppCMSPresenter {
                         (dialog, which) -> {
                             try {
                                 dialog.dismiss();
-                                navigateToSubscriptionPlansPage(false);
                                 if (onCloseAction != null) {
                                     onCloseAction.call();
                                 }
+                                navigateToSubscriptionPlansPage(false);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error closing navigate to subscription dialog: " + e.getMessage());
                             }
@@ -6585,9 +6596,9 @@ public class AppCMSPresenter {
                 builder.setOnKeyListener((arg0, keyCode, event) -> {
                     if (keyCode == KeyEvent.KEYCODE_BACK) {
                         if (onCloseAction != null) {
-                            //if user press back key without doing login subscription ,clear saved data 
-                            setEntitlementPendingVideoData(null);
                             onCloseAction.call();
+                            //if user press back key without doing login subscription ,clear saved data
+                            setEntitlementPendingVideoData(null);
                         }
                     }
                     return true;
@@ -10037,10 +10048,12 @@ public class AppCMSPresenter {
     }
 
     public void showLoadingDialog(boolean showDialog) {
-        if (showDialog) {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-        } else {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+        if (currentActivity != null) {
+            if (showDialog) {
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            } else {
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+            }
         }
     }
 

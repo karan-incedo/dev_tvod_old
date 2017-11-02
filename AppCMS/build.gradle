@@ -6,7 +6,7 @@ def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 
 
-def final appVersionName = "2.1.6"
+def final appVersionName = "2.1.8"
 
 buildscript {
     repositories {
@@ -38,7 +38,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 137
+        versionCode 139
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -215,6 +215,7 @@ dependencies {
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
+    compile "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile project(':exoplayer-library')
     compile project(':library')
