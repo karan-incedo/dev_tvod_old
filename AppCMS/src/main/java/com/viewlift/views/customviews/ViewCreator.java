@@ -19,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputType;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -63,6 +64,16 @@ import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
+import net.nightwhistler.htmlspanner.SpanStack;
+import net.nightwhistler.htmlspanner.TagNodeHandler;
+import net.nightwhistler.htmlspanner.handlers.StyledTextHandler;
+import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandler;
+import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
+import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
+import net.nightwhistler.htmlspanner.style.Style;
+import net.nightwhistler.htmlspanner.style.StyleValue;
+
+import org.htmlcleaner.TagNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +88,16 @@ import rx.functions.Action1;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private ComponentViewResult componentViewResult;
+
+    private HtmlSpanner htmlSpanner;
+
+    public ViewCreator() {
+        htmlSpanner = new HtmlSpanner();
+        htmlSpanner.unregisterHandler("p");
+        Style paragraphStyle = new Style();
+        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler(new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
+        htmlSpanner.registerHandler("p", pHandler);
+    }
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60L);
@@ -2151,7 +2172,7 @@ public class ViewCreator {
 
                         case PAGE_API_DESCRIPTION:
                             if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
-                                Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(moduleAPI.getRawText());
+                                Spannable rawHtmlSpannable = htmlSpanner.fromHtml(moduleAPI.getRawText());
                                 ((TextView) componentViewResult.componentView).setText(rawHtmlSpannable);
                                 ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
                             }
@@ -3249,6 +3270,20 @@ public class ViewCreator {
         @Override
         public void setModuleId(String moduleId) {
             internalEventModuleId = moduleId;
+        }
+    }
+
+    private static class EmptyPStyledTextHandler extends StyledTextHandler {
+        public EmptyPStyledTextHandler(Style style) {
+            super(style);
+        }
+
+        @Override
+        public void beforeChildren(TagNode node, SpannableStringBuilder builder, SpanStack spanStack) {
+            if ( builder.length() == 0 || builder.charAt(builder.length() -1) != '\n' ) {
+                builder.append('\n');
+            }
+            super.beforeChildren(node, builder, spanStack);
         }
     }
 }
