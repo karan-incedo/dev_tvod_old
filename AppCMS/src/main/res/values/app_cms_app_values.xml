@@ -25,4 +25,6 @@
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
+
+    <bool name="show_cast_overlay">false</bool>
 </resources>
