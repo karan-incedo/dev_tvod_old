@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -69,13 +70,13 @@ import java.util.Map;
 
 import rx.functions.Action1;
 
-/**
+/*
  * Created by viewlift on 5/5/17.
  */
 
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
-    ComponentViewResult componentViewResult;
+    private ComponentViewResult componentViewResult;
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         long runtime = (data.getGist().getRuntime() / 60L);
@@ -127,6 +128,7 @@ public class ViewCreator {
         return color1;
     }
 
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     private void refreshPageView(PageView pageView,
                                  Context context,
                                  AppCMSPageUI appCMSPageUI,
@@ -300,29 +302,27 @@ public class ViewCreator {
                                                         videoUrl = videoAssets.getMpeg().get(i).getUrl();
                                                     }
                                                 }
-                                                if (moduleAPI.getContentData().get(0).getGist() != null &&
-                                                        moduleAPI.getContentData().get(0).getGist().getId() != null &&
-                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                                    String[] extraData = new String[3];
-                                                    extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
-                                                    extraData[1] = videoUrl;
-                                                    extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                                            component.getAction(),
-                                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                                            extraData,
-                                                            moduleAPI.getContentData().get(0),
-                                                            false,
-                                                            -1,
-                                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                                                        //Log.e(TAG, "Could not launch action: " +
-//                                                                " permalink: " +
-//                                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-//                                                                " action: " +
-//                                                                component.getAction() +
-//                                                                " video URL: " +
-//                                                                videoUrl);
+                                                if (moduleAPI.getContentData() != null &&
+                                                        !moduleAPI.getContentData().isEmpty() &&
+                                                        moduleAPI.getContentData().get(0) != null &&
+                                                        moduleAPI.getContentData().get(0).getContentDetails() != null) {
+
+                                                    List<String> relatedVideoIds = null;
+                                                    if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
+                                                        relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
                                                     }
+                                                    int currentPlayingIndex = -1;
+                                                    if (relatedVideoIds == null) {
+                                                        currentPlayingIndex = 0;
+                                                    }
+
+                                                    appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
+                                                            currentPlayingIndex,
+                                                            relatedVideoIds,
+                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
+                                                            component.getAction());
+
                                                 }
                                             }
                                         });
@@ -1016,6 +1016,7 @@ public class ViewCreator {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     private <T extends ModuleWithComponents> View createModuleView(final Context context,
                                                                    final T module,
                                                                    final Module moduleAPI,
@@ -1047,7 +1048,8 @@ public class ViewCreator {
                 AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView);
                 if (module.getComponents() != null) {
-                    for (int i = 0; i < module.getComponents().size(); i++) {
+                    int size = module.getComponents().size();
+                    for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
 
                         createComponentView(context,
@@ -1158,7 +1160,8 @@ public class ViewCreator {
                         List<ModuleView.ChildComponentAndView> childComponentAndViewList =
                                 moduleView.getChildComponentAndViewList();
 
-                        for (int j = 0; j < childComponentAndViewList.size(); j++) {
+                        int componentViewListSize = childComponentAndViewList.size();
+                        for (int j = 0; j < componentViewListSize; j++) {
                             ModuleView.ChildComponentAndView childComponentAndView = childComponentAndViewList.get(j);
 
                             ViewGroup.MarginLayoutParams childLayoutParams =
@@ -1249,9 +1252,12 @@ public class ViewCreator {
                 defaultHeight,
                 createMultipleContainersForChildren,
                 createRoundedCorners);
+
+        @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
 
-        for (int i = 0; i < component.getComponents().size(); i++) {
+        int size = component.getComponents().size();
+        for (int i = 0; i < size; i++) {
             Component childComponent = component.getComponents().get(i);
             createComponentView(context,
                     childComponent,
@@ -1296,6 +1302,7 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
+    @SuppressWarnings({"StringBufferReplaceableByString", "ConstantConditions"})
     void createComponentView(final Context context,
                              final Component component,
                              final Layout parentLayout,
@@ -1811,7 +1818,7 @@ public class ViewCreator {
                                 extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
                                 extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
                                 extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
-                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink(),
                                         component.getAction(),
                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
                                         extraData,
@@ -1851,29 +1858,24 @@ public class ViewCreator {
                                 if (moduleAPI.getContentData() != null &&
                                         !moduleAPI.getContentData().isEmpty() &&
                                         moduleAPI.getContentData().get(0) != null &&
-                                        moduleAPI.getContentData().get(0).getGist() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getId() != null &&
-                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                    String[] extraData = new String[3];
-                                    extraData[0] = moduleAPI.getContentData().get(0).getGist().getPermalink();
-                                    extraData[1] = videoUrl;
-                                    extraData[2] = moduleAPI.getContentData().get(0).getGist().getId();
-                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                            component.getAction(),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            extraData,
-                                            moduleAPI.getContentData().get(0),
-                                            false,
-                                            -1,
-                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds())) {
-                                        //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
-//                                                " action: " +
-//                                                component.getAction() +
-//                                                " video URL: " +
-//                                                videoUrl);
+                                        moduleAPI.getContentData().get(0).getContentDetails() != null) {
+
+                                    List<String> relatedVideoIds = null;
+                                    if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
+                                        relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
                                     }
+                                    int currentPlayingIndex = -1;
+                                    if (relatedVideoIds == null) {
+                                        currentPlayingIndex = 0;
+                                    }
+
+                                    appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
+                                            currentPlayingIndex,
+                                            relatedVideoIds,
+                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
+                                            component.getAction());
+
                                 }
                             }
                         });
@@ -1966,51 +1968,8 @@ public class ViewCreator {
 
                         componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
 
-                        componentViewResult.onInternalEvent = new OnInternalEvent() {
-                            final View removeAllButton = componentViewResult.componentView;
-                            private List<OnInternalEvent> receivers = new ArrayList<>();
-                            private String internalEventModuleId = moduleId;
-
-                            @Override
-                            public void addReceiver(OnInternalEvent e) {
-                                receivers.add(e);
-                            }
-
-                            @Override
-                            public void sendEvent(InternalEvent<?> event) {
-                                for (OnInternalEvent internalEvent : receivers) {
-                                    internalEvent.receiveEvent(null);
-                                }
-                                removeAllButton.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void receiveEvent(InternalEvent<?> event) {
-                                if (event != null && event.getEventData() != null && event.getEventData() instanceof Integer) {
-                                    int buttonStatus = (Integer) event.getEventData();
-                                    if (buttonStatus == View.VISIBLE) {
-                                        removeAllButton.setVisibility(View.VISIBLE);
-                                    } else if (buttonStatus == View.GONE) {
-                                        removeAllButton.setVisibility(View.GONE);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void cancel(boolean cancel) {
-                                //
-                            }
-
-                            @Override
-                            public String getModuleId() {
-                                return internalEventModuleId;
-                            }
-
-                            @Override
-                            public void setModuleId(String moduleId) {
-                                internalEventModuleId = moduleId;
-                            }
-                        };
+                        componentViewResult.onInternalEvent = new OnRemoveAllInternalEvent(moduleId,
+                                componentViewResult.componentView);
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
 
@@ -2090,7 +2049,8 @@ public class ViewCreator {
                     default:
                         if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
                             if (!appCMSPresenter.isUserSubscribed()) {
-                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
+                                ((TextView) componentViewResult.componentView)
+                                        .setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
                             } else if (!appCMSPresenter.upgradesAvailableForUser()) {
                                 componentViewResult.componentView.setVisibility(View.GONE);
                             }
@@ -2498,7 +2458,7 @@ public class ViewCreator {
                 break;
 
             case PAGE_IMAGE_KEY:
-                componentViewResult.componentView = new ImageView(context);
+                componentViewResult.componentView = new SimpleDraweeView(context);
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
@@ -2514,20 +2474,32 @@ public class ViewCreator {
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                                Glide.with(context)
-                                        .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
-                                        .override(viewWidth, viewHeight)
-                                        .into((ImageView) componentViewResult.componentView);
+                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
+                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl());
+                                } else {
+                                    Glide.with(context)
+                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+                                            .override(viewWidth, viewHeight)
+                                            .into((ImageView) componentViewResult.componentView);
+                                }
                             } else if (viewWidth > 0) {
-                                Glide.with(context)
-                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                        .override(viewWidth, viewHeight)
-                                        .centerCrop()
-                                        .into((ImageView) componentViewResult.componentView);
+                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
+                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
+                                } else {
+                                    Glide.with(context)
+                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                            .override(viewWidth, viewHeight)
+                                            .centerCrop()
+                                            .into((ImageView) componentViewResult.componentView);
+                                }
                             } else {
-                                Glide.with(context)
-                                        .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                        .into((ImageView) componentViewResult.componentView);
+                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
+                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
+                                } else {
+                                    Glide.with(context)
+                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                            .into((ImageView) componentViewResult.componentView);
+                                }
                             }
                             componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = false;
@@ -2535,7 +2507,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_BADGE_IMAGE_KEY:
-                        int t = 0;
+                        //
                         break;
 
                     case PAGE_VIDEO_IMAGE_KEY:
@@ -2581,10 +2553,15 @@ public class ViewCreator {
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
-                            Glide.with(context)
-                                    .load(component.getImageName())
-                                    .into((ImageView) componentViewResult.componentView);
+                            if (componentViewResult.componentView instanceof SimpleDraweeView) {
+                                ((SimpleDraweeView) componentViewResult.componentView).setImageURI(component.getImageName());
+                            } else {
+                                Glide.with(context)
+                                        .load(component.getImageName())
+                                        .into((ImageView) componentViewResult.componentView);
+                            }
                         }
+
                         ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
                         break;
                 }
@@ -3215,6 +3192,63 @@ public class ViewCreator {
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.setOnClickListener(addClickListener);
             }
+        }
+    }
+
+    private static class OnRemoveAllInternalEvent implements OnInternalEvent {
+        final View removeAllButton;
+        private final String moduleId;
+        private List<OnInternalEvent> receivers;
+        private String internalEventModuleId;
+
+        OnRemoveAllInternalEvent(String moduleId, View removeAllButton) {
+            this.moduleId = moduleId;
+            this.removeAllButton = removeAllButton;
+            receivers = new ArrayList<>();
+            internalEventModuleId = moduleId;
+        }
+
+        @Override
+        public void addReceiver(OnInternalEvent e) {
+            receivers.add(e);
+        }
+
+        @Override
+        public void sendEvent(InternalEvent<?> event) {
+            for (OnInternalEvent internalEvent : receivers) {
+                internalEvent.receiveEvent(null);
+            }
+            removeAllButton.setVisibility(View.GONE);
+        }
+
+        @Override
+        public void receiveEvent(InternalEvent<?> event) {
+            if (event != null && event.getEventData() != null
+                    && event.getEventData() instanceof Integer) {
+                int buttonStatus = (Integer) event.getEventData();
+                if (buttonStatus == View.VISIBLE) {
+                    removeAllButton.setVisibility(View.VISIBLE);
+                } else if (buttonStatus == View.GONE) {
+                    removeAllButton.setVisibility(View.GONE);
+                }
+
+                removeAllButton.requestLayout();
+            }
+        }
+
+        @Override
+        public void cancel(boolean cancel) {
+            //
+        }
+
+        @Override
+        public String getModuleId() {
+            return internalEventModuleId;
+        }
+
+        @Override
+        public void setModuleId(String moduleId) {
+            internalEventModuleId = moduleId;
         }
     }
 }
