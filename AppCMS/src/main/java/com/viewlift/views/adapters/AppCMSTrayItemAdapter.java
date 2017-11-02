@@ -267,7 +267,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             holder.itemView.getContext(),
                             position);
                 } else {
-                    click(adapterData.get(position));
+                    if (!adapterData.isEmpty()) {
+                        click(adapterData.get(position));
+                    }
                 }
             });
 
@@ -348,6 +350,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
 
         } else {
+            sendEvent(hideRemoveAllButtonEvent);
+
             holder.appCMSNotItemLabel.setVisibility(View.VISIBLE);
             holder.appCMSNotItemLabel.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                     .getBrand().getGeneral().getTextColor()));
@@ -370,8 +374,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
             holder.appCMSContinueWatchingProgress.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.GONE);
-
-            sendEvent(hideRemoveAllButtonEvent);
         }
     }
 
