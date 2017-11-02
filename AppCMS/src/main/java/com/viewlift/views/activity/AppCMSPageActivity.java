@@ -898,7 +898,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 String message = null;
-                if (result.getStatus() == null) {
+                if (result == null || result.getStatus() == null) {
                     message = "Additional resolution is required.";
                 } else {
                     int statusCode = result.getStatus().getStatusCode();
