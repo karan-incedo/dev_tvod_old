@@ -448,7 +448,7 @@ public class CastServiceProvider {
         //Setting the Casting Overlay for Casting
         if (mCastHelper.isCastDeviceAvailable)
             if (!appCMSPresenter.isCastOverLayShown()
-                    && mContext.getResources().getBoolean(R.bool.show_cast_overlay)) {
+                    && mContext.getResources().getBoolean(R.bool.display_chromecast_overlay)) {
                 appCMSPresenter.setCastOverLay();
                 showIntroOverLay();
             }
