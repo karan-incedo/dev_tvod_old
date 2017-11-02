@@ -279,7 +279,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                        pageLoading(false);
+                        if(!appCMSPresenter.isSignUpFromFacebook()){
+                            pageLoading(false);
+                        }
                         handleLaunchPageAction(appCMSBinder,
                                 false,
                                 false,
@@ -405,8 +407,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION));
-        registerReceiver(networkConnectedReceiver,
-                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         registerReceiver(wifiConnectedReceiver,
                 new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
         registerReceiver(downloadReceiver,
@@ -650,6 +650,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         resume();
 
+        try {
+            registerReceiver(networkConnectedReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        } catch (Exception e) {
+
+        }
+
         appCMSPresenter.setCancelAllLoads(false);
 
         appCMSPresenter.setCurrentActivity(this);
@@ -674,10 +681,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 refreshPageData();
             }
         }, true, 0, 3);
+
+        if (!appCMSPresenter.isNetworkConnected()) {
+            appCMSPresenter.showNoNetworkConnectivityToast();
+        }
     }
 
     private void refreshPageData() {
-        pageLoading(true);
+        boolean cancelLoadingOnFinish = false;
+        if (!appCMSPresenter.isPageLoading()) {
+            pageLoading(true);
+            cancelLoadingOnFinish = true;
+        }
         if (appCMSBinderMap != null &&
                 appCMSBinderStack != null &&
                 !appCMSBinderStack.isEmpty()) {
@@ -686,16 +701,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
                 if (appCMSPageUI != null) {
                     appCMSBinder.setAppCMSPageUI(appCMSPageUI);
-                } else {
+                } else if (cancelLoadingOnFinish) {
                     pageLoading(false);
                 }
                 updateData(appCMSBinder, () -> {
                     appCMSPresenter.sendRefreshPageAction();
                 });
-            } else {
+            } else if (cancelLoadingOnFinish) {
                 pageLoading(false);
             }
-        } else {
+        } else if(cancelLoadingOnFinish) {
             pageLoading(false);
         }
     }
@@ -710,7 +725,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         isActive = false;
 
         appCMSPresenter.closeSoftKeyboard();
-        appCMSPresenter.cancelWatchlistToast();
+        appCMSPresenter.cancelCustomToast();
+
+        try {
+            unregisterReceiver(networkConnectedReceiver);
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
@@ -756,7 +777,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         unregisterReceiver(presenterActionReceiver);
-        unregisterReceiver(networkConnectedReceiver);
         unregisterReceiver(wifiConnectedReceiver);
         unregisterReceiver(downloadReceiver);
         unregisterReceiver(notifyUpdateListsReceiver);
@@ -848,8 +868,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             appCMSPresenter.sendCloseOthersAction(null, true, false);
                         }
                     });
-                } else {
-                    appCMSPresenter.sendCloseOthersAction(null, true, false);
                 }
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
@@ -1093,9 +1111,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             shouldSendCloseOthersAction = false;
         }
 
-        if (!castDisabled) {
-            setCastingInstance();
-        }
+        setCastingInstance();
+
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -1234,6 +1251,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));
                 fragmentTransaction.addToBackStack(appCMSBinder.getPageId() + BaseView.isLandscape(this));
                 fragmentTransaction.commit();
+                getSupportFragmentManager().executePendingTransactions();
             }
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Failed to add Fragment to back stack");
@@ -1389,7 +1407,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            pageLoading(false);
+            if(!appCMSPresenter.isSignUpFromFacebook()){
+                pageLoading(false);
+            }
+
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
                 handleToolbar(appCMSBinder.isAppbarPresent(),
@@ -1421,7 +1442,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
-                    createFragment = false;
                 } catch (IllegalStateException e) {
                     //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
@@ -1434,6 +1454,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     poppedStack = true;
                 }
                 i++;
+            }
+
+            if (!appCMSBinderStack.isEmpty()) {
+                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
             }
 
             if (distanceFromStackTop < 0 ||
@@ -1969,6 +1993,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed());
             appCMSPresenter.refreshSubscriptionData(null, false);
         }
+
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
 
@@ -1998,14 +2023,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void setCastingInstance() {
-        if (!castDisabled) {
-            try {
-                CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
-                CastServiceProvider.getInstance(this).onActivityResume();
-            } catch (Exception e) {
-                //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
-            }
+        try {
+            CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
+            CastServiceProvider.getInstance(this).onActivityResume();
+        } catch (Exception e) {
+            //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }
+
     }
 
     private void handleCloseAction(boolean closeOnePage) {
@@ -2013,7 +2037,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                + getSupportFragmentManager().getBackStackEntryCount());
         if (!appCMSBinderStack.isEmpty()) {
             try {
-                getSupportFragmentManager().popBackStackImmediate();
+                int lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                String lastBackStackEntryName = getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount)
+                        .getName();
+                String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
+                        lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
+                        lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
+                        lastBackStackEntryName.length());
+                while (lastBackStackCount > 0 &&
+                        getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
+                    getSupportFragmentManager().popBackStackImmediate();
+                    lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                }
             } catch (IllegalStateException e) {
                 //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
