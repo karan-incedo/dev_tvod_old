@@ -10043,10 +10043,12 @@ public class AppCMSPresenter {
     }
 
     public void showLoadingDialog(boolean showDialog) {
-        if (showDialog) {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-        } else {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+        if (currentActivity != null) {
+            if (showDialog) {
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            } else {
+                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+            }
         }
     }
 
