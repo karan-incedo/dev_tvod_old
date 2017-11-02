@@ -32,7 +32,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -1484,7 +1483,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             if (!appCMSBinderStack.isEmpty() && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
-                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                createFragment = !(appCMSBinderMap.get(appCMSBinderStack.peek())
+                        .getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH
+                        && updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH);
             }
 
             if (distanceFromStackTop < 0 ||
