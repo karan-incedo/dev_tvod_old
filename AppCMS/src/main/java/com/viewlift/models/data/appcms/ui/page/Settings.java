@@ -26,6 +26,10 @@ public class Settings implements Serializable {
     @Expose
     Columns columns;
 
+    @SerializedName("primaryCta")
+    @Expose
+    PrimaryCta primaryCta;
+
     public String getTitle() {
         return title;
     }
@@ -56,5 +60,17 @@ public class Settings implements Serializable {
 
     public void setColumns(Columns columns) {
         this.columns = columns;
+    }
+
+    public boolean isLoop() {
+        return loop;
+    }
+
+    public PrimaryCta getPrimaryCta() {
+        return primaryCta;
+    }
+
+    public void setPrimaryCta(PrimaryCta primaryCta) {
+        this.primaryCta = primaryCta;
     }
 }
