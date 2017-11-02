@@ -1984,14 +1984,14 @@ public class ViewCreator {
                                         break;
 
                                     case PAGE_DOWNLOAD_MODULE_KEY:
-                                        appCMSPresenter.clearDownload(appCMSAddToWatchlistResult -> {
+                                        appCMSPresenter.clearDownload(appCMSDownloadStatusResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
                                         });
                                         break;
 
                                     case PAGE_WATCHLIST_MODULE_KEY:
-                                        appCMSPresenter.clearWatchlist(addToWatchlistResult -> {
+                                        appCMSPresenter.clearWatchlist(appCMSAddToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
                                         });
