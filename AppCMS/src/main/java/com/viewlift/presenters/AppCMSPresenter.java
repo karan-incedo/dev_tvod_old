@@ -8815,8 +8815,8 @@ public class AppCMSPresenter {
                                         .forceReloadFromNetwork(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
-                                    Log.d(TAG, "Refreshed main.json with update version: " + main.getVersion());
-                                    if (readyAction != null) {
+                                    if (readyAction != null && main != null) {
+                                        Log.d(TAG, "Refreshed main.json with update version: " + main.getVersion());
                                         Log.d(TAG, "Notifying listeners that main.json has been updated");
                                         Observable.just(main).subscribe(readyAction);
                                     }
