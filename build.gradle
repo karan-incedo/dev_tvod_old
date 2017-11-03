@@ -3,7 +3,7 @@
 buildscript {
     ext {
         realmVersion = "3.5.0"
-        gradleBuildVersion = "3.0.0-beta6"
+        gradleBuildVersion = "3.0.0"
         playServicesVersion = "3.0.0"
     }
     repositories {
