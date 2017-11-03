@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.RemoteException;
 import android.os.StatFs;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -542,7 +543,8 @@ public class AppCMSPresenter {
     private Typeface boldTypeFace;
     private Typeface semiBoldTypeFace;
     private Typeface extraBoldTypeFace;
-
+    private long mLastClickTime = 0;
+    public boolean showNetworkContectivity = false ;
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -2655,6 +2657,10 @@ public class AppCMSPresenter {
     }
 
     private void displayCustomToast(String toastMessage) {
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 3000){
+            return;
+        }
+        mLastClickTime = SystemClock.elapsedRealtime();
         LayoutInflater inflater = currentActivity.getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast_layout,
                 (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
@@ -6925,6 +6931,7 @@ public class AppCMSPresenter {
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
                         (dialog, which) -> {
                             try {
+                                showNetworkContectivity = false ;
                                 dialog.dismiss();
                                 if (onDismissAction != null) {
                                     onDismissAction.call();
