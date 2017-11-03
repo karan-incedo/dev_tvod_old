@@ -821,12 +821,12 @@ public class AppCMSPresenter {
         return appCMSAndroidModules;
     }
 
-    public void refreshVideoData(final ContentDatum contentDatum,
+    public void refreshVideoData(final String id,
                                  Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    contentDatum.getGist().getId(),
+                    id,
                     appCMSSite.getGist().getSiteInternalName());
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
@@ -2923,9 +2923,13 @@ public class AppCMSPresenter {
             if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
                 createLocalCopyForUser(contentDatum, resultAction1);
             } else if (getMegabytesAvailable() > file_size) {
-                startDownload(contentDatum,
-                        resultAction1);
+                try {
+                    startDownload(contentDatum,
+                            resultAction1);
 //                        startNextDownload = false;
+                } catch (Exception e) {
+
+                }
             } else {
                 currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
             }
@@ -3243,7 +3247,7 @@ public class AppCMSPresenter {
 
     private void startDownload(ContentDatum contentDatum,
                                Action1<UserVideoDownloadStatus> resultAction1) {
-        refreshVideoData(contentDatum, updateContentDatum -> {
+        refreshVideoData(contentDatum.getId(), updateContentDatum -> {
             if (updateContentDatum != null &&
                     updateContentDatum.getGist().getId() != null) {
                 getAppCMSSignedURL(updateContentDatum.getGist().getId(), appCMSSignedURLResult -> currentActivity.runOnUiThread(() -> {
