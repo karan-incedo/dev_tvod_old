@@ -407,7 +407,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         break;
 
                                     case "VIDEO":
-                                        action = videoAction;
+                                        action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                         break;
 
                                     default:
