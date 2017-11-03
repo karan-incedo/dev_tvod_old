@@ -125,9 +125,11 @@ public class AppCMSAndroidModuleCall {
                 writeModuleToFile(getResourceFilename(blocksBaseUrl, version), moduleDataMap.appCMSAndroidModule);
             }
         } catch (Exception e1) {
+            //Log.e(TAG, "Failed to load block modules from file: " + e1.getMessage());
         }
         return moduleDataMap;
     }
+
     private void readModuleListFromFile(String blocksBaseUrl,
                                         String version,
                                         boolean forceLoadFromNetwork,
@@ -138,28 +140,26 @@ public class AppCMSAndroidModuleCall {
             if (forceLoadFromNetwork) {
                 moduleDataMap = readModuleListFromNetwork(moduleDataMap, blocksBaseUrl, version);
             } else {
+                try {
+                    InputStream inputStream = new FileInputStream(
+                            new File(storageDirectory.toString() +
+                                    File.separatorChar +
+                                    getResourceFilename(blocksBaseUrl, version)));
 
-            try {
-                InputStream inputStream = new FileInputStream(
-                        new File(storageDirectory.toString() +
-                                File.separatorChar +
-                                getResourceFilename(blocksBaseUrl, version)));
-
-                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-                long startTime = new Date().getTime();
-                Log.d(TAG, "Start time: " + startTime);
-                ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
-                moduleDataMap.appCMSAndroidModule = (HashMap<String, ModuleList>) objectInputStream.readObject();
-                long endTime = new Date().getTime();
-                Log.d(TAG, "End time: " + endTime);
-                Log.d(TAG, "Time elapsed: " + (endTime - startTime));
-                objectInputStream.close();
-                bufferedInputStream.close();
-                inputStream.close();
-            } catch (Exception e) {
-                //Log.w(TAG, "Failed to load block modules from file: " + e.getMessage());
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                    long startTime = new Date().getTime();
+                    Log.d(TAG, "Start time: " + startTime);
+                    ObjectInputStream objectInputStream = new ObjectInputStream(bufferedInputStream);
+                    moduleDataMap.appCMSAndroidModule = (HashMap<String, ModuleList>) objectInputStream.readObject();
+                    long endTime = new Date().getTime();
+                    Log.d(TAG, "End time: " + endTime);
+                    Log.d(TAG, "Time elapsed: " + (endTime - startTime));
+                    objectInputStream.close();
+                    bufferedInputStream.close();
+                    inputStream.close();
+                } catch (Exception e) {
+                    //Log.w(TAG, "Failed to load block modules from file: " + e.getMessage());
                     moduleDataMap = readModuleListFromNetwork(moduleDataMap, blocksBaseUrl, version);
-                    //Log.e(TAG, "Failed to load block modules from file: " + e1.getMessage());
                 }
             }
 

@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -453,6 +454,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     appCMSPresenter.logoutTV();
                     break;
 
+                case EDIT_WATCHLIST:
+                    if (appCMSPresenter.isNetworkConnected()) {
+                        appCMSPresenter.editWatchlist(retryCallBinder.getFilmId(),
+                                retryCallBinder.getCallback(),
+                                !bundle.getBoolean("queued"));
+                    } else {
+                        appCMSPresenter.openErrorDialog(retryCallBinder.getFilmId(),
+                                bundle.getBoolean("queued"),
+                                retryCallBinder.getCallback());
+                    }
+                    break;
             }
         }
     }
@@ -760,7 +772,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 appCMSSite.getGist().getSiteInternalName(),
                                 appCMSBinder.getPagePath());
 
-                        appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
+                        //appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 appCMSPageAPI -> {

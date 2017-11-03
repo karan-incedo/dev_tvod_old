@@ -212,6 +212,7 @@ dependencies {
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
+	compile "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile project(':exoplayer-library')
     compile project(':library')

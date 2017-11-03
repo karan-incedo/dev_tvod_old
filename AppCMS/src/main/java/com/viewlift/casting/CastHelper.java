@@ -579,6 +579,7 @@ public class CastHelper {
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
                 CastingUtils.isMediaQueueLoaded = true;
+
                 onAppDisConnectCalled = false;
                 if (callBackRemoteListener != null && mActivity != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null && !onAppDisConnectCalled) {
                     onAppDisConnectCalled = true;
@@ -612,7 +613,6 @@ public class CastHelper {
                     }
 
                     CastingUtils.castingMediaId = "";
-
                     if (callBackRemoteListener != null)
                         callBackRemoteListener.onApplicationDisconnected();
                 }
