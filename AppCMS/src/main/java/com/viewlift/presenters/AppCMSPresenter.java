@@ -697,7 +697,7 @@ public class AppCMSPresenter {
         this.cancelAllLoads = cancelAllLoads;
     }
 
-    private Navigation getNavigation() {
+    public Navigation getNavigation() {
         return navigation;
     }
 
@@ -3912,7 +3912,7 @@ public class AppCMSPresenter {
                 currentActivity.sendBroadcast(args);
                 return;
             }
-            getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
+             getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
                     pageIdToPageAPIUrlMap.get(pageId),
                     appCMSSite.getGist().getSiteInternalName(),
                     true,
