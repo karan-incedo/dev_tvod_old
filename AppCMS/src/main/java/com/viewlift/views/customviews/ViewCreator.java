@@ -447,13 +447,13 @@ public class ViewCreator {
                                                 if (resizeText) {
                                                     fontSize = (int) (0.8 * fontSize);
                                                 }
-                                                ((TextView) componentViewResult.componentView).setTextSize(fontSize);
+                                                ((TextView) view).setTextSize(fontSize);
                                             } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
                                                 int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
                                                 if (resizeText) {
                                                     fontSize = (int) (0.8 * fontSize);
                                                 }
-                                                ((TextView) componentViewResult.componentView).setTextSize(fontSize);
+                                                ((TextView) view).setTextSize(fontSize);
                                             }
                                             ((TextView) view).setGravity(Gravity.CENTER);
                                             applyBorderToComponent(context,
