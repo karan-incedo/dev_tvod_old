@@ -1,11 +1,9 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +20,9 @@ import com.viewlift.views.customviews.BaseView;
 import java.util.List;
 
 import rx.Observable;
-import rx.functions.Action;
 import rx.functions.Action1;
 
-/**
+/*
  * Created by viewlift on 6/12/17.
  */
 
@@ -56,7 +53,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private static int DEVICE_HEIGHT;
     private final AppCMSPresenter appCMSPresenter;
     private final Context context;
-    private  Action1 action;
+    private Action1 action;
     private int imageWidth = 0;
     private int imageHeight = 0;
     private int textSize = 0;
@@ -86,35 +83,33 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         return new ViewHolder(view, imageWidth, imageHeight, textSize, textWidth, textTopMargin);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int i) {
         final int adapterPosition = i;
-        viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(action != null) {
-                    Observable.just("progress").subscribe(action);
-                }
-                String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
-                String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
-                String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
-                //Log.d(TAG, "Launching " + permalink + ":" + action);
-                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                        action,
-                        title,
-                        null,
-                        null,
-                        true,
-                        0,
-                        null)) {
+        viewHolder.parentLayout.setOnClickListener(v -> {
+            if (action != null) {
+                Observable.just("progress").subscribe(action);
+            }
+            String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
+            String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
+            String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
+            //Log.d(TAG, "Launching " + permalink + ":" + action);
+            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                    action,
+                    title,
+                    null,
+                    null,
+                    true,
+                    0,
+                    null)) {
 //                    //Log.e(TAG, "Could not launch action: " +
 //                            " permalink: " +
 //                            permalink +
 //                            " action: " +
 //                            action);
-                }
-                //context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             }
+            //context.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         });
 
         if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
@@ -203,6 +198,10 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         return TEXTSIZE_MOBILE;
     }
 
+    public void handleProgress(Action1 action) {
+        this.action = action;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         FrameLayout parentLayout;
@@ -239,9 +238,5 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
             this.parentLayout.addView(this.filmTitle);
         }
-    }
-
-    public void handleProgress(Action1 action){
-        action = action;
     }
 }

@@ -12,19 +12,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.views.components.AppCMSPresenterComponent;
-
-import com.viewlift.R;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by viewlift on 6/22/17.
@@ -35,6 +30,12 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            // Activity was brought to front and not created,
+            // Thus finishing this will get us to the last viewed activity
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_launch_tv);
         //Log.d(TAG, "Launching application from main.json");
 

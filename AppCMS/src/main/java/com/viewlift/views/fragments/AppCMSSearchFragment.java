@@ -16,7 +16,6 @@ import android.widget.RelativeLayout;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.adapters.SearchSuggestionsAdapter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -113,7 +112,6 @@ public class AppCMSSearchFragment extends DialogFragment {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
                 String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
                 appCMSPresenter.openVideoPageFromSearch(searchHintResult);
-                appCMSSearchView.setQuery("", false);
                 return true;
             }
         });

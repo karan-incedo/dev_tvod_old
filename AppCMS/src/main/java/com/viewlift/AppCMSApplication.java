@@ -85,12 +85,12 @@ public class AppCMSApplication extends MultiDexApplication {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
-                openActivities++;
             }
 
             @Override
             public void onActivityStarted(Activity activity) {
                 //Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
+                openActivities++;
             }
 
             @Override
@@ -110,6 +110,7 @@ public class AppCMSApplication extends MultiDexApplication {
                 if (openActivities == 1) {
                     appCMSPresenterComponent.appCMSPresenter().setCancelAllLoads(true);
                 }
+                openActivities--;
             }
 
             @Override
@@ -122,7 +123,6 @@ public class AppCMSApplication extends MultiDexApplication {
                 //Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
                 appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
-                openActivities--;
             }
         });
     }

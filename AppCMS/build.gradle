@@ -6,7 +6,7 @@ def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 
 
-def final appVersionName = "2.1.8"
+def final appVersionName = "2.1.10"
 
 buildscript {
     repositories {
@@ -38,7 +38,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 139
+        versionCode 141
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -57,8 +57,8 @@ android {
 
             minSdkVersion 21
             compileSdkVersion 25
-            versionCode 3010010
-            versionName "1.0.18"
+            versionCode 3010031
+            versionName "1.2.1"
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false

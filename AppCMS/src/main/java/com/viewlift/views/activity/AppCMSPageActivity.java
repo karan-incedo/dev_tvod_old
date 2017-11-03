@@ -32,7 +32,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,6 +99,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action0;
 import rx.functions.Action1;
+/**
 
 /*
  * Created by viewlift on 5/5/17.
@@ -120,6 +120,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int NO_NAV_MENU_PAGE_INDEX = -1;
 
     private static final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     @BindView(R.id.app_cms_parent_layout)
     RelativeLayout appCMSParentLayout;
@@ -159,6 +163,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.new_version_available_close_button)
     ImageButton newVersionAvailableCloseButton;
+
+    @BindView(R.id.app_cms_search_button)
+    ImageButton mSearchTopButton;
+
+    @BindView(R.id.app_cms_profile_btn)
+    ImageButton mProfileTopButton;
 
     @BindView(R.id.app_cms_toolbar)
     Toolbar toolbar;
@@ -284,6 +294,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (!appCMSPresenter.isSignUpFromFacebook()) {
                             pageLoading(false);
                         }
+
                         handleLaunchPageAction(appCMSBinder,
                                 false,
                                 false,
@@ -375,10 +386,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 appCMSPresenter.startNextDownload();
                             }
                         } catch (Exception e) {
-                            //
+
                         }
                     }
                 }
+            }
+        };
+        notifyUpdateListsReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
+                for (Fragment fragment : fragmentList) {
+                    if (fragment instanceof AppCMSPageFragment) {
+                        ((AppCMSPageFragment) fragment).updateDataLists();
+                    }
+                }
+            }
+        };
+        refreshPageDataReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                refreshPageData();
             }
         };
 
@@ -554,6 +582,33 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
         );
 
+        //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
+        mSearchTopButton.setOnClickListener(v -> {
+                    appCMSPresenter.launchSearchPage();
+                }
+        );
+
+        //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
+        mProfileTopButton.setOnClickListener(v -> {
+            if (appCMSPresenter.isUserLoggedIn()){
+                appCMSPresenter.launchNavigationPage();
+            }else{
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                    appCMSPresenter.navigateToLoginPage(false);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
+                    String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
+                    if (appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                    } else {
+                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    }
+                    appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
+                }
+            }
+                }
+        );
         inflateCastMiniController();
 
         if (loadingProgressBar != null) {
@@ -654,7 +709,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
         } else {
@@ -752,6 +806,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } catch (Exception e) {
             //
         }
+        appCMSPresenter.pausePIP();
     }
 
     @Override
@@ -777,6 +832,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         appCMSPresenter.cancelInternalEvents();
+        pageLoading(false);
 
         if (!appCMSBinderStack.isEmpty() &&
                 isPageLoading() &&
@@ -825,6 +881,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             imm.hideSoftInputFromWindow(appCMSParentView.getWindowToken(), 0);
         }
 
+        appCMSPresenter.setCancelAllLoads(true);
+
+        appCMSPresenter.dismissPopupWindowPlayer();
+		appCMSPresenter.setCancelAllLoads(true);
         //Log.d(TAG, "onDestroy()");
     }
 
@@ -897,56 +957,59 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             } else if (requestCode == AppCMSPresenter.RC_GOOGLE_SIGN_IN) {
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-
                 String message = null;
-                int statusCode = result.getStatus().getStatusCode();
+                if (result == null || result.getStatus() == null) {
+                    message = "Additional resolution is required.";
+                } else {
+                    int statusCode = result.getStatus().getStatusCode();
 
-                switch (statusCode) {
-                    case CommonStatusCodes.API_NOT_CONNECTED:
-                        message = "The API is not connected.";
-                        break;
+                    switch (statusCode) {
+                        case CommonStatusCodes.API_NOT_CONNECTED:
+                            message = "The API is not connected.";
+                            break;
 
-                    case CommonStatusCodes.CANCELED:
-                        break;
+                        case CommonStatusCodes.CANCELED:
+                            break;
 
-                    case CommonStatusCodes.DEVELOPER_ERROR:
-                        message = "The app is configured incorrectly.";
-                        break;
+                        case CommonStatusCodes.DEVELOPER_ERROR:
+                            message = "The app is configured incorrectly.";
+                            break;
 
-                    case CommonStatusCodes.ERROR:
-                        message = "An error has occurred.";
-                        break;
+                        case CommonStatusCodes.ERROR:
+                            message = "An error has occurred.";
+                            break;
 
-                    case CommonStatusCodes.INTERNAL_ERROR:
-                        message = "An internal server error has occurred.";
-                        break;
+                        case CommonStatusCodes.INTERNAL_ERROR:
+                            message = "An internal server error has occurred.";
+                            break;
 
-                    case CommonStatusCodes.INTERRUPTED:
-                        message = "The login attempt was interrupted.";
-                        break;
+                        case CommonStatusCodes.INTERRUPTED:
+                            message = "The login attempt was interrupted.";
+                            break;
 
-                    case CommonStatusCodes.INVALID_ACCOUNT:
-                        message = "An invalid account is being used.";
-                        break;
+                        case CommonStatusCodes.INVALID_ACCOUNT:
+                            message = "An invalid account is being used.";
+                            break;
 
-                    case CommonStatusCodes.NETWORK_ERROR:
-                        message = "A network error has occurred.";
-                        break;
+                        case CommonStatusCodes.NETWORK_ERROR:
+                            message = "A network error has occurred.";
+                            break;
 
-                    case CommonStatusCodes.RESOLUTION_REQUIRED:
-                        message = "Additional resolution is required.";
-                        break;
+                        case CommonStatusCodes.RESOLUTION_REQUIRED:
+                            message = "Additional resolution is required.";
+                            break;
 
-                    case CommonStatusCodes.SIGN_IN_REQUIRED:
-                        message = "Sign In is required.";
-                        break;
+                        case CommonStatusCodes.SIGN_IN_REQUIRED:
+                            message = "Sign In is required.";
+                            break;
 
-                    case CommonStatusCodes.TIMEOUT:
-                        message = "A timeout has occurred.";
-                        break;
+                        case CommonStatusCodes.TIMEOUT:
+                            message = "A timeout has occurred.";
+                            break;
 
-                    default:
-                        break;
+                        default:
+                            break;
+                    }
                 }
                 if (!TextUtils.isEmpty(message)) {
                     //Log.e(TAG, "Google Signin Status Message: " + message);
@@ -1107,6 +1170,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         popActionStack);
             }
         }
+
+        if (updatedAppCMSBinder != null) {
+            handleToolbar(updatedAppCMSBinder.isAppbarPresent(),
+                    updatedAppCMSBinder.getAppCMSMain(),
+                    updatedAppCMSBinder.getPageId());
+            handleNavbar(updatedAppCMSBinder);
+        }
     }
 
     private void resume() {
@@ -1120,10 +1190,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!isActive) {
             if (updatedAppCMSBinder != null) {
                 if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
-                    handleLaunchPageAction(updatedAppCMSBinder,
-                            appCMSPresenter.getConfigurationChanged(),
-                            false,
-                            false);
+                handleLaunchPageAction(updatedAppCMSBinder,
+                        appCMSPresenter.getConfigurationChanged(),
+                        false,
+                        false);
                 }
             }
         }
@@ -1138,7 +1208,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         setCastingInstance();
-
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -1270,6 +1339,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 default:
                     break;
+            }
+            if (!(appCMSPageFragment instanceof AppCMSPageFragment) ){
+                appCMSPresenter.dismissPopupWindowPlayer();
             }
 
             if (appCMSPageFragment != null) {
@@ -1452,6 +1524,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         } else {
             boolean createFragment = true;
+
             int distanceFromStackTop = appCMSBinderStack.search(appCMSBinder.getPageId());
             //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
             int i = 1;
@@ -1468,6 +1541,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
+                    createFragment = false;
                 } catch (IllegalStateException e) {
                     //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
@@ -1481,9 +1555,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
                 i++;
             }
-
             if (!appCMSBinderStack.isEmpty()) {
                 createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+            }
+
+            if (!appCMSBinderStack.isEmpty() && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
+                createFragment = !(appCMSBinderMap.get(appCMSBinderStack.peek())
+                        .getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH
+                        && updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH);
             }
 
             if (distanceFromStackTop < 0 ||
@@ -1523,7 +1602,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             if (poppedStack) {
                                 appCMSBinderStack.push(appCMSBinder.getPageId());
                                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-                                createFragment = appCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
                             }
 
                             if (!createFragment) {
@@ -1825,7 +1903,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 false,
                 0,
                 null);
-
         appCMSPresenter.resetDeeplinkQuery();
     }
 
@@ -1903,6 +1980,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 readyAction.call();
             }
         }
+
     }
 
     private void updateData() {
@@ -1933,7 +2011,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
                                 appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
                                 appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
-
                                 //Log.d(TAG, "Updated watched history for loaded displays");
                             }
                         });
@@ -2032,6 +2109,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if ((appCMSPresenter.findHomePageNavItem() != null &&
                     !TextUtils.isEmpty(appCMSPresenter.findHomePageNavItem().getPageId()) &&
                     appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) ||
+
                     (appCMSPresenter.findMoviesPageNavItem() != null &&
                             !TextUtils.isEmpty(appCMSPresenter.findMoviesPageNavItem().getPageId()) &&
                             appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId))) {
@@ -2055,7 +2133,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } catch (Exception e) {
             //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }
-
     }
 
     private void handleCloseAction(boolean closeOnePage) {
@@ -2131,12 +2208,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restartInternalEvents();
         }
     }
-
     @Override
     public void saveQuery(String searchQuery) {
         this.searchQuery = searchQuery;
     }
-
     @Override
     public String restoreQuery() {
         return searchQuery;

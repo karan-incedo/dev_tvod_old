@@ -246,7 +246,6 @@ public class LoginModule extends ModuleView {
                         childViews[1] = moduleView;
                         addChildComponents(moduleView, component, 1, appCMSAndroidModules);
                         topLayoutContainer.addView(moduleView);
-
                     }
                 }
             }

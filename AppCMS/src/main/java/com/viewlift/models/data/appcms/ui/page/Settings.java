@@ -26,6 +26,17 @@ public class Settings implements Serializable {
     @Expose
     Columns columns;
 
+    @SerializedName("showPIP")
+    @Expose
+    boolean showPIP;
+    @SerializedName("isStandaloneVideo")
+    @Expose
+    boolean standaloneVideo;
+
+    @SerializedName("showPlaybackControls")
+    @Expose
+    boolean showPlaybackControls;
+
     public String getTitle() {
         return title;
     }
@@ -56,5 +67,29 @@ public class Settings implements Serializable {
 
     public void setColumns(Columns columns) {
         this.columns = columns;
+    }
+
+    public void setShowPIP(boolean showPIP) {
+        this.showPIP = showPIP;
+    }
+
+    public boolean isShowPIP() {
+        return showPIP;
+    }
+
+    public void setShowPlaybackControls(boolean showPlaybackControls) {
+        this.showPlaybackControls = showPlaybackControls;
+    }
+
+    public boolean isShowPlaybackControls() {
+        return showPlaybackControls;
+    }
+
+    public void setStandaloneVideo(boolean standaloneVideo) {
+        this.standaloneVideo = standaloneVideo;
+    }
+
+    public boolean isStandaloneVideo() {
+        return standaloneVideo;
     }
 }

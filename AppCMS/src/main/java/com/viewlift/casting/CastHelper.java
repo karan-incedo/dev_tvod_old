@@ -94,7 +94,7 @@ public class CastHelper {
     private String paramLink = "";
 
     private static String mStreamId;
-    private long mStartBufferMilliSec;
+    private long mStartBufferMilliSec = 0l;
     private long mStopBufferMilliSec;
     private static double ttfirstframe = 0d;
     private long beaconBufferingTime;
@@ -579,7 +579,8 @@ public class CastHelper {
                     getRemoteMediaClient().removeProgressListener(progressListener);
                 }
                 CastingUtils.isMediaQueueLoaded = true;
-                onAppDisConnectCalled=false;
+
+                onAppDisConnectCalled = false;
                 if (callBackRemoteListener != null && mActivity != null && mActivity instanceof AppCMSPlayVideoActivity && binderPlayScreen != null && !onAppDisConnectCalled) {
                     onAppDisConnectCalled = true;
                     //if player activity already opened than finish it
@@ -829,7 +830,6 @@ public class CastHelper {
             mStartBufferMilliSec = new Date().getTime();
             if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                 mStopBufferMilliSec = new Date().getTime();
-                ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                 appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
                         currentMediaParamKey,
                         beaconScreenName,
@@ -841,7 +841,7 @@ public class CastHelper {
                         null,
                         null,
                         mStreamId,
-                        ttfirstframe,
+                        0d,
                         0,
                         isVideoDownloaded);
                 sentBeaconPlay = true;
@@ -854,7 +854,7 @@ public class CastHelper {
 
                     if (!TextUtils.isEmpty(currentRemoteMediaId)) {
                         mStopBufferMilliSec = new Date().getTime();
-                        ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                        ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                         appCMSPresenterComponenet.sendBeaconMessage(currentRemoteMediaId,
                                 currentMediaParamKey,
                                 beaconScreenName,
