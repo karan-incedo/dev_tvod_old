@@ -1,14 +1,10 @@
 <resources>
-    <!-- Primary app values -->
-
     <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
-
-
 
     <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
-       <!-- AppCMS StreamingInfo API -->
+    <!-- AppCMS StreamingInfo API -->
     <string name="app_cms_streaminginfo_api_url">%1$s/content/videos/%2$s?site=%3$s&amp;fields=streamingInfo</string>
 
     <!-- AppCMS Search API -->
@@ -70,7 +66,9 @@
     <!-- Restore Purchase API -->
     <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/android?site=%2$s</string>
 
+    <!-- -->
     <string name="app_cms_signed_url_api_url">%1$s/content/signature/%2$s?site=%3$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -129,6 +127,7 @@
     <string name="app_cms_page_passwordtextfield2_key">password label</string>
     <string name="app_cms_page_forgotpassword_key">forgot password button</string>
     <string name="app_cms_page_login_key">login button</string>
+    <string name="app_cms_page_signup_key">signup button</string>
     <string name="app_cms_page_mobileinput_key">mobile text field</string>
     <string name="app_cms_page_authentication_module">AC Authentication 01</string>
     <string name="app_cms_page_login_component_key">AC Login Component</string>
@@ -149,7 +148,8 @@
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
     <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
-      <string name="app_cms_setting_module">AC UserManagement 01</string>
+
+    <string name="app_cms_setting_module">AC UserManagement 01</string>
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_change_password_key">Change Password</string>
 
@@ -394,6 +394,9 @@
     <string name="app_cms_settings_subscription_duration_label">subscriptionDurationLabel</string>
     <string name="app_cms_settings_manage_subscription_button_key">manageSubscriptionButton</string>
     <string name="app_cms_settings_subscription_label_key">subscriptionLabel</string>
+
+    <string name="app_cms_settings_user_email_label_key">userEmailKey</string>
+
     <!-- AppCMS Payment Processor values -->
     <string name="subscription_ios_payment_processor">iOS</string>
     <string name="subscription_ios_payment_processor_friendly">iTunes</string>
@@ -408,10 +411,14 @@
     <string name="app_cms_view_plan_module_key">ViewPlanModule</string>
     <string name="facebook_auth_provider_name_key">facebook</string>
     <string name="google_auth_provider_name_key">google</string>
+
+    <!--reset password-->
     <string name="app_cms_reset_password_cancel_button_key">resetPasswordCancelButton</string>
     <string name="app_cms_reset_password_continue_button_key">resetPasswordButton</string>
     <string name="app_cms_forgotPasswordTitle_key">forgotPasswordTitle</string>
+
     <string name="contact_us">Contact Us</string>
+
     <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
     <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
     <string name="app_cms_contact_us_module">AC ContactUs 01</string>

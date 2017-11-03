@@ -25,7 +25,7 @@ import java.util.Map;
  * Created by viewlift on 5/17/17.
  */
 
-public abstract class BaseView extends CardView {
+public abstract class BaseView extends FrameLayout {
     public static final int STANDARD_MOBILE_WIDTH_PX = 375;
     public static final int STANDARD_MOBILE_HEIGHT_PX = 667;
     public static final int STANDARD_TABLET_WIDTH_PX = 768;

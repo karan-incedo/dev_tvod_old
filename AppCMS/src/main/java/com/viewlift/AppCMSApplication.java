@@ -9,6 +9,7 @@ import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
@@ -32,13 +33,15 @@ public class AppCMSApplication extends MultiDexApplication {
 
     private AppCMSPresenterComponent appCMSPresenterComponent;
 
-    private Map<Activity, Integer> closeAppMap;
-
     private AppsFlyerConversionListener conversionDataListener;
+
+    private int openActivities;
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+        openActivities = 0;
 
         conversionDataListener = new AppsFlyerConversionListener() {
 
@@ -66,9 +69,8 @@ public class AppCMSApplication extends MultiDexApplication {
         new Thread(() -> {
             Fabric.with(AppCMSApplication.this, new Crashlytics());
             Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+            Fresco.initialize(this);
         }).run();
-
-        closeAppMap = new HashMap<>();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
@@ -83,15 +85,12 @@ public class AppCMSApplication extends MultiDexApplication {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
                 appCMSPresenterComponent.appCMSPresenter().setCurrentActivity(activity);
-                if (closeAppMap.containsKey(activity)) {
-                    activity.finish();
-                    closeAppMap.remove(activity);
-                }
             }
 
             @Override
             public void onActivityStarted(Activity activity) {
                 //Log.d(TAG, "Activity being started: " + activity.getLocalClassName());
+                openActivities++;
             }
 
             @Override
@@ -108,6 +107,10 @@ public class AppCMSApplication extends MultiDexApplication {
             @Override
             public void onActivityStopped(Activity activity) {
                 //Log.d(TAG, "Activity being stopped: " + activity.getLocalClassName());
+                if (openActivities == 1) {
+                    appCMSPresenterComponent.appCMSPresenter().setCancelAllLoads(true);
+                }
+                openActivities--;
             }
 
             @Override
@@ -120,19 +123,12 @@ public class AppCMSApplication extends MultiDexApplication {
                 //Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
                 appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
                 appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
-                if (closeAppMap.containsKey(activity)) {
-                    closeAppMap.remove(activity);
-                }
             }
         });
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {
         return appCMSPresenterComponent;
-    }
-
-    public void setCloseApp(Activity activity) {
-        closeAppMap.put(activity, 1);
     }
 
     public void initAppsFlyer(String appsFlyerKey) {

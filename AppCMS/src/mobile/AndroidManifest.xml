@@ -62,6 +62,7 @@
                     android:pathPrefix="/films/title" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.viewlift.casting.roku.RokuCastingOverlay"
             android:configChanges="orientation|screenSize"

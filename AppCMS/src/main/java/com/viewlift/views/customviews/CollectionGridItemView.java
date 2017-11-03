@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -9,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
+import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.SpannableString;
@@ -26,6 +28,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.request.BasePostprocessor;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -41,10 +49,11 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-/**
+/*
  * Created by viewlift on 5/5/17.
  */
 
+@SuppressLint("ViewConstructor")
 public class CollectionGridItemView extends BaseView {
     private static final String TAG = "CollectionItemView";
 
@@ -58,6 +67,7 @@ public class CollectionGridItemView extends BaseView {
     private boolean selectable;
     private boolean createMultipleContainersForChildren;
     private boolean createRoundedCorners;
+    private GradientPostProcessor gradientPostProcessor;
 
     @Inject
     public CollectionGridItemView(Context context,
@@ -77,6 +87,7 @@ public class CollectionGridItemView extends BaseView {
         this.viewsToUpdateOnClickEvent = new ArrayList<>();
         this.createMultipleContainersForChildren = createMultipleContainersForChildren;
         this.createRoundedCorners = createRoundedCorners;
+        this.gradientPostProcessor = new GradientPostProcessor();
         init();
     }
 
@@ -228,7 +239,8 @@ public class CollectionGridItemView extends BaseView {
             if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -253,40 +265,56 @@ public class CollectionGridItemView extends BaseView {
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         childViewWidth = (16 * childViewHeight) / 9;
                     }
+
                     if (childViewHeight > childViewWidth &&
                             childViewHeight > 0 &&
                             childViewWidth > 0 &&
-                            !TextUtils.isEmpty(data.getGist().getPosterImageUrl())) {
+                            !TextUtils.isEmpty(data.getGist().getPosterImageUrl()) &&
+                            (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                                    componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getPosterImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
-                                .centerCrop()
-                                .into((ImageView) view);
+                            if (view instanceof SimpleDraweeView) {
+                                ((SimpleDraweeView) view).setImageURI(imageUrl);
+                            } else {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) view);
+                            }
                         } catch (Exception e) {
+                            //
                         }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
-                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                                    componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
                                 childViewWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                        Glide.with(context)
-                                .load(imageUrl)
-                                .override(childViewWidth, childViewHeight)
-                                .centerCrop()
-                                .into((ImageView) view);
+                            if (view instanceof SimpleDraweeView) {
+                                ((SimpleDraweeView) view).setImageURI(imageUrl);
+                            } else {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop()
+                                        .into((ImageView) view);
+                            }
                         } catch (Exception e) {
+                            //
                         }
-                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                            componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
@@ -297,72 +325,102 @@ public class CollectionGridItemView extends BaseView {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
 
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    .transform(new BitmapTransformation(context) {
-                                        @Override
-                                        public String getId() {
-                                            return imageUrl;
-                                        }
+                            if (view instanceof SimpleDraweeView) {
+                                gradientPostProcessor.imageWidth = imageWidth;
+                                gradientPostProcessor.imageHeight = imageHeight;
+                                ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(imageUrl))
+                                        .setPostprocessor(gradientPostProcessor)
+                                        .build();
 
-                                        @Override
-                                        protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
-                                                                   int outWidth, int outHeight) {
-                                            int width = toTransform.getWidth();
-                                            int height = toTransform.getHeight();
-
-                                            boolean scaleImageUp = false;
-
-                                            Bitmap sourceWithGradient;
-                                            if (width < imageWidth &&
-                                                    height < imageHeight) {
-                                                scaleImageUp = true;
-                                                float widthToHeightRatio =
-                                                        (float) width / (float) height;
-                                                width = (int) (imageHeight * widthToHeightRatio);
-                                                height = imageHeight;
-                                                sourceWithGradient =
-                                                        Bitmap.createScaledBitmap(toTransform,
-                                                                width,
-                                                                height,
-                                                                false);
-                                            } else {
-                                                sourceWithGradient =
-                                                        Bitmap.createBitmap(width,
-                                                                height,
-                                                                Bitmap.Config.ARGB_8888);
+                                DraweeController draweeController = Fresco.newDraweeControllerBuilder()
+                                        .setImageRequest(imageRequest)
+                                        .build();
+                                view.getLayoutParams().width = imageWidth;
+                                view.getLayoutParams().height = imageHeight;
+                                ((SimpleDraweeView) view).setController(draweeController);
+//                                ((SimpleDraweeView) view).setImageURI(imageUrl);
+                            } else {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                        .transform(new BitmapTransformation(context) {
+                                            @Override
+                                            public String getId() {
+                                                return imageUrl;
                                             }
 
-                                            Canvas canvas = new Canvas(sourceWithGradient);
-                                            if (!scaleImageUp) {
-                                                canvas.drawBitmap(toTransform, 0, 0, null);
-                                            }
+                                            @Override
+                                            protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+                                                                       int outWidth, int outHeight) {
+                                                int width = toTransform.getWidth();
+                                                int height = toTransform.getHeight();
 
-                                            Paint paint = new Paint();
-                                            LinearGradient shader = new LinearGradient(0,
-                                                    0,
-                                                    0,
-                                                    height,
-                                                    0xFFFFFFFF,
-                                                    0xFF000000,
-                                                    Shader.TileMode.CLAMP);
-                                            paint.setShader(shader);
-                                            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-                                            canvas.drawRect(0, 0, width, height, paint);
-                                            toTransform.recycle();
-                                            paint = null;
-                                            return sourceWithGradient;
-                                        }
-                                    })
-                                    .into((ImageView) view);
+                                                boolean scaleImageUp = false;
+
+                                                Bitmap sourceWithGradient;
+                                                if (width < imageWidth &&
+                                                        height < imageHeight) {
+                                                    scaleImageUp = true;
+                                                    float widthToHeightRatio =
+                                                            (float) width / (float) height;
+                                                    width = (int) (imageHeight * widthToHeightRatio);
+                                                    height = imageHeight;
+                                                    sourceWithGradient =
+                                                            Bitmap.createScaledBitmap(toTransform,
+                                                                    width,
+                                                                    height,
+                                                                    false);
+                                                } else {
+                                                    sourceWithGradient =
+                                                            Bitmap.createBitmap(width,
+                                                                    height,
+                                                                    Bitmap.Config.ARGB_8888);
+                                                }
+
+                                                Canvas canvas = new Canvas(sourceWithGradient);
+                                                if (!scaleImageUp) {
+                                                    canvas.drawBitmap(toTransform, 0, 0, null);
+                                                }
+
+                                                Paint paint = new Paint();
+                                                LinearGradient shader = new LinearGradient(0,
+                                                        0,
+                                                        0,
+                                                        height,
+                                                        0xFFFFFFFF,
+                                                        0xFF000000,
+                                                        Shader.TileMode.CLAMP);
+                                                paint.setShader(shader);
+                                                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+                                                canvas.drawRect(0, 0, width, height, paint);
+                                                toTransform.recycle();
+                                                paint = null;
+                                                return sourceWithGradient;
+                                            }
+                                        })
+                                        .into((ImageView) view);
+                            }
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             data.getGist().getImageGist().get_3x4() != null &&
-                            data.getGist().getBadgeImages().get_3x4() != null) {
+                            data.getGist().getBadgeImages().get_3x4() != null &&
+                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getBadgeImages().get_3x4(),
+                                childViewWidth,
+                                childViewHeight);
+
+                        if (view instanceof SimpleDraweeView) {
+                            ((SimpleDraweeView) view).setImageURI(imageUrl);
+                        } else {
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(childViewWidth, childViewHeight)
+                                    .into((ImageView) view);
+                        }
                     }
                     bringToFront = false;
                 }
@@ -383,7 +441,7 @@ public class CollectionGridItemView extends BaseView {
 
                 view.setOnClickListener(v ->
                         onClickHandler.click(CollectionGridItemView.this,
-                        childComponent, data));
+                                childComponent, data));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
@@ -398,7 +456,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo=getDateFormat(data.getGist().getPublishDate(),"MMM dd");
+                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
                         ((TextView) view).setText(data.getGist().getTitle());
@@ -491,6 +549,7 @@ public class CollectionGridItemView extends BaseView {
                             if (currency != null) {
                                 stringBuilder.append(currency.getSymbol());
                             }
+
                             stringBuilder.append(formattedRecurringPaymentAmount);
                             ((TextView) view).setText(stringBuilder.toString());
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
@@ -521,13 +580,12 @@ public class CollectionGridItemView extends BaseView {
     }
 
     public Component matchComponentToView(View view) {
-        Component result = null;
         for (ItemContainer itemContainer : childItems) {
             if (itemContainer.childView == view) {
                 return itemContainer.component;
             }
         }
-        return result;
+        return null;
     }
 
     public List<View> getViewsToUpdateOnClickEvent() {
@@ -553,7 +611,7 @@ public class CollectionGridItemView extends BaseView {
                 itemContainer = new ItemContainer();
             }
 
-            public Builder childView(View childView) {
+            Builder childView(View childView) {
                 itemContainer.childView = childView;
                 return this;
             }
@@ -569,13 +627,53 @@ public class CollectionGridItemView extends BaseView {
         }
     }
 
-    private String getDateFormat(long timeMilliSeconds,String dateFormat) {
+    private String getDateFormat(long timeMilliSeconds, String dateFormat) {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeMilliSeconds);
         return formatter.format(calendar.getTime());
+    }
 
+    private static class GradientPostProcessor extends BasePostprocessor {
+        int imageWidth;
+        int imageHeight;
+
+
+        @Override
+        public void process(Bitmap bitmap) {
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+
+            boolean scaleImageUp = false;
+
+            if (width < imageWidth &&
+                    height < imageHeight) {
+                scaleImageUp = true;
+                float widthToHeightRatio =
+                        (float) width / (float) height;
+                width = (int) (imageHeight * widthToHeightRatio);
+                height = imageHeight;
+            }
+
+            Canvas canvas = new Canvas(bitmap);
+            if (!scaleImageUp) {
+                canvas.drawBitmap(bitmap, 0, 0, null);
+            }
+
+            Paint paint = new Paint();
+            LinearGradient shader = new LinearGradient(0,
+                    0,
+                    0,
+                    height,
+                    0xFFFFFFFF,
+                    0xFF000000,
+                    Shader.TileMode.CLAMP);
+            paint.setShader(shader);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+            canvas.drawRect(0, 0, width, height, paint);
+            paint = null;
+        }
     }
 }

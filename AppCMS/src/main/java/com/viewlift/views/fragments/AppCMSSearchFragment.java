@@ -112,7 +112,6 @@ public class AppCMSSearchFragment extends DialogFragment {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
                 String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
                 appCMSPresenter.openVideoPageFromSearch(searchHintResult);
-                appCMSSearchView.setQuery("", false);
                 return true;
             }
         });

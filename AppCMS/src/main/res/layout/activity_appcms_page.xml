@@ -65,7 +65,7 @@
                     android:background="#00000000"
                     android:padding="5dp"
                     android:src="@drawable/profile"
-                    android:visibility="visible" />
+                    android:visibility="gone" />
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
                     android:layout_width="wrap_content"
@@ -86,7 +86,8 @@
                         android:layout_margin="@dimen/close_button_margin"
                         android:background="@android:color/transparent"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/search" />
+                        android:src="@drawable/search"
+                        android:visibility="gone"/>
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"
 

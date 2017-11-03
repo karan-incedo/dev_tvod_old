@@ -1,12 +1,10 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.util.Log;
-
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.network.rest.AppCMSPageUICall;
 
 import java.io.IOException;
 
-import com.viewlift.models.network.rest.AppCMSPageUICall;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -25,19 +23,30 @@ public class GetAppCMSPageUIAsyncTask {
     public static class Params {
         String url;
         long timeStamp;
+        boolean loadFromFile;
+
         public static class Builder {
             private Params params;
+
             public Builder() {
                 params = new Params();
             }
+
             public Builder url(String url) {
                 params.url = url;
                 return this;
             }
+
             public Builder timeStamp(long timeStamp) {
                 params.timeStamp = timeStamp;
                 return this;
             }
+
+            public Builder loadFromFile(boolean loadFromFile) {
+                params.loadFromFile = loadFromFile;
+                return this;
+            }
+
             public Params build() {
                 return params;
             }
@@ -54,7 +63,7 @@ public class GetAppCMSPageUIAsyncTask {
             Observable
                     .fromCallable(() -> {
                         try {
-                            return call.call(params.url, params.timeStamp);
+                            return call.call(params.url, params.timeStamp, params.loadFromFile);
                         } catch (IOException e) {
                             //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
                         }

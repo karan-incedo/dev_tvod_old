@@ -2,13 +2,11 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,19 +18,16 @@ import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.binders.AppCMSBinder;
-import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
-import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
-
-import com.viewlift.R;
 
 import java.util.List;
 
@@ -127,12 +122,6 @@ public class AppCMSPageFragment extends Fragment {
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
-			if (appCMSPresenter != null) {
-            if (!BaseView.isTablet(getContext())) {
-                appCMSPresenter.restrictPortraitOnly();
-            } else {
-                appCMSPresenter.unrestrictPortraitOnly();
-            }
             onPageCreation.onSuccess(appCMSBinder);
             videoPlayerView = pageView.findViewById(R.id.video_player_id);
             playLiveImageView = pageView.findViewById(R.id.play_live_image_id);
@@ -141,6 +130,8 @@ public class AppCMSPageFragment extends Fragment {
             //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
         }
+
+
         if (container != null) {
             container.removeAllViews();
             pageViewGroup = container;
@@ -184,17 +175,17 @@ public class AppCMSPageFragment extends Fragment {
                 if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
                         !appCMSPresenter.pipPlayerVisible) {
                     appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
-                }else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) ==0 ){
+                } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
                     appCMSPresenter.dismissPopupWindowPlayer();
                 }
             } else {
                 appCMSPresenter.dismissPopupWindowPlayer();
             }
 
-        }else if (appCMSPresenter.pipPlayerVisible){
+        } else if (appCMSPresenter.pipPlayerVisible) {
             appCMSPresenter.dismissPopupWindowPlayer();
         }
-}
+
         return pageView;
     }
 
@@ -235,7 +226,6 @@ public class AppCMSPageFragment extends Fragment {
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         }
 
-
         //Logs an app event.
         appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
         //Sets whether analytics collection is enabled for this app on this device.
@@ -255,6 +245,14 @@ public class AppCMSPageFragment extends Fragment {
             videoPlayerView.requestAudioFocus();
         }
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        updateDataLists();
+        resumePlayer(false);
+    }
+
     public void updateDataLists() {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
@@ -264,11 +262,6 @@ public class AppCMSPageFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        resumePlayer(false);
-    }
 
     @Override
     public void onDestroy() {
@@ -342,7 +335,13 @@ public class AppCMSPageFragment extends Fragment {
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
+            boolean updatePage = false;
+            if (pageView != null) {
+                updatePage = pageView.getParent() != null;
+            }
+
             pageView = null;
+
             pageView = viewCreator.generatePage(getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
@@ -351,15 +350,19 @@ public class AppCMSPageFragment extends Fragment {
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSPresenter,
                     modulesToIgnore);
+
             if (pageViewGroup != null &&
                     pageView != null &&
                     pageView.getParent() == null) {
                 removeAllViews(pageViewGroup);
                 pageViewGroup.addView(pageView);
-                updateAllViews(pageViewGroup);
+                if (updatePage) {
+                    updateAllViews(pageViewGroup);
+                }
             }
         }
     }
+
     private void updateAllViews(ViewGroup pageViewGroup) {
         if (pageViewGroup.getVisibility() == View.VISIBLE) {
             pageViewGroup.setVisibility(View.GONE);
@@ -379,6 +382,7 @@ public class AppCMSPageFragment extends Fragment {
             }
         }
     }
+
     private void removeAllViews(ViewGroup viewGroup) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
