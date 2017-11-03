@@ -7,7 +7,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -31,7 +30,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
+/*
  * Created by viewlift on 5/5/17.
  */
 
@@ -39,31 +38,31 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         implements AppCMSBaseAdapter {
     private static final String TAG = "AppCMSViewAdapter";
     protected Layout parentLayout;
-    protected boolean useParentSize;
     protected Component component;
     protected AppCMSPresenter appCMSPresenter;
     protected Settings settings;
     protected ViewCreator viewCreator;
-    protected Module moduleAPI;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
-    protected List<ContentDatum> adapterData;
-    protected CollectionGridItemView.OnClickHandler onClickHandler;
-    protected int defaultWidth;
-    protected int defaultHeight;
-    protected boolean useMarginsAsPercentages;
-    protected String defaultAction;
-    protected String componentViewType;
-    protected AppCMSUIKeyType viewTypeKey;
-    protected boolean isSelected;
-    protected int unselectedColor;
-    protected int selectedColor;
-    protected boolean isClickable;
+    Module moduleAPI;
+    List<ContentDatum> adapterData;
+    CollectionGridItemView.OnClickHandler onClickHandler;
+    int defaultWidth;
+    int defaultHeight;
+    boolean useMarginsAsPercentages;
+    String componentViewType;
+    AppCMSAndroidModules appCMSAndroidModules;
+    private boolean useParentSize;
+    private String defaultAction;
+    private AppCMSUIKeyType viewTypeKey;
+    private boolean isSelected;
+    private int unselectedColor;
+    private int selectedColor;
+    private boolean isClickable;
     private String videoAction;
     private String showAction;
     private String watchVideoAction;
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
-    protected AppCMSAndroidModules appCMSAndroidModules;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -133,7 +132,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
         this.appCMSAndroidModules = appCMSAndroidModules;
 
-        sortPlansInDescendingOrderByPrice();
+        sortPlansByPriceInDescendingOrder();
     }
 
     @Override
@@ -152,7 +151,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 useMarginsAsPercentages,
                 true,
                 this.componentViewType,
-                false, // createMultipleChildrenContainers()
+                false,
                 useRoundedCorners());
 
         if ("AC SelectPlan 02".equals(componentViewType)) {
@@ -183,10 +182,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
         return new ViewHolder(view);
     }
-
-//    private boolean createMultipleChildrenContainers() {
-//        return "AC Tray 01".equals(componentViewType) || "AC SeasonTray 01".equals(componentViewType);
-//    }
 
     private boolean useRoundedCorners() {
         return "AC SelectPlan 02".equals(componentViewType);
@@ -277,7 +272,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @Override
     public void resetData(RecyclerView listView) {
-
+        notifyDataSetChanged();
     }
 
     @Override
@@ -287,7 +282,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         adapterData = contentData;
 
-        sortPlansInDescendingOrderByPrice();
+        sortPlansByPriceInDescendingOrder();
 
         notifyDataSetChanged();
         listView.setAdapter(this);
@@ -311,8 +306,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
     }
 
-    protected void bindView(CollectionGridItemView itemView,
-                            final ContentDatum data) throws IllegalArgumentException {
+    void bindView(CollectionGridItemView itemView,
+                  final ContentDatum data) throws IllegalArgumentException {
         if (onClickHandler == null) {
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
@@ -338,9 +333,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             plan.getPlanDetails() != null &&
                                             !plan.getPlanDetails().isEmpty() &&
                                             ((plan.getPlanDetails().get(0).getStrikeThroughPrice() != 0 &&
-                                            price < plan.getPlanDetails().get(0).getStrikeThroughPrice()) ||
+                                                    price < plan.getPlanDetails().get(0).getStrikeThroughPrice()) ||
                                                     (plan.getPlanDetails().get(0).getRecurringPaymentAmount() != 0 &&
-                                                    price < plan.getPlanDetails().get(0).getRecurringPaymentAmount()))) {
+                                                            price < plan.getPlanDetails().get(0).getRecurringPaymentAmount()))) {
                                         upgradesAvailable = true;
                                     }
                                 }
@@ -383,6 +378,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 }
                                 String title = data.getGist().getTitle();
                                 String hlsUrl = getHlsUrl(data);
+
+                                @SuppressWarnings("MismatchedReadAndWriteOfArray")
                                 String[] extraData = new String[3];
                                 extraData[0] = permalink;
                                 extraData[1] = hlsUrl;
@@ -613,7 +610,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         itemView.setBackground(planBorder);
     }
 
-    private void sortPlansInDescendingOrderByPrice() {
+    private void sortPlansByPriceInDescendingOrder() {
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
             Collections.sort(adapterData,
@@ -628,35 +625,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 .getStrikeThroughPrice(), datum1.getPlanDetails().get(0)
                                 .getStrikeThroughPrice());
                     });
-        }
-    }
-
-    private void cullDataByAvailableUpgrades(List<SubscriptionPlan> availableSubscriptionPlans,
-                                             double existingSubscriptionPrice) {
-        if (adapterData != null) {
-            List<ContentDatum> updatedData = new ArrayList<>();
-            for (ContentDatum contentDatum : adapterData) {
-                double priceToCompare = contentDatum.getPlanDetails().get(0).getStrikeThroughPrice();
-                if (priceToCompare == 0) {
-                    priceToCompare = contentDatum.getPlanDetails().get(0).getRecurringPaymentAmount();
-                }
-                if (availableSubscriptionPlans != null) {
-                    for (SubscriptionPlan subscriptionPlan : availableSubscriptionPlans) {
-                        if (!TextUtils.isEmpty(contentDatum.getIdentifier()) &&
-                                contentDatum.getIdentifier().equals(subscriptionPlan.getSku()) &&
-                                (existingSubscriptionPrice < subscriptionPlan.getSubscriptionPrice())) {
-                            updatedData.add(contentDatum);
-                        }
-                    }
-                } else if (contentDatum.getPlanDetails() != null &&
-                        !contentDatum.getPlanDetails().isEmpty() &&
-                        contentDatum.getPlanDetails().get(0) != null &&
-                        existingSubscriptionPrice < priceToCompare) {
-                    updatedData.add(contentDatum);
-                }
-            }
-
-            this.adapterData = updatedData;
         }
     }
 

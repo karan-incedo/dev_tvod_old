@@ -554,6 +554,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_subscription_label_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_SUBSCRIPTION_LABEL_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_user_email_label_key),
+                AppCMSUIKeyType.PAGE_SETTINGS_USER_EMAIL_LABEL_KEY);
+
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
 

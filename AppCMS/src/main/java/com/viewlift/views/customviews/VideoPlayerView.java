@@ -64,7 +64,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import rx.Observable;
-import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
@@ -334,10 +333,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         });
         player.addVideoListener(this);
 
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN);
+        if (context != null) {
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager != null) {
+                audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.AUDIOFOCUS_GAIN);
+            }
+        }
 
         setFillBasedOnOrientation();
 
