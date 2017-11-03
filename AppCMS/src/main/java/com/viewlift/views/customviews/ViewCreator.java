@@ -445,13 +445,21 @@ public class ViewCreator {
                                             if (component.getFontSize() > 0) {
                                                 int fontSize = component.getFontSize();
                                                 if (resizeText) {
-                                                    fontSize = (int) (0.8 * fontSize);
+                                                    if (BaseView.isTablet(context)) {
+                                                        fontSize = (int) (0.6 * fontSize);
+                                                    } else {
+                                                        fontSize = (int) (0.8 * fontSize);
+                                                    }
                                                 }
                                                 ((TextView) view).setTextSize(fontSize);
                                             } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
                                                 int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
                                                 if (resizeText) {
-                                                    fontSize = (int) (0.8 * fontSize);
+                                                    if (BaseView.isTablet(context)) {
+                                                        fontSize = (int) (0.6 * fontSize);
+                                                    } else {
+                                                        fontSize = (int) (0.8 * fontSize);
+                                                    }
                                                 }
                                                 ((TextView) view).setTextSize(fontSize);
                                             }
@@ -2539,13 +2547,21 @@ public class ViewCreator {
                 if (component.getFontSize() > 0) {
                     int fontSize = component.getFontSize();
                     if (resizeText) {
-                        fontSize = (int) (0.8 * fontSize);
+                        if (BaseView.isTablet(context)) {
+                            fontSize = (int) (0.6 * fontSize);
+                        } else {
+                            fontSize = (int) (0.8 * fontSize);
+                        }
                     }
                     ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                 } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
                     int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
                     if (resizeText) {
-                        fontSize = (int) (0.8 * fontSize);
+                        if (BaseView.isTablet(context)) {
+                            fontSize = (int) (0.6 * fontSize);
+                        } else {
+                            fontSize = (int) (0.8 * fontSize);
+                        }
                     }
                     ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                 }
