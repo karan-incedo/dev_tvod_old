@@ -346,7 +346,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
                 }
-                if (!isConnected) {
+                if (!isConnected && appCMSPresenter.showNetworkContectivity) {
                     appCMSPresenter.showNoNetworkConnectivityToast();
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
@@ -758,11 +758,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (!appCMSPresenter.isNetworkConnected() && !isDownloadPageOpen) {
+        if (!appCMSPresenter.isNetworkConnected() && !isDownloadPageOpen && appCMSPresenter.showNetworkContectivity) {
             appCMSPresenter.showNoNetworkConnectivityToast();
         }
     }
-
     private void refreshPageData() {
         boolean cancelLoadingOnFinish = false;
         if (!appCMSPresenter.isPageLoading()) {
