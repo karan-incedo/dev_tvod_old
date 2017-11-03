@@ -17,7 +17,6 @@
 }
 
 -keep class com.viewlift.AppCMSApplication { *;}
-
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
@@ -30,7 +29,6 @@
 -dontwarn org.jaxen.**
 -dontwarn sun.misc.**
 -dontwarn com.google.android.gms.location.**
-
 -dontskipnonpubliclibraryclasses
 -optimizationpasses 5
 

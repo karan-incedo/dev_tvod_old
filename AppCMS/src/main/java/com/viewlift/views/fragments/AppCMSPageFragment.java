@@ -5,27 +5,26 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.binders.AppCMSBinder;
-import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
-import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
-
-import com.viewlift.R;
 
 import java.util.List;
 
@@ -51,8 +50,8 @@ public class AppCMSPageFragment extends Fragment {
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     private boolean shouldSendFirebaseViewItemEvent;
-
     private ViewGroup pageViewGroup;
+    private VideoPlayerView videoPlayerView;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
@@ -138,6 +137,52 @@ public class AppCMSPageFragment extends Fragment {
             sendFirebaseAnalyticsEvents(appCMSBinder);
             shouldSendFirebaseViewItemEvent = false;
         }
+        if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView &&
+                appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().get(1) != null &&
+                appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() != null) {
+            NestedScrollView nestedScrollView = (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
+
+
+            //System.out.println(positionToScroll+ " positionToScroll "+holder.getChildCount() );
+            if (appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()) {
+                Toast.makeText(getContext(), "Created Scroll Event listener  ", Toast.LENGTH_SHORT).show();
+                nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+                    @Override
+                    public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+
+
+                        if (appCMSPresenter.getFirstVisibleChildPosition(v) == 0) {
+                            appCMSPresenter.pipPlayerVisible = false;
+                            appCMSPresenter.dismissPopupWindowPlayer();
+                            if (videoPlayerView != null) {
+                                videoPlayerView.startPlayer();
+                            }
+
+                        } else if (!appCMSPresenter.pipPlayerVisible) {
+                            appCMSPresenter.showPopupWindowPlayer(v);
+                            if (videoPlayerView != null) {
+                                videoPlayerView.pausePlayer();
+                            }
+                        }
+
+                    }
+                });
+
+                if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
+                        !appCMSPresenter.pipPlayerVisible) {
+                    appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
+                    appCMSPresenter.dismissPopupWindowPlayer();
+                }
+            } else {
+                appCMSPresenter.dismissPopupWindowPlayer();
+            }
+
+        } else if (appCMSPresenter.pipPlayerVisible) {
+            appCMSPresenter.dismissPopupWindowPlayer();
+        }
 
         return pageView;
     }
@@ -199,8 +244,12 @@ public class AppCMSPageFragment extends Fragment {
     public void updateDataLists() {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
+            if (videoPlayerView != null && !appCMSPresenter.pipPlayerVisible) {
+                videoPlayerView.startPlayer();
+            }
         }
     }
+
 
     @Override
     public void onDestroy() {

@@ -14,7 +14,10 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+<<<<<<< HEAD
 import android.util.Log;
+=======
+>>>>>>> 33465b008825bac41f7253c5bfdfbc907b216744
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;

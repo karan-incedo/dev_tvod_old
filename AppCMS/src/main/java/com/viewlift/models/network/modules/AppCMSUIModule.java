@@ -123,7 +123,6 @@ public class AppCMSUIModule {
 
         this.unknownHostExceptionTimeout =
                 context.getResources().getInteger(R.integer.app_cms_unknown_host_exception_connection_timeout_msec);
-
         int cacheSize = 10 * 1024 * 1024; // 10 MB
         cache = new Cache(context.getCacheDir(), cacheSize);
     }
@@ -169,6 +168,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_key),
+                AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_image_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_add_to_watchlist_key),
@@ -203,6 +204,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WATCH_VIDEO_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_image_key),
                 AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_live_image_key),
+                AppCMSUIKeyType.PAGE_PLAY_LIVE_IMAGE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_title_key),
                 AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_key),
@@ -255,15 +259,6 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_module),
                 AppCMSUIKeyType.PAGE_RESET_PASSWORD_MODULE_KEY);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_us_module),
-                AppCMSUIKeyType.PAGE_CONTACT_US_MODULE_KEY);
-
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_us_call_icon_key),
-                AppCMSUIKeyType.CONTACT_US_PHONE_IMAGE);
-
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_us_email_icon_key),
-                AppCMSUIKeyType.CONTACT_US_EMAIL_IMAGE);
-
         jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_cancel_button_key),
                 AppCMSUIKeyType.RESET_PASSWORD_CANCEL_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_reset_password_continue_button_key),
@@ -275,6 +270,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
@@ -310,7 +306,6 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.CONTACT_US_PHONE_LABEL);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_email_id_label),
                 AppCMSUIKeyType.CONTACT_US_EMAIL_LABEL);
-
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_cancel_subscription_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY);
@@ -391,6 +386,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_module_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_module_key),
+                AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);
@@ -558,6 +556,28 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put("", AppCMSUIKeyType.PAGE_EMPTY_KEY);
         jsonValueKeyMap.put(null, AppCMSUIKeyType.PAGE_NULL_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_grid_option_key),
+                AppCMSUIKeyType.PAGE_GRID_OPTION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_option_key),
+                AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_badgeimage),
+                AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_image_key),
+                AppCMSUIKeyType.PAGE_BANNER_IMAGE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_icon_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_ICON);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_background_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_BACKGROUND);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_button_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_BUTTON);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_title_key),
+                AppCMSUIKeyType.PAGE_BANNER_DETAIL_TITLE);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -573,10 +593,8 @@ public class AppCMSUIModule {
                 context.getString(R.string.app_cms_action_detailvideopage_key));
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_pagename_showscreen_key),
                 context.getString(R.string.app_cms_action_showvideopage_key));
-
         this.pageNameToActionMap.put(context.getString(R.string.app_cms_page_name_forgotpassword),
                 context.getString(R.string.app_cms_action_forgotpassword_key));
-
     }
 
     private void createActionToPageMap(Context context) {
@@ -671,6 +689,12 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_logout_key),
                 AppCMSActionType.LOGOUT);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_title_label),
+                AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_LABEL);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_description_label),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_LABEL);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_delete_item_button),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DELETE_ITEM_BUTTON);
 
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_title_label),
@@ -696,6 +720,12 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_change_download_quality_key),
                 AppCMSActionType.CHANGE_DOWNLOAD_QUALITY);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_open_option_dialog),
+                AppCMSActionType.OPEN_OPTION_DIALOG);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_banner_detail_button_action_key),
+                AppCMSActionType.BANNER_DETAIL_CLICK);
     }
 
     @Provides

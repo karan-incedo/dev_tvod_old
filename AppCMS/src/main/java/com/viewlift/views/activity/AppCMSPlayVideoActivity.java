@@ -459,6 +459,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onDestroy() {
         try {
             unregisterReceiver(handoffReceiver);
+            unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }
