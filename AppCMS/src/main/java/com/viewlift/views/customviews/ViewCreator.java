@@ -440,25 +440,7 @@ public class ViewCreator {
                                                 moduleAPI.getContentData().get(0).getParentalRating() != null &&
                                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                             String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
-                                            String convertedRating = context.getString(R.string.age_rating_converted_default);
-                                            if (parentalRating.contains(context.getString(R.string.age_rating_y7))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_y7);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_y);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_ua))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_ua);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_pg);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_g);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_fourteen);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_default);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_raging_r))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_eighteen);
-                                            }
-                                            ((TextView) view).setText(convertedRating);
+                                            ((TextView) view).setText(parentalRating);
                                             ((TextView) view).setGravity(Gravity.CENTER);
                                             applyBorderToComponent(context,
                                                     view,
@@ -2411,25 +2393,7 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0).getGist() != null &&
                                     !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                 String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
-                                String convertedRating = context.getString(R.string.age_rating_converted_default);
-                                if (parentalRating.contains(context.getString(R.string.age_rating_y7))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_y7);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_y);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_ua))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_ua);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_pg);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_g);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_fourteen);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_default);
-                                } else if (parentalRating.contains(context.getString(R.string.age_raging_r))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_eighteen);
-                                }
-                                ((TextView) componentViewResult.componentView).setText(convertedRating);
+                                ((TextView) componentViewResult.componentView).setText(parentalRating);
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
                                 applyBorderToComponent(context,
                                         componentViewResult.componentView,
