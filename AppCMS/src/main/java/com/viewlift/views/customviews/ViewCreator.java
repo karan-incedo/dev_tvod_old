@@ -2616,18 +2616,19 @@ public class ViewCreator {
                         imageView1.setImageResource(R.drawable.logo);
                         break;
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
-                        componentViewResult.componentView = new ImageView(context);
-                        ImageView imageView = (ImageView) componentViewResult.componentView;
-                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                        String iconImageUrl;
-                        if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
-                            iconImageUrl = component.getIcon_url();
-                            Glide.with(context)
-                                    .load(iconImageUrl)
-                                    .into(imageView);
-                        } else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
-                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
-                        }
+                        // TODO: 03 Nov. 2017 - Badges are not yet ready for Production - This should uncommented once that is available
+//                        componentViewResult.componentView = new ImageView(context);
+//                        ImageView imageView = (ImageView) componentViewResult.componentView;
+//                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//                        String iconImageUrl;
+//                        if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
+//                            iconImageUrl = component.getIcon_url();
+//                            Glide.with(context)
+//                                    .load(iconImageUrl)
+//                                    .into(imageView);
+//                        } else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
+//                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
+//                        }
 
 
                         break;
