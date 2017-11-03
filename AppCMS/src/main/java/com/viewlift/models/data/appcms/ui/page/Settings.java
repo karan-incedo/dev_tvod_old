@@ -6,6 +6,7 @@ import com.viewlift.models.data.appcms.api.Columns;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+
 @UseStag
 public class Settings implements Serializable {
 

@@ -148,7 +148,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
-    private boolean showEntitlementDialog = false;
+    private boolean showEntitlementDialog=false;
 
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
@@ -534,6 +534,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 mTotalVideoDuration -= mTotalVideoDuration % 4;
                                 mProgressHandler.post(mProgressRunnable);
                             } catch (Exception e) {
+
                             }
                         }
                         if (!sentBeaconFirstFrame) {
@@ -573,14 +574,16 @@ public class AppCMSPlayVideoFragment extends Fragment
                     return;
                 }
 
+                //if user is not subscribe or ot login than on seek to end dont open autoplay screen# fix for SVFA-2403
                 if (appCMSPresenter.isAppSVOD() &&
                         !isTrailer &&
                         !freeContent &&
-                        !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
-                    showEntitlementDialog = true;
+                        !appCMSPresenter.isUserSubscribed()&& !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
+                    showEntitlementDialog=true;
                 }
                 if (onClosePlayerEvent != null && playerState.isPlayWhenReady() && !showEntitlementDialog) {
-                    // tell the activity that the movie is finished
+
+                            // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
                 if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {

@@ -53,6 +53,8 @@ public class AppCMSPageUICall {
                 try {
                     loadFromNetwork(url, filename);
                 } catch (Exception e2) {
+                    //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
+//                        e2.getMessage());
                 }
             }
         } else {
@@ -69,8 +71,6 @@ public class AppCMSPageUICall {
                     .execute().body());
             appCMSPageUI.setLoadedFromNetwork(true);
         } catch (Exception e) {
-            //Log.e(TAG, "A last ditch effort to download the AppCMS UI JSON did not succeed: " +
-//                        e2.getMessage());
 
         }
         return appCMSPageUI;

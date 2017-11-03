@@ -10,12 +10,14 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
@@ -117,11 +119,12 @@ public class AppCMSPageFragment extends Fragment {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
             onPageCreation.onSuccess(appCMSBinder);
-            videoPlayerView = (VideoPlayerView) pageView.findViewById(R.id.video_player_id);
         } else {
             //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
         }
+
+
         if (container != null) {
             container.removeAllViews();
             pageViewGroup = container;
@@ -221,7 +224,6 @@ public class AppCMSPageFragment extends Fragment {
                 bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, appCMSVideoPageBinder.getScreenName());
         }
 
-
         //Logs an app event.
         appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
         //Sets whether analytics collection is enabled for this app on this device.
@@ -236,6 +238,12 @@ public class AppCMSPageFragment extends Fragment {
             handleOrientation(getActivity().getResources().getConfiguration().orientation);
         }
 
+        updateDataLists();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
         updateDataLists();
     }
 
@@ -325,7 +333,9 @@ public class AppCMSPageFragment extends Fragment {
             if (pageView != null) {
                 updatePage = pageView.getParent() != null;
             }
+
             pageView = null;
+
             pageView = viewCreator.generatePage(getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
@@ -334,6 +344,7 @@ public class AppCMSPageFragment extends Fragment {
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSPresenter,
                     modulesToIgnore);
+
             if (pageViewGroup != null &&
                     pageView != null &&
                     pageView.getParent() == null) {

@@ -380,6 +380,14 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         return totalItemCount;
     }
 
+    public void setUserLoggedIn(boolean userLoggedIn) {
+        this.userLoggedIn = userLoggedIn;
+    }
+
+    public void setUserSubscribed(boolean userSubscribed) {
+        this.userSubscribed = userSubscribed;
+    }
+
     public boolean isItemSelected() {
         return itemSelected;
     }

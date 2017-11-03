@@ -333,10 +333,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         });
         player.addVideoListener(this);
 
-        AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN);
+        if (context != null) {
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager != null) {
+                audioManager.requestAudioFocus(focusChange -> Log.i(TAG, "Audio focus has changed: " + focusChange),
+                        AudioManager.STREAM_MUSIC,
+                        AudioManager.AUDIOFOCUS_GAIN);
+            }
+        }
 
         setFillBasedOnOrientation();
 
@@ -484,7 +488,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                               int trackSelectionReason, Object trackSelectionData, long mediaStartTimeMs,
                               long mediaEndTimeMs, long elapsedRealtimeMs) {
         //Log.d(TAG, "Load started");
-
+        bitrate = (trackFormat.bitrate / 1000);
     }
 
     @Override

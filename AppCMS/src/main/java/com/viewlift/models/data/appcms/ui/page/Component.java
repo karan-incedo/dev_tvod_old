@@ -114,12 +114,15 @@ public class Component implements ModuleWithComponents, Serializable {
     public String getItemClickAction() {
         return itemClickAction;
     }
+
     public void setItemClickAction(String itemClickAction) {
         this.itemClickAction = itemClickAction;
     }
+
     @SerializedName("itemClickAction")
     @Expose
     String itemClickAction;
+
     @SerializedName("fontFamily")
     @Expose
     String fontFamily;
@@ -199,12 +202,14 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("svod")
     @Expose
     boolean svod;
+
     public String getHintColor() {
         return hintColor;
     }
     public void setHintColor(String hintColor) {
         this.hintColor = hintColor;
     }
+
     @SerializedName("hintColor")
     @Expose
     String hintColor;
@@ -212,6 +217,7 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("blockName")
     @Expose
     String blockName;
+
     boolean yAxisSetManually;
 
     public String getText() {
@@ -535,9 +541,12 @@ public class Component implements ModuleWithComponents, Serializable {
     public String getBlockName() {
         return null;
     }
+
     @Override
     public void setBlockName(String blockName) {
+
     }
+
     public void setSvod(boolean svod) {
         this.svod = svod;
     }

@@ -97,20 +97,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                 if (!appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
+                 appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
                         -1,
                         null,
-                        rowData.contentData.getGist().getWatchedTime())){
-                    Utils.pageLoading(false,getActivity());
-                  /*  Log.e(TAG, "Could not launch play action: " +
-                            " filmId: " +
-                            filmId +
-                            " permaLink: " +
-                            permaLink +
-                            " title: " +
-                            title); */
- 
-                }
+                        rowData.contentData.getGist().getWatchedTime());
             } else {
                 appCMSPresenter.showLoadingDialog(false);
             }

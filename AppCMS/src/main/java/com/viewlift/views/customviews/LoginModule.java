@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -7,10 +8,13 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -32,6 +36,7 @@ import java.util.Map;
  * Created by viewlift on 6/28/17.
  */
 
+@SuppressLint("ViewConstructor")
 public class LoginModule extends ModuleView {
     private static final String TAG = "LoginModule";
 
@@ -43,6 +48,7 @@ public class LoginModule extends ModuleView {
     private final AppCMSPresenter appCMSPresenter;
     private final ViewCreator viewCreator;
     private final AppCMSPresenter.LaunchType launchType;
+    Context context;
     private Button[] buttonSelectors;
     private ModuleView[] childViews;
     private GradientDrawable[] underlineViews;
@@ -55,9 +61,11 @@ public class LoginModule extends ModuleView {
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
     private AppCMSAndroidModules appCMSAndroidModules;
-    Context con;
+    //    private String loginAction;
+    private String loginInSignUpAction;
     // variable to track event time
 
+    @SuppressWarnings("unchecked")
     public LoginModule(Context context,
                        ModuleWithComponents moduleInfo,
                        Module moduleAPI,
@@ -78,10 +86,9 @@ public class LoginModule extends ModuleView {
         this.passwordInputViews = new EditText[NUM_CHILD_VIEWS];
         this.loginBorderPadding = context.getResources().getInteger(R.integer.app_cms_login_underline_padding);
         this.launchType = appCMSPresenter.getLaunchType();
-        this.con = context;
+        this.context = context;
         this.appCMSAndroidModules = appCMSAndroidModules;
         init();
-
     }
 
     public void init() {
@@ -197,6 +204,7 @@ public class LoginModule extends ModuleView {
                                                 true,
                                                 false);
                                         appCMSPresenter.navigateToSubscriptionPlansPage(appCMSPresenter.getLoginFromNavPage());
+
                                     } else {
                                         appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
                                     }
@@ -238,7 +246,6 @@ public class LoginModule extends ModuleView {
                         childViews[1] = moduleView;
                         addChildComponents(moduleView, component, 1, appCMSAndroidModules);
                         topLayoutContainer.addView(moduleView);
-
                     }
                 }
             }
@@ -273,7 +280,7 @@ public class LoginModule extends ModuleView {
     }
 
     private void unselectChild(int childIndex) {
-        if (childViews != null&&
+        if (childViews != null &&
                 childIndex < childViews.length &&
                 childViews[childIndex] != null) {
             childViews[childIndex].setVisibility(GONE);
@@ -330,37 +337,40 @@ public class LoginModule extends ModuleView {
                     if (componentType == null) {
                         componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                     }
+                    AppCMSUIKeyType componentKey = jsonValueKeyMap.get(component.getKey());
+                    if (componentKey == null) {
+                        componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                    }
                     switch (componentType) {
                         case PAGE_BUTTON_KEY:
-                            componentView.setOnClickListener(new OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    //Log.d(TAG, "Button clicked: " + component.getAction());
+                            if (componentKey == AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY ||
+                                    (componentKey == AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY)) {
+                                loginInSignUpAction = component.getAction();
+                            }
 
-                                    if (!appCMSPresenter.isPageLoading() &&
-                                            visibleEmailInputView != null &&
-                                            visiblePasswordInputView != null) {
-                                        appCMSPresenter.showLoadingDialog(true);
-                                        String[] authData = new String[2];
-                                        authData[0] = visibleEmailInputView.getText().toString();
-                                        authData[1] = visiblePasswordInputView.getText().toString();
-                                        appCMSPresenter.launchButtonSelectedAction(null,
-                                                component.getAction(),
-                                                null,
-                                                authData,
-                                                null,
-                                                true,
-                                                0,
-                                                null);
-                                    }
+                            componentView.setOnClickListener(v -> {
+                                //Log.d(TAG, "Button clicked: " + component.getAction());
+
+                                if (!appCMSPresenter.isPageLoading() &&
+                                        visibleEmailInputView != null &&
+                                        visiblePasswordInputView != null) {
+                                    appCMSPresenter.showLoadingDialog(true);
+                                    String[] authData = new String[2];
+                                    authData[0] = visibleEmailInputView.getText().toString();
+                                    authData[1] = visiblePasswordInputView.getText().toString();
+                                    appCMSPresenter.launchButtonSelectedAction(null,
+                                            component.getAction(),
+                                            null,
+                                            authData,
+                                            null,
+                                            true,
+                                            0,
+                                            null);
                                 }
                             });
                             break;
+
                         case PAGE_TEXTFIELD_KEY:
-                            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(component.getKey());
-                            if (componentKey == null) {
-                                componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                            }
                             switch (componentKey) {
                                 case PAGE_EMAILTEXTFIELD_KEY:
                                 case PAGE_EMAILTEXTFIELD2_KEY:
@@ -369,21 +379,58 @@ public class LoginModule extends ModuleView {
                                         visibleEmailInputView = emailInputViews[1];
                                     }
                                     break;
+
                                 case PAGE_PASSWORDTEXTFIELD_KEY:
                                 case PAGE_PASSWORDTEXTFIELD2_KEY:
                                     passwordInputViews[childIndex] = ((TextInputLayout) componentView).getEditText();
-                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], con);
+                                    passwordInputViews[childIndex]
+                                            .setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                                    passwordInputViews[childIndex]
+                                            .setImeOptions(EditorInfo.IME_ACTION_SEND | EditorInfo.IME_ACTION_GO);
+                                    passwordInputViews[childIndex]
+                                            .setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+                                    passwordInputViews[childIndex].setOnEditorActionListener((v, actionId, event) -> {
+                                        boolean isImeActionSent = false;
+                                        if (actionId == EditorInfo.IME_ACTION_SEND) {
+                                            if (!appCMSPresenter.isPageLoading() &&
+                                                    visibleEmailInputView != null &&
+                                                    visiblePasswordInputView != null) {
+                                                appCMSPresenter.showLoadingDialog(true);
+                                                String[] authData = new String[2];
+                                                authData[0] = visibleEmailInputView.getText().toString();
+                                                authData[1] = visiblePasswordInputView.getText().toString();
+                                                appCMSPresenter.launchButtonSelectedAction(null,
+                                                        loginInSignUpAction,
+                                                        null,
+                                                        authData,
+                                                        null,
+                                                        true,
+                                                        0,
+                                                        null);
+                                            }
+                                            isImeActionSent = true;
+                                        }
+                                        return isImeActionSent;
+                                    });
+
+                                    AppCMSPresenter.noSpaceInEditTextFilter(passwordInputViews[childIndex], context);
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visiblePasswordInputView = passwordInputViews[1];
                                     }
                                     break;
+
                                 default:
+                                    break;
                             }
                             break;
+
                         case PAGE_SEPARATOR_VIEW_KEY:
                             break;
+
                         default:
                             componentView.setBackgroundColor(bgColor);
+                            break;
                     }
                 } else {
                     moduleView.setComponentHasView(i, false);
@@ -396,5 +443,4 @@ public class LoginModule extends ModuleView {
         underline.setStroke((int) convertDpToPixel(2, getContext()), color);
         underline.setColor(transparentColor);
     }
-
 }

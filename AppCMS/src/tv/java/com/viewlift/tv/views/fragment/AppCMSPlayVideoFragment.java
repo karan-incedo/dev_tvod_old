@@ -111,6 +111,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean sentBeaconFirstFrame;
     private long mTotalVideoDuration;
 
+
+    public VideoPlayerView getVideoPlayerView() {
+        return videoPlayerView;
+    }
+
     public interface OnClosePlayerEvent {
         void closePlayer();
 
@@ -217,6 +222,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private void preparePlayer() {
+        videoPlayerView.init(getActivity());
+        videoPlayerView.getPlayer().setPlayWhenReady(true);
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(false);
             videoPlayerView.getPlayerView().getSubtitleView()
@@ -264,7 +271,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                             beaconBufferingThread.sendBeaconBuffering = true;
                             if (!beaconBufferingThread.isAlive()) {
                                 beaconBufferingThread.start();
-                            }
+                             }
                         }
 
                         break;
@@ -353,6 +360,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         });
     }
 
+    private boolean isAdsDisplaying = false;
+    public boolean isAdsPlaying() {
+        return isAdsDisplaying;
+    }
+
 
     @Nullable
     @Override
@@ -388,6 +400,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
+
+
         playBackStateLayout = (RelativeLayout) rootView.findViewById(R.id.playback_state_layout);
         playBackStateTextView = (TextView) rootView.findViewById(R.id.playback_state_text);
         playBackStateTextView.setTextColor(Color.parseColor(fontColor));
@@ -535,7 +549,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }
 
         if (!shouldRequestAds) {
-            videoPlayerView.getPlayer().setPlayWhenReady(true);
+            //videoPlayerView.getPlayer().setPlayWhenReady(true);
             preparePlayer();
         }
 
@@ -578,7 +592,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
         return rootView;
     }
-
 
     public void cancelTimer() {
         if (null != entitlementCheckTimerTask) {
@@ -646,7 +659,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onResume() {
         videoPlayerView.setListener(this);
-        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
+       if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
         }  /*else {
             videoPlayerView.resumePlayer();
@@ -672,15 +685,19 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.pausePlayer();
         }
         getActivity().unregisterReceiver(networkReciever);
-        cancelTimer();
         super.onPause();
     }
 
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
-        videoPlayerView.getPlayer().setPlayWhenReady(true);
-        preparePlayer();
+        if(videoPlayerView.getPlayer() != null){
+            videoPlayerView.getPlayer().setPlayWhenReady(true);
+        }
+        if (isAdded() && isVisible()) {
+            preparePlayer();
+        }
+        isAdsDisplaying = false;
         // videoPlayerView.getPlayer().setPlayWhenReady(true);
         // videoPlayerView.resumePlayer();
     }
@@ -694,6 +711,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 playBackStateLayout.setVisibility(View.GONE);
                 videoPlayerInfoContainer.setVisibility(View.GONE); //to hide the player controls.
                 adsManager.start();
+                isAdsDisplaying = true;
                 break;
             case CONTENT_PAUSE_REQUESTED:
                 isAdDisplayed = true;
@@ -756,7 +774,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     adsManager.destroy();
                     adsManager = null;
                 }
-                preparePlayer();
+                isAdsDisplaying = false;
+                if (isVisible() && isAdded()) {
+                    preparePlayer();
+                }
                 videoPlayerInfoContainer.setVisibility(View.VISIBLE); //show player controlls.
                 break;
             default:
@@ -764,11 +785,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         }
     }
 
-
     @Override
     public void onDestroyView() {
         videoPlayerView.releasePlayer();
         onClosePlayerEvent = null;
+
         adsLoader = null;
         super.onDestroyView();
 
@@ -797,7 +818,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         adsLoader = null;
 
         super.onDestroyView();
-
     }
 
     private void requestAds(String adTagUrl) {
@@ -821,6 +841,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             });
 
             adsLoader.requestAds(request);
+            isAdsDisplaying = true;
 
             apod += 1;
             if (appCMSPresenter != null) {
@@ -845,10 +866,16 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     public boolean showController(KeyEvent event) {
-        SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
-        if (playerView.getPlayer().getPlayWhenReady()) {
-            playerView.showController();
-            return playerView.dispatchMediaKeyEvent(event);
+        if(null != videoPlayerView) {
+            SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
+            if (null != playerView) {
+                if(null != playerView.getPlayer()){
+                    if( playerView.getPlayer().getPlayWhenReady() ) {
+                        playerView.showController();
+//                        return playerView.dispatchMediaKeyEvent(event);
+                    }
+                }
+            }
         }
         return true;
     }
@@ -918,9 +945,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 false,
                 event,
                 "Video",
-                videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                String.valueOf(videoPlayerView.getVideoHeight()),
-                String.valueOf(videoPlayerView.getVideoWidth()),
+                String.valueOf(videoPlayerView.getBitrate()),
+                String.valueOf(videoPlayerView.getHeight()),
+                String.valueOf(videoPlayerView.getWidth()),
                 mStreamId,
                 0d,
                 0,
@@ -1071,5 +1098,4 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             }
         }
     }
-
 }

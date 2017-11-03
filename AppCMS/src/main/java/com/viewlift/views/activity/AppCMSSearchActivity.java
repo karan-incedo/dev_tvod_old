@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 import rx.Observable;
 import rx.functions.Action1;
 
-/**
+/*
  * Created by viewlift on 6/12/17.
  */
 
