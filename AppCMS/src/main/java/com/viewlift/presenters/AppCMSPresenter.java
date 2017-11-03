@@ -699,6 +699,9 @@ public class AppCMSPresenter {
 
     public void setCancelAllLoads(boolean cancelAllLoads) {
         this.cancelAllLoads = cancelAllLoads;
+        if (cancelAllLoads) {
+            showLoadingDialog(false);
+        }
     }
 
     public Navigation getNavigation() {
@@ -6004,6 +6007,7 @@ public class AppCMSPresenter {
 
     public void logout() {
         if (currentActivity != null) {
+            showLoadingDialog(true);
             GraphRequest revokePermissions = new GraphRequest(AccessToken.getCurrentAccessToken(),
                     getLoggedInUser() + "/permissions/", null,
                     HttpMethod.DELETE, response -> {
@@ -6050,7 +6054,7 @@ public class AppCMSPresenter {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
             }
 
-            refreshAPIData(this::navigateToHomePage, true);
+            refreshAPIData(this::navigateToHomePage, false);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
         }

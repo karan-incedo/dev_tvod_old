@@ -292,9 +292,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                        if (!appCMSPresenter.isSignUpFromFacebook()) {
-                            pageLoading(false);
-                        }
 
                         handleLaunchPageAction(appCMSBinder,
                                 false,
@@ -404,25 +401,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         };
-        refreshPageDataReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                refreshPageData();
-            }
-        };
-
-        notifyUpdateListsReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-                for (Fragment fragment : fragmentList) {
-                    if (fragment instanceof AppCMSPageFragment) {
-                        ((AppCMSPageFragment) fragment).updateDataLists();
-                    }
-                }
-            }
-        };
-
         refreshPageDataReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
