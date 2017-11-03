@@ -38,8 +38,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -73,7 +73,6 @@ import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandl
 import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
-import net.nightwhistler.htmlspanner.style.StyleValue;
 
 import org.htmlcleaner.TagNode;
 

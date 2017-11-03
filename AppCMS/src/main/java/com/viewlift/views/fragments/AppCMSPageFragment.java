@@ -10,17 +10,13 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
@@ -123,8 +119,8 @@ public class AppCMSPageFragment extends Fragment {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
             onPageCreation.onSuccess(appCMSBinder);
-            videoPlayerView = pageView.findViewById(R.id.video_player_id);
-            playLiveImageView = pageView.findViewById(R.id.play_live_image_id);
+            videoPlayerView = (VideoPlayerView) pageView.findViewById(R.id.video_player_id);
+            playLiveImageView = (Button) pageView.findViewById(R.id.play_live_image_id);
 
         } else {
             //Log.e(TAG, "AppCMS page creation error");
