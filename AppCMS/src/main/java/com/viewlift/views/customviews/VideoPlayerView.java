@@ -11,7 +11,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
-import android.view.TextureView;
 import android.widget.FrameLayout;
 import android.widget.ToggleButton;
 
@@ -23,6 +22,7 @@ import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -56,6 +56,7 @@ import com.google.android.exoplayer2.upstream.TransferListener;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.viewlift.R;
 
 import java.io.IOException;
@@ -71,7 +72,7 @@ import rx.functions.Action1;
  */
 
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
-        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener {
+        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
@@ -90,6 +91,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private long resumePosition;
 
     private long bitrate = 0l;
+    private int videoHeight = 0;
+    private int videoWidth = 0;
 
     private long mCurrentPlayerPosition;
     private ErrorEventListener mErrorEventListener;
@@ -226,8 +229,28 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
+    public void setBitrate(long bitrate) {
+        this.bitrate = bitrate;
+    }
+
     public long getBitrate() {
         return bitrate;
+    }
+
+    public void setVideoHeight(int videoHeight) {
+        this.videoHeight = videoHeight;
+    }
+
+    public int getVideoHeight() {
+        return videoHeight;
+    }
+
+    public void setVideoWidth(int videoWidth) {
+        this.videoWidth = videoWidth;
+    }
+
+    public int getVideoWidth() {
+        return videoWidth;
     }
 
     public void setClosedCaptionEnabled(boolean closedCaptionEnabled) {
@@ -302,6 +325,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
+        player.setVideoDebugListener(this);
         playerView.setPlayer(player);
         playerView.setControllerVisibilityListener(visibility -> {
             if (onPlayerControlsStateChanged != null) {
@@ -525,6 +549,28 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
+    public void onVideoEnabled(DecoderCounters counters) {
+
+    }
+
+    @Override
+    public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
+
+    }
+
+    @Override
+    public void onVideoInputFormatChanged(Format format) {
+        setBitrate(format.bitrate/1000);
+        setVideoHeight(format.height);
+        setVideoWidth(format.width);
+    }
+
+    @Override
+    public void onDroppedFrames(int count, long elapsedMs) {
+
+    }
+
+    @Override
     public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthHeightRatio) {
         //Log.i(TAG, "Video size changed: width = " +
 //                width +
@@ -544,6 +590,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         }
+    }
+
+    @Override
+    public void onRenderedFirstFrame(Surface surface) {
+
+    }
+
+    @Override
+    public void onVideoDisabled(DecoderCounters counters) {
+
     }
 
     @Override

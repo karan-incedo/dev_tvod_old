@@ -61,6 +61,7 @@ public class LoginModule extends ModuleView {
     private AppCMSAndroidModules appCMSAndroidModules;
     private String loginAction;
     private String signupAction;
+
     // variable to track event time
 
     public LoginModule(Context context,
@@ -244,7 +245,6 @@ public class LoginModule extends ModuleView {
                         childViews[1] = moduleView;
                         addChildComponents(moduleView, component, 1, appCMSAndroidModules);
                         topLayoutContainer.addView(moduleView);
-
                     }
                 }
             }

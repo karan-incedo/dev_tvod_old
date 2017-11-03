@@ -32,7 +32,9 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
@@ -375,7 +377,6 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getBadgeImages().get_3x4(),
                                 childViewWidth,
                                 childViewHeight);
-
                         Glide.with(context)
                                 .load(imageUrl)
                                 .override(childViewWidth, childViewHeight)
@@ -395,6 +396,12 @@ public class CollectionGridItemView extends BaseView {
 
                 view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                         childComponent, data));
+            } else if (componentType == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
+
+
+                view.setOnClickListener(v ->
+                        onClickHandler.click(CollectionGridItemView.this,
+                                childComponent, data));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
@@ -408,6 +415,9 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
+                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
@@ -576,5 +586,15 @@ public class CollectionGridItemView extends BaseView {
                 return itemContainer;
             }
         }
+    }
+
+    private String getDateFormat(long timeMilliSeconds, String dateFormat) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        return formatter.format(calendar.getTime());
+
     }
 }

@@ -6,12 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.reflect.TypeToken;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
-import com.viewlift.models.data.appcms.ui.android.Blocks;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -21,9 +18,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 import javax.inject.Inject;
 
@@ -142,11 +137,9 @@ public class AppCMSAndroidModuleCall {
         Observable.fromCallable(() -> {
             ModuleDataMap moduleDataMap = new ModuleDataMap();
             moduleDataMap.loadedFromNetwork = false;
-
             if (forceLoadFromNetwork) {
                 moduleDataMap = readModuleListFromNetwork(moduleDataMap, blocksBaseUrl, version);
             } else {
-
                 try {
                     InputStream inputStream = new FileInputStream(
                             new File(storageDirectory.toString() +

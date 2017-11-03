@@ -91,6 +91,7 @@
     <string name="app_cms_page_table_view_key">tableView</string>
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
+    <string name="app_cms_page_video_player_key">player</string>
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>
     <string name="app_cms_page_segmented_view">AC SegmentedView</string>
@@ -133,6 +134,7 @@
     <string name="app_cms_page_signup_component_key">AC SignUp Component</string>
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
+    <string name="app_cms_page_video_player_module_key">AC StandaloneVideoPlayer 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
@@ -146,6 +148,7 @@
     <string name="app_cms_page_settings_plan_value_key">planValue</string>
     <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
+
     <string name="app_cms_setting_module">AC UserManagement 01</string>
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_change_password_key">Change Password</string>
@@ -210,6 +213,11 @@
     <string name="app_cms_page_subscription_page_key">Subscription</string>
     <string name="app_cms_page_subscription_page_name_key">View Plans</string>
     <string name="app_cms_page_show_page_name_key">Show Page</string>
+
+    <string name="app_cms_page_grid_option_key">gridOptions</string>
+    <string name="app_cms_page_thumbnail_option_key">thumbnailInfo</string>
+    <string name="app_cms_page_thumbnail_badgeimage">thumbnailBadgeImage</string>
+    <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
 
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>
@@ -386,8 +394,6 @@
     <string name="app_cms_settings_subscription_duration_label">subscriptionDurationLabel</string>
     <string name="app_cms_settings_manage_subscription_button_key">manageSubscriptionButton</string>
     <string name="app_cms_settings_subscription_label_key">subscriptionLabel</string>
-
-
     <!-- AppCMS Payment Processor values -->
     <string name="subscription_ios_payment_processor">iOS</string>
     <string name="subscription_ios_payment_processor_friendly">iTunes</string>
@@ -417,4 +423,14 @@
     <string name="app_cms_email_id_label">emailId</string>
     <string name="app_cms_contact_us_call_icon_key">call_Icon</string>
     <string name="app_cms_contact_us_email_icon_key">email_Icon</string>
+
+    <string name="app_cms_banner_image_key">bannerImage</string>
+    <string name="app_cms_banner_detail_key">bannerDetail</string>
+    <string name="app_cms_banner_detail_icon_key">bannerIcon</string>
+    <string name="app_cms_banner_detail_background_key">bannerDetailBackground</string>
+    <string name="app_cms_banner_detail_button_key">bannerDetailButton</string>
+    <string name="app_cms_banner_detail_button_action_key">bannerDetailClick</string>
+    <string name="app_cms_banner_detail_title_key">bannerTitle</string>
+
+    <string name="app_cms_page_play_live_image_key">playLiveImage</string>
 </resources>
