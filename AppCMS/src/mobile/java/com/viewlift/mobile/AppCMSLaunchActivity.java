@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.appsflyer.AppsFlyerLib;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
@@ -47,6 +48,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
+
+        Fresco.initialize(getApplicationContext());
 
         setContentView(R.layout.activity_launch);
 

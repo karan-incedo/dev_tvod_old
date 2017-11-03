@@ -217,8 +217,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
-        Fresco.initialize(getApplicationContext());
-
         setContentView(R.layout.activity_appcms_page);
 
         homePageIndex = getResources().getInteger(R.integer.first_primary_page_index);
