@@ -441,6 +441,20 @@ public class ViewCreator {
                                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                             String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                             ((TextView) view).setText(parentalRating);
+                                            boolean resizeText = parentalRating.length() > 2;
+                                            if (component.getFontSize() > 0) {
+                                                int fontSize = component.getFontSize();
+                                                if (resizeText) {
+                                                    fontSize = (int) (0.8 * fontSize);
+                                                }
+                                                ((TextView) componentViewResult.componentView).setTextSize(fontSize);
+                                            } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
+                                                int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
+                                                if (resizeText) {
+                                                    fontSize = (int) (0.8 * fontSize);
+                                                }
+                                                ((TextView) componentViewResult.componentView).setTextSize(fontSize);
+                                            }
                                             ((TextView) view).setGravity(Gravity.CENTER);
                                             applyBorderToComponent(context,
                                                     view,
@@ -2127,6 +2141,8 @@ public class ViewCreator {
 
             case PAGE_LABEL_KEY:
             case PAGE_TEXTVIEW_KEY:
+                boolean resizeText = false;
+
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor())) {
@@ -2395,6 +2411,11 @@ public class ViewCreator {
                                 String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                 ((TextView) componentViewResult.componentView).setText(parentalRating);
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
+
+                                if (parentalRating.length() > 2) {
+                                    resizeText = true;
+                                }
+
                                 applyBorderToComponent(context,
                                         componentViewResult.componentView,
                                         component,
@@ -2516,9 +2537,17 @@ public class ViewCreator {
                 }
 
                 if (component.getFontSize() > 0) {
-                    ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                    int fontSize = component.getFontSize();
+                    if (resizeText) {
+                        fontSize = (int) (0.8 * fontSize);
+                    }
+                    ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                 } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
-                    ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
+                    int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
+                    if (resizeText) {
+                        fontSize = (int) (0.8 * fontSize);
+                    }
+                    ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                 }
 
                 break;
