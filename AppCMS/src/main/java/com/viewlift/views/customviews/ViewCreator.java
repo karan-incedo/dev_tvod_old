@@ -38,8 +38,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -73,7 +73,6 @@ import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandl
 import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
-import net.nightwhistler.htmlspanner.style.StyleValue;
 
 import org.htmlcleaner.TagNode;
 
@@ -1938,6 +1937,20 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        componentViewResult.componentView.setId(R.id.play_live_image_id);
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                            if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                            } else {
+                                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
+                            }
+                        });
+
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                        } else {
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                        }
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
@@ -3350,7 +3363,7 @@ public class ViewCreator {
         VideoPlayerView videoPlayerView = new VideoPlayerView(context);
         videoPlayerView.init(context);
         // it should be dynamic when live url come from api
-        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
+        videoPlayerView.setUri(Uri.parse("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"),
                 null);
         videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
         videoPlayerView.getPlayerView().hideController();

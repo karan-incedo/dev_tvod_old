@@ -70,8 +70,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener,
         VideoPlayerView.ErrorEventListener,
-        Animation.AnimationListener,
-        AudioManager.OnAudioFocusChangeListener {
+        Animation.AnimationListener{
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -165,7 +164,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private int progressCount = 0;
     private Handler seekBarHandler;
     private boolean showCRWWarningMessage;
-    private boolean mAudioFocusGranted = false;
     private boolean isAdDisplayed;
     private int playIndex;
     private long watchedTime;
@@ -756,8 +754,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             //Log.i(TAG, "Playing video: " + title);
         }
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
-
-        requestAudioFocus();
+        videoPlayerView.requestAudioFocus();
         resumeVideo();
         super.onResume();
     }
@@ -1363,56 +1360,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAnimationRepeat(Animation animation) {
         //
-    }
-
-    protected void abandonAudioFocus() {
-        if (getContext() != null) {
-            AudioManager am = (AudioManager) getContext().getApplicationContext()
-                    .getSystemService(Context.AUDIO_SERVICE);
-            int result = am.abandonAudioFocus(this);
-            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                mAudioFocusGranted = false;
-            }
-        }
-    }
-
-    protected boolean requestAudioFocus() {
-        if (getContext() != null && !mAudioFocusGranted) {
-            AudioManager am = (AudioManager) getContext().getApplicationContext()
-                    .getSystemService(Context.AUDIO_SERVICE);
-            int result = am.requestAudioFocus(this,
-                    AudioManager.STREAM_MUSIC,
-                    AudioManager.AUDIOFOCUS_GAIN);
-            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                mAudioFocusGranted = true;
-            }
-        }
-        return mAudioFocusGranted;
-    }
-
-    @Override
-    public void onAudioFocusChange(int focusChange) {
-        switch (focusChange) {
-            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                videoPlayerView.pausePlayer();
-                break;
-
-            case AudioManager.AUDIOFOCUS_GAIN:
-                if (videoPlayerView.getPlayer() != null && videoPlayerView.getPlayer().getPlayWhenReady()) {
-                    videoPlayerView.startPlayer();
-                } else {
-                    videoPlayerView.pausePlayer();
-                }
-                break;
-
-            case AudioManager.AUDIOFOCUS_LOSS:
-                videoPlayerView.pausePlayer();
-                abandonAudioFocus();
-                break;
-
-            default:
-                break;
-        }
     }
 
     public interface OnClosePlayerEvent {
