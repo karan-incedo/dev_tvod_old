@@ -128,7 +128,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     }, 500);
                 } else {
                     String finalFontColor1 = fontColor;
-                    String id = binder.getContentData().getId();
+                    String id = binder.getContentData().getGist().getId();
                     if (binder.isTrailer()) {
                         id = null;
                         if (binder.getContentData() != null &&
@@ -142,7 +142,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         appCMSPresenter.refreshVideoData(id,
                                 updatedContentDatum -> {
                                     try {
-                                        updatedContentDatum.getContentDetails().setTrailers(binder.getContentData().getContentDetails().getTrailers());
                                         binder.setContentData(updatedContentDatum);
                                     } catch (Exception e) {
 

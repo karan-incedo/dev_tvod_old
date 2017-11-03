@@ -325,7 +325,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 @Override
                 public void run() {
                     if (onUpdateContentDatumEvent != null) {
-                        appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum().getId(), updatedContentDatum -> {
+                        appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getId(), updatedContentDatum -> {
                             onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
                             appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                                 if (videoPlayerView != null && appCMSSignedURLResult != null) {
@@ -1096,7 +1096,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onRefreshTokenCallback() {
         //Log.d(TAG, "Calling refresh token callback");
         if (onUpdateContentDatumEvent != null) {
-            appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum().getId(), updatedContentDatum -> {
+            appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getId(), updatedContentDatum -> {
                 onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
                 appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                     if (videoPlayerView != null && appCMSSignedURLResult != null) {
