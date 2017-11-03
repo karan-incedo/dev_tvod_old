@@ -454,6 +454,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     appCMSPresenter.logoutTV();
                     break;
 
+                case EDIT_WATCHLIST:
+                    if (appCMSPresenter.isNetworkConnected()) {
+                        appCMSPresenter.editWatchlist(retryCallBinder.getFilmId(),
+                                retryCallBinder.getCallback(),
+                                !bundle.getBoolean("queued"));
+                    } else {
+                        appCMSPresenter.openErrorDialog(retryCallBinder.getFilmId(),
+                                bundle.getBoolean("queued"),
+                                retryCallBinder.getCallback());
+                    }
+                    break;
             }
         }
     }
@@ -761,7 +772,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 appCMSSite.getGist().getSiteInternalName(),
                                 appCMSBinder.getPagePath());
 
-                        appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
+                        //appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
                                 appCMSPageAPI -> {

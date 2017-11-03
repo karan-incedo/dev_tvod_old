@@ -49,6 +49,9 @@ public class AppCMSTVAutoplayFragment extends Fragment {
     private TextView tvCountdown;
     private Context context;
     private boolean cancelCountdown = true;
+    private Button cancelCountdownButton;
+    private AppCMSTVAutoplayCustomLoader appCMSTVAutoplayCustomLoader;
+    private TextView upNextTextView;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSVideoPageBinder binder);
@@ -143,10 +146,10 @@ public class AppCMSTVAutoplayFragment extends Fragment {
         if (pageView != null) {
             tvCountdown = (TextView) pageView.findViewById(R.id.countdown_id);
             ImageView movieImage = (ImageView) pageView.findViewById(R.id.autoplay_play_movie_image);
-            Button cancelCountdownButton = (Button) pageView.findViewById(R.id.autoplay_cancel_countdown_button);
+            cancelCountdownButton = (Button) pageView.findViewById(R.id.autoplay_cancel_countdown_button);
             TextView finishedMovieTitle = (TextView) pageView.findViewById(R.id.autoplay_finished_movie_title);
-            TextView upNextTextView = (TextView) pageView.findViewById(R.id.up_next_text_view_id);
-            AppCMSTVAutoplayCustomLoader appCMSTVAutoplayCustomLoader = (AppCMSTVAutoplayCustomLoader) pageView.findViewById(R.id.autoplay_rotating_loader_view_id);
+            upNextTextView = (TextView) pageView.findViewById(R.id.up_next_text_view_id);
+            appCMSTVAutoplayCustomLoader = (AppCMSTVAutoplayCustomLoader) pageView.findViewById(R.id.autoplay_rotating_loader_view_id);
 
             if (movieImage != null) {
                 movieImage.setOnClickListener(v -> {
@@ -272,9 +275,21 @@ public class AppCMSTVAutoplayFragment extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
+    public void onStop() {
+        super.onStop();
+        if (cancelCountdown) {
+            stopCountdown();
+            if (cancelCountdownButton != null) {
+                cancelCountdownButton.setText(getString(R.string.back));
+            }
+            cancelCountdown = false;
+            if (appCMSTVAutoplayCustomLoader != null) {
+                appCMSTVAutoplayCustomLoader.setVisibility(View.GONE);
+            }
+            if (upNextTextView != null) {
+                upNextTextView.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override

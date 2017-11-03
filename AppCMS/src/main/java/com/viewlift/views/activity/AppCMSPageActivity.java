@@ -52,6 +52,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
@@ -99,6 +100,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action0;
 import rx.functions.Action1;
+/**
 
 /*
  * Created by viewlift on 5/5/17.
@@ -119,6 +121,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int NO_NAV_MENU_PAGE_INDEX = -1;
 
     private static final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
 
     @BindView(R.id.app_cms_parent_layout)
     RelativeLayout appCMSParentLayout;
@@ -158,6 +164,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.new_version_available_close_button)
     ImageButton newVersionAvailableCloseButton;
+
+    @BindView(R.id.app_cms_search_button)
+    ImageButton mSearchTopButton;
+
+    @BindView(R.id.app_cms_profile_btn)
+    ImageButton mProfileTopButton;
 
     @BindView(R.id.app_cms_toolbar)
     Toolbar toolbar;
@@ -280,9 +292,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                        if (!appCMSPresenter.isSignUpFromFacebook()) {
-                            pageLoading(false);
-                        }
+
                         handleLaunchPageAction(appCMSBinder,
                                 false,
                                 false,
@@ -374,13 +384,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 appCMSPresenter.startNextDownload();
                             }
                         } catch (Exception e) {
-                            //
+
                         }
                     }
                 }
             }
         };
-
         notifyUpdateListsReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -392,7 +401,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         };
-
         refreshPageDataReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -553,6 +561,33 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
         );
 
+        //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
+        mSearchTopButton.setOnClickListener(v -> {
+                    appCMSPresenter.launchSearchPage();
+                }
+        );
+
+        //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
+        mProfileTopButton.setOnClickListener(v -> {
+            if (appCMSPresenter.isUserLoggedIn()){
+                appCMSPresenter.launchNavigationPage();
+            }else{
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                    appCMSPresenter.navigateToLoginPage(false);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
+                    String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
+                    if (appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                    } else {
+                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    }
+                    appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
+                }
+            }
+                }
+        );
         inflateCastMiniController();
 
         if (loadingProgressBar != null) {
@@ -653,7 +688,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
         } else {
@@ -751,6 +785,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } catch (Exception e) {
             //
         }
+        appCMSPresenter.pausePIP();
     }
 
     @Override
@@ -825,6 +860,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             imm.hideSoftInputFromWindow(appCMSParentView.getWindowToken(), 0);
         }
 
+        appCMSPresenter.setCancelAllLoads(true);
+
+        appCMSPresenter.dismissPopupWindowPlayer();
+		appCMSPresenter.setCancelAllLoads(true);
         //Log.d(TAG, "onDestroy()");
     }
 
@@ -1130,10 +1169,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!isActive) {
             if (updatedAppCMSBinder != null) {
                 if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
-                    handleLaunchPageAction(updatedAppCMSBinder,
-                            appCMSPresenter.getConfigurationChanged(),
-                            false,
-                            false);
+                handleLaunchPageAction(updatedAppCMSBinder,
+                        appCMSPresenter.getConfigurationChanged(),
+                        false,
+                        false);
                 }
             }
         }
@@ -1148,7 +1187,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         setCastingInstance();
-
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
@@ -1280,6 +1318,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 default:
                     break;
+            }
+            if (!(appCMSPageFragment instanceof AppCMSPageFragment) ){
+                appCMSPresenter.dismissPopupWindowPlayer();
             }
 
             if (appCMSPageFragment != null) {
@@ -1479,6 +1520,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //Log.d(TAG, "Popping stack to getList to page item");
                 try {
                     getSupportFragmentManager().popBackStackImmediate();
+                    createFragment = false;
                 } catch (IllegalStateException e) {
                     //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
                 }
@@ -1491,6 +1533,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     poppedStack = true;
                 }
                 i++;
+            }
+            if (!appCMSBinderStack.isEmpty()) {
+                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
             }
 
             if (!appCMSBinderStack.isEmpty() && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
@@ -1837,7 +1882,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 false,
                 0,
                 null);
-
         appCMSPresenter.resetDeeplinkQuery();
     }
 
@@ -1915,6 +1959,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 readyAction.call();
             }
         }
+
     }
 
     private void updateData() {
@@ -1945,7 +1990,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
                                 appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
                                 appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
-
                                 //Log.d(TAG, "Updated watched history for loaded displays");
                             }
                         });
@@ -2044,6 +2088,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if ((appCMSPresenter.findHomePageNavItem() != null &&
                     !TextUtils.isEmpty(appCMSPresenter.findHomePageNavItem().getPageId()) &&
                     appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) ||
+
                     (appCMSPresenter.findMoviesPageNavItem() != null &&
                             !TextUtils.isEmpty(appCMSPresenter.findMoviesPageNavItem().getPageId()) &&
                             appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId))) {
@@ -2067,7 +2112,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } catch (Exception e) {
             //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }
-
     }
 
     private void handleCloseAction(boolean closeOnePage) {
@@ -2143,12 +2187,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restartInternalEvents();
         }
     }
-
     @Override
     public void saveQuery(String searchQuery) {
         this.searchQuery = searchQuery;
     }
-
     @Override
     public String restoreQuery() {
         return searchQuery;

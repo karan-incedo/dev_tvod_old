@@ -3,7 +3,10 @@ package com.viewlift.views.binders;
 import android.os.Binder;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.presenters.AppCMSPresenter;
+
+import rx.functions.Action1;
 
 /**
  * Created by nitin.tyagi on 7/31/2017.
@@ -18,6 +21,7 @@ public class RetryCallBinder extends Binder {
     private String[] extraData;
     private ContentDatum contentDatum;
     private String pageId;
+    private Action1<AppCMSAddToWatchlistResult> callback;
 
     public String getFilmId() {
         return filmId;
@@ -93,5 +97,13 @@ public class RetryCallBinder extends Binder {
 
     public void setPageId(String pageId) {
         this.pageId = pageId;
+    }
+
+    public Action1<AppCMSAddToWatchlistResult> getCallback() {
+        return callback;
+    }
+
+    public void setCallback(Action1<AppCMSAddToWatchlistResult> action1) {
+        this.callback = action1;
     }
 }

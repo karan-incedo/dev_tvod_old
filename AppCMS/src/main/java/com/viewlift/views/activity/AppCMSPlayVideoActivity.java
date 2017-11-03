@@ -112,38 +112,33 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
             if (binder != null
                     && binder.getContentData() != null
-                    && binder.getContentData().getGist() != null
-                    && !binder.isTrailer()) {
+                    && binder.getContentData().getGist() != null) {
 
                 Gist gist = binder.getContentData().getGist();
 
                 if (binder.isOffline()) {
                     Handler handler = new Handler();
                     String finalFontColor = fontColor;
-                    handler.postDelayed(new Runnable(){
-                        @Override
-                        public void run(){
-                            try {
-                                launchVideoPlayer(gist, extra, useHls, finalFontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
-                            } catch (Exception e) {
+                    handler.postDelayed(() -> {
+                        try {
+                            launchVideoPlayer(gist, extra, useHls, finalFontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                        } catch (Exception e) {
 
-                            }
                         }
                     }, 500);
                 } else {
                     String finalFontColor1 = fontColor;
-                    if (binder.getContentData().getGist().getPermalink().contains(getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
-                        launchVideoPlayer(binder.getContentData().getGist(), extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
-                    } else {
-                        appCMSPresenter.refreshVideoData(binder.getContentData(),
-                                updatedContentDatum -> {
+                    appCMSPresenter.refreshVideoData(binder.getContentData(),
+                            updatedContentDatum -> {
+                                try {
+                                    updatedContentDatum.getContentDetails().setTrailers(binder.getContentData().getContentDetails().getTrailers());
                                     binder.setContentData(updatedContentDatum);
-                                    launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
-                                });
-                    }
+                                } catch (Exception e) {
+
+                                }
+                                launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                            });
                 }
-            } else if (binder.isTrailer()) {
-                launchVideoPlayer(binder.getContentData().getGist(), extra, useHls, fontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
             }
         } catch (ClassCastException e) {
             //Log.e(TAG, e.getMessage());
@@ -285,7 +280,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             }
                     /*If the video is already downloaded, play if from there, even if Internet is
                     * available*/
-            else if (gist.getId() != null
+            else if (!binder.isTrailer()
+                    && gist.getId() != null
                     && appCMSPresenter.getRealmController() != null
                     && appCMSPresenter.getRealmController().getDownloadById(gist.getId()) != null
                     && appCMSPresenter.getRealmController().getDownloadById(gist.getId()).getDownloadStatus() != null
@@ -416,6 +412,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     protected void onDestroy() {
         try {
             unregisterReceiver(handoffReceiver);
+            unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
         }

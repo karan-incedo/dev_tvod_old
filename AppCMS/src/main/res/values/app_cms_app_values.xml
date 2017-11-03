@@ -4,6 +4,7 @@
     <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
     <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
 
+
     <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
 
@@ -15,7 +16,9 @@
     <string name="fb_login_protocol_scheme">fb1324523080924996</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
+    <string name="app_cms_apptentive_api_key">
+        dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7
+    </string>
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">0974224E</string>
@@ -26,5 +29,5 @@
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
 
-    <bool name="show_cast_overlay">false</bool>
+    <bool name="display_chromecast_overlay">false</bool>
 </resources>

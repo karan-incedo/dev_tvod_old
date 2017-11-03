@@ -51,6 +51,10 @@ public class ClearDialogFragment extends AbsDialogFragment {
     private Action1<String> onNegativeButtonClicked;
     private Action1<String> onBackKeyListener;
 
+    private boolean isFocusOnPositiveButton = true;
+    private Button positiveButton;
+    private Button negativeButton;
+
     public ClearDialogFragment() {
         super();
     }
@@ -88,9 +92,12 @@ public class ClearDialogFragment extends AbsDialogFragment {
         mView.findViewById(R.id.fragment_clear_overlay).setBackgroundColor(Color.parseColor(backGroundColor));
 
         /*Bind Views*/
-        Button negativeButton = (Button) mView.findViewById(R.id.btn_cancel);
-        Button positiveButton = (Button) mView.findViewById(R.id.btn_yes);
+        negativeButton = (Button) mView.findViewById(R.id.btn_cancel);
+        positiveButton = (Button) mView.findViewById(R.id.btn_yes);
         TextView tvTitle = (TextView) mView.findViewById(R.id.text_overlay_title);
+        tvTitle.setFocusable(false);
+        tvTitle.setEnabled(false);
+        tvTitle.setClickable(false);
         TextView tvDescription = (TextView) mView.findViewById(R.id.text_overlay_description);
         ScrollView scrollView = (ScrollView) mView.findViewById(R.id.scrollview);
 
@@ -221,5 +228,26 @@ public class ClearDialogFragment extends AbsDialogFragment {
         bundle.putInt(getString(R.string.tv_dialog_width_key), width);
         bundle.putInt(getString(R.string.tv_dialog_height_key), height);
         super.onActivityCreated(bundle);
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (negativeButton != null && negativeButton.hasFocus()){
+            isFocusOnPositiveButton = false;
+        } else {
+            isFocusOnPositiveButton = true;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isFocusOnPositiveButton) {
+            positiveButton.requestFocus();
+        } else {
+            negativeButton.requestFocus();
+        }
     }
 }

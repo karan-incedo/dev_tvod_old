@@ -30,6 +30,17 @@ public class Settings implements Serializable {
     @Expose
     PrimaryCta primaryCta;
 
+    @SerializedName("showPIP")
+    @Expose
+    boolean showPIP;
+    @SerializedName("isStandaloneVideo")
+    @Expose
+    boolean standaloneVideo;
+
+    @SerializedName("showPlaybackControls")
+    @Expose
+    boolean showPlaybackControls;
+
     public String getTitle() {
         return title;
     }
@@ -72,5 +83,29 @@ public class Settings implements Serializable {
 
     public void setPrimaryCta(PrimaryCta primaryCta) {
         this.primaryCta = primaryCta;
+    }
+
+    public void setShowPIP(boolean showPIP) {
+        this.showPIP = showPIP;
+    }
+
+    public boolean isShowPIP() {
+        return showPIP;
+    }
+
+    public void setShowPlaybackControls(boolean showPlaybackControls) {
+        this.showPlaybackControls = showPlaybackControls;
+    }
+
+    public boolean isShowPlaybackControls() {
+        return showPlaybackControls;
+    }
+
+    public void setStandaloneVideo(boolean standaloneVideo) {
+        this.standaloneVideo = standaloneVideo;
+    }
+
+    public boolean isStandaloneVideo() {
+        return standaloneVideo;
     }
 }

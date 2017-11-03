@@ -69,7 +69,6 @@ public class AppCMSApplication extends MultiDexApplication {
         new Thread(() -> {
             Fabric.with(AppCMSApplication.this, new Crashlytics());
             Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
-            Fresco.initialize(this);
         }).run();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
