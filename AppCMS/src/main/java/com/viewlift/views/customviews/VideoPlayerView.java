@@ -71,7 +71,7 @@ import rx.functions.Action1;
  */
 
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
-        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener {
+        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
@@ -104,6 +104,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private String keyPairIdCookie;
 
     private boolean playerJustInitialized;
+    private boolean mAudioFocusGranted = false;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -573,6 +574,56 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setKeyPairIdCookie(String keyPairIdCookie) {
         this.keyPairIdCookie = keyPairIdCookie;
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                pausePlayer();
+                break;
+
+            case AudioManager.AUDIOFOCUS_GAIN:
+                if (getPlayer() != null && getPlayer().getPlayWhenReady()) {
+                    startPlayer();
+                } else {
+                    pausePlayer();
+                }
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS:
+                pausePlayer();
+                abandonAudioFocus();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    protected void abandonAudioFocus() {
+        if (getContext() != null) {
+            AudioManager am = (AudioManager) getContext().getApplicationContext()
+                    .getSystemService(Context.AUDIO_SERVICE);
+            int result = am.abandonAudioFocus(this);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = false;
+            }
+        }
+    }
+
+    public boolean requestAudioFocus() {
+        if (getContext() != null && !mAudioFocusGranted) {
+            AudioManager am = (AudioManager) getContext().getApplicationContext()
+                    .getSystemService(Context.AUDIO_SERVICE);
+            int result = am.requestAudioFocus(this,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = true;
+            }
+        }
+        return mAudioFocusGranted;
     }
 
     public interface ErrorEventListener {

@@ -1893,7 +1893,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-
+                        componentViewResult.componentView.setId(R.id.play_live_image_id);
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
                                 appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
