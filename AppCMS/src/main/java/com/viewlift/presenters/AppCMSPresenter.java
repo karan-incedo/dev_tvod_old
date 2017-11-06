@@ -2673,10 +2673,10 @@ public class AppCMSPresenter {
     }
 
     private void displayCustomToast(String toastMessage) {
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
-            return;
-        }
-        mLastClickTime = SystemClock.elapsedRealtime();
+//        if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
+//            return;
+//        }
+//        mLastClickTime = SystemClock.elapsedRealtime();
         LayoutInflater inflater = currentActivity.getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast_layout,
                 (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
@@ -2685,7 +2685,7 @@ public class AppCMSPresenter {
         customToastMessage.setText(toastMessage);
 
         customToast = new Toast(currentActivity.getApplicationContext());
-        customToast.setDuration(Toast.LENGTH_SHORT);
+        customToast.setDuration(Toast.LENGTH_LONG);
         customToast.setView(layout);
         customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
         customToast.show();
@@ -6791,6 +6791,8 @@ public class AppCMSPresenter {
                             launched = true;
                             launchBlankPage();
                             sendStopLoadingPageAction(false, null);
+                            showNoNetworkConnectivityToast();
+                            showNetworkConnectivity = false;
                         });
                 return;
             }
@@ -6962,7 +6964,6 @@ public class AppCMSPresenter {
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
                         (dialog, which) -> {
                             try {
-                                showNetworkConnectivity = false;
                                 dialog.dismiss();
                                 if (onDismissAction != null) {
                                     onDismissAction.call();

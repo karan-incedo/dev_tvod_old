@@ -734,9 +734,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (!appCMSPresenter.isNetworkConnected() &&
-                !isDownloadPageOpen &&
-                appCMSPresenter.shouldShowNetworkContectivity()) {
+        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) && appCMSPresenter.shouldShowNetworkContectivity()) {
             appCMSPresenter.showNoNetworkConnectivityToast();
             appCMSPresenter.setShowNetworkConnectivity(false);
         }
