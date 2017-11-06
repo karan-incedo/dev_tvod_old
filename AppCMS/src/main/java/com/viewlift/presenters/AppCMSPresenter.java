@@ -544,7 +544,8 @@ public class AppCMSPresenter {
     private Typeface semiBoldTypeFace;
     private Typeface extraBoldTypeFace;
     private long mLastClickTime = 0;
-    public boolean showNetworkContectivity = false ;
+    public boolean showNetworkContectivity = false;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -2018,7 +2019,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public boolean isSignUpFromFacebook(){
+    public boolean isSignUpFromFacebook() {
         return isSignupFromFacebook;
     }
 
@@ -2192,7 +2193,7 @@ public class AppCMSPresenter {
                                 showLoadingDialog(false);
                                 try {
                                     if (appCMSSubscriptionPlanResult != null) {
-                                         upgradePlanAPICall();
+                                        upgradePlanAPICall();
                                     }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "refreshSubscriptionData: " + e.getMessage());
@@ -2405,7 +2406,7 @@ public class AppCMSPresenter {
                         //
                     });
         } catch (IOException e) {
-            e.printStackTrace();
+            
         }
     }
 
@@ -2577,7 +2578,11 @@ public class AppCMSPresenter {
     public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
         if (isNetworkConnected()) {
             showLoadingDialog(true);
-            getPageAPILruCache().evictAll();
+            try {
+                getPageAPILruCache().evictAll();
+            } catch (Exception e) {
+                
+            }
             getUserData((userIdentity) -> {
                 try {
                     setLoggedInUser(userIdentity.getUserId());
@@ -2657,7 +2662,7 @@ public class AppCMSPresenter {
     }
 
     private void displayCustomToast(String toastMessage) {
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 3000){
+        if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
             return;
         }
         mLastClickTime = SystemClock.elapsedRealtime();
@@ -4761,10 +4766,11 @@ public class AppCMSPresenter {
             userIdentityPassword.setResetToken(getAuthToken());
             userIdentityPassword.setOldPassword(oldPassword);
             userIdentityPassword.setNewPassword(newPassword);
-
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             appCMSUserIdentityCall.passwordPost(url,
                     getAuthToken(), userIdentityPassword,
                     userIdentityPasswordResult -> {
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         try {
                             if (userIdentityPasswordResult != null) {
                                 showToast("Password Changed Successfully", Toast.LENGTH_LONG);
@@ -4774,6 +4780,7 @@ public class AppCMSPresenter {
                             //Log.e(TAG, "Error retrieving user password reset result: " + e.getMessage());
                         }
                     }, errorBody -> {
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         try {
                             UserIdentityPassword userIdentityError = gson.fromJson(errorBody.string(),
                                     UserIdentityPassword.class);
@@ -5654,7 +5661,7 @@ public class AppCMSPresenter {
                             finalizeLogin(forceSubscribed,
                                     facebookLoginResponse.isSubscribed(),
                                     launchType == LaunchType.INIT_SIGNUP ||
-                                    launchType == LaunchType.SUBSCRIBE,
+                                            launchType == LaunchType.SUBSCRIBE,
                                     refreshSubscriptionData);
                         }
                     }
@@ -5707,7 +5714,7 @@ public class AppCMSPresenter {
                                 finalizeLogin(forceSubscribed,
                                         googleLoginResponse.isSubscribed(),
                                         launchType == LaunchType.INIT_SIGNUP ||
-                                        launchType == LaunchType.SUBSCRIBE,
+                                                launchType == LaunchType.SUBSCRIBE,
 
                                         refreshSubscriptionData);
                             }
@@ -6935,7 +6942,7 @@ public class AppCMSPresenter {
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
                         (dialog, which) -> {
                             try {
-                                showNetworkContectivity = false ;
+                                showNetworkContectivity = false;
                                 dialog.dismiss();
                                 if (onDismissAction != null) {
                                     onDismissAction.call();
@@ -8628,7 +8635,7 @@ public class AppCMSPresenter {
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     currentActivity.startActivity(intent);
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    
                 }
             }
         }
@@ -8746,7 +8753,11 @@ public class AppCMSPresenter {
                                                                 if (appCMSPageUI != null) {
                                                                     navigationPages.put(metaPage.getPageId(), appCMSPageUI);
                                                                     Log.d(TAG, "Clearing page cache");
-                                                                    pageViewLruCache.evictAll();
+                                                                    try {
+                                                                        pageViewLruCache.evictAll();
+                                                                    } catch (Exception e) {
+                                                                        
+                                                                    }
 
                                                                     String action = pageNameToActionMap.get(metaPage.getPageName());
                                                                     if (action != null && actionToPageMap.containsKey(action)) {
@@ -8773,7 +8784,11 @@ public class AppCMSPresenter {
                                                     if (appCMSAndroidModules.isLoadedFromNetwork() &&
                                                             pageViewLruCache != null) {
                                                         Log.d(TAG, "Clearing page cache");
-                                                        pageViewLruCache.evictAll();
+                                                        try {
+                                                            pageViewLruCache.evictAll();
+                                                        } catch (Exception e) {
+                                                            
+                                                        }
                                                     }
 
                                                     Log.d(TAG, "Refreshing API Data");
@@ -9797,13 +9812,13 @@ public class AppCMSPresenter {
     }
 
     public boolean launchTVButtonSelectedAction(String pagePath,
-                                                 String action,
-                                                 String filmTitle,
-                                                 String[] extraData,
-                                                 ContentDatum contentDatum,
-                                                 final boolean closeLauncher,
-                                                 int currentlyPlayingIndex,
-                                                 List<String> relateVideoIds) {
+                                                String action,
+                                                String filmTitle,
+                                                String[] extraData,
+                                                ContentDatum contentDatum,
+                                                final boolean closeLauncher,
+                                                int currentlyPlayingIndex,
+                                                List<String> relateVideoIds) {
         boolean result = false;
         //Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
@@ -9839,7 +9854,7 @@ public class AppCMSPresenter {
                                 Class videoPlayer = Class.forName(tvVideoPlayerPackage);
                                 playVideoIntent = new Intent(currentActivity, videoPlayer);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                               
                             }
                             String adsUrl;
 
@@ -10544,7 +10559,7 @@ public class AppCMSPresenter {
                     }, action1
             );
         } catch (IOException e) {
-            e.printStackTrace();
+            
         }
     }
 
@@ -10601,7 +10616,7 @@ public class AppCMSPresenter {
 
     public enum RETRY_TYPE {
         VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION,
-        HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION,EDIT_WATCHLIST
+        HISTORY_RETRY_ACTION, RESET_PASSWORD_RETRY, LOGOUT_ACTION, EDIT_WATCHLIST
     }
 
     public enum ExtraScreenType {
@@ -11183,5 +11198,9 @@ public class AppCMSPresenter {
     public void showPopUpMenuSports(View v) {
         PopupMenu popupMenu = new PopupMenu(getCurrentActivity());
         popupMenu.showLocation(v.getId(), getCurrentActivity());
+    }
+
+    public void showEmptySearchToast() {
+        showToast(getCurrentActivity().getResources().getString(R.string.search_blank_toast_msg), Toast.LENGTH_SHORT);
     }
 }

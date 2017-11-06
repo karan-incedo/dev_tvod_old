@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -147,6 +148,23 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                     updateNoResultsDisplay(appCMSPresenter, null);
                 }
                 return false;
+            }
+        });
+
+        appCMSSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
+
+            @Override
+            public boolean onSuggestionSelect(int position) {
+                return true;
+            }
+
+            @Override
+            public boolean onSuggestionClick(int position) {
+                Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
+                String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
+                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                finish();
+                return true;
             }
         });
 
