@@ -2081,12 +2081,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.refreshSubscriptionData(null, true);
         }
 
-        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
-                !appCMSPresenter.isNetworkConnected() &&
-                appCMSPresenter.shouldShowNetworkContectivity()) {
-            appCMSPresenter.showNoNetworkConnectivityToast();
-            appCMSPresenter.setShowNetworkConnectivity(false);
-        }
+//        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
+//                !appCMSPresenter.isNetworkConnected() &&
+//                appCMSPresenter.shouldShowNetworkContectivity()) {
+//            appCMSPresenter.showNoNetworkConnectivityToast();
+//            appCMSPresenter.setShowNetworkConnectivity(false);
+//        }
 
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }
