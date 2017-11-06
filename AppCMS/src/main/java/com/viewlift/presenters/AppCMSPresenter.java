@@ -545,14 +545,14 @@ public class AppCMSPresenter {
     private Typeface semiBoldTypeFace;
     private Typeface extraBoldTypeFace;
     private long mLastClickTime = 0;
-    private boolean showNetworkContectivity = false;
+    private boolean showNetworkConnectivity;
 
     public boolean shouldShowNetworkContectivity() {
-        return showNetworkContectivity;
+        return showNetworkConnectivity;
     }
 
-    public void setShowNetworkContectivity(boolean showNetworkContectivity) {
-        this.showNetworkContectivity = showNetworkContectivity;
+    public void setShowNetworkConnectivity(boolean showNetworkConnectivity) {
+        this.showNetworkConnectivity = showNetworkConnectivity;
     }
 
     @Inject
@@ -692,6 +692,8 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.downloadInProgress = false;
         this.loginFromNavPage = true;
+
+        this.showNetworkConnectivity = true;
     }
 
     /*does not let user enter space in editText*/
@@ -6960,7 +6962,7 @@ public class AppCMSPresenter {
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
                         (dialog, which) -> {
                             try {
-                                showNetworkContectivity = false;
+                                showNetworkConnectivity = false;
                                 dialog.dismiss();
                                 if (onDismissAction != null) {
                                     onDismissAction.call();

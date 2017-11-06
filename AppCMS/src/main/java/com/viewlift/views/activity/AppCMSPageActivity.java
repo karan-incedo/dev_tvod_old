@@ -342,7 +342,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
-                    appCMSPresenter.setShowNetworkContectivity(!isConnected);
+                    appCMSPresenter.setShowNetworkConnectivity(!isConnected);
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
@@ -736,10 +736,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (!appCMSPresenter.isNetworkConnected() &&
                 !isDownloadPageOpen &&
-                appCMSPresenter.shouldShowNetworkContectivity() &&
                 appCMSPresenter.shouldShowNetworkContectivity()) {
             appCMSPresenter.showNoNetworkConnectivityToast();
-            appCMSPresenter.setShowNetworkContectivity(false);
+            appCMSPresenter.setShowNetworkConnectivity(false);
         }
     }
     private void refreshPageData() {
@@ -813,6 +812,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         appCMSPresenter.cancelInternalEvents();
+
+        appCMSPresenter.setShowNetworkConnectivity(true);
 
         if (!appCMSBinderStack.isEmpty() &&
                 isPageLoading() &&
@@ -2079,7 +2080,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) && appCMSPresenter.shouldShowNetworkContectivity()) {
             appCMSPresenter.showNoNetworkConnectivityToast();
-            appCMSPresenter.setShowNetworkContectivity(false);
+            appCMSPresenter.setShowNetworkConnectivity(false);
         }
 
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
