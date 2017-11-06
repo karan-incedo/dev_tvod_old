@@ -2406,7 +2406,7 @@ public class AppCMSPresenter {
                         //
                     });
         } catch (IOException e) {
-            e.printStackTrace();
+            
         }
     }
 
@@ -2581,7 +2581,7 @@ public class AppCMSPresenter {
             try {
                 getPageAPILruCache().evictAll();
             } catch (Exception e) {
-                e.printStackTrace();
+                
             }
             getUserData((userIdentity) -> {
                 try {
@@ -8635,7 +8635,7 @@ public class AppCMSPresenter {
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     currentActivity.startActivity(intent);
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    
                 }
             }
         }
@@ -8756,7 +8756,7 @@ public class AppCMSPresenter {
                                                                     try {
                                                                         pageViewLruCache.evictAll();
                                                                     } catch (Exception e) {
-                                                                        e.printStackTrace();
+                                                                        
                                                                     }
 
                                                                     String action = pageNameToActionMap.get(metaPage.getPageName());
@@ -8787,7 +8787,7 @@ public class AppCMSPresenter {
                                                         try {
                                                             pageViewLruCache.evictAll();
                                                         } catch (Exception e) {
-                                                            e.printStackTrace();
+                                                            
                                                         }
                                                     }
 
@@ -9854,7 +9854,7 @@ public class AppCMSPresenter {
                                 Class videoPlayer = Class.forName(tvVideoPlayerPackage);
                                 playVideoIntent = new Intent(currentActivity, videoPlayer);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                               
                             }
                             String adsUrl;
 
@@ -10559,7 +10559,7 @@ public class AppCMSPresenter {
                     }, action1
             );
         } catch (IOException e) {
-            e.printStackTrace();
+            
         }
     }
 
