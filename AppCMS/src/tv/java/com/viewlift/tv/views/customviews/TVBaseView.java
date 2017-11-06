@@ -195,6 +195,9 @@ public abstract class TVBaseView extends FrameLayout {
                         break;
                     case PAGE_TEXTALIGNMENT_CENTER_KEY:
                         gravity = Gravity.CENTER;
+                        if(componentKey == AppCMSUIKeyType.PAGE_SETTINGS_USER_EMAIL_LABEL_KEY){
+                            gravity = Gravity.CENTER_HORIZONTAL;
+                        }
                         break;
                 }
                 ((TextView) view).setGravity(gravity);
@@ -255,7 +258,7 @@ public abstract class TVBaseView extends FrameLayout {
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
         } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
-            viewHeight = (int) (viewHeight / 1.05);
+            viewHeight = (int) (viewHeight / 1.15);
         } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY
             && componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_IMAGE_KEY) {
                 int imagePadding = Integer.valueOf(

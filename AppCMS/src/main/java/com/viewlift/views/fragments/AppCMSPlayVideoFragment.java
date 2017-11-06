@@ -158,7 +158,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     };
 
     private String mStreamId;
-    private long mStartBufferMilliSec;
+    private long mStartBufferMilliSec = 0l;
     private long mStopBufferMilliSec;
     private ProgressBar progressBar;
     private Runnable seekListener;
@@ -178,7 +178,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private String closedCaptionUrl;
     private boolean isCastConnected;
     private UserIdentity userIdentityObj;
-    int maxPreviewSecs=0;
+    int maxPreviewSecs = 0;
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -201,7 +201,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private TimerTask refreshTokenTimerTask;
     private Timer entitlementCheckTimer;
     private TimerTask entitlementCheckTimerTask;
-    private boolean entitlementCheckCancelled=false;
+    private boolean entitlementCheckCancelled = false;
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String primaryCategory,
@@ -325,7 +325,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 @Override
                 public void run() {
                     if (onUpdateContentDatumEvent != null) {
-                        appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum(), updatedContentDatum -> {
+                        appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getId(), updatedContentDatum -> {
                             onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
                             appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                                 if (videoPlayerView != null && appCMSSignedURLResult != null) {
@@ -369,8 +369,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 public void run() {
                     if (isAdded()) {
                         appCMSPresenter.getUserData(userIdentity -> {
-
-                            userIdentityObj=userIdentity;
+                            userIdentityObj = userIdentity;
                             //Log.d(TAG, "Video player entitlement check triggered");
                             if (!entitlementCheckCancelled) {
                                 int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
@@ -540,7 +539,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         }
                         if (!sentBeaconFirstFrame) {
                             mStopBufferMilliSec = new Date().getTime();
-                            ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                            ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                             appCMSPresenter.sendBeaconMessage(filmId,
                                     permaLink,
                                     parentScreenName,
@@ -548,9 +547,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     false,
                                     AppCMSPresenter.BeaconEvent.FIRST_FRAME,
                                     "Video",
-                                    String.valueOf(videoPlayerView.getBitrate()),
-                                    String.valueOf(videoPlayerView.getHeight()),
-                                    String.valueOf(videoPlayerView.getWidth()),
+                                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                                    String.valueOf(videoPlayerView.getVideoHeight()),
+                                    String.valueOf(videoPlayerView.getVideoWidth()),
                                     mStreamId,
                                     ttfirstframe,
                                     0,
@@ -618,9 +617,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                         false,
                         AppCMSPresenter.BeaconEvent.PLAY,
                         "Video",
-                        String.valueOf(videoPlayerView.getBitrate()),
-                        String.valueOf(videoPlayerView.getHeight()),
-                        String.valueOf(videoPlayerView.getWidth()),
+                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                        String.valueOf(videoPlayerView.getVideoHeight()),
+                        String.valueOf(videoPlayerView.getVideoWidth()),
                         mStreamId,
                         0d,
                         0,
@@ -845,9 +844,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                             false,
                             AppCMSPresenter.BeaconEvent.AD_IMPRESSION,
                             "Video",
-                            String.valueOf(videoPlayerView.getBitrate()),
-                            String.valueOf(videoPlayerView.getHeight()),
-                            String.valueOf(videoPlayerView.getWidth()),
+                            videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                            String.valueOf(videoPlayerView.getVideoHeight()),
+                            String.valueOf(videoPlayerView.getVideoWidth()),
                             mStreamId,
                             0d,
                             apod,
@@ -864,7 +863,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
                 if (appCMSPresenter != null) {
                     mStopBufferMilliSec = new Date().getTime();
-                    ttfirstframe = ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                    ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                     appCMSPresenter.sendBeaconMessage(filmId,
                             permaLink,
                             parentScreenName,
@@ -872,9 +871,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                             false,
                             AppCMSPresenter.BeaconEvent.FIRST_FRAME,
                             "Video",
-                            String.valueOf(videoPlayerView.getBitrate()),
-                            String.valueOf(videoPlayerView.getHeight()),
-                            String.valueOf(videoPlayerView.getWidth()),
+                            videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                            String.valueOf(videoPlayerView.getVideoHeight()),
+                            String.valueOf(videoPlayerView.getVideoWidth()),
                             mStreamId,
                             ttfirstframe,
                             0,
@@ -1082,9 +1081,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                         false,
                         AppCMSPresenter.BeaconEvent.AD_REQUEST,
                         "Video",
-                        String.valueOf(videoPlayerView.getBitrate()),
-                        String.valueOf(videoPlayerView.getHeight()),
-                        String.valueOf(videoPlayerView.getWidth()),
+                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                        String.valueOf(videoPlayerView.getVideoHeight()),
+                        String.valueOf(videoPlayerView.getVideoWidth()),
                         mStreamId,
                         0d,
                         apod,
@@ -1097,7 +1096,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onRefreshTokenCallback() {
         //Log.d(TAG, "Calling refresh token callback");
         if (onUpdateContentDatumEvent != null) {
-            appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum(), updatedContentDatum -> {
+            appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum().getGist().getId(), updatedContentDatum -> {
                 onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
                 appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
                     if (videoPlayerView != null && appCMSSignedURLResult != null) {
@@ -1156,9 +1155,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                 false,
                 event,
                 "Video",
-                String.valueOf(videoPlayerView.getBitrate()),
-                String.valueOf(videoPlayerView.getHeight()),
-                String.valueOf(videoPlayerView.getWidth()),
+                videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                String.valueOf(videoPlayerView.getVideoHeight()),
+                String.valueOf(videoPlayerView.getVideoWidth()),
                 mStreamId,
                 0d,
                 0,
@@ -1256,7 +1255,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             @Override
             public void onTick(long millisUntilFinished) {
                 long progress = (long) (100.0 * (1.0 - (double) millisUntilFinished / (double) totalCountdownInMillis));
-                Log.d(TAG, "CRW Progress:"  + progress);
+                Log.d(TAG, "CRW Progress:" + progress);
                 progressBar.setProgress((int) progress);
             }
 
@@ -1493,9 +1492,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                                     false,
                                     AppCMSPresenter.BeaconEvent.PING,
                                     "Video",
-                                    String.valueOf(videoPlayerView.getBitrate()),
-                                    String.valueOf(videoPlayerView.getHeight()),
-                                    String.valueOf(videoPlayerView.getWidth()),
+                                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                                    String.valueOf(videoPlayerView.getVideoHeight()),
+                                    String.valueOf(videoPlayerView.getVideoWidth()),
                                     mStreamId,
                                     0d,
                                     0,
@@ -1524,6 +1523,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         VideoPlayerView videoPlayerView;
         boolean runBeaconBuffering;
         boolean sendBeaconBuffering;
+        int bufferCount = 0;
 
 
         public BeaconBufferingThread(long beaconBufferTimeoutMsec,
@@ -1552,20 +1552,26 @@ public class AppCMSPlayVideoFragment extends Fragment
                         if (appCMSPresenter != null && videoPlayerView != null &&
                                 videoPlayerView.getPlayer().getPlayWhenReady() &&
                                 videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) { // For not to sent PIN in PAUSE mode
-                            appCMSPresenter.sendBeaconMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    videoPlayerView.getCurrentPosition(),
-                                    false,
-                                    AppCMSPresenter.BeaconEvent.BUFFERING,
-                                    "Video",
-                                    String.valueOf(videoPlayerView.getBitrate()),
-                                    String.valueOf(videoPlayerView.getHeight()),
-                                    String.valueOf(videoPlayerView.getWidth()),
-                                    mStreamId,
-                                    0d,
-                                    0,
-                                    isVideoDownloaded);
+                            bufferCount++;
+                            if (bufferCount>=5) {
+
+                                appCMSPresenter.sendBeaconMessage(filmId,
+                                        permaLink,
+                                        parentScreenName,
+                                        videoPlayerView.getCurrentPosition(),
+                                        false,
+                                        AppCMSPresenter.BeaconEvent.BUFFERING,
+                                        "Video",
+                                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                                        String.valueOf(videoPlayerView.getVideoHeight()),
+                                        String.valueOf(videoPlayerView.getVideoWidth()),
+                                        mStreamId,
+                                        0d,
+                                        0,
+                                        isVideoDownloaded);
+                                bufferCount=0;
+
+                            }
 
                         }
                     }

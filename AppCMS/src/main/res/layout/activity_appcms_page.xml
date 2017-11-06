@@ -57,7 +57,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center">
-
+                <ImageButton
+                    android:id="@+id/app_cms_profile_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="#00000000"
+                    android:padding="5dp"
+                    android:src="@drawable/profile"
+                    android:visibility="gone" />
                 <ImageView
                     android:id="@+id/app_cms_toolbar_logo"
                     android:layout_width="wrap_content"
@@ -71,7 +79,15 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
-
+                    <ImageButton
+                        android:id="@+id/app_cms_search_button"
+                        android:layout_width="@dimen/close_button_size"
+                        android:layout_height="@dimen/close_button_size"
+                        android:layout_margin="@dimen/close_button_margin"
+                        android:background="@android:color/transparent"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/search"
+                        android:visibility="gone"/>
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"
 

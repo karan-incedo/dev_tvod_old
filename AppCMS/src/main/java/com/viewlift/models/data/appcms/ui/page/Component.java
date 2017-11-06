@@ -43,6 +43,18 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     String key;
 
+    public int getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(int opacity) {
+        this.opacity = opacity;
+    }
+
+    @SerializedName("opacity")
+    @Expose
+    int opacity;
+
     @SerializedName("borderColor")
     @Expose
     String borderColor;
@@ -58,6 +70,18 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("imageName")
     @Expose
     String imageName;
+
+    public String getIcon_url() {
+        return icon_url;
+    }
+
+    public void setIcon_url(String icon_url) {
+        this.icon_url = icon_url;
+    }
+
+    @SerializedName("icon_url")
+    @Expose
+    String icon_url;
 
     @SerializedName("textAlignment")
     @Expose
@@ -98,7 +122,6 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("itemClickAction")
     @Expose
     String itemClickAction;
-
 
     @SerializedName("fontFamily")
     @Expose
@@ -183,7 +206,6 @@ public class Component implements ModuleWithComponents, Serializable {
     public String getHintColor() {
         return hintColor;
     }
-
     public void setHintColor(String hintColor) {
         this.hintColor = hintColor;
     }
@@ -253,15 +275,11 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setType(String type) {
         this.type = type;
     }
-
     @Override
     public void setId(String id) {
-
     }
-
     @Override
     public void setSettings(Settings settings) {
-
     }
 
     public String getKey() {
