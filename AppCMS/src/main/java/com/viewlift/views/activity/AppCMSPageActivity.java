@@ -333,6 +333,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         };
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        appCMSPresenter.setNetworkConnected(isConnected, null);
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -342,7 +346,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
-                    appCMSPresenter.setShowNetworkConnectivity(!isConnected);
+                    appCMSPresenter.setShowNetworkConnectivity(appCMSPresenter.isNetworkConnected() && !isConnected);
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
@@ -734,7 +738,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) && appCMSPresenter.shouldShowNetworkContectivity()) {
+        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
+                appCMSPresenter.shouldShowNetworkContectivity() &&
+                !appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showNoNetworkConnectivityToast();
             appCMSPresenter.setShowNetworkConnectivity(false);
         }
@@ -2074,7 +2080,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.refreshSubscriptionData(null, true);
         }
 
-        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) && appCMSPresenter.shouldShowNetworkContectivity()) {
+        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
+                appCMSPresenter.shouldShowNetworkContectivity() &&
+                !appCMSPresenter.isNetworkConnected()) {
             appCMSPresenter.showNoNetworkConnectivityToast();
             appCMSPresenter.setShowNetworkConnectivity(false);
         }
