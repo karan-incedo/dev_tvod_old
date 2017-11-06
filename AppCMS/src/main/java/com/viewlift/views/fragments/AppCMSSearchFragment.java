@@ -119,8 +119,13 @@ public class AppCMSSearchFragment extends DialogFragment {
         appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
         appCMSGoButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
 
-        appCMSGoButton.setOnClickListener(v ->
-                appCMSPresenter.launchSearchResultsPage(appCMSSearchView.getQuery().toString()));
+        appCMSGoButton.setOnClickListener(v -> {
+            if (appCMSSearchView.getQuery().toString().trim().length() == 0) {
+                appCMSPresenter.showEmptySearchToast();
+                return;
+            }
+            appCMSPresenter.launchSearchResultsPage(appCMSSearchView.getQuery().toString());
+        });
 
         setBgColor((int) bgColor);
 
