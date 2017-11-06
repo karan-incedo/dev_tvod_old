@@ -1486,9 +1486,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            if (!appCMSPresenter.isSignUpFromFacebook()) {
-                pageLoading(false);
-            }
+            pageLoading(false);
 
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
