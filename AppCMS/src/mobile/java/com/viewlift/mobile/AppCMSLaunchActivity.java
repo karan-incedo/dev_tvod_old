@@ -18,6 +18,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.mobile.imageutils.FrescoImageLoader;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -26,6 +27,7 @@ import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
+import com.viewlift.views.utilities.ImageUtils;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
@@ -50,6 +52,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         }
 
         Fresco.initialize(getApplicationContext());
+
+        ImageUtils.registerImageLoader(new FrescoImageLoader());
 
         setContentView(R.layout.activity_launch);
 
