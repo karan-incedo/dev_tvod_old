@@ -759,9 +759,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         requestAudioFocus();
         resumeVideo();
-
-        appCMSPresenter.setShowNetworkConnectivity(appCMSPresenter.isNetworkConnected());
-
         super.onResume();
     }
 
