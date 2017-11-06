@@ -2074,7 +2074,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.isViewPlanPage(updatedAppCMSBinder.getPageId())) {
             //Log.d(TAG, "checkForExistingSubscription() - 1532");
             appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed());
-            appCMSPresenter.refreshSubscriptionData(null, false);
+            appCMSPresenter.refreshSubscriptionData(null, true);
         }
 
         if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) && appCMSPresenter.shouldShowNetworkContectivity()) {
