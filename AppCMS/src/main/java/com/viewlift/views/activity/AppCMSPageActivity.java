@@ -774,6 +774,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.cancelInternalEvents();
 
+        pageLoading(false);
+
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
 
@@ -811,7 +813,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         appCMSPresenter.cancelInternalEvents();
-        pageLoading(false);
 
         if (!appCMSBinderStack.isEmpty() &&
                 isPageLoading() &&
