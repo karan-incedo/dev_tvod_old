@@ -346,8 +346,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
-                    appCMSPresenter.setShowNetworkConnectivity(appCMSPresenter.getNetworkConnectedState() &&
-                            !isConnected);
+                    if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
+                        appCMSPresenter.setShowNetworkConnectivity(true);
+                        appCMSPresenter.showNoNetworkConnectivityToast();
+                    } else {
+                        appCMSPresenter.setShowNetworkConnectivity(false);
+                    }
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
