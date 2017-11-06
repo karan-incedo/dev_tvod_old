@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.viewlift.hoichoi'
-def final customApplicationId = 'Hoichoi'
-def final hostName = "www.hoichoi.tv"
+def final packageName = 'com.mse.monumentalnetworks'
+def final customApplicationId = 'Monumental Sports Network'
+def final hostName = "www.monumentalsportsnetwork.com"
 
 
 def final appVersionName = "2.1.13"
@@ -232,7 +232,7 @@ dependencies {
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
-    mobileCompile "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
+    compile "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
     annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile project(':exoplayer-library')
     compile project(':library')

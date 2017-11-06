@@ -194,10 +194,12 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                    RowPresenter.ViewHolder rowViewHolder, Row row) {
 
+            if(null != item && item instanceof BrowseFragmentRowData) {
 
-            rowData = (BrowseFragmentRowData)item;
-            if(rowData != null)
-             data = rowData.contentData;
+                rowData = (BrowseFragmentRowData) item;
+                if (rowData != null)
+                    data = rowData.contentData;
+            }
             //Log.d(TAG , "Clicked StreamInfo = " + rowData.contentData.getGist().getTitle());
         }
     }

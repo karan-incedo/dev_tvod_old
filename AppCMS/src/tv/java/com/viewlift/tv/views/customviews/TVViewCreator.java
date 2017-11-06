@@ -76,6 +76,7 @@ import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.tv.views.presenter.JumbotronPresenter;
+import com.viewlift.tv.views.presenter.PlayerPresenter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CreditBlocksView;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -228,7 +229,7 @@ public class TVViewCreator {
         TVModuleView moduleView = null;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getView())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
+               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -238,10 +239,28 @@ public class TVViewCreator {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                             pageView, jsonValueKeyMap, appCMSPresenter, true);
                 }
-            } else {
-                if(!module.getView().equalsIgnoreCase("AC ContinueWatching 01")){
-                    module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
+            }else if(module.getView().equalsIgnoreCase(context.getResources().getString(R.string.standaloneplayer))){
+                if (null == mRowsAdapter) {
+                    AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+                    mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
+
+                customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
+                customHeaderItem.setmIsCarousal(true);
+                customHeaderItem.setmListRowLeftMargin(0);
+                customHeaderItem.setmListRowRightMargin(0);
+                customHeaderItem.setmListRowHeight(920);
+                customHeaderItem.setmModuleId( (moduleAPI!= null) ? moduleAPI.getId() : null);
+
+                PlayerPresenter cardPresenter = new PlayerPresenter();
+                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
+                listRowAdapter.add(1);
+                mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
+
+            } else {
+               /* if(!module.getView().equalsIgnoreCase("AC ContinueWatching 01")){
+                    module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
+                }*/
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -254,7 +273,7 @@ public class TVViewCreator {
             }
             return null;
         } else if ("AC UserManagement 01".equalsIgnoreCase(module.getView())) {
-            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+         //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             final TVPageView finalPageView = pageView;
