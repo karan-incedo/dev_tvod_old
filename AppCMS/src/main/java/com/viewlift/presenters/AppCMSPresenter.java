@@ -5593,6 +5593,15 @@ public class AppCMSPresenter {
         }
     }
 
+    public boolean getNetworkConnectedState() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs =
+                    currentContext.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true);
+        }
+        return false;
+    }
+
     @SuppressWarnings("UnusedReturnValue")
     public boolean setNetworkConnected(boolean networkConnected, String pageId) {
         if (currentContext != null) {
