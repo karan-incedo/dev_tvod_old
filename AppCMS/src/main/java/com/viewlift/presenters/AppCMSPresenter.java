@@ -477,6 +477,7 @@ public class AppCMSPresenter {
     private MetaPage loginPage;
     private MetaPage downloadQualityPage;
     private MetaPage homePage;
+    private MetaPage downloadPage;
     private MetaPage subscriptionPage;
     private MetaPage historyPage;
     private MetaPage watchlistPage;
@@ -544,7 +545,15 @@ public class AppCMSPresenter {
     private Typeface semiBoldTypeFace;
     private Typeface extraBoldTypeFace;
     private long mLastClickTime = 0;
-    public boolean showNetworkContectivity = false;
+    private boolean showNetworkContectivity = false;
+
+    public boolean shouldShowNetworkContectivity() {
+        return showNetworkContectivity;
+    }
+
+    public void setShowNetworkContectivity(boolean showNetworkContectivity) {
+        this.showNetworkContectivity = showNetworkContectivity;
+    }
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -5133,6 +5142,15 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isDownloadPage(String pageId) {
+        if (currentActivity != null) {
+            return (downloadPage != null &&
+                    !TextUtils.isEmpty(pageId) &&
+                    pageId.equals(downloadPage.getPageId()));
+        }
+        return false;
+    }
+
     public boolean isShowPage(String pageId) {
         if (currentActivity != null) {
             String pageName = pageIdToPageNameMap.get(pageId);
@@ -9076,7 +9094,7 @@ public class AppCMSPresenter {
 
             int downloadPageIndex = getDownloadPage(metaPageList);
             if (downloadPageIndex >= 0) {
-                MetaPage downloadPage = metaPageList.get(downloadPageIndex);
+                downloadPage = metaPageList.get(downloadPageIndex);
                 new SoftReference<Object>(downloadPage, referenceQueue);
             }
 

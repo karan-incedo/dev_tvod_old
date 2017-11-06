@@ -52,7 +52,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.Auth;
@@ -343,9 +342,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
-                }
-                if (!isConnected && appCMSPresenter.showNetworkContectivity) {
-                    appCMSPresenter.showNoNetworkConnectivityToast();
+                    appCMSPresenter.setShowNetworkContectivity(!isConnected);
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
@@ -737,8 +734,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (!appCMSPresenter.isNetworkConnected() && !isDownloadPageOpen && appCMSPresenter.showNetworkContectivity) {
+        if (!appCMSPresenter.isNetworkConnected() &&
+                !isDownloadPageOpen &&
+                appCMSPresenter.shouldShowNetworkContectivity() &&
+                appCMSPresenter.shouldShowNetworkContectivity()) {
             appCMSPresenter.showNoNetworkConnectivityToast();
+            appCMSPresenter.setShowNetworkContectivity(false);
         }
     }
     private void refreshPageData() {
@@ -2073,6 +2074,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             //Log.d(TAG, "checkForExistingSubscription() - 1532");
             appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed());
             appCMSPresenter.refreshSubscriptionData(null, false);
+        }
+
+        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) && appCMSPresenter.shouldShowNetworkContectivity()) {
+            appCMSPresenter.showNoNetworkConnectivityToast();
+            appCMSPresenter.setShowNetworkContectivity(false);
         }
 
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
