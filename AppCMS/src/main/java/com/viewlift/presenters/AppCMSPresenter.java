@@ -477,6 +477,7 @@ public class AppCMSPresenter {
     private MetaPage loginPage;
     private MetaPage downloadQualityPage;
     private MetaPage homePage;
+    private MetaPage downloadPage;
     private MetaPage subscriptionPage;
     private MetaPage historyPage;
     private MetaPage watchlistPage;
@@ -544,7 +545,15 @@ public class AppCMSPresenter {
     private Typeface semiBoldTypeFace;
     private Typeface extraBoldTypeFace;
     private long mLastClickTime = 0;
-    public boolean showNetworkContectivity = false;
+    private boolean showNetworkConnectivity;
+
+    public boolean shouldShowNetworkContectivity() {
+        return showNetworkConnectivity;
+    }
+
+    public void setShowNetworkConnectivity(boolean showNetworkConnectivity) {
+        this.showNetworkConnectivity = showNetworkConnectivity;
+    }
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -683,6 +692,8 @@ public class AppCMSPresenter {
         this.cancelAllLoads = false;
         this.downloadInProgress = false;
         this.loginFromNavPage = true;
+
+        this.showNetworkConnectivity = true;
     }
 
     /*does not let user enter space in editText*/
@@ -2662,10 +2673,10 @@ public class AppCMSPresenter {
     }
 
     private void displayCustomToast(String toastMessage) {
-        if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
-            return;
-        }
-        mLastClickTime = SystemClock.elapsedRealtime();
+//        if (SystemClock.elapsedRealtime() - mLastClickTime < 3000) {
+//            return;
+//        }
+//        mLastClickTime = SystemClock.elapsedRealtime();
         LayoutInflater inflater = currentActivity.getLayoutInflater();
         View layout = inflater.inflate(R.layout.custom_toast_layout,
                 (ViewGroup) currentActivity.findViewById(R.id.custom_toast_layout_root));
@@ -2674,7 +2685,7 @@ public class AppCMSPresenter {
         customToastMessage.setText(toastMessage);
 
         customToast = new Toast(currentActivity.getApplicationContext());
-        customToast.setDuration(Toast.LENGTH_SHORT);
+        customToast.setDuration(Toast.LENGTH_LONG);
         customToast.setView(layout);
         customToast.setGravity(Gravity.FILL | Gravity.CENTER_VERTICAL, 0, 0);
         customToast.show();
@@ -5133,6 +5144,15 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isDownloadPage(String pageId) {
+        if (currentActivity != null) {
+            return (downloadPage != null &&
+                    !TextUtils.isEmpty(pageId) &&
+                    pageId.equals(downloadPage.getPageId()));
+        }
+        return false;
+    }
+
     public boolean isShowPage(String pageId) {
         if (currentActivity != null) {
             String pageName = pageIdToPageNameMap.get(pageId);
@@ -5571,6 +5591,15 @@ public class AppCMSPresenter {
         if (currentContext != null) {
             displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
         }
+    }
+
+    public boolean getNetworkConnectedState() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs =
+                    currentContext.getSharedPreferences(NETWORK_CONNECTED_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true);
+        }
+        return false;
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -6771,6 +6800,8 @@ public class AppCMSPresenter {
                             launched = true;
                             launchBlankPage();
                             sendStopLoadingPageAction(false, null);
+                            showNoNetworkConnectivityToast();
+                            showNetworkConnectivity = false;
                         });
                 return;
             }
@@ -6942,7 +6973,6 @@ public class AppCMSPresenter {
                 builder.setNegativeButton(R.string.app_cms_close_alert_dialog_button_text,
                         (dialog, which) -> {
                             try {
-                                showNetworkContectivity = false;
                                 dialog.dismiss();
                                 if (onDismissAction != null) {
                                     onDismissAction.call();
@@ -9076,7 +9106,7 @@ public class AppCMSPresenter {
 
             int downloadPageIndex = getDownloadPage(metaPageList);
             if (downloadPageIndex >= 0) {
-                MetaPage downloadPage = metaPageList.get(downloadPageIndex);
+                downloadPage = metaPageList.get(downloadPageIndex);
                 new SoftReference<Object>(downloadPage, referenceQueue);
             }
 

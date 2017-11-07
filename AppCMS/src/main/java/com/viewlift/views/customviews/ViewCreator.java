@@ -39,7 +39,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -64,6 +63,7 @@ import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 import net.nightwhistler.htmlspanner.SpanStack;
@@ -2569,7 +2569,10 @@ public class ViewCreator {
                 break;
 
             case PAGE_IMAGE_KEY:
-                componentViewResult.componentView = new SimpleDraweeView(context);
+                componentViewResult.componentView = ImageUtils.createImageView(context);
+                if (componentViewResult.componentView == null) {
+                    componentViewResult.componentView = new ImageView(context);
+                }
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
@@ -2585,18 +2588,14 @@ public class ViewCreator {
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                             .override(viewWidth, viewHeight)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else if (viewWidth > 0) {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .override(viewWidth, viewHeight)
@@ -2604,9 +2603,7 @@ public class ViewCreator {
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .into((ImageView) componentViewResult.componentView);
@@ -2696,9 +2693,7 @@ public class ViewCreator {
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
-                            if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                ((SimpleDraweeView) componentViewResult.componentView).setImageURI(component.getImageName());
-                            } else {
+                            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, component.getImageName())) {
                                 Glide.with(context)
                                         .load(component.getImageName())
                                         .into((ImageView) componentViewResult.componentView);
