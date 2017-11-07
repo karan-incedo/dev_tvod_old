@@ -9240,6 +9240,10 @@ public class AppCMSPresenter {
 
         List<Observable<GetAppCMSPageUIAsyncTask.MetaPageUI>> observables = new ArrayList<>();
         for (MetaPage metaPage : metaPageList) {
+            if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {
+                setDownloadPageId(metaPage.getPageId());
+            }
+
             pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
             pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
