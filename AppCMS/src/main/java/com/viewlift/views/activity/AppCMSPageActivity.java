@@ -446,6 +446,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
+                        pageLoading(true);
                         AppCMSPageActivity.this.accessToken = loginResult.getAccessToken();
                         if (appCMSPresenter != null && AppCMSPageActivity.this.accessToken != null) {
                             GraphRequest request = GraphRequest.newMeRequest(
@@ -1544,7 +1545,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 i++;
             }
             if (!appCMSBinderStack.isEmpty()) {
-                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                AppCMSBinder currentAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                try {
+                    createFragment = currentAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                } catch (Exception e) {
+
+                }
             }
 
             if (!appCMSBinderStack.isEmpty() && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
