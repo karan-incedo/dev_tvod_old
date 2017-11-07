@@ -67,7 +67,7 @@ public class AppCMSPageUICall {
         AppCMSPageUI appCMSPageUI = null;
         try {
             deletePreviousFiles(url);
-            appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url.toString())
+            appCMSPageUI = writePageToFile(filename, appCMSPageUIRest.get(url)
                     .execute().body());
             appCMSPageUI.setLoadedFromNetwork(true);
         } catch (Exception e) {

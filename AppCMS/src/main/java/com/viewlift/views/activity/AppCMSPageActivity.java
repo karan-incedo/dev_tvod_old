@@ -32,6 +32,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +95,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -333,6 +336,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         };
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        appCMSPresenter.setNetworkConnected(isConnected, null);
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -342,7 +349,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
-                    appCMSPresenter.setShowNetworkConnectivity(!isConnected);
+                    if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
+                        appCMSPresenter.setShowNetworkConnectivity(true);
+                        appCMSPresenter.showNoNetworkConnectivityToast();
+                    } else {
+                        appCMSPresenter.setShowNetworkConnectivity(false);
+                    }
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
@@ -685,6 +697,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
         } else {
@@ -734,7 +747,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) && appCMSPresenter.shouldShowNetworkContectivity()) {
+        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
+                !appCMSPresenter.isNetworkConnected() &&
+                appCMSPresenter.shouldShowNetworkContectivity()) {
             appCMSPresenter.showNoNetworkConnectivityToast();
             appCMSPresenter.setShowNetworkConnectivity(false);
         }
@@ -769,9 +784,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        appCMSPresenter.cancelInternalEvents();
+        if (!appCMSPresenter.isSignUpFromFacebook()) {
+            pageLoading(false);
+        }
 
-        pageLoading(false);
+        appCMSPresenter.cancelInternalEvents();
 
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
@@ -915,6 +932,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             } else {
                 if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+                    pageLoading(true);
                     callbackManager.onActivityResult(requestCode, resultCode, data);
                 } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                     appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
@@ -1076,6 +1094,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void pageLoading(boolean pageLoading) {
+        Thread.dumpStack();
         if (pageLoading) {
             appCMSPresenter.setMainFragmentTransparency(0.5f);
             appCMSFragment.setEnabled(false);
@@ -1533,7 +1552,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 i++;
             }
             if (!appCMSBinderStack.isEmpty()) {
-                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                AppCMSBinder currentAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                try {
+                    createFragment = currentAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                } catch (Exception e) {
+
+                }
             }
 
             if (!appCMSBinderStack.isEmpty() && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
@@ -2074,10 +2098,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.refreshSubscriptionData(null, true);
         }
 
-        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) && appCMSPresenter.shouldShowNetworkContectivity()) {
-            appCMSPresenter.showNoNetworkConnectivityToast();
-            appCMSPresenter.setShowNetworkConnectivity(false);
-        }
+//        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
+//                !appCMSPresenter.isNetworkConnected() &&
+//                appCMSPresenter.shouldShowNetworkContectivity()) {
+//            appCMSPresenter.showNoNetworkConnectivityToast();
+//            appCMSPresenter.setShowNetworkConnectivity(false);
+//        }
 
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
     }

@@ -1,5 +1,6 @@
 package com.viewlift.models.network.background.tasks;
 
+import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 
@@ -20,10 +21,32 @@ public class GetAppCMSPageUIAsyncTask {
     private final AppCMSPageUICall call;
     private final Action1<AppCMSPageUI> readyAction;
 
+    public static class MetaPageUI {
+        private AppCMSPageUI appCMSPageUI;
+        private MetaPage metaPage;
+
+        public AppCMSPageUI getAppCMSPageUI() {
+            return appCMSPageUI;
+        }
+
+        public void setAppCMSPageUI(AppCMSPageUI appCMSPageUI) {
+            this.appCMSPageUI = appCMSPageUI;
+        }
+
+        public MetaPage getMetaPage() {
+            return metaPage;
+        }
+
+        public void setMetaPage(MetaPage metaPage) {
+            this.metaPage = metaPage;
+        }
+    }
+
     public static class Params {
         String url;
         long timeStamp;
         boolean loadFromFile;
+        MetaPage metaPage;
 
         public static class Builder {
             private Params params;
@@ -47,6 +70,11 @@ public class GetAppCMSPageUIAsyncTask {
                 return this;
             }
 
+            public Builder metaPage(MetaPage metaPage) {
+                params.metaPage = metaPage;
+                return this;
+            }
+
             public Params build() {
                 return params;
             }
@@ -56,6 +84,26 @@ public class GetAppCMSPageUIAsyncTask {
     public GetAppCMSPageUIAsyncTask(AppCMSPageUICall call, Action1<AppCMSPageUI> readyAction) {
         this.call = call;
         this.readyAction = readyAction;
+    }
+
+    public Observable<MetaPageUI> getObservable(Params params) {
+        if (params != null) {
+            return Observable
+                    .fromCallable(() -> {
+                        try {
+                            MetaPageUI metaPageUI = new MetaPageUI();
+                            metaPageUI.setMetaPage(params.metaPage);
+                            metaPageUI.setAppCMSPageUI(call.call(params.url, params.timeStamp, params.loadFromFile));
+                            return metaPageUI;
+                        } catch (IOException e) {
+                            //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
+                        }
+                        return null;
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread());
+        }
+        return null;
     }
 
     public void execute(Params params) {

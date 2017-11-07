@@ -433,6 +433,7 @@
     <string name="close_one_page_key">close_one_page</string>
     <string name="logged_in_as">Logged in as %s</string>
     <string name="search_blank_toast_msg">Please enter a value to search.</string>
+    <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
 
 </resources>
 
