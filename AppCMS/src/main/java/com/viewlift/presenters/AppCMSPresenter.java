@@ -30,7 +30,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.RemoteException;
 import android.os.StatFs;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
@@ -2161,7 +2160,7 @@ public class AppCMSPresenter {
     }
 
     private boolean useCCAvenue() {
-        return (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
+        boolean useCCAve =  (TextUtils.isEmpty(getActiveSubscriptionProcessor()) ||
                 (!TextUtils.isEmpty(getActiveSubscriptionProcessor()) &&
                         (!getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
                                 !getActiveSubscriptionProcessor().equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly))))) &&
@@ -2172,6 +2171,8 @@ public class AppCMSPresenter {
                 appCMSMain.getPaymentProviders().getCcav() != null &&
                 !TextUtils.isEmpty(appCMSMain.getPaymentProviders().getCcav().getCountry()) &&
                 appCMSMain.getPaymentProviders().getCcav().getCountry().equalsIgnoreCase(countryCode);
+        Log.v("useCCAve",useCCAve + "") ;
+        return useCCAve ;
     }
 
     public void initiateItemPurchase() {
@@ -7810,10 +7811,12 @@ public class AppCMSPresenter {
                                                                 }
                                                             }
                                                         setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
-                                                        if (useCCAvenue() && !isSubscriptionCompleted()) {
+                                                        //if (useCCAvenue() && !isSubscriptionCompleted()) {
+                                                        if (!isSubscriptionCompleted()) {
                                                             setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
                                                                     appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
                                                         }
+                                                        //}
                                                     }
 
                                                     if (appCMSSubscriptionPlanResult.getSubscriptionInfo() != null) {
