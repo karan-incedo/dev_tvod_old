@@ -82,14 +82,10 @@ public class AppCMSPageAPICall {
                     headersMap.put("Authorization", authToken);
                 }
                 //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
-                Log.d(TAG, "Header data: " + headersMap.toString());
-                Log.d(TAG, "Start page data " + urlWithContent + ": " + new Date());
                 Response<JsonElement> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
-                Log.d(TAG, "Parsing page data " + urlWithContent + ": " + new Date());
                 if (response != null && response.body() != null) {
                     appCMSPageAPI = gson.fromJson(response.body(), AppCMSPageAPI.class);
                 }
-                Log.d(TAG, "End page data " + urlWithContent + ": " + new Date());
 
                 if (!response.isSuccessful()) {
                     //Log.e(TAG, "Response error: " + response.errorBody().string());

@@ -4898,7 +4898,6 @@ public class AppCMSPresenter {
                         siteId,
                         getPageId(appCMSPageUI));
 
-                Log.d(TAG, "Navigate to page start: " + new Date());
                 getPageIdContent(apiUrl,
                         getPageId(appCMSPageUI),
                         new AppCMSPageAPIAction(appbarPresent,
@@ -4916,7 +4915,6 @@ public class AppCMSPresenter {
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
                                 if (appCMSPageAPI != null) {
-                                    Log.d(TAG, "Navigate to page end: " + new Date());
                                     cancelInternalEvents();
                                     pushActionInternalEvents(appCMSPageAPIAction.pageId
                                             + BaseView.isLandscape(currentActivity));
@@ -9264,8 +9262,6 @@ public class AppCMSPresenter {
             observables.add(getAppCMSPageUIAsyncTask.getObservable(params));
         }
 
-        Log.d(TAG, "Start: " + new Date());
-
         Observable.zip(observables, args -> {
             try {
                 for (Object arg : args) {
@@ -9287,7 +9283,7 @@ public class AppCMSPresenter {
                 return false;
             }
             return true;
-        }).subscribe(r -> { Log.d(TAG, "End: " + new Date()); if (r) { onPagesFinishedAction.call(); } else { launchBlankPage(); } });
+        }).subscribe(r -> { if (r) { onPagesFinishedAction.call(); } else { launchBlankPage(); } });
     }
 
     private void processMetaPagesQueue(final boolean loadFromFile,

@@ -1094,7 +1094,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void pageLoading(boolean pageLoading) {
-        Thread.dumpStack();
         if (pageLoading) {
             appCMSPresenter.setMainFragmentTransparency(0.5f);
             appCMSFragment.setEnabled(false);
