@@ -32,6 +32,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +95,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -446,7 +449,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
-                        pageLoading(true);
                         AppCMSPageActivity.this.accessToken = loginResult.getAccessToken();
                         if (appCMSPresenter != null && AppCMSPageActivity.this.accessToken != null) {
                             GraphRequest request = GraphRequest.newMeRequest(
@@ -695,6 +697,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+
         if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
         } else {
@@ -781,9 +784,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        appCMSPresenter.cancelInternalEvents();
+        if (!appCMSPresenter.isSignUpFromFacebook()) {
+            pageLoading(false);
+        }
 
-        pageLoading(false);
+        appCMSPresenter.cancelInternalEvents();
 
         unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
@@ -927,6 +932,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             } else {
                 if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+                    pageLoading(true);
                     callbackManager.onActivityResult(requestCode, resultCode, data);
                 } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                     appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
@@ -1088,6 +1094,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void pageLoading(boolean pageLoading) {
+        Thread.dumpStack();
         if (pageLoading) {
             appCMSPresenter.setMainFragmentTransparency(0.5f);
             appCMSFragment.setEnabled(false);

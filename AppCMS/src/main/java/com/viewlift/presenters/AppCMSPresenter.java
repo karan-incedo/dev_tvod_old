@@ -256,6 +256,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.FuncN;
 import rx.schedulers.Schedulers;
 
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
@@ -2022,9 +2024,9 @@ public class AppCMSPresenter {
 
     private void loginFacebook() {
         if (currentActivity != null) {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             isSignupFromFacebook = true;
             LoginManager.getInstance().logOut();
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
                     Arrays.asList("public_profile", "email", "user_friends"));
         }
@@ -4889,6 +4891,7 @@ public class AppCMSPresenter {
                         siteId,
                         getPageId(appCMSPageUI));
 
+                Log.d(TAG, "Navigate to page start: " + new Date());
                 getPageIdContent(apiUrl,
                         getPageId(appCMSPageUI),
                         new AppCMSPageAPIAction(appbarPresent,
@@ -4906,6 +4909,7 @@ public class AppCMSPresenter {
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
                                 if (appCMSPageAPI != null) {
+                                    Log.d(TAG, "Navigate to page end: " + new Date());
                                     cancelInternalEvents();
                                     pushActionInternalEvents(appCMSPageAPIAction.pageId
                                             + BaseView.isLandscape(currentActivity));
@@ -8994,7 +8998,9 @@ public class AppCMSPresenter {
                                     new SoftReference<>(navigation, referenceQueue);
                                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                                     //Log.d(TAG, "Processing meta pages queue");
-                                    processMetaPagesQueue(loadFromFile,
+
+                                    processMetaPagesList(loadFromFile,
+                                            appCMSAndroidUI.getMetaPages(),
                                             () -> {
                                                 if (!isNetworkConnected()) {
                                                     openDownloadScreenForNetworkError(true,
@@ -9041,6 +9047,54 @@ public class AppCMSPresenter {
 
                                                 }
                                             });
+
+//                                    processMetaPagesQueue(loadFromFile,
+//                                            () -> {
+//                                                if (!isNetworkConnected()) {
+//                                                    openDownloadScreenForNetworkError(true,
+//                                                            () -> getAppCMSAndroid(tryCount));
+//                                                } else {
+//                                                    if (appCMSMain.getServiceType()
+//                                                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+//                                                        refreshSubscriptionData(() -> {
+//
+//                                                        }, true);
+//                                                    }
+//
+//                                                    if (appCMSMain.isForceLogin()) {
+//                                                        boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+//                                                                loginPage.getPageName(),
+//                                                                loginPage.getPageUI(),
+//                                                                false,
+//                                                                true,
+//                                                                false,
+//                                                                false,
+//                                                                false,
+//                                                                deeplinkSearchQuery);
+//                                                        if (!launchSuccess) {
+//                                                            //Log.e(TAG, "Failed to launch page: "
+////                                                                        + loginPage.getPageName());
+//                                                            launchBlankPage();
+//                                                        }
+//                                                    } else {
+//                                                        boolean launchSuccess = navigateToPage(homePage.getPageId(),
+//                                                                homePage.getPageName(),
+//                                                                homePage.getPageUI(),
+//                                                                false,
+//                                                                true,
+//                                                                false,
+//                                                                true,
+//                                                                false,
+//                                                                deeplinkSearchQuery);
+//                                                        if (!launchSuccess) {
+//                                                            //Log.e(TAG, "Failed to launch page: "
+////                                                                        + loginPage.getPageName());
+//                                                            launchBlankPage();
+//                                                        }
+//                                                    }
+//
+//                                                }
+//                                            });
                                 });
                             }
                         } catch (Exception e) {
@@ -9087,9 +9141,9 @@ public class AppCMSPresenter {
     }
 
     private void queueMetaPages(List<MetaPage> metaPageList) {
-        if (pagesToProcess == null) {
-            pagesToProcess = new ConcurrentLinkedQueue<>();
-        }
+//        if (pagesToProcess == null) {
+//            pagesToProcess = new ConcurrentLinkedQueue<>();
+//        }
 
         if (!metaPageList.isEmpty()) {
             int loginPageIndex = getSigninPage(metaPageList);
@@ -9149,23 +9203,78 @@ public class AppCMSPresenter {
                 }
             }
 
-            if (pageToQueueIndex == -1) {
-                pageToQueueIndex = homePageIndex;
-            }
-
-            if (pageToQueueIndex >= 0) {
-                pagesToProcess.add(metaPageList.get(pageToQueueIndex));
-                //Log.d(TAG, "Queuing meta page: " +
-//                        metaPageList.get(pageToQueueIndex).getPageName() + ": " +
-//                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
-//                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
-//                        metaPageList.get(pageToQueueIndex).getPageAPI());
-                metaPageList.remove(pageToQueueIndex);
-                queueMetaPages(metaPageList);
-            } else {
-                pagesToProcess.addAll(metaPageList);
-            }
+//            if (pageToQueueIndex == -1) {
+//                pageToQueueIndex = homePageIndex;
+//            }
+//
+//            if (pageToQueueIndex >= 0) {
+//                pagesToProcess.add(metaPageList.get(pageToQueueIndex));
+//                //Log.d(TAG, "Queuing meta page: " +
+////                        metaPageList.get(pageToQueueIndex).getPageName() + ": " +
+////                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
+////                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
+////                        metaPageList.get(pageToQueueIndex).getPageAPI());
+//                metaPageList.remove(pageToQueueIndex);
+//                queueMetaPages(metaPageList);
+//            } else {
+//                pagesToProcess.addAll(metaPageList);
+//            }
         }
+    }
+
+    private void processMetaPagesList(final boolean loadFromFile,
+                                      List<MetaPage> metaPageList,
+                                      final Action0 onPagesFinishedAction) {
+
+        GetAppCMSPageUIAsyncTask getAppCMSPageUIAsyncTask =
+                new GetAppCMSPageUIAsyncTask(appCMSPageUICall, null);
+
+        List<Observable<GetAppCMSPageUIAsyncTask.MetaPageUI>> observables = new ArrayList<>();
+        for (MetaPage metaPage : metaPageList) {
+            pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
+            pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
+
+            long timeStamp = 0L;
+            if (appCMSMain != null) {
+                timeStamp = appCMSMain.getTimestamp();
+            }
+            String url = currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                    metaPage.getPageUI());
+
+            GetAppCMSPageUIAsyncTask.Params params =
+                    new GetAppCMSPageUIAsyncTask.Params.Builder()
+                            .url(url)
+                            .timeStamp(timeStamp)
+                            .loadFromFile(loadFromFile)
+                            .metaPage(metaPage)
+                            .build();
+            observables.add(getAppCMSPageUIAsyncTask.getObservable(params));
+        }
+
+        Log.d(TAG, "Start: " + new Date());
+
+        Observable.zip(observables, args -> {
+            try {
+                for (Object arg : args) {
+                    if (arg instanceof GetAppCMSPageUIAsyncTask.MetaPageUI) {
+                        GetAppCMSPageUIAsyncTask.MetaPageUI metaPageUI = (GetAppCMSPageUIAsyncTask.MetaPageUI) arg;
+                        navigationPages.put(metaPageUI.getMetaPage().getPageId(), metaPageUI.getAppCMSPageUI());
+                        String action = pageNameToActionMap.get(metaPageUI.getMetaPage().getPageName());
+                        if (action != null && actionToPageMap.containsKey(action)) {
+                            actionToPageMap.put(action, metaPageUI.getAppCMSPageUI());
+                            actionToPageNameMap.put(action, metaPageUI.getMetaPage().getPageName());
+                            actionToPageAPIUrlMap.put(action, metaPageUI.getMetaPage().getPageAPI());
+                            actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPageUI.getMetaPage());
+                            //Log.d(TAG, "Action: " + action + "  PageAPI URL: "
+//                                        + metaPage.getPageAPI());
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }).subscribe(r -> { Log.d(TAG, "End: " + new Date()); if (r) { onPagesFinishedAction.call(); } else { launchBlankPage(); } });
     }
 
     private void processMetaPagesQueue(final boolean loadFromFile,
