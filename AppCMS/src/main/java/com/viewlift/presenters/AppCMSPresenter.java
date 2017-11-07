@@ -34,6 +34,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -2420,7 +2421,7 @@ public class AppCMSPresenter {
                         //
                     });
         } catch (IOException e) {
-            
+
         }
     }
 
@@ -2595,7 +2596,7 @@ public class AppCMSPresenter {
             try {
                 getPageAPILruCache().evictAll();
             } catch (Exception e) {
-                
+
             }
             getUserData((userIdentity) -> {
                 try {
@@ -3633,6 +3634,11 @@ public class AppCMSPresenter {
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            for (Fragment fragment : ((FragmentActivity)currentActivity).getSupportFragmentManager().getFragments()) {
+                if (fragment instanceof AppCMSMoreFragment) {
+                    ((AppCMSMoreFragment) fragment).sendDismissAction();
+                }
+            }
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
@@ -8672,7 +8678,7 @@ public class AppCMSPresenter {
                     intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                     currentActivity.startActivity(intent);
                 } catch (ClassNotFoundException e) {
-                    
+
                 }
             }
         }
@@ -8793,7 +8799,7 @@ public class AppCMSPresenter {
                                                                     try {
                                                                         pageViewLruCache.evictAll();
                                                                     } catch (Exception e) {
-                                                                        
+
                                                                     }
 
                                                                     String action = pageNameToActionMap.get(metaPage.getPageName());
@@ -8824,7 +8830,7 @@ public class AppCMSPresenter {
                                                         try {
                                                             pageViewLruCache.evictAll();
                                                         } catch (Exception e) {
-                                                            
+
                                                         }
                                                     }
 
@@ -9996,7 +10002,7 @@ public class AppCMSPresenter {
                                 Class videoPlayer = Class.forName(tvVideoPlayerPackage);
                                 playVideoIntent = new Intent(currentActivity, videoPlayer);
                             } catch (Exception e) {
-                               
+
                             }
                             String adsUrl;
 
@@ -10701,7 +10707,7 @@ public class AppCMSPresenter {
                     }, action1
             );
         } catch (IOException e) {
-            
+
         }
     }
 
