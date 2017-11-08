@@ -25,7 +25,6 @@ public class PlayerPresenter extends Presenter {
         final FrameLayout frameLayout = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams layoutParams;
 
-
             layoutParams = new FrameLayout.LayoutParams(DEVICE_WIDTH,
                     DEVICE_HEIGHT);
 
@@ -80,7 +79,7 @@ public class PlayerPresenter extends Presenter {
             @Override
             public void onVisibilityChange(int i) {
                 if (i == 0) {
-                    videoPlayerView.getPlayerView().hideController();
+                   videoPlayerView.getPlayerView().hideController();
                 }
             }
         });

@@ -82,7 +82,7 @@ public class CardPresenter extends Presenter {
             public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
                 if(keyCode == KeyEvent.KEYCODE_DPAD_UP
                         && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    frameLayout.clearFocus();
+                   // frameLayout.clearFocus();
                 }
                 return false;
             }

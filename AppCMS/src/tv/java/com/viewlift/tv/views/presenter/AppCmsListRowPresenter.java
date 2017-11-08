@@ -37,7 +37,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     float headerTileLetterSpacing = 0.11f;
 
     public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter){
-        super(FocusHighlight.ZOOM_FACTOR_XSMALL);
+        super(FocusHighlight.ZOOM_FACTOR_NONE);
         mContext = context;
         setShadowEnabled(false);
         setSelectEffectEnabled(false);
@@ -83,9 +83,10 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             ListRow rowItem = (ListRow) item;
             CustomHeaderItem customHeaderItem = ((CustomHeaderItem)rowItem.getHeaderItem());
+            int listRowHeight =  Utils.getViewYAxisAsPerScreen(mContext,customHeaderItem.getmListRowHeight());
             int listRowLeftmargin = Utils.getViewXAxisAsPerScreen(mContext,customHeaderItem.getmListRowLeftMargin());
             int listRowRightmargin = Utils.getViewXAxisAsPerScreen(mContext,customHeaderItem.getmListRowRightMargin());
-            int listRowHeight =  Utils.getViewYAxisAsPerScreen(mContext,customHeaderItem.getmListRowHeight());
+
 
             headerTitle.setTextSize(customHeaderItem.getFontSize());
 
@@ -101,8 +102,22 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             boolean isCarousal = customHeaderItem.ismIsCarousal();
 
-            //Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString());
-            if(isCarousal){
+            Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString()
+            +" isLivePlayer = "+customHeaderItem.ismIsLivePlayer());
+            if(customHeaderItem.ismIsLivePlayer()){
+                headerTitleContainer.setVisibility(View.GONE);
+                headerTitle.setVisibility(View.GONE);
+
+                listRowParam.height = mContext.getResources().getDisplayMetrics().heightPixels + 100;
+                listRowParam.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                listRowView.setLayoutParams(listRowParam);
+
+                horizontalGrLayoutParams.setMargins(-70, 0 , 0,0);
+                horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
+
+                return;
+            }
+            else if(isCarousal){
                 headerTitleContainer.setVisibility(View.GONE);
                 headerTitle.setVisibility(View.GONE);
                 int horizontalSpacing = (int)mContext.getResources().getDimension(R.dimen.caurosel_grid_item_spacing);

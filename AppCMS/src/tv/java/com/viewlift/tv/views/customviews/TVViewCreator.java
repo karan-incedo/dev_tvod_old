@@ -227,7 +227,7 @@ public class TVViewCreator {
                                  AppCMSPresenter appCMSPresenter, AppCMSPageAPI appCMSPageAPI,
                                  boolean isFromLoginDialog) {
         TVModuleView moduleView = null;
-        if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getView())) {
+        if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getType())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
                // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
                 if (null == mRowsAdapter) {
@@ -246,10 +246,11 @@ public class TVViewCreator {
                 }
 
                 customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
-                customHeaderItem.setmIsCarousal(true);
+                customHeaderItem.setmIsCarousal(false);
                 customHeaderItem.setmListRowLeftMargin(0);
                 customHeaderItem.setmListRowRightMargin(0);
                 customHeaderItem.setmListRowHeight(920);
+                customHeaderItem.setmIsLivePlayer(true);
                 customHeaderItem.setmModuleId( (moduleAPI!= null) ? moduleAPI.getId() : null);
 
                 PlayerPresenter cardPresenter = new PlayerPresenter();

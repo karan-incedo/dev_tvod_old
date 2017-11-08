@@ -9,6 +9,7 @@
 
     <dimen name="browse_fragment_margin_left">0dp</dimen>
     <dimen name="browse_fragment_margin_top">-130dp</dimen>
+    <dimen name="browse_fragment_margin_top_for_player">-170dp</dimen>
 
     <dimen name = "jumbotron_weidth">770dp</dimen>
     <dimen name = "jumbotron_height">274dp</dimen>

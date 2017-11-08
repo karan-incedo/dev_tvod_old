@@ -18,12 +18,18 @@ import com.viewlift.R;
 
 public class BaseBrowseFragment extends BrowseFragment {
 
+    private View browseFragmentView = null;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View browseFragmentView =  super.onCreateView(inflater, container, savedInstanceState);
-        Utils.setBrowseFragmentViewParameters(browseFragmentView,
+         browseFragmentView =  super.onCreateView(inflater, container, savedInstanceState);
+      /*  Utils.setBrowseFragmentViewParameters(browseFragmentView,
                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
-                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));
+                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));*/
+        browseFragmentView.setNestedScrollingEnabled(false);
+        return browseFragmentView;
+    }
+
+    public View getBrowseFragmentView(){
         return browseFragmentView;
     }
 

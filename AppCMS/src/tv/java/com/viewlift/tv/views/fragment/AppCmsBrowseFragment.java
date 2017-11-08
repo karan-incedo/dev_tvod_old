@@ -193,17 +193,20 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                    RowPresenter.ViewHolder rowViewHolder, Row row) {
-
-            if(null != item && item instanceof BrowseFragmentRowData) {
-
-                rowData = (BrowseFragmentRowData) item;
-                if (rowData != null)
-                    data = rowData.contentData;
-            }
-            //Log.d(TAG , "Clicked StreamInfo = " + rowData.contentData.getGist().getTitle());
+        if(null != item && item instanceof BrowseFragmentRowData) {
+            rowData = (BrowseFragmentRowData) item;
+            if (rowData != null)
+                data = rowData.contentData;
+            if(null != getBrowseFragmentView())
+                Utils.setBrowseFragmentViewParameters(getBrowseFragmentView(),
+                        (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
+                        (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));
+        }else{
+            if(null != getBrowseFragmentView())
+                Utils.setBrowseFragmentViewParameters(getBrowseFragmentView(),
+                        -40,
+                        (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
         }
     }
-
-
-
+}
 }
