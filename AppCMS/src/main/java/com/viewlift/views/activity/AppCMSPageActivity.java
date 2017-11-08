@@ -1917,8 +1917,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     AppCMSPageAPI historyAPI =
                             appCMSHistoryResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
                     historyAPI.getModules().get(0).setId(appCMSBinder.getPageId());
-                    appCMSPresenter.mergeData(historyAPI, appCMSBinder.getAppCMSPageAPI());
-                    appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
+//                    appCMSPresenter.mergeData(historyAPI, appCMSBinder.getAppCMSPageAPI());
+                    appCMSBinder.updateAppCMSPageAPI(historyAPI);
 
                     //Log.d(TAG, "Updated watched history for loaded displays");
 
@@ -1935,8 +1935,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     AppCMSPageAPI watchlistAPI =
                             appCMSWatchlistResult.convertToAppCMSPageAPI(appCMSBinder.getPageId());
                     watchlistAPI.getModules().get(0).setId(appCMSBinder.getPageId());
-                    appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
-                    appCMSBinder.updateAppCMSPageAPI(appCMSBinder.getAppCMSPageAPI());
+//                    appCMSPresenter.mergeData(watchlistAPI, appCMSBinder.getAppCMSPageAPI());
+                    appCMSBinder.updateAppCMSPageAPI(watchlistAPI);
 
                     //Log.d(TAG, "Updated watched history for loaded displays");
 

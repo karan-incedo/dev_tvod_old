@@ -1443,7 +1443,7 @@ public class ViewCreator {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appCMSTrayItemAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
-                                .id(moduleAPI.getId() + component.getKey())
+                                .id(moduleId + component.getKey())
                                 .build());
                     }
                 }
