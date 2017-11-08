@@ -1,18 +1,58 @@
 package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.models.data.appcms.ui.page.ComponentListSerializerDeserializer;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @UseStag
-public class NavigationPrimary implements Serializable {
+public class NavigationTabBar implements Serializable {
 
     @SerializedName("title")
     @Expose
     String title;
+
+    public boolean isIsbackgroundSelectable() {
+        return isbackgroundSelectable;
+    }
+
+    public void setIsbackgroundSelectable(boolean isbackgroundSelectable) {
+        this.isbackgroundSelectable = isbackgroundSelectable;
+    }
+
+    public boolean isDefaultLaunch() {
+        return isDefaultLaunch;
+    }
+
+    public void setDefaultLaunch(boolean defaultLaunch) {
+        isDefaultLaunch = defaultLaunch;
+    }
+
+    public ArrayList<Component> getComponents() {
+        return components;
+    }
+
+    public void setComponents(ArrayList<Component> components) {
+        this.components = components;
+    }
+
+    @SerializedName("isbackgroundSelectable")
+    @Expose
+    boolean isbackgroundSelectable;
+
+    @SerializedName("isDefaultLaunch")
+    @Expose
+    boolean isDefaultLaunch;
+
+    @SerializedName("components")
+    @Expose
+    ArrayList<Component> components;
 
     public String getIcon() {
         return icon;
@@ -50,15 +90,6 @@ public class NavigationPrimary implements Serializable {
     @Expose
     AccessLevels accessLevels;
 
-    @SerializedName("pagePath")
-    @Expose
-    String pagePath;
-    @SerializedName("icon")
-    @Expose
-    String icon;
-    @SerializedName("platforms")
-    @Expose
-    Platforms platforms;
     public String getTitle() {
         return title;
     }
@@ -113,23 +144,5 @@ public class NavigationPrimary implements Serializable {
 
     public void setAccessLevels(AccessLevels accessLevels) {
         this.accessLevels = accessLevels;
-    }
-    public String getPagePath() {
-        return pagePath;
-    }
-    public void setPagePath(String pagePath) {
-        this.pagePath = pagePath;
-    }
-    public String getIcon() {
-        return icon;
-    }
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-    public Platforms getPlatforms() {
-        return platforms;
-    }
-    public void setPlatforms(Platforms platforms) {
-        this.platforms = platforms;
     }
 }
