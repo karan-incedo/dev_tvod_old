@@ -137,7 +137,7 @@ public class CardPresenter extends Presenter {
                                         Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
 
                                 imageView.setLayoutParams(parms);
-                                imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
+                                parentLayout.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
 
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);

@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -361,7 +363,7 @@ public class Utils {
                 context,
                 isEditText ? android.R.color.white : android.R.color.transparent
         ));
-        return ageBorder;
+        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{Color.BLACK, Color.parseColor(borderColor)});
     }
 
     /**
