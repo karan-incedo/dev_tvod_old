@@ -82,7 +82,7 @@ public class AppCMSTeamListFragment extends DialogFragment {
                 .appCMSPresenter();
 
         if (appCMSBinder != null && appCMSBinder.getNavigation() != null) {
-            appCMSTeamItemAdapter = new AppCMSTeamItemAdapter(appCMSBinder.getNavigation().getNavigationPrimary().get(3),
+            appCMSTeamItemAdapter = new AppCMSTeamItemAdapter(appCMSBinder.getNavigation().getNavigationTabbar(),
                     appCMSPresenter,
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSBinder.isUserLoggedIn(),
@@ -104,12 +104,14 @@ public class AppCMSTeamListFragment extends DialogFragment {
                 ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
             } else {
                 if (!BaseView.isTablet(getContext())) {
-                    ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_TOP |RelativeLayout.CENTER_HORIZONTAL);
+                    ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).setMargins(70,70,0,0);
                 } else {
                     ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
                 }
-                appCMSNavLoginContainer.setVisibility(View.VISIBLE);
-                View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
+                //((RecyclerView.LayoutParams)navItemsList.getLayoutParams()).setMargins(50,50,0,0);
+                appCMSNavLoginContainer.setVisibility(View.GONE);
+                /*View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
                 appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
                 TextView appCMSNavItemsLoggedOutMessage = (TextView) view.findViewById(R.id.app_cms_nav_items_logged_out_message);
                 appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
@@ -150,7 +152,7 @@ public class AppCMSTeamListFragment extends DialogFragment {
                     appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
                 } else {
                     appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
-                }
+                }*/
             }
         }
 

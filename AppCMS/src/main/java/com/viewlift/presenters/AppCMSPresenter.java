@@ -126,6 +126,7 @@ import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
@@ -6466,6 +6467,24 @@ public class AppCMSPresenter {
         return currentActivity != null &&
                 !TextUtils.isEmpty(pageId) &&
                 pageId.equals(currentActivity.getString(R.string.app_cms_navigation_page_tag));
+    }
+    public boolean isPageTeamNavigationPage(List<NavigationTabBar> navigationTabBarList) {
+        for (NavigationTabBar navigationTabBarItem: navigationTabBarList){
+            if (!TextUtils.isEmpty(navigationTabBarItem.getTitle()) &&
+                    navigationTabBarItem.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_team_page_tag))){
+                return true;
+            }
+        }
+        return false;
+    }
+    public NavigationTabBar getPageTeamNavigationPage(List<NavigationTabBar> navigationTabBarList) {
+        for (NavigationTabBar navigationTabBarItem: navigationTabBarList){
+            if (!TextUtils.isEmpty(navigationTabBarItem.getTitle()) &&
+                    navigationTabBarItem.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_team_page_tag))){
+                return navigationTabBarItem;
+            }
+        }
+        return null;
     }
 
     public boolean isPageUser(String pageId) {

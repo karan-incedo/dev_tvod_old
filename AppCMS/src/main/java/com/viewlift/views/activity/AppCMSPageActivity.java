@@ -1289,13 +1289,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 case NAVIGATION:
                     try {
-                        appCMSPageFragment =
-                                AppCMSNavItemsFragment.newInstance(this,
-                                        appCMSBinder,
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+
+                            appCMSPageFragment =
+                                    AppCMSNavItemsFragment.newInstance(this,
+                                            appCMSBinder,
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+
                         //send menu screen event for firebase
                         sendFireBaseMenuScreenEvent();
                     } catch (IllegalArgumentException e) {
@@ -1304,15 +1306,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     break;
                 case TEAM:
                     try {
-                        appCMSPageFragment =
-                                AppCMSTeamListFragment.newInstance(this,
-                                        appCMSBinder,
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-                        //send menu screen event for firebase
-                        sendFireBaseMenuScreenEvent();
+                        if (appCMSBinder!=null &&
+                                appCMSBinder.getNavigation().getNavigationTabbar()!=null &&
+                                appCMSPresenter.isPageTeamNavigationPage(appCMSBinder.getNavigation().getNavigationTabbar()) ) {
+                            appCMSPageFragment =
+                                    AppCMSTeamListFragment.newInstance(this,
+                                            appCMSBinder,
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                            //send menu screen event for firebase
+                            sendFireBaseMenuScreenEvent();
+                        }
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
