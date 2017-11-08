@@ -756,9 +756,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             //Log.i(TAG, "Playing video: " + title);
         }
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
-
+        videoPlayerView.requestAudioFocus();
         appCMSPresenter.setShowNetworkConnectivity(false);
-        requestAudioFocus();
         resumeVideo();
         super.onResume();
     }

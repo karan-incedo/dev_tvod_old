@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -50,6 +51,7 @@ public class AppCMSPageFragment extends Fragment {
     private boolean shouldSendFirebaseViewItemEvent;
     private ViewGroup pageViewGroup;
     private VideoPlayerView videoPlayerView;
+    private Button playLiveImageView;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSBinder appCMSBinder);
@@ -117,6 +119,9 @@ public class AppCMSPageFragment extends Fragment {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
             onPageCreation.onSuccess(appCMSBinder);
+            videoPlayerView = (VideoPlayerView) pageView.findViewById(R.id.video_player_id);
+            playLiveImageView = (Button) pageView.findViewById(R.id.play_live_image_id);
+
         } else {
             //Log.e(TAG, "AppCMS page creation error");
             onPageCreation.onError(appCMSBinder);
@@ -155,15 +160,10 @@ public class AppCMSPageFragment extends Fragment {
                         if (appCMSPresenter.getFirstVisibleChildPosition(v) == 0) {
                             appCMSPresenter.pipPlayerVisible = false;
                             appCMSPresenter.dismissPopupWindowPlayer();
-                            if (videoPlayerView != null) {
-                                videoPlayerView.startPlayer();
-                            }
-
+                             resumePlayer(true);
                         } else if (!appCMSPresenter.pipPlayerVisible) {
                             appCMSPresenter.showPopupWindowPlayer(v);
-                            if (videoPlayerView != null) {
-                                videoPlayerView.pausePlayer();
-                            }
+                             resumePlayer(false);
                         }
 
                     }
@@ -239,19 +239,23 @@ public class AppCMSPageFragment extends Fragment {
         }
 
         updateDataLists();
+        if(videoPlayerView != null) {
+            videoPlayerView.requestAudioFocus();
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         updateDataLists();
+        resumePlayer(false);
     }
 
     public void updateDataLists() {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
-            if (videoPlayerView != null && !appCMSPresenter.pipPlayerVisible) {
-                videoPlayerView.startPlayer();
+            if (!appCMSPresenter.pipPlayerVisible) {
+                resumePlayer(true);
             }
         }
     }
@@ -385,5 +389,17 @@ public class AppCMSPageFragment extends Fragment {
             }
         }
         viewGroup.removeAllViews();
+    }
+
+    private void resumePlayer(boolean playerState){
+        if (videoPlayerView != null && playLiveImageView != null) {
+            if (appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isAppSVOD() && playerState) {
+                    playLiveImageView.setVisibility(View.GONE);
+                    videoPlayerView.startPlayer();
+            } else {
+                playLiveImageView.setVisibility(View.VISIBLE);
+                videoPlayerView.pausePlayer();
+            }
+        }
     }
 }
