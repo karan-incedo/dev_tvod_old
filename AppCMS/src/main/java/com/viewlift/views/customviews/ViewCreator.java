@@ -39,7 +39,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -64,6 +63,7 @@ import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 import net.nightwhistler.htmlspanner.SpanStack;
@@ -73,7 +73,6 @@ import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandl
 import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
-import net.nightwhistler.htmlspanner.style.StyleValue;
 
 import org.htmlcleaner.TagNode;
 
@@ -440,25 +439,29 @@ public class ViewCreator {
                                                 moduleAPI.getContentData().get(0).getParentalRating() != null &&
                                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                             String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
-                                            String convertedRating = context.getString(R.string.age_rating_converted_default);
-                                            if (parentalRating.contains(context.getString(R.string.age_rating_y7))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_y7);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_y);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_ua))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_ua);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_pg);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_g);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_fourteen);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_default);
-                                            } else if (parentalRating.contains(context.getString(R.string.age_raging_r))) {
-                                                convertedRating = context.getString(R.string.age_rating_converted_eighteen);
+                                            ((TextView) view).setText(parentalRating);
+                                            boolean resizeText = parentalRating.length() > 2;
+                                            if (component.getFontSize() > 0) {
+                                                int fontSize = component.getFontSize();
+                                                if (resizeText) {
+                                                    if (BaseView.isTablet(context)) {
+                                                        fontSize = (int) (0.6 * fontSize);
+                                                    } else {
+                                                        fontSize = (int) (0.8 * fontSize);
+                                                    }
+                                                }
+                                                ((TextView) view).setTextSize(fontSize);
+                                            } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
+                                                int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
+                                                if (resizeText) {
+                                                    if (BaseView.isTablet(context)) {
+                                                        fontSize = (int) (0.6 * fontSize);
+                                                    } else {
+                                                        fontSize = (int) (0.8 * fontSize);
                                             }
-                                            ((TextView) view).setText(convertedRating);
+                                                }
+                                                ((TextView) view).setTextSize(fontSize);
+                                            }
                                             ((TextView) view).setGravity(Gravity.CENTER);
                                             applyBorderToComponent(context,
                                                     view,
@@ -2145,6 +2148,7 @@ public class ViewCreator {
 
             case PAGE_LABEL_KEY:
             case PAGE_TEXTVIEW_KEY:
+                boolean resizeText = false;
                 componentViewResult.componentView = new TextView(context);
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor())) {
@@ -2411,26 +2415,13 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0).getGist() != null &&
                                     !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                 String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
-                                String convertedRating = context.getString(R.string.age_rating_converted_default);
-                                if (parentalRating.contains(context.getString(R.string.age_rating_y7))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_y7);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_y))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_y);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_ua))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_ua);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_pg))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_pg);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_g))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_g);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_fourteen))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_fourteen);
-                                } else if (parentalRating.contains(context.getString(R.string.age_rating_converted_default))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_default);
-                                } else if (parentalRating.contains(context.getString(R.string.age_raging_r))) {
-                                    convertedRating = context.getString(R.string.age_rating_converted_eighteen);
-                                }
-                                ((TextView) componentViewResult.componentView).setText(convertedRating);
+                                ((TextView) componentViewResult.componentView).setText(parentalRating);
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
+
+                                if (parentalRating.length() > 2) {
+                                    resizeText = true;
+                                }
+
                                 applyBorderToComponent(context,
                                         componentViewResult.componentView,
                                         component,
@@ -2552,15 +2543,34 @@ public class ViewCreator {
                 }
 
                 if (component.getFontSize() > 0) {
-                    ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                    int fontSize = component.getFontSize();
+                    if (resizeText) {
+                        if (BaseView.isTablet(context)) {
+                            fontSize = (int) (0.6 * fontSize);
+                        } else {
+                            fontSize = (int) (0.8 * fontSize);
+                        }
+                    }
+                    ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                 } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
-                    ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
+                    int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
+                    if (resizeText) {
+                        if (BaseView.isTablet(context)) {
+                            fontSize = (int) (0.6 * fontSize);
+                        } else {
+                            fontSize = (int) (0.8 * fontSize);
+                        }
+                    }
+                    ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                 }
 
                 break;
 
             case PAGE_IMAGE_KEY:
-                componentViewResult.componentView = new SimpleDraweeView(context);
+                componentViewResult.componentView = ImageUtils.createImageView(context);
+                if (componentViewResult.componentView == null) {
+                    componentViewResult.componentView = new ImageView(context);
+                }
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
@@ -2576,18 +2586,14 @@ public class ViewCreator {
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                             .override(viewWidth, viewHeight)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else if (viewWidth > 0) {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .override(viewWidth, viewHeight)
@@ -2595,9 +2601,7 @@ public class ViewCreator {
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .into((ImageView) componentViewResult.componentView);
@@ -2616,18 +2620,18 @@ public class ViewCreator {
                         imageView1.setImageResource(R.drawable.logo);
                         break;
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
-                        componentViewResult.componentView = new ImageView(context);
-                        ImageView imageView = (ImageView) componentViewResult.componentView;
-                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                        String iconImageUrl;
-                        if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
-                            iconImageUrl = component.getIcon_url();
-                            Glide.with(context)
-                                    .load(iconImageUrl)
-                                    .into(imageView);
-                        } else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
-                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
-                        }
+//                        componentViewResult.componentView = new ImageView(context);
+//                        ImageView imageView = (ImageView) componentViewResult.componentView;
+//                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//                        String iconImageUrl;
+//                        if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
+//                            iconImageUrl = component.getIcon_url();
+//                            Glide.with(context)
+//                                    .load(iconImageUrl)
+//                                    .into(imageView);
+//                        } else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
+//                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
+//                        }
 
 
                         break;
@@ -2686,9 +2690,7 @@ public class ViewCreator {
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
-                            if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                ((SimpleDraweeView) componentViewResult.componentView).setImageURI(component.getImageName());
-                            } else {
+                            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, component.getImageName())) {
                                 Glide.with(context)
                                         .load(component.getImageName())
                                         .into((ImageView) componentViewResult.componentView);

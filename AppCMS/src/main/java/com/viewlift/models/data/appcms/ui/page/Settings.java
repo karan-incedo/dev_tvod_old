@@ -26,6 +26,9 @@ public class Settings implements Serializable {
     @Expose
     Columns columns;
 
+    @SerializedName("primaryCta")
+    @Expose
+    PrimaryCta primaryCta;
     @SerializedName("showPIP")
     @Expose
     boolean showPIP;
@@ -69,6 +72,15 @@ public class Settings implements Serializable {
         this.columns = columns;
     }
 
+    public boolean isLoop() {
+        return loop;
+    }
+    public PrimaryCta getPrimaryCta() {
+        return primaryCta;
+    }
+    public void setPrimaryCta(PrimaryCta primaryCta) {
+        this.primaryCta = primaryCta;
+    }
     public void setShowPIP(boolean showPIP) {
         this.showPIP = showPIP;
     }

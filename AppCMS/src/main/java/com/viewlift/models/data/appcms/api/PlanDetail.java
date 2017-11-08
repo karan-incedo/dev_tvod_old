@@ -5,54 +5,56 @@ import java.io.Serializable;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
+@UseStag
 public class PlanDetail implements Serializable {
 
     @SerializedName("recurringPaymentAmount")
     @Expose
-    private double recurringPaymentAmount;
+    double recurringPaymentAmount;
     @SerializedName("recurringPaymentCurrencyCode")
     @Expose
-    private String recurringPaymentCurrencyCode;
+    String recurringPaymentCurrencyCode;
     @SerializedName("countryCode")
     @Expose
-    private String countryCode;
+    String countryCode;
     @SerializedName("featureDetails")
     @Expose
-    private List<FeatureDetail> featureDetails = null;
+    List<FeatureDetail> featureDetails = null;
     @SerializedName("callToAction")
     @Expose
-    private String callToAction;
+    String callToAction;
     @SerializedName("featurePlanIdentifier")
     @Expose
-    private String featurePlanIdentifier;
+    String featurePlanIdentifier;
     @SerializedName("discountedPrice")
     @Expose
-    private double discountedPrice;
+    double discountedPrice;
     @SerializedName("isDefault")
     @Expose
-    private boolean isDefault;
+    boolean isDefault;
     @SerializedName("scheduledFromDate")
     @Expose
-    private long scheduledFromDate;
+    long scheduledFromDate;
     @SerializedName("supportedDevices")
     @Expose
-    private List<String> supportedDevices = null;
+    List<String> supportedDevices = null;
     @SerializedName("visible")
     @Expose
-    private boolean visible;
+    boolean visible;
     @SerializedName("numberOfAllowedStreams")
     @Expose
-    private int numberOfAllowedStreams;
+    int numberOfAllowedStreams;
     @SerializedName("numberOfAllowedDevices")
     @Expose
-    private int numberOfAllowedDevices;
+    int numberOfAllowedDevices;
     @SerializedName("strikeThroughPrice")
     @Expose
-    private double strikeThroughPrice;
+    double strikeThroughPrice;
 
     public double getRecurringPaymentAmount() {
         return recurringPaymentAmount;

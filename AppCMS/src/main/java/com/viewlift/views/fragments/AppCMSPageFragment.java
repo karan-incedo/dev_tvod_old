@@ -10,14 +10,12 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
@@ -137,6 +135,7 @@ public class AppCMSPageFragment extends Fragment {
             sendFirebaseAnalyticsEvents(appCMSBinder);
             shouldSendFirebaseViewItemEvent = false;
         }
+        if (pageView!=null) {
         if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView &&
                 appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
                 appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
@@ -182,6 +181,7 @@ public class AppCMSPageFragment extends Fragment {
 
         } else if (appCMSPresenter.pipPlayerVisible) {
             appCMSPresenter.dismissPopupWindowPlayer();
+            }
         }
 
         return pageView;
@@ -334,8 +334,7 @@ public class AppCMSPageFragment extends Fragment {
                 updatePage = pageView.getParent() != null;
             }
 
-            pageView = null;
-
+            try {
             pageView = viewCreator.generatePage(getContext(),
                     appCMSBinder.getAppCMSPageUI(),
                     appCMSBinder.getAppCMSPageAPI(),
@@ -353,6 +352,8 @@ public class AppCMSPageFragment extends Fragment {
                 if (updatePage) {
                     updateAllViews(pageViewGroup);
                 }
+                }
+            } catch (Exception e) {
             }
         }
     }
