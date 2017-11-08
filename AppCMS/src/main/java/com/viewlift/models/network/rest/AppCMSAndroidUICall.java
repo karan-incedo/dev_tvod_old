@@ -60,6 +60,8 @@ public class AppCMSAndroidUICall {
 //                    e.getMessage());
             }
         }
+
+
         if (appCMSAndroidUI == null && tryCount == 0) {
             return call(url, loadFromFile, tryCount + 1);
         } else if (appCMSAndroidUI == null) {

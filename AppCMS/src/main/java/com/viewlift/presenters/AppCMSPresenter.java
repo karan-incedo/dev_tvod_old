@@ -76,6 +76,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -259,6 +260,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -8954,24 +8956,28 @@ public class AppCMSPresenter {
 //                    Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
                     new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
                         try {
-                            if (appCMSAndroidUI == null ||
-                                    appCMSAndroidUI.getMetaPages() == null ||
-                                    appCMSAndroidUI.getMetaPages().isEmpty()) {
+                            AppCMSAndroidUI appCMSAndroidUI1 = new GsonBuilder().create().fromJson(
+                                    loadJsonFromAssets(currentActivity, "tab_bar.json"),
+                                    AppCMSAndroidUI.class);
+
+                            if (appCMSAndroidUI1 == null ||
+                                    appCMSAndroidUI1.getMetaPages() == null ||
+                                    appCMSAndroidUI1.getMetaPages().isEmpty()) {
                                 //Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                                 launchBlankPage();
                             } else if (isAppBelowMinVersion()) {
                                 //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                                 launchUpgradeAppActivity();
                             } else {
-                                getAppCMSModules(appCMSAndroidUI, false, (appCMSAndroidModules) -> {
+                                getAppCMSModules(appCMSAndroidUI1, false, (appCMSAndroidModules) -> {
                                     launchBlankPage();
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;
-                                    initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-                                    initAppsFlyer(appCMSAndroidUI);
-                                    navigation = appCMSAndroidUI.getNavigation();
+                                    initializeGA(appCMSAndroidUI1.getAnalytics().getGoogleAnalyticsId());
+                                    initAppsFlyer(appCMSAndroidUI1);
+                                    navigation = appCMSAndroidUI1.getNavigation();
                                     new SoftReference<>(navigation, referenceQueue);
-                                    queueMetaPages(appCMSAndroidUI.getMetaPages());
+                                    queueMetaPages(appCMSAndroidUI1.getMetaPages());
                                     //Log.d(TAG, "Processing meta pages queue");
                                     processMetaPagesQueue(loadFromFile,
                                             () -> {

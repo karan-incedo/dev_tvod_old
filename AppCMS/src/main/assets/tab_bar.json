@@ -1,0 +1,1319 @@
+{
+  "analytics": {
+    "googleAnalyticsId": "UA-00000000-9"
+  },
+  "navigation": {
+    "settings": {
+      "primaryCta": {
+        "ctaText": "START YOUR FREE TRIAL",
+        "bannerText": "WATCH LIVE GAMES - ",
+        "displayedPath": "View Plans",
+        "placement": "Banner",
+        "pageId": "0a8d63c0-9770-4836-9d24-5ed1da83f973",
+        "url": "/viewplans"
+      }
+    },
+    "footer": [
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "About Us",
+        "title": "About Us",
+        "pageId": "30594e43-0206-4477-ae10-a60bcc0555fd",
+        "items": [],
+        "url": "/about-us",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "mailto:monumentalnetworksupport@monumentalsports.com",
+        "title": "Contact Us",
+        "pageId": "",
+        "items": [],
+        "url": "mailto:monumentalnetworksupport@monumentalsports.com",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "http://shop.monumentalsportsnetwork.com/",
+        "title": "Shop",
+        "pageId": "",
+        "url": "http://shop.monumentalsportsnetwork.com/",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "Privacy Policy",
+        "title": "Privacy Policy",
+        "pageId": "ff84e84b-6644-4ed9-b47a-f47b76ad0c31",
+        "items": [],
+        "url": "/privacy-policy",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "Terms of Service",
+        "title": "Terms of Service",
+        "pageId": "2d5f234a-e0e4-4075-b0db-1a6324cdeaed",
+        "items": [],
+        "url": "/tos",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "FAQ",
+        "title": "FAQ",
+        "pageId": "0fa287ef-2d61-49c8-b0ab-70854ded5861",
+        "items": [],
+        "url": "/faq",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      }
+    ],
+    "left": [
+      {
+        "accessLevels": {
+          "subscribed": false,
+          "loggedIn": false,
+          "loggedOut": true
+        },
+        "displayedPath": "Authentication Screen",
+        "title": "icon-user",
+        "pageId": "2bc9c255-3cb8-4387-8ebd-71642947a8d7",
+        "items": [],
+        "url": "/login",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": false
+        },
+        "displayedPath": "My Account",
+        "title": "icon-user",
+        "pageId": "d48b1213-6c2e-4096-a26a-3448a57b010e",
+        "url": "/user",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      }
+    ],
+    "tabBar": [
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "icon": "icon-home",
+        "displayedPath": "Home Page",
+        "title": "HOME",
+        "isDefaultLaunch": true,
+        "pageId": "5a54eccc-146a-4a12-9ae3-6720460b2c22",
+        "isbackgroundSelectable": true,
+        "url": "/",
+        "components": [
+          {
+            "layout": {
+              "mobile": {
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "fontSize": 12,
+                "height": 12
+              },
+              "tabletLandscape": {
+                "leftMargin": 0.98,
+                "topMargin": 0.91,
+                "rightMargin": 4.69,
+                "fontSize": 18,
+                "height": 24
+              },
+              "tabletPortrait": {
+                "leftMargin": 1.3,
+                "topMargin": 0.68,
+                "rightMargin": 6.25,
+                "fontSize": 18,
+                "height": 24
+              }
+            },
+            "fontFamily": "OpenSans",
+            "numberOfLines": 1,
+            "isSelectable": false,
+            "textAlignment": "center",
+            "type": "label",
+            "textColor": "#ffffff",
+            "fontWeight": "normal",
+            "key": "tabName"
+          },
+          {
+            "layout": {
+              "mobile": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletLandscape": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletPortrait": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              }
+            },
+            "isSelectable": false,
+            "type": "image",
+            "key": "tagImage"
+          }
+        ],
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "icon": "icon-live",
+        "displayedPath": "Live",
+        "isDefaultLaunch": false,
+        "isbackgroundSelectable": true,
+        "title": "LIVE",
+        "pageId": "b5233890-a8aa-4bf9-a9d8-4db6bc54cec2",
+        "url": "/live",
+        "components": [
+          {
+            "layout": {
+              "mobile": {
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "fontSize": 12,
+                "height": 12
+              },
+              "tabletLandscape": {
+                "leftMargin": 0.98,
+                "topMargin": 0.91,
+                "rightMargin": 4.69,
+                "fontSize": 18,
+                "height": 24
+              },
+              "tabletPortrait": {
+                "leftMargin": 1.3,
+                "topMargin": 0.68,
+                "rightMargin": 6.25,
+                "fontSize": 18,
+                "height": 24
+              }
+            },
+            "fontFamily": "OpenSans",
+            "numberOfLines": 1,
+            "isSelectable": false,
+            "textAlignment": "center",
+            "type": "label",
+            "textColor": "#ffffff",
+            "fontWeight": "normal",
+            "key": "tabName"
+          },
+          {
+            "layout": {
+              "mobile": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletLandscape": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletPortrait": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              }
+            },
+            "isSelectable": false,
+            "type": "image",
+            "key": "tagImage"
+          }
+        ],
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "icon": "icon-grid",
+        "displayedPath": "Show Page",
+        "isDefaultLaunch": false,
+        "isbackgroundSelectable": true,
+        "title": "SHOWS",
+        "pageId": "12540c94-3de9-420e-8d04-77d595772c22",
+        "url": "/show",
+        "components": [
+          {
+            "layout": {
+              "mobile": {
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "fontSize": 12,
+                "height": 12
+              },
+              "tabletLandscape": {
+                "leftMargin": 0.98,
+                "topMargin": 0.91,
+                "rightMargin": 4.69,
+                "fontSize": 18,
+                "height": 24
+              },
+              "tabletPortrait": {
+                "leftMargin": 1.3,
+                "topMargin": 0.68,
+                "rightMargin": 6.25,
+                "fontSize": 18,
+                "height": 24
+              }
+            },
+            "fontFamily": "OpenSans",
+            "numberOfLines": 1,
+            "isSelectable": false,
+            "textAlignment": "center",
+            "type": "label",
+            "textColor": "#ffffff",
+            "fontWeight": "normal",
+            "key": "tabName"
+          },
+          {
+            "layout": {
+              "mobile": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletLandscape": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletPortrait": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              }
+            },
+            "isSelectable": false,
+            "type": "image",
+            "key": "tagImage"
+          }
+        ],
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "isDefaultLaunch": false,
+        "isbackgroundSelectable": true,
+        "icon": "icon-bracket",
+        "title": "TEAMS",
+        "pageId": "",
+        "components": [
+          {
+            "layout": {
+              "mobile": {
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "fontSize": 12,
+                "height": 12
+              },
+              "tabletLandscape": {
+                "leftMargin": 0.98,
+                "topMargin": 0.91,
+                "rightMargin": 4.69,
+                "fontSize": 18,
+                "height": 24
+              },
+              "tabletPortrait": {
+                "leftMargin": 1.3,
+                "topMargin": 0.68,
+                "rightMargin": 6.25,
+                "fontSize": 18,
+                "height": 24
+              }
+            },
+            "fontFamily": "OpenSans",
+            "numberOfLines": 1,
+            "isSelectable": false,
+            "textAlignment": "center",
+            "type": "label",
+            "textColor": "#ffffff",
+            "fontWeight": "normal",
+            "key": "tabName"
+          },
+          {
+            "layout": {
+              "mobile": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletLandscape": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletPortrait": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              }
+            },
+            "isSelectable": false,
+            "type": "image",
+            "key": "tagImage"
+          }
+        ],
+        "items": [
+          {
+            "accessLevels": {
+              "subscribed": true,
+              "loggedIn": true,
+              "loggedOut": true
+            },
+            "icon": "icon-capitals",
+            "displayedPath": "Capitals Page",
+            "title": "CAPITALS",
+            "pageId": "b7cf9716-4249-4c37-98b6-b3e93d101f2b",
+            "url": "/teams/capitals",
+            "platforms": {
+              "roku": true,
+              "fireTv": true,
+              "appleTv": true,
+              "web": true,
+              "android": true,
+              "xbox": true,
+              "ios": true
+            }
+          },
+          {
+            "accessLevels": {
+              "subscribed": true,
+              "loggedIn": true,
+              "loggedOut": true
+            },
+            "icon": "icon-wizards",
+            "displayedPath": "Wizards Page",
+            "title": "WIZARDS",
+            "pageId": "1178dfa3-1350-492f-b4b4-763b354f8bf1",
+            "url": "/teams/wizards",
+            "platforms": {
+              "roku": true,
+              "fireTv": true,
+              "appleTv": true,
+              "web": true,
+              "android": true,
+              "xbox": true,
+              "ios": true
+            }
+          },
+          {
+            "accessLevels": {
+              "subscribed": true,
+              "loggedIn": true,
+              "loggedOut": true
+            },
+            "icon": "icon-mystics",
+            "displayedPath": "Mystics Page",
+            "title": "MYSTICS",
+            "pageId": "da26de9b-07d6-483f-a58d-d0dc1b27d803",
+            "url": "/teams/mystics",
+            "platforms": {
+              "roku": true,
+              "fireTv": true,
+              "appleTv": true,
+              "web": true,
+              "android": true,
+              "xbox": true,
+              "ios": true
+            }
+          }
+        ],
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "icon": "icon-menu",
+        "displayedPath": "Menu Screen",
+        "title": "MORE",
+        "isDefaultLaunch": false,
+        "isbackgroundSelectable": true,
+        "pageId": "",
+        "url": "Menu Screen",
+        "components": [
+          {
+            "layout": {
+              "mobile": {
+                "leftMargin": 0,
+                "topMargin": 0,
+                "rightMargin": 0,
+                "fontSize": 12,
+                "height": 12
+              },
+              "tabletLandscape": {
+                "leftMargin": 0.98,
+                "topMargin": 0.91,
+                "rightMargin": 4.69,
+                "fontSize": 18,
+                "height": 24
+              },
+              "tabletPortrait": {
+                "leftMargin": 1.3,
+                "topMargin": 0.68,
+                "rightMargin": 6.25,
+                "fontSize": 18,
+                "height": 24
+              }
+            },
+            "fontFamily": "OpenSans",
+            "numberOfLines": 1,
+            "isSelectable": false,
+            "textAlignment": "center",
+            "type": "label",
+            "textColor": "#ffffff",
+            "fontWeight": "normal",
+            "key": "tabName"
+          },
+          {
+            "layout": {
+              "mobile": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletLandscape": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              },
+              "tabletPortrait": {
+                "yAxis": 0,
+                "xAxis": 0,
+                "width": 16,
+                "height": 16
+              }
+            },
+            "isSelectable": false,
+            "type": "image",
+            "key": "tagImage"
+          }
+        ],
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      }
+    ],
+    "right": [
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "Search Screen",
+        "title": "icon-search",
+        "pageId": "f9dde643-7b97-41aa-9356-79285b6c198e",
+        "url": "/search",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      }
+    ],
+    "user": [
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": false
+        },
+        "displayedPath": "My Account",
+        "title": "My Account",
+        "pageId": "d48b1213-6c2e-4096-a26a-3448a57b010e",
+        "items": [],
+        "url": "/user",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": false
+        },
+        "displayedPath": "My Watchlist",
+        "title": "My Watchlist",
+        "pageId": "298cd01c-de4b-45f1-b238-04a510f7b710",
+        "items": [],
+        "url": "/user/watchlist",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": false
+        },
+        "displayedPath": "My History",
+        "title": "My History",
+        "pageId": "106ed14f-f6da-4b55-9d52-29314a154d30",
+        "items": [],
+        "url": "/user/history",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      }
+    ],
+    "primary": [
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "Home Page",
+        "title": "Home",
+        "pageId": "5a54eccc-146a-4a12-9ae3-6720460b2c22",
+        "items": [],
+        "url": "/",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "Live",
+        "title": "Live",
+        "pageId": "b5233890-a8aa-4bf9-a9d8-4db6bc54cec2",
+        "items": [],
+        "url": "/live",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "Show Page",
+        "title": "Shows",
+        "pageId": "12540c94-3de9-420e-8d04-77d595772c22",
+        "url": "/show",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "title": "Teams",
+        "pageId": "",
+        "items": [
+          {
+            "accessLevels": {
+              "subscribed": true,
+              "loggedIn": true,
+              "loggedOut": true
+            },
+            "displayedPath": "Capitals Page",
+            "title": "Capitals",
+            "pageId": "b7cf9716-4249-4c37-98b6-b3e93d101f2b",
+            "url": "/teams/capitals",
+            "platforms": {
+              "roku": true,
+              "fireTv": true,
+              "appleTv": true,
+              "web": true,
+              "android": true,
+              "xbox": true,
+              "ios": true
+            }
+          },
+          {
+            "accessLevels": {
+              "subscribed": true,
+              "loggedIn": true,
+              "loggedOut": true
+            },
+            "displayedPath": "Wizards Page",
+            "title": "Wizards",
+            "pageId": "1178dfa3-1350-492f-b4b4-763b354f8bf1",
+            "url": "/teams/wizards",
+            "platforms": {
+              "roku": true,
+              "fireTv": true,
+              "appleTv": true,
+              "web": true,
+              "android": true,
+              "xbox": true,
+              "ios": true
+            }
+          },
+          {
+            "accessLevels": {
+              "subscribed": true,
+              "loggedIn": true,
+              "loggedOut": true
+            },
+            "displayedPath": "Mystics Page",
+            "title": "Mystics",
+            "pageId": "da26de9b-07d6-483f-a58d-d0dc1b27d803",
+            "url": "/teams/mystics",
+            "platforms": {
+              "roku": true,
+              "fireTv": true,
+              "appleTv": true,
+              "web": true,
+              "android": true,
+              "xbox": true,
+              "ios": true
+            }
+          }
+        ],
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      },
+      {
+        "accessLevels": {
+          "subscribed": true,
+          "loggedIn": true,
+          "loggedOut": true
+        },
+        "displayedPath": "http://shop.monumentalsportsnetwork.com/",
+        "title": "Shop",
+        "pageId": "",
+        "url": "http://shop.monumentalsportsnetwork.com/",
+        "platforms": {
+          "roku": true,
+          "fireTv": true,
+          "appleTv": true,
+          "web": true,
+          "android": true,
+          "xbox": true,
+          "ios": true
+        }
+      }
+    ]
+  },
+  "images": {
+    "mobileAppIcon": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/images/dev-mse-icon-mobile.png"
+  },
+  "pages": [
+    {
+      "Page-Name": "Home Page",
+      "Page-Type": "Modular Page",
+      "Page-ID": "5a54eccc-146a-4a12-9ae3-6720460b2c22",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/5a54eccc-146a-4a12-9ae3-6720460b2c22.json?version=0.0.12",
+      "Page-API": "/content/pages",
+      "version": "0.0.12"
+    },
+    {
+      "Page-Name": "About Us",
+      "Page-Type": "Ancillary Page",
+      "Page-ID": "30594e43-0206-4477-ae10-a60bcc0555fd",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/30594e43-0206-4477-ae10-a60bcc0555fd.json?version=0.0.7",
+      "Page-API": "/content/pages",
+      "version": "0.0.7"
+    },
+    {
+      "Page-Name": "Categories Page",
+      "Page-Type": "Modular Page",
+      "Page-ID": "063bd9a6-c8d3-435b-b95b-61c6c4c32249",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/063bd9a6-c8d3-435b-b95b-61c6c4c32249.json?version=0.0.8",
+      "Page-API": "/content/pages",
+      "version": "0.0.8"
+    },
+    {
+      "Page-Name": "Live",
+      "Page-Type": "Modular Page",
+      "Page-ID": "b5233890-a8aa-4bf9-a9d8-4db6bc54cec2",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/b5233890-a8aa-4bf9-a9d8-4db6bc54cec2.json?version=0.0.8",
+      "Page-API": "/content/pages",
+      "version": "0.0.8"
+    },
+    {
+      "Page-Name": "Contact Us",
+      "Page-Type": "Ancillary Page",
+      "Page-ID": "9ec859a3-0e0f-43ff-a4a6-14d39a70d42b",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/9ec859a3-0e0f-43ff-a4a6-14d39a70d42b.json?version=0.0.7",
+      "Page-API": "/content/pages",
+      "version": "0.0.7"
+    },
+    {
+      "Page-Name": "FAQ",
+      "Page-Type": "Ancillary Page",
+      "Page-ID": "0fa287ef-2d61-49c8-b0ab-70854ded5861",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/0fa287ef-2d61-49c8-b0ab-70854ded5861.json?version=0.0.8",
+      "Page-API": "/content/pages",
+      "version": "0.0.8"
+    },
+    {
+      "Page-Name": "My Account",
+      "Page-Type": "User Page",
+      "Page-ID": "d48b1213-6c2e-4096-a26a-3448a57b010e",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/d48b1213-6c2e-4096-a26a-3448a57b010e.json?version=0.0.7",
+      "Page-API": "/content/pages",
+      "version": "0.0.7"
+    },
+    {
+      "Page-Name": "My History",
+      "Page-Type": "User Page",
+      "Page-ID": "106ed14f-f6da-4b55-9d52-29314a154d30",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/106ed14f-f6da-4b55-9d52-29314a154d30.json?version=0.0.7",
+      "Page-API": "/content/pages",
+      "version": "0.0.7"
+    },
+    {
+      "Page-Name": "My Watchlist",
+      "Page-Type": "User Page",
+      "Page-ID": "298cd01c-de4b-45f1-b238-04a510f7b710",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/298cd01c-de4b-45f1-b238-04a510f7b710.json?version=0.0.7",
+      "Page-API": "/content/pages",
+      "version": "0.0.7"
+    },
+    {
+      "Page-Name": "Download Settings",
+      "Page-Type": "User Page",
+      "Page-ID": "63811e5a-ad49-46e2-8ae1-06128a95e121",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/63811e5a-ad49-46e2-8ae1-06128a95e121.json?version=0.0.6",
+      "Page-API": "/content/pages",
+      "version": "0.0.6"
+    },
+    {
+      "Page-Name": "My Downloads",
+      "Page-Type": "User Page",
+      "Page-ID": "bd22b76a-637f-42ef-8521-e7fde699e745",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/bd22b76a-637f-42ef-8521-e7fde699e745.json?version=0.0.6",
+      "Page-API": "/content/pages",
+      "version": "0.0.6"
+    },
+    {
+      "Page-Name": "Privacy Policy",
+      "Page-Type": "Ancillary Page",
+      "Page-ID": "ff84e84b-6644-4ed9-b47a-f47b76ad0c31",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/ff84e84b-6644-4ed9-b47a-f47b76ad0c31.json?version=0.0.9",
+      "Page-API": "/content/pages",
+      "version": "0.0.9"
+    },
+    {
+      "Page-Name": "Terms of Service",
+      "Page-Type": "Ancillary Page",
+      "Page-ID": "2d5f234a-e0e4-4075-b0db-1a6324cdeaed",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/2d5f234a-e0e4-4075-b0db-1a6324cdeaed.json?version=0.0.8",
+      "Page-API": "/content/pages",
+      "version": "0.0.8"
+    },
+    {
+      "Page-Name": "Video Page",
+      "Page-Type": "Video Template Page",
+      "Page-ID": "bc7311ae-4691-4738-b429-bd48b79797b2",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/bc7311ae-4691-4738-b429-bd48b79797b2.json?version=0.0.8",
+      "Page-API": "/content/pages",
+      "version": "0.0.8"
+    },
+    {
+      "Page-Name": "Category Page",
+      "Page-Type": "Category Template Page",
+      "Page-ID": "41e281ec-e712-410c-8aa3-457694325008",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/41e281ec-e712-410c-8aa3-457694325008.json?version=0.0.5",
+      "Page-API": "/content/pages",
+      "version": "0.0.5"
+    },
+    {
+      "Page-Name": "Tag Page",
+      "Page-Type": "Tag Template Page",
+      "Page-ID": "8699a17f-740a-4251-b63c-cd82ab8637d4",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/8699a17f-740a-4251-b63c-cd82ab8637d4.json?version=0.0.5",
+      "Page-API": "/content/pages",
+      "version": "0.0.5"
+    },
+    {
+      "Page-Name": "Splash Screen",
+      "Page-Type": "Splash Screen",
+      "Page-ID": "b8aaa0a0-2144-4e02-8a96-4bfb9b039731",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/b8aaa0a0-2144-4e02-8a96-4bfb9b039731.json?version=0.0.3",
+      "Page-API": "/content/pages",
+      "version": "0.0.3"
+    },
+    {
+      "Page-Name": "Search Screen",
+      "Page-Type": "Search Screen",
+      "Page-ID": "f9dde643-7b97-41aa-9356-79285b6c198e",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/f9dde643-7b97-41aa-9356-79285b6c198e.json?version=0.0.2",
+      "Page-API": "/content/pages",
+      "version": "0.0.2"
+    },
+    {
+      "Page-Name": "Authentication Screen",
+      "Page-Type": "Authentication Screen",
+      "Page-ID": "2bc9c255-3cb8-4387-8ebd-71642947a8d7",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/2bc9c255-3cb8-4387-8ebd-71642947a8d7.json?version=0.0.4",
+      "Page-API": "/content/pages",
+      "version": "0.0.4"
+    },
+    {
+      "Page-Name": "Create Login Screen",
+      "Page-Type": "Authentication Screen",
+      "Page-ID": "787b6517-1d2a-4101-b963-21be55711cc8",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/787b6517-1d2a-4101-b963-21be55711cc8.json?version=0.0.3",
+      "Page-API": "/content/pages",
+      "version": "0.0.3"
+    },
+    {
+      "Page-Name": "Reset Password",
+      "Page-Type": "User Page",
+      "Page-ID": "5acf31ac-923c-4dfc-a2f4-a3b898944ac2",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/5acf31ac-923c-4dfc-a2f4-a3b898944ac2.json?version=0.0.7",
+      "Page-API": "/content/pages",
+      "version": "0.0.7"
+    },
+    {
+      "Page-Name": "View Plans",
+      "Page-Type": "Marketing Page",
+      "Page-ID": "0a8d63c0-9770-4836-9d24-5ed1da83f973",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/0a8d63c0-9770-4836-9d24-5ed1da83f973.json?version=0.0.65",
+      "Page-API": "/content/pages",
+      "version": "0.0.65"
+    },
+    {
+      "Page-Name": "AutoPlay Screen",
+      "Page-Type": "AutoPlay Screen",
+      "Page-ID": "1ac27958-94fe-4548-a6ae-0d661fed77c9",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/1ac27958-94fe-4548-a6ae-0d661fed77c9.json?version=0.0.5",
+      "Page-API": "/content/pages",
+      "version": "0.0.5"
+    },
+    {
+      "Page-Name": "Subscription Flow",
+      "Page-Type": "Subscription Flow",
+      "Page-ID": "de6932eb-a21d-4322-a2c4-26a2a127390c",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/de6932eb-a21d-4322-a2c4-26a2a127390c.json?version=0.0.3",
+      "Page-API": "/content/pages",
+      "version": "0.0.3"
+    },
+    {
+      "Page-Name": "Show Page",
+      "Page-Type": "Show Template Page",
+      "Page-ID": "12540c94-3de9-420e-8d04-77d595772c22",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/12540c94-3de9-420e-8d04-77d595772c22.json?version=0.0.6",
+      "Page-API": "/content/pages",
+      "version": "0.0.6"
+    },
+    {
+      "Page-Name": "Capitals Page",
+      "Page-Type": "Modular Page",
+      "Page-ID": "b7cf9716-4249-4c37-98b6-b3e93d101f2b",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/b7cf9716-4249-4c37-98b6-b3e93d101f2b.json?version=0.0.6",
+      "Page-API": "/content/pages",
+      "version": "0.0.6"
+    },
+    {
+      "Page-Name": "Wizards Page",
+      "Page-Type": "Modular Page",
+      "Page-ID": "1178dfa3-1350-492f-b4b4-763b354f8bf1",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/1178dfa3-1350-492f-b4b4-763b354f8bf1.json?version=0.0.5",
+      "Page-API": "/content/pages",
+      "version": "0.0.5"
+    },
+    {
+      "Page-Name": "Mystics Page",
+      "Page-Type": "Modular Page",
+      "Page-ID": "da26de9b-07d6-483f-a58d-d0dc1b27d803",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/da26de9b-07d6-483f-a58d-d0dc1b27d803.json?version=0.0.5",
+      "Page-API": "/content/pages",
+      "version": "0.0.5"
+    },
+    {
+      "Page-Name": "Sub Navigation Screen",
+      "Page-Type": "Sub Navigation Screen",
+      "Page-ID": "a2caea77-abbf-4f2e-bb57-d0a85bf47bf8",
+      "Page-UI": "https://appcms.viewlift.com/f2410236-d5e8-4031-8c55-a56c2f8b1e5f/android/a2caea77-abbf-4f2e-bb57-d0a85bf47bf8.json?version=0.0.2",
+      "Page-API": "/content/pages",
+      "version": "0.0.2"
+    }
+  ],
+  "appName": "Monumental",
+  "shortAppName": "MSE",
+  "blocks": [
+    {
+      "name": "authentication01",
+      "version": "14"
+    },
+    {
+      "name": "authentication02",
+      "version": "14"
+    },
+    {
+      "name": "autoPlay01",
+      "version": "14"
+    },
+    {
+      "name": "autoPlay02",
+      "version": "2"
+    },
+    {
+      "name": "boostSelectPlan01",
+      "version": "7"
+    },
+    {
+      "name": "boostSelectPlan02",
+      "version": "7"
+    },
+    {
+      "name": "carousel01",
+      "version": "14"
+    },
+    {
+      "name": "contactUs01",
+      "version": "14"
+    },
+    {
+      "name": "imageTextRow01",
+      "version": "14"
+    },
+    {
+      "name": "rawHtml01",
+      "version": "14"
+    },
+    {
+      "name": "richText01",
+      "version": "14"
+    },
+    {
+      "name": "standaloneVideoPlayer01",
+      "version": "14"
+    },
+    {
+      "name": "webFrame01",
+      "version": "1"
+    },
+    {
+      "name": "contentRatingWarning01",
+      "version": "1"
+    },
+    {
+      "name": "continueWatching01",
+      "version": "14"
+    },
+    {
+      "name": "downloads01",
+      "version": "14"
+    },
+    {
+      "name": "footer01",
+      "version": "4"
+    },
+    {
+      "name": "footer02",
+      "version": "4"
+    },
+    {
+      "name": "grid01",
+      "version": "14"
+    },
+    {
+      "name": "history01",
+      "version": "14"
+    },
+    {
+      "name": "banner01",
+      "version": "1"
+    },
+    {
+      "name": "masthead01",
+      "version": "14"
+    },
+    {
+      "name": "search01",
+      "version": "14"
+    },
+    {
+      "name": "seasonTray01",
+      "version": "2"
+    },
+    {
+      "name": "showDetail01",
+      "version": "20"
+    },
+    {
+      "name": "splashScreen01",
+      "version": "14"
+    },
+    {
+      "name": "subNav01",
+      "version": "1"
+    },
+    {
+      "name": "selectPlan01",
+      "version": "14"
+    },
+    {
+      "name": "selectPlan02",
+      "version": "14"
+    },
+    {
+      "name": "tray01",
+      "version": "14"
+    },
+    {
+      "name": "tray02",
+      "version": "14"
+    },
+    {
+      "name": "tray03",
+      "version": "14"
+    },
+    {
+      "name": "tray04",
+      "version": "14"
+    },
+    {
+      "name": "trayFeaturedVideo01",
+      "version": "14"
+    },
+    {
+      "name": "downloadSettings01",
+      "version": "14"
+    },
+    {
+      "name": "resetPassword01",
+      "version": "14"
+    },
+    {
+      "name": "userManagement01",
+      "version": "15"
+    },
+    {
+      "name": "videoPlayerInfo01",
+      "version": "14"
+    },
+    {
+      "name": "videoPlayerInfo01__TEMP__NO_STARS",
+      "version": "14"
+    },
+    {
+      "name": "videoPlayerInfo02",
+      "version": "16"
+    },
+    {
+      "name": "watchlist01",
+      "version": "14"
+    }
+  ],
+  "blocksVersion": "12",
+  "version": "0.343.0",
+  "blocksBundleUrl": "https://appcms.viewlift.com/template-builder/blocksBundle/android.json",
+  "blocksBaseUrl": "https://appcms.viewlift.com/template-builder/blocks",
+  "pagesUpdated": 1510004715000
+}
