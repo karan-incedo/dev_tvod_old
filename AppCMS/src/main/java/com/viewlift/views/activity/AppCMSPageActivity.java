@@ -210,6 +210,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private String FIREBASE_MENU_SCREEN = "MENU";
     private String searchQuery;
     private boolean isDownloadPageOpen = false;
+    private boolean loaderWaitingFor3rdPartyLogin = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -278,8 +279,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());
                     }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
+                    loaderWaitingFor3rdPartyLogin = intent.getBooleanExtra(getString(R.string.thrid_party_login_intent_extra_key), false);
                     pageLoading(true);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION)) {
+                    loaderWaitingFor3rdPartyLogin = false;
                     pageLoading(false);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION)) {
 //                    Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
@@ -784,9 +787,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        if (!appCMSPresenter.isSignUpFromFacebook()) {
-            pageLoading(false);
-        }
+        pageLoading(false);
 
         appCMSPresenter.cancelInternalEvents();
 
@@ -1106,7 +1107,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSTabNavContainer.getChildAt(i).setEnabled(false);
             }
             appCMSPresenter.setPageLoading(true);
-        } else {
+        } else if (!loaderWaitingFor3rdPartyLogin) {
             appCMSPresenter.setMainFragmentTransparency(1.0f);
             if (appCMSPresenter.isAddOnFragmentVisible()) {
                 appCMSPresenter.showAddOnFragment(true, 0.2f);

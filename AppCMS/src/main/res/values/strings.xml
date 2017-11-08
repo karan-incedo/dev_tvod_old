@@ -434,6 +434,7 @@
     <string name="logged_in_as">Logged in as %s</string>
     <string name="search_blank_toast_msg">Please enter a value to search.</string>
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
+    <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
 
 </resources>
 

@@ -548,6 +548,7 @@ public class AppCMSPresenter {
     private Typeface extraBoldTypeFace;
     private long mLastClickTime = 0;
     private boolean showNetworkConnectivity;
+    private boolean waithingFor3rdPartyLogin;
 
     public boolean shouldShowNetworkContectivity() {
         return showNetworkConnectivity;
@@ -696,6 +697,8 @@ public class AppCMSPresenter {
         this.loginFromNavPage = true;
 
         this.showNetworkConnectivity = true;
+
+        this.waithingFor3rdPartyLogin = false;
     }
 
     /*does not let user enter space in editText*/
@@ -2025,8 +2028,11 @@ public class AppCMSPresenter {
     private void loginFacebook() {
         if (currentActivity != null) {
             isSignupFromFacebook = true;
+            waithingFor3rdPartyLogin = true;
             LoginManager.getInstance().logOut();
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingIntent.putExtra(currentActivity.getString(R.string.thrid_party_login_intent_extra_key), true);
+            currentActivity.sendBroadcast(pageLoadingIntent);
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
                     Arrays.asList("public_profile", "email", "user_friends"));
         }
@@ -2038,9 +2044,13 @@ public class AppCMSPresenter {
 
     private void loginGoogle() {
         if (currentActivity != null) {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingIntent.putExtra(currentActivity.getString(R.string.thrid_party_login_intent_extra_key), true);
+            currentActivity.sendBroadcast(pageLoadingIntent);
 
             isSignupFromGoogle = true;
+
+            waithingFor3rdPartyLogin = true;
 
             if (googleApiClient != null && googleApiClient.isConnected()) {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
@@ -5323,6 +5333,10 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isWaitingFor3rdPartyLogin() {
+        return isWaitingFor3rdPartyLogin();
+    }
+
     /**
      * Get The Value of Cast Overlay is shown or not
      *
@@ -5696,6 +5710,8 @@ public class AppCMSPresenter {
                                 this.facebookEmail = email;
                             }
 
+                            waithingFor3rdPartyLogin = false;
+
                             finalizeLogin(forceSubscribed,
                                     facebookLoginResponse.isSubscribed(),
                                     launchType == LaunchType.INIT_SIGNUP ||
@@ -5748,6 +5764,8 @@ public class AppCMSPresenter {
                                     this.googleUsername = googleUsername;
                                     this.googleEmail = googleEmail;
                                 }
+
+                                waithingFor3rdPartyLogin = false;
 
                                 finalizeLogin(forceSubscribed,
                                         googleLoginResponse.isSubscribed(),
