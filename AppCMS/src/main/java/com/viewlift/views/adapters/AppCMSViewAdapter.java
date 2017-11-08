@@ -407,6 +407,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         break;
 
                                     case "VIDEO":
+                                       // action = videoAction;  temp changes
                                         action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                         break;
 
@@ -432,7 +433,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             action,
                                             title,
                                             null,
-                                            null,
+                                            data,
                                             false,
                                             currentPlayingIndex,
                                             relatedVideoIds)) {

@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +12,12 @@ import java.util.List;
  * Owned by ViewLift, NYC
  */
 
+@UseStag
 public class AppCMSVideoDetail {
 
     @SerializedName("records")
     @Expose
-    private List<ContentDatum> records;
+    List<ContentDatum> records;
 
     public List<ContentDatum> getRecords() {
         return records;

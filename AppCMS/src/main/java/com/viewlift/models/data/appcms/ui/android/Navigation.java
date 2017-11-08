@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -21,6 +22,12 @@ public class Navigation implements Serializable {
     @SerializedName("footer")
     @Expose
     List<NavigationFooter> navigationFooter = null;
+    @SerializedName("tabBar")
+    @Expose
+    List<NavigationPrimary> tabBar = null;
+    @SerializedName("settings")
+    @Expose
+    Settings settings;
 
     public List<NavigationPrimary> getNavigationPrimary() {
         return navigationPrimary;
@@ -44,5 +51,17 @@ public class Navigation implements Serializable {
 
     public void setNavigationFooter(List<NavigationFooter> navigationFooter) {
         this.navigationFooter = navigationFooter;
+    }
+    public List<NavigationPrimary> getTabBar() {
+        return tabBar;
+    }
+    public void setTabBar(List<NavigationPrimary> tabBar) {
+        this.tabBar = tabBar;
+    }
+    public Settings getSettings() {
+        return settings;
+    }
+    public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 }
