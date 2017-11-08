@@ -34,6 +34,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -88,6 +89,7 @@ import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSPageFragment;
 import com.viewlift.views.fragments.AppCMSResetPasswordFragment;
 import com.viewlift.views.fragments.AppCMSSearchFragment;
+import com.viewlift.views.fragments.AppCMSTeamListFragment;
 
 import org.json.JSONException;
 
@@ -97,14 +99,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action0;
 import rx.functions.Action1;
-
 /**
- * /*
+
+/*
  * Created by viewlift on 5/5/17.
  */
 
@@ -294,9 +298,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
                     if (!appCMSBinderStack.isEmpty()) {
                         AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-                        if (!appCMSPresenter.isSignUpFromFacebook()) {
-                            pageLoading(false);
-                        }
 
                         handleLaunchPageAction(appCMSBinder,
                                 false,
@@ -339,6 +340,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         };
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        appCMSPresenter.setNetworkConnected(isConnected, null);
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -348,9 +353,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 String pageId = "";
                 if (!appCMSBinderStack.isEmpty()) {
                     pageId = appCMSBinderStack.peek();
-                }
-                if (!isConnected) {
+                    if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
+                        appCMSPresenter.setShowNetworkConnectivity(true);
                     appCMSPresenter.showNoNetworkConnectivityToast();
+                    } else {
+                        appCMSPresenter.setShowNetworkConnectivity(false);
+                    }
                 }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
@@ -406,24 +414,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         };
-        refreshPageDataReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                refreshPageData();
-            }
-        };
 
-        notifyUpdateListsReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
-                for (Fragment fragment : fragmentList) {
-                    if (fragment instanceof AppCMSPageFragment) {
-                        ((AppCMSPageFragment) fragment).updateDataLists();
-                    }
-                }
-            }
-        };
 
         refreshPageDataReceiver = new BroadcastReceiver() {
             @Override
@@ -594,23 +585,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
         mProfileTopButton.setOnClickListener(v -> {
+            if (appCMSPresenter.isUserLoggedIn()){
+                appCMSPresenter.launchNavigationPage();
+            }else{
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                    appCMSPresenter.navigateToLoginPage(false);
+                    Bundle bundle = new Bundle();
+                    bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
+                    String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
                     if (appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.launchNavigationPage();
+                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
                     } else {
-                        if (appCMSPresenter != null) {
-                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
-                            appCMSPresenter.navigateToLoginPage(false);
-                            Bundle bundle = new Bundle();
-                            bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
-                            String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
-                            if (appCMSPresenter.isUserLoggedIn()) {
-                                appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
-                            } else {
-                                appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                            }
-                            appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
-                        }
+                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                     }
+                    appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
+                }
+            }
                 }
         );
         inflateCastMiniController();
@@ -762,8 +753,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (!appCMSPresenter.isNetworkConnected() && !isDownloadPageOpen) {
+        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
+                !appCMSPresenter.isNetworkConnected() &&
+                appCMSPresenter.shouldShowNetworkContectivity()) {
             appCMSPresenter.showNoNetworkConnectivityToast();
+            appCMSPresenter.setShowNetworkConnectivity(false);
         }
     }
 
@@ -796,6 +790,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onPause() {
         super.onPause();
+        if (!appCMSPresenter.isSignUpFromFacebook()) {
+            pageLoading(false);
+        }
 
         appCMSPresenter.cancelInternalEvents();
 
@@ -836,7 +833,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
         appCMSPresenter.cancelInternalEvents();
-        pageLoading(false);
+
+        appCMSPresenter.setShowNetworkConnectivity(true);
 
         if (!appCMSBinderStack.isEmpty() &&
                 isPageLoading() &&
@@ -940,6 +938,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             } else {
                 if (FacebookSdk.isFacebookRequestCode(requestCode)) {
+                    pageLoading(true);
                     callbackManager.onActivityResult(requestCode, resultCode, data);
                 } else if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                     appCMSPresenter.finalizeSignupAfterSubscription(data.getStringExtra("INAPP_PURCHASE_DATA"));
@@ -1194,10 +1193,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!isActive) {
             if (updatedAppCMSBinder != null) {
                 if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
-                    handleLaunchPageAction(updatedAppCMSBinder,
-                            appCMSPresenter.getConfigurationChanged(),
-                            false,
-                            false);
+                handleLaunchPageAction(updatedAppCMSBinder,
+                        appCMSPresenter.getConfigurationChanged(),
+                        false,
+                        false);
                 }
             }
         }
@@ -1288,7 +1287,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                     break;
 
-                case NAVIGATION:
+                case TEAM:
                     try {
                         appCMSPageFragment =
                                 AppCMSNavItemsFragment.newInstance(this,
@@ -1303,7 +1302,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
                     break;
-
+                case NAVIGATION:
+                    try {
+                        appCMSPageFragment =
+                                AppCMSTeamListFragment.newInstance(this,
+                                        appCMSBinder,
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                        //send menu screen event for firebase
+                        sendFireBaseMenuScreenEvent();
+                    } catch (IllegalArgumentException e) {
+                        //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
+                    }
+                    break;
                 case SEARCH:
                     try {
                         appCMSPageFragment = AppCMSSearchFragment.newInstance(this,
@@ -1516,9 +1529,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            if (!appCMSPresenter.isSignUpFromFacebook()) {
                 pageLoading(false);
-            }
 
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
@@ -1567,7 +1578,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 i++;
             }
             if (!appCMSBinderStack.isEmpty()) {
-                createFragment = appCMSBinderMap.get(appCMSBinderStack.peek()).getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                AppCMSBinder currentAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                try {
+                    createFragment = currentAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.SEARCH;
+                } catch (Exception e) {
+                }
             }
 
             if (!appCMSBinderStack.isEmpty() && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
@@ -2208,7 +2223,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter.isViewPlanPage(updatedAppCMSBinder.getPageId())) {
             //Log.d(TAG, "checkForExistingSubscription() - 1532");
             appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && !appCMSPresenter.isUserSubscribed());
-            appCMSPresenter.refreshSubscriptionData(null, false);
+            appCMSPresenter.refreshSubscriptionData(null, true);
         }
 
         getSupportFragmentManager().removeOnBackStackChangedListener(this);

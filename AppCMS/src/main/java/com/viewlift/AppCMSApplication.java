@@ -1,7 +1,6 @@
 package com.viewlift;
 
 import android.app.Activity;
-import android.app.Application;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 
@@ -9,15 +8,12 @@ import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
 import com.viewlift.views.components.DaggerAppCMSPresenterComponent;
 import com.viewlift.views.modules.AppCMSPresenterModule;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
@@ -69,7 +65,6 @@ public class AppCMSApplication extends MultiDexApplication {
         new Thread(() -> {
             Fabric.with(AppCMSApplication.this, new Crashlytics());
             Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
-            Fresco.initialize(this);
         }).run();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
