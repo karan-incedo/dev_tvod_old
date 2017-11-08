@@ -14,14 +14,6 @@ public class NavigationPrimary implements Serializable {
     @Expose
     String title;
 
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
     @SerializedName("icon")
     @Expose
     String icon;
@@ -53,9 +45,7 @@ public class NavigationPrimary implements Serializable {
     @SerializedName("pagePath")
     @Expose
     String pagePath;
-    @SerializedName("icon")
-    @Expose
-    String icon;
+
     @SerializedName("platforms")
     @Expose
     Platforms platforms;

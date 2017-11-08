@@ -1287,7 +1287,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                     break;
 
-                case TEAM:
+                case NAVIGATION:
                     try {
                         appCMSPageFragment =
                                 AppCMSNavItemsFragment.newInstance(this,
@@ -1302,7 +1302,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
                     break;
-                case NAVIGATION:
+                case TEAM:
                     try {
                         appCMSPageFragment =
                                 AppCMSTeamListFragment.newInstance(this,
@@ -1613,6 +1613,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (distanceFromStackTop >= 0) {
                 switch (appCMSBinder.getExtraScreenType()) {
                     case NAVIGATION:
+                    case TEAM:
                     case SEARCH:
                         //Log.d(TAG, "Popping stack to getList to page item");
                         try {
@@ -1903,6 +1904,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     tagId = navigationItem.getPageId();
                 } else if (navigationItem.getDisplayedPath() != null) {
                     tagId = navigationItem.getDisplayedPath();
+                }else if (navigationItem.getTitle() != null){
+                    tagId = navigationItem.getTitle();
                 }
                 NavTabTag navigationTag = new NavTabTag();
                 navigationTag.setPageId(tagId);
@@ -1916,6 +1919,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSPresenter.showMainFragmentView(true);
                         if (navigationTabTag.getPageId().equals("Menu Screen")) {
                             appCMSPresenter.launchNavigationPage();
+                        } else if (navigationTabTag.getPageId().equals("TEAMS")) {
+                            appCMSPresenter.launchTeamNavPage();
                         } else if (navigationTabTag.getPageId().equals("Search Screen")) {
                             appCMSPresenter.launchSearchPage();
                         } else if (!TextUtils.isEmpty(navigationTabTag.getPageId().toString())) {

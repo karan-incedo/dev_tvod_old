@@ -1684,7 +1684,40 @@ public class AppCMSPresenter {
 
         return result;
     }
+    public boolean launchTeamNavPage() {
+        boolean result = false;
 
+        if (currentActivity != null) {
+            cancelInternalEvents();
+
+            Bundle args = getPageActivityBundle(currentActivity,
+                    null,
+                    null,
+                    currentActivity.getString(R.string.app_cms_team_page_tag),
+                    currentActivity.getString(R.string.app_cms_team_page_tag),
+                    null,
+                    currentActivity.getString(R.string.app_cms_team_page_tag),
+                    false,
+                    true,
+                    false,
+                    true,
+                    false,
+                    null,
+                    ExtraScreenType.TEAM);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
+
+            result = true;
+        }
+
+        return result;
+    }
     public void mergeData(AppCMSPageAPI fromAppCMSPageAPI, AppCMSPageAPI toAppCMSPageAPI) {
         for (Module module : fromAppCMSPageAPI.getModules()) {
             Module updateToModule = null;
