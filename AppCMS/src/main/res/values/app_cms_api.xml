@@ -21,6 +21,7 @@
     <string name="app_cms_beacon_tvplatform">FireTV</string>
     <string name="app_cms_beacon_dpm_android">Standard Android OS</string>
     <string name="app_cms_beacon_video_player_parent_screen_name">VideoPlayer</string>
+    <string name="app_cms_beacon_show_player_parent_screen_name">videoPlayerShow</string>
     <string name="app_cms_beacon_casting_screen_name">CastingView</string>
 
     <!-- AppCMS Google Analytics -->
@@ -92,6 +93,7 @@
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_video_player_key">player</string>
+    <string name="app_cms_page_show_player_key">playerShow</string>
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>
     <string name="app_cms_page_segmented_view">AC SegmentedView</string>
@@ -135,6 +137,7 @@
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
     <string name="app_cms_page_video_player_module_key">AC StandaloneVideoPlayer 01</string>
+    <string name="app_cms_page_show_player_module_key">AC StandaloneVideoPlayer Show 01</string>
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
@@ -436,6 +439,7 @@
     <string name="app_cms_banner_detail_title_key">bannerTitle</string>
 
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
+    <string name="app_cms_page_play_show_image_key">playLiveImageShow</string>
 
     <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
     <string name="app_cms_floodlight_url">src=6070801;cat=appco0;type=msnbm0;dc_rdid=%1$s&amp;dc_lat=;tag_for_child_directed_treatment=;ord=%2$s&amp;</string>
