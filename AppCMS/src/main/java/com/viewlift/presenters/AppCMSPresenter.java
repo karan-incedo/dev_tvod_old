@@ -4699,26 +4699,30 @@ public class AppCMSPresenter {
 
     public void getUserData(final Action1<UserIdentity> userIdentityAction) {
         if (currentActivity != null) {
-            callRefreshIdentity(() -> {
-                try {
-                    String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
-                            appCMSMain.getApiBaseUrl(),
-                            appCMSSite.getGist().getSiteInternalName());
-                    appCMSUserIdentityCall.callGet(url,
-                            getAuthToken(),
-                            userIdentity -> {
-                                try {
-                                    Observable.just(userIdentity).subscribe(userIdentityAction);
-                                } catch (Exception e) {
-                                    //Log.e(TAG, "Error retrieving user identity information: " + e.getMessage());
-                                    Observable.just((UserIdentity) null).subscribe(userIdentityAction);
-                                }
-                            });
-                } catch (Exception e) {
-                    //Log.e(TAG, "Error refreshing identity: " + e.getMessage());
-                    Observable.just((UserIdentity) null).subscribe(userIdentityAction);
-                }
-            });
+            if (isUserLoggedIn()) {
+                callRefreshIdentity(() -> {
+                    try {
+                        String url = currentActivity.getString(R.string.app_cms_user_identity_api_url,
+                                appCMSMain.getApiBaseUrl(),
+                                appCMSSite.getGist().getSiteInternalName());
+                        appCMSUserIdentityCall.callGet(url,
+                                getAuthToken(),
+                                userIdentity -> {
+                                    try {
+                                        Observable.just(userIdentity).subscribe(userIdentityAction);
+                                    } catch (Exception e) {
+                                        //Log.e(TAG, "Error retrieving user identity information: " + e.getMessage());
+                                        Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                                    }
+                                });
+                    } catch (Exception e) {
+                        //Log.e(TAG, "Error refreshing identity: " + e.getMessage());
+                        Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                    }
+                });
+            } else {
+                Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+            }
         } else {
             Observable.just((UserIdentity) null).subscribe(userIdentityAction);
         }
