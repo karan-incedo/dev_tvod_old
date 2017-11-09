@@ -178,7 +178,7 @@ public class ViewCreator {
 
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_SHOW_PLAYER_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                 createModule = false;
             }
@@ -1000,7 +1000,7 @@ public class ViewCreator {
             if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY)) {
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_SHOW_PLAYER_MODULE_KEY)) {
                 createModule = false;
             }
 
