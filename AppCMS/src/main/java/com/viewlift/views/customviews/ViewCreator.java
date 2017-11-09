@@ -964,6 +964,7 @@ public class ViewCreator {
                 (!appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
+            pageView.removeAllAddOnViews();
             pageView.getChildrenContainer().removeAllViews();
             componentViewResult = new ComponentViewResult();
             createPageView(context,

@@ -150,12 +150,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        if (adapterData != null && adapterData.size() == 0) {
+            sendEvent(hideRemoveAllButtonEvent);
+        }
+
         if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
             ContentDatum contentDatum = adapterData.get(position);
-
-            if (adapterData.size() == 0) {
-                sendEvent(hideRemoveAllButtonEvent);
-            }
 
             StringBuffer imageUrl;
             if (isDownload) {

@@ -37,6 +37,7 @@ public class PageView extends BaseView {
     private boolean userLoggedIn;
     private Map<String, ModuleView> moduleViewMap;
     private AppCMSPresenter appCMSPresenter;
+    private SwipeRefreshLayout mainView;
 
     @Inject
     public PageView(Context context,
@@ -138,19 +139,19 @@ public class PageView extends BaseView {
         nestedScrollView.setId(R.id.home_nested_scroll_view);
         nestedScrollView.addView(childrenContainer);
 
-        SwipeRefreshLayout swipeRefreshLayout = new SwipeRefreshLayout(getContext());
+        mainView = new SwipeRefreshLayout(getContext());
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
                 new SwipeRefreshLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
-        swipeRefreshLayout.setLayoutParams(swipeRefreshLayoutParams);
-        swipeRefreshLayout.addView(nestedScrollView);
-        swipeRefreshLayout.setOnRefreshListener(() -> {
+        mainView.setLayoutParams(swipeRefreshLayoutParams);
+        mainView.addView(nestedScrollView);
+        mainView.setOnRefreshListener(() -> {
             appCMSPresenter.refreshAPIData(() -> {
-                        swipeRefreshLayout.setRefreshing(false);
+                        mainView.setRefreshing(false);
             },
                     true);
         });
-        addView(swipeRefreshLayout);
+        addView(mainView);
         return childrenContainer;
     }
 
@@ -195,5 +196,19 @@ public class PageView extends BaseView {
 
     public AppCMSPageUI getAppCMSPageUI() {
         return appCMSPageUI;
+    }
+
+    public void removeAllAddOnViews() {
+        int index = 0;
+        boolean removedChild = false;
+        while (index < getChildCount() && !removedChild) {
+            View child = getChildAt(index);
+            if (child != mainView) {
+                removeView(child);
+                removedChild = true;
+                removeAllAddOnViews();
+            }
+            index++;
+        }
     }
 }
