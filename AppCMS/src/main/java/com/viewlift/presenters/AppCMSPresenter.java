@@ -126,6 +126,7 @@ import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
@@ -1684,7 +1685,40 @@ public class AppCMSPresenter {
 
         return result;
     }
+    public boolean launchTeamNavPage() {
+        boolean result = false;
 
+        if (currentActivity != null) {
+            cancelInternalEvents();
+
+            Bundle args = getPageActivityBundle(currentActivity,
+                    null,
+                    null,
+                    currentActivity.getString(R.string.app_cms_team_page_tag),
+                    currentActivity.getString(R.string.app_cms_team_page_tag),
+                    null,
+                    currentActivity.getString(R.string.app_cms_team_page_tag),
+                    false,
+                    true,
+                    false,
+                    true,
+                    false,
+                    null,
+                    ExtraScreenType.TEAM);
+            if (args != null) {
+                Intent updatePageIntent =
+                        new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                updatePageIntent.putExtra(
+                        currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(updatePageIntent);
+            }
+
+            result = true;
+        }
+
+        return result;
+    }
     public void mergeData(AppCMSPageAPI fromAppCMSPageAPI, AppCMSPageAPI toAppCMSPageAPI) {
         for (Module module : fromAppCMSPageAPI.getModules()) {
             Module updateToModule = null;
@@ -6433,6 +6467,24 @@ public class AppCMSPresenter {
         return currentActivity != null &&
                 !TextUtils.isEmpty(pageId) &&
                 pageId.equals(currentActivity.getString(R.string.app_cms_navigation_page_tag));
+    }
+    public boolean isPageTeamNavigationPage(List<NavigationTabBar> navigationTabBarList) {
+        for (NavigationTabBar navigationTabBarItem: navigationTabBarList){
+            if (!TextUtils.isEmpty(navigationTabBarItem.getTitle()) &&
+                    navigationTabBarItem.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_team_page_tag))){
+                return true;
+            }
+        }
+        return false;
+    }
+    public NavigationTabBar getPageTeamNavigationPage(List<NavigationTabBar> navigationTabBarList) {
+        for (NavigationTabBar navigationTabBarItem: navigationTabBarList){
+            if (!TextUtils.isEmpty(navigationTabBarItem.getTitle()) &&
+                    navigationTabBarItem.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_team_page_tag))){
+                return navigationTabBarItem;
+            }
+        }
+        return null;
     }
 
     public boolean isPageUser(String pageId) {

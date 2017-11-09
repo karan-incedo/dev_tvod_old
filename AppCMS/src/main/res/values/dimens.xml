@@ -16,9 +16,9 @@
     <dimen name="menu_item_height">36dp</dimen>
     <dimen name="bottom_navbar_height">55dp</dimen>
     <dimen name="nav_item_text_size">16sp</dimen>
-    <dimen name="nav_item_margin">8dp</dimen>
-    <dimen name="nav_image_height">8dp</dimen>
-    <dimen name="nav_image_width">8dp</dimen>
+    <dimen name="nav_item_margin">2dp</dimen>
+    <dimen name="nav_image_height">5dp</dimen>
+    <dimen name="nav_image_width">5dp</dimen>
     <dimen name="nav_item_padding">8dp</dimen>
     <dimen name="nav_item_large_width">16dp</dimen>
     <dimen name="nav_item_large_height">16dp</dimen>

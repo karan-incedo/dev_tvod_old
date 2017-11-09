@@ -107,8 +107,8 @@ import butterknife.ButterKnife;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
-/**
- * /*
+
+ /*
  * Created by viewlift on 5/5/17.
  */
 
@@ -1287,32 +1287,38 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                     break;
 
-                case TEAM:
+                case NAVIGATION:
                     try {
-                        appCMSPageFragment =
-                                AppCMSNavItemsFragment.newInstance(this,
-                                        appCMSBinder,
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+
+                            appCMSPageFragment =
+                                    AppCMSNavItemsFragment.newInstance(this,
+                                            appCMSBinder,
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+
                         //send menu screen event for firebase
                         sendFireBaseMenuScreenEvent();
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
                     break;
-                case NAVIGATION:
+                case TEAM:
                     try {
-                        appCMSPageFragment =
-                                AppCMSTeamListFragment.newInstance(this,
-                                        appCMSBinder,
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-                        //send menu screen event for firebase
-                        sendFireBaseMenuScreenEvent();
+                        if (appCMSBinder!=null &&
+                                appCMSBinder.getNavigation().getNavigationTabbar()!=null &&
+                                appCMSPresenter.isPageTeamNavigationPage(appCMSBinder.getNavigation().getNavigationTabbar()) ) {
+                            appCMSPageFragment =
+                                    AppCMSTeamListFragment.newInstance(this,
+                                            appCMSBinder,
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                            //send menu screen event for firebase
+                            sendFireBaseMenuScreenEvent();
+                        }
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
@@ -1529,7 +1535,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            pageLoading(false);
+                pageLoading(false);
 
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
@@ -1613,6 +1619,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (distanceFromStackTop >= 0) {
                 switch (appCMSBinder.getExtraScreenType()) {
                     case NAVIGATION:
+                    case TEAM:
                     case SEARCH:
                         //Log.d(TAG, "Popping stack to getList to page item");
                         try {
@@ -1874,7 +1881,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void createTabBar() {
-        int WEIGHT_SUM = 100;
+        int WEIGHT_SUM=100;
         if (appCMSPresenter.getNavigation().getNavigationTabbar() != null) {
             int weight = WEIGHT_SUM / appCMSPresenter.getNavigation().getNavigationTabbar().size();
             appCMSTabNavContainer.removeAllViews();
@@ -1907,6 +1914,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     tagId = navigationItem.getPageId();
                 } else if (navigationItem.getDisplayedPath() != null) {
                     tagId = navigationItem.getDisplayedPath();
+                }else if (navigationItem.getTitle() != null){
+                    tagId = navigationItem.getTitle();
                 }
 
                 NavTabTag navigationTag = new NavTabTag();
@@ -1916,19 +1925,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 navBarItemView.setOnClickListener(v -> {
                     if (v.getTag() != null) {
-                        NavTabTag navigationTabTag = (NavTabTag) v.getTag();
-                        selectNavItem((NavBarItemView) v);
-                        if (navigationTabTag != null) {
-                            appCMSPresenter.showMainFragmentView(true);
-                            if (navigationTabTag.getPageId().equals("Menu Screen")) {
-                                appCMSPresenter.launchNavigationPage();
-                            } else if (navigationTabTag.getPageId().equals("Search Screen")) {
-                                appCMSPresenter.launchSearchPage();
-                            } else if (!TextUtils.isEmpty(navigationTabTag.getPageId().toString())) {
-                                selectNavItemAndLaunchPage(navBarItemView,
-                                        appCMSPresenter.getNavigation().getNavigationTabbar().get(v.getId()).getPageId(),
-                                        appCMSPresenter.getNavigation().getNavigationTabbar().get(v.getId()).getTitle());
-                            }
+                    NavTabTag navigationTabTag = (NavTabTag) v.getTag();
+                    selectNavItem((NavBarItemView) v);
+                    appCMSPresenter.showMainFragmentView(true);
+                        if (navigationTabTag.getPageId().equals("Menu Screen")) {
+                            appCMSPresenter.launchNavigationPage();
+                        } else if (navigationTabTag.getPageId().equals("TEAMS")) {
+                            appCMSPresenter.launchTeamNavPage();
+                        } else if (navigationTabTag.getPageId().equals("Search Screen")) {
+                            appCMSPresenter.launchSearchPage();
+                        } else if (!TextUtils.isEmpty(navigationTabTag.getPageId().toString())) {
+                            selectNavItemAndLaunchPage(navBarItemView,
+                                    appCMSPresenter.getNavigation().getNavigationTabbar().get(v.getId()).getPageId(),
+                                    appCMSPresenter.getNavigation().getNavigationTabbar().get(v.getId()).getTitle());
                         }
                     }
                 });
@@ -1994,12 +2003,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!TextUtils.isEmpty(pageId)) {
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 NavTabTag navigationTabTag = null;
-                if (appCMSTabNavContainer.getChildAt(i).getTag() != null) {
+                if(appCMSTabNavContainer.getChildAt(i).getTag()!=null){
                     navigationTabTag = (NavTabTag) appCMSTabNavContainer.getChildAt(i).getTag();
                 }
 
                 if (navigationTabTag != null && !TextUtils.isEmpty(navigationTabTag.getPageId()) &&
-                        pageId.contains(navigationTabTag.getPageId()) || (navigationTabTag != null && navigationTabTag.getPageId() != null && pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen"))) {
+                        pageId.contains(navigationTabTag.getPageId()) || (navigationTabTag!=null && navigationTabTag.getPageId() != null && pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen"))) {
                     selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
                     Log.d(TAG, "Nav item - Selecting tab item with page Id: " +
                             pageId +

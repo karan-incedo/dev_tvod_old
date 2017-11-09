@@ -30,8 +30,8 @@ public class NavBarItemView extends LinearLayout {
     private boolean hasFocus;
     private int highlightColor;
     private String HOME_TAB_ICON_KEY = "icon-home";
-    private String SHOW_TAB_ICON_KEY = "icon-live";
-    private String LIVE_TAB_ICON_KEY = "icon-grid";
+    private String SHOW_TAB_ICON_KEY = "icon-grid";
+    private String LIVE_TAB_ICON_KEY = "icon-live";
     private String TEAM_TAB_ICON_KEY = "icon-bracket";
     private String MENU_TAB_ICON_KEY = "icon-menu";
     private String SEARCH_TAB_ICON_KEY = "icon-search";
@@ -115,6 +115,8 @@ public class NavBarItemView extends LinearLayout {
 
     public void createChildren(Context context) {
         navImage = new ImageView(context);
+
+        int navItemMargin =(int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_margin), getContext());
         int navImageWidth =
                 (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_width), getContext());
         int navImageHeight =
@@ -141,13 +143,14 @@ public class NavBarItemView extends LinearLayout {
         LinearLayout.LayoutParams navLabelLayoutParams =
                 new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
-        navLabelLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
+        navLabelLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
         navLabel.setLayoutParams(navLabelLayoutParams);
         navLabel.setTextColor(ContextCompat.getColor(context, R.color.colorNavBarText));
         navLabel.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
 
         addView(navImage);
         addView(navLabel);
+        setPadding(0,navItemMargin,0,0);
 
     }
 

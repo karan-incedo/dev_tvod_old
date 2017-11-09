@@ -68,7 +68,7 @@ public class NavigationTabBar implements Serializable {
 
     @SerializedName("items")
     @Expose
-    List<Object> items = null;
+    List<NavigationTabBar> items = null;
 
     @SerializedName("pageId")
     @Expose
@@ -98,11 +98,11 @@ public class NavigationTabBar implements Serializable {
         this.title = title;
     }
 
-    public List<Object> getItems() {
+    public List<NavigationTabBar> getItems() {
         return items;
     }
 
-    public void setItems(List<Object> items) {
+    public void setItems(List<NavigationTabBar> items) {
         this.items = items;
     }
 
