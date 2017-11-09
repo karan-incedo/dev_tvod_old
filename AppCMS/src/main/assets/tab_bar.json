@@ -219,7 +219,7 @@
             },
             "fontFamily": "OpenSans",
             "numberOfLines": 1,
-            "isSelectable": false,
+            "isSelectable": true,
             "textAlignment": "center",
             "type": "label",
             "textColor": "#ffffff",
@@ -247,7 +247,7 @@
                 "height": 16
               }
             },
-            "isSelectable": false,
+            "isSelectable": true,
             "type": "image",
             "key": "tagImage"
           }
@@ -302,7 +302,7 @@
             },
             "fontFamily": "OpenSans",
             "numberOfLines": 1,
-            "isSelectable": false,
+            "isSelectable": true,
             "textAlignment": "center",
             "type": "label",
             "textColor": "#ffffff",
@@ -330,7 +330,7 @@
                 "height": 16
               }
             },
-            "isSelectable": false,
+            "isSelectable": true,
             "type": "image",
             "key": "tagImage"
           }
@@ -385,7 +385,7 @@
             },
             "fontFamily": "OpenSans",
             "numberOfLines": 1,
-            "isSelectable": false,
+            "isSelectable": true,
             "textAlignment": "center",
             "type": "label",
             "textColor": "#ffffff",
@@ -413,7 +413,7 @@
                 "height": 16
               }
             },
-            "isSelectable": false,
+            "isSelectable": true,
             "type": "image",
             "key": "tagImage"
           }
@@ -466,7 +466,7 @@
             },
             "fontFamily": "OpenSans",
             "numberOfLines": 1,
-            "isSelectable": false,
+            "isSelectable": true,
             "textAlignment": "center",
             "type": "label",
             "textColor": "#ffffff",
@@ -494,7 +494,7 @@
                 "height": 16
               }
             },
-            "isSelectable": false,
+            "isSelectable": true,
             "type": "image",
             "key": "tagImage"
           }
@@ -614,7 +614,7 @@
             },
             "fontFamily": "OpenSans",
             "numberOfLines": 1,
-            "isSelectable": false,
+            "isSelectable": true,
             "textAlignment": "center",
             "type": "label",
             "textColor": "#ffffff",
@@ -642,7 +642,7 @@
                 "height": 16
               }
             },
-            "isSelectable": false,
+            "isSelectable": true,
             "type": "image",
             "key": "tagImage"
           }

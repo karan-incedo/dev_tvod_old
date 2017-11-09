@@ -129,21 +129,22 @@ public class NavBarItemView extends LinearLayout {
 
         LinearLayout.LayoutParams navImageLayoutParams =
                 new LinearLayout.LayoutParams(navImageWidth, navImageHeight);
-        navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         navImage.setLayoutParams(navImageLayoutParams);
 
         LinearLayout.LayoutParams parentLayoutParams =
                 new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        navImageLayoutParams.gravity = Gravity.CENTER;
+        parentLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         this.setLayoutParams(parentLayoutParams);
 
         navLabel = new TextView(context);
         LinearLayout.LayoutParams navLabelLayoutParams =
                 new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
-        navLabelLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        navLabelLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         navLabel.setLayoutParams(navLabelLayoutParams);
         navLabel.setTextColor(ContextCompat.getColor(context, R.color.colorNavBarText));
+        navLabel.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
 
         addView(navImage);
         addView(navLabel);
