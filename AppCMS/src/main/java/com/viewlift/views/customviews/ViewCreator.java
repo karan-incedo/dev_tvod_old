@@ -38,7 +38,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -96,7 +95,8 @@ public class ViewCreator {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
         Style paragraphStyle = new Style();
-        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler(new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
+        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler
+                (new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
         htmlSpanner.registerHandler("p", pHandler);
     }
 
@@ -148,6 +148,24 @@ public class ViewCreator {
             color1 *= 0.8;
         }
         return color1;
+    }
+
+    public static VideoPlayerView playerView(Context context) {
+
+        VideoPlayerView videoPlayerView = new VideoPlayerView(context);
+        videoPlayerView.init(context);
+        // it should be dynamic when live url come from api
+        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
+                null);
+        videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
+        videoPlayerView.getPlayerView().hideController();
+        videoPlayerView.getPlayerView().setControllerVisibilityListener(i -> {
+            if (i == 0) {
+                videoPlayerView.getPlayerView().hideController();
+            }
+        });
+
+        return videoPlayerView;
     }
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})
@@ -2169,7 +2187,7 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
@@ -2197,7 +2215,7 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
@@ -3349,27 +3367,6 @@ public class ViewCreator {
         }
     }
 
-    public static VideoPlayerView playerView(Context context) {
-
-        VideoPlayerView videoPlayerView = new VideoPlayerView(context);
-        videoPlayerView.init(context);
-        // it should be dynamic when live url come from api
-        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
-                null);
-        videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
-        videoPlayerView.getPlayerView().hideController();
-        videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
-            @Override
-            public void onVisibilityChange(int i) {
-                if (i == 0) {
-                    videoPlayerView.getPlayerView().hideController();
-                }
-            }
-        });
-
-        return videoPlayerView;
-    }
-
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
         final View removeAllButton;
         private final String moduleId;
@@ -3434,7 +3431,7 @@ public class ViewCreator {
 
         @Override
         public void beforeChildren(TagNode node, SpannableStringBuilder builder, SpanStack spanStack) {
-            if ( builder.length() == 0 || builder.charAt(builder.length() -1) != '\n' ) {
+            if (builder.length() == 0 || builder.charAt(builder.length() - 1) != '\n') {
                 builder.append('\n');
             }
             super.beforeChildren(node, builder, spanStack);

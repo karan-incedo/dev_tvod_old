@@ -3,9 +3,7 @@ package com.viewlift.views.adapters;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +22,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
+/*
  * Created by viewlift on 5/30/17.
  */
 
@@ -89,7 +87,8 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
         if (getClickedItemPosition() == i) {
             viewHolder.navItemSelector.setVisibility(View.VISIBLE);
-            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getCta().getPrimary().getBackgroundColor()));
             viewHolder.navItemLabel.setTypeface(null, Typeface.BOLD);
         } else {
             viewHolder.navItemSelector.setVisibility(View.INVISIBLE);
@@ -187,7 +186,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                                    () -> appCMSPresenter.launchBlankPage(),
+                                                    appCMSPresenter::launchBlankPage,
                                                     null);
                                             return;
                                         }
