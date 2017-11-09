@@ -76,6 +76,7 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -94,6 +95,7 @@ import com.viewlift.views.fragments.AppCMSTeamListFragment;
 import org.json.JSONException;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
@@ -106,9 +108,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.functions.Action0;
 import rx.functions.Action1;
-/**
 
-/*
+/**
+ * /*
  * Created by viewlift on 5/5/17.
  */
 
@@ -355,7 +357,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     pageId = appCMSBinderStack.peek();
                     if (appCMSPresenter.getNetworkConnectedState() && !isConnected) {
                         appCMSPresenter.setShowNetworkConnectivity(true);
-                    appCMSPresenter.showNoNetworkConnectivityToast();
+                        appCMSPresenter.showNoNetworkConnectivityToast();
                     } else {
                         appCMSPresenter.setShowNetworkConnectivity(false);
                     }
@@ -585,23 +587,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
         mProfileTopButton.setOnClickListener(v -> {
-            if (appCMSPresenter.isUserLoggedIn()){
-                appCMSPresenter.launchNavigationPage();
-            }else{
-                if (appCMSPresenter != null) {
-                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
-                    appCMSPresenter.navigateToLoginPage(false);
-                    Bundle bundle = new Bundle();
-                    bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
-                    String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
                     if (appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                        appCMSPresenter.launchNavigationPage();
                     } else {
-                        appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                        if (appCMSPresenter != null) {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                            appCMSPresenter.navigateToLoginPage(false);
+                            Bundle bundle = new Bundle();
+                            bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
+                            String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
+                            if (appCMSPresenter.isUserLoggedIn()) {
+                                appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
+                            } else {
+                                appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                            }
+                            appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
+                        }
                     }
-                    appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
-                }
-            }
                 }
         );
         inflateCastMiniController();
@@ -1193,10 +1195,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!isActive) {
             if (updatedAppCMSBinder != null) {
                 if (updatedAppCMSBinder.getExtraScreenType() != AppCMSPresenter.ExtraScreenType.BLANK) {
-                handleLaunchPageAction(updatedAppCMSBinder,
-                        appCMSPresenter.getConfigurationChanged(),
-                        false,
-                        false);
+                    handleLaunchPageAction(updatedAppCMSBinder,
+                            appCMSPresenter.getConfigurationChanged(),
+                            false,
+                            false);
                 }
             }
         }
@@ -1290,13 +1292,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 case NAVIGATION:
                     try {
 
-                            appCMSPageFragment =
-                                    AppCMSNavItemsFragment.newInstance(this,
-                                            appCMSBinder,
-                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
-                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                        appCMSPageFragment =
+                                AppCMSNavItemsFragment.newInstance(this,
+                                        appCMSBinder,
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
 
                         //send menu screen event for firebase
                         sendFireBaseMenuScreenEvent();
@@ -1306,9 +1308,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     break;
                 case TEAM:
                     try {
-                        if (appCMSBinder!=null &&
-                                appCMSBinder.getNavigation().getNavigationTabbar()!=null &&
-                                appCMSPresenter.isPageTeamNavigationPage(appCMSBinder.getNavigation().getNavigationTabbar()) ) {
+                        if (appCMSBinder != null &&
+                                appCMSBinder.getNavigation().getNavigationTabbar() != null &&
+                                appCMSPresenter.isPageTeamNavigationPage(appCMSBinder.getNavigation().getNavigationTabbar())) {
                             appCMSPageFragment =
                                     AppCMSTeamListFragment.newInstance(this,
                                             appCMSBinder,
@@ -1455,9 +1457,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
-            final Navigation navigation = appCMSBinder.getNavigation();
-            if (navigation != null && navigation.getNavigationPrimary() != null &&
+            /* final Navigation navigation = appCMSBinder.getNavigation();
+           if (navigation != null && navigation.getNavigationPrimary() != null &&
                     navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
+                appCMSTabNavContainer.setVisibility(View.GONE);
+            }*/
+            final ModuleList moduleFooter = appCMSBinder.getAppCMSPageUI() != null ? appCMSBinder.getAppCMSPageUI().getModuleList().get(appCMSBinder.getAppCMSPageUI().getModuleList().size() - 1) : null;
+            if (moduleFooter != null &&
+                    moduleFooter.getSettings() != null &&
+                    !moduleFooter.getSettings().isShowTabBar()) {
                 appCMSTabNavContainer.setVisibility(View.GONE);
             } else {
                 appCMSTabNavContainer.setVisibility(View.VISIBLE);
@@ -1535,7 +1543,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-                pageLoading(false);
+            pageLoading(false);
 
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
@@ -1881,9 +1889,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void createTabBar() {
-        int WEIGHT_SUM=100;
+        int WEIGHT_SUM = 100;
         if (appCMSPresenter.getNavigation().getNavigationTabbar() != null) {
             int weight = WEIGHT_SUM / appCMSPresenter.getNavigation().getNavigationTabbar().size();
+            System.out.println("createTabBar isShowTabBar " + appCMSPresenter.getHomePageMeta().getPageId());
+            System.out.println("createTabBar isShowTabBar " + appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()));
+            if (appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()) != null) {
+                ArrayList<ModuleList> moduleLists = appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()).getModuleList();
+                ModuleList footerModule = moduleLists.get(moduleLists.size() - 1);
+                System.out.println("createTabBar isShowTabBar " + footerModule.getSettings().isShowTabBar());
+                System.out.println("createTabBar isBackgroundSelectable " + footerModule.isBackgroundSelectable());
+            }
+
 
             for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationTabbar().size(); i++) {
                 NavigationTabBar navigationItem = appCMSPresenter.getNavigation().getNavigationTabbar().get(i);
@@ -1900,7 +1917,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 navBarItemView.setTabImage(navigationItem.getIcon());
                 navBarItemView.setLabel(tabLabel);
                 navBarItemView.setHighlightColor(highlightColor);
-                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams( LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
                 param.weight = weight;
                 navBarItemView.setLayoutParams(param);
 
@@ -1910,7 +1927,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     tagId = navigationItem.getPageId();
                 } else if (navigationItem.getDisplayedPath() != null) {
                     tagId = navigationItem.getDisplayedPath();
-                }else if (navigationItem.getTitle() != null){
+                } else if (navigationItem.getTitle() != null) {
                     tagId = navigationItem.getTitle();
                 }
                 NavTabTag navigationTag = new NavTabTag();
@@ -1920,9 +1937,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 navBarItemView.setOnClickListener(v -> {
                     if (v.getTag() != null) {
-                    NavTabTag navigationTabTag = (NavTabTag) v.getTag();
-                    selectNavItem((NavBarItemView) v);
-                    appCMSPresenter.showMainFragmentView(true);
+                        NavTabTag navigationTabTag = (NavTabTag) v.getTag();
+                        selectNavItem((NavBarItemView) v);
+                        appCMSPresenter.showMainFragmentView(true);
                         if (navigationTabTag.getPageId().equals("Menu Screen")) {
                             appCMSPresenter.launchNavigationPage();
                         } else if (navigationTabTag.getPageId().equals("TEAMS")) {
@@ -1998,12 +2015,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!TextUtils.isEmpty(pageId)) {
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 NavTabTag navigationTabTag = null;
-                if(appCMSTabNavContainer.getChildAt(i).getTag()!=null){
+                if (appCMSTabNavContainer.getChildAt(i).getTag() != null) {
                     navigationTabTag = (NavTabTag) appCMSTabNavContainer.getChildAt(i).getTag();
                 }
 
                 if (navigationTabTag != null && !TextUtils.isEmpty(navigationTabTag.getPageId()) &&
-                        pageId.contains(navigationTabTag.getPageId()) || (navigationTabTag!=null && navigationTabTag.getPageId() != null && pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen"))) {
+                        pageId.contains(navigationTabTag.getPageId()) || (navigationTabTag != null && navigationTabTag.getPageId() != null && pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen"))) {
                     selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
                     Log.d(TAG, "Nav item - Selecting tab item with page Id: " +
                             pageId +

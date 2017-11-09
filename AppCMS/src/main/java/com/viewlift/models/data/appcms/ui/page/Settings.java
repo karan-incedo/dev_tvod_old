@@ -40,6 +40,10 @@ public class Settings implements Serializable {
     @Expose
     boolean showPlaybackControls;
 
+    @SerializedName("showTabBar")
+    @Expose
+    boolean showTabBar;
+
     public String getTitle() {
         return title;
     }
@@ -75,12 +79,15 @@ public class Settings implements Serializable {
     public boolean isLoop() {
         return loop;
     }
+
     public PrimaryCta getPrimaryCta() {
         return primaryCta;
     }
+
     public void setPrimaryCta(PrimaryCta primaryCta) {
         this.primaryCta = primaryCta;
     }
+
     public void setShowPIP(boolean showPIP) {
         this.showPIP = showPIP;
     }
@@ -103,5 +110,13 @@ public class Settings implements Serializable {
 
     public boolean isStandaloneVideo() {
         return standaloneVideo;
+    }
+
+    public boolean isShowTabBar() {
+        return showTabBar;
+    }
+
+    public void setShowTabBar(boolean showTabBar) {
+        this.showTabBar = showTabBar;
     }
 }
