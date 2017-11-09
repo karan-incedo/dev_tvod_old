@@ -936,6 +936,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
         } else if (resultCode == RESULT_CANCELED) {
+            loaderWaitingFor3rdPartyLogin = false;
             pageLoading(false);
             if (requestCode == AppCMSPresenter.RC_PURCHASE_PLAY_STORE_ITEM) {
                 if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku())) {
