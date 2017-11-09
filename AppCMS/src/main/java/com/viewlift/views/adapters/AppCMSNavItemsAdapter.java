@@ -183,6 +183,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
 
+                                case ANDROID_WATCHLIST_SCREEN_KEY:
                                 case ANDROID_WATCHLIST_NAV_KEY:
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
