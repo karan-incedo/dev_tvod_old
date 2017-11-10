@@ -87,6 +87,28 @@
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
     <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
+
+
+    <string name="font_bold_ttf">fonts/%1$s-Bold.ttf</string>
+    <string name="font_italic_ttf">fonts/%1$s-Italic.ttf</string>
+    <string name="font_semibold_ttf">fonts/%1$s-Semibold.ttf</string>
+    <string name="font_semibold_italic_ttf">fonts/%1$s-SemiboldItalic.ttf</string>
+    <string name="font_bold_italic_ttf">fonts/%1$s-BoldItalic.ttf</string>
+    <string name="font_black_ttf">fonts/%1$s-Black.ttf</string>
+    <string name="font_black_italic_ttf">fonts/%1$s-BlackItalic.ttf</string>
+    <string name="font_light_ttf">fonts/%1$s-Light.ttf</string>
+    <string name="font_light_italic_ttf">fonts/%1$s-LightItalic.ttf</string>
+    <string name="font_hairline_ttf">fonts/%1$s-Hairline.ttf</string>
+    <string name="font_hairline_italic_ttf">fonts/%1$s-HairlineItalic.ttf</string>
+    <string name="font_heavy_ttf">fonts/%1$s-Heavy.ttf</string>
+    <string name="font_heavy_italic_ttf">fonts/%1$s-HeavyItalic.ttf</string>
+    <string name="font_medium_ttf">fonts/%1$s-Medium.ttf</string>
+    <string name="font_medium_italic_ttf">fonts/%1$s-MediumItalic.ttf</string>
+    <string name="font_thin_ttf">fonts/%1$s-Thin.ttf</string>
+    <string name="font_thin_italic_ttf">fonts/%1$s-ThinItalic.ttf</string>
+    <string name="font_extrabold_ttf">fonts/%1$s-ExtraBold.ttf</string>
+    <string name="font_regular_ttf">fonts/%1$s-Regular.ttf</string>
+
     <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
     <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
     <string name="search_button_text">GO</string>

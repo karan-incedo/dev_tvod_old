@@ -118,7 +118,23 @@
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
+    <string name="app_cms_page_font_black_key">Black</string>
+    <string name="app_cms_page_font_black_italic_key">BlackItalic</string>
+    <string name="app_cms_page_font_bold_italic_key">BoldItalic</string>
+    <string name="app_cms_page_font_hairline_key">Hairline</string>
+    <string name="app_cms_page_font_hairline_italic_key">HairlineItalic</string>
+    <string name="app_cms_page_font_heavy_key">Heavy</string>
+    <string name="app_cms_page_font_heavy_italic_key">HeavyItalic</string>
+    <string name="app_cms_page_font_light_key">Light</string>
+    <string name="app_cms_page_font_light_italic_key">LightItalic</string>
+    <string name="app_cms_page_font_medium_key">Medium</string>
+    <string name="app_cms_page_font_medium_italic_key">MediumItalic</string>
+    <string name="app_cms_page_font_thin_key">Thin</string>
+    <string name="app_cms_page_font_thin_italic_key">ThinItalic</string>
+    <string name="app_cms_page_font_semibold_italic_key">SemiboldItalic</string>
+
     <string name="app_cms_page_font_family_key">OpenSans</string>
+    <string name="app_cms_page_font_lato_family_key">Lato</string>
     <string name="app_cms_page_textview_key">textView</string>
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>
@@ -230,7 +246,7 @@
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
-    <string name="app_cms_team_page_tag">teams</string>
+    <string name="app_cms_team_page_tag">Teams</string>
     <string name="app_cms_ccavenue_page_tag">ccavenue</string>
     <string name="app_cms_search_page_tag">search</string>
     <string name="app_cms_video_page_tag">video</string>
