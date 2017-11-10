@@ -200,6 +200,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PLAY_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_action_showvideopage_key),
                 AppCMSUIKeyType.PAGE_SHOW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_team_page_tag),
+                AppCMSUIKeyType.PAGE_TEAMS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_watchnow_key),
                 AppCMSUIKeyType.PAGE_WATCH_VIDEO_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_play_image_key),
@@ -233,8 +235,32 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_extrabold_key),
                 AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_black_key),
+                AppCMSUIKeyType.PAGE_TEXT_BLACK_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_black_italic_key),
+                AppCMSUIKeyType.PAGE_TEXT_BLACK_ITALIC_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_hairline_key),
+                AppCMSUIKeyType.PAGE_TEXT_HAIRLINE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_hairline_italic_key),
+                AppCMSUIKeyType.PAGE_TEXT_HAIRLINE_ITALIC_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_heavy_key),
+                AppCMSUIKeyType.PAGE_TEXT_HEAVY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_heavy_italic_key),
+                AppCMSUIKeyType.PAGE_TEXT_HEAVY_ITALIC_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_light_key),
+                AppCMSUIKeyType.PAGE_TEXT_LIGHT_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_light_italic_key),
+                AppCMSUIKeyType.PAGE_TEXT_LIGHT_ITALIC_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_bold_italic_key),
+                AppCMSUIKeyType.PAGE_TEXT_BLACK_ITALIC_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_thin_key),
+                AppCMSUIKeyType.PAGE_TEXT_THIN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_thin_italic_key),
+                AppCMSUIKeyType.PAGE_TEXT_THIN_ITALIC_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
                 AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_lato_family_key),
+                AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textview_key),
                 AppCMSUIKeyType.PAGE_TEXTVIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textfield_key),

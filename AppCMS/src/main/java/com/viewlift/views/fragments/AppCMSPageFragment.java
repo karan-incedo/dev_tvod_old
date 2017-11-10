@@ -148,10 +148,8 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() != null) {
             NestedScrollView nestedScrollView = (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
 
-
-            //System.out.println(positionToScroll+ " positionToScroll "+holder.getChildCount() );
             if (appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()) {
-                Toast.makeText(getContext(), "Created Scroll Event listener  ", Toast.LENGTH_SHORT).show();
+                appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
                 nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                     @Override
                     public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {

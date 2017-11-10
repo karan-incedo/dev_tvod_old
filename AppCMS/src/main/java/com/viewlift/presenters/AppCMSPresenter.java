@@ -47,6 +47,7 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -11309,6 +11310,39 @@ public class AppCMSPresenter {
         relativeLayoutPIP.addView(videoPlayerViewPIP);
         relativeLayoutPIP.setVisibility(View.VISIBLE);
 
+
+        relativeLayoutPIP.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                int action = event.getAction();
+                switch (event.getAction()) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        // do nothing
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+
+                        break;
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        //v.setBackgroundDrawable(normalShape);
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        // Dropped, reassign View to ViewGroup
+                       /* View view = (View) event.getLocalState();
+                        ViewGroup owner = (ViewGroup) view.getParent();
+                        owner.removeView(view);
+                        LinearLayout container = (LinearLayout) v;
+                        container.addView(view);
+                        view.setVisibility(View.VISIBLE);*/
+                        dismissPopupWindowPlayer();
+                        break;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        //v.setBackgroundDrawable(normalShape);
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
         ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
     }
 
@@ -11395,5 +11429,16 @@ public class AppCMSPresenter {
 
     public MetaPage getHomePageMeta() {
         return homePage;
+    }
+
+    public AppCMSPageUI getTabBarUI(String url){
+
+        try {
+           AppCMSPageUI appCMSPageUITab= appCMSPageUICall.call(url,0l,true);
+           return appCMSPageUITab;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

@@ -459,7 +459,7 @@ public class ViewCreator {
                                                         fontSize = (int) (0.6 * fontSize);
                                                     } else {
                                                         fontSize = (int) (0.8 * fontSize);
-                                            }
+                                                    }
                                                 }
                                                 ((TextView) view).setTextSize(fontSize);
                                             }
@@ -3115,7 +3115,22 @@ public class ViewCreator {
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Component component,
                              TextView textView) {
-        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+
+        if (jsonValueKeyMap.get(component.getFontFamily()) != null) {
+            String fontName = "";
+            switch (jsonValueKeyMap.get(component.getFontFamily())) {
+                case PAGE_TEXT_OPENSANS_FONTFAMILY_KEY:
+                    fontName = context.getString(R.string.app_cms_page_font_family_key);
+                    break;
+                case PAGE_TEXT_LATO_FONTFAMILY_KEY:
+                    fontName = context.getString(R.string.app_cms_page_font_lato_family_key);
+                    break;
+                default:
+                    fontName = context.getString(R.string.app_cms_page_font_family_key);
+                    break;
+
+            }
+
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -3126,7 +3141,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_bold_ttf));
+                                context.getString(R.string.font_bold_ttf,fontName));
                         appCMSPresenter.setBoldTypeFace(face);
                     }
                     break;
@@ -3135,7 +3150,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getSemiBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_semibold_ttf));
+                                context.getString(R.string.font_semibold_ttf,fontName));
                         appCMSPresenter.setSemiBoldTypeFace(face);
                     }
                     break;
@@ -3144,16 +3159,119 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_extrabold_ttf));
+                                context.getString(R.string.font_extrabold_ttf,fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
-
+                case PAGE_TEXT_BLACK_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_black_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_BLACK_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_black_italic_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HAIRLINE_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_hairline_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HAIRLINE_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_hairline_italic_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HEAVY_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_heavy_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HEAVY_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_heavy_italic_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_LIGHT_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_light_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_LIGHT_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_light_italic_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_MEDIUM_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_medium_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_MEDIUM_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_medium_italic_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_THIN_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_thin_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_THIN_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_thin_italic_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_SEMIBOLD_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_semibold_italic_ttf,fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
                 default:
                     face = appCMSPresenter.getRegularFontFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_regular_ttf));
+                                context.getString(R.string.font_regular_ttf,fontName));
                         appCMSPresenter.setRegularFontFace(face);
                     }
                     break;
@@ -3433,7 +3551,7 @@ public class ViewCreator {
 
         @Override
         public void beforeChildren(TagNode node, SpannableStringBuilder builder, SpanStack spanStack) {
-            if ( builder.length() == 0 || builder.charAt(builder.length() -1) != '\n' ) {
+            if (builder.length() == 0 || builder.charAt(builder.length() - 1) != '\n') {
                 builder.append('\n');
             }
             super.beforeChildren(node, builder, spanStack);

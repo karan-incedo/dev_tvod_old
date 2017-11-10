@@ -1892,9 +1892,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         int WEIGHT_SUM = 100;
         if (appCMSPresenter.getNavigation().getNavigationTabbar() != null) {
             int weight = WEIGHT_SUM / appCMSPresenter.getNavigation().getNavigationTabbar().size();
-            System.out.println("createTabBar isShowTabBar " + appCMSPresenter.getHomePageMeta().getPageId());
-            System.out.println("createTabBar isShowTabBar " + appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()));
-            if (appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()) != null) {
+              if (appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()) != null) {
                 ArrayList<ModuleList> moduleLists = appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()).getModuleList();
                 ModuleList footerModule = moduleLists.get(moduleLists.size() - 1);
                 System.out.println("createTabBar isShowTabBar " + footerModule.getSettings().isShowTabBar());
@@ -2020,7 +2018,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
 
                 if (navigationTabTag != null && !TextUtils.isEmpty(navigationTabTag.getPageId()) &&
-                        pageId.contains(navigationTabTag.getPageId()) || (navigationTabTag != null && navigationTabTag.getPageId() != null && pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen"))) {
+                        (pageId.contains(navigationTabTag.getPageId()) || pageId.equalsIgnoreCase(navigationTabTag.getPageId()))|| (navigationTabTag != null && navigationTabTag.getPageId() != null && pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen"))) {
                     selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
                     Log.d(TAG, "Nav item - Selecting tab item with page Id: " +
                             pageId +
