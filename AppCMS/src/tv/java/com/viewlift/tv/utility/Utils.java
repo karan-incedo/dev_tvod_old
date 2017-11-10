@@ -4,11 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.graphics.drawable.ClipDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -17,18 +14,14 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -36,11 +29,11 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.tv.FireTV;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.views.activity.AppCmsBaseActivity;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
 
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
@@ -628,4 +621,45 @@ public class Utils {
     }
 
 
+    public static String convertSecondsToTime(long runtime) {
+        StringBuilder timeInString = new StringBuilder();
+        runtime = runtime * 1000;
+        
+        long days = TimeUnit.MILLISECONDS
+                .toDays(runtime);
+        runtime -= TimeUnit.DAYS.toMillis(days);
+        if (days != 0){
+            timeInString.append(Long.toString(days));
+        }
+
+        long hours = TimeUnit.MILLISECONDS
+                .toHours(runtime);
+        runtime -= TimeUnit.HOURS.toMillis(hours);
+        if (hours != 0 || timeInString.length() > 0){
+            if (timeInString.length() > 0) {
+                timeInString.append(":");
+            }
+            timeInString.append(Long.toString(hours));
+        }
+
+        long minutes = TimeUnit.MILLISECONDS
+                .toMinutes(runtime);
+        runtime -= TimeUnit.MINUTES.toMillis(minutes);
+//        if (minutes != 0 || timeInString.length() > 0){
+            if (timeInString.length() > 0) {
+                timeInString.append(":");
+            }
+            timeInString.append(Long.toString(minutes));
+//        }
+
+        long seconds = TimeUnit.MILLISECONDS
+                .toSeconds(runtime);
+//        if (seconds != 0 || timeInString.length() > 0){
+            if (timeInString.length() > 0) {
+                timeInString.append(":");
+            }
+            timeInString.append(Long.toString(seconds));
+//        }
+        return timeInString.toString();
+    }
 }
