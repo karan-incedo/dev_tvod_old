@@ -27,7 +27,7 @@ import butterknife.ButterKnife;
  */
 
 public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAdapter.ViewHolder> {
-    private static final String TAG = "AppCMSNavItemsAdapter";
+    //private static final String TAG = "AppCMSNavItemsAdapter";
 
     private final Navigation navigation;
     private final AppCMSPresenter appCMSPresenter;
@@ -67,6 +67,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         int indexOffset = 0;
 
         viewHolder.navItemLabel.setText("");
+        viewHolder.navItemLabel.setTypeface(appCMSPresenter.getRegularFontFace());
 
         if (i >= numPrimaryItems) {
             indexOffset += numPrimaryItems;
@@ -89,7 +90,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
             viewHolder.navItemSelector.setVisibility(View.VISIBLE);
             viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                     .getBrand().getCta().getPrimary().getBackgroundColor()));
-            viewHolder.navItemLabel.setTypeface(null, Typeface.BOLD);
+            viewHolder.navItemLabel.setTypeface(appCMSPresenter.getBoldTypeFace(), Typeface.BOLD);
         } else {
             viewHolder.navItemSelector.setVisibility(View.INVISIBLE);
         }
