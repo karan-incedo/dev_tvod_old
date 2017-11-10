@@ -28,6 +28,8 @@ import com.viewlift.tv.utility.Utils;
 
 import net.nightwhistler.htmlspanner.spans.CenterSpan;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -187,11 +189,16 @@ public class CardPresenter extends Presenter {
                             layoutParams = new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.WRAP_CONTENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                            tvTitle.setText(component.getText());
                             tvTitle.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
                             tvTitle.setGravity(Gravity.CENTER);
                             Integer padding = Integer.valueOf(component.getLayout().getTv().getPadding());
                             tvTitle.setPadding(6, padding, 10, 4);
+                            String time = Utils.convertSecondsToTime(contentData.getGist().getRuntime());
+
+                            Date publishedDate = new Date(contentData.getGist().getPublishDate());
+                            SimpleDateFormat spf = new SimpleDateFormat("MMM dd");
+                            String date = spf.format(publishedDate);
+                            tvTitle.setText(time + " | " + date);
                         } else {
                             layoutParams = new FrameLayout.LayoutParams(
                                     FrameLayout.LayoutParams.MATCH_PARENT,
