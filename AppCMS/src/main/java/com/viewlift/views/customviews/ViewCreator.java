@@ -3226,12 +3226,17 @@ public class ViewCreator {
                                 UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
                             }, true);
                 } else {
-                    if (appCMSPresenter.isAppSVOD() &&
-                            appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
-                    } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
-                    }
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                            () -> {
+                                appCMSPresenter.setAfterLoginAction(() -> {
+                                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
+                                            addToWatchlistResult -> {
+                                                UpdateImageIconAction.this.imageButton.setImageResource(
+                                                        R.drawable.remove_from_watchlist);
+                                                UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
+                                            }, true);
+                                });
+                            });
                 }
             };
             removeClickListener = v -> appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
@@ -3302,12 +3307,33 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                            if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
+                                                appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                                            } else {
+                                                appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
+                                            }
+                                        });
+                                    });
                         } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                            if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
+                                                appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                                            } else {
+                                                appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
+                                            }
+                                        });
+                                    });
                         }
                     } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                () -> {
+
+                                });
                     }
                 }
                 imageButton.setOnClickListener(null);

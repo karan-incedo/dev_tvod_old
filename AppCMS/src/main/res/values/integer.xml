@@ -12,6 +12,7 @@
     <integer name="app_cms_border_stroke_width">4</integer>
     <integer name="app_cms_empty_list_message_textsize">24</integer>
 
+    <integer name="number_of_tabs">3</integer>
     <integer name="first_primary_page_index">0</integer>
     <integer name="nav_live_page_index">4</integer>
     <integer name="second_primary_page_index">1</integer>

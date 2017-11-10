@@ -537,6 +537,7 @@ public class AppCMSPresenter {
     private boolean downloadInProgress;
     private boolean loginFromNavPage;
     private Action0 afterLoginAction;
+    private boolean shouldLaunchLoginAction;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -3355,7 +3356,7 @@ public class AppCMSPresenter {
                                         updateContentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
 
                     } catch (Exception e) {
-                        //Log.e(TAG, e.getMessage());
+                        Log.e(TAG, e.getMessage());
                         showDialog(DialogType.DOWNLOAD_INCOMPLETE, e.getMessage(), false, null, null);
                     } finally {
                         appCMSUserDownloadVideoStatusCall.call(updateContentDatum.getGist().getId(), this,
@@ -3462,7 +3463,7 @@ public class AppCMSPresenter {
                 }
             }, 500, 1000);
         } catch (Exception e) {
-            //Log.e(TAG, "Could not find video ID in downloads");
+            Log.e(TAG, "Error updating download status: " + e.getMessage());
         }
     }
 
@@ -4868,6 +4869,14 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             InputMethodManager imm = (InputMethodManager) currentActivity.getSystemService(Activity.INPUT_METHOD_SERVICE);
             imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        }
+    }
+
+    public void initiateAfterLoginAction() {
+        if (afterLoginAction != null && shouldLaunchLoginAction) {
+            afterLoginAction.call();
+            afterLoginAction = null;
+            shouldLaunchLoginAction = false;
         }
     }
 
@@ -8101,10 +8110,7 @@ public class AppCMSPresenter {
             initiateItemPurchase();
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         } else {
-            if (afterLoginAction != null) {
-                afterLoginAction.call();
-                afterLoginAction = null;
-            }
+            shouldLaunchLoginAction = true;
 
             //Log.d(TAG, "Logging in");
             if (appCMSMain.getServiceType()
@@ -8142,7 +8148,6 @@ public class AppCMSPresenter {
                             if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
                                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                             }
-
 
                             if (loginFromNavPage) {
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
@@ -10808,6 +10813,7 @@ public class AppCMSPresenter {
 
     public void setAfterLoginAction(Action0 afterLoginAction) {
         this.afterLoginAction = afterLoginAction;
+        this.shouldLaunchLoginAction = false;
     }
 
     public enum LaunchType {
