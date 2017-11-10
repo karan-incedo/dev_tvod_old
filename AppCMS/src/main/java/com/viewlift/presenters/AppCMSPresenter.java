@@ -536,6 +536,7 @@ public class AppCMSPresenter {
     private boolean cancelAllLoads;
     private boolean downloadInProgress;
     private boolean loginFromNavPage;
+    private Action0 afterLoginAction;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -8098,6 +8099,11 @@ public class AppCMSPresenter {
             initiateItemPurchase();
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         } else {
+            if (afterLoginAction != null) {
+                afterLoginAction.call();
+                afterLoginAction = null;
+            }
+
             //Log.d(TAG, "Logging in");
             if (appCMSMain.getServiceType()
                     .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key)) &&
@@ -9117,10 +9123,6 @@ public class AppCMSPresenter {
     }
 
     private void queueMetaPages(List<MetaPage> metaPageList) {
-//        if (pagesToProcess == null) {
-//            pagesToProcess = new ConcurrentLinkedQueue<>();
-//        }
-
         if (!metaPageList.isEmpty()) {
             int loginPageIndex = getSigninPage(metaPageList);
             if (loginPageIndex >= 0) {
@@ -9170,31 +9172,10 @@ public class AppCMSPresenter {
                 new SoftReference<Object>(watchlistPage, referenceQueue);
             }
 
-            int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
                     && !isUserLoggedIn()) {
                 launchType = LaunchType.LOGIN_AND_SIGNUP;
-                if (appCMSMain.isForceLogin()) {
-                    pageToQueueIndex = splashScreenIndex;
-                }
             }
-
-//            if (pageToQueueIndex == -1) {
-//                pageToQueueIndex = homePageIndex;
-//            }
-//
-//            if (pageToQueueIndex >= 0) {
-//                pagesToProcess.add(metaPageList.get(pageToQueueIndex));
-//                //Log.d(TAG, "Queuing meta page: " +
-////                        metaPageList.get(pageToQueueIndex).getPageName() + ": " +
-////                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
-////                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
-////                        metaPageList.get(pageToQueueIndex).getPageAPI());
-//                metaPageList.remove(pageToQueueIndex);
-//                queueMetaPages(metaPageList);
-//            } else {
-//                pagesToProcess.addAll(metaPageList);
-//            }
         }
     }
 
@@ -10522,6 +10503,10 @@ public class AppCMSPresenter {
         getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
     }
 
+    public ReferenceQueue<Object> getSoftReferenceQueue() {
+        return referenceQueue;
+    }
+
     public String getApiKey() {
         return apikey;
     }
@@ -10813,6 +10798,14 @@ public class AppCMSPresenter {
 
     public void showEmptySearchToast() {
         showToast(getCurrentActivity().getResources().getString(R.string.search_blank_toast_msg), Toast.LENGTH_SHORT);
+    }
+
+    public Action0 getAfterLoginAction() {
+        return afterLoginAction;
+    }
+
+    public void setAfterLoginAction(Action0 afterLoginAction) {
+        this.afterLoginAction = afterLoginAction;
     }
 
     public enum LaunchType {
