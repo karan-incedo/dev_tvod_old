@@ -17,4 +17,6 @@
     <integer name="second_primary_page_index">1</integer>
     <integer name="search_page_index">2</integer>
     <integer name="third_primary_page_index">3</integer>
+    <integer name="nav_bar_items_weightsum">100</integer>
+
 </resources>

@@ -16,7 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.R;
-import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
+import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPageActivity;
 
 /**
  * Created by viewlift on 5/26/17.
@@ -35,18 +37,15 @@ public class NavBarItemView extends LinearLayout {
     private String TEAM_TAB_ICON_KEY = "icon-bracket";
     private String MENU_TAB_ICON_KEY = "icon-menu";
     private String SEARCH_TAB_ICON_KEY = "icon-search";
-    private NavigationTabBar navTabBar;
-
-    public NavBarItemView(Context context) {
+    private ModuleList navTabBar;
+    private AppCMSPresenter appCMSPresenter;
+    public NavBarItemView(Context context, ModuleList navigationItem, AppCMSPresenter appCMSPresenter) {
         super(context);
+        this.navTabBar = navigationItem;
+        this.appCMSPresenter=appCMSPresenter;
         init();
     }
 
-    public NavBarItemView(Context context, NavigationTabBar navTabBar) {
-        super(context);
-        this.navTabBar = navTabBar;
-        init();
-    }
 
     public NavBarItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -71,10 +70,11 @@ public class NavBarItemView extends LinearLayout {
     public void init() {
         hasFocus = false;
         setOrientation(VERTICAL);
-        createChildren(getContext());
+        createChildren();
     }
 
-    public void select(boolean hasFocus, NavigationTabBar navigationTabBar) {
+    public void select(boolean hasFocus, AppCMSPageActivity.NavTabTag navigationTabBar) {
+
         this.hasFocus = hasFocus;
         Resources resources = getResources();
         int drawableId = resources.getIdentifier("tab_hover",
@@ -83,18 +83,18 @@ public class NavBarItemView extends LinearLayout {
         int color = ContextCompat.getColor(getContext(), R.color.colorNavBarText);
         if (hasFocus) {
             color = highlightColor;
-            if (navigationTabBar.isIsbackgroundSelectable()) {
+            if (navigationTabBar.getNavigationModuleItem().getIsBackgroundSelectable()) {
                 setTabBg();
             }
         } else {
             this.setBackgroundResource(0);
         }
 
-        for (int i = 0; i < navigationTabBar.getComponents().size(); i++) {
-            String type = navigationTabBar.getComponents().get(i).getType();
-            if (type.equalsIgnoreCase("label") && navigationTabBar.getComponents().get(i).isSelectable()) {
+        for (int i = 0; i < navigationTabBar.getNavigationModuleItem().getComponents().size(); i++) {
+            String type = navigationTabBar.getNavigationModuleItem().getComponents().get(i).getType();
+            if (navLabel!=null && type.equalsIgnoreCase("label") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
                 navLabel.setTextColor(color);
-            } else if (type.equalsIgnoreCase("image") && navigationTabBar.getComponents().get(i).isSelectable()) {
+            } else if (navImage!=null && type.equalsIgnoreCase("image") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
                 applyTintToDrawable(navImage.getDrawable(), color);
             }
 
@@ -113,72 +113,78 @@ public class NavBarItemView extends LinearLayout {
     }
 
 
-    public void createChildren(Context context) {
-        navImage = new ImageView(context);
+    public void createChildren() {
 
-        int navItemMargin =(int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_margin), getContext());
-        int navImageWidth =
-                (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_width), getContext());
-        int navImageHeight =
-                (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_height), getContext());
+        for (int i = 0; i < navTabBar.getComponents().size(); i++) {
 
-        if (BaseView.isTablet(getContext())) {
-            navImageWidth =
-                    (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_width), getContext());
-            navImageHeight =
-                    (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_height), getContext());
+            String componentType = navTabBar.getComponents().get(i).getType();
+            switch (componentType) {
+                case "image":
+                    navImage = new ImageView(getContext());
+                    int navImageWidth =
+                            (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_width), getContext());
+                    int navImageHeight =
+                            (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_height), getContext());
+
+                    if (BaseView.isTablet(getContext())) {
+                        navImageWidth =
+                                (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_width), getContext());
+                        navImageHeight =
+                                (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_height), getContext());
+                    }
+
+                    LinearLayout.LayoutParams navImageLayoutParams =
+                            new LinearLayout.LayoutParams(navImageWidth, navImageHeight);
+                    navImageLayoutParams.gravity = Gravity.CENTER;
+                    navImage.setLayoutParams(navImageLayoutParams);
+                    addView(navImage);
+
+                    break;
+
+                case "label":
+                    navLabel = new TextView(getContext());
+                    LinearLayout.LayoutParams navLabelLayoutParams =
+                            new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    navLabelLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                    navLabel.setLayoutParams(navLabelLayoutParams);
+                    navLabel.setTextColor(ContextCompat.getColor(getContext(), R.color.colorNavBarText));
+                    navLabel.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
+                    addView(navLabel);
+
+                    break;
+
+            }
         }
-
-        LinearLayout.LayoutParams navImageLayoutParams =
-                new LinearLayout.LayoutParams(navImageWidth, navImageHeight);
-        navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-        navImage.setLayoutParams(navImageLayoutParams);
 
         LinearLayout.LayoutParams parentLayoutParams =
                 new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         parentLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
         this.setLayoutParams(parentLayoutParams);
 
-        navLabel = new TextView(context);
-        LinearLayout.LayoutParams navLabelLayoutParams =
-                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT);
-        navLabelLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-        navLabel.setLayoutParams(navLabelLayoutParams);
-        navLabel.setTextColor(ContextCompat.getColor(context, R.color.colorNavBarText));
-        navLabel.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
+        int navItemMargin = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_margin), getContext());
 
-        addView(navImage);
-        addView(navLabel);
-        setPadding(0,navItemMargin,0,0);
+        setPadding(0, navItemMargin, 0, 0);
 
     }
 
     public void setTabImage(String tabDisplayPath) {
         Resources resources = getResources();
-
+        int drawableId;
         String drawableName = null;
         if (tabDisplayPath == null) {
             drawableName = resources.getString(R.string.app_cms_menu_icon_name);
-        } else if (tabDisplayPath.equalsIgnoreCase(HOME_TAB_ICON_KEY)) {
-            drawableName = resources.getString(R.string.app_cms_home_icon_name);
-        } else if (tabDisplayPath.equalsIgnoreCase(LIVE_TAB_ICON_KEY)) {
-            drawableName = resources.getString(R.string.app_cms_live_icon_name);
-        } else if (tabDisplayPath.equalsIgnoreCase(SHOW_TAB_ICON_KEY)) {
-            drawableName = resources.getString(R.string.app_cms_shows_icon_name);
-        } else if (tabDisplayPath.equalsIgnoreCase(TEAM_TAB_ICON_KEY)) {
-            drawableName = resources.getString(R.string.app_cms_team_icon_name);
-        } else if (tabDisplayPath.equalsIgnoreCase(MENU_TAB_ICON_KEY)) {
-            drawableName = resources.getString(R.string.app_cms_menu_icon_name);
-        } else if (tabDisplayPath.equalsIgnoreCase(SEARCH_TAB_ICON_KEY)) {
-            drawableName = resources.getString(R.string.app_cms_search_icon_name);
-        } else {
-            drawableName = resources.getString(R.string.app_cms_menu_icon_name);
+            drawableId = resources.getIdentifier(drawableName,
+                    "drawable",
+                    getContext().getPackageName());
+
+        }else{
+            drawableId= resources.getIdentifier(tabDisplayPath.replace("-","_") , "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
+
         }
-        int drawableId = resources.getIdentifier(drawableName,
-                "drawable",
-                getContext().getPackageName());
-        navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
+        if (navImage != null) {
+            navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
+        }
     }
 
     public void setImage(String drawableName) {
@@ -186,11 +192,15 @@ public class NavBarItemView extends LinearLayout {
         int drawableId = resources.getIdentifier(drawableName,
                 "drawable",
                 getContext().getPackageName());
-        navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
+        if(navImage!=null){
+            navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
+        }
     }
 
     public void setLabel(String label) {
-        navLabel.setText(label);
+        if(navLabel!=null ){
+            navLabel.setText(label);
+        }
     }
 
     public void hideLabel() {
@@ -211,4 +221,5 @@ public class NavBarItemView extends LinearLayout {
             drawable.setTintMode(PorterDuff.Mode.MULTIPLY);
         }
     }
+
 }

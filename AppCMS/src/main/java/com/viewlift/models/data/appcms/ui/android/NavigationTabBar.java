@@ -42,9 +42,33 @@ public class NavigationTabBar implements Serializable {
         this.components = components;
     }
 
-    @SerializedName("isbackgroundSelectable")
+    @SerializedName("isBackgroundSelectable")
     @Expose
     boolean isbackgroundSelectable;
+
+    public boolean isTabSeparator() {
+        return isTabSeparator;
+    }
+
+    public void setTabSeparator(boolean tabSeparator) {
+        isTabSeparator = tabSeparator;
+    }
+
+    public String getTabSeparatorcolor() {
+        return tabSeparatorcolor;
+    }
+
+    public void setTabSeparatorcolor(String tabSeparatorcolor) {
+        this.tabSeparatorcolor = tabSeparatorcolor;
+    }
+
+    @SerializedName("isTabSeparator")
+    @Expose
+    boolean isTabSeparator;
+
+    @SerializedName("tabSeparator-color")
+    @Expose
+    String tabSeparatorcolor;
 
     @SerializedName("isDefaultLaunch")
     @Expose
