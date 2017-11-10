@@ -14,6 +14,7 @@ public class NavigationPrimary implements Serializable {
     @Expose
     String title;
 
+
     @SerializedName("icon")
     @Expose
     String icon;

@@ -9073,28 +9073,25 @@ public class AppCMSPresenter {
 //                    Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
                     new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
                         try {
-                            AppCMSAndroidUI appCMSAndroidUI1 = new GsonBuilder().create().fromJson(
-                                    loadJsonFromAssets(currentActivity, "tab_bar.json"),
-                                    AppCMSAndroidUI.class);
 
-                            if (appCMSAndroidUI1 == null ||
-                                    appCMSAndroidUI1.getMetaPages() == null ||
-                                    appCMSAndroidUI1.getMetaPages().isEmpty()) {
+                            if (appCMSAndroidUI == null ||
+                                    appCMSAndroidUI.getMetaPages() == null ||
+                                    appCMSAndroidUI.getMetaPages().isEmpty()) {
                                 //Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                                 launchBlankPage();
                             } else if (isAppBelowMinVersion()) {
                                 //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                                 launchUpgradeAppActivity();
                             } else {
-                                getAppCMSModules(appCMSAndroidUI1, false, (appCMSAndroidModules) -> {
+                                getAppCMSModules(appCMSAndroidUI, false, (appCMSAndroidModules) -> {
                                     launchBlankPage();
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;
-                                    initializeGA(appCMSAndroidUI1.getAnalytics().getGoogleAnalyticsId());
-                                    initAppsFlyer(appCMSAndroidUI1);
-                                    navigation = appCMSAndroidUI1.getNavigation();
+                                    initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+                                    initAppsFlyer(appCMSAndroidUI);
+                                    navigation = appCMSAndroidUI.getNavigation();
                                     new SoftReference<>(navigation, referenceQueue);
-                                    queueMetaPages(appCMSAndroidUI1.getMetaPages());
+                                    queueMetaPages(appCMSAndroidUI.getMetaPages());
                                     //Log.d(TAG, "Processing meta pages queue");
                                     processMetaPagesList(loadFromFile,
                                             appCMSAndroidUI.getMetaPages(),
@@ -9258,7 +9255,7 @@ public class AppCMSPresenter {
 
 //            if (pageToQueueIndex >= 0) {
 //                pagesToProcess.add(metaPageList.get(pageToQueueIndex));
-            //Log.d(TAG, "Queuing meta page: " +
+                //Log.d(TAG, "Queuing meta page: " +
 //                        metaPageList.get(pageToQueueIndex).getPageName() + ": " +
 //                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
 //                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
@@ -11422,23 +11419,27 @@ public class AppCMSPresenter {
     public void showEmptySearchToast() {
         showToast(getCurrentActivity().getResources().getString(R.string.search_blank_toast_msg), Toast.LENGTH_SHORT);
     }
-
-    public AppCMSPageUI getPageUI(String pageid) {
-        return navigationPages.get(pageid);
-    }
-
-    public MetaPage getHomePageMeta() {
-        return homePage;
-    }
-
-    public AppCMSPageUI getTabBarUI(String url){
-
-        try {
-           AppCMSPageUI appCMSPageUITab= appCMSPageUICall.call(url,0l,true);
-           return appCMSPageUITab;
-        } catch (IOException e) {
-            e.printStackTrace();
+    public ModuleList getTabBarUIModule() {
+        AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
+        ModuleList footerModule = null;
+        if (appCmsHomePage != null) {
+            ArrayList<ModuleList> moduleList = appCmsHomePage.getModuleList();
+            for (int i = moduleList.size() - 1; i >= 0; i--) {
+                if (moduleList.get(i).getType().contains("AC Footer 01")) {
+                    footerModule = moduleList.get(i);
+                    break;
+                }
+            }
         }
-        return null;
+        return footerModule;
+    }
+
+    public ModuleList getTabBarUIFooterModule() {
+        ModuleList footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
+        return footerModule;
+    }
+    public ModuleList getModuleListComponent(String moduleId) {
+        ModuleList moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
+        return moduleList;
     }
 }

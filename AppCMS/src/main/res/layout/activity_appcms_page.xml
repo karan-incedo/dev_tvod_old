@@ -135,7 +135,7 @@
         android:weightSum="100"
         android:background="@android:color/transparent"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
 
     </LinearLayout>

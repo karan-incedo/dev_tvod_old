@@ -109,8 +109,8 @@ import butterknife.ButterKnife;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
-/**
- * /*
+
+/*
  * Created by viewlift on 5/5/17.
  */
 
@@ -150,7 +150,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     AppBarLayout appBarLayout;
 
     @BindView(R.id.app_cms_tab_nav_container)
-    LinearLayout appCMSTabNavContainer;
+    LinearLayout appCMSTabNavParentContainer;
 
     @BindView(R.id.ll_media_route_button)
     LinearLayout ll_media_route_button;
@@ -216,6 +216,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private String FIREBASE_MENU_SCREEN = "MENU";
     private String searchQuery;
     private boolean isDownloadPageOpen = false;
+    private LinearLayout appCMSTabNavContainer;
+    private boolean isTabCreated=false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -447,7 +449,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
         registerReceiver(refreshPageDataReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
-
+        registerReceiver(presenterActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
         resumeInternalEvents = false;
 
         shouldSendCloseOthersAction = false;
@@ -1105,14 +1108,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (pageLoading) {
             appCMSPresenter.setMainFragmentTransparency(0.5f);
             appCMSFragment.setEnabled(false);
-            appCMSTabNavContainer.setEnabled(false);
+            if(appCMSTabNavContainer!=null){
+                appCMSTabNavContainer.setEnabled(false);
+                for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                    appCMSTabNavContainer.getChildAt(i).setEnabled(false);
+                }
+            }
             loadingProgressBar.setVisibility(View.VISIBLE);
             //while progress bar loading disable user interaction
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
-                appCMSTabNavContainer.getChildAt(i).setEnabled(false);
-            }
+
             appCMSPresenter.setPageLoading(true);
         } else {
             appCMSPresenter.setMainFragmentTransparency(1.0f);
@@ -1120,12 +1126,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.showAddOnFragment(true, 0.2f);
             }
             appCMSFragment.setEnabled(true);
-            appCMSTabNavContainer.setEnabled(true);
+
             loadingProgressBar.setVisibility(View.GONE);
             //clear user interaction blocker flag
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
-                appCMSTabNavContainer.getChildAt(i).setEnabled(true);
+
+
+            if(appCMSTabNavContainer!=null){
+                appCMSTabNavContainer.setEnabled(true);
+                for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
+                    appCMSTabNavContainer.getChildAt(i).setEnabled(true);
+                }
             }
             appCMSPresenter.setPageLoading(false);
         }
@@ -1403,9 +1414,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
 
-    private void selectNavItems(int id) {
-
-    }
 
     private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
         if (!appCMSPresenter.navigateToPage(pageId,
@@ -1429,7 +1437,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void selectNavItem(NavBarItemView v) {
         unselectAllNavItems();
         NavTabTag navigationTabTag = (NavTabTag) v.getTag();
-        v.select(true, navigationTabTag.getNavigationTabBar());
+        v.select(true, navigationTabTag);
     }
 
     private void unselectAllNavItems() {
@@ -1443,7 +1451,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void unselectNavItem(NavBarItemView v) {
         NavTabTag navigationTabTag = (NavTabTag) v.getTag();
 
-        v.select(false, navigationTabTag.getNavigationTabBar());
+        v.select(false, navigationTabTag);
     }
 
     private NavBarItemView getSelectedNavItem() {
@@ -1543,7 +1551,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            pageLoading(false);
+                pageLoading(false);
 
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
@@ -1870,7 +1878,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void manageTopBar() {
-        if (appCMSPresenter.getNavigation().getNavigationLeft() != null && appCMSPresenter.getNavigation().getNavigationLeft().size() > 0) {
+        if (appCMSPresenter.getNavigation()!=null && appCMSPresenter.getNavigation().getNavigationLeft() != null && appCMSPresenter.getNavigation().getNavigationLeft().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationLeft().size(); i++) {
                 if (appCMSPresenter.getNavigation().getNavigationLeft().get(i).getDisplayedPath().equalsIgnoreCase("Authentication Screen")) {
 
@@ -1878,7 +1886,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         }
-        if (appCMSPresenter.getNavigation().getNavigationRight() != null && appCMSPresenter.getNavigation().getNavigationRight().size() > 0) {
+        if ( appCMSPresenter.getNavigation()!=null && appCMSPresenter.getNavigation().getNavigationRight() != null && appCMSPresenter.getNavigation().getNavigationRight().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationRight().size(); i++) {
                 if (appCMSPresenter.getNavigation().getNavigationRight().get(i).getDisplayedPath().equalsIgnoreCase("Search Screen")) {
 
@@ -1888,22 +1896,36 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
+
+
     private void createTabBar() {
-        int WEIGHT_SUM = 100;
-        if (appCMSPresenter.getNavigation().getNavigationTabbar() != null) {
+        ModuleList tabBarModule=appCMSPresenter.getTabBarUIFooterModule();
+        if (appCMSPresenter.getNavigation().getNavigationTabbar() != null && !isTabCreated && tabBarModule!=null) {
+            isTabCreated=true;
+            int WEIGHT_SUM = getResources().getInteger(R.integer.nav_bar_items_weightsum);
             int weight = WEIGHT_SUM / appCMSPresenter.getNavigation().getNavigationTabbar().size();
-              if (appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()) != null) {
-                ArrayList<ModuleList> moduleLists = appCMSPresenter.getPageUI(appCMSPresenter.getHomePageMeta().getPageId()).getModuleList();
-                ModuleList footerModule = moduleLists.get(moduleLists.size() - 1);
-                System.out.println("createTabBar isShowTabBar " + footerModule.getSettings().isShowTabBar());
-                System.out.println("createTabBar isBackgroundSelectable " + footerModule.isBackgroundSelectable());
+
+            appCMSTabNavParentContainer.removeAllViews();
+
+            //add separator view
+            if(tabBarModule.getIsTabSeparator()) {
+                View sepratorView = new View(this);
+                sepratorView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) BaseView.convertDpToPixel(getResources().getDimension(R.dimen.nav_item_separator_height), this)));
+                sepratorView.setBackgroundColor(Color.parseColor(tabBarModule.getTabSeparator_color()));
+                appCMSTabNavParentContainer.addView(sepratorView);
             }
+
+            //add navigation item parent view
+            appCMSTabNavContainer = new LinearLayout(this);
+            appCMSTabNavContainer.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            appCMSTabNavContainer.setOrientation(LinearLayout.HORIZONTAL);
+            appCMSTabNavParentContainer.addView(appCMSTabNavContainer);
 
 
             for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationTabbar().size(); i++) {
                 NavigationTabBar navigationItem = appCMSPresenter.getNavigation().getNavigationTabbar().get(i);
-                NavBarItemView navBarItemView = new NavBarItemView(this, navigationItem);
 
+                NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule,appCMSPresenter);
                 int highlightColor = 0;
                 if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
                     highlightColor = Color.parseColor("#f4181c");
@@ -1915,11 +1937,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 navBarItemView.setTabImage(navigationItem.getIcon());
                 navBarItemView.setLabel(tabLabel);
                 navBarItemView.setHighlightColor(highlightColor);
+
                 LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
                 param.weight = weight;
+                param.gravity = Gravity.CENTER;
                 navBarItemView.setLayoutParams(param);
 
                 navBarItemView.setId(i);
+
                 String tagId = null;
                 if (navigationItem.getPageId() != null && !TextUtils.isEmpty(navigationItem.getPageId())) {
                     tagId = navigationItem.getPageId();
@@ -1928,9 +1953,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 } else if (navigationItem.getTitle() != null) {
                     tagId = navigationItem.getTitle();
                 }
+
                 NavTabTag navigationTag = new NavTabTag();
                 navigationTag.setPageId(tagId);
                 navigationTag.setNavigationTabBar(navigationItem);
+                navigationTag.setNavigationModuleItem(tabBarModule);
                 navBarItemView.setTag(navigationTag);
 
                 navBarItemView.setOnClickListener(v -> {
@@ -1956,7 +1983,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    private class NavTabTag {
+
+
+    public class NavTabTag {
         public String getPageId() {
             return pageId;
         }
@@ -1975,42 +2004,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         private String pageId;
         private NavigationTabBar navigationTabBar;
-    }
 
-    private void createMenuNavItem() {
-        if (appCMSTabNavContainer.getChildCount() <= navMenuPageIndex) {
-            navMenuPageIndex = DEFAULT_NAV_MENU_PAGE_INDEX;
-        }
-        final NavBarItemView menuNavBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(navMenuPageIndex);
-        int highlightColor = 0;
-        if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
-            highlightColor =
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        } else {
-            highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+        public ModuleList getNavigationModuleItem() {
+            return navigationModuleItem;
         }
 
-        menuNavBarItemView.setImage(getString(R.string.app_cms_menu_icon_name));
-        menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
-        menuNavBarItemView.setHighlightColor(highlightColor);
-        menuNavBarItemView.setOnClickListener(v -> {
+        public void setNavigationModuleItem(ModuleList navigationModuleItem) {
+            this.navigationModuleItem = navigationModuleItem;
+        }
 
-            currentMenuTabIndex = navMenuPageIndex;
-            if (!appCMSBinderStack.isEmpty()) {
-                if (!appCMSPresenter.launchNavigationPage()) {
-                    //Log.e(TAG, "Could not launch navigation page!");
-                } else {
-                    resumeInternalEvents = true;
-                    selectNavItem(menuNavBarItemView);
-                }
-            }
-        });
+        private ModuleList navigationModuleItem;
+
     }
+
 
     private void selectNavItem(String pageId) {
         boolean foundPage = false;
-        if (!TextUtils.isEmpty(pageId)) {
+        if (!TextUtils.isEmpty(pageId) && appCMSTabNavContainer!=null) {
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 NavTabTag navigationTabTag = null;
                 if (appCMSTabNavContainer.getChildAt(i).getTag() != null) {

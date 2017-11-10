@@ -44,17 +44,43 @@ public class ModuleList implements ModuleWithComponents, Serializable {
     @Expose
     String blockName;
 
+    public boolean getIsTabSeparator() {
+        return isTabSeparator;
+    }
+
+    public void setIsTabSeparator(boolean isTabSeparator) {
+        this.isTabSeparator = isTabSeparator;
+    }
+
+    public String getTabSeparator_color() {
+        return tabSeparator_color;
+    }
+
+    public void setTabSeparator_color(String tabSeparator_color) {
+        this.tabSeparator_color = tabSeparator_color;
+    }
+
+    public boolean getIsBackgroundSelectable() {
+        return isBackgroundSelectable;
+    }
+
+    public void setIsBackgroundSelectable(boolean isBackgroundSelectable) {
+        this.isBackgroundSelectable = isBackgroundSelectable;
+    }
+
     @SerializedName("isTabSeparator")
     @Expose
     boolean isTabSeparator;
 
     @SerializedName("tabSeparator-color")
     @Expose
-    String tabSeparatorColor;
+    String tabSeparator_color;
 
     @SerializedName("isBackgroundSelectable")
     @Expose
     boolean isBackgroundSelectable;
+
+
 
     public String getId() {
         return id;
@@ -119,29 +145,5 @@ public class ModuleList implements ModuleWithComponents, Serializable {
 
     public void setBlockName(String blockName) {
         this.blockName = blockName;
-    }
-
-    public boolean isTabSeparator() {
-        return isTabSeparator;
-    }
-
-    public void setTabSeparator(boolean tabSeparator) {
-        isTabSeparator = tabSeparator;
-    }
-
-    public String getTabSeparatorColor() {
-        return tabSeparatorColor;
-    }
-
-    public void setTabSeparatorColor(String tabSeparatorColor) {
-        this.tabSeparatorColor = tabSeparatorColor;
-    }
-
-    public boolean isBackgroundSelectable() {
-        return isBackgroundSelectable;
-    }
-
-    public void setBackgroundSelectable(boolean backgroundSelectable) {
-        isBackgroundSelectable = backgroundSelectable;
     }
 }
