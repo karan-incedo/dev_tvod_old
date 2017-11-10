@@ -1437,7 +1437,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void selectNavItem(NavBarItemView v) {
         unselectAllNavItems();
         NavTabTag navigationTabTag = (NavTabTag) v.getTag();
-        v.select(true, navigationTabTag.getNavigationTabBar());
+        v.select(true, navigationTabTag);
     }
 
     private void unselectAllNavItems() {
@@ -1451,7 +1451,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void unselectNavItem(NavBarItemView v) {
         NavTabTag navigationTabTag = (NavTabTag) v.getTag();
 
-        v.select(false, navigationTabTag.getNavigationTabBar());
+        v.select(false, navigationTabTag);
     }
 
     private NavBarItemView getSelectedNavItem() {
@@ -1465,11 +1465,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
-            final Navigation navigation = appCMSBinder.getNavigation();
-            if (navigation != null && navigation.getNavigationPrimary() != null &&
-                    navigation.getNavigationPrimary().isEmpty() && navigation.getNavigationTabbar() != null &&
-                    navigation.getNavigationTabbar().isEmpty() || !appCMSBinder.isNavbarPresent()) {
-                appCMSTabNavParentContainer.setVisibility(View.GONE);
+            /* final Navigation navigation = appCMSBinder.getNavigation();
+           if (navigation != null && navigation.getNavigationPrimary() != null &&
+                    navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
+                appCMSTabNavContainer.setVisibility(View.GONE);
+            }*/
+            final ModuleList moduleFooter = appCMSBinder.getAppCMSPageUI() != null ? appCMSBinder.getAppCMSPageUI().getModuleList().get(appCMSBinder.getAppCMSPageUI().getModuleList().size() - 1) : null;
+            if (moduleFooter != null &&
+                    moduleFooter.getSettings() != null &&
+                    !moduleFooter.getSettings().isShowTabBar()) {
+                appCMSTabNavContainer.setVisibility(View.GONE);
             } else {
                 appCMSTabNavContainer.setVisibility(View.VISIBLE);
                 selectNavItem(appCMSBinder.getPageId());
@@ -1873,7 +1878,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void manageTopBar() {
-        if (appCMSPresenter.getNavigation().getNavigationLeft() != null && appCMSPresenter.getNavigation().getNavigationLeft().size() > 0) {
+        if (appCMSPresenter.getNavigation()!=null && appCMSPresenter.getNavigation().getNavigationLeft() != null && appCMSPresenter.getNavigation().getNavigationLeft().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationLeft().size(); i++) {
                 if (appCMSPresenter.getNavigation().getNavigationLeft().get(i).getDisplayedPath().equalsIgnoreCase("Authentication Screen")) {
 
@@ -1881,7 +1886,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         }
-        if (appCMSPresenter.getNavigation().getNavigationRight() != null && appCMSPresenter.getNavigation().getNavigationRight().size() > 0) {
+        if ( appCMSPresenter.getNavigation()!=null && appCMSPresenter.getNavigation().getNavigationRight() != null && appCMSPresenter.getNavigation().getNavigationRight().size() > 0) {
             for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationRight().size(); i++) {
                 if (appCMSPresenter.getNavigation().getNavigationRight().get(i).getDisplayedPath().equalsIgnoreCase("Search Screen")) {
 
