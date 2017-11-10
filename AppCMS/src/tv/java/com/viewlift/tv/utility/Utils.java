@@ -349,6 +349,18 @@ public class Utils {
         return res;
     }
 
+    public static StateListDrawable getTrayBorder(Context context , String primaryHover, String secondaryHover){
+        StateListDrawable res = new StateListDrawable();
+        res.addState(new int[]{android.R.attr.state_focused}, getGradientDrawable(primaryHover, secondaryHover));
+        res.addState(new int[]{android.R.attr.state_pressed}, getGradientDrawable(primaryHover, secondaryHover));
+        res.addState(new int[]{android.R.attr.state_selected}, getGradientDrawable(primaryHover, secondaryHover));
+        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
+                context,
+                android.R.color.transparent
+        )));
+        return res;
+    }
+
     private static GradientDrawable getBorder(Context context , String borderColor , boolean isEditText , Component component , boolean isNormalState){
         GradientDrawable ageBorder = new GradientDrawable();
         ageBorder.setShape(GradientDrawable.RECTANGLE);
@@ -364,6 +376,10 @@ public class Utils {
                 isEditText ? android.R.color.white : android.R.color.transparent
         ));
         return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{Color.BLACK, Color.parseColor(borderColor)});
+    }
+
+    private static GradientDrawable getGradientDrawable(String primaryHover, String secondaryHover){
+        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{Color.parseColor(primaryHover), Color.parseColor(secondaryHover)});
     }
 
     /**
@@ -527,6 +543,32 @@ public class Utils {
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()){
             color =  appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor();
+        }
+        return color;
+    }
+
+    public static String getPrimaryHoverColor(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, R.color.colorAccent)));
+        //Log.d("Utils.java" , "getFocusColor = "+color);
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+                && null != appCMSPresenter.getAppCMSMain().getBrand()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimaryHover()) {
+            color = appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimaryHover().getBackgroundColor();
+        }
+        return color;
+    }
+
+    public static String getSecondaryHoverColor(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, R.color.colorAccent)));
+        //Log.d("Utils.java" , "getFocusColor = "+color);
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+                && null != appCMSPresenter.getAppCMSMain().getBrand()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondaryHover()) {
+            color = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondaryHover().getBackgroundColor();
         }
         return color;
     }

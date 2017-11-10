@@ -259,9 +259,9 @@ public class TVViewCreator {
                 mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
 
             } else {
-               /* if(!module.getView().equalsIgnoreCase("AC ContinueWatching 01")){
+                if(!module.getView().equalsIgnoreCase("AC Tray 03")){
                     module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
-                }*/
+                }
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -539,6 +539,7 @@ public class TVViewCreator {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                             Integer.valueOf(component.getLayout().getTv().getHeight()),
                             Integer.valueOf(component.getLayout().getTv().getWidth()),
+                            component.getTrayBackground(),
                             jsonValueKeyMap
                     );
                     ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);

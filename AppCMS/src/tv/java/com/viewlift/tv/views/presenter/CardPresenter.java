@@ -7,6 +7,7 @@ import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 
+import net.nightwhistler.htmlspanner.spans.CenterSpan;
+
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +36,7 @@ import java.util.Map;
  */
 
 public class CardPresenter extends Presenter {
+    private String trayBackground;
     private AppCMSPresenter mAppCmsPresenter = null;
     private Context mContext;
     int i = 0;
@@ -42,13 +46,18 @@ public class CardPresenter extends Presenter {
     String borderColor = null;
     private Typeface fontType;
 
-    public CardPresenter(Context context , AppCMSPresenter appCMSPresenter ,
-                         int height , int width , Map<String ,
-                          AppCMSUIKeyType> jsonKeyValuemap){
+    public CardPresenter(Context context,
+                         AppCMSPresenter appCMSPresenter,
+                         int height,
+                         int width,
+                         String trayBackground,
+                         Map<String,
+            AppCMSUIKeyType> jsonKeyValuemap) {
         mContext = context;
         mAppCmsPresenter = appCMSPresenter;
         mHeight = height;
         mWidth = width;
+        this.trayBackground = trayBackground;
         mJsonKeyValuemap = jsonKeyValuemap;
         borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
     }
@@ -87,6 +96,10 @@ public class CardPresenter extends Presenter {
                 return false;
             }
         });
+
+        if(trayBackground != null && trayBackground.equalsIgnoreCase("gradient")){
+            frameLayout.setBackground(Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)));
+        }
         return new ViewHolder(frameLayout);
     }
 
@@ -97,7 +110,7 @@ public class CardPresenter extends Presenter {
         ContentDatum contentData = rowData.contentData;
         List<Component> componentList = rowData.uiComponentList;
         FrameLayout cardView = (FrameLayout) viewHolder.view;
-        createComponent(componentList , cardView , contentData);
+        createComponent(componentList, cardView, contentData);
     }
 
     @Override
@@ -135,6 +148,11 @@ public class CardPresenter extends Presenter {
 
                                         Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
                                         Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
+                                parms.setMargins(
+                                        Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
+                                        Integer.valueOf(component.getLayout().getTv().getTopMargin()),
+                                        0,
+                                        0);
 
                                 imageView.setLayoutParams(parms);
                                 parentLayout.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
@@ -164,21 +182,33 @@ public class CardPresenter extends Presenter {
 
                     case PAGE_LABEL_KEY:
                         TextView tvTitle = new TextView(parentLayout.getContext());
-                        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.MATCH_PARENT ,
-                                Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getHeight())));
-                         layoutParams.topMargin =  Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getTopMargin()));
-                         tvTitle.setLayoutParams(layoutParams);
-                        tvTitle.setMaxLines(1);
-                        tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                        FrameLayout.LayoutParams layoutParams;
+                        if (componentKey.equals(AppCMSUIKeyType.PAGE_THUMBNAIL_TIME_AND_DATE_KEY)) {
+                            layoutParams = new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                            tvTitle.setText(component.getText());
+                            tvTitle.setBackgroundColor(Color.parseColor(component.getBackgroundColor()));
+                            tvTitle.setGravity(Gravity.CENTER);
+                            Integer padding = Integer.valueOf(component.getLayout().getTv().getPadding());
+                            tvTitle.setPadding(6, padding, 10, 4);
+                        } else {
+                            layoutParams = new FrameLayout.LayoutParams(
+                                    FrameLayout.LayoutParams.MATCH_PARENT,
+                                    Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
+                            tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                            tvTitle.setText(contentData.getGist().getTitle());
+                        }
+                        layoutParams.topMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getTopMargin()));
+                        layoutParams.leftMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getLeftMargin()));
+                        tvTitle.setLayoutParams(layoutParams);
                         tvTitle.setTextColor(Color.parseColor(component.getTextColor()));
-                        if(fontType == null)
+                        if (fontType == null)
                             fontType = getFontType(component);
-                        if(fontType != null){
+                        if (fontType != null) {
                             tvTitle.setTypeface(fontType);
                         }
-                        tvTitle.setText(contentData.getGist().getTitle());
-                        //tvTitle.setTextSize(component.getFontSize());
+                        tvTitle.setTextSize(component.getFontSize());
                         parentLayout.addView(tvTitle);
                         break;
 
