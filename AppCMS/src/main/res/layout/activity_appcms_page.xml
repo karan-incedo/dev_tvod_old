@@ -86,7 +86,7 @@
                         android:layout_margin="@dimen/close_button_margin"
                         android:background="@android:color/transparent"
                         android:scaleType="fitCenter"
-                        android:src="@drawable/search"
+                        android:src="@drawable/search_"
                         android:visibility="gone"/>
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"
@@ -132,51 +132,63 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navbar_height"
         android:layout_alignParentBottom="true"
+        android:weightSum="100"
         android:background="@android:color/transparent"
+        android:gravity="center"
         android:orientation="horizontal">
 
-        <com.viewlift.views.customviews.NavBarItemView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:scaleType="centerInside" />
-
-        <com.viewlift.views.customviews.NavBarItemView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:clickable="true"
-            android:focusable="true"
-            android:scaleType="centerInside" />
-
-        <com.viewlift.views.customviews.NavBarItemView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:clickable="true"
-            android:focusable="true"
-            android:scaleType="centerInside" />
-
-        <com.viewlift.views.customviews.NavBarItemView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_weight="1"
-            android:background="@android:color/transparent"
-            android:clickable="true"
-            android:focusable="true"
-            android:scaleType="centerInside" />
 
     </LinearLayout>
+    <!--<LinearLayout-->
+        <!--android:id="@+id/app_cms_tab_nav_container"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="@dimen/bottom_navbar_height"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:background="@android:color/transparent"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<com.viewlift.views.customviews.NavBarItemView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom|center_horizontal"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:clickable="true"-->
+            <!--android:focusable="true"-->
+            <!--android:foreground="?android:attr/selectableItemBackground"-->
+            <!--android:scaleType="centerInside" />-->
+
+        <!--<com.viewlift.views.customviews.NavBarItemView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom|center_horizontal"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:clickable="true"-->
+            <!--android:focusable="true"-->
+            <!--android:scaleType="centerInside" />-->
+
+        <!--<com.viewlift.views.customviews.NavBarItemView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom|center_horizontal"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:clickable="true"-->
+            <!--android:focusable="true"-->
+            <!--android:scaleType="centerInside" />-->
+
+        <!--<com.viewlift.views.customviews.NavBarItemView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom|center_horizontal"-->
+            <!--android:layout_weight="1"-->
+            <!--android:background="@android:color/transparent"-->
+            <!--android:clickable="true"-->
+            <!--android:focusable="true"-->
+            <!--android:scaleType="centerInside" />-->
+
+    <!--</LinearLayout>-->
 
     <RelativeLayout
         android:id="@+id/app_cms_parent_layout"

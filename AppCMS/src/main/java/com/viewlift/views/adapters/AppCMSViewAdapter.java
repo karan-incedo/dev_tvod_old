@@ -409,13 +409,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     case "VIDEO":
                                         action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                         break;
+
                                     default:
                                         break;
                                 }
 
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {
-
                                     if (!appCMSPresenter.launchVideoPlayer(data,
                                             currentPlayingIndex,
                                             relatedVideoIds,
@@ -428,7 +428,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                                action);
                                     }
                                 } else {
-
                                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                                             action,
                                             title,

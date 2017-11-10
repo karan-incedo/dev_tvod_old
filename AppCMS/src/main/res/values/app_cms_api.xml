@@ -233,6 +233,7 @@
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
+    <string name="app_cms_team_page_tag">teams</string>
     <string name="app_cms_ccavenue_page_tag">ccavenue</string>
     <string name="app_cms_search_page_tag">search</string>
     <string name="app_cms_video_page_tag">video</string>
@@ -346,6 +347,9 @@
     <string name="app_cms_menu_label">Menu</string>
     <string name="app_cms_live_icon_name">live_</string>
     <string name="app_cms_home_icon_name">home_page_</string>
+    <string name="app_cms_shows_icon_name">shows_</string>
+    <string name="app_cms_team_icon_name">teams_</string>
+
     <string name="app_cms_home_label">Home</string>
     <string name="app_cms_movies_icon_name">categories_page_categories</string>
     <string name="app_cms_movies_label">Movies</string>
