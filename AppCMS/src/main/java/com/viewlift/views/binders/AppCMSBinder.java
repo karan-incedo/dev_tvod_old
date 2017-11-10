@@ -65,7 +65,7 @@ public class AppCMSBinder extends Binder {
                         boolean userSubscribed,
                         AppCMSPresenter.ExtraScreenType extraScreenType,
                         Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                        Uri searchQuery ,
+                        Uri searchQuery,
                         AppCMSSearchCall appCMSSearchCall) {
         this.appCMSMain = appCMSMain;
         this.appCMSPageUI = appCMSPageUI;
@@ -86,6 +86,7 @@ public class AppCMSBinder extends Binder {
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.searchQuery = searchQuery;
         this.appCMSSearchCall = appCMSSearchCall;
+
     }
 
     public AppCMSMain getAppCMSMain() {
@@ -125,7 +126,9 @@ public class AppCMSBinder extends Binder {
     }
 
     public boolean isAppbarPresent() {
-        return appbarPresent;
+
+        return (appCMSPageUI != null && appCMSPageUI.getModuleList().get(appCMSPageUI.getModuleList().size() - 1).getSettings() != null) ?
+                appCMSPageUI.getModuleList().get(appCMSPageUI.getModuleList().size() - 1).getSettings().isShowTabBar() : appbarPresent;
     }
 
     public boolean isFullScreenEnabled() {

@@ -260,6 +260,8 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.FuncN;
 import rx.schedulers.Schedulers;
 
 import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
@@ -4619,7 +4621,6 @@ public class AppCMSPresenter {
                     deeplinkSearchQuery);
         }
     }
-
 
     public void navigateToLoginPage(boolean loginFromNavPage) {
         this.loginFromNavPage = loginFromNavPage;
@@ -9071,31 +9072,32 @@ public class AppCMSPresenter {
 //                    Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
                     new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
                         try {
+                            AppCMSAndroidUI appCMSAndroidUI1 = new GsonBuilder().create().fromJson(
+                                    loadJsonFromAssets(currentActivity, "tab_bar.json"),
+                                    AppCMSAndroidUI.class);
 
-
-                            if (appCMSAndroidUI == null ||
-                                    appCMSAndroidUI.getMetaPages() == null ||
-                                    appCMSAndroidUI.getMetaPages().isEmpty()) {
+                            if (appCMSAndroidUI1 == null ||
+                                    appCMSAndroidUI1.getMetaPages() == null ||
+                                    appCMSAndroidUI1.getMetaPages().isEmpty()) {
                                 //Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
                                 launchBlankPage();
                             } else if (isAppBelowMinVersion()) {
                                 //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                                 launchUpgradeAppActivity();
                             } else {
-                                getAppCMSModules(appCMSAndroidUI, false, (appCMSAndroidModules) -> {
+                                getAppCMSModules(appCMSAndroidUI1, false, (appCMSAndroidModules) -> {
                                     launchBlankPage();
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;
-                                    initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-                                    initAppsFlyer(appCMSAndroidUI);
-                                    navigation = appCMSAndroidUI.getNavigation();
+                                    initializeGA(appCMSAndroidUI1.getAnalytics().getGoogleAnalyticsId());
+                                    initAppsFlyer(appCMSAndroidUI1);
+                                    navigation = appCMSAndroidUI1.getNavigation();
                                     new SoftReference<>(navigation, referenceQueue);
-                                    queueMetaPages(appCMSAndroidUI.getMetaPages());
+                                    queueMetaPages(appCMSAndroidUI1.getMetaPages());
                                     //Log.d(TAG, "Processing meta pages queue");
                                     processMetaPagesList(loadFromFile,
                                             appCMSAndroidUI.getMetaPages(),
                                             () -> {
-
                                                 if (!isNetworkConnected()) {
                                                     openDownloadScreenForNetworkError(true,
                                                             () -> getAppCMSAndroid(tryCount));
@@ -9186,7 +9188,6 @@ public class AppCMSPresenter {
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
     }
 
-
     private void queueMetaPages(List<MetaPage> metaPageList) {
 //        if (pagesToProcess == null) {
 //            pagesToProcess = new ConcurrentLinkedQueue<>();
@@ -9256,7 +9257,7 @@ public class AppCMSPresenter {
 
 //            if (pageToQueueIndex >= 0) {
 //                pagesToProcess.add(metaPageList.get(pageToQueueIndex));
-            //Log.d(TAG, "Queuing meta page: " +
+                //Log.d(TAG, "Queuing meta page: " +
 //                        metaPageList.get(pageToQueueIndex).getPageName() + ": " +
 //                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
 //                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
@@ -9344,7 +9345,6 @@ public class AppCMSPresenter {
                     appCMSPageUI -> {
                         try {
                             navigationPages.put(metaPage.getPageId(), appCMSPageUI);
-
                             String action = pageNameToActionMap.get(metaPage.getPageName());
                             if (action != null && actionToPageMap.containsKey(action)) {
                                 actionToPageMap.put(action, appCMSPageUI);
@@ -9377,27 +9377,6 @@ public class AppCMSPresenter {
         }
         return null;
     }
-
-    public ModuleList getTabBarUIModule() {
-        AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
-        ModuleList footerModule = null;
-        if (appCmsHomePage != null) {
-            ArrayList<ModuleList> moduleList = appCmsHomePage.getModuleList();
-            for (int i = moduleList.size() - 1; i >= 0; i--) {
-                if (moduleList.get(i).getType().contains("AC Footer 01")) {
-                    footerModule = moduleList.get(i);
-                    break;
-                }
-            }
-        }
-        return footerModule;
-    }
-
-    public ModuleList getTabBarUIFooterModule() {
-        ModuleList footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
-        return footerModule;
-    }
-
 
     /**
      * Temp method for loading download Quality screen from Assets till json is not updated at Server
@@ -9616,7 +9595,6 @@ public class AppCMSPresenter {
             }).execute(params);
         }
     }
-
 
     public boolean navigateToTVPage(String pageId,
                                     String pageTitle,
@@ -11331,6 +11309,39 @@ public class AppCMSPresenter {
         relativeLayoutPIP.addView(videoPlayerViewPIP);
         relativeLayoutPIP.setVisibility(View.VISIBLE);
 
+
+        relativeLayoutPIP.setOnDragListener(new View.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                int action = event.getAction();
+                switch (event.getAction()) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        // do nothing
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+
+                        break;
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        //v.setBackgroundDrawable(normalShape);
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        // Dropped, reassign View to ViewGroup
+                       /* View view = (View) event.getLocalState();
+                        ViewGroup owner = (ViewGroup) view.getParent();
+                        owner.removeView(view);
+                        LinearLayout container = (LinearLayout) v;
+                        container.addView(view);
+                        view.setVisibility(View.VISIBLE);*/
+                        dismissPopupWindowPlayer();
+                        break;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        //v.setBackgroundDrawable(normalShape);
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
         ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
     }
 
