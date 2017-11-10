@@ -209,7 +209,7 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     private void sendFirebaseAnalyticsEvents(AppCMSBinder appCMSVideoPageBinder) {
-        if (appCMSVideoPageBinder == null)
+        if (appCMSPresenter == null || appCMSVideoPageBinder == null)
             return;
         if (appCMSPresenter.getmFireBaseAnalytics() == null)
             return;

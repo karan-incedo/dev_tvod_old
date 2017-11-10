@@ -932,8 +932,13 @@ public class ViewCreator {
             return null;
         }
 
-        PageView pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
-                + BaseView.isLandscape(context));
+        PageView pageView = null;
+        try {
+            pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
+                    + BaseView.isLandscape(context));
+        } catch (Exception e) {
+
+        }
         if (appCMSPresenter.isPageAVideoPage(screenName)) {
             pageView = appCMSPresenter.getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
         }

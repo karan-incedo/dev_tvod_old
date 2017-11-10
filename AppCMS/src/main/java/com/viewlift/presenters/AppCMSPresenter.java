@@ -1052,17 +1052,19 @@ public class AppCMSPresenter {
     }
 
     public void getUserVideoStatus(String filmId, Action1<UserVideoStatusResponse> responseAction) {
-        if (shouldRefreshAuthToken()) {
-            refreshIdentity(getRefreshToken(),
-                    () -> {
-                        String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
-                                appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
-                        appCMSUserVideoStatusCall.call(url, getAuthToken(), responseAction);
-                    });
-        } else {
-            String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
-                    appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
-            appCMSUserVideoStatusCall.call(url, getAuthToken(), responseAction);
+        if (currentActivity != null) {
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(),
+                        () -> {
+                            String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
+                                    appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
+                            appCMSUserVideoStatusCall.call(url, getAuthToken(), responseAction);
+                        });
+            } else {
+                String url = currentActivity.getString(R.string.app_cms_video_status_api_url,
+                        appCMSMain.getApiBaseUrl(), filmId, appCMSSite.getGist().getSiteInternalName());
+                appCMSUserVideoStatusCall.call(url, getAuthToken(), responseAction);
+            }
         }
     }
 

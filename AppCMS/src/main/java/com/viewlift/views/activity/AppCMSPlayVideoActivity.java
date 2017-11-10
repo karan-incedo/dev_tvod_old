@@ -317,31 +317,36 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         String finalClosedCaptionUrl = closedCaptionUrl;
         boolean finalFreeContent = freeContent;
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
-                AppCMSPlayVideoFragment.newInstance(this,
-                        primaryCategory,
-                        fontColor,
-                        title,
-                        permaLink,
-                        binder.isTrailer(),
-                        hlsUrl,
-                        filmId,
-                        adsUrl,
-                        playAds,
-                        playIndex,
-                        watchedTime,
-                        videoImageUrl,
-                        finalClosedCaptionUrl,
-                        contentRating, videoRunTime,
-                        finalFreeContent,
-                        appCMSSignedURLResult);
-        fragmentTransaction.add(R.id.app_cms_play_video_page_container,
-                appCMSPlayVideoFragment,
-                getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.commit();
+
+        try {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
+                    AppCMSPlayVideoFragment.newInstance(this,
+                            primaryCategory,
+                            fontColor,
+                            title,
+                            permaLink,
+                            binder.isTrailer(),
+                            hlsUrl,
+                            filmId,
+                            adsUrl,
+                            playAds,
+                            playIndex,
+                            watchedTime,
+                            videoImageUrl,
+                            finalClosedCaptionUrl,
+                            contentRating, videoRunTime,
+                            finalFreeContent,
+                            appCMSSignedURLResult);
+            fragmentTransaction.add(R.id.app_cms_play_video_page_container,
+                    appCMSPlayVideoFragment,
+                    getString(R.string.video_fragment_tag_key));
+            fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
+            fragmentTransaction.commit();
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

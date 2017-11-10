@@ -749,11 +749,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             isDownloadPageOpen = appCMSBinder != null && appCMSBinder.getPageId().equalsIgnoreCase(appCMSPresenter.getDownloadPageId());
         }
 
-        if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
-                !appCMSPresenter.isNetworkConnected() &&
-                appCMSPresenter.shouldShowNetworkContectivity()) {
-            appCMSPresenter.showNoNetworkConnectivityToast();
-            appCMSPresenter.setShowNetworkConnectivity(false);
+        try {
+            if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
+                    !appCMSPresenter.isNetworkConnected() &&
+                    appCMSPresenter.shouldShowNetworkContectivity()) {
+                appCMSPresenter.showNoNetworkConnectivityToast();
+                appCMSPresenter.setShowNetworkConnectivity(false);
+            }
+        } catch (Exception e) {
+
         }
     }
 
@@ -807,20 +811,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     protected void onNewIntent(Intent intent) {
-        if (intent != null) {
-            Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-            updatedAppCMSBinder =
-                    (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-            if (updatedAppCMSBinder != null) {
-                mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
+        try {
+            if (intent != null) {
+                Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+                updatedAppCMSBinder =
+                        (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                if (updatedAppCMSBinder != null) {
+                    mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
+                }
+                if (isActive) {
+                    handleLaunchPageAction(updatedAppCMSBinder,
+                            false,
+                            false,
+                            false);
+                }
+                initPageActivity();
             }
-            if (isActive) {
-                handleLaunchPageAction(updatedAppCMSBinder,
-                        false,
-                        false,
-                        false);
-            }
-            initPageActivity();
+        } catch (Exception e) {
+
         }
     }
 
@@ -2150,62 +2158,68 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!appCMSBinderStack.isEmpty()) {
             try {
                 int lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
-                String lastBackStackEntryName = getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount)
-                        .getName();
-                String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
-                        lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
-                                lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
-                                        lastBackStackEntryName.length());
-                while (lastBackStackCount > 0 &&
-                        getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
-                    getSupportFragmentManager().popBackStackImmediate();
-                    lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                if (0 < lastBackStackCount) {
+                    String lastBackStackEntryName = getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount)
+                            .getName();
+                    String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
+                            lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
+                                    lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
+                                            lastBackStackEntryName.length());
+                    while (lastBackStackCount > 0 &&
+                            getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
+                        getSupportFragmentManager().popBackStackImmediate();
+                        lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                    }
                 }
-            } catch (IllegalStateException e) {
+            } catch (Exception e) {
                 //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
             }
 
-            if (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek())) {
-                if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
-                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+            try {
+                if (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek())) {
+                    if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                    }
                 }
-            }
 
-            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-            boolean leavingExtraPage = false;
-            if (appCMSBinder != null) {
-                leavingExtraPage = appCMSBinder.getExtraScreenType() !=
-                        AppCMSPresenter.ExtraScreenType.NONE;
+                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                boolean leavingExtraPage = false;
+                if (appCMSBinder != null) {
+                    leavingExtraPage = appCMSBinder.getExtraScreenType() !=
+                            AppCMSPresenter.ExtraScreenType.NONE;
 
-                boolean recurse = !closeOnePage &&
-                        appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName());
+                    boolean recurse = !closeOnePage &&
+                            appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName());
 
-                handleBack(true,
-                        false,
-                        recurse,
-                        true);
+                    handleBack(true,
+                            false,
+                            recurse,
+                            true);
 
-            }
+                }
 
-            if (appCMSBinderStack.isEmpty()) {
-                finishAffinity();
-                return;
-            }
+                if (appCMSBinderStack.isEmpty()) {
+                    finishAffinity();
+                    return;
+                }
 
-            appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
 
-            if (appCMSPresenter != null && appCMSBinder != null) {
-                leavingExtraPage = appCMSBinder.getExtraScreenType() !=
-                        AppCMSPresenter.ExtraScreenType.NONE;
+                if (appCMSPresenter != null && appCMSBinder != null) {
+                    leavingExtraPage = appCMSBinder.getExtraScreenType() !=
+                            AppCMSPresenter.ExtraScreenType.NONE;
 
-                appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
-                        + BaseView.isLandscape(this));
+                    appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
+                            + BaseView.isLandscape(this));
 
-                handleLaunchPageAction(appCMSBinder,
-                        false,
-                        leavingExtraPage,
-                        appCMSBinder.getExtraScreenType()
-                                == AppCMSPresenter.ExtraScreenType.SEARCH);
+                    handleLaunchPageAction(appCMSBinder,
+                            false,
+                            leavingExtraPage,
+                            appCMSBinder.getExtraScreenType()
+                                    == AppCMSPresenter.ExtraScreenType.SEARCH);
+                }
+            } catch (Exception e) {
+
             }
             isActive = true;
         } else {
