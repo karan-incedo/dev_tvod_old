@@ -3229,12 +3229,7 @@ public class ViewCreator {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
                             () -> {
                                 appCMSPresenter.setAfterLoginAction(() -> {
-                                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
-                                            addToWatchlistResult -> {
-                                                UpdateImageIconAction.this.imageButton.setImageResource(
-                                                        R.drawable.remove_from_watchlist);
-                                                UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
-                                            }, true);
+
                                 });
                             });
                 }
@@ -3310,22 +3305,14 @@ public class ViewCreator {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                                     () -> {
                                         appCMSPresenter.setAfterLoginAction(() -> {
-                                            if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
-                                                appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
-                                            } else {
-                                                appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
-                                            }
+
                                         });
                                     });
                         } else {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
                                     () -> {
                                         appCMSPresenter.setAfterLoginAction(() -> {
-                                            if (appCMSPresenter.isDownloadQualityScreenShowBefore()) {
-                                                appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
-                                            } else {
-                                                appCMSPresenter.showDownloadQualityScreen(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this);
-                                            }
+
                                         });
                                     });
                         }
