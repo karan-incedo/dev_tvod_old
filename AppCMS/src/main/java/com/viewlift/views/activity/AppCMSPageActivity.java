@@ -232,6 +232,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
 
+        initPageActivity();
+
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
         if (args != null) {
             try {
@@ -498,8 +500,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 });
 
-        initPageActivity();
-
         appCMSPresenter.sendCloseOthersAction(null, false, false);
 
 //        Log.d(TAG, "onCreate()");
@@ -550,11 +550,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         int tabCount = getResources().getInteger(R.integer.number_of_tabs);
-        createMenuNavItem(tabCount);
+
         createHomeNavItem(tabCount, appCMSPresenter.findHomePageNavItem());
         createLiveNavItem(tabCount, appCMSPresenter.findLivePageNavItem());
         createMoviesNavItem(tabCount, appCMSPresenter.findMoviesPageNavItem());
         createSearchNavItem(tabCount, getString(R.string.app_cms_search_page_tag));
+        createMenuNavItem(tabCount);
 
         //Settings The Firebase Analytics for Android
         FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -829,7 +830,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false,
                             false);
                 }
-                initPageActivity();
             }
         } catch (Exception e) {
 
@@ -2156,22 +2156,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void setMediaRouterButtonVisibility(String pageId) {
         if (!castDisabled) {
-            if ((appCMSPresenter.findHomePageNavItem() != null &&
-                    !TextUtils.isEmpty(appCMSPresenter.findHomePageNavItem().getPageId()) &&
-                    appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) ||
+            try {
+                if ((appCMSPresenter.findHomePageNavItem() != null &&
+                        !TextUtils.isEmpty(appCMSPresenter.findHomePageNavItem().getPageId()) &&
+                        appCMSPresenter.findHomePageNavItem().getPageId().equalsIgnoreCase(pageId)) ||
 
-                    (appCMSPresenter.findMoviesPageNavItem() != null &&
-                            !TextUtils.isEmpty(appCMSPresenter.findMoviesPageNavItem().getPageId()) &&
-                            appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId))) {
-                ll_media_route_button.setVisibility(View.VISIBLE);
-                CastServiceProvider.getInstance(this).isHomeScreen(true);
-            } else {
-                ll_media_route_button.setVisibility(View.GONE);
-                CastServiceProvider.getInstance(this).isHomeScreen(false);
-            }
+                        (appCMSPresenter.findMoviesPageNavItem() != null &&
+                                !TextUtils.isEmpty(appCMSPresenter.findMoviesPageNavItem().getPageId()) &&
+                                appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId))) {
+                    ll_media_route_button.setVisibility(View.VISIBLE);
+                    CastServiceProvider.getInstance(this).isHomeScreen(true);
+                } else {
+                    ll_media_route_button.setVisibility(View.GONE);
+                    CastServiceProvider.getInstance(this).isHomeScreen(false);
+                }
 
-            if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
-                CastServiceProvider.getInstance(this).showIntroOverLay();
+                if (CastServiceProvider.getInstance(this).isOverlayVisible()) {
+                    CastServiceProvider.getInstance(this).showIntroOverLay();
+                }
+            } catch (Exception e) {
+
             }
         }
     }
