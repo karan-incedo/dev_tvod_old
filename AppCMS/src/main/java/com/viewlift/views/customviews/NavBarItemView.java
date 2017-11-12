@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -54,6 +55,7 @@ public class NavBarItemView extends LinearLayout {
 
     public void init() {
         hasFocus = false;
+        setPadding(0, 0, 0, 0);
         setOrientation(VERTICAL);
         createChildren(getContext());
     }
@@ -97,6 +99,7 @@ public class NavBarItemView extends LinearLayout {
         navLabel.setTextColor(ContextCompat.getColor(context, R.color.colorNavBarText));
 
         addView(navImage);
+        navLabel.setClickable(true);
         addView(navLabel);
     }
 
@@ -122,6 +125,13 @@ public class NavBarItemView extends LinearLayout {
 
     public void setHighlightColor(int highlightColor) {
         this.highlightColor = highlightColor;
+    }
+
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+        navImage.setOnClickListener(l);
+        navLabel.setOnClickListener(l);
     }
 
     private void applyTintToDrawable(@Nullable Drawable drawable, int color) {

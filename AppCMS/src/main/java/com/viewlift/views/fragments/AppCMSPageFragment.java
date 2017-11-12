@@ -352,15 +352,15 @@ public class AppCMSPageFragment extends Fragment {
                         appCMSPresenter,
                         modulesToIgnore);
 
-//                if (pageViewGroup != null &&
-//                        pageView != null &&
-//                        pageView.getParent() == null) {
-//                    removeAllViews(pageViewGroup);
-//                    pageViewGroup.addView(pageView);
-//                    if (updatePage) {
-//                        updateAllViews(pageViewGroup);
-//                    }
-//                }
+                if (pageViewGroup != null &&
+                        pageView != null &&
+                        pageView.getParent() == null) {
+                    removeAllViews(pageViewGroup);
+                    pageViewGroup.addView(pageView);
+                    if (updatePage) {
+                        updateAllViews(pageViewGroup);
+                    }
+                }
             } catch (Exception e) {
 
             }

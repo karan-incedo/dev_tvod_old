@@ -4729,10 +4729,18 @@ public class AppCMSPresenter {
                     }
                 });
             } else {
-                Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                try {
+                    Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                } catch (Exception e) {
+
+                }
             }
         } else {
-            Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+            try {
+                Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+            } catch (Exception e) {
+
+            }
         }
     }
 
@@ -6750,33 +6758,34 @@ public class AppCMSPresenter {
                     return true;
                 });
             }
-            AlertDialog dialog = builder.create();
+            currentActivity.runOnUiThread(() -> {
+                AlertDialog dialog = builder.create();
+                if (onCloseAction != null) {
+                    dialog.setCanceledOnTouchOutside(false);
 
-            if (onCloseAction != null) {
-                dialog.setCanceledOnTouchOutside(false);
+                    dialog.setOnCancelListener(dialogInterface -> {
+                        if (dialogType == DialogType.EXISTING_SUBSCRIPTION ||
+                                dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
+                            sendCloseOthersAction(null, true, false);
+                        }
+                    });
+                }
 
-                dialog.setOnCancelListener(dialogInterface -> {
-                    if (dialogType == DialogType.EXISTING_SUBSCRIPTION ||
-                            dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
-                        sendCloseOthersAction(null, true, false);
-                    }
-                });
-            }
-
-            if (dialog.getWindow() != null) {
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                        Color.parseColor(appCMSMain.getBrand()
-                                .getGeneral()
-                                .getBackgroundColor())));
-                if (currentActivity.getWindow().isActive()) {
-                    try {
-                        dialog.show();
-                    } catch (Exception e) {
-                        //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
+                if (dialog.getWindow() != null) {
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
+                            Color.parseColor(appCMSMain.getBrand()
+                                    .getGeneral()
+                                    .getBackgroundColor())));
+                    if (currentActivity.getWindow().isActive()) {
+                        try {
+                            dialog.show();
+                        } catch (Exception e) {
+                            //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
+                        }
                     }
                 }
-            }
+            });
         }
     }
 

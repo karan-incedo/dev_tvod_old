@@ -131,6 +131,7 @@
         android:id="@+id/app_cms_tab_nav_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navbar_height"
+        android:layout_marginTop="@dimen/app_cms_toolbar_margin_top"
         android:layout_alignParentBottom="true"
         android:background="@android:color/transparent"
         android:orientation="horizontal">
