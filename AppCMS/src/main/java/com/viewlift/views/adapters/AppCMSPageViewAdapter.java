@@ -46,7 +46,12 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
 
     @Override
     public PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PageViewHolder(new FrameLayout(parent.getContext()));
+        FrameLayout viewGroup = new FrameLayout(parent.getContext());
+        FrameLayout.LayoutParams viewGroupLayoutParams =
+                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
+        viewGroup.setLayoutParams(viewGroupLayoutParams);
+        return new PageViewHolder(viewGroup);
     }
 
     @Override

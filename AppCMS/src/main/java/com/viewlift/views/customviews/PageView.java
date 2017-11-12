@@ -6,6 +6,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -129,21 +130,11 @@ public class PageView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
-//        childrenContainer = new LinearLayout(getContext());
-//        LinearLayout.LayoutParams childContainerLayoutParams =
-//                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-//                        LayoutParams.MATCH_PARENT);
-//        childrenContainer.setLayoutParams(childContainerLayoutParams);
-//        ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
-
         childrenContainer = new RecyclerView(getContext());
         FrameLayout.LayoutParams nestedScrollViewLayoutParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
-        nestedScrollViewLayoutParams.gravity = FrameLayout.
         childrenContainer.setLayoutParams(nestedScrollViewLayoutParams);
-//        childrenContainer.setId(R.id.home_nested_scroll_view);
-//        childrenContainer.addView(childrenContainer);
         ((RecyclerView) childrenContainer).setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL,
                 false));
