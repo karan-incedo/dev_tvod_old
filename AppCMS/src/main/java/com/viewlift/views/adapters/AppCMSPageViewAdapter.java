@@ -32,6 +32,18 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
         }
     }
 
+    public View findChildViewById(int id) {
+        int adapterDataSize = childViews != null ? childViews.size() : 0;
+        for (int i = 0; i < adapterDataSize; i++) {
+            View view = childViews.get(i).findViewById(id);
+            if (view != null) {
+                return view;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new PageViewHolder(new FrameLayout(parent.getContext()));
@@ -49,7 +61,7 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
 
     @Override
     public int getItemCount() {
-        return childViews.size();
+        return childViews != null ? childViews.size() : 0;
     }
 
     public static class PageViewHolder extends RecyclerView.ViewHolder {

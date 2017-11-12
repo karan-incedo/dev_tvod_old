@@ -137,9 +137,10 @@ public class PageView extends BaseView {
 //        ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
 
         childrenContainer = new RecyclerView(getContext());
-        RecyclerView.LayoutParams nestedScrollViewLayoutParams =
-                new RecyclerView.LayoutParams(LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams nestedScrollViewLayoutParams =
+                new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
+        nestedScrollViewLayoutParams.gravity = FrameLayout.
         childrenContainer.setLayoutParams(nestedScrollViewLayoutParams);
 //        childrenContainer.setId(R.id.home_nested_scroll_view);
 //        childrenContainer.addView(childrenContainer);
@@ -227,5 +228,12 @@ public class PageView extends BaseView {
         if (appCMSPageViewAdapter != null) {
             appCMSPageViewAdapter.notifyDataSetChanged();
         }
+    }
+
+    public View findChildViewById(int id) {
+        if (appCMSPageViewAdapter != null) {
+            return appCMSPageViewAdapter.findChildViewById(id);
+        }
+        return null;
     }
 }
