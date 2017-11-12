@@ -206,6 +206,8 @@ import com.viewlift.views.fragments.AppCMSTrayMenuDialogFragment;
 import org.jsoup.Jsoup;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.temporal.ChronoUnit;
 
 import java.io.BufferedReader;
@@ -4544,28 +4546,30 @@ public class AppCMSPresenter {
     private boolean existingSubscriptionExpired(InAppPurchaseData inAppPurchaseData,
                                                 SkuDetails skuDetails) {
         try {
-            Instant subscribedPurchaseTime = Instant.ofEpochMilli(inAppPurchaseData.getPurchaseTime());
-            Instant nowTime = Instant.now();
-            Instant subscribedExpirationTime = Instant.from(subscribedPurchaseTime);
+            Instant subscribedPurchaseTimeInstant = Instant.ofEpochMilli(inAppPurchaseData.getPurchaseTime());
+            Instant nowTimeInstant = Instant.now();
+            ZonedDateTime subscribedPurchaseTime = ZonedDateTime.ofInstant(subscribedPurchaseTimeInstant, ZoneId.systemDefault());
+            ZonedDateTime nowTime = ZonedDateTime.ofInstant(nowTimeInstant, ZoneId.systemDefault());
+            ZonedDateTime subscribedExpirationTime = ZonedDateTime.ofInstant(subscribedPurchaseTimeInstant, ZoneId.systemDefault());
             String subscriptionPeriod = skuDetails.getSubscriptionPeriod();
             final String SUBS_PERIOD_REGEX = "P(([0-9]+)[yY])?(([0-9]+)[mM])?(([0-9]+)[wW])?(([0-9]+)[dD])?";
             if (subscriptionPeriod.matches(SUBS_PERIOD_REGEX)) {
                 Matcher subscriptionPeriodMatcher = Pattern.compile(SUBS_PERIOD_REGEX).matcher(subscriptionPeriod);
                 if (subscriptionPeriodMatcher.find()) {
                     if (subscriptionPeriodMatcher.group(2) != null) {
-                        subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(2)),
+                        subscribedExpirationTime = subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(2)),
                                 ChronoUnit.YEARS);
                     }
                     if (subscriptionPeriodMatcher.group(4) != null) {
-                        subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(4)),
+                        subscribedExpirationTime = subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(4)),
                                 ChronoUnit.MONTHS);
                     }
                     if (subscriptionPeriodMatcher.group(6) != null) {
-                        subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(6)),
+                        subscribedExpirationTime = subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(6)),
                                 ChronoUnit.WEEKS);
                     }
                     if (subscriptionPeriodMatcher.group(8) != null) {
-                        subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(8)),
+                        subscribedExpirationTime = subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(8)),
                                 ChronoUnit.DAYS);
                     }
                 }
@@ -4577,7 +4581,7 @@ public class AppCMSPresenter {
                 return betweenSubscribedTimeAndExpirationTime.compareTo(betweenSubscribedTimeAndNowTime) < 0;
             }
         } catch (Exception e) {
-            //Log.e(TAG, "");
+            Log.e(TAG, "Error parsing end date: " + e.getMessage());
         }
         return false;
     }

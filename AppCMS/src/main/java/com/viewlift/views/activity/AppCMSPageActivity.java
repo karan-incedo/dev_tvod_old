@@ -62,6 +62,7 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
@@ -506,6 +507,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void initPageActivity() {
+        AndroidThreeTen.init(this);
+
         accessToken = AccessToken.getCurrentAccessToken();
 
         inAppBillingServiceConn = new ServiceConnection() {
