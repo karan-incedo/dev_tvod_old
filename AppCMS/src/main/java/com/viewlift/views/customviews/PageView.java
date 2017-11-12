@@ -3,6 +3,8 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,7 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSBaseAdapter;
+import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +41,7 @@ public class PageView extends BaseView {
     private Map<String, ModuleView> moduleViewMap;
     private AppCMSPresenter appCMSPresenter;
     private SwipeRefreshLayout mainView;
+    private AppCMSPageViewAdapter appCMSPageViewAdapter;
 
     @Inject
     public PageView(Context context,
@@ -48,6 +52,7 @@ public class PageView extends BaseView {
         this.viewsWithComponentIds = new ArrayList<>();
         this.moduleViewMap = new HashMap<>();
         this.appCMSPresenter = appCMSPresenter;
+        this.appCMSPageViewAdapter = new AppCMSPageViewAdapter();
         init();
     }
 
@@ -124,27 +129,31 @@ public class PageView extends BaseView {
 
     @Override
     protected ViewGroup createChildrenContainer() {
-        childrenContainer = new LinearLayout(getContext());
-        LinearLayout.LayoutParams childContainerLayoutParams =
-                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-                        LayoutParams.MATCH_PARENT);
-        childrenContainer.setLayoutParams(childContainerLayoutParams);
-        ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
+//        childrenContainer = new LinearLayout(getContext());
+//        LinearLayout.LayoutParams childContainerLayoutParams =
+//                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+//                        LayoutParams.MATCH_PARENT);
+//        childrenContainer.setLayoutParams(childContainerLayoutParams);
+//        ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
 
-        NestedScrollView nestedScrollView = new NestedScrollView(getContext());
-        NestedScrollView.LayoutParams nestedScrollViewLayoutParams =
-                new NestedScrollView.LayoutParams(LayoutParams.MATCH_PARENT,
+        childrenContainer = new RecyclerView(getContext());
+        RecyclerView.LayoutParams nestedScrollViewLayoutParams =
+                new RecyclerView.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
-        nestedScrollView.setLayoutParams(nestedScrollViewLayoutParams);
-        nestedScrollView.setId(R.id.home_nested_scroll_view);
-        nestedScrollView.addView(childrenContainer);
+        childrenContainer.setLayoutParams(nestedScrollViewLayoutParams);
+//        childrenContainer.setId(R.id.home_nested_scroll_view);
+//        childrenContainer.addView(childrenContainer);
+        ((RecyclerView) childrenContainer).setLayoutManager(new LinearLayoutManager(getContext(),
+                LinearLayoutManager.VERTICAL,
+                false));
+        ((RecyclerView) childrenContainer).setAdapter(appCMSPageViewAdapter);
 
         mainView = new SwipeRefreshLayout(getContext());
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
                 new SwipeRefreshLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
         mainView.setLayoutParams(swipeRefreshLayoutParams);
-        mainView.addView(nestedScrollView);
+        mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
             appCMSPresenter.refreshAPIData(() -> {
                         mainView.setRefreshing(false);
@@ -181,10 +190,12 @@ public class PageView extends BaseView {
     public void clearExistingViewLists() {
         moduleViewMap.clear();
         viewsWithComponentIds.clear();
+        appCMSPageViewAdapter.removeAllViews();
     }
 
     public void addModuleViewWithModuleId(String moduleId, ModuleView moduleView) {
         moduleViewMap.put(moduleId, moduleView);
+        appCMSPageViewAdapter.addView(moduleView);
     }
 
     public ModuleView getModuleViewWithModuleId(String moduleId) {
@@ -209,6 +220,12 @@ public class PageView extends BaseView {
                 removeAllAddOnViews();
             }
             index++;
+        }
+    }
+
+    public void notifyAdapterDataSetChanged() {
+        if (appCMSPageViewAdapter != null) {
+            appCMSPageViewAdapter.notifyDataSetChanged();
         }
     }
 }

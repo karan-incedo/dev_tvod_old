@@ -1045,13 +1045,14 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter);
                 if (childView != null) {
-                    childrenContainer.addView(childView);
+//                    childrenContainer.addView(childView);
                     if (moduleAPI == null) {
                         childView.setVisibility(View.GONE);
                     }
                 }
             }
         }
+        pageView.notifyAdapterDataSetChanged();
 
         List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
         if (presenterOnInternalEvents != null) {
