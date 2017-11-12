@@ -551,6 +551,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         int tabCount = getResources().getInteger(R.integer.number_of_tabs);
 
+        for (int i = 0; i < tabCount; i++) {
+            addNavigationItem();
+        }
+
         createHomeNavItem(tabCount, appCMSPresenter.findHomePageNavItem());
         createLiveNavItem(tabCount, appCMSPresenter.findLivePageNavItem());
         createMoviesNavItem(tabCount, appCMSPresenter.findMoviesPageNavItem());
@@ -1689,6 +1693,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 
+    public void addNavigationItem() {
+        final NavBarItemView navBarItemView =
+                new NavBarItemView(new ContextThemeWrapper(this, R.style.NavbarItemView));
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.weight = 1;
+        navBarItemView.setLayoutParams(layoutParams);
+        appCMSTabNavContainer.addView(navBarItemView);
+    }
+
     private void createHomeNavItem(int tabCount, final NavigationPrimary homePageNav) {
         if (homePageNav != null) {
             if (tabCount <= homePageIndex) {
@@ -1696,11 +1710,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (homePageIndex < tabCount) {
                 final NavBarItemView homeNavBarItemView =
-                        new NavBarItemView(new ContextThemeWrapper(this, R.style.NavbarItemView));
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT);
-                layoutParams.weight = 1;
-                homeNavBarItemView.setLayoutParams(layoutParams);
+                        (NavBarItemView) appCMSTabNavContainer.getChildAt(homePageIndex);
                 int highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
                 try {
                     highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
@@ -1728,9 +1738,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (getSelectedNavItem() == null) {
                     selectNavItem(homeNavBarItemView);
                 }
-                if (homeNavBarItemView.getParent() == null) {
-                    appCMSTabNavContainer.addView(homeNavBarItemView);
-                }
             }
         }
     }
@@ -1740,12 +1747,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             navLivePageIndex = DEFAULT_NAV_LIVE_PAGE_INDEX;
         }
         if (navLivePageIndex < tabCount) {
-            NavBarItemView navLiveItemView =
-                    new NavBarItemView(new ContextThemeWrapper(this, R.style.NavbarItemView));
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
-                    ViewGroup.LayoutParams.MATCH_PARENT);
-            layoutParams.weight = 1;
-            navLiveItemView.setLayoutParams(layoutParams);
+            final NavBarItemView navLiveItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(navLivePageIndex);
             int highlightColor;
             try {
                 highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
@@ -1781,11 +1784,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (categoriesPageIndex < tabCount) {
                 final NavBarItemView moviesNavBarItemView =
-                        new NavBarItemView(new ContextThemeWrapper(this, R.style.NavbarItemView));
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT);
-                layoutParams.weight = 1;
-                moviesNavBarItemView.setLayoutParams(layoutParams);
+                        (NavBarItemView) appCMSTabNavContainer.getChildAt(categoriesPageIndex);
                 int highlightColor;
                 try {
                     highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
@@ -1822,12 +1821,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 searchPageIndex = DEFAULT_SEARCH_INDEX;
             }
             if (searchPageIndex < tabCount) {
-                NavBarItemView searchNavBarItemView =
-                        new NavBarItemView(new ContextThemeWrapper(this, R.style.NavbarItemView));
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
-                        ViewGroup.LayoutParams.MATCH_PARENT);
-                layoutParams.weight = 1;
-                searchNavBarItemView.setLayoutParams(layoutParams);
+                final NavBarItemView searchNavBarItemView =
+                        (NavBarItemView) appCMSTabNavContainer.getChildAt(searchPageIndex);
                 int highlightColor;
                 try {
                     highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
@@ -1875,11 +1870,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             navMenuPageIndex = DEFAULT_NAV_MENU_PAGE_INDEX;
         }
         final NavBarItemView menuNavBarItemView =
-                new NavBarItemView(new ContextThemeWrapper(this, R.style.NavbarItemView));
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
-                ViewGroup.LayoutParams.MATCH_PARENT);
-        layoutParams.weight = 1;
-        menuNavBarItemView.setLayoutParams(layoutParams);
+                (NavBarItemView) appCMSTabNavContainer.getChildAt(navMenuPageIndex);
         int highlightColor = 0;
         if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
             highlightColor =
