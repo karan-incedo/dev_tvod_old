@@ -49,7 +49,7 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
         FrameLayout viewGroup = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams viewGroupLayoutParams =
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT);
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
         viewGroup.setLayoutParams(viewGroupLayoutParams);
         return new PageViewHolder(viewGroup);
     }
