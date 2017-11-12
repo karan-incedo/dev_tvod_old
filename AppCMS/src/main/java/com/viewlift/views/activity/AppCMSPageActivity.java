@@ -1581,9 +1581,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             if (!appCMSBinderStack.isEmpty() && appCMSBinderMap.get(appCMSBinderStack.peek()) != null) {
-                createFragment = !(appCMSBinderMap.get(appCMSBinderStack.peek())
-                        .getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH
-                        && updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH);
+                try {
+                    createFragment = !(appCMSBinderMap.get(appCMSBinderStack.peek())
+                            .getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH
+                            && updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH);
+                } catch (Exception e) {
+
+                }
             }
 
             if (distanceFromStackTop < 0 ||
@@ -1606,47 +1610,51 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
 
             if (distanceFromStackTop >= 0) {
-                switch (appCMSBinder.getExtraScreenType()) {
-                    case NAVIGATION:
-                    case SEARCH:
-                        //Log.d(TAG, "Popping stack to getList to page item");
-                        try {
-                            createFragment = false;
-                            if (!isBinderStackEmpty() &&
-                                    !isBinderStackTopNull() &&
-                                    appCMSBinderStack.peek().equals(appCMSBinder.getPageId()) &&
-                                    !keepPage) {
-                                getSupportFragmentManager().popBackStackImmediate();
-                                createFragment = true;
-                            }
+                try {
+                    switch (appCMSBinder.getExtraScreenType()) {
+                        case NAVIGATION:
+                        case SEARCH:
+                            //Log.d(TAG, "Popping stack to getList to page item");
+                            try {
+                                createFragment = false;
+                                if (!isBinderStackEmpty() &&
+                                        !isBinderStackTopNull() &&
+                                        appCMSBinderStack.peek().equals(appCMSBinder.getPageId()) &&
+                                        !keepPage) {
+                                    getSupportFragmentManager().popBackStackImmediate();
+                                    createFragment = true;
+                                }
 
+                                if (poppedStack) {
+                                    appCMSBinderStack.push(appCMSBinder.getPageId());
+                                    appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
+                                }
+
+                                if (!createFragment) {
+                                    handleToolbar(appCMSBinder.isAppbarPresent(),
+                                            appCMSBinder.getAppCMSMain(),
+                                            appCMSBinder.getPageId());
+                                    handleNavbar(appCMSBinder);
+                                }
+                            } catch (IllegalStateException e) {
+                                //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
+                            }
+                            break;
+
+                        case NONE:
                             if (poppedStack) {
-                                appCMSBinderStack.push(appCMSBinder.getPageId());
+                                if (appCMSBinderStack.search(appCMSBinder.getPageId()) < 0) {
+                                    appCMSBinderStack.push(appCMSBinder.getPageId());
+                                }
                                 appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
                             }
+                            break;
 
-                            if (!createFragment) {
-                                handleToolbar(appCMSBinder.isAppbarPresent(),
-                                        appCMSBinder.getAppCMSMain(),
-                                        appCMSBinder.getPageId());
-                                handleNavbar(appCMSBinder);
-                            }
-                        } catch (IllegalStateException e) {
-                            //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
-                        }
-                        break;
+                        default:
+                            break;
+                    }
+                } catch (Exception e) {
 
-                    case NONE:
-                        if (poppedStack) {
-                            if (appCMSBinderStack.search(appCMSBinder.getPageId()) < 0) {
-                                appCMSBinderStack.push(appCMSBinder.getPageId());
-                            }
-                            appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
-                        }
-                        break;
-
-                    default:
-                        break;
                 }
             }
 
