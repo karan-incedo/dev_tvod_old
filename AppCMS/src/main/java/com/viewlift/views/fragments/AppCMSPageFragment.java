@@ -149,7 +149,7 @@ public class AppCMSPageFragment extends Fragment {
             NestedScrollView nestedScrollView = (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
 
             if (appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()) {
-                appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+
                 nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
                     @Override
                     public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {

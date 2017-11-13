@@ -11282,18 +11282,15 @@ public class AppCMSPresenter {
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
     VideoPlayerView videoPlayerViewPIP, videoPlayerViewPage;
-    RelativeLayout relativeLayoutPIP,relativeLayoutPIPEvent;
+    RelativeLayout relativeLayoutPIP, relativeLayoutPIPEvent;
 
     public void showPopupWindowPlayer(View scrollView) {
 
         RelativeLayout.LayoutParams lpPipView = null;
         Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
-        pipPlayerVisible = true;
 
 
         videoPlayerViewPIP = ViewCreator.playerView(currentActivity);
-
-
 
         //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
         relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
@@ -11320,15 +11317,16 @@ public class AppCMSPresenter {
 
         relativeLayoutPIP.setVisibility(View.VISIBLE);
 
-        //rdemo.setBackgroundColor(Color.TRANSPARENT);
+
         relativeLayoutPIP.addView(relativeLayoutPIPEvent);
         relativeLayoutPIPEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((NestedScrollView)scrollView).smoothScrollTo(0,0);
+                ((NestedScrollView) scrollView).smoothScrollTo(0, 0);
             }
         });
         ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+        pipPlayerVisible = true;
     }
 
     public void pausePIP() {
@@ -11363,17 +11361,24 @@ public class AppCMSPresenter {
         }
         try {
             if (relativeLayoutPIP != null) {
-                if (relativeLayoutPIPEvent!=null ){
-                    relativeLayoutPIP.removeView(relativeLayoutPIPEvent);
-                }
+
+
                 relativeLayoutPIP.setVisibility(View.GONE);
+
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+
                 rootView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        if (relativeLayoutPIPEvent != null) {
+                            relativeLayoutPIPEvent.setVisibility(View.GONE);
+                            relativeLayoutPIPEvent.setOnClickListener(null);
+                            relativeLayoutPIP.removeView(relativeLayoutPIPEvent);
 
+                        }
                         rootView.removeView(relativeLayoutPIP);
                         relativeLayoutPIP = null;
+                        relativeLayoutPIPEvent = null;
                     }
                 }, 100);
             }
