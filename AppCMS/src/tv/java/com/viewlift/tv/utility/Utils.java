@@ -625,15 +625,13 @@ public class Utils {
         StringBuilder timeInString = new StringBuilder();
         runtime = runtime * 1000;
         
-        long days = TimeUnit.MILLISECONDS
-                .toDays(runtime);
+        long days = TimeUnit.MILLISECONDS.toDays(runtime);
         runtime -= TimeUnit.DAYS.toMillis(days);
         if (days != 0){
             timeInString.append(Long.toString(days));
         }
 
-        long hours = TimeUnit.MILLISECONDS
-                .toHours(runtime);
+        long hours = TimeUnit.MILLISECONDS.toHours(runtime);
         runtime -= TimeUnit.HOURS.toMillis(hours);
         if (hours != 0 || timeInString.length() > 0){
             if (timeInString.length() > 0) {
@@ -642,8 +640,7 @@ public class Utils {
             timeInString.append(Long.toString(hours));
         }
 
-        long minutes = TimeUnit.MILLISECONDS
-                .toMinutes(runtime);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(runtime);
         runtime -= TimeUnit.MINUTES.toMillis(minutes);
 //        if (minutes != 0 || timeInString.length() > 0){
             if (timeInString.length() > 0) {
@@ -652,8 +649,7 @@ public class Utils {
             timeInString.append(Long.toString(minutes));
 //        }
 
-        long seconds = TimeUnit.MILLISECONDS
-                .toSeconds(runtime);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(runtime);
 //        if (seconds != 0 || timeInString.length() > 0){
             if (timeInString.length() > 0) {
                 timeInString.append(":");

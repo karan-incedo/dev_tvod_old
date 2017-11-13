@@ -481,6 +481,7 @@ public class AppCMSPresenter {
     private MetaPage historyPage;
     private MetaPage watchlistPage;
     private PlatformType platformType;
+    private TemplateType templateType = TemplateType.SPORTS;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
     private LaunchType launchType;
     private IInAppBillingService inAppBillingService;
@@ -10085,6 +10086,10 @@ public class AppCMSPresenter {
         return platformType;
     }
 
+    public TemplateType getTemplateType() {
+        return templateType;
+    }
+
     public boolean isRemovableSDCardAvailable() {
         return currentActivity != null && getStorageDirectories(currentActivity).length >= 1;
     }
@@ -10554,6 +10559,10 @@ public class AppCMSPresenter {
 
     public enum PlatformType {
         ANDROID, TV
+    }
+
+    public enum TemplateType {
+        ENTERTAINMENT, SPORTS
     }
 
     public enum BeaconEvent {

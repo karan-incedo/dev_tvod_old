@@ -14,9 +14,9 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -114,6 +114,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         setContentView(R.layout.activity_app_cms_tv_home);
         navHolder = (FrameLayout)findViewById(R.id.navigation_placholder);
+        if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.SPORTS)) {
+            ViewGroup.LayoutParams layoutParams = navHolder.getLayoutParams();
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        }
         homeHolder = (FrameLayout)findViewById(R.id.home_placeholder);
         shadowView = (FrameLayout)findViewById(R.id.shadow_view);
         setNavigationFragment(navigationFragment);
@@ -669,7 +673,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private boolean isNavigationVisible(){
-        return ( (navHolder.getVisibility() == View.VISIBLE) ? true : false );
+        return (navHolder.getVisibility() == View.VISIBLE);
     }
 
     public void openSearchFragment(){
