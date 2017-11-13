@@ -34,7 +34,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,7 +70,6 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -95,14 +93,11 @@ import com.viewlift.views.fragments.AppCMSTeamListFragment;
 import org.json.JSONException;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -1470,7 +1465,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
                 appCMSTabNavContainer.setVisibility(View.GONE);
             }*/
-            final ModuleList moduleFooter = appCMSBinder.getAppCMSPageUI() != null ? appCMSBinder.getAppCMSPageUI().getModuleList().get(appCMSBinder.getAppCMSPageUI().getModuleList().size() - 1) : null;
+            //final ModuleList moduleFooter = appCMSBinder.getAppCMSPageUI() != null ? appCMSBinder.getAppCMSPageUI().getModuleList().get(appCMSBinder.getAppCMSPageUI().getModuleList().size() - 1) : null;
+            final ModuleList moduleFooter = appCMSPresenter.getTabBarUIFooterModule();
             if (moduleFooter != null &&
                     moduleFooter.getSettings() != null &&
                     !moduleFooter.getSettings().isShowTabBar()) {
@@ -2027,11 +2023,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
 
                 if (navigationTabTag != null && !TextUtils.isEmpty(navigationTabTag.getPageId()) &&
-                        (pageId.contains(navigationTabTag.getPageId()) || pageId.equalsIgnoreCase(navigationTabTag.getPageId())  ||
-                        (navigationTabTag != null && navigationTabTag.getPageId() != null &&
-                                (pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen")) ||
-                                (pageId.equalsIgnoreCase(getString(R.string.app_cms_team_page_tag)) &&
-                                        navigationTabTag.getNavigationTabBar().getTitle().equalsIgnoreCase(getString(R.string.app_cms_team_page_tag)))   ))) {
+                        (pageId.contains(navigationTabTag.getPageId()) || pageId.equalsIgnoreCase(navigationTabTag.getPageId()) ||
+                                (navigationTabTag != null && navigationTabTag.getPageId() != null &&
+                                        (pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen")) ||
+                                        (pageId.equalsIgnoreCase(getString(R.string.app_cms_team_page_tag)) &&
+                                                navigationTabTag.getNavigationTabBar().getTitle().equalsIgnoreCase(getString(R.string.app_cms_team_page_tag)))))) {
                     selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
                     Log.d(TAG, "Nav item - Selecting tab item with page Id: " +
                             pageId +

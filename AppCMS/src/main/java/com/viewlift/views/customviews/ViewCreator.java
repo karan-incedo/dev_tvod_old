@@ -42,6 +42,7 @@ import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -1603,7 +1604,7 @@ public class ViewCreator {
                 break;
 
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
-                componentViewResult.componentView = playerView(context);
+                componentViewResult.componentView = playerView(context, appCMSPresenter, moduleAPI.getContentData().get(0).getGist().getId());
                 componentViewResult.componentView.setId(R.id.video_player_id);
 
                 break;
@@ -3141,7 +3142,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_bold_ttf,fontName));
+                                context.getString(R.string.font_bold_ttf, fontName));
                         appCMSPresenter.setBoldTypeFace(face);
                     }
                     break;
@@ -3150,7 +3151,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getSemiBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_semibold_ttf,fontName));
+                                context.getString(R.string.font_semibold_ttf, fontName));
                         appCMSPresenter.setSemiBoldTypeFace(face);
                     }
                     break;
@@ -3159,7 +3160,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_extrabold_ttf,fontName));
+                                context.getString(R.string.font_extrabold_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3167,7 +3168,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_black_ttf,fontName));
+                                context.getString(R.string.font_black_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3175,7 +3176,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_black_italic_ttf,fontName));
+                                context.getString(R.string.font_black_italic_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3183,7 +3184,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_hairline_ttf,fontName));
+                                context.getString(R.string.font_hairline_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3191,7 +3192,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_hairline_italic_ttf,fontName));
+                                context.getString(R.string.font_hairline_italic_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3199,7 +3200,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_heavy_ttf,fontName));
+                                context.getString(R.string.font_heavy_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3207,7 +3208,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_heavy_italic_ttf,fontName));
+                                context.getString(R.string.font_heavy_italic_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3215,7 +3216,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_light_ttf,fontName));
+                                context.getString(R.string.font_light_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3223,7 +3224,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_light_italic_ttf,fontName));
+                                context.getString(R.string.font_light_italic_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3231,7 +3232,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_medium_ttf,fontName));
+                                context.getString(R.string.font_medium_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3239,7 +3240,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_medium_italic_ttf,fontName));
+                                context.getString(R.string.font_medium_italic_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3247,7 +3248,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_thin_ttf,fontName));
+                                context.getString(R.string.font_thin_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3255,7 +3256,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_thin_italic_ttf,fontName));
+                                context.getString(R.string.font_thin_italic_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3263,7 +3264,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_semibold_italic_ttf,fontName));
+                                context.getString(R.string.font_semibold_italic_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
@@ -3271,7 +3272,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getRegularFontFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.font_regular_ttf,fontName));
+                                context.getString(R.string.font_regular_ttf, fontName));
                         appCMSPresenter.setRegularFontFace(face);
                     }
                     break;
@@ -3466,13 +3467,72 @@ public class ViewCreator {
         }
     }
 
-    public static VideoPlayerView playerView(Context context) {
+    public static VideoPlayerView playerView(Context context, AppCMSPresenter appCMSPresenter, String videoId) {
 
         VideoPlayerView videoPlayerView = new VideoPlayerView(context);
         videoPlayerView.init(context);
         // it should be dynamic when live url come from api
-        videoPlayerView.setUri(Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4"),
-                null);
+
+        appCMSPresenter.refreshVideoData(videoId, updatedContentDatum -> {
+           // appCMSPresenter.getAppCMSSignedURL(videoId, appCMSSignedURLResult -> {
+           //     if (videoPlayerView != null && appCMSSignedURLResult != null) {
+                if (videoPlayerView != null ) {
+                    boolean foundMatchingMpeg = false;
+                    String hlsUrl = "";
+                    String closedCaptionUrl = "";
+                    if (updatedContentDatum != null &&
+                            updatedContentDatum.getStreamingInfo() != null &&
+                            updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
+                            updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg() != null &&
+                            !updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().isEmpty()) {
+
+                        updatedContentDatum.getGist().setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
+                        if (updatedContentDatum.getStreamingInfo().getVideoAssets().getHls()!=null
+                                ) {
+                            hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
+                        } else {
+                            //for (int i = 0; i < updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() && !foundMatchingMpeg; i++) {
+                               // int queryIndex = hlsUrl.indexOf("?");
+                                /*if (0 <= queryIndex) {
+                                    if (updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl().contains(hlsUrl.substring(0, queryIndex))) {
+                                        foundMatchingMpeg = true;*/
+                                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                                    /*}
+                                }*/
+                           // }
+                        }
+                        // TODO: 7/27/2017 Implement CC for multiple languages.
+                        if (updatedContentDatum.getContentDetails() != null
+                                && updatedContentDatum.getContentDetails().getClosedCaptions() != null
+                                && !updatedContentDatum.getContentDetails().getClosedCaptions().isEmpty()) {
+                            for (ClosedCaptions cc : updatedContentDatum.getContentDetails().getClosedCaptions()) {
+                                if (cc.getUrl() != null &&
+                                        !cc.getUrl().equalsIgnoreCase(context.getString(R.string.download_file_prefix)) &&
+                                        cc.getFormat() != null &&
+                                        cc.getFormat().equalsIgnoreCase("SRT")) {
+                                    closedCaptionUrl = cc.getUrl();
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    /*videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                            appCMSSignedURLResult.getSignature(),
+                            appCMSSignedURLResult.getKeyPairId());*/
+
+
+                        videoPlayerView.setUri(Uri.parse(hlsUrl),
+                                !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
+                        videoPlayerView.setCurrentPosition(updatedContentDatum.getGist().getWatchedTime() * 1000L);
+
+                }
+            //});
+
+        });
+       /* videoPlayerView.setUri(Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4"),
+                null);*/
         videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {

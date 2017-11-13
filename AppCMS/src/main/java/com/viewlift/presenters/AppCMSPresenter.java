@@ -8462,7 +8462,7 @@ public class AppCMSPresenter {
                     pagePath,
                     screenName,
                     loadFromFile,
-                    appbarPresent,
+                    appbarPresent==false?getTabBarUIFooterModule().getSettings().isShowTabBar():true,
                     fullscreenEnabled,
                     navbarPresent,
                     sendCloseAction,
@@ -11284,13 +11284,13 @@ public class AppCMSPresenter {
     VideoPlayerView videoPlayerViewPIP, videoPlayerViewPage;
     RelativeLayout relativeLayoutPIP, relativeLayoutPIPEvent;
 
-    public void showPopupWindowPlayer(View scrollView) {
+    public void showPopupWindowPlayer(View scrollView,String videoId) {
 
         RelativeLayout.LayoutParams lpPipView = null;
         Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
 
 
-        videoPlayerViewPIP = ViewCreator.playerView(currentActivity);
+        videoPlayerViewPIP = ViewCreator.playerView(currentActivity,this,videoId);
 
         //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
         relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);

@@ -160,7 +160,7 @@ public class AppCMSPageFragment extends Fragment {
                             appCMSPresenter.dismissPopupWindowPlayer();
                              resumePlayer(true);
                         } else if (!appCMSPresenter.pipPlayerVisible) {
-                            appCMSPresenter.showPopupWindowPlayer(v);
+                            appCMSPresenter.showPopupWindowPlayer(v,appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getId());
                              resumePlayer(false);
                         }
 
@@ -169,7 +169,7 @@ public class AppCMSPageFragment extends Fragment {
 
                 if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
                         !appCMSPresenter.pipPlayerVisible) {
-                    appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                    appCMSPresenter.showPopupWindowPlayer(nestedScrollView,appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getId());
                 } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
                     appCMSPresenter.dismissPopupWindowPlayer();
                 }
