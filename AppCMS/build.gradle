@@ -134,18 +134,22 @@ android {
     dexOptions {
         incremental true
         javaMaxHeapSize "4g"
+        preDexLibraries = false
+        additionalParameters = ["--set-max-idx-number=55000"] // default 60000
     }
 }
 
 afterEvaluate {
-    tasks.matching {
-        it.name.startsWith('dex')
-    }.each { dx ->
-        if (dx.additionalParameters == null) {
-            dx.additionalParameters = []
+    if (!android.applicationVariants.matching { it.flavorName == 'mobile' }.isEmpty()) {
+        tasks.matching {
+            it.name.startsWith('dex')
+        }.each { dx ->
+            if (dx.additionalParameters == null) {
+                dx.additionalParameters = []
+            }
+            dx.additionalParameters += '--multi-dex' // enable multidex
+            dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
         }
-        dx.additionalParameters += '--multi-dex' // enable multidex
-        dx.additionalParameters += "--main-dex-list=$projectDir/multidex.keep".toString()
     }
 }
 
