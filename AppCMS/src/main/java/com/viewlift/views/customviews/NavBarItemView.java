@@ -77,9 +77,6 @@ public class NavBarItemView extends LinearLayout {
 
         this.hasFocus = hasFocus;
         Resources resources = getResources();
-        int drawableId = resources.getIdentifier("tab_hover",
-                "drawable",
-                getContext().getPackageName());
         int color = ContextCompat.getColor(getContext(), R.color.colorNavBarText);
         if (hasFocus) {
             color = highlightColor;

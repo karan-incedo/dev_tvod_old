@@ -33,13 +33,14 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -1603,7 +1604,8 @@ public class ViewCreator {
                 break;
 
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
-                componentViewResult.componentView = playerView(context);
+
+                componentViewResult.componentView = playerView(context,component);
                 componentViewResult.componentView.setId(R.id.video_player_id);
 
                 break;
@@ -1942,6 +1944,8 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        componentViewResult.componentView.setId(R.id.play_live_image_id);
+
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
@@ -3466,22 +3470,56 @@ public class ViewCreator {
         }
     }
 
-    public static VideoPlayerView playerView(Context context) {
+    public static VideoPlayerView playerView(Context context, Component component) {
 
+        Component mComponent=component;
         VideoPlayerView videoPlayerView = new VideoPlayerView(context);
         videoPlayerView.init(context);
+//        videoPlayerView.setOnTouchListener(this);
         // it should be dynamic when live url come from api
-        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
+//        videoPlayerView.setUri(Uri.parse("https://snagfilms-lh.akamaihd.net/i/Laxsportsnetwork_1@322790/master.m3u8?7544bdcc50dae6fd8d8ebeb3ba54706c7eb1db7bd808eb469b2094bb2d8fa248a93aed9f18570510bf020033a32d809b23"),
+//                null);
+
+        videoPlayerView.setUri(Uri.parse("https://vmsn.viewlift.com/video_assets/2016/mp4/wizards-bauru-video-recap-10-11-15/20056901/a.mp4"),
                 null);
         videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
-        videoPlayerView.getPlayerView().hideController();
+        videoPlayerView.getPlayerView().showController();
+        videoPlayerView.getPlayerView().setControllerHideOnTouch(true);
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
             public void onVisibilityChange(int i) {
                 if (i == 0) {
-                    videoPlayerView.getPlayerView().hideController();
+//                    videoPlayerView.getPlayerView().hideController();
                 }
             }
+        });
+
+
+        videoPlayerView.setOnPlayerStateChanged(playerState -> {
+
+            if (playerState.getPlaybackState() == ExoPlayer.STATE_READY ) {
+                System.out.println("videoPlayerView run time onready-" + videoPlayerView.getDuration());
+                long updatedRunTime = 0;
+                try {
+                    updatedRunTime = videoPlayerView.getDuration() / 1000;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                System.out.println("video state ready");
+            } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
+                System.out.println("video state ended STATE_ENDED");
+
+                if ( playerState.isPlayWhenReady() ) {
+                    System.out.println("video state ended playwhen ready");
+
+                    // tell the activity that the movie is finished
+                }
+            } else if (playerState.getPlaybackState() == ExoPlayer.STATE_BUFFERING ||
+                    playerState.getPlaybackState() == ExoPlayer.STATE_IDLE) {
+
+            }
+
+
         });
 
         return videoPlayerView;
