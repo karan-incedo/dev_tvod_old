@@ -57,7 +57,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
         this.userLoggedIn = userLoggedIn;
         this.userSubscribed = userSubscribed;
         this.textColor = textColor;
-        this.resources= appCMSPresenter.getCurrentActivity().getResources();
+        this.resources = appCMSPresenter.getCurrentActivity().getResources();
     }
 
     @Override
@@ -74,6 +74,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
             holder.navItemLabel.setText(navigationItem.getTitle());
             int resID = resources.getIdentifier(navigationItem.getIcon().replace("-","_") , "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
             holder.navItemLogo.setImageDrawable(resources.getDrawable(resID));
+            holder.navItemLogo.setVisibility(View.VISIBLE);
             holder.itemView.setOnClickListener(v -> {
                 //Todo need to remove toast and call the respective team pages.
                 appCMSPresenter.cancelInternalEvents();

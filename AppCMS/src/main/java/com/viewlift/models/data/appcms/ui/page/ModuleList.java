@@ -44,6 +44,18 @@ public class ModuleList implements ModuleWithComponents, Serializable {
     @Expose
     String blockName;
 
+    @SerializedName("isTabSeparator")
+    @Expose
+    boolean isTabSeparator;
+
+    @SerializedName("tabSeparator-color")
+    @Expose
+    String tabSeparatorColor;
+
+    @SerializedName("isBackgroundSelectable")
+    @Expose
+    boolean isBackgroundSelectable;
+
     public String getId() {
         return id;
     }
@@ -107,5 +119,29 @@ public class ModuleList implements ModuleWithComponents, Serializable {
 
     public void setBlockName(String blockName) {
         this.blockName = blockName;
+    }
+
+    public boolean isTabSeparator() {
+        return isTabSeparator;
+    }
+
+    public void setTabSeparator(boolean tabSeparator) {
+        isTabSeparator = tabSeparator;
+    }
+
+    public String getTabSeparatorColor() {
+        return tabSeparatorColor;
+    }
+
+    public void setTabSeparatorColor(String tabSeparatorColor) {
+        this.tabSeparatorColor = tabSeparatorColor;
+    }
+
+    public boolean isBackgroundSelectable() {
+        return isBackgroundSelectable;
+    }
+
+    public void setBackgroundSelectable(boolean backgroundSelectable) {
+        isBackgroundSelectable = backgroundSelectable;
     }
 }
