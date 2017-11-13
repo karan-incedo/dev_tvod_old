@@ -1011,7 +1011,12 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            ModuleList module = null;
+            try {
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            } catch (Exception e) {
+
+            }
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {

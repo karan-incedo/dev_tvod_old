@@ -754,7 +754,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.setVisibility(View.GONE);
                 refreshPageData();
             }
-        }, true, 0, 3);
+        }, true, 0, 0);
 
         if (appCMSBinderMap != null && !appCMSBinderMap.isEmpty() && appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
