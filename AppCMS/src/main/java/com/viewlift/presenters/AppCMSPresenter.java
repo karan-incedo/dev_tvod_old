@@ -231,6 +231,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9260,8 +9261,10 @@ public class AppCMSPresenter {
 //                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
 //                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
 //                        metaPageList.get(pageToQueueIndex).getPageAPI());
-                metaPageList.remove(pageToQueueIndex);
-                queueMetaPages(metaPageList);
+                List<MetaPage> metaPagesCopy = new ArrayList<>();
+                metaPagesCopy.addAll(metaPageList);
+                metaPagesCopy.remove(pageToQueueIndex);
+                queueMetaPages(metaPagesCopy);
             } else {
                 pagesToProcess.addAll(metaPageList);
             }
