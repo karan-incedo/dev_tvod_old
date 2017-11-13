@@ -215,6 +215,9 @@ public class ViewCreator {
 
                     if (moduleAPI != null) {
 
+                        updateUserHistory(appCMSPresenter,
+                                moduleAPI.getContentData());
+
                         for (Component component : module.getComponents()) {
                             shouldHideComponent = false;
 
@@ -277,7 +280,7 @@ public class ViewCreator {
                                                 long runTime =
                                                         moduleAPI.getContentData().get(0).getGist().getRuntime();
                                                 if (watchedTime > 0 && runTime > 0) {
-                                                    long percentageWatched = watchedTime / runTime;
+                                                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
                                                     ((ProgressBar) view)
                                                             .setProgress((int) percentageWatched);
                                                     view.setVisibility(View.VISIBLE);
@@ -1106,6 +1109,11 @@ public class ViewCreator {
                 AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView);
                 if (module.getComponents() != null) {
+                    if (moduleAPI != null) {
+                        updateUserHistory(appCMSPresenter,
+                                moduleAPI.getContentData());
+                    }
+
                     int size = module.getComponents().size();
                     for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
@@ -1270,6 +1278,22 @@ public class ViewCreator {
             moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         }
         return moduleView;
+    }
+
+    private void updateUserHistory(AppCMSPresenter appCMSPresenter,
+                                   List<ContentDatum> contentData) {
+        try {
+            int contentDatumLength = contentData.size();
+            for (int i = 0; i < contentDatumLength; i++) {
+                ContentDatum currentContentDatum = contentData.get(i);
+                ContentDatum userHistoryContentDatum = appCMSPresenter.getUserHistoryContentDatum(contentData.get(i).getGist().getId());
+                if (userHistoryContentDatum != null) {
+                    currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
+                }
+            }
+        } catch (Exception e) {
+
+        }
     }
 
     private void updateModuleHeight(Context context,
@@ -2771,7 +2795,7 @@ public class ViewCreator {
                             long runTime =
                                     moduleAPI.getContentData().get(0).getGist().getRuntime();
                             if (watchedTime > 0 && runTime > 0) {
-                                long percentageWatched = watchedTime / runTime;
+                                long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
                                 ((ProgressBar) componentViewResult.componentView)
                                         .setProgress((int) percentageWatched);
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);

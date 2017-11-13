@@ -110,6 +110,7 @@ import com.viewlift.models.data.appcms.downloads.RealmController;
 import com.viewlift.models.data.appcms.downloads.UserVideoDownloadStatus;
 import com.viewlift.models.data.appcms.history.AppCMSDeleteHistoryResult;
 import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
+import com.viewlift.models.data.appcms.history.Record;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -540,6 +541,7 @@ public class AppCMSPresenter {
     private boolean loginFromNavPage;
     private Action0 afterLoginAction;
     private boolean shouldLaunchLoginAction;
+    private Map<String, ContentDatum> userHistoryData;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -717,6 +719,8 @@ public class AppCMSPresenter {
         this.showNetworkConnectivity = true;
 
         this.waithingFor3rdPartyLogin = false;
+
+        this.userHistoryData = new HashMap<>();
     }
 
     /*does not let user enter space in editText*/
@@ -879,7 +883,12 @@ public class AppCMSPresenter {
                         if (appCMSVideoDetail != null &&
                                 appCMSVideoDetail.getRecords() != null &&
                                 appCMSVideoDetail.getRecords().get(0) != null) {
-                            readyAction.call(appCMSVideoDetail.getRecords().get(0));
+                            ContentDatum currentContentDatum = appCMSVideoDetail.getRecords().get(0);
+                            ContentDatum userHistoryContentDatum = getUserHistoryContentDatum(currentContentDatum.getGist().getId());
+                            if (userHistoryContentDatum != null) {
+                                currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
+                            }
+                            readyAction.call(currentContentDatum);
                         }
                     }).execute(params);
         }
@@ -1027,6 +1036,9 @@ public class AppCMSPresenter {
                             Log.e(TAG, "Error updating watched time: " + e.getMessage());
                         }
                     });
+
+            populateUserHistoryData();
+
             currentActivity.runOnUiThread(() -> {
                 try {
                     // copyFromRealm is used to get an unmanaged in-memory copy of an already
@@ -1045,8 +1057,22 @@ public class AppCMSPresenter {
                     //Log.e(TAG, "Film " + filmId + " has not been downloaded");
                 }
             });
-
         }
+    }
+
+    private void populateUserHistoryData() {
+        getHistoryData(appCMSHistoryResult -> {
+            try {
+                int contentDatumLength = appCMSHistoryResult.getRecords().size();
+                List<Record> historyRecords = appCMSHistoryResult.getRecords();
+                for (int i = 0; i < contentDatumLength; i++) {
+                    ContentDatum recordContentDatum = historyRecords.get(i).convertToContentDatum();
+                    userHistoryData.put(recordContentDatum.getGist().getId(), recordContentDatum);
+                }
+            } catch (Exception e) {
+
+            }
+        });
     }
 
     private void sendUpdateHistoryAction() {
@@ -1650,6 +1676,15 @@ public class AppCMSPresenter {
         }
 
         return result;
+    }
+
+    public ContentDatum getUserHistoryContentDatum(String filmId) {
+        try {
+            return userHistoryData.get(filmId);
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 
     public boolean launchNavigationPage() {
@@ -6150,6 +6185,8 @@ public class AppCMSPresenter {
                 Auth.GoogleSignInApi.signOut(googleApiClient);
             }
 
+            userHistoryData.clear();
+
             refreshAPIData(this::navigateToHomePage, false);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
@@ -8112,6 +8149,8 @@ public class AppCMSPresenter {
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
+        populateUserHistoryData();
+
         //Log.d(TAG, "Initiating user login - user subscribed: " + getIsUserSubscribed());
 
         if (TextUtils.isEmpty(getUserDownloadQualityPref())) {
@@ -9038,6 +9077,10 @@ public class AppCMSPresenter {
                                 //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                                 launchUpgradeAppActivity();
                             } else {
+                                if (isUserLoggedIn()) {
+//                                    populateUserHistoryData();
+                                }
+
                                 getAppCMSModules(appCMSAndroidUI, false, (appCMSAndroidModules) -> {
                                     launchBlankPage();
                                     //Log.d(TAG, "Received module list");
@@ -9061,6 +9104,10 @@ public class AppCMSPresenter {
                                                         refreshSubscriptionData(() -> {
 
                                                         }, true);
+                                                    }
+
+                                                    if (isUserLoggedIn()) {
+                                                        populateUserHistoryData();
                                                     }
 
                                                     if (appCMSMain.isForceLogin()) {
