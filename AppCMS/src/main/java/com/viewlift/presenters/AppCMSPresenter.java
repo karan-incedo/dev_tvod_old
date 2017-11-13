@@ -9190,6 +9190,10 @@ public class AppCMSPresenter {
     }
 
     private void queueMetaPages(List<MetaPage> metaPageList) {
+        if (pagesToProcess == null) {
+            pagesToProcess = new ConcurrentLinkedQueue<>();
+        }
+
         if (!metaPageList.isEmpty()) {
             int loginPageIndex = getSigninPage(metaPageList);
             if (loginPageIndex >= 0) {
@@ -9239,9 +9243,27 @@ public class AppCMSPresenter {
                 new SoftReference<Object>(watchlistPage, referenceQueue);
             }
 
+            int pageToQueueIndex = -1;
             if (jsonValueKeyMap.get(appCMSMain.getServiceType()) == AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE
                     && !isUserLoggedIn()) {
                 launchType = LaunchType.LOGIN_AND_SIGNUP;
+            }
+
+            if (pageToQueueIndex == -1) {
+                pageToQueueIndex = homePageIndex;
+            }
+
+            if (pageToQueueIndex >= 0) {
+                pagesToProcess.add(metaPageList.get(pageToQueueIndex));
+                //Log.d(TAG, "Queuing meta page: " +
+//                        metaPageList.get(pageToQueueIndex).getPageName() + ": " +
+//                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
+//                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
+//                        metaPageList.get(pageToQueueIndex).getPageAPI());
+                metaPageList.remove(pageToQueueIndex);
+                queueMetaPages(metaPageList);
+            } else {
+                pagesToProcess.addAll(metaPageList);
             }
         }
     }
