@@ -128,6 +128,10 @@ public class AppCMSUIModule {
     }
 
     private void createJsonValueKeyMap(Context context) {
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_ratingbar_key),
+                AppCMSUIKeyType.PAGE_RATINGBAR);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_type_key),
+                AppCMSUIKeyType.PAGE_VIDEO_TYPE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_main_svod_service_type_key),
                 AppCMSUIKeyType.MAIN_SVOD_SERVICE_TYPE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_authscreen_key),
