@@ -47,17 +47,21 @@ public class AutoplayActivity
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
         appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
-        Intent intent = getIntent();
-        Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
-        binder = (AppCMSVideoPageBinder)
-                bundleExtra.getBinder(getString(R.string.app_cms_video_player_binder_key));
-        setContentView(R.layout.activity_autoplay);
+        try {
+            Intent intent = getIntent();
+            Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
+            binder = (AppCMSVideoPageBinder)
+                    bundleExtra.getBinder(getString(R.string.app_cms_video_player_binder_key));
+            setContentView(R.layout.activity_autoplay);
 
-        //Restore the fragment's instance
-        autoplayFragment = (AutoplayFragment) getSupportFragmentManager()
-                .findFragmentByTag(binder.getContentData().getGist().getId());
-        if (autoplayFragment == null) {
-            createFragment(binder);
+            //Restore the fragment's instance
+            autoplayFragment = (AutoplayFragment) getSupportFragmentManager()
+                    .findFragmentByTag(binder.getContentData().getGist().getId());
+            if (autoplayFragment == null) {
+                createFragment(binder);
+            }
+        } catch (Exception e) {
+
         }
     }
 

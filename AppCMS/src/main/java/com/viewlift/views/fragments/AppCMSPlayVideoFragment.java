@@ -757,6 +757,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 
+        appCMSPresenter.setShowNetworkConnectivity(false);
+
         requestAudioFocus();
         resumeVideo();
         super.onResume();
@@ -1255,7 +1257,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             @Override
             public void onTick(long millisUntilFinished) {
                 long progress = (long) (100.0 * (1.0 - (double) millisUntilFinished / (double) totalCountdownInMillis));
-                Log.d(TAG, "CRW Progress:" + progress);
+//                Log.d(TAG, "CRW Progress:" + progress);
                 progressBar.setProgress((int) progress);
             }
 

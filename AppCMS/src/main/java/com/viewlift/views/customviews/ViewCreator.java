@@ -38,8 +38,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.exoplayer2.ui.PlaybackControlView;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -64,6 +62,7 @@ import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 import net.nightwhistler.htmlspanner.SpanStack;
@@ -73,7 +72,6 @@ import net.nightwhistler.htmlspanner.handlers.attributes.AlignmentAttributeHandl
 import net.nightwhistler.htmlspanner.handlers.attributes.BorderAttributeHandler;
 import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
-import net.nightwhistler.htmlspanner.style.StyleValue;
 
 import org.htmlcleaner.TagNode;
 
@@ -97,7 +95,8 @@ public class ViewCreator {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
         Style paragraphStyle = new Style();
-        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler(new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
+        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler
+                (new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
         htmlSpanner.registerHandler("p", pHandler);
     }
 
@@ -151,6 +150,24 @@ public class ViewCreator {
         return color1;
     }
 
+    public static VideoPlayerView playerView(Context context) {
+
+        VideoPlayerView videoPlayerView = new VideoPlayerView(context);
+        videoPlayerView.init(context);
+        // it should be dynamic when live url come from api
+        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
+                null);
+        videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
+        videoPlayerView.getPlayerView().hideController();
+        videoPlayerView.getPlayerView().setControllerVisibilityListener(i -> {
+            if (i == 0) {
+                videoPlayerView.getPlayerView().hideController();
+            }
+        });
+
+        return videoPlayerView;
+    }
+
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     private void refreshPageView(PageView pageView,
                                  Context context,
@@ -197,6 +214,9 @@ public class ViewCreator {
                     boolean shouldHideComponent;
 
                     if (moduleAPI != null) {
+
+                        updateUserHistory(appCMSPresenter,
+                                moduleAPI.getContentData());
 
                         for (Component component : module.getComponents()) {
                             shouldHideComponent = false;
@@ -260,7 +280,7 @@ public class ViewCreator {
                                                 long runTime =
                                                         moduleAPI.getContentData().get(0).getGist().getRuntime();
                                                 if (watchedTime > 0 && runTime > 0) {
-                                                    long percentageWatched = watchedTime / runTime;
+                                                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
                                                     ((ProgressBar) view)
                                                             .setProgress((int) percentageWatched);
                                                     view.setVisibility(View.VISIBLE);
@@ -915,8 +935,13 @@ public class ViewCreator {
             return null;
         }
 
-        PageView pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
-                + BaseView.isLandscape(context));
+        PageView pageView = null;
+        try {
+            pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
+                    + BaseView.isLandscape(context));
+        } catch (Exception e) {
+
+        }
         if (appCMSPresenter.isPageAVideoPage(screenName)) {
             pageView = appCMSPresenter.getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
         }
@@ -947,6 +972,7 @@ public class ViewCreator {
                 (!appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
+            pageView.removeAllAddOnViews();
             pageView.getChildrenContainer().removeAllViews();
             componentViewResult = new ComponentViewResult();
             createPageView(context,
@@ -988,7 +1014,12 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            ModuleList module = null;
+            try {
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            } catch (Exception e) {
+
+            }
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {
@@ -1022,13 +1053,14 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter);
                 if (childView != null) {
-                    childrenContainer.addView(childView);
+//                    childrenContainer.addView(childView);
                     if (moduleAPI == null) {
                         childView.setVisibility(View.GONE);
                     }
                 }
             }
         }
+        pageView.notifyAdapterDataSetChanged();
 
         List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
         if (presenterOnInternalEvents != null) {
@@ -1077,6 +1109,11 @@ public class ViewCreator {
                 AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView);
                 if (module.getComponents() != null) {
+                    if (moduleAPI != null) {
+                        updateUserHistory(appCMSPresenter,
+                                moduleAPI.getContentData());
+                    }
+
                     int size = module.getComponents().size();
                     for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
@@ -1241,6 +1278,22 @@ public class ViewCreator {
             moduleView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         }
         return moduleView;
+    }
+
+    private void updateUserHistory(AppCMSPresenter appCMSPresenter,
+                                   List<ContentDatum> contentData) {
+        try {
+            int contentDatumLength = contentData.size();
+            for (int i = 0; i < contentDatumLength; i++) {
+                ContentDatum currentContentDatum = contentData.get(i);
+                ContentDatum userHistoryContentDatum = appCMSPresenter.getUserHistoryContentDatum(contentData.get(i).getGist().getId());
+                if (userHistoryContentDatum != null) {
+                    currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
+                }
+            }
+        } catch (Exception e) {
+
+        }
     }
 
     private void updateModuleHeight(Context context,
@@ -1444,7 +1497,7 @@ public class ViewCreator {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                 .adapter(appCMSTrayItemAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
-                                .id(moduleAPI.getId() + component.getKey())
+                                .id(moduleId + component.getKey())
                                 .build());
                     }
                 }
@@ -2170,7 +2223,7 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
@@ -2198,7 +2251,7 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
@@ -2569,7 +2622,10 @@ public class ViewCreator {
                 break;
 
             case PAGE_IMAGE_KEY:
-                componentViewResult.componentView = new SimpleDraweeView(context);
+                componentViewResult.componentView = ImageUtils.createImageView(context);
+                if (componentViewResult.componentView == null) {
+                    componentViewResult.componentView = new ImageView(context);
+                }
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
@@ -2585,18 +2641,14 @@ public class ViewCreator {
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                             .override(viewWidth, viewHeight)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else if (viewWidth > 0) {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .override(viewWidth, viewHeight)
@@ -2604,9 +2656,7 @@ public class ViewCreator {
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else {
-                                if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                    ((SimpleDraweeView) componentViewResult.componentView).setImageURI(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
-                                } else {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .into((ImageView) componentViewResult.componentView);
@@ -2696,9 +2746,7 @@ public class ViewCreator {
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
-                            if (componentViewResult.componentView instanceof SimpleDraweeView) {
-                                ((SimpleDraweeView) componentViewResult.componentView).setImageURI(component.getImageName());
-                            } else {
+                            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, component.getImageName())) {
                                 Glide.with(context)
                                         .load(component.getImageName())
                                         .into((ImageView) componentViewResult.componentView);
@@ -2747,7 +2795,7 @@ public class ViewCreator {
                             long runTime =
                                     moduleAPI.getContentData().get(0).getGist().getRuntime();
                             if (watchedTime > 0 && runTime > 0) {
-                                long percentageWatched = watchedTime / runTime;
+                                long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
                                 ((ProgressBar) componentViewResult.componentView)
                                         .setProgress((int) percentageWatched);
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);
@@ -3208,12 +3256,12 @@ public class ViewCreator {
                                 UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
                             }, true);
                 } else {
-                    if (appCMSPresenter.isAppSVOD() &&
-                            appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
-                    } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
-                    }
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                            () -> {
+                                appCMSPresenter.setAfterLoginAction(() -> {
+
+                                });
+                            });
                 }
             };
             removeClickListener = v -> appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
@@ -3284,12 +3332,25 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+
+                                        });
+                                    });
                         } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+
+                                        });
+                                    });
                         }
                     } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                () -> {
+
+                                });
                     }
                 }
                 imageButton.setOnClickListener(null);
@@ -3353,27 +3414,6 @@ public class ViewCreator {
                 imageButton.setOnClickListener(addClickListener);
             }
         }
-    }
-
-    public static VideoPlayerView playerView(Context context) {
-
-        VideoPlayerView videoPlayerView = new VideoPlayerView(context);
-        videoPlayerView.init(context);
-        // it should be dynamic when live url come from api
-        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
-                null);
-        videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
-        videoPlayerView.getPlayerView().hideController();
-        videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
-            @Override
-            public void onVisibilityChange(int i) {
-                if (i == 0) {
-                    videoPlayerView.getPlayerView().hideController();
-                }
-            }
-        });
-
-        return videoPlayerView;
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
@@ -3440,7 +3480,7 @@ public class ViewCreator {
 
         @Override
         public void beforeChildren(TagNode node, SpannableStringBuilder builder, SpanStack spanStack) {
-            if ( builder.length() == 0 || builder.charAt(builder.length() -1) != '\n' ) {
+            if (builder.length() == 0 || builder.charAt(builder.length() - 1) != '\n') {
                 builder.append('\n');
             }
             super.beforeChildren(node, builder, spanStack);

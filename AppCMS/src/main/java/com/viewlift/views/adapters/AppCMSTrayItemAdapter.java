@@ -150,6 +150,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        if (adapterData != null && adapterData.size() == 0) {
+            sendEvent(hideRemoveAllButtonEvent);
+        }
+
         if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
             ContentDatum contentDatum = adapterData.get(position);
 
@@ -328,8 +332,21 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             if (contentDatum.getGist() != null) {
-                holder.appCMSContinueWatchingDuration.setText(String.valueOf(contentDatum.getGist()
-                        .getRuntime() / SECONDS_PER_MINS) + " " + String.valueOf(holder.itemView.getContext().getString(R.string.mins_abbreviation)));
+                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
+                    StringBuilder runtimeText = new StringBuilder()
+                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                            .append(" ")
+                            .append(holder.itemView.getContext().getString(R.string.min_abbreviation));
+
+                    holder.appCMSContinueWatchingDuration.setText(runtimeText);
+                } else {
+                    StringBuilder runtimeText = new StringBuilder()
+                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                            .append(" ")
+                            .append(holder.itemView.getContext().getString(R.string.mins_abbreviation));
+
+                    holder.appCMSContinueWatchingDuration.setText(runtimeText);
+                }
             }
 
             if (contentDatum.getGist().getWatchedPercentage() > 0) {
@@ -348,7 +365,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     holder.appCMSContinueWatchingProgress.setProgress(0);
                 }
             }
-
         } else {
             sendEvent(hideRemoveAllButtonEvent);
 
@@ -443,7 +459,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return lastWatchedMessage;
     }
 
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "unused"})
     private ContentDatum getNextContentDatum(int position) {
         if (position + 1 == adapterData.size()) {
             return null;
@@ -542,8 +558,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void addReceiver(OnInternalEvent e) {
         receivers.add(e);
-//        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 1) {
-        if (adapterData == null || adapterData.size() == 1) {
+        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
         } else {
             sendEvent(showRemoveAllButtonEvent);
@@ -736,8 +751,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (isHistory) {
             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
                 if (appCMSHistoryResult != null) {
-                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules()
-                            .get(0).getContentData();
+//                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules()
+//                            .get(0).getContentData();
                     sortData();
                     notifyDataSetChanged();
                 }
@@ -750,8 +765,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
         } else if (isDownload) {
-            sortData();
-            notifyDataSetChanged();
+            if (!adapterData.isEmpty()) {
+                sortData();
+                notifyDataSetChanged();
+            }
         }
     }
 
@@ -759,7 +776,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         adapterData = contentData;
         sortData();
-        if (adapterData == null || adapterData.size() < 2) {
+        notifyDataSetChanged();
+
+        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
         } else {
             sendEvent(showRemoveAllButtonEvent);
@@ -832,6 +851,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     appCMSDeleteHistoryResult -> {
                         adapterData.remove(contentDatum);
                         notifyDataSetChanged();
+                        if (adapterData.size() == 0) {
+                            sendEvent(hideRemoveAllButtonEvent);
+                        }
                     }, false);
         }
 
@@ -848,6 +870,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         notifyItemRangeRemoved(position, getItemCount());
                                         adapterData.remove(contentDatum);
                                         notifyItemRangeChanged(position, getItemCount());
+                                        if (adapterData.size() == 0) {
+                                            sendEvent(hideRemoveAllButtonEvent);
+                                        }
                                     }),
                     null);
         }
@@ -858,6 +883,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     addToWatchlistResult -> {
                         adapterData.remove(contentDatum);
                         notifyDataSetChanged();
+                        if (adapterData.size() == 0) {
+                            sendEvent(hideRemoveAllButtonEvent);
+                        }
                     }, false);
         }
     }

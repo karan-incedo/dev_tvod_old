@@ -1,5 +1,7 @@
 package com.viewlift.models.network.rest;
 
+import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordRequest;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
@@ -12,7 +14,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Action1;
 
-/**
+/*
  * Created by viewlift on 7/6/17.
  */
 
@@ -32,7 +34,9 @@ public class AppCMSResetPasswordCall {
         forgotPasswordRequest.setEmail(email);
         appCMSResetPasswordRest.resetPassword(url, forgotPasswordRequest).enqueue(new Callback<ForgotPasswordResponse>() {
             @Override
-            public void onResponse(Call<ForgotPasswordResponse> call, Response<ForgotPasswordResponse> response) {
+            @SuppressWarnings("ConstantConditions")
+            public void onResponse(@NonNull Call<ForgotPasswordResponse> call,
+                                   @NonNull Response<ForgotPasswordResponse> response) {
                 if (readyAction != null) {
                     if (response.body() != null) {
                         Observable.just(response.body()).subscribe(readyAction);
@@ -52,7 +56,7 @@ public class AppCMSResetPasswordCall {
             }
 
             @Override
-            public void onFailure(Call<ForgotPasswordResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<ForgotPasswordResponse> call, @NonNull Throwable t) {
                 if (readyAction != null) {
                     Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
                 }
