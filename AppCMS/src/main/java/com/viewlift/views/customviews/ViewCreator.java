@@ -181,7 +181,12 @@ public class ViewCreator {
             return;
         }
         for (ModuleList moduleInfo : appCMSPageUI.getModuleList()) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            ModuleList module = null;
+            try {
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            } catch (Exception e) {
+
+            }
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {
