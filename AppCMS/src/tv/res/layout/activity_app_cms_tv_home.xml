@@ -49,6 +49,7 @@
 </RelativeLayout>
 
     <ImageView
+        android:id="@+id/footer_logo"
         android:layout_width="@dimen/footer_logo_width"
         android:layout_height="@dimen/footer_logo_height"
         android:layout_alignParentBottom="true"
@@ -70,6 +71,25 @@
         android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
         />
 
+    <ImageView
+        android:id="@+id/press_down_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/press_down"
+        android:layout_marginBottom="@dimen/footer_info_icon_margin_bottom"
+         />
+
+    <ImageView
+        android:id="@+id/press_up_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:background="@drawable/prees_menu"
+        android:layout_marginTop="@dimen/footer_info_icon_margin_bottom"
+        />
 
 
 </RelativeLayout>

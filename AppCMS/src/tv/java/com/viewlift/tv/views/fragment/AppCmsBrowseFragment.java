@@ -23,6 +23,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.tv.views.customviews.TVPageView;
 
 /**
  * Created by nitin.tyagi on 6/29/2017.
@@ -32,7 +33,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     private ArrayObjectAdapter mRowsAdapter;
     private final String TAG = AppCmsBrowseFragment.class.getName();
     private View view;
-
+    private TVPageView pageView;
 
 
     public static AppCmsBrowseFragment newInstance(Context context){
@@ -41,20 +42,28 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         return appCmsBrowseFragment;
     }
 
-    public void setmRowsAdapter(ArrayObjectAdapter rowsAdapter){
+    public void setPageView(TVPageView tvPageView) {
+        pageView = tvPageView;
+    }
+
+    public void setmRowsAdapter(ArrayObjectAdapter rowsAdapter) {
         this.mRowsAdapter = rowsAdapter;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        view =  super.onCreateView(inflater, container, savedInstanceState);
+        view = super.onCreateView(inflater, container, savedInstanceState);
         return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
 
-    public void requestFocus(boolean requestFocus){
-        if(null != view){
-            if(requestFocus)
+    public void requestFocus(boolean requestFocus) {
+        if (null != view) {
+            if (requestFocus)
                 view.requestFocus();
             else
                 view.clearFocus();
@@ -65,7 +74,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //Log.d(TAG , "appcmsBrowseFragment onActivityCreated");
-        if(null != mRowsAdapter){
+        if (null != mRowsAdapter) {
             setAdapter(mRowsAdapter);
         }
 
@@ -74,8 +83,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
 
-
     AppCMSPresenter appCMSPresenter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,9 +96,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     ContentDatum data = null;
     BrowseFragmentRowData rowData = null;
     long clickedTime;
+
     public void pushedPlayKey() {
         if (null != rowData) {
-            Utils.pageLoading(true,getActivity());
+            Utils.pageLoading(true, getActivity());
             String filmId = rowData.contentData.getGist().getId();
             String permaLink = rowData.contentData.getGist().getPermalink();
             String title = rowData.contentData.getGist().getTitle();
@@ -97,7 +107,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                 appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
+                appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
                         -1,
                         null,
                         rowData.contentData.getGist().getWatchedTime());
@@ -116,67 +126,43 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
-            ContentDatum data = rowData.contentData;
-            //String hls = rowData.contentData.getStreamingInfo().getVideoAssets().getHls();
-            //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+            if (null != item && item instanceof BrowseFragmentRowData) {
+                BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
+                ContentDatum data = rowData.contentData;
 
-            String action = /*"play"*/rowData.action;
-            if (action.equalsIgnoreCase(getString(R.string.app_cms_action_watchvideo_key))) {
-                pushedPlayKey();
-            } else {
-                String permalink = data.getGist().getPermalink();
-                String title = data.getGist().getTitle();
-                String hlsUrl = getHlsUrl(data);
-                String[] extraData = new String[4];
-                extraData[0] = permalink;
-                extraData[1] = hlsUrl;
-                extraData[2] = data.getGist().getId();
-                if (data.getContentDetails() != null &&
-                       data.getContentDetails().getClosedCaptions() != null) {
-                    for (ClosedCaptions closedCaption :
-                            data.getContentDetails().getClosedCaptions()) {
-                        if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
-                            extraData[3] = closedCaption.getUrl();
-                            break;
+                String action = /*"play"*/rowData.action;
+                if (action.equalsIgnoreCase(getString(R.string.app_cms_action_watchvideo_key))) {
+                    pushedPlayKey();
+                } else {
+                    String permalink = data.getGist().getPermalink();
+                    String title = data.getGist().getTitle();
+                    String hlsUrl = getHlsUrl(data);
+                    String[] extraData = new String[4];
+                    extraData[0] = permalink;
+                    extraData[1] = hlsUrl;
+                    extraData[2] = data.getGist().getId();
+                    if (data.getContentDetails() != null &&
+                            data.getContentDetails().getClosedCaptions() != null) {
+                        for (ClosedCaptions closedCaption :
+                                data.getContentDetails().getClosedCaptions()) {
+                            if (closedCaption.getFormat().equalsIgnoreCase("SRT")) {
+                                extraData[3] = closedCaption.getUrl();
+                                break;
+                            }
                         }
                     }
-                }
-                //Log.d(TAG, "Launching " + permalink + ": " + action);
-                if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
-                        action,
-                        title,
-                        extraData,
-                        data,
-                        false,-1, null)) {
-             /*       Log.e(TAG, "Could not launch action: " +
-                            " permalink: " +
-                            permalink +
-                            " action: " +
-                            action +
-                            " hlsUrl: " +
-                            hlsUrl);  */
-                }
-            }
-            /*if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
-                        action,
-                        title,
-                        extraData,
-                        data,
-                        false,
-                        -1,
-                        null)) {
-                    Log.e(TAG, "Could not launch action: " +
-                            " permalink: " +
-                            permalink +
-                            " action: " +
-                            action +
-                            " hlsUrl: " +
-                            hlsUrl);
-                }*/
+                    if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
+                            action,
+                            title,
+                            extraData,
+                            data,
+                            false, -1, null)) {
 
-            itemViewHolder.view.setClickable(false);
-            new Handler().postDelayed(() -> itemViewHolder.view.setClickable(true), 3000);
+                    }
+                }
+                itemViewHolder.view.setClickable(false);
+                new Handler().postDelayed(() -> itemViewHolder.view.setClickable(true), 3000);
+            }
         }
     }
 
@@ -189,24 +175,29 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         return null;
     }
 
+    boolean isPlayerComponentSelected = false;
     private class ItemViewSelectedListener implements OnItemViewSelectedListener {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                    RowPresenter.ViewHolder rowViewHolder, Row row) {
-        if(null != item && item instanceof BrowseFragmentRowData) {
-            rowData = (BrowseFragmentRowData) item;
-            if (rowData != null)
-                data = rowData.contentData;
-            if(null != getBrowseFragmentView())
-                Utils.setBrowseFragmentViewParameters(getBrowseFragmentView(),
+            if (null != item && item instanceof BrowseFragmentRowData) {
+                isPlayerComponentSelected = false;
+                rowData = (BrowseFragmentRowData) item;
+                if (rowData != null)
+                    data = rowData.contentData;
+                Utils.setBrowseFragmentViewParameters(view,
                         (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
                         (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));
-        }else{
-            if(null != getBrowseFragmentView())
-                Utils.setBrowseFragmentViewParameters(getBrowseFragmentView(),
-                        -40,
-                        (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
+
+            }else {
+                if(pageView.isStandAlonePlayerEnabled()) {
+                    isPlayerComponentSelected = true;
+                    Utils.setBrowseFragmentViewParameters(view,
+                            -40,
+                            (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
+                }
+            }
+
         }
     }
-}
 }

@@ -12,8 +12,7 @@
     "firetv": {
       "yAxis": 0,
       "leftMargin": 0,
-      "rightMargin": 0,
-      "height": 221
+      "rightMargin": 0
     }
   },
   "components": [
@@ -21,9 +20,7 @@
       "layout": {
         "firetv": {
           "yAxis": 0,
-          "leftMargin": 0,
-          "rightMargin": 0,
-          "height": 211
+           "xAxis":0
         }
       },
       "type": "player",

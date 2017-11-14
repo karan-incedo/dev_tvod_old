@@ -22,10 +22,6 @@ public class BaseBrowseFragment extends BrowseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
          browseFragmentView =  super.onCreateView(inflater, container, savedInstanceState);
-      /*  Utils.setBrowseFragmentViewParameters(browseFragmentView,
-                (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
-                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));*/
-        browseFragmentView.setNestedScrollingEnabled(false);
         return browseFragmentView;
     }
 
