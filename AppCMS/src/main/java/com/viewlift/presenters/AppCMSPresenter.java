@@ -8462,7 +8462,7 @@ public class AppCMSPresenter {
                     pagePath,
                     screenName,
                     loadFromFile,
-                    appbarPresent,
+                    appbarPresent==false?getTabBarUIFooterModule().getSettings().isShowTabBar():true,
                     fullscreenEnabled,
                     navbarPresent,
                     sendCloseAction,
@@ -9255,7 +9255,7 @@ public class AppCMSPresenter {
 
 //            if (pageToQueueIndex >= 0) {
 //                pagesToProcess.add(metaPageList.get(pageToQueueIndex));
-                //Log.d(TAG, "Queuing meta page: " +
+            //Log.d(TAG, "Queuing meta page: " +
 //                        metaPageList.get(pageToQueueIndex).getPageName() + ": " +
 //                        metaPageList.get(pageToQueueIndex).getPageId() + " " +
 //                        metaPageList.get(pageToQueueIndex).getPageUI() + " " +
@@ -11282,65 +11282,51 @@ public class AppCMSPresenter {
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
     VideoPlayerView videoPlayerViewPIP, videoPlayerViewPage;
-    RelativeLayout relativeLayoutPIP;
+    RelativeLayout relativeLayoutPIP, relativeLayoutPIPEvent;
 
-    public void showPopupWindowPlayer(View v) {
-        //  dismissPopupWindowPlayer();
+    public void showPopupWindowPlayer(View scrollView,String videoId) {
+
+        RelativeLayout.LayoutParams lpPipView = null;
         Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
-        pipPlayerVisible = true;
 
 
-        videoPlayerViewPIP = ViewCreator.playerView(currentActivity);
+        videoPlayerViewPIP = ViewCreator.playerView(currentActivity,this,videoId);
 
         //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
         relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
+        relativeLayoutPIPEvent = new RelativeLayout(currentActivity);
 
-        RelativeLayout.LayoutParams lpPipView = new RelativeLayout.LayoutParams(750, 450);
+        if (!BaseView.isTablet(currentActivity)) {
+            lpPipView = new RelativeLayout.LayoutParams(750, 450);
+            lpPipView.rightMargin = 50;
+            lpPipView.bottomMargin = 20;
+        } else {
+            lpPipView = new RelativeLayout.LayoutParams(250, 175);
+            lpPipView.rightMargin = 10;
+            lpPipView.bottomMargin = 10;
+        }
         lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         lpPipView.addRule(RelativeLayout.ABOVE, R.id.app_cms_tab_nav_container);
-        lpPipView.rightMargin = 50;
-        lpPipView.bottomMargin = 20;
+
 
         relativeLayoutPIP.setLayoutParams(lpPipView);
+        relativeLayoutPIPEvent.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 
 
         relativeLayoutPIP.addView(videoPlayerViewPIP);
+
         relativeLayoutPIP.setVisibility(View.VISIBLE);
 
 
-        relativeLayoutPIP.setOnDragListener(new View.OnDragListener() {
+        relativeLayoutPIP.addView(relativeLayoutPIPEvent);
+        relativeLayoutPIPEvent.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onDrag(View v, DragEvent event) {
-                int action = event.getAction();
-                switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        // do nothing
-                        break;
-                    case DragEvent.ACTION_DRAG_ENTERED:
-
-                        break;
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        //v.setBackgroundDrawable(normalShape);
-                        break;
-                    case DragEvent.ACTION_DROP:
-                        // Dropped, reassign View to ViewGroup
-                       /* View view = (View) event.getLocalState();
-                        ViewGroup owner = (ViewGroup) view.getParent();
-                        owner.removeView(view);
-                        LinearLayout container = (LinearLayout) v;
-                        container.addView(view);
-                        view.setVisibility(View.VISIBLE);*/
-                        dismissPopupWindowPlayer();
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
-                        //v.setBackgroundDrawable(normalShape);
-                    default:
-                        break;
-                }
-                return true;
+            public void onClick(View v) {
+                ((NestedScrollView) scrollView).smoothScrollTo(0, 0);
             }
         });
         ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+        pipPlayerVisible = true;
     }
 
     public void pausePIP() {
@@ -11375,14 +11361,24 @@ public class AppCMSPresenter {
         }
         try {
             if (relativeLayoutPIP != null) {
-                //  relativeLayout.removeAllViews();
+
+
                 relativeLayoutPIP.setVisibility(View.GONE);
+
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+
                 rootView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        if (relativeLayoutPIPEvent != null) {
+                            relativeLayoutPIPEvent.setVisibility(View.GONE);
+                            relativeLayoutPIPEvent.setOnClickListener(null);
+                            relativeLayoutPIP.removeView(relativeLayoutPIPEvent);
+
+                        }
                         rootView.removeView(relativeLayoutPIP);
                         relativeLayoutPIP = null;
+                        relativeLayoutPIPEvent = null;
                     }
                 }, 100);
             }
@@ -11419,6 +11415,7 @@ public class AppCMSPresenter {
     public void showEmptySearchToast() {
         showToast(getCurrentActivity().getResources().getString(R.string.search_blank_toast_msg), Toast.LENGTH_SHORT);
     }
+
     public ModuleList getTabBarUIModule() {
         AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
         ModuleList footerModule = null;
@@ -11438,6 +11435,7 @@ public class AppCMSPresenter {
         ModuleList footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
         return footerModule;
     }
+
     public ModuleList getModuleListComponent(String moduleId) {
         ModuleList moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
         return moduleList;
