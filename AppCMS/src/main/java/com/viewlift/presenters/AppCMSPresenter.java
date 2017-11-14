@@ -4210,31 +4210,35 @@ public class AppCMSPresenter {
     public void getHistoryData(final Action1<AppCMSHistoryResult> appCMSHistoryResultAction) {
         if (currentActivity != null) {
             MetaPage historyMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.HISTORY_PAGE);
-            AppCMSPageUI appCMSPageUI = navigationPages.get(historyMetaPage.getPageId());
-            getHistoryPageContent(appCMSMain.getApiBaseUrl(),
-                    historyMetaPage.getPageAPI(),
-                    appCMSSite.getGist().getSiteInternalName(),
-                    true,
-                    getPageId(appCMSPageUI),
-                    new AppCMSHistoryAPIAction(true,
-                            false,
-                            true,
-                            appCMSPageUI,
-                            historyMetaPage.getPageId(),
-                            historyMetaPage.getPageId(),
-                            historyMetaPage.getPageName(),
-                            historyMetaPage.getPageId(),
-                            false,
-                            null) {
-                        @Override
-                        public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                            if (appCMSHistoryResult != null) {
-                                Observable.just(appCMSHistoryResult).subscribe(appCMSHistoryResultAction);
-                            } else {
-                                Observable.just((AppCMSHistoryResult) null).subscribe(appCMSHistoryResultAction);
+            try {
+                AppCMSPageUI appCMSPageUI = navigationPages.get(historyMetaPage.getPageId());
+                getHistoryPageContent(appCMSMain.getApiBaseUrl(),
+                        historyMetaPage.getPageAPI(),
+                        appCMSSite.getGist().getSiteInternalName(),
+                        true,
+                        getPageId(appCMSPageUI),
+                        new AppCMSHistoryAPIAction(true,
+                                false,
+                                true,
+                                appCMSPageUI,
+                                historyMetaPage.getPageId(),
+                                historyMetaPage.getPageId(),
+                                historyMetaPage.getPageName(),
+                                historyMetaPage.getPageId(),
+                                false,
+                                null) {
+                            @Override
+                            public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                                if (appCMSHistoryResult != null) {
+                                    Observable.just(appCMSHistoryResult).subscribe(appCMSHistoryResultAction);
+                                } else {
+                                    Observable.just((AppCMSHistoryResult) null).subscribe(appCMSHistoryResultAction);
+                                }
                             }
-                        }
-                    });
+                        });
+            } catch (Exception e) {
+                //
+            }
         }
     }
 
