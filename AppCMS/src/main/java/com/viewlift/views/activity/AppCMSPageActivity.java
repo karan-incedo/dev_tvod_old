@@ -490,6 +490,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     public void onCancel() {
                         // App code
 //                        Log.e(TAG, "Facebook login was cancelled");
+                        loaderWaitingFor3rdPartyLogin = false;
                         pageLoading(false);
                     }
 
@@ -497,6 +498,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     public void onError(FacebookException exception) {
                         // App code
 //                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+                        loaderWaitingFor3rdPartyLogin = false;
                         pageLoading(false);
                     }
                 });

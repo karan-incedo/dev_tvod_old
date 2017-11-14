@@ -5748,6 +5748,7 @@ public class AppCMSPresenter {
                 facebookAccessToken,
                 facebookUserId,
                 facebookLoginResponse -> {
+                    waithingFor3rdPartyLogin = false;
                     if (facebookLoginResponse != null) {
                         if (!TextUtils.isEmpty(facebookLoginResponse.getError())) {
                             showDialog(DialogType.SIGNIN, facebookLoginResponse.getError(), false, null, null);
@@ -5768,8 +5769,6 @@ public class AppCMSPresenter {
                                 this.facebookUsername = username;
                                 this.facebookEmail = email;
                             }
-
-                            waithingFor3rdPartyLogin = false;
 
                             finalizeLogin(forceSubscribed,
                                     facebookLoginResponse.isSubscribed(),
