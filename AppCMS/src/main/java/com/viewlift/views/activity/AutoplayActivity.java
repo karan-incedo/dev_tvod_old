@@ -85,7 +85,7 @@ public class AutoplayActivity
                 binder.getCurrentPlayingVideoIndex() + 1,
                 binder.getContentData().getGist().getWatchedTime());
         binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
-        finish();
+//        finish();
     }
 
     @Override
