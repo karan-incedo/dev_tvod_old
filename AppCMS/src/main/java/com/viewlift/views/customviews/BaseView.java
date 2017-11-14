@@ -828,7 +828,6 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_VIDEO_CLOSE_KEY:
                     lm -= 8;
-                    rm -= 8;
                     bm -= 8;
                     break;
 
