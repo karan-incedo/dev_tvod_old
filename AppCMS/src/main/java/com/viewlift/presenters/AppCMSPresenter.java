@@ -2639,6 +2639,7 @@ public class AppCMSPresenter {
 
     public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
         if (isNetworkConnected()) {
+            cancelInternalEvents();
             showLoadingDialog(true);
             try {
                 getPageAPILruCache().evictAll();
