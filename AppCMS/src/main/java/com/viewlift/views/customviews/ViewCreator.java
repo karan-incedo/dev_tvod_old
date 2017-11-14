@@ -1992,7 +1992,7 @@ public class ViewCreator {
 
                     case PAGE_PLAY_KEY:
                     case PAGE_PLAY_IMAGE_KEY:
-                        componentViewResult.componentView.setPadding(8, 8, 8, 8);
+                        componentViewResult.componentView.setPadding(40, 40, 40, 40);
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
 
                         componentViewResult.componentView.getBackground().setTint(tintColor);
@@ -3076,9 +3076,6 @@ public class ViewCreator {
                             });
                     if (appCMSPresenter.isExternalStorageAvailable()) {
                         componentViewResult.componentView.setEnabled(true);
-                    } else {
-                        componentViewResult.componentView.setEnabled(false);
-                        ((Switch) componentViewResult.componentView).setChecked(false);
                     }
                 }
                 break;
