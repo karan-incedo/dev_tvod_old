@@ -181,7 +181,12 @@ public class ViewCreator {
             return;
         }
         for (ModuleList moduleInfo : appCMSPageUI.getModuleList()) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            ModuleList module = null;
+            try {
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            } catch (Exception e) {
+
+            }
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {
@@ -1979,6 +1984,7 @@ public class ViewCreator {
                                 }
                             }
                         });
+                        componentViewResult.componentView.setPadding(8, 8, 8, 8);
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
@@ -1986,7 +1992,9 @@ public class ViewCreator {
 
                     case PAGE_PLAY_KEY:
                     case PAGE_PLAY_IMAGE_KEY:
+                        componentViewResult.componentView.setPadding(8, 8, 8, 8);
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
+
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         break;
@@ -2000,9 +2008,8 @@ public class ViewCreator {
                     case PAGE_VIDEO_CLOSE_KEY:
                         ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setPadding(0, 0, 0, 0);
+                        componentViewResult.componentView.setPadding(8, 0, 0, 8);
                         int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
-//                        componentViewResult.componentView.setPadding(0, 0, 0, 0);
                         ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
                         componentViewResult.componentView.setOnClickListener(v -> {

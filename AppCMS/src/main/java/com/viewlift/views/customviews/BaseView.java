@@ -807,14 +807,28 @@ public abstract class BaseView extends FrameLayout {
                     }
                     break;
 
+                case PAGE_VIDEO_PLAY_BUTTON_KEY:
+                    lm -= 8;
+                    rm -= 8;
+                    bm -= 8;
+                    tm -= 8;
+                    break;
+
                 case PAGE_PLAY_IMAGE_KEY:
                     if (AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
                         gravity = Gravity.CENTER;
-                        tm = 0;
-                        lm = 0;
+                        lm -= 8;
+                        rm -= 8;
+                        bm -= 8;
+                        tm -= 8;
                     }
+                    break;
+
+                case PAGE_VIDEO_CLOSE_KEY:
+                    lm -= 8;
+                    bm -= 8;
                     break;
 
                 case PAGE_DOWNLOAD_SETTING_TITLE_KEY:

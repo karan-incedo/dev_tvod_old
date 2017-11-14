@@ -2639,6 +2639,7 @@ public class AppCMSPresenter {
 
     public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
         if (isNetworkConnected()) {
+            cancelInternalEvents();
             showLoadingDialog(true);
             try {
                 getPageAPILruCache().evictAll();
@@ -5748,6 +5749,7 @@ public class AppCMSPresenter {
                 facebookAccessToken,
                 facebookUserId,
                 facebookLoginResponse -> {
+                    waithingFor3rdPartyLogin = false;
                     if (facebookLoginResponse != null) {
                         if (!TextUtils.isEmpty(facebookLoginResponse.getError())) {
                             showDialog(DialogType.SIGNIN, facebookLoginResponse.getError(), false, null, null);
@@ -5768,8 +5770,6 @@ public class AppCMSPresenter {
                                 this.facebookUsername = username;
                                 this.facebookEmail = email;
                             }
-
-                            waithingFor3rdPartyLogin = false;
 
                             finalizeLogin(forceSubscribed,
                                     facebookLoginResponse.isSubscribed(),
@@ -7087,15 +7087,17 @@ public class AppCMSPresenter {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                             ContextCompat.getColor(currentContext, R.color.colorPrimaryDark)));
                 }
-                if (currentActivity.getWindow().isActive()) {
-                    try {
-                        if (!dialog.isShowing())
-                            dialog.show();
-                    } catch (Exception e) {
-                        //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
+                currentActivity.runOnUiThread(() -> {
+                    if (currentActivity.getWindow().isActive()) {
+                        try {
+                            if (!dialog.isShowing())
+                                dialog.show();
+                        } catch (Exception e) {
+                            //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
+                        }
                     }
-                }
+                });
             }
         }
     }
