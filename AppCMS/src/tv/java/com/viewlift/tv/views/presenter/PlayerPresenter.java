@@ -29,13 +29,10 @@ public class PlayerPresenter extends Presenter {
         //Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
         final FrameLayout frameLayout = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams layoutParams;
-
-            layoutParams = new FrameLayout.LayoutParams(DEVICE_WIDTH,
+        layoutParams = new FrameLayout.LayoutParams(DEVICE_WIDTH,
                     DEVICE_HEIGHT);
-
         frameLayout.setLayoutParams(layoutParams);
         frameLayout.setFocusable(true);
-
         return new ViewHolder(frameLayout);
     }
 
@@ -72,12 +69,9 @@ public class PlayerPresenter extends Presenter {
     }
 
 
-
     public static CustomVideoVideoPlayerView playerView(Context context) {
-
         CustomVideoVideoPlayerView videoPlayerView = new CustomVideoVideoPlayerView(context);
         videoPlayerView.init(context);
-        // it should be dynamic when live url come from api
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
@@ -87,7 +81,6 @@ public class PlayerPresenter extends Presenter {
                 }
             }
         });
-
         return videoPlayerView;
     }
 

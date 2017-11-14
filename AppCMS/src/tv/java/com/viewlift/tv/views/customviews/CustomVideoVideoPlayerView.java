@@ -152,6 +152,14 @@ public class CustomVideoVideoPlayerView extends VideoPlayerView{
      super.releasePlayer();
     }
 
+
+    public void resumePlayer(){
+        if(null != getPlayer() && !getPlayer().getPlayWhenReady()){
+            getPlayer().setPlayWhenReady(true);
+        }
+    }
+
+
     LinearLayout linearLayout;
     TextView textView;
     private void createLoader(){

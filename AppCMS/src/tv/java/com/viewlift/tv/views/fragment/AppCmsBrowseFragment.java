@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -23,6 +24,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.tv.views.customviews.CustomVideoVideoPlayerView;
 import com.viewlift.tv.views.customviews.TVPageView;
 
 /**
@@ -59,6 +61,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     @Override
     public void onStart() {
         super.onStart();
+        if(null != customVideoVideoPlayerView){
+            customVideoVideoPlayerView.resumePlayer();
+        }
     }
 
     public void requestFocus(boolean requestFocus) {
@@ -176,6 +181,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
     boolean isPlayerComponentSelected = false;
+    CustomVideoVideoPlayerView customVideoVideoPlayerView;
     private class ItemViewSelectedListener implements OnItemViewSelectedListener {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
@@ -191,6 +197,11 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
             }else {
                 if(pageView.isStandAlonePlayerEnabled()) {
+                    if( null != itemViewHolder && null != itemViewHolder.view
+                            && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoVideoPlayerView){
+                        customVideoVideoPlayerView  =  (CustomVideoVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
+                    }
+
                     isPlayerComponentSelected = true;
                     Utils.setBrowseFragmentViewParameters(view,
                             -40,
@@ -200,4 +211,13 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
         }
     }
+
+    @Override
+    public void onStop() {
+        if(null != customVideoVideoPlayerView){
+            customVideoVideoPlayerView.pausePlayer();
+        }
+        super.onStop();
+    }
+
 }
