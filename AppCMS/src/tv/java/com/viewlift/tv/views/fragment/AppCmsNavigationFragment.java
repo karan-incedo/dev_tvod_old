@@ -10,11 +10,11 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -26,7 +26,6 @@ import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.binders.AppCMSBinder;
 
 import java.util.List;
@@ -76,16 +75,32 @@ public class AppCmsNavigationFragment extends Fragment {
         AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-
+        TextView navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
+        View navTopLine = view.findViewById(R.id.nav_top_line);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        NavigationAdapter navigationAdapter = new NavigationAdapter(getActivity(), textColor, bgColor,
-                                                appCMSBinder.getNavigation(),
-                                                appCMSBinder.isUserLoggedIn(),
-                                                appCMSPresenter);
+        if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+            NavigationAdapter navigationAdapter = new NavigationAdapter(getActivity(), textColor, bgColor,
+                                                    appCMSBinder.getNavigation(),
+                                                    appCMSBinder.isUserLoggedIn(),
+                                                    appCMSPresenter);
 
-        mRecyclerView.setAdapter(navigationAdapter);
+            mRecyclerView.setAdapter(navigationAdapter);
+            navMenuTile.setVisibility(View.GONE);
+            navTopLine.setVisibility(View.GONE);
+        } else {
+            STNavigationAdapter navigationAdapter = new STNavigationAdapter(getActivity(), textColor, bgColor,
+                    appCMSBinder.getNavigation(),
+                    appCMSBinder.isUserLoggedIn(),
+                    appCMSPresenter);
+
+            mRecyclerView.setAdapter(navigationAdapter);
+            navMenuTile.setText("Menu");
+            navMenuTile.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_regular)));
+            navMenuTile.setVisibility(View.VISIBLE);
+            navTopLine.setVisibility(View.VISIBLE);
+        }
         return view;
     }
 
@@ -125,7 +140,7 @@ public class AppCmsNavigationFragment extends Fragment {
         //Log.d("" ,"Navigation setSelectedPageId = " + mSelectedPageId );
     }
 
-    public void notifiDataSetInvlidate() {
+    public void notifyDataSetInvalidate() {
         if(null != mRecyclerView && null != mRecyclerView.getAdapter()){
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
@@ -318,6 +333,190 @@ public class AppCmsNavigationFragment extends Fragment {
                         }
                         return false;
                     }
+                });
+            }
+        }
+    }
+
+    class STNavigationAdapter extends RecyclerView.Adapter<STNavigationAdapter.STNavItemHolder> {
+        private Context mContext;
+        private int textColor;
+        private int bgColor;
+        private Navigation navigation;
+        private boolean isuserLoggedIn;
+        private AppCMSPresenter appCmsPresenter;
+
+        public STNavigationAdapter(Context activity,
+                                 int textColor,
+                                 int bgColor,
+                                 Navigation navigation,
+                                 boolean userLoggedIn,
+                                 AppCMSPresenter appCMSPresenter) {
+            mContext = activity;
+            this.textColor = textColor;
+            this.bgColor = bgColor;
+            this.navigation = navigation;
+            this.isuserLoggedIn = userLoggedIn;
+            this.appCmsPresenter = appCMSPresenter;
+        }
+
+
+        public Object getItem(int i) {
+            return navigation.getNavigationPrimary().get(i);
+        }
+
+        @Override
+        public STNavItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.st_navigation_item, parent, false);
+            return new STNavItemHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(STNavItemHolder holder, final int position) {
+            final NavigationPrimary primary = (NavigationPrimary) getItem(position);
+            holder.navItemView.setText(primary.getTitle().toUpperCase());
+            holder.navItemView.setTag(R.string.item_position, position);
+            if (primary.getIcon() != null) {
+                holder.navImageView.setImageResource(getIcon(primary.getIcon()));
+            }
+            if (null != mSelectedPageId) {
+                if (primary.getPageId().equalsIgnoreCase(mSelectedPageId)) {
+                    holder.navItemLayout.requestFocus();
+                } else {
+                    holder.navItemLayout.clearFocus();
+                }
+            }
+
+
+            holder.navItemLayout.setOnClickListener(view -> {
+                navigationVisibilityListener.showNavigation(false);
+                Utils.pageLoading(true, getActivity());
+
+                new Handler().postDelayed(() -> {
+                    if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
+                        appCmsPresenter.openSearch();
+                        Utils.pageLoading(false, getActivity());
+                    } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
+                            getString(R.string.profile_label)))) {
+
+                        NavigationUser navigationUser = getNavigationUser();
+                        //Log.d("","Selected Title = "+navigationUser.getTitle());
+                        if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
+                                .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
+                            appCmsPresenter.navigateToWatchlistPage(
+                                    navigationUser.getPageId(),
+                                    navigationUser.getTitle(),
+                                    navigationUser.getUrl(),
+                                    false);
+                        } else {
+                            appCmsPresenter.navigateToTVPage(
+                                    navigationUser.getPageId(),
+                                    navigationUser.getTitle(),
+                                    navigationUser.getUrl(),
+                                    false,
+                                    Uri.EMPTY,
+                                    false,
+                                    false,
+                                    false
+                            );
+                        }
+
+                    } else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
+                            primary.getTitle(),
+                            primary.getUrl(),
+                            false,
+                            null,
+                            true,
+                            false,
+                            false)) {
+
+                    }
+                }, 500);
+            });
+        }
+
+        private int getIcon(String icon) {
+            int iconResId = 0;
+            if (icon.equalsIgnoreCase(getString(R.string.st_home_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_home;
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_show_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_grid;
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_teams_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_grid;
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_watchlist_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_watchlist;
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_history_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_clock;
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_settings_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_gear;
+            }
+            return iconResId;
+        }
+
+        private NavigationUser getNavigationUser() {
+            List<NavigationUser> navigationUserList = navigation.getNavigationUser();
+            for (NavigationUser navigationUser : navigationUserList) {
+                if (appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedIn()) {
+                    return navigationUser;
+                } else if (!appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedOut()) {
+                    return navigationUser;
+                }
+            }
+            return null;
+        }
+        @Override
+        public int getItemCount() {
+            int totalCount = 0;
+            if (null != this.navigation && null != navigation.getNavigationPrimary())
+                totalCount = this.navigation.getNavigationPrimary().size();
+            return totalCount;
+        }
+
+
+        class STNavItemHolder extends RecyclerView.ViewHolder {
+            TextView navItemView;
+            ImageView navImageView;
+            RelativeLayout navItemLayout;
+
+            public STNavItemHolder(View itemView) {
+                super(itemView);
+                setTypeFaceValue(appCmsPresenter);
+                navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
+                navImageView = (ImageView) itemView.findViewById(R.id.nav_item_image);
+                navItemLayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
+//                navItemLayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false));
+                navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
+                navItemView.setTypeface(semiBoldTypeFace);
+                navItemLayout.setOnFocusChangeListener((view, hasFocus) -> {
+
+                    selectedPosition = (int) navItemView.getTag(R.string.item_position);
+
+                    if (hasFocus) {
+                        navImageView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                    } else {
+                        navImageView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                    }
+                });
+
+                navItemLayout.setOnKeyListener((view, i, keyEvent) -> {
+                    int keyCode = keyEvent.getKeyCode();
+                    int action = keyEvent.getAction();
+                    if (action == KeyEvent.ACTION_DOWN) {
+                        switch (keyCode) {
+                            case KeyEvent.KEYCODE_DPAD_LEFT:
+                                if (isStartPosition()) {
+                                    return true;
+                                }
+                                break;
+                            case KeyEvent.KEYCODE_DPAD_RIGHT:
+                                if (isEndPosition()) {
+                                    return true;
+                                }
+                                break;
+                        }
+                    }
+                    return false;
                 });
             }
         }

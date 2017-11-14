@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/appcms_tv_navigation_item_padding"
+    android:paddingRight="@dimen/appcms_tv_navigation_item_padding">
+
+    <RelativeLayout
+        android:id="@+id/nav_item_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/appcms_tv_navigation_item_padding"
+        android:focusable="true">
+
+        <ImageView
+            android:id="@+id/nav_item_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/st_menu_color_selector"
+            android:src="@drawable/st_menu_icon_clock" />
+
+        <TextView
+            android:id="@+id/nav_item_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/nav_item_image"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="10dp"
+            android:letterSpacing="0.04"
+            android:textSize="@dimen/appcms_tv_navigation_textSize" />
+
+    </RelativeLayout>
+
+</LinearLayout>

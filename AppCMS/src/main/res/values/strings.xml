@@ -89,6 +89,7 @@
     <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
     <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
     <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
+    <string name="lato_regular">fonts/Lato-Regular.ttf</string>
     <string name="search_button_text">GO</string>
     <string name="bg_color_key">bg_color</string>
     <string name="button_color_key">button_color</string>
@@ -432,6 +433,12 @@
     <string name="app_cms_close_text">CLOSE</string>
     <string name="close_one_page_key">close_one_page</string>
     <string name="logged_in_as">Logged in as %s</string>
+    <string name="st_home_icon_key">icon-home</string>
+    <string name="st_show_icon_key">icon-grid</string>
+    <string name="st_teams_icon_key">icon-bracket</string>
+    <string name="st_watchlist_icon_key">icon-watchlist</string>
+    <string name="st_history_icon_key" >icon-clock</string>
+    <string name="st_settings_icon_key">icon-gear</string>
 
 </resources>
 

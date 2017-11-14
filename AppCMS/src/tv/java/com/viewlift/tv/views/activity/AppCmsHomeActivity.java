@@ -658,16 +658,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     @Override
     public void showNavigation(final boolean shouldShow) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
-                shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
-                navigationFragment.setFocusable(shouldShow);
-                if(shouldShow) {
-                   // navigationFragment.setSelectorColor();
-                    navigationFragment.notifiDataSetInvlidate();
-                }
+        new Handler().post(() -> {
+            navHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+            shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+            navigationFragment.setFocusable(shouldShow);
+            if(shouldShow) {
+               // navigationFragment.setSelectorColor();
+                navigationFragment.notifyDataSetInvalidate();
             }
         });
     }

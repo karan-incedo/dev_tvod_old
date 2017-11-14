@@ -9351,20 +9351,20 @@ public class AppCMSPresenter {
                     navigation = appCMSAndroidUI.getNavigation();
 
                     //add search in navigation item.
-                    NavigationPrimary myProfile = new NavigationPrimary();
+                    /*NavigationPrimary myProfile = new NavigationPrimary();
                     myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
                             currentActivity.getString(R.string.profile_label)));
                     myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
                             appCMSAndroidUI.getShortAppName() != null ?
                                     appCMSAndroidUI.getShortAppName() :
                                     currentActivity.getString(R.string.profile_label)));
-                    navigation.getNavigationPrimary().add(myProfile);
+                    navigation.getNavigationPrimary().add(myProfile);*/
 
                     //add search in navigation item.
-                    NavigationPrimary searchNav = new NavigationPrimary();
+                    /*NavigationPrimary searchNav = new NavigationPrimary();
                     searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
                     searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
-                    navigation.getNavigationPrimary().add(searchNav);
+                    navigation.getNavigationPrimary().add(searchNav);*/
 
 
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
