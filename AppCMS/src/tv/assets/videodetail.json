@@ -14,58 +14,9 @@
       "layout": {
         "ftv": {
           "yAxis": 0,
-          "leftMargin": 0,
-          "rightMargin": 0,
-          "height": 100
-        }
-      },
-      "components": [
-        {
-          "layout": {
-            "ftv": {
-              "leftMargin": 95,
-              "topMargin": 10,
-              "fontSize": 30
-            }
-          },
-          "opacity": 1,
-          "fontFamily": "OpenSans",
-          "numberOfLines": 1,
-          "textAlignment": "left",
-          "type": "label",
-          "textColor": "#ffffff",
-          "fontWeight": "Bold",
-          "key": "videoTitle"
-        },
-        {
-          "layout": {
-            "ftv": {
-              "width": 590,
-              "rightMargin": 100,
-              "fontSize": 16,
-              "height": 36
-            }
-          },
-          "opacity": 0.5,
-          "fontFamily": "OpenSans",
-          "numberOfLines": 1,
-          "textAlignment": "right",
-          "type": "label",
-          "textColor": "#66ffffff",
-          "key": "videoSubTitle"
-        }
-      ],
-      "textAlignment": "left",
-      "type": "headerView",
-      "key": "videoDetailHeader"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 120,
-          "xAxis": 1080,
-          "width": 747,
-          "height": 420,
+          "xAxis": 0,
+          "width": 1100,
+          "height": 618,
           "padding": 4
         }
       },
@@ -76,22 +27,10 @@
     {
       "layout": {
         "ftv": {
-          "yAxis": 260,
-          "xAxis": 1410,
-          "width": 113,
-          "height": 130
-        }
-      },
-      "type": "button",
-      "key": "playButton"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "leftMargin": 95,
-          "yAxis": 477,
-          "width": 270,
-          "height": 62,
+          "leftMargin": 1540,
+          "yAxis": 480,
+          "width": 319.3,
+          "height": 70,
           "fontSize": 12
         }
       },
@@ -101,6 +40,27 @@
       "borderWidth": 4,
       "action": "addToWatchlist",
       "text": "ADD TO WATCHLIST",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "Semibold",
+      "key": "addToWatchlist"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1170,
+          "yAxis": 480,
+          "width": 319.3,
+          "height": 70,
+          "fontSize": 12
+        }
+      },
+      "padding": 15,
+      "borderColor": "#66ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "addToWatchlist",
+      "text": "START WATCHING",
       "type": "button",
       "textColor": "ffffff",
       "fontWeight": "Semibold",
