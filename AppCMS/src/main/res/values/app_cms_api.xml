@@ -459,5 +459,8 @@
 
     <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
     <string name="app_cms_floodlight_url">src=6070801;cat=appco0;type=msnbm0;dc_rdid=%1$s&amp;dc_lat=;tag_for_child_directed_treatment=;ord=%2$s&amp;</string>
+    <!--watchlist / history / queue UI json keys-->
+    <string name="app_cms_page_ratingbar_key">ratingBar</string>
+    <string name="app_cms_page_video_type_key">videoTypeImage</string>
 
 </resources>
