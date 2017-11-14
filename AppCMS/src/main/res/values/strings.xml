@@ -38,7 +38,6 @@
     <string name="app_cms_on_action_internal_events_key">app_cms_on_action_internal_events</string>
     <string name="resume_internal_events_key">resume_internal_events</string>
     <string name="send_to">Share Video</string>
-    <string name="search_films">Search films</string>
     <string name="done">DONE</string>
     <string name="player_video_playing_on_pause_key">player_video_playing_on_pause</string>
     <string name="app_cms_network_connectivity_error_title">Network Connectivity</string>
@@ -179,8 +178,6 @@
     <!--User Management - Closed Captions-->
     <string name="app_cms_closed_captions_toggle_button_key">closedCaptionsToggle</string>
 
-    <!-- AppCMS Video Detail API -->
-    <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
     <string name="media_route_menu_title">Play on&#8230;</string>
     <string name="countdown_seconds">%d seconds</string>
@@ -458,6 +455,8 @@
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
 
     <string name="app_cms_module_list_footer_key">footer01</string>
+    <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
+    
 
 </resources>
 

@@ -4,7 +4,7 @@
     <integer name="app_cms_default_connection_timeout_msec">5000</integer>
     <integer name="app_cms_default_read_timeout_msec">5000</integer>
     <integer name="app_cms_default_write_timeout_msec">2000</integer>
-    <integer name="app_cms_unknown_host_exception_connection_timeout_msec">2000</integer>
+    <integer name="app_cms_unknown_host_exception_connection_timeout_msec">5000</integer>
     <integer name="app_cms_login_selector_margin">98</integer>
     <integer name="app_cms_login_input_textsize">16</integer>
     <integer name="app_cms_login_input_horizontal_margin">8</integer>
@@ -12,11 +12,6 @@
     <integer name="app_cms_border_stroke_width">4</integer>
     <integer name="app_cms_empty_list_message_textsize">24</integer>
 
-    <integer name="first_primary_page_index">0</integer>
-    <integer name="nav_live_page_index">4</integer>
-    <integer name="second_primary_page_index">1</integer>
-    <integer name="search_page_index">2</integer>
-    <integer name="third_primary_page_index">3</integer>
-    <integer name="nav_bar_items_weightsum">100</integer>
 
+    <integer name="nav_bar_items_weightsum">100</integer>
 </resources>

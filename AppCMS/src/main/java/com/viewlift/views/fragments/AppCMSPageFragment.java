@@ -25,6 +25,7 @@ import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
+import java.lang.ref.SoftReference;
 import java.util.List;
 
 /**
@@ -78,6 +79,7 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                         .getAppCMSPresenterComponent()
                         .appCMSPresenter();
+                new SoftReference<Object>(appCMSBinder, appCMSPresenter.getSoftReferenceQueue());
                 appCMSViewComponent = buildAppCMSViewComponent();
 
                 shouldSendFirebaseViewItemEvent = true;
@@ -142,6 +144,8 @@ public class AppCMSPageFragment extends Fragment {
         }
         if (pageView!=null) {
         if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView &&
+                    appCMSBinder != null &&
+                    appCMSBinder.getAppCMSPageUI() != null &&
                 appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
                 appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
                 appCMSBinder.getAppCMSPageUI().getModuleList().get(1) != null &&
@@ -199,7 +203,7 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     private void sendFirebaseAnalyticsEvents(AppCMSBinder appCMSVideoPageBinder) {
-        if (appCMSVideoPageBinder == null)
+        if (appCMSPresenter == null || appCMSVideoPageBinder == null)
             return;
         if (appCMSPresenter.getmFireBaseAnalytics() == null)
             return;

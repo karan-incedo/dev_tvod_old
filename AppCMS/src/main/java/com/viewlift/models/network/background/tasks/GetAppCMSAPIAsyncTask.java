@@ -25,45 +25,6 @@ public class GetAppCMSAPIAsyncTask {
     private final Action1<AppCMSPageAPI> readyAction;
     private Params currentParams;
 
-    public static class Params {
-        String urlWithContent;
-        String authToken;
-        String pageId;
-        boolean loadFromFile;
-        LruCache<String, AppCMSPageAPI> appCMSPageAPILruCache;
-        public static class Builder {
-            private Params params;
-            public Builder() {
-                params = new Params();
-            }
-            public Builder context() {
-                return this;
-            }
-            public Builder urlWithContent(String urlWithContent) {
-                params.urlWithContent = urlWithContent;
-                return this;
-            }
-            public Builder pageId(String pageId) {
-                params.pageId = pageId;
-                return this;
-            }
-            public Builder authToken(String authToken) {
-                params.authToken = authToken;
-                return this;
-            }
-            public Builder loadFromFile(boolean loadFromFile) {
-                params.loadFromFile = loadFromFile;
-                return this;
-            }
-            public Builder appCMSPageAPILruCache(LruCache<String, AppCMSPageAPI> appCMSPageAPILruCache) {
-                params.appCMSPageAPILruCache = appCMSPageAPILruCache;
-                return this;
-            }
-            public Params build() {
-                return params;
-            }
-        }
-    }
 
     public GetAppCMSAPIAsyncTask(AppCMSPageAPICall call,
                                  Action1<AppCMSPageAPI> readyAction) {
@@ -114,5 +75,44 @@ public class GetAppCMSAPIAsyncTask {
                         onDelete.call();
                     }
                 });
+    }
+    public static class Params {
+        String urlWithContent;
+        String authToken;
+        String pageId;
+        boolean loadFromFile;
+        LruCache<String, AppCMSPageAPI> appCMSPageAPILruCache;
+        public static class Builder {
+            private Params params;
+            public Builder() {
+                params = new Params();
+            }
+            public Builder context() {
+                return this;
+            }
+            public Builder urlWithContent(String urlWithContent) {
+                params.urlWithContent = urlWithContent;
+                return this;
+            }
+            public Builder pageId(String pageId) {
+                params.pageId = pageId;
+                return this;
+            }
+            public Builder authToken(String authToken) {
+                params.authToken = authToken;
+                return this;
+            }
+            public Builder loadFromFile(boolean loadFromFile) {
+                params.loadFromFile = loadFromFile;
+                return this;
+            }
+            public Builder appCMSPageAPILruCache(LruCache<String, AppCMSPageAPI> appCMSPageAPILruCache) {
+                params.appCMSPageAPILruCache = appCMSPageAPILruCache;
+                return this;
+            }
+            public Params build() {
+                return params;
+            }
+        }
     }
 }
