@@ -71,29 +71,37 @@
         "ftv": {
           "leftMargin": 1170,
           "yAxis": 20,
-          "height": 62,
-          "width": 270,
-          "fontSize": 12
+          "width": 671,
+          "fontSize": 15,
+          "height": 60
         }
       },
-      "letterSpacing": 0.12,
-      "padding": 15,
-      "borderColor": "#66ffffff",
       "fontFamily": "OpenSans",
-      "borderWidth": 4,
-      "action": "watchTrailer",
-      "text": "WATCH TRAILER",
-      "type": "button",
+      "type": "label",
       "textColor": "#ffffff",
-      "fontWeight": "Semibold",
-      "key": "watchTrailer"
+      "key": "headingText"
     },
     {
       "layout": {
         "ftv": {
           "leftMargin": 1170,
-          "yAxis": 20,
-          "width": 800,
+          "yAxis": 100,
+          "width": 671,
+          "fontSize": 12,
+          "height": 60
+        }
+      },
+      "fontFamily": "OpenSans",
+      "type": "label",
+      "textColor": "#ffffff",
+      "key": "subHeadingHeadingText"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1170,
+          "yAxis": 100,
+          "width": 671,
           "fontSize": 15,
           "height": 240
         }
@@ -102,23 +110,6 @@
       "type": "label",
       "textColor": "#ffffff",
       "key": "videoDescriptionText"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "fontSizeKey": 15,
-          "yAxis": 342,
-          "xAxis": 95,
-          "width": 800,
-          "height": 100,
-          "fontSizeValue": 15
-        }
-      },
-      "fontFamilyKey": "OpenSans-ExtraBold",
-      "fontFamilyValue": "OpenSans",
-      "type": "castView",
-      "textColor": "#ffffff",
-      "key": "castView"
     }
   ]
 }

@@ -429,13 +429,13 @@
     <string name="app_cms_close_text">CLOSE</string>
     <string name="close_one_page_key">close_one_page</string>
     <string name="logged_in_as">Logged in as %s</string>
-     <string name="st_home_icon_key">icon-home</string>
+    <string name="st_home_icon_key">icon-home</string>
     <string name="st_show_icon_key">icon-grid</string>
     <string name="st_teams_icon_key">icon-bracket</string>
     <string name="st_watchlist_icon_key">icon-watchlist</string>
     <string name="st_history_icon_key" >icon-clock</string>
     <string name="st_settings_icon_key">icon-gear</string>
-     <string name="search_blank_toast_msg">Please enter a value to search.</string>
+    <string name="search_blank_toast_msg">Please enter a value to search.</string>
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
 
