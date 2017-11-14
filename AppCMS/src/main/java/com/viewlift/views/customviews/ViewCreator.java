@@ -420,7 +420,13 @@ public class ViewCreator {
                                                             moduleAPI.getContentData().get(0), userId), userId);
 
                                         }
-                                        view.setVisibility(View.VISIBLE);
+
+                                        if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
+                                                appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDonwloads()) {
+                                            view.setVisibility(View.VISIBLE);
+                                        } else {
+                                            view.setVisibility(View.GONE);
+                                        }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY
                                             && view != null) {
                                         if (moduleAPI.getContentData() != null &&
@@ -504,6 +510,7 @@ public class ViewCreator {
                                             if (videoDescription != null) {
                                                 videoDescription = videoDescription.trim();
                                             }
+
                                             if (!TextUtils.isEmpty(videoDescription)) {
                                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                                                     ((TextView) view).setText(Html.fromHtml(videoDescription));
@@ -769,7 +776,6 @@ public class ViewCreator {
                                                     ((Switch) componentViewResult.componentView).setChecked(false);
                                                     appCMSPresenter.setUserDownloadLocationPref(false);
                                                 }
-
                                                 break;
 
                                             default:
@@ -1657,13 +1663,11 @@ public class ViewCreator {
                         componentViewResult.shouldHideModule = true;
                     }
                 }
-
                 break;
 
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
                 componentViewResult.componentView = playerView(context);
                 componentViewResult.componentView.setId(R.id.video_player_id);
-
                 break;
 
             case PAGE_CAROUSEL_VIEW_KEY:
@@ -1861,8 +1865,8 @@ public class ViewCreator {
 
                     case PAGE_GRID_OPTION_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
-
                         break;
+
                     case PAGE_BANNER_DETAIL_BUTTON:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
                         componentViewResult.componentView.setId(View.generateViewId());
@@ -1873,6 +1877,7 @@ public class ViewCreator {
                             }
                         });
                         break;
+
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
@@ -1885,7 +1890,13 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
                                             moduleAPI.getContentData().get(0), userId), userId);
                         }
-                        componentViewResult.componentView.setVisibility(View.VISIBLE);
+
+                        if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
+                                appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDonwloads()) {
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                        } else {
+                            componentViewResult.componentView.setVisibility(View.GONE);
+                        }
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
@@ -2677,10 +2688,12 @@ public class ViewCreator {
                     case PAGE_BADGE_IMAGE_KEY:
                         //
                         break;
+
                     case PAGE_BANNER_IMAGE:
                         ImageView imageView1 = (ImageView) componentViewResult.componentView;
                         imageView1.setImageResource(R.drawable.logo);
                         break;
+
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
                         // TODO: 03 Nov. 2017 - Badges are not yet ready for Production - This should uncommented once that is available
 //                        componentViewResult.componentView = new ImageView(context);
@@ -2698,6 +2711,7 @@ public class ViewCreator {
 
 
                         break;
+
                     case PAGE_BANNER_DETAIL_ICON:
                         componentViewResult.componentView = new ImageView(context);
 //                        int viewWidthForBannerIcon = (int) BaseView.getViewWidth(context,
@@ -2710,6 +2724,7 @@ public class ViewCreator {
                         ImageView bannerDetailImage = (ImageView) componentViewResult.componentView;
                         bannerDetailImage.setImageResource(R.drawable.mastercard);
                         break;
+
                     case PAGE_VIDEO_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -2819,6 +2834,7 @@ public class ViewCreator {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
                 break;
+
             case PAGE_BANNER_DETAIL_BACKGROUND:
                 componentViewResult.componentView = new View(context);
                 if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -2827,6 +2843,7 @@ public class ViewCreator {
                                     component.getBackgroundColor())));
                 }
                 break;
+
             case PAGE_SEPARATOR_VIEW_KEY:
             case PAGE_SEGMENTED_VIEW_KEY:
                 componentViewResult.componentView = new View(context);
