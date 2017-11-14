@@ -7087,15 +7087,17 @@ public class AppCMSPresenter {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                             ContextCompat.getColor(currentContext, R.color.colorPrimaryDark)));
                 }
-                if (currentActivity.getWindow().isActive()) {
-                    try {
-                        if (!dialog.isShowing())
-                            dialog.show();
-                    } catch (Exception e) {
-                        //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
+                currentActivity.runOnUiThread(() -> {
+                    if (currentActivity.getWindow().isActive()) {
+                        try {
+                            if (!dialog.isShowing())
+                                dialog.show();
+                        } catch (Exception e) {
+                            //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
+                        }
                     }
-                }
+                });
             }
         }
     }
