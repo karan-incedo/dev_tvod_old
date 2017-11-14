@@ -71,28 +71,6 @@
         "ftv": {
           "leftMargin": 1170,
           "yAxis": 20,
-          "height": 62,
-          "width": 270,
-          "fontSize": 12
-        }
-      },
-      "letterSpacing": 0.12,
-      "padding": 15,
-      "borderColor": "#66ffffff",
-      "fontFamily": "OpenSans",
-      "borderWidth": 4,
-      "action": "watchTrailer",
-      "text": "WATCH TRAILER",
-      "type": "button",
-      "textColor": "#ffffff",
-      "fontWeight": "Semibold",
-      "key": "watchTrailer"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "leftMargin": 1170,
-          "yAxis": 20,
           "width": 800,
           "fontSize": 15,
           "height": 240
