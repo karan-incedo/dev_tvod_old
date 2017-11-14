@@ -131,6 +131,7 @@ public class PageView extends BaseView {
     @Override
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new RecyclerView(getContext());
+        childrenContainer.setId(R.id.home_nested_scroll_view);
         FrameLayout.LayoutParams nestedScrollViewLayoutParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
