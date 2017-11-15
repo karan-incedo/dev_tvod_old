@@ -159,7 +159,20 @@ public class AppCMSPageFragment extends Fragment {
 
                 if (appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()) {
 
-
+                   final String videoId;
+                    if (appCMSBinder.getAppCMSPageAPI()!=null &&
+                            appCMSBinder.getAppCMSPageAPI().getModules()!=null&&
+                            appCMSBinder.getAppCMSPageAPI().getModules().get(0)!=null&&
+                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData()!=null&&
+                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0)!=null&&
+                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist()!=null&&
+                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getId()!=null)
+                    {
+                        videoId=appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getId();
+                    }else
+                    {
+                        videoId=null;
+                    }
                         nestedScrollView.addOnScrollListener(new RecyclerView.OnScrollListener(){
                      /*       @Override
                             public void onScrolled(RecyclerView v, int dx, int dy) {
@@ -189,14 +202,14 @@ public class AppCMSPageFragment extends Fragment {
                                                 (v.getLayoutManager()) instanceof LinearLayoutManager &&
                                                 ((LinearLayoutManager )v.getLayoutManager()).findFirstVisibleItemPosition()==0 &&
                                                 ((LinearLayoutManager )v.getLayoutManager()).findFirstCompletelyVisibleItemPosition()<=1 ){
-                                            System.out.println(((LinearLayoutManager )v.getLayoutManager()).findFirstVisibleItemPosition()+"hide  mini player " +((LinearLayoutManager )v.getLayoutManager()).findFirstCompletelyVisibleItemPosition());
+
                                             appCMSPresenter.pipPlayerVisible = false;
                                             appCMSPresenter.dismissPopupWindowPlayer();
                                             resumePlayer(true);
                                         }else if (!appCMSPresenter.pipPlayerVisible) {
-                                            appCMSPresenter.showPopupWindowPlayer(v, appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getId());
+                                            appCMSPresenter.showPopupWindowPlayer(v, videoId);
                                             resumePlayer(false);
-                                            System.out.println(((LinearLayoutManager )v.getLayoutManager()).findFirstVisibleItemPosition()+"show mini player " + ((LinearLayoutManager )v.getLayoutManager()).findFirstCompletelyVisibleItemPosition());
+
                                         }
                                         break;
                                     case RecyclerView.SCROLL_STATE_DRAGGING:
@@ -227,7 +240,7 @@ public class AppCMSPageFragment extends Fragment {
 
                     if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
                             !appCMSPresenter.pipPlayerVisible) {
-                        appCMSPresenter.showPopupWindowPlayer(nestedScrollView, appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getId());
+                        appCMSPresenter.showPopupWindowPlayer(nestedScrollView, videoId);
                     } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
                         appCMSPresenter.dismissPopupWindowPlayer();
                     }

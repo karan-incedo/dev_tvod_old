@@ -11427,49 +11427,50 @@ public class AppCMSPresenter {
     }
 
     public void showPopupWindowPlayer(View scrollView, String videoId) {
-
-        RelativeLayout.LayoutParams lpPipView = null;
-        Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
-
-
-        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, videoId);
-
-        //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
-        relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
-        relativeLayoutPIPEvent = new RelativeLayout(currentActivity);
-
-        if (!BaseView.isTablet(currentActivity)) {
-            lpPipView = new RelativeLayout.LayoutParams(750, 450);
-            lpPipView.rightMargin = 50;
-            lpPipView.bottomMargin = 20;
-        } else {
-            lpPipView = new RelativeLayout.LayoutParams(250, 175);
-            lpPipView.rightMargin = 10;
-            lpPipView.bottomMargin = 10;
-        }
-        lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        lpPipView.addRule(RelativeLayout.ABOVE, R.id.app_cms_tab_nav_container);
+        if (videoId != null) {
+            RelativeLayout.LayoutParams lpPipView = null;
+            Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
 
 
-        relativeLayoutPIP.setLayoutParams(lpPipView);
-        relativeLayoutPIPEvent.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+            videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, videoId);
 
+            //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
+            relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
+            relativeLayoutPIPEvent = new RelativeLayout(currentActivity);
 
-        relativeLayoutPIP.addView(videoPlayerViewPIP);
-
-        relativeLayoutPIP.setVisibility(View.VISIBLE);
-
-
-        relativeLayoutPIP.addView(relativeLayoutPIPEvent);
-        relativeLayoutPIPEvent.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //((RecyclerView) scrollView).getLayoutManager().scrollToPosition(0);
-                ((RecyclerView) scrollView).smoothScrollToPosition(0);
+            if (!BaseView.isTablet(currentActivity)) {
+                lpPipView = new RelativeLayout.LayoutParams(750, 450);
+                lpPipView.rightMargin = 50;
+                lpPipView.bottomMargin = 20;
+            } else {
+                lpPipView = new RelativeLayout.LayoutParams(250, 175);
+                lpPipView.rightMargin = 10;
+                lpPipView.bottomMargin = 10;
             }
-        });
-        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
-        pipPlayerVisible = true;
+            lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            lpPipView.addRule(RelativeLayout.ABOVE, R.id.app_cms_tab_nav_container);
+
+
+            relativeLayoutPIP.setLayoutParams(lpPipView);
+            relativeLayoutPIPEvent.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+
+
+            relativeLayoutPIP.addView(videoPlayerViewPIP);
+
+            relativeLayoutPIP.setVisibility(View.VISIBLE);
+
+
+            relativeLayoutPIP.addView(relativeLayoutPIPEvent);
+            relativeLayoutPIPEvent.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //((RecyclerView) scrollView).getLayoutManager().scrollToPosition(0);
+                    ((RecyclerView) scrollView).smoothScrollToPosition(0);
+                }
+            });
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+            pipPlayerVisible = true;
+        }
     }
 
     public void pausePIP() {
