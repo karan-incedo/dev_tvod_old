@@ -120,7 +120,23 @@
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
+    <string name="app_cms_page_font_black_key">Black</string>
+    <string name="app_cms_page_font_black_italic_key">BlackItalic</string>
+    <string name="app_cms_page_font_bold_italic_key">BoldItalic</string>
+    <string name="app_cms_page_font_hairline_key">Hairline</string>
+    <string name="app_cms_page_font_hairline_italic_key">HairlineItalic</string>
+    <string name="app_cms_page_font_heavy_key">Heavy</string>
+    <string name="app_cms_page_font_heavy_italic_key">HeavyItalic</string>
+    <string name="app_cms_page_font_light_key">Light</string>
+    <string name="app_cms_page_font_light_italic_key">LightItalic</string>
+    <string name="app_cms_page_font_medium_key">Medium</string>
+    <string name="app_cms_page_font_medium_italic_key">MediumItalic</string>
+    <string name="app_cms_page_font_thin_key">Thin</string>
+    <string name="app_cms_page_font_thin_italic_key">ThinItalic</string>
+    <string name="app_cms_page_font_semibold_italic_key">SemiboldItalic</string>
+
     <string name="app_cms_page_font_family_key">OpenSans</string>
+    <string name="app_cms_page_font_lato_family_key">Lato</string>
     <string name="app_cms_page_textview_key">textView</string>
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>
@@ -234,7 +250,7 @@
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
-    <string name="app_cms_team_page_tag">teams</string>
+    <string name="app_cms_team_page_tag">Teams</string>
     <string name="app_cms_ccavenue_page_tag">ccavenue</string>
     <string name="app_cms_search_page_tag">search</string>
     <string name="app_cms_video_page_tag">video</string>
@@ -305,6 +321,9 @@
     <string name="app_cms_page_id_query_parameter">pageId=</string>
     <string name="app_cms_page_path_query_parameter">path=</string>
     <string name="app_cms_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
+
+    <!-- AppCMS Video Detail API -->
+    <string name="app_cms_video_detail_api_url">%1$s/content/videos?ids=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS WatchList API -->
     <string name="app_cms_watchlist_api_url">%1$s/user/queues?site=%2$s&amp;userId=%3$s</string>
@@ -448,5 +467,8 @@
 
     <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
     <string name="app_cms_floodlight_url">src=6070801;cat=appco0;type=msnbm0;dc_rdid=%1$s&amp;dc_lat=;tag_for_child_directed_treatment=;ord=%2$s&amp;</string>
+    <!--watchlist / history / queue UI json keys-->
+    <string name="app_cms_page_ratingbar_key">ratingBar</string>
+    <string name="app_cms_page_video_type_key">videoTypeImage</string>
 
 </resources>

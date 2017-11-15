@@ -42,6 +42,7 @@ import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -97,7 +98,8 @@ public class ViewCreator {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
         Style paragraphStyle = new Style();
-        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler(new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
+        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler
+                (new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
         htmlSpanner.registerHandler("p", pHandler);
     }
 
@@ -197,6 +199,8 @@ public class ViewCreator {
                     boolean shouldHideComponent;
 
                     if (moduleAPI != null) {
+                        updateUserHistory(appCMSPresenter,
+                                moduleAPI.getContentData());
 
                         for (Component component : module.getComponents()) {
                             shouldHideComponent = false;
@@ -260,7 +264,7 @@ public class ViewCreator {
                                                 long runTime =
                                                         moduleAPI.getContentData().get(0).getGist().getRuntime();
                                                 if (watchedTime > 0 && runTime > 0) {
-                                                    long percentageWatched = watchedTime / runTime;
+                                                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
                                                     ((ProgressBar) view)
                                                             .setProgress((int) percentageWatched);
                                                     view.setVisibility(View.VISIBLE);
@@ -275,7 +279,7 @@ public class ViewCreator {
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
-                                    if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
+                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getContentDetails() != null &&
@@ -459,7 +463,7 @@ public class ViewCreator {
                                                         fontSize = (int) (0.6 * fontSize);
                                                     } else {
                                                         fontSize = (int) (0.8 * fontSize);
-                                            }
+                                                    }
                                                 }
                                                 ((TextView) view).setTextSize(fontSize);
                                             }
@@ -915,8 +919,12 @@ public class ViewCreator {
             return null;
         }
 
-        PageView pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
+        PageView pageView = null;
+        try {
+            pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
                 + BaseView.isLandscape(context));
+        } catch (Exception e) {
+        }
         if (appCMSPresenter.isPageAVideoPage(screenName)) {
             pageView = appCMSPresenter.getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
         }
@@ -947,6 +955,7 @@ public class ViewCreator {
                 (!appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
+            pageView.removeAllAddOnViews();
             pageView.getChildrenContainer().removeAllViews();
             componentViewResult = new ComponentViewResult();
             createPageView(context,
@@ -988,7 +997,11 @@ public class ViewCreator {
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
         for (ModuleList moduleInfo : modulesList) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            ModuleList module = null;
+            try {
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            } catch (Exception e) {
+            }
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {
@@ -1027,13 +1040,14 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter);
                 if (childView != null) {
-                    childrenContainer.addView(childView);
+//                    childrenContainer.addView(childView);
                     if (moduleAPI == null) {
                         childView.setVisibility(View.GONE);
                     }
                 }
             }
         }
+        pageView.notifyAdapterDataSetChanged();
 
         List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
         if (presenterOnInternalEvents != null) {
@@ -1082,6 +1096,10 @@ public class ViewCreator {
                 AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView);
                 if (module.getComponents() != null) {
+                    if (moduleAPI != null) {
+                        updateUserHistory(appCMSPresenter,
+                                moduleAPI.getContentData());
+                    }
                     int size = module.getComponents().size();
                     for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
@@ -1248,6 +1266,20 @@ public class ViewCreator {
         return moduleView;
     }
 
+    private void updateUserHistory(AppCMSPresenter appCMSPresenter,
+                                   List<ContentDatum> contentData) {
+        try {
+            int contentDatumLength = contentData.size();
+            for (int i = 0; i < contentDatumLength; i++) {
+                ContentDatum currentContentDatum = contentData.get(i);
+                ContentDatum userHistoryContentDatum = appCMSPresenter.getUserHistoryContentDatum(contentData.get(i).getGist().getId());
+                if (userHistoryContentDatum != null) {
+                    currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
     private void updateModuleHeight(Context context,
                                     Layout parentLayout,
                                     List<Component> moduleComponents,
@@ -1608,7 +1640,7 @@ public class ViewCreator {
                 break;
 
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
-                componentViewResult.componentView = playerView(context);
+                componentViewResult.componentView = playerView(context, appCMSPresenter, moduleAPI.getContentData().get(0).getGist().getId());
                 componentViewResult.componentView.setId(R.id.video_player_id);
 
                 break;
@@ -1808,7 +1840,25 @@ public class ViewCreator {
 
                     case PAGE_GRID_OPTION_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
-
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                        component.getAction(),
+                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                        null,
+                                        moduleAPI.getContentData().get(0),
+                                        false,
+                                        -1,
+                                        null)) {
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
+                                }
+                            }
+                        });
                         break;
                     case PAGE_BANNER_DETAIL_BUTTON:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
@@ -2174,7 +2224,7 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
@@ -2202,7 +2252,7 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
@@ -2745,7 +2795,7 @@ public class ViewCreator {
                             long runTime =
                                     moduleAPI.getContentData().get(0).getGist().getRuntime();
                             if (watchedTime > 0 && runTime > 0) {
-                                long percentageWatched = watchedTime / runTime;
+                                long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
                                 ((ProgressBar) componentViewResult.componentView)
                                         .setProgress((int) percentageWatched);
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);
@@ -3121,7 +3171,22 @@ public class ViewCreator {
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Component component,
                              TextView textView) {
-        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+
+        if (jsonValueKeyMap.get(component.getFontFamily()) != null) {
+            String fontName = "";
+            switch (jsonValueKeyMap.get(component.getFontFamily())) {
+                case PAGE_TEXT_OPENSANS_FONTFAMILY_KEY:
+                    fontName = context.getString(R.string.app_cms_page_font_family_key);
+                    break;
+                case PAGE_TEXT_LATO_FONTFAMILY_KEY:
+                    fontName = context.getString(R.string.app_cms_page_font_lato_family_key);
+                    break;
+                default:
+                    fontName = context.getString(R.string.app_cms_page_font_family_key);
+                    break;
+
+            }
+
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -3132,7 +3197,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_bold_ttf));
+                                context.getString(R.string.font_bold_ttf, fontName));
                         appCMSPresenter.setBoldTypeFace(face);
                     }
                     break;
@@ -3141,7 +3206,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getSemiBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_semibold_ttf));
+                                context.getString(R.string.font_semibold_ttf, fontName));
                         appCMSPresenter.setSemiBoldTypeFace(face);
                     }
                     break;
@@ -3150,16 +3215,119 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_extrabold_ttf));
+                                context.getString(R.string.font_extrabold_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
-
+                case PAGE_TEXT_BLACK_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_black_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_BLACK_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_black_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HAIRLINE_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_hairline_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HAIRLINE_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_hairline_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HEAVY_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_heavy_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HEAVY_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_heavy_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_LIGHT_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_light_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_LIGHT_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_light_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_MEDIUM_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_medium_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_MEDIUM_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_medium_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_THIN_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_thin_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_THIN_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_thin_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_SEMIBOLD_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_semibold_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
                 default:
                     face = appCMSPresenter.getRegularFontFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_regular_ttf));
+                                context.getString(R.string.font_regular_ttf, fontName));
                         appCMSPresenter.setRegularFontFace(face);
                     }
                     break;
@@ -3207,12 +3375,12 @@ public class ViewCreator {
                                 UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
                             }, true);
                 } else {
-                    if (appCMSPresenter.isAppSVOD() &&
-                            appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
-                    } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
-                    }
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                            () -> {
+                                appCMSPresenter.setAfterLoginAction(() -> {
+
+                                });
+                            });
                 }
             };
             removeClickListener = v -> appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
@@ -3283,12 +3451,22 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                        });
+                                    });
                         } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                        });
+                                    });
                         }
                     } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                () -> {
+                                });
                     }
                 }
                 imageButton.setOnClickListener(null);
@@ -3354,13 +3532,72 @@ public class ViewCreator {
         }
     }
 
-    public static VideoPlayerView playerView(Context context) {
+    public static VideoPlayerView playerView(Context context, AppCMSPresenter appCMSPresenter, String videoId) {
 
         VideoPlayerView videoPlayerView = new VideoPlayerView(context);
         videoPlayerView.init(context);
         // it should be dynamic when live url come from api
-        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
-                null);
+
+        appCMSPresenter.refreshVideoData(videoId, updatedContentDatum -> {
+           // appCMSPresenter.getAppCMSSignedURL(videoId, appCMSSignedURLResult -> {
+           //     if (videoPlayerView != null && appCMSSignedURLResult != null) {
+                if (videoPlayerView != null ) {
+                    boolean foundMatchingMpeg = false;
+                    String hlsUrl = "";
+                    String closedCaptionUrl = "";
+                    if (updatedContentDatum != null &&
+                            updatedContentDatum.getStreamingInfo() != null &&
+                            updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
+                            updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg() != null &&
+                            !updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().isEmpty()) {
+
+                        updatedContentDatum.getGist().setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
+                        if (updatedContentDatum.getStreamingInfo().getVideoAssets().getHls()!=null
+                                ) {
+                            hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
+                        } else {
+                            //for (int i = 0; i < updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() && !foundMatchingMpeg; i++) {
+                               // int queryIndex = hlsUrl.indexOf("?");
+                                /*if (0 <= queryIndex) {
+                                    if (updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl().contains(hlsUrl.substring(0, queryIndex))) {
+                                        foundMatchingMpeg = true;*/
+                                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                                    /*}
+                                }*/
+                           // }
+                        }
+                        // TODO: 7/27/2017 Implement CC for multiple languages.
+                        if (updatedContentDatum.getContentDetails() != null
+                                && updatedContentDatum.getContentDetails().getClosedCaptions() != null
+                                && !updatedContentDatum.getContentDetails().getClosedCaptions().isEmpty()) {
+                            for (ClosedCaptions cc : updatedContentDatum.getContentDetails().getClosedCaptions()) {
+                                if (cc.getUrl() != null &&
+                                        !cc.getUrl().equalsIgnoreCase(context.getString(R.string.download_file_prefix)) &&
+                                        cc.getFormat() != null &&
+                                        cc.getFormat().equalsIgnoreCase("SRT")) {
+                                    closedCaptionUrl = cc.getUrl();
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    /*videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                            appCMSSignedURLResult.getSignature(),
+                            appCMSSignedURLResult.getKeyPairId());*/
+
+
+                        videoPlayerView.setUri(Uri.parse(hlsUrl),
+                                !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
+                        videoPlayerView.setCurrentPosition(updatedContentDatum.getGist().getWatchedTime() * 1000L);
+
+                }
+            //});
+
+        });
+       /* videoPlayerView.setUri(Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4"),
+                null);*/
         videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
@@ -3439,7 +3676,7 @@ public class ViewCreator {
 
         @Override
         public void beforeChildren(TagNode node, SpannableStringBuilder builder, SpanStack spanStack) {
-            if ( builder.length() == 0 || builder.charAt(builder.length() -1) != '\n' ) {
+            if (builder.length() == 0 || builder.charAt(builder.length() - 1) != '\n') {
                 builder.append('\n');
             }
             super.beforeChildren(node, builder, spanStack);

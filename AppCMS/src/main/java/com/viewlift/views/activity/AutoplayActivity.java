@@ -47,6 +47,7 @@ public class AutoplayActivity
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
         appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
+        try {
         Intent intent = getIntent();
         Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
         binder = (AppCMSVideoPageBinder)
@@ -58,6 +59,8 @@ public class AutoplayActivity
                 .findFragmentByTag(binder.getContentData().getGist().getId());
         if (autoplayFragment == null) {
             createFragment(binder);
+            }
+        } catch (Exception e) {
         }
     }
 

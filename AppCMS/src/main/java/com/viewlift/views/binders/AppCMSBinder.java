@@ -7,9 +7,7 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
-
 import java.util.Map;
-
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.models.network.rest.AppCMSSearchCall;
@@ -126,9 +124,7 @@ public class AppCMSBinder extends Binder {
     }
 
     public boolean isAppbarPresent() {
-
-        return (appCMSPageUI != null && appCMSPageUI.getModuleList().get(appCMSPageUI.getModuleList().size() - 1).getSettings() != null) ?
-                appCMSPageUI.getModuleList().get(appCMSPageUI.getModuleList().size() - 1).getSettings().isShowTabBar() : appbarPresent;
+        return appbarPresent;
     }
 
     public boolean isFullScreenEnabled() {

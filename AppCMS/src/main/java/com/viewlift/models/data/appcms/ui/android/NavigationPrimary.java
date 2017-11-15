@@ -14,9 +14,7 @@ public class NavigationPrimary implements Serializable {
     @Expose
     String title;
 
-    @SerializedName("icon")
-    @Expose
-    String icon;
+
 
     @SerializedName("items")
     @Expose
@@ -46,6 +44,9 @@ public class NavigationPrimary implements Serializable {
     @Expose
     String pagePath;
 
+    @SerializedName("icon")
+    @Expose
+    String icon;
     @SerializedName("platforms")
     @Expose
     Platforms platforms;
