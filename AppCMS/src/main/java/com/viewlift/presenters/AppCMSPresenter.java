@@ -577,6 +577,7 @@ public class AppCMSPresenter {
     private long mLastClickTime = 0;
     private boolean showNetworkConnectivity;
     private boolean waithingFor3rdPartyLogin;
+    private AppCMSAndroidUI appCMSAndroid;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -1257,7 +1258,7 @@ public class AppCMSPresenter {
                         //Send Firebase Analytics when user is subscribed and user is Logged In
                         sendFirebaseLoginSubscribeSuccess();
 
-                        String adsUrl;
+                        String adsUrl = null;
                         if (actionType == AppCMSActionType.PLAY_VIDEO_PAGE) {
                             if (pagePath != null && pagePath.contains(
                                     currentActivity.getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
@@ -1300,6 +1301,7 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Film " + filmId + " has not been downloaded");
                                 }
                             }
+
                             long entitlementCheckVideoWatchTime = -1L;
                             if (entitlementPendingVideoData != null) {
                                 if (isUserSubscribed()) {
@@ -1350,10 +1352,16 @@ public class AppCMSPresenter {
                                 extraData);
 
                         Date now = new Date();
-                        adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
-                                getPermalinkCompletePath(pagePath),
-                                now.getTime(),
-                                appCMSSite.getGist().getSiteInternalName());
+
+                        try {
+                            adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
+                                    appCMSAndroid.getAdvertising().getVideoTag(),
+                                    getPermalinkCompletePath(pagePath),
+                                    now.getTime(),
+                                    appCMSMain.getSite());
+                        } catch (Exception e) {
+                            //
+                        }
 
                         String backgroundColor = appCMSMain.getBrand()
                                 .getGeneral()
@@ -9081,7 +9089,7 @@ public class AppCMSPresenter {
                             if (appCMSAndroidUI == null ||
                                     appCMSAndroidUI.getMetaPages() == null ||
                                     appCMSAndroidUI.getMetaPages().isEmpty()) {
-                                //Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
+                                //Log.e(TAG, "AppCMS keys for pages for appCMSAndroid not found");
                                 launchBlankPage();
                             } else if (isAppBelowMinVersion()) {
                                 //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
@@ -9095,6 +9103,7 @@ public class AppCMSPresenter {
                                     launchBlankPage();
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;
+                                    this.appCMSAndroid = appCMSAndroidUI;
                                     initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                                     initAppsFlyer(appCMSAndroidUI);
                                     navigation = appCMSAndroidUI.getNavigation();
@@ -9561,7 +9570,7 @@ public class AppCMSPresenter {
                 if (appCMSAndroidUI == null ||
                         appCMSAndroidUI.getMetaPages() == null ||
                         appCMSAndroidUI.getMetaPages().isEmpty()) {
-                    //Log.e(TAG, "AppCMS keys for pages for appCMSAndroidUI not found");
+                    //Log.e(TAG, "AppCMS keys for pages for appCMSAndroid not found");
                     launchErrorActivity(PlatformType.TV);
                 } else {
                     if (appCMSAndroidUI.getAnalytics() != null) {
@@ -10069,6 +10078,7 @@ public class AppCMSPresenter {
 
                             Date now = new Date();
                             adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
+                                    appCMSAndroid.getAdvertising().getVideoTag(),
                                     getPermalinkCompletePath(pagePath),
                                     now.getTime(),
                                     appCMSMain.getSite());
@@ -10274,6 +10284,7 @@ public class AppCMSPresenter {
         Date now = new Date();
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_ads_url_key),
                 currentActivity.getString(R.string.app_cms_ads_api_url,
+                        appCMSAndroid.getAdvertising().getVideoTag(),
                         getPermalinkCompletePath(pagePath),
                         now.getTime(),
                         appCMSSite.getGist().getSiteInternalName()));
