@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
+   <!-- <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
     <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
 
-    <!--<string name="app_cms_app_name">9d2c4ddd-94e3-44af-bee8-851e76d6b96e</string>-->
+    <!--<string name="app_cms_app_name">00000151-11b4-d29b-a17d-55fdb2b80000</string>-->
     <string name="app_cms_app_name">f2410236-d5e8-4031-8c55-a56c2f8b1e5f</string>
 
     <!-- x-api-key -->
@@ -29,4 +29,12 @@
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
+    <bool name="display_chromecast_overlay">false</bool>
+    <string name="search_films">Search films</string>
+    <integer name="number_of_tabs">4</integer>
+    <integer name="first_primary_page_index">0</integer>
+    <integer name="nav_live_page_index">4</integer>
+    <integer name="second_primary_page_index">1</integer>
+    <integer name="search_page_index">2</integer>
+    <integer name="third_primary_page_index">3</integer>
 </resources>

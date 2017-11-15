@@ -69,6 +69,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
         int indexOffset = 0;
 
         viewHolder.navItemLabel.setText("");
+        viewHolder.navItemLabel.setTypeface(appCMSPresenter.getRegularFontFace());
 
         if (i >= numPrimaryItems) {
             indexOffset += numPrimaryItems;
@@ -89,8 +90,9 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
         if (getClickedItemPosition() == i) {
             viewHolder.navItemSelector.setVisibility(View.VISIBLE);
-            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-            viewHolder.navItemLabel.setTypeface(null, Typeface.BOLD);
+            viewHolder.navItemSelector.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getCta().getPrimary().getBackgroundColor()));
+            viewHolder.navItemLabel.setTypeface(appCMSPresenter.getBoldTypeFace(), Typeface.BOLD);
         } else {
             viewHolder.navItemSelector.setVisibility(View.INVISIBLE);
         }

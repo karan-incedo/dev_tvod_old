@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -22,6 +23,24 @@ public class Navigation implements Serializable {
     @Expose
     List<NavigationFooter> navigationFooter = null;
 
+    @SerializedName("left")
+    @Expose
+    List<NavigationPrimary> navigationLeft = null;
+
+    @SerializedName("right")
+    @Expose
+    List<NavigationPrimary> navigationRight = null;
+
+    @SerializedName("settings")
+    @Expose
+    Settings settings;
+
+
+    @SerializedName("tabBar")
+    @Expose
+    List<NavigationTabBar> navigationTabbar = null;
+
+
     public List<NavigationPrimary> getNavigationLeft() {
         return navigationLeft;
     }
@@ -37,19 +56,6 @@ public class Navigation implements Serializable {
     public void setNavigationRight(List<NavigationPrimary> navigationRight) {
         this.navigationRight = navigationRight;
     }
-
-    @SerializedName("left")
-    @Expose
-    List<NavigationPrimary> navigationLeft = null;
-
-    @SerializedName("right")
-    @Expose
-    List<NavigationPrimary> navigationRight = null;
-
-
-    @SerializedName("tabBar")
-    @Expose
-    List<NavigationTabBar> navigationTabbar = null;
 
     public List<NavigationPrimary> getNavigationPrimary() {
         return navigationPrimary;
@@ -82,5 +88,13 @@ public class Navigation implements Serializable {
 
     public void setNavigationTabbar(List<NavigationTabBar> navigationTabbar) {
         this.navigationTabbar = navigationTabbar;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 }

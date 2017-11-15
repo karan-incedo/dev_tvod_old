@@ -1,14 +1,25 @@
 package com.viewlift.models.data.appcms.ui.main;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+import com.vimeo.stag.UseStag;
 import java.io.Serializable;
 
 /**
  * Created by nitin.tyagi on 9/11/2017.
  */
 
+@UseStag
 public class CustomerService implements Serializable {
-
+    @SerializedName("email")
+    @Expose
     String email;
+    @SerializedName("phoneNumber")
+    @Expose
+    String phone;
+    @SerializedName("address")
+    @Expose
+    String address;
 
     public String getEmail() {
         return email;
@@ -26,8 +37,11 @@ public class CustomerService implements Serializable {
         this.phone = phone;
     }
 
-    String phone;
+    public String getAddress() {
+        return address;
+    }
 
-
-
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }
