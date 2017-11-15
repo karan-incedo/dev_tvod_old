@@ -231,7 +231,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -4210,31 +4209,35 @@ public class AppCMSPresenter {
     public void getHistoryData(final Action1<AppCMSHistoryResult> appCMSHistoryResultAction) {
         if (currentActivity != null) {
             MetaPage historyMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.HISTORY_PAGE);
-            AppCMSPageUI appCMSPageUI = navigationPages.get(historyMetaPage.getPageId());
-            getHistoryPageContent(appCMSMain.getApiBaseUrl(),
-                    historyMetaPage.getPageAPI(),
-                    appCMSSite.getGist().getSiteInternalName(),
-                    true,
-                    getPageId(appCMSPageUI),
-                    new AppCMSHistoryAPIAction(true,
-                            false,
-                            true,
-                            appCMSPageUI,
-                            historyMetaPage.getPageId(),
-                            historyMetaPage.getPageId(),
-                            historyMetaPage.getPageName(),
-                            historyMetaPage.getPageId(),
-                            false,
-                            null) {
-                        @Override
-                        public void call(AppCMSHistoryResult appCMSHistoryResult) {
-                            if (appCMSHistoryResult != null) {
-                                Observable.just(appCMSHistoryResult).subscribe(appCMSHistoryResultAction);
-                            } else {
-                                Observable.just((AppCMSHistoryResult) null).subscribe(appCMSHistoryResultAction);
+            try {
+                AppCMSPageUI appCMSPageUI = navigationPages.get(historyMetaPage.getPageId());
+                getHistoryPageContent(appCMSMain.getApiBaseUrl(),
+                        historyMetaPage.getPageAPI(),
+                        appCMSSite.getGist().getSiteInternalName(),
+                        true,
+                        getPageId(appCMSPageUI),
+                        new AppCMSHistoryAPIAction(true,
+                                false,
+                                true,
+                                appCMSPageUI,
+                                historyMetaPage.getPageId(),
+                                historyMetaPage.getPageId(),
+                                historyMetaPage.getPageName(),
+                                historyMetaPage.getPageId(),
+                                false,
+                                null) {
+                            @Override
+                            public void call(AppCMSHistoryResult appCMSHistoryResult) {
+                                if (appCMSHistoryResult != null) {
+                                    Observable.just(appCMSHistoryResult).subscribe(appCMSHistoryResultAction);
+                                } else {
+                                    Observable.just((AppCMSHistoryResult) null).subscribe(appCMSHistoryResultAction);
+                                }
                             }
-                        }
-                    });
+                        });
+            } catch (Exception e) {
+                //
+            }
         }
     }
 
@@ -6175,8 +6178,13 @@ public class AppCMSPresenter {
             setExistingGooglePlaySubscriptionId(null);
             setActiveSubscriptionProcessor(null);
             setRestoreSubscriptionReceipt(null);
-            setFacebookAccessToken(null, null, null, null, false, false);
-            setGoogleAccessToken(null, null, null, null, false, false);
+
+            SharedPreferences sharedPreferences =
+                    currentContext.getSharedPreferences(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+            sharedPreferences.edit().putString(FACEBOOK_ACCESS_TOKEN_SHARED_PREF_NAME, null).apply();
+
+            sharedPreferences = currentContext.getSharedPreferences(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, 0);
+            sharedPreferences.edit().putString(GOOGLE_ACCESS_TOKEN_SHARED_PREF_NAME, null).apply();
 
             signinAnonymousUser();
 
@@ -6196,7 +6204,6 @@ public class AppCMSPresenter {
 
     private void sendFireBaseLogOutEvent() {
         Bundle bundle = new Bundle();
-
 
         String FIREBASE_SCREEN_LOG_OUT = "log_out";
         String FIREBASE_SCREEN_SIGN_OUT = "sign_out";

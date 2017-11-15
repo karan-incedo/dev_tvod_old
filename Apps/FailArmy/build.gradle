@@ -6,7 +6,7 @@ def final customApplicationId = 'FailArmy'
 def final hostName = "failarmy.viewlift.com"
 
 
-def final appVersionName = "0.0.4"
+def final appVersionName = "0.0.6"
 
 buildscript {
     repositories {
@@ -38,7 +38,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 4
+        versionCode 6
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
