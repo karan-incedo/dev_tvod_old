@@ -450,6 +450,8 @@ public class AppCmsNavigationFragment extends Fragment {
                 iconResId = R.drawable.st_menu_icon_clock;
             } else if (icon.equalsIgnoreCase(getString(R.string.st_settings_icon_key))) {
                 iconResId = R.drawable.st_menu_icon_gear;
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_search_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_search;
             }
             return iconResId;
         }

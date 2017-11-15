@@ -742,7 +742,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     @Override
-    public int getNavigationContaineer() {
+    public int getNavigationContainer() {
         return R.id.navigation_placholder;
     }
 
