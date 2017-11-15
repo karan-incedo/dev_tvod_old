@@ -18,6 +18,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.mobile.imageutils.FrescoImageLoader;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -26,6 +27,7 @@ import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
+import com.viewlift.views.utilities.ImageUtils;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
@@ -49,22 +51,14 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
-        Fresco.initialize(getApplicationContext());
-
         setContentView(R.layout.activity_launch);
 
-        handleIntent(getIntent());
+        setFullScreenFocus();
 
-        //Log.d(TAG, "Launching application from main.json");
-        //Log.d(TAG, "Search query (optional): " + searchQuery);
         appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
 
-        appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
-
-        if (!BaseView.isTablet(this)) {
-            appCMSPresenterComponent.appCMSPresenter().restrictPortraitOnly();
-        }
+        handleIntent(getIntent());
 
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
@@ -77,10 +71,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-
-        //Log.d(TAG, "onCreate()");
-        setCasting();
-        setFullScreenFocus();
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         networkConnectedReceiver = new BroadcastReceiver() {
@@ -101,9 +91,19 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             }
         };
 
-        UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+        setCasting();
 
-        AppsFlyerLib.getInstance().startTracking(getApplication());
+        new Thread(() -> {
+            appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
+
+            Fresco.initialize(getApplicationContext());
+
+            ImageUtils.registerImageLoader(new FrescoImageLoader());
+
+            UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+
+            AppsFlyerLib.getInstance().startTracking(getApplication());
+        });
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
@@ -139,8 +139,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             if (data != null) {
                 //Log.i(TAG, "Received intent data: " + data.toString());
                 searchQuery = data;
-                AppCMSPresenterComponent appCMSPresenterComponent =
-                        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
                 appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
             }
 

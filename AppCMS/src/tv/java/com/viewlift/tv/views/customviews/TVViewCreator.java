@@ -229,12 +229,11 @@ public class TVViewCreator {
         TVModuleView moduleView = null;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getType())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
-               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
+                // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
-
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                             pageView, jsonValueKeyMap, appCMSPresenter, true);
@@ -244,20 +243,12 @@ public class TVViewCreator {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
 
-                customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
-                customHeaderItem.setmIsCarousal(false);
-                customHeaderItem.setmListRowLeftMargin(0);
-                customHeaderItem.setmListRowRightMargin(0);
-                customHeaderItem.setmListRowHeight(920);
-                customHeaderItem.setmIsLivePlayer(true);
-                customHeaderItem.setmModuleId( (moduleAPI!= null) ? moduleAPI.getId() : null);
-
-                PlayerPresenter cardPresenter = new PlayerPresenter();
-                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
-                listRowAdapter.add(1);
-                mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
-
+                for (Component component : module.getComponents()) {
+                    createTrayModule(context, component, module.getLayout(), module, moduleAPI,
+                            pageView, jsonValueKeyMap, appCMSPresenter, false);
+                }
             } else {
                 if(!module.getView().equalsIgnoreCase("AC Tray 03")){
                     module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
@@ -274,7 +265,7 @@ public class TVViewCreator {
             }
             return null;
         } else if ("AC UserManagement 01".equalsIgnoreCase(module.getView())) {
-         //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+            //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             final TVPageView finalPageView = pageView;
@@ -359,14 +350,21 @@ public class TVViewCreator {
             }
         } else {
 
-            moduleView = new TVModuleView<>(context, module);
-            ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
             if("AC ResetPassword 01".equalsIgnoreCase(module.getView())){
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
             }
+
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
-                 //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+            }
+
+            moduleView = new TVModuleView<>(context, module);
+            ViewGroup childrenContainer = moduleView.getChildrenContainer();
+
+
+            if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
 
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
@@ -558,6 +556,19 @@ public class TVViewCreator {
                         mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                     }
                 }
+                break;
+
+            case PAGE_VIDEO_PLAYER_VIEW_KEY:
+                customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
+                customHeaderItem.setmIsCarousal(false);
+                customHeaderItem.setmIsLivePlayer(true);
+                customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
+                PlayerPresenter cardPresenter = new PlayerPresenter();
+                cardPresenter.setVideoId(moduleData.getContentData().get(0).getGist().getId());
+                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
+                pageView.setIsStandAlonePlayerEnabled(true);
+                listRowAdapter.add(1);
+                mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
                 break;
         }
     }
@@ -850,7 +861,7 @@ public class TVViewCreator {
                                                 extraData,
                                                 moduleAPI.getContentData().get(0),
                                                 false,
-                                                 -1,
+                                                -1,
                                                 null)) {
                                         /*    Log.e(TAG, "Could not launch action: " +
                                                     " permalink: " +
@@ -1315,7 +1326,7 @@ public class TVViewCreator {
                             componentViewResult.componentView.setSelected(true);
                             break;
                         case PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY:
-                           componentViewResult.componentView.setId(R.id.autoplay_finished_movie_title);
+                            componentViewResult.componentView.setId(R.id.autoplay_finished_movie_title);
                             break;
 
                         case PAGE_VIDEO_SUBTITLE_KEY:
@@ -1698,11 +1709,11 @@ public class TVViewCreator {
                                                     String permaLink = moduleAPI.getContentData().get(0).getGist().getPermalink();
                                                     String title = moduleAPI.getContentData().get(0).getGist().getTitle();
 
-                                                appCMSPresenter.launchTVVideoPlayer(
-                                                         moduleAPI.getContentData().get(0),
-                                                         -1,
-                                                         moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds(),
-                                                         moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                                                    appCMSPresenter.launchTVVideoPlayer(
+                                                            moduleAPI.getContentData().get(0),
+                                                            -1,
+                                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds(),
+                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime());
 
                                                     break;
                                                 }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary app values -->
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
+
+    <string name="app_cms_app_name">6ea6f2a0-451c-4d87-8060-051f8c07db23</string>
+    <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
+
+    <!-- x-api-key -->
+    <string name="x_api_key">jbNA1dr2bn1CshPLWxTsXRclfLrkpHcpcOC1il90</string>
+
+    <!-- AppCMS Facebook Login values -->
+    <string name="facebook_app_id">129797851053271</string>
+    <string name="fb_login_protocol_scheme">fb129797851053271</string>
+
+    <!-- AppCMS Apptentive API -->
+    <string name="app_cms_apptentive_api_key">
+        89e71da95909aa0b487c59fa8b490d5fd681263205c149b893467becadcadf77
+    </string>
+
+    <!-- cast receiver -->
+    <string name="chromecast_receiver_app_id">706F92EC</string>
+
+    <!-- flag to use HLS or not -->
+    <bool name="use_hls">true</bool>
+
+    <!-- Default video resolution -->
+    <string name="default_video_resolution">360p</string>
+
+    <string name="search_films">Search videos</string>
+
+    <integer name="number_of_tabs">3</integer>
+    <integer name="first_primary_page_index">1</integer>
+    <integer name="nav_live_page_index">4</integer>
+    <integer name="second_primary_page_index">3</integer>
+    <integer name="search_page_index">2</integer>
+    <integer name="third_primary_page_index">0</integer>
+</resources>

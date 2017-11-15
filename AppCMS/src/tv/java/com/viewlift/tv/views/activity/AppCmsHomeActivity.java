@@ -119,6 +119,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
         }
         homeHolder = (FrameLayout)findViewById(R.id.home_placeholder);
+        homeHolder.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         shadowView = (FrameLayout)findViewById(R.id.shadow_view);
         setNavigationFragment(navigationFragment);
         setPageFragment(appCMSBinder);
@@ -256,6 +257,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     protected void onResume() {
         super.onResume();
         registerReceivers();
+        toggleFooterBaseOnTemplate();
+        hideFooterControls();
         isActive = true;
     }
 
@@ -862,5 +865,32 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             }
         },50);
 
+    }
+
+    public void toggleFooterBaseOnTemplate(){
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+            findViewById(R.id.footer_logo).setVisibility(View.INVISIBLE);
+            findViewById(R.id.info_icon).setVisibility(View.INVISIBLE);
+            findViewById(R.id.press_up_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
+        }else if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.ENTERTAINMENT){
+            findViewById(R.id.footer_logo).setVisibility(View.INVISIBLE);
+            findViewById(R.id.info_icon).setVisibility(View.INVISIBLE);
+            findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
+        }
+    }
+
+    private void hideFooterControls(){
+        new Handler().postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
+                        findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
+                        findViewById(R.id.top_logo).setVisibility(View.INVISIBLE);
+                    }
+                },6000
+        );
     }
 }

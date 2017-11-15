@@ -14,9 +14,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:banner="@drawable/logo"
+        android:banner="@drawable/mse_top_logo"
         android:label="@string/default_app_name"
-        android:icon="@drawable/app_icon_small_front">
+        android:icon="@drawable/mse_top_logo">
         <activity
             android:name="com.viewlift.tv.AppCMSLeanbackActivity"
             android:theme="@style/AppTheme">

@@ -99,6 +99,7 @@ public class AppCmsTVPageFragment extends Fragment {
         if ((tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null) {
             if (getChildFragmentManager().findFragmentByTag(mAppCMSBinder.getScreenName()) == null) {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
+                browseFragment.setPageView(tvPageView);
                 browseFragment.setAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment, browseFragment, mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
             } else {

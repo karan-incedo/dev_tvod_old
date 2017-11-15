@@ -1,5 +1,7 @@
 package com.viewlift.tv.views.presenter;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v17.leanback.widget.Presenter;
@@ -7,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.google.android.exoplayer2.ui.PlaybackControlView;
+import com.viewlift.R;
+import com.viewlift.tv.views.customviews.CustomVideoVideoPlayerView;
+import com.viewlift.tv.views.fragment.AppCMSPlayVideoFragment;
 import com.viewlift.views.customviews.VideoPlayerView;
 
 /**
@@ -24,30 +29,26 @@ public class PlayerPresenter extends Presenter {
         //Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
         final FrameLayout frameLayout = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams layoutParams;
-
-            layoutParams = new FrameLayout.LayoutParams(DEVICE_WIDTH,
+        layoutParams = new FrameLayout.LayoutParams(DEVICE_WIDTH,
                     DEVICE_HEIGHT);
-
         frameLayout.setLayoutParams(layoutParams);
         frameLayout.setFocusable(true);
-
-
-
         return new ViewHolder(frameLayout);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
         FrameLayout cardView = (FrameLayout) viewHolder.view;
-        VideoPlayerView videoPlayerView = null;
+        CustomVideoVideoPlayerView videoPlayerView = null;
         if(null != cardView && cardView.getChildCount() > 0){
-            videoPlayerView = (VideoPlayerView)cardView.getChildAt(0);
+            videoPlayerView = (CustomVideoVideoPlayerView)cardView.getChildAt(0);
         }else {
             videoPlayerView = playerView(cardView.getContext());
             cardView.addView(videoPlayerView);
-            videoPlayerView.setUri(Uri.parse("https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"),
+            videoPlayerView.setVideoUri(mVideoId);
+           /* videoPlayerView.setUri(Uri.parse("https://snagfilms-lh.akamaihd.net/i/Laxsportsnetwork_1@322790/master.m3u8?7544bdcc50dae6fd8d8ebeb3ba54706c7eb1db7bd808eb469b2094bb2d8fa248a93aed9f18570510bf020033a32d809b23"),
                     null);
-            videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
+            videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);*/
         }
     }
 
@@ -68,12 +69,9 @@ public class PlayerPresenter extends Presenter {
     }
 
 
-
-    public static VideoPlayerView playerView(Context context) {
-
-        VideoPlayerView videoPlayerView = new VideoPlayerView(context);
+    public static CustomVideoVideoPlayerView playerView(Context context) {
+        CustomVideoVideoPlayerView videoPlayerView = new CustomVideoVideoPlayerView(context);
         videoPlayerView.init(context);
-        // it should be dynamic when live url come from api
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
@@ -83,8 +81,11 @@ public class PlayerPresenter extends Presenter {
                 }
             }
         });
-
         return videoPlayerView;
     }
 
+    private String mVideoId;
+    public void setVideoId(String id) {
+        mVideoId = id;
+    }
 }
