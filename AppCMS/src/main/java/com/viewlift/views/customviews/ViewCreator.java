@@ -1148,7 +1148,7 @@ public class ViewCreator {
                             componentViewResult.componentView.setVisibility(View.GONE);
                             adjustOthers = AdjustOtherState.INITIATED;
                         } else if (!appCMSPresenter.isAppSVOD() && jsonValueKeyMap.get(component.getKey()) != null &&
-                                jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOAD_KEY
+                                jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
                                 && appCMSPresenter.getAppCMSMain().getFeatures() != null &&
                                 !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                             componentViewResult.shouldHideComponent = true;
@@ -2226,6 +2226,11 @@ public class ViewCreator {
                         !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                     componentViewResult.componentView.setVisibility(View.GONE);
                     componentViewResult.shouldHideComponent = true;
+                } else if (jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY &&
+                        !appCMSPresenter.isAppSVOD() &&
+                        !appCMSPresenter.getAppCMSMain().getFeatures().isAutoPlay()) {
+                    componentViewResult.componentView.setVisibility(View.GONE);
+                    componentViewResult.shouldHideComponent = true;
                 }
 
                 if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor())) {
@@ -3072,11 +3077,18 @@ public class ViewCreator {
                 }
 
                 if (componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY) {
-                    ((Switch) componentViewResult.componentView)
-                            .setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
-                    ((Switch) componentViewResult.componentView)
-                            .setOnCheckedChangeListener((buttonView, isChecked)
-                                    -> appCMSPresenter.setAutoplayEnabledUserPref(context, isChecked));
+                    if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
+                            appCMSPresenter.getAppCMSMain().getFeatures().isAutoPlay()) {
+                        ((Switch) componentViewResult.componentView)
+                                .setChecked(appCMSPresenter.getAutoplayEnabledUserPref(context));
+                        ((Switch) componentViewResult.componentView)
+                                .setOnCheckedChangeListener((buttonView, isChecked)
+                                        -> appCMSPresenter.setAutoplayEnabledUserPref(context, isChecked));
+                    } else {
+                        ((Switch) componentViewResult.componentView)
+                                .setChecked(false);
+                        componentViewResult.componentView.setVisibility(View.GONE);
+                    }
                 }
 
                 if (componentKey == AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY) {
@@ -3110,6 +3122,8 @@ public class ViewCreator {
                         }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
                     } else {
+                        componentViewResult.componentView.setEnabled(false);
+                        ((Switch) componentViewResult.componentView).setChecked(false);
                         componentViewResult.componentView.setVisibility(View.GONE);
                     }
                 }

@@ -164,6 +164,7 @@
     <string name="app_cms_page_settings_download_quality_value_key">downloadQualityValue</string>
     <string name="app_cms_page_settings_app_version_value_key">appVersionValue</string>
 
+    <string name="app_cms_user_management_autoplay_text_key">autoplayTitle</string>
     <string name="app_cms_user_management_use_sd_card_for_downloads_text_key">Use SD Card For Downloads</string>
 
     <string name="app_cms_page_history_module_key">AC History 01</string>
