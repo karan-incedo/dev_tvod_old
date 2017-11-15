@@ -180,6 +180,11 @@ public class CollectionGridItemView extends BaseView {
         return childrenContainer;
     }
 
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
+
     public void addChild(ItemContainer itemContainer) {
         if (childrenContainer == null) {
             createChildrenContainer();
