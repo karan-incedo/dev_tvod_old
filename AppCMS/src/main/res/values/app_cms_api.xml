@@ -465,5 +465,10 @@
     <!--watchlist / history / queue UI json keys-->
     <string name="app_cms_page_ratingbar_key">ratingBar</string>
     <string name="app_cms_page_video_type_key">videoTypeImage</string>
+    <string name="app_cms_page_delete_watchlist_key">deleteWatchlist</string>
+    <string name="app_cms_delete_single_watchlist_action">deleteSingleItemWatchlist</string>
+    <!--video content type-->
+    <string name="app_cms_content_type_shows">SHOW</string>
+    <string name="app_cms_content_type_episode">EPISODE</string>
 
 </resources>
