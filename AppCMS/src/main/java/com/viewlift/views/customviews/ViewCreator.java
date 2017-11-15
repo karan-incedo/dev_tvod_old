@@ -8,6 +8,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -33,6 +34,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -40,6 +42,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -83,6 +86,8 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
+
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 
 /*
  * Created by viewlift on 5/5/17.
@@ -279,7 +284,7 @@ public class ViewCreator {
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
-                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
+                                    if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getContentDetails() != null &&
@@ -922,7 +927,7 @@ public class ViewCreator {
         PageView pageView = null;
         try {
             pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
-                + BaseView.isLandscape(context));
+                    + BaseView.isLandscape(context));
         } catch (Exception e) {
         }
         if (appCMSPresenter.isPageAVideoPage(screenName)) {
@@ -1275,6 +1280,7 @@ public class ViewCreator {
         } catch (Exception e) {
         }
     }
+
     private void updateModuleHeight(Context context,
                                     Layout parentLayout,
                                     List<Component> moduleComponents,
@@ -1291,7 +1297,7 @@ public class ViewCreator {
     public CollectionGridItemView createCollectionGridItemView(final Context context,
                                                                final Layout parentLayout,
                                                                final boolean useParentLayout,
-                                                               final Component component,
+                                                               Component component,
                                                                final AppCMSPresenter appCMSPresenter,
                                                                final Module moduleAPI,
                                                                final AppCMSAndroidModules appCMSAndroidModules,
@@ -1315,7 +1321,12 @@ public class ViewCreator {
 
         @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
-
+        if (viewType.contains("AC Watchlist 01")) {
+            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+                    loadJsonFromAssets(context, "watchlist_sports.json"),
+                    AppCMSPageUI.class);
+            component = appCMSPageUI.getModuleList().get(2).getComponents().get(4);
+        }
         int size = component.getComponents().size();
         for (int i = 0; i < size; i++) {
             Component childComponent = component.getComponents().get(i);
@@ -1407,6 +1418,19 @@ public class ViewCreator {
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
         switch (componentType) {
+            case PAGE_RATINGBAR:
+                componentViewResult.componentView = new RatingBar(context);
+
+                LayerDrawable stars = (LayerDrawable) ((RatingBar) componentViewResult.componentView).getProgressDrawable();
+                stars.getDrawable(2).setColorFilter(Color.parseColor(getColor(context, component.getFillColor()))
+                        , PorterDuff.Mode.SRC_ATOP);
+                stars.getDrawable(0).setColorFilter(Color.parseColor(getColor(context, component.getBorderColor())),
+                        PorterDuff.Mode.SRC_ATOP);
+                stars.getDrawable(1).setColorFilter(Color.parseColor(getColor(context, component.getBorderColor())),
+                        PorterDuff.Mode.SRC_ATOP);
+                ((RatingBar) componentViewResult.componentView).setEnabled(false);
+                ((RatingBar) componentViewResult.componentView).setRating(moduleAPI.getContentData().get(0).getGist().getAverageStarRating());
+                break;
             case PAGE_TABLE_VIEW_KEY:
                 if (moduleType == AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY) {
 
@@ -1460,21 +1484,35 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-                            moduleAPI.getContentData(),
-                            component.getComponents(),
+                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
+                            this,
                             appCMSPresenter,
+                            settings,
+                            component.getLayout(),
+                            false,
+                            component,
                             jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
-                            (RecyclerView) componentViewResult.componentView);
+                            appCMSAndroidModules);
 
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
-                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
-                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+//                            moduleAPI.getContentData(),
+//                            component.getComponents(),
+//                            appCMSPresenter,
+//                            jsonValueKeyMap,
+//                            viewType,
+//                            (RecyclerView) componentViewResult.componentView);
+
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+//                    componentViewResult.onInternalEvent = appCMSViewAdapter;
+//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(appCMSTrayItemAdapter)
+                                .adapter(appCMSViewAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleAPI.getId() + component.getKey())
                                 .build());
@@ -1831,6 +1869,9 @@ public class ViewCreator {
 
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
+                        break;
+                    case PAGE_DELETE_WATCHLIST_KEY:
+                        componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.ic_deleteicon));
                         break;
 
                     case PAGE_GRID_OPTION_KEY:
@@ -2623,6 +2664,15 @@ public class ViewCreator {
                     componentViewResult.componentView = new ImageView(context);
                 }
                 switch (componentKey) {
+                    case PAGE_VIDEO_TYPE_KEY:
+                        // TODO: have to  add condition depending upon API object
+                        if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_shows))) {
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_shows);
+                        }
+                        if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_episode))) {
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_episode);
+                        }
+                        break;
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -3533,47 +3583,47 @@ public class ViewCreator {
         // it should be dynamic when live url come from api
 
         appCMSPresenter.refreshVideoData(videoId, updatedContentDatum -> {
-           // appCMSPresenter.getAppCMSSignedURL(videoId, appCMSSignedURLResult -> {
-           //     if (videoPlayerView != null && appCMSSignedURLResult != null) {
-                if (videoPlayerView != null ) {
-                    boolean foundMatchingMpeg = false;
-                    String hlsUrl = "";
-                    String closedCaptionUrl = "";
-                    if (updatedContentDatum != null &&
-                            updatedContentDatum.getStreamingInfo() != null &&
-                            updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
-                            updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg() != null &&
-                            !updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().isEmpty()) {
+            // appCMSPresenter.getAppCMSSignedURL(videoId, appCMSSignedURLResult -> {
+            //     if (videoPlayerView != null && appCMSSignedURLResult != null) {
+            if (videoPlayerView != null) {
+                boolean foundMatchingMpeg = false;
+                String hlsUrl = "";
+                String closedCaptionUrl = "";
+                if (updatedContentDatum != null &&
+                        updatedContentDatum.getStreamingInfo() != null &&
+                        updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
+                        updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg() != null &&
+                        !updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().isEmpty()) {
 
-                        updatedContentDatum.getGist().setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
-                        if (updatedContentDatum.getStreamingInfo().getVideoAssets().getHls()!=null
-                                ) {
-                            hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
-                        } else {
-                            //for (int i = 0; i < updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() && !foundMatchingMpeg; i++) {
-                               // int queryIndex = hlsUrl.indexOf("?");
+                    updatedContentDatum.getGist().setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
+                    if (updatedContentDatum.getStreamingInfo().getVideoAssets().getHls() != null
+                            ) {
+                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
+                    } else {
+                        //for (int i = 0; i < updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() && !foundMatchingMpeg; i++) {
+                        // int queryIndex = hlsUrl.indexOf("?");
                                 /*if (0 <= queryIndex) {
                                     if (updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl().contains(hlsUrl.substring(0, queryIndex))) {
                                         foundMatchingMpeg = true;*/
-                                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
                                     /*}
                                 }*/
-                           // }
-                        }
-                        // TODO: 7/27/2017 Implement CC for multiple languages.
-                        if (updatedContentDatum.getContentDetails() != null
-                                && updatedContentDatum.getContentDetails().getClosedCaptions() != null
-                                && !updatedContentDatum.getContentDetails().getClosedCaptions().isEmpty()) {
-                            for (ClosedCaptions cc : updatedContentDatum.getContentDetails().getClosedCaptions()) {
-                                if (cc.getUrl() != null &&
-                                        !cc.getUrl().equalsIgnoreCase(context.getString(R.string.download_file_prefix)) &&
-                                        cc.getFormat() != null &&
-                                        cc.getFormat().equalsIgnoreCase("SRT")) {
-                                    closedCaptionUrl = cc.getUrl();
-                                }
+                        // }
+                    }
+                    // TODO: 7/27/2017 Implement CC for multiple languages.
+                    if (updatedContentDatum.getContentDetails() != null
+                            && updatedContentDatum.getContentDetails().getClosedCaptions() != null
+                            && !updatedContentDatum.getContentDetails().getClosedCaptions().isEmpty()) {
+                        for (ClosedCaptions cc : updatedContentDatum.getContentDetails().getClosedCaptions()) {
+                            if (cc.getUrl() != null &&
+                                    !cc.getUrl().equalsIgnoreCase(context.getString(R.string.download_file_prefix)) &&
+                                    cc.getFormat() != null &&
+                                    cc.getFormat().equalsIgnoreCase("SRT")) {
+                                closedCaptionUrl = cc.getUrl();
                             }
                         }
                     }
+                }
 
 
 
@@ -3582,11 +3632,11 @@ public class ViewCreator {
                             appCMSSignedURLResult.getKeyPairId());*/
 
 
-                        videoPlayerView.setUri(Uri.parse(hlsUrl),
-                                !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
-                        videoPlayerView.setCurrentPosition(updatedContentDatum.getGist().getWatchedTime() * 1000L);
+                videoPlayerView.setUri(Uri.parse(hlsUrl),
+                        !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
+                videoPlayerView.setCurrentPosition(updatedContentDatum.getGist().getWatchedTime() * 1000L);
 
-                }
+            }
             //});
 
         });
