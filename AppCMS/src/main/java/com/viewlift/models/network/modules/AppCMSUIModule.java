@@ -611,6 +611,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BANNER_DETAIL_BUTTON);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_title_key),
                 AppCMSUIKeyType.PAGE_BANNER_DETAIL_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_delete_watchlist_key),
+                AppCMSUIKeyType.PAGE_DELETE_WATCHLIST_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_delete_history_key),
+                AppCMSUIKeyType.PAGE_DELETE_HISTORY_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -759,6 +763,11 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_banner_detail_button_action_key),
                 AppCMSActionType.BANNER_DETAIL_CLICK);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_delete_single_watchlist_action),
+                AppCMSActionType.DELETE_SINGLE_WATCHLIST_ITEM);
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_delete_single_history_action),
+                AppCMSActionType.DELETE_SINGLE_HISTORY_ITEM);
     }
 
     @Provides
