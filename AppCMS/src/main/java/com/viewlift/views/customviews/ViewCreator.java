@@ -2654,9 +2654,11 @@ public class ViewCreator {
 
             case PAGE_IMAGE_KEY:
                 componentViewResult.componentView = ImageUtils.createImageView(context);
+
                 if (componentViewResult.componentView == null) {
                     componentViewResult.componentView = new ImageView(context);
                 }
+
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
@@ -2672,14 +2674,17 @@ public class ViewCreator {
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                        moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
                                     Glide.with(context)
-                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+//                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
+                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .override(viewWidth, viewHeight)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else if (viewWidth > 0) {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .override(viewWidth, viewHeight)
@@ -2687,13 +2692,15 @@ public class ViewCreator {
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             }
-                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
+                                    android.R.color.transparent));
                             componentViewResult.useWidthOfScreen = false;
                         }
                         break;
@@ -2708,7 +2715,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
-                        // TODO: 03 Nov. 2017 - Badges are not yet ready for Production - This should uncommented once that is available
+                        // TODO: 03 Nov. 2017 - Badges are not yet ready for Production - This should be uncommented once that is available
 //                        componentViewResult.componentView = new ImageView(context);
 //                        ImageView imageView = (ImageView) componentViewResult.componentView;
 //                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
@@ -2721,8 +2728,6 @@ public class ViewCreator {
 //                        } else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
 //                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
 //                        }
-
-
                         break;
 
                     case PAGE_BANNER_DETAIL_ICON:
