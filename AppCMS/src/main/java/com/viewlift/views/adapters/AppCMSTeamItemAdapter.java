@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
@@ -72,9 +73,20 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
         if (navigationTabBar != null) {
             NavigationTabBar navigationItem = (NavigationTabBar) navigationTabBar.getItems().get(position);
             holder.navItemLabel.setText(navigationItem.getTitle());
-            int resID = resources.getIdentifier(navigationItem.getIcon().replace("-","_") , "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
-            holder.navItemLogo.setImageDrawable(resources.getDrawable(resID));
-            holder.navItemLogo.setVisibility(View.VISIBLE);
+            System.out.println(navigationItem.getIcon());
+            if (navigationItem.getIcon().contains("http://") ||navigationItem.getIcon().contains("https://")){
+                Glide.with(holder.itemView.getContext())
+                        .load(navigationItem.getIcon())
+                        .override(100,100)
+                        .into((ImageView) holder.navItemLogo);
+                holder.navItemLogo.setVisibility(View.VISIBLE);
+            }else {
+                int resID = resources.getIdentifier(navigationItem.getIcon().replace("-", "_"), "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
+                holder.navItemLogo.setImageDrawable(resources.getDrawable(resID));
+                holder.navItemLogo.setVisibility(View.VISIBLE);
+            }
+
+
             holder.itemView.setOnClickListener(v -> {
                 //Todo need to remove toast and call the respective team pages.
                 appCMSPresenter.cancelInternalEvents();

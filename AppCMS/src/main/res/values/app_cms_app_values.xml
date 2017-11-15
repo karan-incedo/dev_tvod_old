@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-   <!-- <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
+    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
     <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
 
     <!--<string name="app_cms_app_name">00000151-11b4-d29b-a17d-55fdb2b80000</string>-->
