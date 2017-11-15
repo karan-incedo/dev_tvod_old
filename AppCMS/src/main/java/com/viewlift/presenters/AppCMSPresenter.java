@@ -6640,13 +6640,22 @@ public class AppCMSPresenter {
                 String paymentProcessor = getActiveSubscriptionProcessor();
                 if ((!TextUtils.isEmpty(paymentProcessor) &&
                         !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) {
+                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
+                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
+                        !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
                     title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
                     message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_web_user_dialog);
                 } else if (!TextUtils.isEmpty(paymentProcessor) &&
-                        TextUtils.isEmpty(getExistingGooglePlaySubscriptionId())) {
-                    title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
-                    message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                        ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
+                                || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
+                    title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                    message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_ios_user_dialog);
+                } else {
+                    if (!TextUtils.isEmpty(paymentProcessor) &&
+                            TextUtils.isEmpty(getExistingGooglePlaySubscriptionId())) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                    }
                 }
             }
 
