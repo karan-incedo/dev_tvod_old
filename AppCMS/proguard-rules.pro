@@ -94,7 +94,7 @@
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
 
-# If you keep the line number information, uncomment this to
+# If you keep the line number information, uncomment thbuiis to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
