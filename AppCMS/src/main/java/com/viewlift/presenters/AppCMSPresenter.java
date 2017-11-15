@@ -6512,7 +6512,11 @@ public class AppCMSPresenter {
     @SuppressWarnings("unused")
     public boolean isPageFooter(String pageId) {
         for (NavigationFooter navigationFooter : navigation.getNavigationFooter()) {
-            if (pageId != null && !TextUtils.isEmpty(pageId) && pageId.contains(navigationFooter.getPageId())) {
+            if (pageId != null &&
+                    !TextUtils.isEmpty(pageId) &&
+            navigationFooter != null &&
+                    !TextUtils.isEmpty(navigationFooter.getPageId()) &&\
+                    && pageId.contains(navigationFooter.getPageId())) {
                 return true;
             }
         }
@@ -9157,7 +9161,6 @@ public class AppCMSPresenter {
                                                             launchBlankPage();
                                                         }
                                                     }
-
                                                 }
                                             });
                                 });
@@ -9604,9 +9607,9 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(logoAnimIntent);
 
                                 NavigationPrimary homePageNav = findHomePageNavItem();
-                                boolean launchSuccess = navigateToTVPage(homePageNav.getPageId(),
-                                        homePageNav.getTitle(),
-                                        homePageNav.getUrl(),
+                                boolean launchSuccess = navigateToTVPage(homePage.getPageId(),
+                                        homePage.getPageName(),
+                                        homePage.getPageUI(),
                                         true,
                                         null,
                                         false,
