@@ -76,6 +76,7 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
         addToWatchList.setOnClickListener(this);
         downloadBtn.setOnClickListener(this);
         closeBtn.setOnClickListener(this);
+        downloadBtn.setVisibility(appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()) ? View.GONE : View.VISIBLE);
     }
 
     @Override

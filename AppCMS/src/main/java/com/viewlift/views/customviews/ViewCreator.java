@@ -178,7 +178,7 @@ public class ViewCreator {
             boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
 
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
-                    (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
+                    (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_BANNER_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_SHOW_PLAYER_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                 createModule = false;
@@ -1000,11 +1000,16 @@ public class ViewCreator {
                 module.setBlockName(moduleInfo.getBlockName());
             }
 
+            /*if(moduleInfo.getBlockName().equalsIgnoreCase("banner01")){
+                module.setLayout(moduleInfo.getLayout());
+                module.setComponents(moduleInfo.getComponents());
+            }*/
+
             boolean createModule = !modulesToIgnore.contains(module.getType());
 
             if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_BANNER_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_SHOW_PLAYER_MODULE_KEY)) {
                 createModule = false;
             }
@@ -3079,6 +3084,7 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MODULE_KEY:
                     case PAGE_DOWNLOAD_SETTING_MODULE_KEY:
                     case PAGE_DOWNLOAD_MODULE_KEY:
+                    case PAGE_BANNER_MODULE_KEY:
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {
                             return appCMSPageAPI.getModules().get(0);

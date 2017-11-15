@@ -4947,12 +4947,21 @@ public class AppCMSPresenter {
                                 searchQuery) {
                             @Override
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
-                                final AppCMSPageAPIAction appCMSPageAPIAction = this;
+                                 AppCMSPageAPIAction appCMSPageAPIAction = this;
+                                /*if (action.equalsIgnoreCase("b7cf9716-4249-4c37-98b6-b3e93d101f2b")) {
+                                    appCMSPageAPIAction.appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentActivity, "b7cf9716-4249-4c37-98b6-b3e93d101f2b.json"),
+                                            AppCMSPageUI.class);
+                                }*/
+
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
                                     pushActionInternalEvents(appCMSPageAPIAction.pageId
                                             + BaseView.isLandscape(currentActivity));
                                     navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
+
+
+
                                     if (appCMSPageAPIAction.launchActivity) {
                                         launchPageActivity(currentActivity,
                                                 appCMSPageAPIAction.appCMSPageUI,
@@ -5136,6 +5145,12 @@ public class AppCMSPresenter {
         AppCMSPageAPI appCMSPageAPI = null;
         if (platformType == PlatformType.ANDROID) {
             try {
+
+                /*if(pageId.equalsIgnoreCase("b7cf9716-4249-4c37-98b6-b3e93d101f2b")) {
+                    appCMSPageAPI = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(currentActivity, "team_detail.json"),
+                            AppCMSPageAPI.class);
+                }else*/
                 appCMSPageAPI = getPageAPILruCache().get(pageId);
             } catch (Exception e) {
                 appCMSPageAPI = null;
@@ -11012,7 +11027,7 @@ public class AppCMSPresenter {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;
         final boolean navbarPresent;
-        final AppCMSPageUI appCMSPageUI;
+              AppCMSPageUI appCMSPageUI;
         final String action;
         final String pageId;
         final String pageTitle;
