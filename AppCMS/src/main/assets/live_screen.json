@@ -135,7 +135,7 @@
           "yAxis": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 240
+          "height": 270
         },
         "tabletLandscape": {
           "yAxis": 0,
@@ -194,7 +194,7 @@
               "topMargin": 17.89,
               "rightMargin": 4.27,
               "bottomMargin": 0,
-              "height": 215
+              "height": 245
             },
             "tabletLandscape": {
               "yAxis": 0,

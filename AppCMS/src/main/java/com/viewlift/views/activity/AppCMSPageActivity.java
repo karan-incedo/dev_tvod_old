@@ -1485,9 +1485,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (moduleFooter != null &&
                     moduleFooter.getSettings() != null &&
                     !moduleFooter.getSettings().isShowTabBar()) {
-                appCMSTabNavParentContainer.setVisibility(View.GONE);
+                appCMSTabNavContainer.setVisibility(View.GONE);
             } else {
-                appCMSTabNavParentContainer.setVisibility(View.VISIBLE);
+                appCMSTabNavContainer.setVisibility(View.VISIBLE);
                 selectNavItem(appCMSBinder.getPageId());
             }
         }

@@ -290,7 +290,7 @@ public class ViewCreator {
                                         }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
-                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
+                                    if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getContentDetails() != null &&
@@ -933,7 +933,7 @@ public class ViewCreator {
         PageView pageView = null;
         try {
             pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
-                + BaseView.isLandscape(context));
+                    + BaseView.isLandscape(context));
         } catch (Exception e) {
         }
         if (appCMSPresenter.isPageAVideoPage(screenName)) {
@@ -1292,6 +1292,7 @@ public class ViewCreator {
         } catch (Exception e) {
         }
     }
+
     private void updateModuleHeight(Context context,
                                     Layout parentLayout,
                                     List<Component> moduleComponents,
@@ -1656,7 +1657,7 @@ public class ViewCreator {
                 componentViewResult.componentView.setId(R.id.video_player_id);
                 break;
             case PAGE_WEB_VIEW_KEY:
-                componentViewResult.componentView = getWebViewComponent(context, moduleAPI);
+                componentViewResult.componentView = getWebViewComponent(context, moduleAPI, component);
 //                ((WebView) componentViewResult.componentView).getSettings().setLoadWithOverviewMode(true);
 //                ((WebView) componentViewResult.componentView).getSettings().setUseWideViewPort(true);
 //                ((WebView) componentViewResult.componentView).getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
@@ -3627,7 +3628,8 @@ public class ViewCreator {
         return videoPlayerView;
     }
 
-    public static WebView getWebViewComponent(Context context, Module moduleAPI) {
+    public static WebView getWebViewComponent(Context context, Module moduleAPI, Component component) {
+
         WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
 //        webView.getSettings().setLoadWithOverviewMode(false);
@@ -3636,13 +3638,15 @@ public class ViewCreator {
         webView.getSettings().setDisplayZoomControls(false);
         webView.setBackgroundColor(Color.TRANSPARENT);
         Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-//        int width1 = display.getWidth();
-        int width1 = BaseView.getDeviceWidth();
-        System.out.print("device width-"+width1);
+        int width1 = display.getWidth();
+        int height1 = 210;
+//        int width1 = BaseView.getDeviceWidth();
+        System.out.println("device width-" + width1);
 //        String html = "<iframe style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
-        String html = "<iframe width=\""+width1+"\" height=\"210\" style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
+        String html = "<iframe width=\"" + width1 + "\" height=\"" + height1 + "px\" style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
 
-        String htmlStart="<html> <header><meta name='viewport' content='user-scalable=no'/> </header> <body>";
+
+        String htmlStart = "<html> <header><meta name='viewport' content='user-scalable=no'/> </header> <body>";
         String htmlEnd = "</body></html>";
 //        webView.setInitialScale(100);
 
@@ -3653,6 +3657,7 @@ public class ViewCreator {
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
             webViewUrl = moduleAPI.getRawText();
         }
+//        String data_html = "<!DOCTYPE html><html> <head> <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"target-densitydpi=high-dpi\" /> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> </head> <body style=\"background:black;margin:0 0 0 0; padding:0 0 0 0;\"> <iframe style=\" width=' " + width1 + "' height='" + height1 + "' src=\"" + webViewUrl + "\" frameborder=\"0\"></iframe> </body> </html> ";
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -3663,8 +3668,10 @@ public class ViewCreator {
             }
 
         });
+//        webView.loadDataWithBaseURL(webViewUrl, data_html, "text/html", "UTF-8", null);
+
 //        webView.loadData(htmlStart+html+htmlEnd, "text/html", null);
-        webView.loadData(html, "text/html", null);
+        webView.loadData(html, "text/html", "UTF-8");
 
 //        webView.loadUrl(html);
         String finalWebViewUrl = html;
@@ -3678,7 +3685,6 @@ public class ViewCreator {
 
         return webView;
     }
-
 
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
