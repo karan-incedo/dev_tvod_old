@@ -63,6 +63,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private String videoAction;
     private String showAction;
     private String deleteSingleWatchlistAction;
+    private String deleteSingleHistoryAction;
     private String watchVideoAction;
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
@@ -121,6 +122,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.videoAction = getVideoAction(context);
         this.showAction = getShowAction(context);
         this.deleteSingleWatchlistAction = getDeleteSingleWatchlistAction(context);
+        this.deleteSingleHistoryAction = getDeleteSingleHistoryAction(context);
 
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
@@ -423,6 +425,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {
+                                    if (action.contains(deleteSingleHistoryAction)) {
+                                        appCMSPresenter.editHistory(data.getGist().getId(),
+                                                appCMSDeleteHistoryResult -> {
+                                                    adapterData.remove(data);
+                                                    notifyDataSetChanged();
+//                                                    if (adapterData.size() == 0) {
+//                                                        sendEvent(hideRemoveAllButtonEvent);
+//                                                    }
+                                                }, false);
+                                    }
                                     if (action.contains(deleteSingleWatchlistAction)) {
                                         appCMSPresenter.editWatchlist(data.getGist().getId(),
                                                 addToWatchlistResult -> {
@@ -611,6 +623,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private String getDeleteSingleWatchlistAction(Context context) {
         return context.getString(R.string.app_cms_delete_single_watchlist_action);
+    }
+
+    private String getDeleteSingleHistoryAction(Context context) {
+        return context.getString(R.string.app_cms_delete_single_history_action);
     }
 
     private String getVideoAction(Context context) {
