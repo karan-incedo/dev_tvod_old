@@ -11,7 +11,7 @@
     <string name="app_cms_search_api_url">%1$s/search/v1?site=%2$s&amp;searchTerm=%3$s</string>
 
     <!-- AppCMS Ads API -->
-    <string name="app_cms_ads_api_url">http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&amp;iu=/225734590/SF_Video/Map_Android&amp;impl=s&amp;gdfp_req=1&amp;env=vp&amp;output=xml_vast2&amp;unviewed_position_start=1&amp;url=%1$s&amp;ad_rule=0&amp;correlator=%2$d&amp;cust_params=APPID=%3$s</string>
+    <string name="app_cms_ads_api_url">%1$s&amp;url=%2$s&amp;ad_rule=0&amp;correlator=%3$d&amp;cust_params=APPID=%4$s</string>
 
     <!-- AppCMS Beacon API -->
     <string name="app_cms_beacon_url_base">https://1a7ahu122g.execute-api.us-east-1.amazonaws.com/production_beacon/firehouse-proxy</string>

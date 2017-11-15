@@ -1354,7 +1354,11 @@ public class AppCMSPresenter {
                         Date now = new Date();
 
                         try {
-                            adsUrl = appCMSAndroid.getAdvertising().getVideoTag();
+                            adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
+                                    appCMSAndroid.getAdvertising().getVideoTag(),
+                                    getPermalinkCompletePath(pagePath),
+                                    now.getTime(),
+                                    appCMSMain.getSite());
                         } catch (Exception e) {
                             //
                         }
@@ -10074,6 +10078,7 @@ public class AppCMSPresenter {
 
                             Date now = new Date();
                             adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
+                                    appCMSAndroid.getAdvertising().getVideoTag(),
                                     getPermalinkCompletePath(pagePath),
                                     now.getTime(),
                                     appCMSMain.getSite());
@@ -10279,6 +10284,7 @@ public class AppCMSPresenter {
         Date now = new Date();
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_ads_url_key),
                 currentActivity.getString(R.string.app_cms_ads_api_url,
+                        appCMSAndroid.getAdvertising().getVideoTag(),
                         getPermalinkCompletePath(pagePath),
                         now.getTime(),
                         appCMSSite.getGist().getSiteInternalName()));
