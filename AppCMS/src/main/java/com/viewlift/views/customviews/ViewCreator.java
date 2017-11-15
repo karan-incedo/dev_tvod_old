@@ -1871,6 +1871,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
                     case PAGE_DELETE_WATCHLIST_KEY:
+                    case PAGE_DELETE_HISTORY_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.ic_deleteicon));
                         break;
 
