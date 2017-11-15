@@ -39,10 +39,11 @@ public class NavBarItemView extends LinearLayout {
     private String SEARCH_TAB_ICON_KEY = "icon-search";
     private ModuleList navTabBar;
     private AppCMSPresenter appCMSPresenter;
+
     public NavBarItemView(Context context, ModuleList navigationItem, AppCMSPresenter appCMSPresenter) {
         super(context);
         this.navTabBar = navigationItem;
-        this.appCMSPresenter=appCMSPresenter;
+        this.appCMSPresenter = appCMSPresenter;
         init();
     }
 
@@ -89,9 +90,9 @@ public class NavBarItemView extends LinearLayout {
 
         for (int i = 0; i < navigationTabBar.getNavigationModuleItem().getComponents().size(); i++) {
             String type = navigationTabBar.getNavigationModuleItem().getComponents().get(i).getType();
-            if (navLabel!=null && type.equalsIgnoreCase("label") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
+            if (navLabel != null && type.equalsIgnoreCase("label") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
                 navLabel.setTextColor(color);
-            } else if (navImage!=null && type.equalsIgnoreCase("image") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
+            } else if (navImage != null && type.equalsIgnoreCase("image") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
                 applyTintToDrawable(navImage.getDrawable(), color);
             }
 
@@ -175,8 +176,8 @@ public class NavBarItemView extends LinearLayout {
                     "drawable",
                     getContext().getPackageName());
 
-        }else{
-            drawableId= resources.getIdentifier(tabDisplayPath.replace("-","_") , "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
+        } else {
+            drawableId = resources.getIdentifier(tabDisplayPath.replace("-", "_"), "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
 
         }
         if (navImage != null) {
@@ -189,13 +190,13 @@ public class NavBarItemView extends LinearLayout {
         int drawableId = resources.getIdentifier(drawableName,
                 "drawable",
                 getContext().getPackageName());
-        if(navImage!=null){
+        if (navImage != null) {
             navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
         }
     }
 
     public void setLabel(String label) {
-        if(navLabel!=null ){
+        if (navLabel != null) {
             navLabel.setText(label);
         }
     }

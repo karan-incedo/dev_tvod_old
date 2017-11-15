@@ -54,6 +54,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -78,6 +80,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -260,8 +263,11 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.FuncN;
 import rx.schedulers.Schedulers;
 
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -4944,6 +4950,19 @@ public class AppCMSPresenter {
                                 searchQuery) {
                             @Override
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
+                                AppCMSPageUI appCMSPageUI;
+                                if (pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
+                                    appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentActivity, "home_json_ui.json"),
+                                            AppCMSPageUI.class);
+                                } else if (pageId.equalsIgnoreCase("b5233890-a8aa-4bf9-a9d8-4db6bc54cec2")) {
+                                    appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentActivity, "live_screen.json"),
+                                            AppCMSPageUI.class);
+                                }
+                                else {
+                                    appCMSPageUI = navigationPages.get(action);
+                                }
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
@@ -4952,7 +4971,7 @@ public class AppCMSPresenter {
                                     navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
                                     if (appCMSPageAPIAction.launchActivity) {
                                         launchPageActivity(currentActivity,
-                                                appCMSPageAPIAction.appCMSPageUI,
+                                                appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
@@ -4967,7 +4986,7 @@ public class AppCMSPresenter {
                                                 ExtraScreenType.NONE);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
-                                                appCMSPageAPIAction.appCMSPageUI,
+                                                appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
@@ -8458,7 +8477,7 @@ public class AppCMSPresenter {
                     pagePath,
                     screenName,
                     loadFromFile,
-                    appbarPresent,
+                    appbarPresent==false?getTabBarUIFooterModule().getSettings().isShowTabBar():true,
                     fullscreenEnabled,
                     navbarPresent,
                     sendCloseAction,
@@ -11278,18 +11297,15 @@ public class AppCMSPresenter {
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
     VideoPlayerView videoPlayerViewPIP, videoPlayerViewPage;
-    RelativeLayout relativeLayoutPIP,relativeLayoutPIPEvent;
+    RelativeLayout relativeLayoutPIP, relativeLayoutPIPEvent;
 
-    public void showPopupWindowPlayer(View scrollView) {
+    public void showPopupWindowPlayer(View scrollView,String videoId) {
 
         RelativeLayout.LayoutParams lpPipView = null;
         Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
-        pipPlayerVisible = true;
 
 
-        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, null);
-
-
+        videoPlayerViewPIP = ViewCreator.playerView(currentActivity,this,videoId);
 
         //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
         relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
@@ -11316,15 +11332,16 @@ public class AppCMSPresenter {
 
         relativeLayoutPIP.setVisibility(View.VISIBLE);
 
-        //rdemo.setBackgroundColor(Color.TRANSPARENT);
+
         relativeLayoutPIP.addView(relativeLayoutPIPEvent);
         relativeLayoutPIPEvent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((NestedScrollView)scrollView).smoothScrollTo(0,0);
+                ((NestedScrollView) scrollView).smoothScrollTo(0, 0);
             }
         });
         ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+        pipPlayerVisible = true;
     }
 
     public void pausePIP() {
@@ -11359,17 +11376,24 @@ public class AppCMSPresenter {
         }
         try {
             if (relativeLayoutPIP != null) {
-                if (relativeLayoutPIPEvent!=null ){
-                    relativeLayoutPIP.removeView(relativeLayoutPIPEvent);
-                }
+
+
                 relativeLayoutPIP.setVisibility(View.GONE);
+
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+
                 rootView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        if (relativeLayoutPIPEvent != null) {
+                            relativeLayoutPIPEvent.setVisibility(View.GONE);
+                            relativeLayoutPIPEvent.setOnClickListener(null);
+                            relativeLayoutPIP.removeView(relativeLayoutPIPEvent);
 
+                        }
                         rootView.removeView(relativeLayoutPIP);
                         relativeLayoutPIP = null;
+                        relativeLayoutPIPEvent = null;
                     }
                 }, 100);
             }
@@ -11431,4 +11455,6 @@ public class AppCMSPresenter {
         ModuleList moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
         return moduleList;
     }
+
+
 }
