@@ -819,10 +819,10 @@ public abstract class BaseView extends FrameLayout {
                             && AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY != jsonValueKeyMap.get(viewType)
                             && AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY != jsonValueKeyMap.get(viewType)) {
                         gravity = Gravity.CENTER;
-                        lm -= 8;
-                        rm -= 8;
-                        bm -= 8;
-                        tm -= 8;
+                        lm -= 40;
+                        rm -= 40;
+                        bm -= 40;
+                        tm -= 40;
                     }
                     break;
 
