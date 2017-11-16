@@ -42,6 +42,7 @@ import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
 import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
 import com.viewlift.tv.views.fragment.AppCmsSignUpDialogFragment;
+import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
 import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
@@ -61,7 +62,7 @@ import rx.functions.Action1;
 
 public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         AppCmsNavigationFragment.OnNavigationVisibilityListener ,
-        AppCmsTvErrorFragment.ErrorFragmentListener{
+        AppCmsTvErrorFragment.ErrorFragmentListener, AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener {
 
     private final String TAG = AppCmsHomeActivity.class.getName();
     private FrameLayout navHolder;
@@ -78,6 +79,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private AppCmsTvSearchComponent appCMSSearchUrlComponent;
     private boolean isActive;
     private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
+    private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
+    private FrameLayout subNavHolder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,17 +119,22 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         int bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
 
         navigationFragment = AppCmsNavigationFragment.newInstance(this,this,appCMSBinder,textColor,bgColor);
+        appCmsSubNavigationFragment = AppCmsSubNavigationFragment.newInstance(this, this);
 
         setContentView(R.layout.activity_app_cms_tv_home);
         navHolder = (FrameLayout)findViewById(R.id.navigation_placholder);
+        subNavHolder = (FrameLayout)findViewById(R.id.sub_navigation_placeholder);
         if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.SPORTS)) {
             ViewGroup.LayoutParams layoutParams = navHolder.getLayoutParams();
             layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            ViewGroup.LayoutParams layoutParamsSubNav = subNavHolder.getLayoutParams();
+            layoutParamsSubNav.height = ViewGroup.LayoutParams.MATCH_PARENT;
         }
         homeHolder = (FrameLayout)findViewById(R.id.home_placeholder);
         homeHolder.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         shadowView = (FrameLayout)findViewById(R.id.shadow_view);
         setNavigationFragment(navigationFragment);
+        setSubNavigationFragment(appCmsSubNavigationFragment, updatedAppCMSBinder);
         setPageFragment(appCMSBinder);
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         showInfoIcon(appCMSBinder.getPageId());
@@ -588,6 +596,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             handleNavigationVisibility();
             return;
         }
+        if(isSubNavigationVisible()){
+            handleNavigationVisibility();
+            showSubNavigation(false);
+            return;
+        }
 
         if(appCMSBinderStack.size() > 0){
             appCMSBinderStack.pop();
@@ -664,6 +677,18 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         return super.dispatchKeyEvent(event);
     }
 
+    @Override
+    public void showSubNavigation(boolean shouldShow) {
+        new Handler().post(() -> {
+            subNavHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+            shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
+            appCmsSubNavigationFragment.setFocusable(shouldShow);
+            /*if(shouldShow) {
+                // navigationFragment.setSelectorColor();
+                appCmsSubNavigationFragment.notifyDataSetInvalidate();
+            }*/
+        });
+    }
     private void handleNavigationVisibility(){
         //Log.d(TAG , "handleNavigationVisibility*****");
         if(appCMSPresenter.isPagePrimary(appCMSBinderStack.peek())){
@@ -716,6 +741,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     private boolean isNavigationVisible(){
         return (navHolder.getVisibility() == View.VISIBLE);
+    }
+
+    private boolean isSubNavigationVisible(){
+        return (subNavHolder.getVisibility() == View.VISIBLE);
     }
 
     public void openSearchFragment(){
@@ -788,6 +817,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     public int getNavigationContainer() {
         return R.id.navigation_placholder;
+    }
+
+    @Override
+    public int getSubNavigationContainer() {
+        return R.id.sub_navigation_placeholder;
     }
 
 

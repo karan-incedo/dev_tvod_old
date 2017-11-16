@@ -121,6 +121,7 @@
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
     <string name="app_cms_page_font_family_key">OpenSans</string>
+    <string name="app_cms_page_lato_font_key">Lato</string>
     <string name="app_cms_page_textview_key">textView</string>
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>
@@ -200,6 +201,7 @@
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
+    <string name="app_cms_start_watching_key">startWatching</string>
     <string name="app_cms_page_share_key">shareButton</string>
     <string name="app_cms_page_video_starrating_key">starRating</string>
     <string name="app_cms_page_video_credits_director_key">Director</string>

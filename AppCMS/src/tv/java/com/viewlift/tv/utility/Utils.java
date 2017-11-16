@@ -368,7 +368,7 @@ public class Utils {
                 context,
                 isEditText ? android.R.color.white : android.R.color.transparent
         ));
-        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{Color.BLACK, Color.parseColor(borderColor)});
+        return ageBorder;
     }
 
     private static GradientDrawable getGradientDrawable(String primaryHover, String secondaryHover){
@@ -457,9 +457,6 @@ public class Utils {
         return color;
     }
 
-
-
-
     public static Typeface getTypeFace(Context context,
                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                             Component component) {
@@ -487,6 +484,35 @@ public class Utils {
                     //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
             }
         }
+
+        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_bold));
+                    //Log.d("" , "setTypeFace===Opensans_Bold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_MEDIUM_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_medium));
+                    //Log.d("" , "setTypeFace===Opensans_SemiBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_LIGHT_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_light));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_REGULAR_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_regular));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                default:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
+                    //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+            }
+        }
+
         return face;
     }
 
@@ -512,6 +538,18 @@ public class Utils {
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()){
             color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+        }
+        return color;
+    }
+
+     public static String getTitleColorForST(Context context , AppCMSPresenter appCMSPresenter){
+        String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , android.R.color.white)));
+        //Log.d("Utils.java" , "getTitleColor = "+color);
+        if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+                && null != appCMSPresenter.getAppCMSMain().getBrand()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()){
+            color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor();
         }
         return color;
     }

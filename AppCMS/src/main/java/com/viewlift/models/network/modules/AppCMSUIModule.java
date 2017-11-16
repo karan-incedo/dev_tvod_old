@@ -237,6 +237,19 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
                 AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
+
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
+                AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
+                AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
+                AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
+                AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
+
+
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textview_key),
                 AppCMSUIKeyType.PAGE_TEXTVIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textfield_key),

@@ -38,6 +38,10 @@ public class NavigationFooter implements Serializable {
     @Expose
     AccessLevels accessLevels;
 
+    @SerializedName("icon")
+    @Expose
+    String icon;
+
     public String getTitle() {
         return title;
     }
@@ -92,5 +96,13 @@ public class NavigationFooter implements Serializable {
 
     public void setAccessLevels(AccessLevels accessLevels) {
         this.accessLevels = accessLevels;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

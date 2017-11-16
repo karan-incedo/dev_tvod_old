@@ -329,5 +329,40 @@ public abstract class TVBaseView extends FrameLayout {
             }
             textView.setTypeface(face);
         }
+
+
+        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            Typeface face = null;
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_bold));
+                    //Log.d("" , "setTypeFace===Opensans_Bold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_MEDIUM_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_medium));
+                    //Log.d("" , "setTypeFace===Opensans_SemiBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_LIGHT_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_light));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_REGULAR_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_regular));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                default:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
+                    //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+            }
+
+            textView.setTypeface(face);
+        }
+
+
+
     }
 }
