@@ -20,8 +20,8 @@
     <dimen name="nav_image_height">5dp</dimen>
     <dimen name="nav_image_width">4dp</dimen>
     <dimen name="nav_item_padding">8dp</dimen>
-    <dimen name="nav_item_large_width">16dp</dimen>
-    <dimen name="nav_item_large_height">16dp</dimen>
+    <dimen name="nav_item_large_width">8dp</dimen>
+    <dimen name="nav_item_large_height">8dp</dimen>
     <dimen name="nav_item_separator_height">1dp</dimen>
 
     <dimen name="castview_padding">24dp</dimen>

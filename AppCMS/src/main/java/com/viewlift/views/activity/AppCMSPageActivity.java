@@ -1973,7 +1973,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 navBarItemView.setLabel(tabLabel);
                 navBarItemView.setHighlightColor(highlightColor);
 
-                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                 param.weight = weight;
                 param.gravity = Gravity.CENTER;
                 navBarItemView.setLayoutParams(param);
