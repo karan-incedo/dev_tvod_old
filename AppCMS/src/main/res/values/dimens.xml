@@ -14,15 +14,20 @@
     <dimen name="appbar_elevation">4dp</dimen>
 
     <dimen name="menu_item_height">36dp</dimen>
-    <dimen name="bottom_navbar_height">55dp</dimen>
-    <dimen name="nav_item_text_size">16sp</dimen>
+    <dimen name="bottom_navbar_height">58dp</dimen>
+    <dimen name="nav_item_text_size">12sp</dimen>
     <dimen name="nav_item_margin">5dp</dimen>
-    <dimen name="nav_image_height">5dp</dimen>
-    <dimen name="nav_image_width">4dp</dimen>
+    <dimen name="nav_image_height">24dp</dimen>
+    <dimen name="nav_image_width">24dp</dimen>
     <dimen name="nav_item_padding">8dp</dimen>
-    <dimen name="nav_item_large_width">8dp</dimen>
-    <dimen name="nav_item_large_height">8dp</dimen>
+    <dimen name="nav_item_large_width">168dp</dimen>
+    <dimen name="nav_item_large_height">56dp</dimen>
     <dimen name="nav_item_separator_height">1dp</dimen>
+    <dimen name="nav_item_top_padding">6dp</dimen>
+    <dimen name="nav_item_bottom_padding">10dp</dimen>
+    <dimen name="nav_item_left_right_padding">12dp</dimen>
+    <dimen name="nav_item_min_width">80dp</dimen>
+
 
     <dimen name="castview_padding">24dp</dimen>
     <dimen name="searchbar_elevation">36dp</dimen>

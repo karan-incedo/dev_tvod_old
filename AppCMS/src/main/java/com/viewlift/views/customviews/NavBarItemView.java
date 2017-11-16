@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -124,17 +125,18 @@ public class NavBarItemView extends LinearLayout {
                     int navImageHeight =
                             (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_height), getContext());
 
-                    if (BaseView.isTablet(getContext())) {
+                   /* if (BaseView.isTablet(getContext())) {
                         navImageWidth =
                                 (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_width), getContext());
                         navImageHeight =
                                 (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_height), getContext());
-                    }
+                    }*/
 
+                    System.out.println(navImageWidth+" imageNave "+navImageHeight);
                     LinearLayout.LayoutParams navImageLayoutParams =
-                            new LinearLayout.LayoutParams(navImageWidth, navImageHeight);
-                    navImageLayoutParams.gravity = Gravity.CENTER;
-                    navImage.setLayoutParams(navImageLayoutParams);
+                            new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.nav_image_width,getContext()),BaseView.dpToPx(R.dimen.nav_image_height,getContext()));
+                    navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+                   // navImage.setLayoutParams(navImageLayoutParams);
                     addView(navImage);
 
                     break;
@@ -146,8 +148,10 @@ public class NavBarItemView extends LinearLayout {
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                     navLabelLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                     navLabel.setLayoutParams(navLabelLayoutParams);
+                    navLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                            getResources().getDimension(R.dimen.nav_item_text_size));
                     navLabel.setTextColor(ContextCompat.getColor(getContext(), R.color.colorNavBarText));
-                    navLabel.setGravity(Gravity.CENTER | Gravity.CENTER_HORIZONTAL);
+                    navLabel.setGravity(Gravity.CENTER_HORIZONTAL);
                     addView(navLabel);
 
                     break;
@@ -155,14 +159,25 @@ public class NavBarItemView extends LinearLayout {
             }
         }
 
-        LinearLayout.LayoutParams parentLayoutParams =
-                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        parentLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM;
-        this.setLayoutParams(parentLayoutParams);
+        /*LinearLayout.LayoutParams parentLayoutParams =
+                new LinearLayout.LayoutParams(R.dimen.nav_item_min_width, R.dimen.nav_item_large_height);*/
+       /* LinearLayout.LayoutParams parentLayoutParams =
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        int navItemMargin = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_margin), getContext());
+        setLayoutParams(parentLayoutParams);*/
 
-        setPadding(0, navItemMargin, 0, 0);
+        int navItemTopPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_top_padding), getContext());
+        int navItemBottomPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_bottom_padding), getContext());
+        int navItemWidth = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_min_width), getContext());
+        int navItemLeftRightPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_left_right_padding), getContext());
+
+       // setPadding(navItemLeftRightPadding, navItemTopPadding, navItemLeftRightPadding, navItemBottomPadding);
+        setPadding(BaseView.dpToPx(R.dimen.nav_item_left_right_padding,getContext()),
+                BaseView.dpToPx(R.dimen.nav_item_top_padding,getContext()),
+                BaseView.dpToPx(R.dimen.nav_item_left_right_padding,getContext()),
+                BaseView.dpToPx(R.dimen.nav_item_bottom_padding,getContext()));
+        setMinimumWidth(navItemWidth);
+
 
     }
 
@@ -219,5 +234,6 @@ public class NavBarItemView extends LinearLayout {
             drawable.setTintMode(PorterDuff.Mode.MULTIPLY);
         }
     }
+
 
 }
