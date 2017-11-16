@@ -13,11 +13,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
@@ -25,6 +27,7 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
+import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
@@ -50,6 +53,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+
+import rx.functions.Action1;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.
@@ -226,6 +231,48 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
             }
         };
+
+
+        //TODO : check subscription status :-
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+            if(!appCMSPresenter.isUserLoggedIn()){
+                TextView textView = (TextView)findViewById(R.id.nav_top_line);
+                textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text)));
+                textView.setHeight(46);
+            }else{
+                if (appCMSPresenter.getActiveSubscriptionPlatform() == null) {
+                    appCMSPresenter.getSubscriptionData(
+                            appCMSUserSubscriptionPlanResult -> {
+                                String platform;
+                                String varMessage = "";
+                                if (appCMSUserSubscriptionPlanResult != null
+                                        && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
+                                        && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
+                                    platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
+                                    //TODO : subscribed.
+                                    TextView textView = (TextView)findViewById(R.id.nav_top_line);
+                                    textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text)));
+                                    textView.setHeight(10);
+
+                                } else {
+                                    //TODO : Not subscribed.
+                                    TextView textView = (TextView)findViewById(R.id.nav_top_line);
+                                    textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text)));
+                                    textView.setHeight(46);
+                                }
+                            }
+                    );
+                } else {
+                        //TODO : subscribed
+                    TextView textView = (TextView)findViewById(R.id.nav_top_line);
+                    textView.setText(getResources().getString(R.string.blank_string));
+                    textView.setHeight(10);
+                }
+
+            }
+        }else{
+            findViewById(R.id.nav_top_line).setVisibility(View.GONE);
+        }
     }
 
     private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {

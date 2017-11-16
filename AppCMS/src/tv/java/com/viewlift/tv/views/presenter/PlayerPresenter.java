@@ -44,11 +44,12 @@ public class PlayerPresenter extends Presenter {
             videoPlayerView = (CustomVideoVideoPlayerView)cardView.getChildAt(0);
         }else {
             videoPlayerView = playerView(cardView.getContext());
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT);
+            videoPlayerView.setLayoutParams(layoutParams);
+
             cardView.addView(videoPlayerView);
             videoPlayerView.setVideoUri(mVideoId);
-           /* videoPlayerView.setUri(Uri.parse("https://snagfilms-lh.akamaihd.net/i/Laxsportsnetwork_1@322790/master.m3u8?7544bdcc50dae6fd8d8ebeb3ba54706c7eb1db7bd808eb469b2094bb2d8fa248a93aed9f18570510bf020033a32d809b23"),
-                    null);
-            videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);*/
         }
     }
 

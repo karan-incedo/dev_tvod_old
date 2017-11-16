@@ -20,9 +20,8 @@
           "padding": 4
         }
       },
-      "action": "watchVideo",
       "type": "image",
-      "key": "videoImage"
+      "key": "videoThumbnailImage"
     },
     {
       "layout": {
@@ -59,12 +58,12 @@
       "borderColor": "#66ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
-      "action": "addToWatchlist",
+      "action": "watchVideo",
       "text": "START WATCHING",
       "type": "button",
       "textColor": "ffffff",
       "fontWeight": "Semibold",
-      "key": "addToWatchlist"
+      "key": "startWatching"
     },
     {
       "layout": {
@@ -72,30 +71,31 @@
           "leftMargin": 1170,
           "yAxis": 20,
           "width": 671,
-          "fontSize": 15,
+          "fontSize": 20,
           "height": 50
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
+      "fontWeight": "Medium",
       "type": "label",
       "textColor": "#ffffff",
-      "key": "headingText",
-      "text": " Heading Label"
+      "key": "videoTitle"
     },
     {
       "layout": {
         "ftv": {
           "leftMargin": 1170,
-          "yAxis": 60,
+          "yAxis": 64,
           "width": 671,
           "fontSize": 12,
           "height": 40
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
+      "fontWeight": "Light",
       "type": "label",
       "textColor": "#ffffff",
-      "key": "subHeadingHeadingText",
+      "key": "videoSubTitle",
       "text": "Sub heading Label"
     },
     {
@@ -104,15 +104,15 @@
           "leftMargin": 1170,
           "yAxis": 120,
           "width": 671,
-          "fontSize": 15,
+          "fontSize": 14,
           "height": 240
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
+      "fontWeight": "Regular",
       "type": "label",
       "textColor": "#ffffff",
-      "key": "videoDescriptionText",
-      "text": "Dummy Description"
+      "key": "videoDescriptionText"
     }
   ]
 }
