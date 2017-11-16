@@ -5023,19 +5023,6 @@ public class AppCMSPresenter {
                                 searchQuery) {
                             @Override
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
-                                AppCMSPageUI appCMSPageUI;
-                                if (pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
-                                    appCMSPageUI = new GsonBuilder().create().fromJson(
-                                            loadJsonFromAssets(currentActivity, "home_json_ui.json"),
-                                            AppCMSPageUI.class);
-                                } else if (pageId.equalsIgnoreCase("b5233890-a8aa-4bf9-a9d8-4db6bc54cec2")) {
-                                    appCMSPageUI = new GsonBuilder().create().fromJson(
-                                            loadJsonFromAssets(currentActivity, "live_screen.json"),
-                                            AppCMSPageUI.class);
-                                }
-                                else {
-                                    appCMSPageUI = navigationPages.get(action);
-                                }
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
@@ -5044,7 +5031,7 @@ public class AppCMSPresenter {
                                     navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
                                     if (appCMSPageAPIAction.launchActivity) {
                                         launchPageActivity(currentActivity,
-                                                appCMSPageUI,
+                                                appCMSPageAPIAction.appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
@@ -5059,7 +5046,7 @@ public class AppCMSPresenter {
                                                 ExtraScreenType.NONE);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
-                                                appCMSPageUI,
+                                                appCMSPageAPIAction.appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,

@@ -28,20 +28,16 @@ import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Switch;
@@ -50,7 +46,6 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -74,7 +69,6 @@ import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
-import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.utilities.ImageUtils;
@@ -1029,10 +1023,7 @@ public class ViewCreator {
                 module.setView(moduleInfo.getView());
                 module.setBlockName(moduleInfo.getBlockName());
             }
-            if (module.getBlockName().equalsIgnoreCase("webFrame01")) {
-                module.setComponents(moduleInfo.getComponents());
-                module.setLayout(moduleInfo.getLayout());
-            }
+
 
             boolean createModule = !modulesToIgnore.contains(module.getType());
 
@@ -1691,9 +1682,6 @@ public class ViewCreator {
                 break;
             case PAGE_WEB_VIEW_KEY:
                 componentViewResult.componentView = getWebViewComponent(context, moduleAPI, component);
-//                ((WebView) componentViewResult.componentView).getSettings().setLoadWithOverviewMode(true);
-//                ((WebView) componentViewResult.componentView).getSettings().setUseWideViewPort(true);
-//                ((WebView) componentViewResult.componentView).getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
                 break;
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
@@ -3683,32 +3671,17 @@ public class ViewCreator {
 
         WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
-//        webView.getSettings().setLoadWithOverviewMode(false);
-//        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setBuiltInZoomControls(false);
         webView.getSettings().setDisplayZoomControls(false);
         webView.setBackgroundColor(Color.TRANSPARENT);
-        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int width1 = display.getWidth();
-        int height1 = 210;
-//        int width1 = BaseView.getDeviceWidth();
-        System.out.println("device width-" + width1);
-//        String html = "<iframe style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
-        String html = "<iframe width=\"" + width1 + "\" height=\"" + height1 + "px\" style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
 
-
-        String htmlStart = "<html> <header><meta name='viewport' content='user-scalable=no'/> </header> <body>";
-        String htmlEnd = "</body></html>";
-//        webView.setInitialScale(100);
-
-//        webView.getSettings().
-//        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
-
-        String webViewUrl = null;
+        int height = ((int) component.getLayout().getMobile().getHeight())-45;
+        int width = BaseView.getDeviceWidth();
+        String webViewUrl = "";
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
             webViewUrl = moduleAPI.getRawText();
         }
-//        String data_html = "<!DOCTYPE html><html> <head> <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"target-densitydpi=high-dpi\" /> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> </head> <body style=\"background:black;margin:0 0 0 0; padding:0 0 0 0;\"> <iframe style=\" width=' " + width1 + "' height='" + height1 + "' src=\"" + webViewUrl + "\" frameborder=\"0\"></iframe> </body> </html> ";
+        String html = "<iframe width=\"" + width + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -3717,23 +3690,9 @@ public class ViewCreator {
                 context.startActivity(browserIntent);
                 return true;
             }
-
         });
-//        webView.loadDataWithBaseURL(webViewUrl, data_html, "text/html", "UTF-8", null);
 
-//        webView.loadData(htmlStart+html+htmlEnd, "text/html", null);
         webView.loadData(html, "text/html", "UTF-8");
-
-//        webView.loadUrl(html);
-        String finalWebViewUrl = html;
-        webView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(finalWebViewUrl));
-                context.startActivity(browserIntent);
-            }
-        });
-
         return webView;
     }
 
