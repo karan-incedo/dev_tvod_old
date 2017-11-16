@@ -475,4 +475,6 @@
     <string name="app_cms_content_type_shows">SHOW</string>
     <string name="app_cms_content_type_episode">EPISODE</string>
 
+    <string name="app_cms_table_background_view">tableBackgroundView</string>
+
 </resources>

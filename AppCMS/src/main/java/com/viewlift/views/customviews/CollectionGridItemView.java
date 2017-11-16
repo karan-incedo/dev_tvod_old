@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -435,8 +436,11 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        String publishDate = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        String runTime = convertSecondsToTime(data.getGist().getRuntime());
+                        String thumbInfo=runTime+" | "+publishDate;
                         ((TextView) view).setText(thumbInfo);
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
@@ -615,7 +619,43 @@ public class CollectionGridItemView extends BaseView {
         return formatter.format(calendar.getTime());
     }
 
+    public static String convertSecondsToTime(long runtime) {
+        StringBuilder timeInString = new StringBuilder();
+        runtime = runtime * 1000;
 
+        long days = TimeUnit.MILLISECONDS.toDays(runtime);
+        runtime -= TimeUnit.DAYS.toMillis(days);
+        if (days != 0){
+            timeInString.append(Long.toString(days));
+        }
+
+        long hours = TimeUnit.MILLISECONDS.toHours(runtime);
+        runtime -= TimeUnit.HOURS.toMillis(hours);
+        if (hours != 0 || timeInString.length() > 0){
+            if (timeInString.length() > 0) {
+                timeInString.append(":");
+            }
+            timeInString.append(Long.toString(hours));
+        }
+
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(runtime);
+        runtime -= TimeUnit.MINUTES.toMillis(minutes);
+//        if (minutes != 0 || timeInString.length() > 0){
+        if (timeInString.length() > 0) {
+            timeInString.append(":");
+        }
+        timeInString.append(Long.toString(minutes));
+//        }
+
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(runtime);
+//        if (seconds != 0 || timeInString.length() > 0){
+        if (timeInString.length() > 0) {
+            timeInString.append(":");
+        }
+        timeInString.append(Long.toString(seconds));
+//        }
+        return timeInString.toString();
+    }
 
 
 

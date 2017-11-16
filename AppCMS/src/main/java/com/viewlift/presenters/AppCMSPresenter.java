@@ -263,6 +263,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -5023,7 +5024,7 @@ public class AppCMSPresenter {
                                     navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
                                     if (appCMSPageAPIAction.launchActivity) {
                                         launchPageActivity(currentActivity,
-                                                appCMSPageUI,
+                                                appCMSPageAPIAction.appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
@@ -5038,7 +5039,7 @@ public class AppCMSPresenter {
                                                 ExtraScreenType.NONE);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
-                                                appCMSPageUI,
+                                                appCMSPageAPIAction.appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
