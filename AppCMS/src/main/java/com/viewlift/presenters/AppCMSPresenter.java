@@ -53,6 +53,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -11410,18 +11412,21 @@ public class AppCMSPresenter {
         }
     }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId) {
+    public void showPopupWindowPlayer(View scrollView, String videoId, VideoPlayerView videoPlayerView) {
         if (videoId != null) {
             RelativeLayout.LayoutParams lpPipView = null;
-            Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
 
+            if (videoPlayerView == null) {
+                videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, videoId);
+            } else {
+                ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
+                videoPlayerViewPIP = videoPlayerView;
+            }
 
-            videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, videoId);
-
-            //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
             relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
             relativeLayoutPIPEvent = new RelativeLayout(currentActivity);
 
+            Animation slidedown = new TranslateAnimation(videoPlayerView.getX(),relativeLayoutPIP.getX(),videoPlayerView.getY(),relativeLayoutPIP.getY());
             if (!BaseView.isTablet(currentActivity)) {
                 lpPipView = new RelativeLayout.LayoutParams(750, 450);
                 lpPipView.rightMargin = 50;
@@ -11436,6 +11441,8 @@ public class AppCMSPresenter {
 
 
             relativeLayoutPIP.setLayoutParams(lpPipView);
+            videoPlayerView.startAnimation(slidedown);
+
             relativeLayoutPIPEvent.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
 
 
@@ -11448,7 +11455,6 @@ public class AppCMSPresenter {
             relativeLayoutPIPEvent.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //((RecyclerView) scrollView).getLayoutManager().scrollToPosition(0);
                     ((RecyclerView) scrollView).smoothScrollToPosition(0);
                 }
             });
@@ -11477,9 +11483,9 @@ public class AppCMSPresenter {
         }
     }
 
-    public void dismissPopupWindowPlayer() {
+    public void dismissPopupWindowPlayer(boolean releasePlayer) {
         try {
-            if (videoPlayerViewPIP != null) {
+            if (releasePlayer && videoPlayerViewPIP != null) {
 
                 videoPlayerViewPIP.releasePlayer();
                 videoPlayerViewPIP = null;
