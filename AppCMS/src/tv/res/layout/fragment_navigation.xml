@@ -4,12 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/nav_top_line"
-        android:layout_width="match_parent"
-        android:layout_height="5dp"
-        android:background="@color/colorAccent" />
-
     <TextView
         android:id="@+id/nav_menu_title"
         android:layout_width="wrap_content"

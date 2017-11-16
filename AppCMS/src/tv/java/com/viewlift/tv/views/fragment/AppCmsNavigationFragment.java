@@ -76,7 +76,7 @@ public class AppCmsNavigationFragment extends Fragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
         TextView navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
-        View navTopLine = view.findViewById(R.id.nav_top_line);
+      //  View navTopLine = view.findViewById(R.id.nav_top_line);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -88,7 +88,7 @@ public class AppCmsNavigationFragment extends Fragment {
 
             mRecyclerView.setAdapter(navigationAdapter);
             navMenuTile.setVisibility(View.GONE);
-            navTopLine.setVisibility(View.GONE);
+         //   navTopLine.setVisibility(View.GONE);
         } else {
             STNavigationAdapter navigationAdapter = new STNavigationAdapter(getActivity(), textColor, bgColor,
                     appCMSBinder.getNavigation(),
@@ -99,7 +99,7 @@ public class AppCmsNavigationFragment extends Fragment {
             navMenuTile.setText("Menu");
             navMenuTile.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_regular)));
             navMenuTile.setVisibility(View.VISIBLE);
-            navTopLine.setVisibility(View.VISIBLE);
+          //  navTopLine.setVisibility(View.VISIBLE);
         }
         return view;
     }
