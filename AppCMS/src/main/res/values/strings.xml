@@ -290,6 +290,7 @@
     <string name="app_cms_subscription_upgrade_cancel_title">You did not purchase the subscription through the Google Play store</string>
     <string name="app_cms_subscription_upgrade_for_web_user_dialog">To upgrade your subscription, go to the My Account section on our website.</string>
     <string name="app_cms_subscription_cancel_for_web_user_dialog">To cancel your subscription, go to the My Account section on our website.</string>
+    <string name="app_cms_subscription_cancel_for_ios_user_dialog">To cancel your subscription, go to Manage Subscription on your iOS device.</string>
 
     <string name="app_cms_download_stream_info_error_title">Streaming Info Error</string>
     <string name="app_cms_download_streaming_info_error_message">Some error occurred with streaming info, Please try again.</string>

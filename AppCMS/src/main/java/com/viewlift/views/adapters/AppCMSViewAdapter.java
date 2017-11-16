@@ -39,6 +39,10 @@ import java.util.Map;
 public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder>
         implements AppCMSBaseAdapter {
     private static final String TAG = "AppCMSViewAdapter";
+
+    private final String episodicContentType;
+    private final String fullLengthFeatureType;
+
     protected Layout parentLayout;
     protected Component component;
     protected AppCMSPresenter appCMSPresenter;
@@ -134,6 +138,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.watchTrailerQuailifier = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
 
         this.appCMSAndroidModules = appCMSAndroidModules;
+
+        this.episodicContentType = context.getString(R.string.app_cms_episodic_key_type);
+        this.fullLengthFeatureType = context.getString(R.string.app_cms_full_length_feature_key_type);
 
         sortPlansByPriceInDescendingOrder();
     }
@@ -405,17 +412,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     contentType = data.getGist().getContentType();
                                 }
 
-                                switch (contentType) {
-                                    case "SHOW":
-                                        action = showAction;
-                                        break;
-
-                                    case "VIDEO":
-                                        action = videoAction;
-                                        break;
-
-                                    default:
-                                        break;
+                                if (contentType.equals(episodicContentType)) {
+                                    action = showAction;
+                                } else if (contentType.equals(fullLengthFeatureType)) {
+                                    action = videoAction;
                                 }
 
                                 if (data.getGist() == null ||
@@ -543,17 +543,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         contentType = data.getGist().getContentType();
                     }
 
-                    switch (contentType) {
-                        case "SHOW":
-                            action = showAction;
-                            break;
-
-                        case "VIDEO":
-                            action = videoAction;
-                            break;
-
-                        default:
-                            break;
+                    if (contentType.equals(episodicContentType)) {
+                        action = showAction;
+                    } else if (contentType.equals(fullLengthFeatureType)) {
+                        action = videoAction;
                     }
 
                     //Log.d(TAG, "Launching " + permalink + ":" + action);
