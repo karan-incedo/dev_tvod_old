@@ -615,6 +615,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_DELETE_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_delete_history_key),
                 AppCMSUIKeyType.PAGE_DELETE_HISTORY_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_table_background_view),
+                AppCMSUIKeyType.PAGE_GRID_BACKGROUND);
     }
 
     private void createPageNameToActionMap(Context context) {
