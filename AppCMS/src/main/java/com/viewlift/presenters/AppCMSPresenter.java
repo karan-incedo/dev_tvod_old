@@ -56,6 +56,8 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -269,6 +271,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -5020,6 +5023,19 @@ public class AppCMSPresenter {
                                 searchQuery) {
                             @Override
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
+                                AppCMSPageUI appCMSPageUI;
+                                if (pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
+                                    appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentActivity, "home_json_ui.json"),
+                                            AppCMSPageUI.class);
+                                } else if (pageId.equalsIgnoreCase("b5233890-a8aa-4bf9-a9d8-4db6bc54cec2")) {
+                                    appCMSPageUI = new GsonBuilder().create().fromJson(
+                                            loadJsonFromAssets(currentActivity, "live_screen.json"),
+                                            AppCMSPageUI.class);
+                                }
+                                else {
+                                    appCMSPageUI = navigationPages.get(action);
+                                }
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
@@ -5028,7 +5044,7 @@ public class AppCMSPresenter {
                                     navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
                                     if (appCMSPageAPIAction.launchActivity) {
                                         launchPageActivity(currentActivity,
-                                                appCMSPageAPIAction.appCMSPageUI,
+                                                appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
@@ -5043,7 +5059,7 @@ public class AppCMSPresenter {
                                                 ExtraScreenType.NONE);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
-                                                appCMSPageAPIAction.appCMSPageUI,
+                                                appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
@@ -11547,4 +11563,6 @@ public class AppCMSPresenter {
         ModuleList moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
         return moduleList;
     }
+
+
 }
