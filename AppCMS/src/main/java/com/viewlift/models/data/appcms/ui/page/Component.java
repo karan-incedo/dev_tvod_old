@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @UseStag(UseStag.FieldOption.SERIALIZED_NAME)
-public class Component implements ModuleWithComponents, Serializable {
+public class    Component implements ModuleWithComponents, Serializable {
 
     @SerializedName("text")
     @Expose
@@ -18,6 +18,12 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("textColor")
     @Expose
     String textColor;
+
+
+
+    @SerializedName("isSelectable")
+    @Expose
+    boolean isSelectable;
 
     @SerializedName("backgroundColor")
     @Expose
@@ -182,7 +188,7 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("protected")
     @Expose
     boolean isViewProtected;
-	
+
     @SerializedName("selectedText")
     @Expose
     String selectedText;
@@ -377,7 +383,13 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setTrayClickAction(String trayClickAction) {
         this.trayClickAction = trayClickAction;
     }
+    public boolean isSelectable() {
+        return isSelectable;
+    }
 
+    public void setSelectable(boolean selectable) {
+        isSelectable = selectable;
+    }
     public String getFontFamily() {
         return fontFamily;
     }
@@ -523,7 +535,7 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setSelectedText(String selectedText) {
         this.selectedText = selectedText;
     }
-	
+
     float letterSpacing;
     public float getLetetrSpacing() {
         return letterSpacing;

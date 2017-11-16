@@ -21,6 +21,8 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.models.network.modules.AppCMSUIModule;
+import com.viewlift.presenters.AppCMSActionType;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -60,6 +62,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private boolean isClickable;
     private String videoAction;
     private String showAction;
+    private String deleteSingleWatchlistAction;
+    private String deleteSingleHistoryAction;
     private String watchVideoAction;
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
@@ -117,6 +121,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultAction = getDefaultAction(context);
         this.videoAction = getVideoAction(context);
         this.showAction = getShowAction(context);
+        this.deleteSingleWatchlistAction = getDeleteSingleWatchlistAction(context);
+        this.deleteSingleHistoryAction = getDeleteSingleHistoryAction(context);
 
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
@@ -309,6 +315,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     void bindView(CollectionGridItemView itemView,
                   final ContentDatum data) throws IllegalArgumentException {
         if (onClickHandler == null) {
+
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
@@ -369,6 +376,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                       Component childComponent,
                                       ContentDatum data) {
                         if (isClickable) {
+
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
@@ -407,8 +415,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         break;
 
                                     case "VIDEO":
-                                       // action = videoAction;  temp changes
-                                        action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
+                                        // action = videoAction;  temp changes
+                                        action = action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                         break;
 
                                     default:
@@ -417,18 +425,40 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {
-                                    if (!appCMSPresenter.launchVideoPlayer(data,
-                                            currentPlayingIndex,
-                                            relatedVideoIds,
-                                            -1,
-                                            action)) {
-                                        //Log.e(TAG, "Could not launch action: " +
+                                    if (action.contains(deleteSingleHistoryAction)) {
+                                        appCMSPresenter.editHistory(data.getGist().getId(),
+                                                appCMSDeleteHistoryResult -> {
+                                                    adapterData.remove(data);
+                                                    notifyDataSetChanged();
+//                                                    if (adapterData.size() == 0) {
+//                                                        sendEvent(hideRemoveAllButtonEvent);
+//                                                    }
+                                                }, false);
+                                    }
+                                    if (action.contains(deleteSingleWatchlistAction)) {
+                                        appCMSPresenter.editWatchlist(data.getGist().getId(),
+                                                addToWatchlistResult -> {
+                                                    adapterData.remove(data);
+                                                    notifyDataSetChanged();
+//                                                    if (adapterData.size() == 0) {
+//                                                        sendEvent(hideRemoveAllButtonEvent);
+//                                                    }
+                                                }, false);
+                                    } else {
+                                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                                currentPlayingIndex,
+                                                relatedVideoIds,
+                                                -1,
+                                                action)) {
+                                            //Log.e(TAG, "Could not launch action: " +
 //                                                " permalink: " +
 //                                                permalink +
 //                                                " action: " +
 //                                                action);
+                                        }
                                     }
                                 } else {
+
                                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
                                             action,
                                             title,
@@ -446,6 +476,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 }
                             }
                         }
+
                     }
 
                     @Override
@@ -494,6 +525,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             //
         } else {
             itemView.setOnClickListener(v -> {
+
                 if (isClickable) {
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
@@ -587,6 +619,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private String getShowAction(Context context) {
         return context.getString(R.string.app_cms_action_showvideopage_key);
+    }
+
+    private String getDeleteSingleWatchlistAction(Context context) {
+        return context.getString(R.string.app_cms_delete_single_watchlist_action);
+    }
+
+    private String getDeleteSingleHistoryAction(Context context) {
+        return context.getString(R.string.app_cms_delete_single_history_action);
     }
 
     private String getVideoAction(Context context) {

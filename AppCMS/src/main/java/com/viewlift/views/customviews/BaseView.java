@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
@@ -51,6 +50,12 @@ public abstract class BaseView extends FrameLayout {
             return dp * ((float) metrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
         }
         return 0.0f;
+    }
+    public static int dpToPx(int dp, Context context)
+    {
+        return context.getResources().getDimensionPixelSize(dp);
+
+        //return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
     public static float convertPixelsToDp(float px, Context context) {
@@ -884,13 +889,13 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                     if (isTablet(getContext())) {
-                        lm -= viewWidth * 1.2;
+                        lm -= viewWidth * 0.7;
                     }
                     break;
 
                 case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                     if (isTablet(getContext())) {
-                        lm -= viewWidth * 2.0;
+                        lm -= viewWidth * 0.7;
                     }
                     break;
 

@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -8,6 +9,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -24,15 +26,24 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -40,8 +51,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -83,6 +96,8 @@ import java.util.Map;
 
 import rx.functions.Action1;
 
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
+
 /*
  * Created by viewlift on 5/5/17.
  */
@@ -97,7 +112,8 @@ public class ViewCreator {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
         Style paragraphStyle = new Style();
-        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler(new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
+        TagNodeHandler pHandler = new BorderAttributeHandler(new StyleAttributeHandler
+                (new AlignmentAttributeHandler(new EmptyPStyledTextHandler(paragraphStyle))));
         htmlSpanner.registerHandler("p", pHandler);
     }
 
@@ -142,6 +158,7 @@ public class ViewCreator {
         ((TextView) view).setText(infoText.toString());
         view.setAlpha(0.6f);
     }
+
 
     public static long adjustColor1(long color1, long color2) {
         double ratio = (double) color1 / (double) color2;
@@ -197,6 +214,8 @@ public class ViewCreator {
                     boolean shouldHideComponent;
 
                     if (moduleAPI != null) {
+                        updateUserHistory(appCMSPresenter,
+                                moduleAPI.getContentData());
 
                         for (Component component : module.getComponents()) {
                             shouldHideComponent = false;
@@ -260,7 +279,7 @@ public class ViewCreator {
                                                 long runTime =
                                                         moduleAPI.getContentData().get(0).getGist().getRuntime();
                                                 if (watchedTime > 0 && runTime > 0) {
-                                                    long percentageWatched = watchedTime / runTime;
+                                                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
                                                     ((ProgressBar) view)
                                                             .setProgress((int) percentageWatched);
                                                     view.setVisibility(View.VISIBLE);
@@ -459,7 +478,7 @@ public class ViewCreator {
                                                         fontSize = (int) (0.6 * fontSize);
                                                     } else {
                                                         fontSize = (int) (0.8 * fontSize);
-                                            }
+                                                    }
                                                 }
                                                 ((TextView) view).setTextSize(fontSize);
                                             }
@@ -915,8 +934,12 @@ public class ViewCreator {
             return null;
         }
 
-        PageView pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
-                + BaseView.isLandscape(context));
+        PageView pageView = null;
+        try {
+            pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
+                    + BaseView.isLandscape(context));
+        } catch (Exception e) {
+        }
         if (appCMSPresenter.isPageAVideoPage(screenName)) {
             pageView = appCMSPresenter.getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
         }
@@ -947,6 +970,7 @@ public class ViewCreator {
                 (!appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
+            pageView.removeAllAddOnViews();
             pageView.getChildrenContainer().removeAllViews();
             componentViewResult = new ComponentViewResult();
             createPageView(context,
@@ -987,8 +1011,14 @@ public class ViewCreator {
         pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
+
+
         for (ModuleList moduleInfo : modulesList) {
-            ModuleList module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            ModuleList module = null;
+            try {
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+            } catch (Exception e) {
+            }
             if (module == null) {
                 module = moduleInfo;
             } else if (moduleInfo != null) {
@@ -998,6 +1028,10 @@ public class ViewCreator {
                 module.setType(moduleInfo.getType());
                 module.setView(moduleInfo.getView());
                 module.setBlockName(moduleInfo.getBlockName());
+            }
+            if (module.getBlockName().equalsIgnoreCase("webFrame01")) {
+                module.setComponents(moduleInfo.getComponents());
+                module.setLayout(moduleInfo.getLayout());
             }
 
             boolean createModule = !modulesToIgnore.contains(module.getType());
@@ -1022,13 +1056,14 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter);
                 if (childView != null) {
-                    childrenContainer.addView(childView);
+//                    childrenContainer.addView(childView);
                     if (moduleAPI == null) {
                         childView.setVisibility(View.GONE);
                     }
                 }
             }
         }
+        pageView.notifyAdapterDataSetChanged();
 
         List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
         if (presenterOnInternalEvents != null) {
@@ -1077,6 +1112,10 @@ public class ViewCreator {
                 AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
                 pageView.addModuleViewWithModuleId(module.getId(), moduleView);
                 if (module.getComponents() != null) {
+                    if (moduleAPI != null) {
+                        updateUserHistory(appCMSPresenter,
+                                moduleAPI.getContentData());
+                    }
                     int size = module.getComponents().size();
                     for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
@@ -1243,6 +1282,21 @@ public class ViewCreator {
         return moduleView;
     }
 
+    private void updateUserHistory(AppCMSPresenter appCMSPresenter,
+                                   List<ContentDatum> contentData) {
+        try {
+            int contentDatumLength = contentData.size();
+            for (int i = 0; i < contentDatumLength; i++) {
+                ContentDatum currentContentDatum = contentData.get(i);
+                ContentDatum userHistoryContentDatum = appCMSPresenter.getUserHistoryContentDatum(contentData.get(i).getGist().getId());
+                if (userHistoryContentDatum != null) {
+                    currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
+                }
+            }
+        } catch (Exception e) {
+        }
+    }
+
     private void updateModuleHeight(Context context,
                                     Layout parentLayout,
                                     List<Component> moduleComponents,
@@ -1259,7 +1313,7 @@ public class ViewCreator {
     public CollectionGridItemView createCollectionGridItemView(final Context context,
                                                                final Layout parentLayout,
                                                                final boolean useParentLayout,
-                                                               final Component component,
+                                                               Component component,
                                                                final AppCMSPresenter appCMSPresenter,
                                                                final Module moduleAPI,
                                                                final AppCMSAndroidModules appCMSAndroidModules,
@@ -1283,7 +1337,12 @@ public class ViewCreator {
 
         @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
-
+        if (viewType.contains("AC Watchlist 01")) {
+            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+                    loadJsonFromAssets(context, "watchlist_sports.json"),
+                    AppCMSPageUI.class);
+            component = appCMSPageUI.getModuleList().get(2).getComponents().get(4);
+        }
         int size = component.getComponents().size();
         for (int i = 0; i < size; i++) {
             Component childComponent = component.getComponents().get(i);
@@ -1375,6 +1434,19 @@ public class ViewCreator {
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
         switch (componentType) {
+            case PAGE_RATINGBAR:
+                componentViewResult.componentView = new RatingBar(context);
+
+                LayerDrawable stars = (LayerDrawable) ((RatingBar) componentViewResult.componentView).getProgressDrawable();
+                stars.getDrawable(2).setColorFilter(Color.parseColor(getColor(context, component.getFillColor()))
+                        , PorterDuff.Mode.SRC_ATOP);
+                stars.getDrawable(0).setColorFilter(Color.parseColor(getColor(context, component.getBorderColor())),
+                        PorterDuff.Mode.SRC_ATOP);
+                stars.getDrawable(1).setColorFilter(Color.parseColor(getColor(context, component.getBorderColor())),
+                        PorterDuff.Mode.SRC_ATOP);
+                ((RatingBar) componentViewResult.componentView).setEnabled(false);
+                ((RatingBar) componentViewResult.componentView).setRating(moduleAPI.getContentData().get(0).getGist().getAverageStarRating());
+                break;
             case PAGE_TABLE_VIEW_KEY:
                 if (moduleType == AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY) {
 
@@ -1428,21 +1500,35 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-                            moduleAPI.getContentData(),
-                            component.getComponents(),
+                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
+                            this,
                             appCMSPresenter,
+                            settings,
+                            component.getLayout(),
+                            false,
+                            component,
                             jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
-                            (RecyclerView) componentViewResult.componentView);
+                            appCMSAndroidModules);
 
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
-                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
-                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+//                            moduleAPI.getContentData(),
+//                            component.getComponents(),
+//                            appCMSPresenter,
+//                            jsonValueKeyMap,
+//                            viewType,
+//                            (RecyclerView) componentViewResult.componentView);
+
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+//                    componentViewResult.onInternalEvent = appCMSViewAdapter;
+//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(appCMSTrayItemAdapter)
+                                .adapter(appCMSViewAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleAPI.getId() + component.getKey())
                                 .build());
@@ -1603,11 +1689,15 @@ public class ViewCreator {
                 break;
 
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
-                componentViewResult.componentView = playerView(context);
+                componentViewResult.componentView = playerView(context, appCMSPresenter, moduleAPI.getContentData().get(0).getGist().getId());
                 componentViewResult.componentView.setId(R.id.video_player_id);
-
                 break;
-
+            case PAGE_WEB_VIEW_KEY:
+                componentViewResult.componentView = getWebViewComponent(context, moduleAPI, component);
+//                ((WebView) componentViewResult.componentView).getSettings().setLoadWithOverviewMode(true);
+//                ((WebView) componentViewResult.componentView).getSettings().setUseWideViewPort(true);
+//                ((WebView) componentViewResult.componentView).getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+                break;
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)
@@ -1800,10 +1890,32 @@ public class ViewCreator {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
+                    case PAGE_DELETE_WATCHLIST_KEY:
+                    case PAGE_DELETE_HISTORY_KEY:
+                        componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.ic_deleteicon));
+                        break;
 
                     case PAGE_GRID_OPTION_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
-
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                        component.getAction(),
+                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                        null,
+                                        moduleAPI.getContentData().get(0),
+                                        false,
+                                        -1,
+                                        null)) {
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
+                                }
+                            }
+                        });
                         break;
                     case PAGE_BANNER_DETAIL_BUTTON:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
@@ -2169,7 +2281,7 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
@@ -2197,7 +2309,7 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
-                    ((TextView) componentViewResult.componentView).setBackgroundColor(textBgColor);
+                    componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
 
@@ -2573,6 +2685,15 @@ public class ViewCreator {
                     componentViewResult.componentView = new ImageView(context);
                 }
                 switch (componentKey) {
+                    case PAGE_VIDEO_TYPE_KEY:
+                        // TODO: have to  add condition depending upon API object
+                        if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_shows))) {
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_shows);
+                        }
+                        if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_episode))) {
+                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_episode);
+                        }
+                        break;
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
                         if (moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
@@ -2740,7 +2861,7 @@ public class ViewCreator {
                             long runTime =
                                     moduleAPI.getContentData().get(0).getGist().getRuntime();
                             if (watchedTime > 0 && runTime > 0) {
-                                long percentageWatched = watchedTime / runTime;
+                                long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
                                 ((ProgressBar) componentViewResult.componentView)
                                         .setProgress((int) percentageWatched);
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);
@@ -3115,7 +3236,22 @@ public class ViewCreator {
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Component component,
                              TextView textView) {
-        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+
+        if (jsonValueKeyMap.get(component.getFontFamily()) != null) {
+            String fontName = "";
+            switch (jsonValueKeyMap.get(component.getFontFamily())) {
+                case PAGE_TEXT_OPENSANS_FONTFAMILY_KEY:
+                    fontName = context.getString(R.string.app_cms_page_font_family_key);
+                    break;
+                case PAGE_TEXT_LATO_FONTFAMILY_KEY:
+                    fontName = context.getString(R.string.app_cms_page_font_lato_family_key);
+                    break;
+                default:
+                    fontName = context.getString(R.string.app_cms_page_font_family_key);
+                    break;
+
+            }
+
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
@@ -3126,7 +3262,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_bold_ttf));
+                                context.getString(R.string.font_bold_ttf, fontName));
                         appCMSPresenter.setBoldTypeFace(face);
                     }
                     break;
@@ -3135,7 +3271,7 @@ public class ViewCreator {
                     face = appCMSPresenter.getSemiBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_semibold_ttf));
+                                context.getString(R.string.font_semibold_ttf, fontName));
                         appCMSPresenter.setSemiBoldTypeFace(face);
                     }
                     break;
@@ -3144,16 +3280,119 @@ public class ViewCreator {
                     face = appCMSPresenter.getExtraBoldTypeFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_extrabold_ttf));
+                                context.getString(R.string.font_extrabold_ttf, fontName));
                         appCMSPresenter.setExtraBoldTypeFace(face);
                     }
                     break;
-
+                case PAGE_TEXT_BLACK_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_black_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_BLACK_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_black_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HAIRLINE_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_hairline_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HAIRLINE_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_hairline_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HEAVY_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_heavy_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_HEAVY_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_heavy_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_LIGHT_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_light_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_LIGHT_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_light_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_MEDIUM_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_medium_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_MEDIUM_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_medium_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_THIN_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_thin_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_THIN_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_thin_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+                case PAGE_TEXT_SEMIBOLD_ITALIC_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.font_semibold_italic_ttf, fontName));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
                 default:
                     face = appCMSPresenter.getRegularFontFace();
                     if (face == null) {
                         face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_regular_ttf));
+                                context.getString(R.string.font_regular_ttf, fontName));
                         appCMSPresenter.setRegularFontFace(face);
                     }
                     break;
@@ -3201,12 +3440,12 @@ public class ViewCreator {
                                 UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
                             }, true);
                 } else {
-                    if (appCMSPresenter.isAppSVOD() &&
-                            appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
-                    } else {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
-                    }
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                            () -> {
+                                appCMSPresenter.setAfterLoginAction(() -> {
+
+                                });
+                            });
                 }
             };
             removeClickListener = v -> appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
@@ -3277,12 +3516,22 @@ public class ViewCreator {
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                        });
+                                    });
                         } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED, null);
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                        });
+                                    });
                         }
                     } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                () -> {
+                                });
                     }
                 }
                 imageButton.setOnClickListener(null);
@@ -3348,13 +3597,72 @@ public class ViewCreator {
         }
     }
 
-    public static VideoPlayerView playerView(Context context) {
+    public static VideoPlayerView playerView(Context context, AppCMSPresenter appCMSPresenter, String videoId) {
 
         VideoPlayerView videoPlayerView = new VideoPlayerView(context);
         videoPlayerView.init(context);
         // it should be dynamic when live url come from api
-        videoPlayerView.setUri(Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8"),
-                null);
+
+        appCMSPresenter.refreshVideoData(videoId, updatedContentDatum -> {
+            // appCMSPresenter.getAppCMSSignedURL(videoId, appCMSSignedURLResult -> {
+            //     if (videoPlayerView != null && appCMSSignedURLResult != null) {
+            if (videoPlayerView != null) {
+                boolean foundMatchingMpeg = false;
+                String hlsUrl = "";
+                String closedCaptionUrl = "";
+                if (updatedContentDatum != null &&
+                        updatedContentDatum.getStreamingInfo() != null &&
+                        updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
+                        updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg() != null &&
+                        !updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().isEmpty()) {
+
+                    updatedContentDatum.getGist().setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
+                    if (updatedContentDatum.getStreamingInfo().getVideoAssets().getHls() != null
+                            ) {
+                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
+                    } else {
+                        //for (int i = 0; i < updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() && !foundMatchingMpeg; i++) {
+                        // int queryIndex = hlsUrl.indexOf("?");
+                                /*if (0 <= queryIndex) {
+                                    if (updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl().contains(hlsUrl.substring(0, queryIndex))) {
+                                        foundMatchingMpeg = true;*/
+                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                                    /*}
+                                }*/
+                        // }
+                    }
+                    // TODO: 7/27/2017 Implement CC for multiple languages.
+                    if (updatedContentDatum.getContentDetails() != null
+                            && updatedContentDatum.getContentDetails().getClosedCaptions() != null
+                            && !updatedContentDatum.getContentDetails().getClosedCaptions().isEmpty()) {
+                        for (ClosedCaptions cc : updatedContentDatum.getContentDetails().getClosedCaptions()) {
+                            if (cc.getUrl() != null &&
+                                    !cc.getUrl().equalsIgnoreCase(context.getString(R.string.download_file_prefix)) &&
+                                    cc.getFormat() != null &&
+                                    cc.getFormat().equalsIgnoreCase("SRT")) {
+                                closedCaptionUrl = cc.getUrl();
+                            }
+                        }
+                    }
+                }
+
+
+
+                    /*videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                            appCMSSignedURLResult.getSignature(),
+                            appCMSSignedURLResult.getKeyPairId());*/
+
+
+                videoPlayerView.setUri(Uri.parse(hlsUrl),
+                        !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
+                videoPlayerView.setCurrentPosition(updatedContentDatum.getGist().getWatchedTime() * 1000L);
+
+            }
+            //});
+
+        });
+       /* videoPlayerView.setUri(Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4"),
+                null);*/
         videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
@@ -3368,6 +3676,65 @@ public class ViewCreator {
 
         return videoPlayerView;
     }
+
+    public static WebView getWebViewComponent(Context context, Module moduleAPI, Component component) {
+
+        WebView webView = new WebView(context);
+        webView.getSettings().setJavaScriptEnabled(true);
+//        webView.getSettings().setLoadWithOverviewMode(false);
+//        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int width1 = display.getWidth();
+        int height1 = 210;
+//        int width1 = BaseView.getDeviceWidth();
+        System.out.println("device width-" + width1);
+//        String html = "<iframe style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
+        String html = "<iframe width=\"" + width1 + "\" height=\"" + height1 + "px\" style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
+
+
+        String htmlStart = "<html> <header><meta name='viewport' content='user-scalable=no'/> </header> <body>";
+        String htmlEnd = "</body></html>";
+//        webView.setInitialScale(100);
+
+//        webView.getSettings().
+//        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+
+        String webViewUrl = null;
+        if (moduleAPI != null && moduleAPI.getRawText() != null) {
+            webViewUrl = moduleAPI.getRawText();
+        }
+//        String data_html = "<!DOCTYPE html><html> <head> <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"target-densitydpi=high-dpi\" /> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> </head> <body style=\"background:black;margin:0 0 0 0; padding:0 0 0 0;\"> <iframe style=\" width=' " + width1 + "' height='" + height1 + "' src=\"" + webViewUrl + "\" frameborder=\"0\"></iframe> </body> </html> ";
+
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                context.startActivity(browserIntent);
+                return true;
+            }
+
+        });
+//        webView.loadDataWithBaseURL(webViewUrl, data_html, "text/html", "UTF-8", null);
+
+//        webView.loadData(htmlStart+html+htmlEnd, "text/html", null);
+        webView.loadData(html, "text/html", "UTF-8");
+
+//        webView.loadUrl(html);
+        String finalWebViewUrl = html;
+        webView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(finalWebViewUrl));
+                context.startActivity(browserIntent);
+            }
+        });
+
+        return webView;
+    }
+
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
         final View removeAllButton;
@@ -3433,7 +3800,7 @@ public class ViewCreator {
 
         @Override
         public void beforeChildren(TagNode node, SpannableStringBuilder builder, SpanStack spanStack) {
-            if ( builder.length() == 0 || builder.charAt(builder.length() -1) != '\n' ) {
+            if (builder.length() == 0 || builder.charAt(builder.length() - 1) != '\n') {
                 builder.append('\n');
             }
             super.beforeChildren(node, builder, spanStack);

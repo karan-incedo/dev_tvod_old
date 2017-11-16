@@ -1,17 +1,24 @@
 package com.viewlift.views.adapters;
 
+import android.content.res.Resources;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
+import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -25,7 +32,8 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
 
     private static final String TAG = "AppCMSTeamItemAdapter";
 
-    private final NavigationPrimary navigationPrimary;
+    private final Resources resources;
+    private final NavigationTabBar navigationTabBar;
     private final AppCMSPresenter appCMSPresenter;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final int textColor;
@@ -37,19 +45,22 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
     private boolean itemSelected;
     private int numItemClickedPosition = -1;
 
-    public AppCMSTeamItemAdapter(NavigationPrimary navigationPrimary,
+    public AppCMSTeamItemAdapter(List<NavigationTabBar> navigationTabBarList,
                                  AppCMSPresenter appCMSPresenter,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  boolean userLoggedIn,
                                  boolean userSubscribed,
                                  int textColor) {
-        this.navigationPrimary = navigationPrimary;
+
         this.appCMSPresenter = appCMSPresenter;
+        this.navigationTabBar = appCMSPresenter.getPageTeamNavigationPage(navigationTabBarList);
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.userLoggedIn = userLoggedIn;
         this.userSubscribed = userSubscribed;
         this.textColor = textColor;
+        this.resources = appCMSPresenter.getCurrentActivity().getResources();
     }
+
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.nav_item, parent,
@@ -59,13 +70,35 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        navigationPrimary.getItems().get(position);
+        if (navigationTabBar != null) {
+            NavigationTabBar navigationItem = (NavigationTabBar) navigationTabBar.getItems().get(position);
+            holder.navItemLabel.setText(navigationItem.getTitle());
+            System.out.println(navigationItem.getIcon());
+            if (navigationItem.getIcon().contains("http://") ||navigationItem.getIcon().contains("https://")){
+                Glide.with(holder.itemView.getContext())
+                        .load(navigationItem.getIcon())
+                        .override(100,100)
+                        .into((ImageView) holder.navItemLogo);
+                holder.navItemLogo.setVisibility(View.VISIBLE);
+            }else {
+                int resID = resources.getIdentifier(navigationItem.getIcon().replace("-", "_"), "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
+                holder.navItemLogo.setImageDrawable(resources.getDrawable(resID));
+                holder.navItemLogo.setVisibility(View.VISIBLE);
+            }
+
+
+            holder.itemView.setOnClickListener(v -> {
+                //Todo need to remove toast and call the respective team pages.
+                Toast.makeText(v.getContext(), holder.navItemLabel.getText().toString() + " Under progress..", Toast.LENGTH_SHORT).show();
+            });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return navigationTabBar.getItems().size();
     }
+
     public void setUserLoggedIn(boolean userLoggedIn) {
         this.userLoggedIn = userLoggedIn;
     }
@@ -97,6 +130,9 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
         @BindView(R.id.nav_item_selector)
         View navItemSelector;
 
+        @BindView(R.id.nav_item_logo)
+        ImageView navItemLogo;
+
         View itemView;
 
         public ViewHolder(View itemView) {
@@ -104,6 +140,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
 
             ButterKnife.bind(this, itemView);
             this.itemView = itemView;
+            navItemLogo.setVisibility(View.VISIBLE);
         }
     }
 }

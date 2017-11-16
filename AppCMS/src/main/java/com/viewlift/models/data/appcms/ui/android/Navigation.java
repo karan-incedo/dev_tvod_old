@@ -22,12 +22,40 @@ public class Navigation implements Serializable {
     @SerializedName("footer")
     @Expose
     List<NavigationFooter> navigationFooter = null;
-    @SerializedName("tabBar")
+
+    @SerializedName("left")
     @Expose
-    List<NavigationPrimary> tabBar = null;
+    List<NavigationPrimary> navigationLeft = null;
+
+    @SerializedName("right")
+    @Expose
+    List<NavigationPrimary> navigationRight = null;
+
     @SerializedName("settings")
     @Expose
     Settings settings;
+
+
+    @SerializedName("tabBar")
+    @Expose
+    List<NavigationTabBar> navigationTabbar = null;
+
+
+    public List<NavigationPrimary> getNavigationLeft() {
+        return navigationLeft;
+    }
+
+    public void setNavigationLeft(List<NavigationPrimary> navigationLeft) {
+        this.navigationLeft = navigationLeft;
+    }
+
+    public List<NavigationPrimary> getNavigationRight() {
+        return navigationRight;
+    }
+
+    public void setNavigationRight(List<NavigationPrimary> navigationRight) {
+        this.navigationRight = navigationRight;
+    }
 
     public List<NavigationPrimary> getNavigationPrimary() {
         return navigationPrimary;
@@ -52,15 +80,20 @@ public class Navigation implements Serializable {
     public void setNavigationFooter(List<NavigationFooter> navigationFooter) {
         this.navigationFooter = navigationFooter;
     }
-    public List<NavigationPrimary> getTabBar() {
-        return tabBar;
+
+
+    public List<NavigationTabBar> getNavigationTabbar() {
+        return navigationTabbar;
     }
-    public void setTabBar(List<NavigationPrimary> tabBar) {
-        this.tabBar = tabBar;
+
+    public void setNavigationTabbar(List<NavigationTabBar> navigationTabbar) {
+        this.navigationTabbar = navigationTabbar;
     }
+
     public Settings getSettings() {
         return settings;
     }
+
     public void setSettings(Settings settings) {
         this.settings = settings;
     }

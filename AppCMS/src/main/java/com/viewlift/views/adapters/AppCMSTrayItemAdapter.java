@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.support.annotation.UiThread;
 import android.support.v4.content.ContextCompat;
@@ -18,6 +19,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -28,6 +30,7 @@ import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 
@@ -150,12 +153,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
-            ContentDatum contentDatum = adapterData.get(position);
+        if (adapterData != null && adapterData.size() == 0) {
 
-            if (adapterData.size() == 1) {
                 sendEvent(hideRemoveAllButtonEvent);
             }
+        if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
+            ContentDatum contentDatum = adapterData.get(position);
             StringBuffer imageUrl;
             if (isDownload) {
                 if (contentDatum.getGist() != null && contentDatum.getGist().getVideoImageUrl() != null) {
@@ -362,7 +365,18 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     holder.appCMSContinueWatchingProgress.setProgress(0);
                 }
             }
-
+            if (holder.appCMSVideoTypeImage.getVisibility() == View.VISIBLE) {
+                // TODO: have to  add condition depending upon API object
+//                holder.appCMSVideoTypeImage.setImageResource(R.drawable.ic_episode);
+//                holder.appCMSVideoTypeImage.setImageResource(R.drawable.ic_shows);
+            }
+            if (holder.appCMSRatingBar.getVisibility() == View.VISIBLE) {
+                if (contentDatum.getGist().getAverageStarRating() == 0) {
+                    holder.appCMSRatingBar.setVisibility(View.GONE);
+                } else {
+                    holder.appCMSRatingBar.setRating(contentDatum.getGist().getAverageStarRating());
+                }
+            }
         } else {
             sendEvent(hideRemoveAllButtonEvent);
 
@@ -388,6 +402,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
             holder.appCMSContinueWatchingProgress.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDownloadStatusButton.setVisibility(View.GONE);
+            holder.appCMSVideoTypeImage.setVisibility(View.GONE);
+            holder.appCMSRatingBar.setVisibility(View.GONE);
         }
     }
 
@@ -556,7 +572,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void addReceiver(OnInternalEvent e) {
         receivers.add(e);
-        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 1) {
+        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
         } else {
             sendEvent(showRemoveAllButtonEvent);
@@ -619,6 +635,23 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
 
             switch (componentType) {
+                case PAGE_IMAGE_KEY:
+                    switch (componentKey) {
+                        case PAGE_VIDEO_TYPE_KEY:
+                            viewHolder.appCMSVideoTypeImage.setVisibility(View.VISIBLE);
+                            int height = (int) BaseView.convertDpToPixel(component.getLayout().getMobile().getHeight(), viewHolder.itemView.getContext());
+                            int width = (int) BaseView.convertDpToPixel(component.getLayout().getMobile().getWidth(), viewHolder.itemView.getContext());
+                            int leftMargin = (int) BaseView.convertDpToPixel(component.getLayout().getMobile().getLeftMargin(), viewHolder.itemView.getContext());
+                            int topMargin = (int) BaseView.convertDpToPixel(component.getLayout().getMobile().getTopMargin(), viewHolder.itemView.getContext());
+                            int rightMargin = (int) BaseView.convertDpToPixel(component.getLayout().getMobile().getMarginRight(), viewHolder.itemView.getContext());
+                            int bottomMargin = (int) BaseView.convertDpToPixel(component.getLayout().getMobile().getBottomMargin(), viewHolder.itemView.getContext());
+                            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(width, height);
+                            layoutParams.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+                            viewHolder.appCMSVideoTypeImage.setLayoutParams(layoutParams);
+
+                            break;
+                    }
+                    break;
                 case PAGE_BUTTON_KEY:
                     switch (componentKey) {
                         case PAGE_PLAY_KEY:
@@ -737,7 +770,17 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 case PAGE_PROGRESS_VIEW_KEY:
                     viewHolder.appCMSContinueWatchingProgress.setMax(100);
                     break;
-
+                case PAGE_RATINGBAR:
+                    viewHolder.appCMSRatingBar.setVisibility(View.VISIBLE);
+                    LayerDrawable stars = (LayerDrawable) viewHolder.appCMSRatingBar.getProgressDrawable();
+                    stars.getDrawable(2).setColorFilter(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getFillColor()))
+                            , PorterDuff.Mode.SRC_ATOP);
+                    stars.getDrawable(0).setColorFilter(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBorderColor())),
+                            PorterDuff.Mode.SRC_ATOP);
+                    stars.getDrawable(1).setColorFilter(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBorderColor())),
+                            PorterDuff.Mode.SRC_ATOP);
+                    viewHolder.appCMSRatingBar.setEnabled(false);
+                    break;
                 default:
                     break;
             }
@@ -764,8 +807,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
         } else if (isDownload) {
             if (!adapterData.isEmpty()) {
-            sortData();
-            notifyDataSetChanged();
+                sortData();
+                notifyDataSetChanged();
             }
         }
     }
@@ -775,7 +818,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         adapterData = contentData;
         sortData();
         notifyDataSetChanged();
-        if (adapterData == null || adapterData.isEmpty() || adapterData.size() < 2) {
+        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
         } else {
             sendEvent(showRemoveAllButtonEvent);
@@ -848,6 +891,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     appCMSDeleteHistoryResult -> {
                         adapterData.remove(contentDatum);
                         notifyDataSetChanged();
+                        if (adapterData.size() == 0) {
+                            sendEvent(hideRemoveAllButtonEvent);
+                        }
                     }, false);
         }
 
@@ -864,6 +910,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         notifyItemRangeRemoved(position, getItemCount());
                                         adapterData.remove(contentDatum);
                                         notifyItemRangeChanged(position, getItemCount());
+                                        if (adapterData.size() == 0) {
+                                            sendEvent(hideRemoveAllButtonEvent);
+                                        }
                                     }),
                     null);
         }
@@ -874,6 +923,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     addToWatchlistResult -> {
                         adapterData.remove(contentDatum);
                         notifyDataSetChanged();
+                        if (adapterData.size() == 0) {
+                            sendEvent(hideRemoveAllButtonEvent);
+                        }
                     }, false);
         }
     }
@@ -972,6 +1024,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         @BindView(R.id.app_cms_continue_watching_progress)
         ProgressBar appCMSContinueWatchingProgress;
+
+        @BindView(R.id.app_cms_rating)
+        RatingBar appCMSRatingBar;
+        @BindView(R.id.app_cms_continue_watching_video_type_image)
+        ImageView appCMSVideoTypeImage;
 
         public ViewHolder(View itemView) {
             super(itemView);

@@ -82,7 +82,7 @@ public class AppCMSTeamListFragment extends DialogFragment {
                 .appCMSPresenter();
 
         if (appCMSBinder != null && appCMSBinder.getNavigation() != null) {
-            appCMSTeamItemAdapter = new AppCMSTeamItemAdapter(appCMSBinder.getNavigation().getNavigationPrimary().get(3),
+            appCMSTeamItemAdapter = new AppCMSTeamItemAdapter(appCMSBinder.getNavigation().getNavigationTabbar(),
                     appCMSPresenter,
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSBinder.isUserLoggedIn(),
@@ -92,66 +92,22 @@ public class AppCMSTeamListFragment extends DialogFragment {
             navItemsList.setAdapter(appCMSTeamItemAdapter);
             if (!BaseView.isTablet(getContext())) {
                 appCMSPresenter.restrictPortraitOnly();
-            }else{
+            } else {
                 appCMSPresenter.unrestrictPortraitOnly();
             }
 
             NestedScrollView nestedScrollView = (NestedScrollView) view.findViewById(R.id.app_cms_nav_items_main_view);
 
             LinearLayout appCMSNavLoginContainer = (LinearLayout) view.findViewById(R.id.app_cms_nav_login_container);
-            if (appCMSPresenter.isUserLoggedIn()) {
-                appCMSNavLoginContainer.setVisibility(View.GONE);
-                ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
-            } else {
-                if (!BaseView.isTablet(getContext())) {
-                    ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                } else {
-                    ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
-                }
-                appCMSNavLoginContainer.setVisibility(View.VISIBLE);
-                View appCMSNavItemsSeparatorView = view.findViewById(R.id.app_cms_nav_items_separator_view);
-                appCMSNavItemsSeparatorView.setBackgroundColor(textColor);
-                TextView appCMSNavItemsLoggedOutMessage = (TextView) view.findViewById(R.id.app_cms_nav_items_logged_out_message);
-                appCMSNavItemsLoggedOutMessage.setTextColor(textColor);
-                Button appCMSNavLoginButton = (Button) view.findViewById(R.id.app_cms_nav_login_button);
-                appCMSNavLoginButton.setTextColor(textColor);
-                appCMSNavLoginButton.setOnClickListener(v -> {
-                    if (appCMSPresenter != null) {
-                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
-                        appCMSPresenter.navigateToLoginPage(true);
-                        Bundle bundle = new Bundle();
-                        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_LOGIN_SCREEN_VALUE);
-                        String firebaseEventKey = FirebaseAnalytics.Event.VIEW_ITEM;
-                        if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
-                        } else {
-                            appCMSPresenter.getmFireBaseAnalytics().setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
-                        }
-                        appCMSPresenter.sendFirebaseSelectedEvents(firebaseEventKey, bundle);
-                    }
-                });
-                GradientDrawable loginBorder = new GradientDrawable();
-                loginBorder.setShape(GradientDrawable.RECTANGLE);
-                loginBorder.setStroke(getContext().getResources().getInteger(R.integer.app_cms_border_stroke_width), borderColor);
-                loginBorder.setColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
-                appCMSNavLoginButton.setBackground(loginBorder);
 
-                Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
-                if (appCMSPresenter.getAppCMSMain()
-                        .getServiceType()
-                        .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {
-                    appCMSNavFreeTrialButton.setTextColor(textColor);
-                    appCMSNavFreeTrialButton.setOnClickListener(v -> {
-                        if (appCMSPresenter != null) {
-                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                            appCMSPresenter.navigateToSubscriptionPlansPage(true);
-                        }
-                    });
-                    appCMSNavFreeTrialButton.setBackgroundColor(buttonColor);
-                } else {
-                    appCMSNavFreeTrialButton.setVisibility(View.INVISIBLE);
-                }
+            if (!BaseView.isTablet(getContext())) {
+                ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.ALIGN_PARENT_TOP | RelativeLayout.CENTER_HORIZONTAL);
+                ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).setMargins(70, 70, 0, 0);
+            } else {
+                ((RelativeLayout.LayoutParams) nestedScrollView.getLayoutParams()).addRule(RelativeLayout.CENTER_IN_PARENT);
             }
+            appCMSNavLoginContainer.setVisibility(View.GONE);
+
         }
 
         setBgColor(bgColor, view);
@@ -172,7 +128,7 @@ public class AppCMSTeamListFragment extends DialogFragment {
         super.onDestroyView();
         if (BaseView.isTablet(getContext())) {
             appCMSPresenter.unrestrictPortraitOnly();
-        }else{
+        } else {
             appCMSPresenter.restrictPortraitOnly();
 
         }
