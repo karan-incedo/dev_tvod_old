@@ -194,6 +194,7 @@
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
+    <string name="app_cms_start_watching_key">startWatching</string>
     <string name="app_cms_page_share_key">shareButton</string>
     <string name="app_cms_page_video_starrating_key">starRating</string>
     <string name="app_cms_page_video_credits_director_key">Director</string>
