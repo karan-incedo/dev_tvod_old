@@ -361,9 +361,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             if (holder.appCMSContinueWatchingThumbInfo.getVisibility() == View.VISIBLE) {
-                String thumbInfo = getDateFormat(contentDatum.getGist().getPublishDate(), "MMM dd");
-                holder.appCMSContinueWatchingThumbInfo.setText(thumbInfo);
-                holder.appCMSContinueWatchingVideoImage.setScaleType(ImageView.ScaleType.FIT_XY);
+                if (contentDatum.getGist() != null && contentDatum.getGist().getPublishDate() != 0) {
+                    String thumbInfo = getDateFormat(contentDatum.getGist().getPublishDate(), "MMM dd");
+                    holder.appCMSContinueWatchingThumbInfo.setText(thumbInfo);
+                }
             }
             if (holder.appCMSContinueWatchingDuration.getVisibility() == View.VISIBLE) {
                 if (contentDatum.getGist() != null) {
@@ -415,7 +416,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 //                holder.appCMSVideoTypeImage.setImageResource(R.drawable.ic_shows);
             }
             if (holder.appCMSRatingBar.getVisibility() == View.VISIBLE) {
-                holder.appCMSRatingBar.setRating(contentDatum.getGist().getAverageStarRating());
+                if (contentDatum.getGist() != null && contentDatum.getGist().getAverageStarRating() != 0) {
+                    holder.appCMSRatingBar.setRating(contentDatum.getGist().getAverageStarRating());
+                }
             }
         } else {
             sendEvent(hideRemoveAllButtonEvent);
