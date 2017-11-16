@@ -368,7 +368,7 @@ public class Utils {
                 context,
                 isEditText ? android.R.color.white : android.R.color.transparent
         ));
-        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{Color.BLACK, Color.parseColor(borderColor)});
+        return ageBorder;
     }
 
     private static GradientDrawable getGradientDrawable(String primaryHover, String secondaryHover){
@@ -512,6 +512,18 @@ public class Utils {
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()){
             color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+        }
+        return color;
+    }
+
+     public static String getTitleColorForST(Context context , AppCMSPresenter appCMSPresenter){
+        String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , android.R.color.white)));
+        //Log.d("Utils.java" , "getTitleColor = "+color);
+        if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+                && null != appCMSPresenter.getAppCMSMain().getBrand()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()){
+            color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor();
         }
         return color;
     }

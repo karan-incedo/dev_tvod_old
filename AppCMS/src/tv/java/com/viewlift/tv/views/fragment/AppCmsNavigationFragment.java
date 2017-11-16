@@ -390,13 +390,20 @@ public class AppCmsNavigationFragment extends Fragment {
 
 
             holder.navItemLayout.setOnClickListener(view -> {
-                navigationVisibilityListener.showNavigation(false);
+                final boolean[] hideNavigation = {true};
                 Utils.pageLoading(true, getActivity());
 
                 new Handler().postDelayed(() -> {
                     if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
                         appCmsPresenter.openSearch();
                         Utils.pageLoading(false, getActivity());
+                    }  else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_settings_page_tag))) {
+                        Utils.pageLoading(false, getActivity());
+                        // TODO: 11/15/2017 open subnavigation fragment here
+
+                        hideNavigation[0] = false;
+                        navigationVisibilityListener.showSubNavigation(true);
+
                     } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
                             getString(R.string.profile_label)))) {
 
@@ -421,7 +428,6 @@ public class AppCmsNavigationFragment extends Fragment {
                                     false
                             );
                         }
-
                     } else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                             primary.getTitle(),
                             primary.getUrl(),
@@ -432,6 +438,8 @@ public class AppCmsNavigationFragment extends Fragment {
                             false)) {
 
                     }
+
+                    navigationVisibilityListener.showNavigation(hideNavigation[0]);
                 }, 500);
             });
         }
@@ -443,7 +451,7 @@ public class AppCmsNavigationFragment extends Fragment {
             } else if (icon.equalsIgnoreCase(getString(R.string.st_show_icon_key))) {
                 iconResId = R.drawable.st_menu_icon_grid;
             } else if (icon.equalsIgnoreCase(getString(R.string.st_teams_icon_key))) {
-                iconResId = R.drawable.st_menu_icon_grid;
+                iconResId = R.drawable.st_menu_icon_bracket;
             } else if (icon.equalsIgnoreCase(getString(R.string.st_watchlist_icon_key))) {
                 iconResId = R.drawable.st_menu_icon_watchlist;
             } else if (icon.equalsIgnoreCase(getString(R.string.st_history_icon_key))) {
@@ -535,6 +543,7 @@ public class AppCmsNavigationFragment extends Fragment {
 
     public interface OnNavigationVisibilityListener {
         void showNavigation(boolean shouldShow);
+        void showSubNavigation(boolean shouldShow);
     }
 
 

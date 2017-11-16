@@ -654,10 +654,17 @@ public class TVViewCreator {
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 } else {
-                    componentViewResult.componentView.setBackground(
-                            Utils.setButtonBackgroundSelector(context,
-                                    Color.parseColor(Utils.getTitleColor(context, appCMSPresenter)),
-                                    component));
+                    if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                        componentViewResult.componentView.setBackground(
+                                Utils.setButtonBackgroundSelector(context,
+                                        Color.parseColor(Utils.getTitleColor(context, appCMSPresenter)),
+                                        component));
+                    } else {
+                        componentViewResult.componentView.setBackground(
+                                Utils.setButtonBackgroundSelector(context,
+                                        Color.parseColor(Utils.getTitleColorForST(context, appCMSPresenter)),
+                                        component));
+                    }
                 }
 
                 if (component.getLetetrSpacing() != 0) {

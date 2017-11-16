@@ -2,13 +2,9 @@ package com.viewlift.tv.views.activity;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TabLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,20 +12,18 @@ import android.widget.FrameLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
 import com.viewlift.tv.views.customviews.AppCMSTVTrayAdapter;
 import com.viewlift.tv.views.customviews.TVModuleView;
 import com.viewlift.tv.views.customviews.TVPageView;
-import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
 import com.viewlift.tv.views.fragment.AppCmsSubNavigationFragment;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSBinder;
 
 
-public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNavigationFragment.OnNavigationVisibilityListener {
+public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener {
 
     private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
     private AppCMSBinder mAppCMSBinder;
@@ -121,7 +115,7 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
     }
 
     @Override
-    public void showNavigation(boolean shouldShow) {
+    public void showSubNavigation(boolean shouldShow) {
 
     }
 
