@@ -53,7 +53,6 @@ import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
-import com.viewlift.models.CustomWebView;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
