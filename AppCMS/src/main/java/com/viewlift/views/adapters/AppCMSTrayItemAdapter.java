@@ -12,6 +12,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,20 +24,25 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.views.customviews.SimpleRatingBar;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +50,8 @@ import java.util.concurrent.TimeUnit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 
 /*
  * Created by viewlift on 7/7/17.
@@ -96,6 +104,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             case PAGE_WATCHLIST_MODULE_KEY:
                 this.isWatchlist = true;
+//                if (viewType.contains("AC Watchlist 01")) {
+//                    AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+//                            loadJsonFromAssets(context, "watchlist_sports.json"),
+//                            AppCMSPageUI.class);
+//                    this.components = appCMSPageUI.getModuleList().get(1).getComponents().get(3).getComponents();
+//                }
                 break;
 
             default:
@@ -132,7 +146,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater
                 .from(parent.getContext())
-                .inflate(R.layout.continue_watching_item, parent, false);
+//                .inflate(R.layout.continue_watching_item, parent, false);
+                //TODO: continue_watching_item_sports this is only for sports UI - need to change to dynamic before merging with jonathan
+                .inflate(R.layout.continue_watching_item_sports, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         applyStyles(viewHolder);
         return viewHolder;
@@ -150,13 +166,22 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         mRecyclerView = recyclerView;
     }
 
+    private String getDateFormat(long timeMilliSeconds, String dateFormat) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        return formatter.format(calendar.getTime());
+    }
+
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (adapterData != null && adapterData.size() == 0) {
 
-                sendEvent(hideRemoveAllButtonEvent);
-            }
+            sendEvent(hideRemoveAllButtonEvent);
+        }
         if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
             ContentDatum contentDatum = adapterData.get(position);
             StringBuffer imageUrl;
@@ -310,6 +335,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             if (contentDatum.getGist() != null && contentDatum.getGist().getDescription() != null) {
                 Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
                 holder.appCMSContinueWatchingDescription.setText(rawHtmlSpannable);
+            } else {
+                holder.appCMSContinueWatchingDescription.setVisibility(View.GONE);
             }
 
             holder.appCMSContinueWatchingDeleteButton.setOnClickListener(v -> delete(contentDatum, position));
@@ -333,19 +360,27 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
 
-            if (contentDatum.getGist() != null) {
-                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
-                    StringBuilder runtimeText = new StringBuilder()
-                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
-                            .append(" ")
-                            .append(holder.itemView.getContext().getString(R.string.min_abbreviation));
-                    holder.appCMSContinueWatchingDuration.setText(runtimeText);
-                } else {
-                    StringBuilder runtimeText = new StringBuilder()
-                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
-                            .append(" ")
-                            .append(holder.itemView.getContext().getString(R.string.mins_abbreviation));
-                    holder.appCMSContinueWatchingDuration.setText(runtimeText);
+            if (holder.appCMSContinueWatchingThumbInfo.getVisibility() == View.VISIBLE) {
+                if (contentDatum.getGist() != null && contentDatum.getGist().getPublishDate() != 0) {
+                    String thumbInfo = getDateFormat(contentDatum.getGist().getPublishDate(), "MMM dd");
+                    holder.appCMSContinueWatchingThumbInfo.setText(thumbInfo);
+                }
+            }
+            if (holder.appCMSContinueWatchingDuration.getVisibility() == View.VISIBLE) {
+                if (contentDatum.getGist() != null) {
+                    if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
+                        StringBuilder runtimeText = new StringBuilder()
+                                .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                                .append(" ")
+                                .append(holder.itemView.getContext().getString(R.string.min_abbreviation));
+                        holder.appCMSContinueWatchingDuration.setText(runtimeText);
+                    } else {
+                        StringBuilder runtimeText = new StringBuilder()
+                                .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                                .append(" ")
+                                .append(holder.itemView.getContext().getString(R.string.mins_abbreviation));
+                        holder.appCMSContinueWatchingDuration.setText(runtimeText);
+                    }
                 }
             }
 
@@ -367,13 +402,21 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             }
             if (holder.appCMSVideoTypeImage.getVisibility() == View.VISIBLE) {
                 // TODO: have to  add condition depending upon API object
+                if (contentDatum != null &&
+                        contentDatum.getGist() != null &&
+                        contentDatum.getGist().getContentType() != null) {
+                    if (contentDatum.getGist().getContentType().contains(holder.itemView.getContext().getString(R.string.app_cms_content_type_shows))) {
+                        holder.appCMSVideoTypeImage.setImageResource(R.drawable.ic_shows);
+                    }
+                    if (contentDatum.getGist().getContentType().contains(holder.itemView.getContext().getString(R.string.app_cms_content_type_episode))) {
+                        holder.appCMSVideoTypeImage.setImageResource(R.drawable.ic_episode);
+                    }
+                }
 //                holder.appCMSVideoTypeImage.setImageResource(R.drawable.ic_episode);
 //                holder.appCMSVideoTypeImage.setImageResource(R.drawable.ic_shows);
             }
             if (holder.appCMSRatingBar.getVisibility() == View.VISIBLE) {
-                if (contentDatum.getGist().getAverageStarRating() == 0) {
-                    holder.appCMSRatingBar.setVisibility(View.GONE);
-                } else {
+                if (contentDatum.getGist() != null && contentDatum.getGist().getAverageStarRating() != 0) {
                     holder.appCMSRatingBar.setRating(contentDatum.getGist().getAverageStarRating());
                 }
             }
@@ -390,7 +433,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             } else {
                 holder.appCMSNotItemLabel.setText(holder.itemView.getContext().getString(R.string.empty_watchlist_message));
             }
-
+            holder.appCMSLinearParent.setBackground(null);
             holder.appCMSContinueWatchingVideoImage.setVisibility(View.GONE);
             holder.appCMSContinueWatchingPlayButton.setVisibility(View.GONE);
             holder.appCMSContinueWatchingTitle.setVisibility(View.GONE);
@@ -398,6 +441,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             holder.appCMSContinueWatchingDeleteButton.setVisibility(View.GONE);
             holder.appCMSContinueWatchingLastViewed.setVisibility(View.GONE);
             holder.appCMSContinueWatchingDuration.setVisibility(View.GONE);
+            holder.appCMSContinueWatchingThumbInfo.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSize.setVisibility(View.GONE);
             holder.appCMSContinueWatchingSeparatorView.setVisibility(View.GONE);
             holder.appCMSContinueWatchingProgress.setVisibility(View.GONE);
@@ -622,6 +666,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         return null;
     }
 
+    private String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
+        if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
+        }
+        return baseColorCode;
+    }
+
     private void applyStyles(ViewHolder viewHolder) {
         for (Component component : components) {
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
@@ -656,6 +707,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     switch (componentKey) {
                         case PAGE_PLAY_KEY:
                         case PAGE_PLAY_IMAGE_KEY:
+                            viewHolder.appCMSContinueWatchingPlayButton.setVisibility(View.VISIBLE);
                             viewHolder.appCMSContinueWatchingPlayButton.setBackground(ContextCompat.getDrawable(viewHolder.itemView.getContext(), R.drawable.play_icon));
                             viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTint(tintColor);
                             viewHolder.appCMSContinueWatchingPlayButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
@@ -694,7 +746,37 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     }
 
                     switch (componentKey) {
+                        case PAGE_GRID_THUMBNAIL_INFO:
+                            int textBgColor = Color.parseColor(getColor(viewHolder.itemView.getContext(), appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                            if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                                textBgColor = Color.parseColor(getColorWithOpacity(viewHolder.itemView.getContext(), component.getBackgroundColor(), component.getOpacity()));
+                            }
+                            int textFontColor = Color.parseColor(getColor(viewHolder.itemView.getContext(), appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                            if (!TextUtils.isEmpty(component.getTextColor())) {
+                                textFontColor = Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getTextColor()));
+                            }
+                            viewHolder.appCMSContinueWatchingThumbInfo.setVisibility(View.VISIBLE);
+                            viewHolder.appCMSContinueWatchingThumbInfo.setBackgroundColor(textBgColor);
+                            viewHolder.appCMSContinueWatchingThumbInfo.setTextColor(textFontColor);
+                            if (!TextUtils.isEmpty(component.getFontFamily())) {
+                                setTypeFace(viewHolder.itemView.getContext(),
+                                        jsonValueKeyMap,
+                                        component,
+                                        viewHolder.appCMSContinueWatchingThumbInfo);
+                                setTypeFace(viewHolder.itemView.getContext(),
+                                        jsonValueKeyMap,
+                                        component,
+                                        viewHolder.appCMSContinueWatchingThumbInfo);
+                            }
+
+                            if (component.getFontSize() > 0) {
+                                viewHolder.appCMSContinueWatchingThumbInfo.setTextSize(component.getFontSize());
+                            } else if (BaseView.getFontSize(viewHolder.itemView.getContext(), component.getLayout()) > 0) {
+                                viewHolder.appCMSContinueWatchingThumbInfo.setTextSize(BaseView.getFontSize(viewHolder.itemView.getContext(), component.getLayout()));
+                            }
+                            break;
                         case PAGE_WATCHLIST_DURATION_KEY:
+                            viewHolder.appCMSContinueWatchingDuration.setVisibility(View.VISIBLE);
                             viewHolder.appCMSContinueWatchingDuration.setTextColor(textColor);
                             viewHolder.appCMSContinueWatchingSize.setTextColor(textColor);
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -736,6 +818,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             break;
 
                         case PAGE_API_DESCRIPTION:
+                            viewHolder.appCMSContinueWatchingDescription.setVisibility(View.VISIBLE);
                             viewHolder.appCMSContinueWatchingDescription.setTextColor(textColor);
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                                 viewHolder.appCMSContinueWatchingDescription.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
@@ -757,8 +840,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     }
                     break;
 
+                case PAGE_GRID_BACKGROUND:
+                    viewHolder.appCMSLinearParent.setBackgroundResource(R.drawable.watchlist_item);
+                    break;
                 case PAGE_SEPARATOR_VIEW_KEY:
                 case PAGE_SEGMENTED_VIEW_KEY:
+                    viewHolder.appCMSContinueWatchingSeparatorView.setVisibility(View.VISIBLE);
                     if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                         viewHolder.appCMSContinueWatchingSeparatorView
                                 .setBackgroundColor(Color.parseColor(getColor(
@@ -772,13 +859,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     break;
                 case PAGE_RATINGBAR:
                     viewHolder.appCMSRatingBar.setVisibility(View.VISIBLE);
-                    LayerDrawable stars = (LayerDrawable) viewHolder.appCMSRatingBar.getProgressDrawable();
-                    stars.getDrawable(2).setColorFilter(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getFillColor()))
-                            , PorterDuff.Mode.SRC_ATOP);
-                    stars.getDrawable(0).setColorFilter(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBorderColor())),
-                            PorterDuff.Mode.SRC_ATOP);
-                    stars.getDrawable(1).setColorFilter(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBorderColor())),
-                            PorterDuff.Mode.SRC_ATOP);
+                    viewHolder.appCMSRatingBar.setNumberOfStars(5);
+                    viewHolder.appCMSRatingBar.setStarSize(60f);
+                    viewHolder.appCMSRatingBar.setStarsSeparation(10f);
+                    viewHolder.appCMSRatingBar.setStarBorderWidth(2f);
+                    viewHolder.appCMSRatingBar.setFillColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getFillColor())));
                     viewHolder.appCMSRatingBar.setEnabled(false);
                     break;
                 default:
@@ -1019,6 +1104,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         @BindView(R.id.app_cms_continue_watching_duration)
         TextView appCMSContinueWatchingDuration;
 
+        @BindView(R.id.app_cms_continue_watching_thumbInfo)
+        TextView appCMSContinueWatchingThumbInfo;
+
         @BindView(R.id.app_cms_watchlist_download_status_button)
         ImageView appCMSContinueWatchingDownloadStatusButton;
 
@@ -1026,9 +1114,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         ProgressBar appCMSContinueWatchingProgress;
 
         @BindView(R.id.app_cms_rating)
-        RatingBar appCMSRatingBar;
+        SimpleRatingBar appCMSRatingBar;
+
         @BindView(R.id.app_cms_continue_watching_video_type_image)
         ImageView appCMSVideoTypeImage;
+
+        @BindView(R.id.linearLayoutParent)
+        LinearLayout appCMSLinearParent;
 
         public ViewHolder(View itemView) {
             super(itemView);

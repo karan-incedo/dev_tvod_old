@@ -1337,12 +1337,12 @@ public class ViewCreator {
 
         @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
-        if (viewType.contains("AC Watchlist 01")) {
-            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "watchlist_sports.json"),
-                    AppCMSPageUI.class);
-            component = appCMSPageUI.getModuleList().get(2).getComponents().get(4);
-        }
+//        if (viewType.contains("AC Watchlist 01")) {
+//            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+//                    loadJsonFromAssets(context, "watchlist_sports.json"),
+//                    AppCMSPageUI.class);
+//            component = appCMSPageUI.getModuleList().get(2).getComponents().get(4);
+//        }
         int size = component.getComponents().size();
         for (int i = 0; i < size; i++) {
             Component childComponent = component.getComponents().get(i);
@@ -1434,18 +1434,15 @@ public class ViewCreator {
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
         switch (componentType) {
-            case PAGE_RATINGBAR:
-                componentViewResult.componentView = new RatingBar(context);
 
-                LayerDrawable stars = (LayerDrawable) ((RatingBar) componentViewResult.componentView).getProgressDrawable();
-                stars.getDrawable(2).setColorFilter(Color.parseColor(getColor(context, component.getFillColor()))
-                        , PorterDuff.Mode.SRC_ATOP);
-                stars.getDrawable(0).setColorFilter(Color.parseColor(getColor(context, component.getBorderColor())),
-                        PorterDuff.Mode.SRC_ATOP);
-                stars.getDrawable(1).setColorFilter(Color.parseColor(getColor(context, component.getBorderColor())),
-                        PorterDuff.Mode.SRC_ATOP);
-                ((RatingBar) componentViewResult.componentView).setEnabled(false);
-                ((RatingBar) componentViewResult.componentView).setRating(moduleAPI.getContentData().get(0).getGist().getAverageStarRating());
+            case PAGE_RATINGBAR:
+                componentViewResult.componentView = new SimpleRatingBar(context);
+                ((SimpleRatingBar) componentViewResult.componentView).setNumberOfStars(5);
+                ((SimpleRatingBar) componentViewResult.componentView).setStarSize(60f);
+                ((SimpleRatingBar) componentViewResult.componentView).setStarsSeparation(10f);
+                ((SimpleRatingBar) componentViewResult.componentView).setStarBorderWidth(2f);
+                ((SimpleRatingBar) componentViewResult.componentView).setFillColor(Color.parseColor(getColor(context, component.getFillColor())));
+                ((SimpleRatingBar) componentViewResult.componentView).setEnabled(false);
                 break;
             case PAGE_TABLE_VIEW_KEY:
                 if (moduleType == AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY) {
@@ -1500,35 +1497,35 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
-                            this,
-                            appCMSPresenter,
-                            settings,
-                            component.getLayout(),
-                            false,
-                            component,
-                            jsonValueKeyMap,
-                            moduleAPI,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            viewType,
-                            appCMSAndroidModules);
-
-//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-//                            moduleAPI.getContentData(),
-//                            component.getComponents(),
+//                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
+//                            this,
 //                            appCMSPresenter,
+//                            settings,
+//                            component.getLayout(),
+//                            false,
+//                            component,
 //                            jsonValueKeyMap,
+//                            moduleAPI,
+//                            ViewGroup.LayoutParams.MATCH_PARENT,
+//                            ViewGroup.LayoutParams.WRAP_CONTENT,
 //                            viewType,
-//                            (RecyclerView) componentViewResult.componentView);
+//                            appCMSAndroidModules);
 
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
-//                    componentViewResult.onInternalEvent = appCMSViewAdapter;
-//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+                            moduleAPI.getContentData(),
+                            component.getComponents(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
+
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
+                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(appCMSViewAdapter)
+                                .adapter(appCMSTrayItemAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleAPI.getId() + component.getKey())
                                 .build());
@@ -2687,11 +2684,16 @@ public class ViewCreator {
                 switch (componentKey) {
                     case PAGE_VIDEO_TYPE_KEY:
                         // TODO: have to  add condition depending upon API object
-                        if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_shows))) {
-                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_shows);
-                        }
-                        if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_episode))) {
-                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_episode);
+                        if (moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null &&
+                                moduleAPI.getContentData().get(0).getGist().getContentType() != null) {
+                            if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_shows))) {
+                                ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_shows);
+                            }
+                            if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_episode))) {
+                                ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_episode);
+                            }
                         }
                         break;
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
