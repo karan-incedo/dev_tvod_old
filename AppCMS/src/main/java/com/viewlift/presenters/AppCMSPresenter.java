@@ -79,6 +79,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
+import com.kiswe.kmsdkcorekit.reports.Report;
+import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
+import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -10894,6 +10898,30 @@ public class AppCMSPresenter {
         PopupMenu popupMenu = new PopupMenu(getCurrentActivity());
         popupMenu.showLocation(v.getId(), getCurrentActivity());
     }
+
+    public void launchKiswePlayer(String eventId){
+
+        KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
+                .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
+                .setLogLevel(KMSDKCoreKit.DEBUG);
+        mKit.startKiswePlayerActivity(currentActivity, eventId);
+    }
+
+    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
+        @Override
+        public void handleReport(Report report) {
+
+            if (!Reports.STATUS_SOURCE_PLAYER.equals(report.getString(Reports.FIELD_STATUS_SOURCE))) {
+                return;
+            }
+
+            String eventId = report.getString(Reports.FIELD_STATUS_EVENT_ID, "unknown");
+            String msg = report.getString(Reports.FIELD_STATUS_MESSAGE, "unknown status");
+            int code = report.getInt(Reports.FIELD_STATUS_CODE, -1);
+
+            Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
+        }
+    };
 
     public void showEmptySearchToast() {
         showToast(getCurrentActivity().getResources().getString(R.string.search_blank_toast_msg), Toast.LENGTH_SHORT);

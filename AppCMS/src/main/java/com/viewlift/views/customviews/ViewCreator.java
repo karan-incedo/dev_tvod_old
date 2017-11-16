@@ -37,6 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
@@ -1908,7 +1909,8 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                appCMSPresenter.showPopUpMenuSports(view);
+                                Toast.makeText(view.getContext(),"Team Detail Menu Click",Toast.LENGTH_LONG).show();
+                                //appCMSPresenter.showPopUpMenuSports(view);
                             }
                         });
                         break;
