@@ -224,43 +224,38 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             }
         };
 
-
-        //TODO : check subscription status :-
-        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+        /*Check Subscription in case of SPORTS TEMPLATE*/
+         if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
             if(!appCMSPresenter.isUserLoggedIn()){
                 TextView textView = (TextView)findViewById(R.id.nav_top_line);
                 textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text)));
                 textView.setHeight(46);
             }else{
-                if (appCMSPresenter.getActiveSubscriptionPlatform() == null) {
-                    appCMSPresenter.getSubscriptionData(
-                            appCMSUserSubscriptionPlanResult -> {
-                                String platform;
-                                String varMessage = "";
-                                if (appCMSUserSubscriptionPlanResult != null
-                                        && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
-                                        && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
-                                    platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
-                                    //TODO : subscribed.
-                                    TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                                    textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text)));
-                                    textView.setHeight(10);
-
-                                } else {
-                                    //TODO : Not subscribed.
-                                    TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                                    textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text)));
-                                    textView.setHeight(46);
-                                }
+                appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                    try {
+                        if (appCMSUserSubscriptionPlanResult != null) {
+                            String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                            if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                    subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                 TextView textView = (TextView)findViewById(R.id.nav_top_line);
+                                textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                                textView.setHeight(10);
+                            } else {
+                                  TextView textView = (TextView)findViewById(R.id.nav_top_line);
+                                textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                                textView.setHeight(46);
                             }
-                    );
-                } else {
-                        //TODO : subscribed
-                    TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                    textView.setText(getResources().getString(R.string.blank_string));
-                    textView.setHeight(10);
-                }
-
+                        }else {
+                             TextView textView = (TextView)findViewById(R.id.nav_top_line);
+                            textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                            textView.setHeight(46);
+                        }
+                    } catch (Exception e) {
+                          TextView textView = (TextView)findViewById(R.id.nav_top_line);
+                        textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                        textView.setHeight(46);
+                    }
+                });
             }
         }else{
             findViewById(R.id.nav_top_line).setVisibility(View.GONE);
@@ -305,7 +300,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         super.onResume();
         registerReceivers();
         toggleFooterBaseOnTemplate();
-        hideFooterControls();
+       hideFooterControls();
         isActive = true;
     }
 
@@ -644,8 +639,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
-                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
+                        hideFooterControl();
                         break;
                     case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
                     case KeyEvent.KEYCODE_MEDIA_PLAY:
@@ -779,9 +774,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     private void showInfoIcon(String pageId){
-        findViewById(R.id.info_icon).setVisibility(
-                appCMSPresenter.isPagePrimary(pageId) ? View.VISIBLE : View.INVISIBLE
-        );
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.ENTERTAINMENT) {
+            findViewById(R.id.info_icon).setVisibility(
+                    appCMSPresenter.isPagePrimary(pageId) ? View.VISIBLE : View.INVISIBLE
+            );
+        }
     }
 
     public AppCmsTvSearchComponent getAppCMSSearchComponent(){
@@ -933,11 +930,16 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 new Runnable() {
                     @Override
                     public void run() {
-                        findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
-                        findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
-                        findViewById(R.id.top_logo).setVisibility(View.INVISIBLE);
+                        hideFooterControl();
                     }
                 },6000
         );
+    }
+
+    private void hideFooterControl(){
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+            findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
+        }
     }
 }

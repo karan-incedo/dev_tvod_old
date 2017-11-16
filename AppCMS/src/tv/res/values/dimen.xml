@@ -7,7 +7,7 @@
     <dimen name="appcms_tv_sub_navigation_item_padding">15dp</dimen>
     <dimen name="appcms_tv_sub_navigation_top_margin">36dp</dimen>
 
-    <dimen name="browse_fragment_margin_left">0dp</dimen>
+    <dimen name="browse_fragment_margin_left">-10dp</dimen>
     <dimen name="browse_fragment_margin_top">-130dp</dimen>
     <dimen name="browse_fragment_margin_top_for_player">-170dp</dimen>
 

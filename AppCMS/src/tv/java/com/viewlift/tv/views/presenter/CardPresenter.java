@@ -209,6 +209,7 @@ public class CardPresenter extends Presenter {
                         layoutParams.topMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getTopMargin()));
                         layoutParams.leftMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getLeftMargin()));
                         tvTitle.setLayoutParams(layoutParams);
+                        tvTitle.setMaxLines(2);
                         tvTitle.setTextColor(Color.parseColor(component.getTextColor()));
                         if (fontType == null)
                             fontType = getFontType(component);
