@@ -121,6 +121,7 @@
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
     <string name="app_cms_page_font_family_key">OpenSans</string>
+    <string name="app_cms_page_lato_font_key">Lato</string>
     <string name="app_cms_page_textview_key">textView</string>
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>

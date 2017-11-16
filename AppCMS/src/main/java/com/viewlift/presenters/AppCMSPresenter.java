@@ -6515,7 +6515,7 @@ public class AppCMSPresenter {
             if (pageId != null &&
                     !TextUtils.isEmpty(pageId) &&
             navigationFooter != null &&
-                    !TextUtils.isEmpty(navigationFooter.getPageId()) &&\
+                    !TextUtils.isEmpty(navigationFooter.getPageId())
                     && pageId.contains(navigationFooter.getPageId())) {
                 return true;
             }
