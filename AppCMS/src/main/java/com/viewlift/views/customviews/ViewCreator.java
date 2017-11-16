@@ -1023,10 +1023,7 @@ public class ViewCreator {
                 module.setView(moduleInfo.getView());
                 module.setBlockName(moduleInfo.getBlockName());
             }
-            if (module.getBlockName().equalsIgnoreCase("webFrame01")) {
-                module.setComponents(moduleInfo.getComponents());
-                module.setLayout(moduleInfo.getLayout());
-            }
+
 
             boolean createModule = !modulesToIgnore.contains(module.getType());
 
