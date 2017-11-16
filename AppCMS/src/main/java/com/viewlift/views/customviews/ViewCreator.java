@@ -51,6 +51,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -3606,7 +3607,9 @@ public class ViewCreator {
         appCMSPresenter.refreshVideoData(videoId, updatedContentDatum -> {
             // appCMSPresenter.getAppCMSSignedURL(videoId, appCMSSignedURLResult -> {
             //     if (videoPlayerView != null && appCMSSignedURLResult != null) {
+            System.out.println(" [] "+new Gson().toJson(updatedContentDatum));
             if (videoPlayerView != null) {
+
                 boolean foundMatchingMpeg = false;
                 String hlsUrl = "";
                 String closedCaptionUrl = "";

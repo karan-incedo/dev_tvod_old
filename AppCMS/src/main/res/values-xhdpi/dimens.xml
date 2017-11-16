@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="app_cms_continue_watching_tray_height">80dp</dimen>
+
+    <dimen name="app_cms_mini_player_height">113dp</dimen>
+    <dimen name="app_cms_mini_player_width">200dp</dimen>
 </resources>
