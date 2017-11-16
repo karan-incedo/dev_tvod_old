@@ -105,17 +105,20 @@
               "yAxis": 211,
               "leftMargin": 0,
               "rightMargin": 0,
+              "bottomMargin": 8,
               "height": 10
             },
             "tabletLandscape": {
               "yAxis": 321.5,
               "leftMargin": 0,
+              "bottomMargin": 8,
               "rightMargin": 0,
               "height": 10
             },
             "tabletPortrait": {
               "yAxis": 432,
               "leftMargin": 0,
+              "bottomMargin": 8,
               "rightMargin": 0,
               "height": 10
             }
@@ -126,7 +129,7 @@
       ]
     },
     {
-      "id": "f5e5defc-c058-43bb-b6b2-010c4dce96b7",
+      "id": "3235376f-ee34-4cf4-a8ce-e47aef00e3d0",
       "settings": {},
       "view": "AC WebFrame 01",
       "type": "AC WebFrame 01",
@@ -135,21 +138,21 @@
           "yAxis": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 270
+          "height": 300
         },
         "tabletLandscape": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 270
+          "height": 300
         },
         "tabletPortrait": {
           "yAxis": 0,
           "leftMargin": 0,
           "xAxis": 0,
           "rightMargin": 0,
-          "height": 270
+          "height": 310
         }
       },
       "blockName": "webFrame01",
@@ -191,26 +194,26 @@
             "mobile": {
               "yAxis": 0,
               "leftMargin": 4.27,
-              "topMargin": 17.89,
+              "topMargin": 9.89,
               "rightMargin": 4.27,
               "bottomMargin": 0,
-              "height": 245
+              "height": 285
             },
             "tabletLandscape": {
               "yAxis": 0,
               "leftMargin": 2.93,
-              "topMargin": 17.89,
+              "topMargin": 9.89,
               "rightMargin": 2.93,
               "bottomMargin": 0,
-              "height": 245
+              "height": 285
             },
             "tabletPortrait": {
               "yAxis": 0,
               "leftMargin": 3.91,
-              "topMargin": 17.89,
+              "topMargin": 9.89,
               "rightMargin": 3.91,
               "bottomMargin": 0,
-              "height": 245
+              "height": 285
             }
           },
           "type": "web_view",
