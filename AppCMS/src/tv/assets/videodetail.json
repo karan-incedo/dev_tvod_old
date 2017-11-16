@@ -20,9 +20,8 @@
           "padding": 4
         }
       },
-      "action": "watchVideo",
       "type": "image",
-      "key": "videoImage"
+      "key": "videoThumbnailImage"
     },
     {
       "layout": {
@@ -59,12 +58,12 @@
       "borderColor": "#66ffffff",
       "fontFamily": "OpenSans",
       "borderWidth": 4,
-      "action": "addToWatchlist",
+      "action": "watchVideo",
       "text": "START WATCHING",
       "type": "button",
       "textColor": "ffffff",
       "fontWeight": "Semibold",
-      "key": "addToWatchlist"
+      "key": "startWatching"
     },
     {
       "layout": {
@@ -79,8 +78,7 @@
       "fontFamily": "OpenSans",
       "type": "label",
       "textColor": "#ffffff",
-      "key": "headingText",
-      "text": " Heading Label"
+      "key": "videoTitle"
     },
     {
       "layout": {
@@ -95,7 +93,7 @@
       "fontFamily": "OpenSans",
       "type": "label",
       "textColor": "#ffffff",
-      "key": "subHeadingHeadingText",
+      "key": "videoSubTitle",
       "text": "Sub heading Label"
     },
     {
@@ -111,8 +109,7 @@
       "fontFamily": "OpenSans",
       "type": "label",
       "textColor": "#ffffff",
-      "key": "videoDescriptionText",
-      "text": "Dummy Description"
+      "key": "videoDescriptionText"
     }
   ]
 }

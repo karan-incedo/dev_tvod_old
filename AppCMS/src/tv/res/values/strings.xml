@@ -59,4 +59,6 @@
      <string name="blank_email_error_msg">Please enter email to continue.</string>
     <string name="blank_password_error_msg">Please enter password to continue.</string>
     <string name="back">BACK</string>
+    
+    <string name="watch_live_text">WATCH LIVE GAMES - <u>START FREE TRIAL NOW</u> </string>
 </resources>

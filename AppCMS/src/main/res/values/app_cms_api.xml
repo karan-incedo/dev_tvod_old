@@ -186,7 +186,9 @@
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_show_image_video_key">showImage</string>
+    <string name="app_cms_page_thumbnail_image_video_key">videoThumbnailImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
+    <string name="app_cms_page_start_watching_button_key">startWatching</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
     <string name="app_cms_page_show_video_description_key">showDescriptionText</string>
     <string name="app_cms_page_video_title_key">videoTitle</string>
