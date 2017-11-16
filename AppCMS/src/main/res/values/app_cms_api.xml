@@ -166,10 +166,14 @@
     <string name="app_cms_page_settings_download_quality_value_key">downloadQualityValue</string>
     <string name="app_cms_page_settings_app_version_value_key">appVersionValue</string>
 
+    <string name="app_cms_user_management_use_sd_card_for_downloads_text_key">Use SD Card For Downloads</string>
+
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
     <string name="app_cms_page_download_module_key">AC Downloads 01</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
+
+    <string name="app_cms_user_management_download_settings_key">Download User Management</string>
 
     <string name="app_cms_page_history_title">History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>

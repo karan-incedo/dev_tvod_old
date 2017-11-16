@@ -9,42 +9,38 @@
         android:id="@+id/navigation_placholder"
         android:layout_width="match_parent"
         android:layout_height="@dimen/appcms_tv_navigation_height"
+        android:animateLayoutChanges="true"
         android:background="@color/appcms_nav_background"
-        android:visibility="gone">
-    </FrameLayout>
+        android:visibility="gone"/>
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_below="@id/navigation_placholder">
-
-    <FrameLayout
-        android:id="@+id/home_placeholder"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        >
-    </FrameLayout>
+        android:layout_below="@id/navigation_placholder"
+        android:animateLayoutChanges="true">
 
-    <FrameLayout
-        android:id="@+id/shadow_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/appcms_shadow_color"
-        android:alpha="0.7"
-        android:visibility="gone">
-    </FrameLayout>
+        <FrameLayout
+            android:id="@+id/home_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/footer_gradient_image"
-        >
-    </FrameLayout>
+        <FrameLayout
+            android:id="@+id/shadow_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.7"
+            android:background="@color/appcms_shadow_color"
+            android:visibility="gone"/>
 
 
-</RelativeLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/footer_gradient_image"/>
+
+
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/footer_logo"

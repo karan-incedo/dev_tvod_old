@@ -7,14 +7,13 @@ import android.widget.TextView;
 
 import com.viewlift.R;
 
-/**
+/*
  * Created by viewlift on 6/15/17.
  */
 
 public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
-    private final TextView textView;
-
     private static final float MAX_WIDTH_RATIO = 0.8f;
+    private final TextView textView;
 
     public ViewCreatorTitleLayoutListener(TextView textView) {
         this.textView = textView;
@@ -35,6 +34,7 @@ public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobal
             if (subStringLength > 0) {
                 textView.setText(textView.getContext().getString(R.string.string_with_ellipse,
                         textView.getText().subSequence(0, subStringLength - 3)));
+                textView.requestLayout();
             }
         }
 

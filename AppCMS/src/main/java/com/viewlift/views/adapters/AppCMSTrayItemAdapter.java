@@ -765,7 +765,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
         } else if (isDownload) {
-            if (!adapterData.isEmpty()) {
+            if (adapterData != null && !adapterData.isEmpty()) {
                 sortData();
                 notifyDataSetChanged();
             }

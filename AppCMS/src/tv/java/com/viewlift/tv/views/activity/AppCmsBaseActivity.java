@@ -2,15 +2,9 @@ package com.viewlift.tv.views.activity;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 
-import com.viewlift.R;
-import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
 
 /**
@@ -24,9 +18,9 @@ public abstract class AppCmsBaseActivity extends Activity {
         super.onCreate(savedInstanceState, persistentState);
     }
 
-    public void setNavigationFragment(AppCmsNavigationFragment navigationFragment){
-        getFragmentManager().beginTransaction().add(getNavigationContaineer() ,navigationFragment , "nav" ).commit();
+    public void setNavigationFragment(AppCmsNavigationFragment navigationFragment) {
+        getFragmentManager().beginTransaction().add(getNavigationContainer(), navigationFragment, "nav").commit();
     }
 
-    public abstract int getNavigationContaineer();
+    public abstract int getNavigationContainer();
 }
