@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.util.Log;
 import android.view.Gravity;
@@ -87,20 +88,32 @@ public class AppCMSMoreFragment extends DialogFragment {
             }
         });
 
-        appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getTextColor()));
+        try {
+            appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getGeneral().getTextColor()));
+        } catch (Exception e) {
+            appCMSMoreText.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
+        }
         appCMSMoreText.setText(Html.fromHtml(getContext().getString(R.string.text_with_color,
                 Integer.toHexString(Color.parseColor(textColor)).substring(2),
                 args.getString(getContext().getString(R.string.app_cms_more_text_key)))));
 
-        appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getTextColor()));
+        try {
+            appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getGeneral().getTextColor()));
+        } catch (Exception e) {
+            appCMSMoreText.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
+        }
         appCMSMoreTitleText.setText(Html.fromHtml(getContext().getString(R.string.text_with_color,
                 Integer.toHexString(Color.parseColor(textColor)).substring(2),
                 args.getString(getContext().getString(R.string.app_cms_more_title_key)))));
         appCMSPresenter.dismissOpenDialogs(null);
 
-        setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+        try {
+            setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+        } catch (Exception e) {
+            setBgColor(ContextCompat.getColor(getContext(), android.R.color.black));
+        }
 
         return view;
     }
