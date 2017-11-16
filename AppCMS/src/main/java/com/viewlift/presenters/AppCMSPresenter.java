@@ -9330,63 +9330,66 @@ public class AppCMSPresenter {
                                       List<MetaPage> metaPageList,
                                       final Action0 onPagesFinishedAction) {
 
-        GetAppCMSPageUIAsyncTask getAppCMSPageUIAsyncTask =
-                new GetAppCMSPageUIAsyncTask(appCMSPageUICall, null);
+        if (currentActivity != null) {
+            GetAppCMSPageUIAsyncTask getAppCMSPageUIAsyncTask =
+                    new GetAppCMSPageUIAsyncTask(appCMSPageUICall, null);
 
-        List<Observable<GetAppCMSPageUIAsyncTask.MetaPageUI>> observables = new ArrayList<>();
-        for (MetaPage metaPage : metaPageList) {
-            if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {
-                setDownloadPageId(metaPage.getPageId());
+            List<Observable<GetAppCMSPageUIAsyncTask.MetaPageUI>> observables = new ArrayList<>();
+            for (MetaPage metaPage : metaPageList) {
+                if (metaPage.getPageName().contains("Downloads") && !metaPage.getPageName().contains("Settings")) {
+                    setDownloadPageId(metaPage.getPageId());
+                }
+
+                pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
+                pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
+
+                long timeStamp = 0L;
+                if (appCMSMain != null) {
+                    timeStamp = appCMSMain.getTimestamp();
+                }
+                String url = currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
+                        metaPage.getPageUI());
+
+                GetAppCMSPageUIAsyncTask.Params params =
+                        new GetAppCMSPageUIAsyncTask.Params.Builder()
+                                .url(url)
+                                .timeStamp(timeStamp)
+                                .loadFromFile(loadFromFile)
+                                .metaPage(metaPage)
+                                .build();
+                observables.add(getAppCMSPageUIAsyncTask.getObservable(params));
             }
 
-            pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
-            pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
-
-            long timeStamp = 0L;
-            if (appCMSMain != null) {
-                timeStamp = appCMSMain.getTimestamp();
-            }
-            String url = currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                    metaPage.getPageUI());
-
-            GetAppCMSPageUIAsyncTask.Params params =
-                    new GetAppCMSPageUIAsyncTask.Params.Builder()
-                            .url(url)
-                            .timeStamp(timeStamp)
-                            .loadFromFile(loadFromFile)
-                            .metaPage(metaPage)
-                            .build();
-            observables.add(getAppCMSPageUIAsyncTask.getObservable(params));
-        }
-
-        Observable.zip(observables, args -> {
-            try {
-                for (Object arg : args) {
-                    if (arg instanceof GetAppCMSPageUIAsyncTask.MetaPageUI) {
-                        GetAppCMSPageUIAsyncTask.MetaPageUI metaPageUI = (GetAppCMSPageUIAsyncTask.MetaPageUI) arg;
-                        navigationPages.put(metaPageUI.getMetaPage().getPageId(), metaPageUI.getAppCMSPageUI());
-                        String action = pageNameToActionMap.get(metaPageUI.getMetaPage().getPageName());
-                        if (action != null && actionToPageMap.containsKey(action)) {
-                            actionToPageMap.put(action, metaPageUI.getAppCMSPageUI());
-                            actionToPageNameMap.put(action, metaPageUI.getMetaPage().getPageName());
-                            actionToPageAPIUrlMap.put(action, metaPageUI.getMetaPage().getPageAPI());
-                            actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPageUI.getMetaPage());
-                            //Log.d(TAG, "Action: " + action + "  PageAPI URL: "
+            Observable.zip(observables, args -> {
+                try {
+                    for (Object arg : args) {
+                        if (arg instanceof GetAppCMSPageUIAsyncTask.MetaPageUI) {
+                            GetAppCMSPageUIAsyncTask.MetaPageUI metaPageUI = (GetAppCMSPageUIAsyncTask.MetaPageUI) arg;
+                            navigationPages.put(metaPageUI.getMetaPage().getPageId(), metaPageUI.getAppCMSPageUI());
+                            String action = pageNameToActionMap.get(metaPageUI.getMetaPage().getPageName());
+                            if (action != null && actionToPageMap.containsKey(action)) {
+                                actionToPageMap.put(action, metaPageUI.getAppCMSPageUI());
+                                actionToPageNameMap.put(action, metaPageUI.getMetaPage().getPageName());
+                                actionToPageAPIUrlMap.put(action, metaPageUI.getMetaPage().getPageAPI());
+                                actionTypeToMetaPageMap.put(actionToActionTypeMap.get(action), metaPageUI.getMetaPage());
+                                //Log.d(TAG, "Action: " + action + "  PageAPI URL: "
 //                                        + metaPage.getPageAPI());
+                            }
                         }
                     }
+                } catch (Exception e) {
+                    return false;
                 }
-            } catch (Exception e) {
-                return false;
-            }
-            return true;
-        }).subscribe(r -> {
-            if (r) {
-                onPagesFinishedAction.call();
-            } else {
-                launchBlankPage();
-            }
-        });
+                return true;
+            }).onErrorResumeNext(throwable -> Observable.empty())
+                    .subscribe(r -> {
+                        if (r) {
+                            onPagesFinishedAction.call();
+                        } else {
+                            launchBlankPage();
+                        }
+                    });
+        }
     }
 
     private void processMetaPagesQueue(final boolean loadFromFile,
