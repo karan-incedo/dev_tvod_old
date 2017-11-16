@@ -114,4 +114,9 @@ public class MiniPlayerView extends RelativeLayout {
     public RelativeLayout getRelativeLayoutEvent() {
         return relativeLayoutEvent;
     }
+    public void disposeRelativeLayoutEvent(){
+        this.relativeLayoutEvent.setVisibility(GONE);
+        this.relativeLayoutEvent.setOnClickListener(null);
+        this.relativeLayoutEvent=null;
+    }
 }

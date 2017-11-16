@@ -11473,15 +11473,13 @@ public class AppCMSPresenter {
                 rootView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (relativeLayoutPIPEvent != null) {
-                            relativeLayoutPIPEvent.setVisibility(View.GONE);
-                            relativeLayoutPIPEvent.setOnClickListener(null);
-                            relativeLayoutPIP.removeView(relativeLayoutPIPEvent);
+                        if (relativeLayoutPIP.getRelativeLayoutEvent() != null) {
+                            relativeLayoutPIP.disposeRelativeLayoutEvent();
 
                         }
                         rootView.removeView(relativeLayoutPIP);
                         relativeLayoutPIP = null;
-                        relativeLayoutPIPEvent = null;
+
                     }
                 }, 100);
             }
