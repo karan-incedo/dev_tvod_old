@@ -71,11 +71,12 @@
           "leftMargin": 1170,
           "yAxis": 20,
           "width": 671,
-          "fontSize": 15,
+          "fontSize": 20,
           "height": 50
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
+      "fontWeight": "Medium",
       "type": "label",
       "textColor": "#ffffff",
       "key": "videoTitle"
@@ -84,13 +85,14 @@
       "layout": {
         "ftv": {
           "leftMargin": 1170,
-          "yAxis": 60,
+          "yAxis": 64,
           "width": 671,
           "fontSize": 12,
           "height": 40
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
+      "fontWeight": "Light",
       "type": "label",
       "textColor": "#ffffff",
       "key": "videoSubTitle",
@@ -102,11 +104,12 @@
           "leftMargin": 1170,
           "yAxis": 120,
           "width": 671,
-          "fontSize": 15,
+          "fontSize": 14,
           "height": 240
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
+      "fontWeight": "Regular",
       "type": "label",
       "textColor": "#ffffff",
       "key": "videoDescriptionText"
