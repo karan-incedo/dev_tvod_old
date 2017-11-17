@@ -4,14 +4,15 @@ package com.viewlift.views.fragments;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -36,7 +37,7 @@ import jp.wasabeef.glide.transformations.BlurTransformation;
  * completed and a new movie is to be played
  */
 public class AutoplayFragment extends Fragment {
-    private static final String TAG = "AutoplayFragment";
+    //private static final String TAG = "AutoplayFragment";
     private static final int TOTAL_COUNTDOWN_IN_MILLIS = 13000;
     private static final int COUNTDOWN_INTERVAL_IN_MILLIS = 1000;
     private FragmentInteractionListener fragmentInteractionListener;
@@ -133,13 +134,41 @@ public class AutoplayFragment extends Fragment {
                                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                                         .getBackgroundColor().replace("#", "#DD")));
             }
-            String imageUrl;
+            String imageUrl = null;
+            Uri imageURI = null;
+            boolean loadImageFromLocalSystem;
             if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
+                if (URLUtil.isFileUrl(binder.getContentData().getGist().getVideoImageUrl())) {
+                    loadImageFromLocalSystem = true;
+                    imageURI = Uri.parse(binder.getContentData().getGist().getVideoImageUrl());
+                } else {
+                    loadImageFromLocalSystem = false;
                 imageUrl = binder.getContentData().getGist().getVideoImageUrl();
+                }
             } else {
+                if (URLUtil.isFileUrl(binder.getContentData().getGist().getPosterImageUrl())) {
+                    loadImageFromLocalSystem = true;
+                    imageURI = Uri.parse(binder.getContentData().getGist().getPosterImageUrl());
+                } else {
+                    loadImageFromLocalSystem = false;
                 imageUrl = binder.getContentData().getGist().getPosterImageUrl();
+                }
             }
 
+            if (loadImageFromLocalSystem) {
+                Glide.with(getContext()).load(imageURI)
+                        .bitmapTransform(new BlurTransformation(getContext()))
+                        .into(new SimpleTarget<GlideDrawable>() {
+                            @Override
+                            public void onResourceReady(GlideDrawable resource,
+                                                        GlideAnimation<? super GlideDrawable>
+                                                                glideAnimation) {
+                                if (isAdded() && isVisible()) {
+                                    pageView.setBackground(resource);
+                                }
+                            }
+                        });
+            } else {
             Glide.with(getContext()).load(imageUrl)
                     .bitmapTransform(new BlurTransformation(getContext()))
                     .into(new SimpleTarget<GlideDrawable>() {
@@ -152,6 +181,7 @@ public class AutoplayFragment extends Fragment {
                             }
                         }
                     });
+            }
         }
         return pageView;
     }

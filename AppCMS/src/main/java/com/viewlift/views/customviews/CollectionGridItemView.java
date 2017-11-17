@@ -181,6 +181,10 @@ public class CollectionGridItemView extends BaseView {
         return childrenContainer;
     }
 
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
     public void addChild(ItemContainer itemContainer) {
         if (childrenContainer == null) {
             createChildrenContainer();
@@ -388,19 +392,19 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist().getImageGist().get_3x4() != null &&
                             data.getGist().getBadgeImages().get_3x4() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
-//                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-//                                data.getGist().getBadgeImages().get_3x4(),
-//                                childViewWidth,
-//                                childViewHeight);
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getBadgeImages().get_3x4(),
+                                childViewWidth,
+                                childViewHeight);
 
-//                        if (view instanceof SimpleDraweeView) {
-//                            ((SimpleDraweeView) view).setImageURI(imageUrl);
-//                        } else {
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            Glide.with(context)
+                                    .load(imageUrl)
 //                            Glide.with(context)
 //                                    .load(imageUrl)
-//                                    .override(childViewWidth, childViewHeight)
-//                                    .into((ImageView) view);
-//                        }
+                                    .override(childViewWidth, childViewHeight)
+                                    .into((ImageView) view);
+                        }
                     }
                     bringToFront = false;
                 }
@@ -436,9 +440,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String publishDate = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
-                        String runTime = convertSecondsToTime(data.getGist().getRuntime());
-                        String thumbInfo=runTime+" | "+publishDate;
+                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
 
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {

@@ -130,6 +130,16 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             Glide.with(viewHolder.view.getContext())
                     .load(imageUrl)
                     .into(viewHolder.filmThumbnail);
+        }else if(appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
+                appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage() != null && appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage().getSecureUrl() != null){
+
+            final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
+                    appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage().getSecureUrl(),
+                    imageWidth,
+                    imageHeight);
+            Glide.with(viewHolder.view.getContext())
+                    .load(imageUrl)
+                    .into(viewHolder.filmThumbnail);
         }
     }
 

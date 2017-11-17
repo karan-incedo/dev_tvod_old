@@ -239,6 +239,12 @@ public class NavBarItemView extends LinearLayout {
         this.highlightColor = highlightColor;
     }
 
+   /* @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+        navImage.setOnClickListener(l);
+        navLabel.setOnClickListener(l);
+    }*/
     private void applyTintToDrawable(@Nullable Drawable drawable, int color) {
         if (drawable != null) {
             drawable.setTint(color);

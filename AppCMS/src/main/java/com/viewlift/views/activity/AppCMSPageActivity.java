@@ -499,6 +499,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     public void onCancel() {
                         // App code
 //                        Log.e(TAG, "Facebook login was cancelled");
+                        loaderWaitingFor3rdPartyLogin = false;
                         pageLoading(false);
                     }
 
@@ -506,6 +507,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     public void onError(FacebookException exception) {
                         // App code
 //                        Log.e(TAG, "Facebook login exception: " + exception.getMessage());
+                        loaderWaitingFor3rdPartyLogin = false;
                         pageLoading(false);
                     }
                 });
@@ -922,6 +924,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             processDeepLink(appCMSBinder.getSearchQuery());
             appCMSBinder.clearSearchQuery();
         }
+ 		reportFullyDrawn();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -2084,11 +2087,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-       /* if (!foundPage) {
+        if (!foundPage) {
             final NavBarItemView menuNavBarItemView =
                     (NavBarItemView) appCMSTabNavContainer.getChildAt(navMenuPageIndex);
             selectNavItem(menuNavBarItemView);
-        }*/
+        }
     }
 
     private void processDeepLink(Uri deeplinkUri) {

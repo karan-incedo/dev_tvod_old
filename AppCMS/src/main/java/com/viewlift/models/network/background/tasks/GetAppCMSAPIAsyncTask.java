@@ -1,6 +1,5 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.util.Log;
 import android.util.LruCache;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -19,7 +18,7 @@ import rx.schedulers.Schedulers;
  */
 
 public class GetAppCMSAPIAsyncTask {
-    private static final String TAG = "GetAppCMSAPIAsyncTask";
+    //private static final String TAG = "GetAppCMSAPIAsyncTask";
 
     private final AppCMSPageAPICall call;
     private final Action1<AppCMSPageAPI> readyAction;

@@ -16,7 +16,6 @@ import android.support.percent.PercentLayoutHelper;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,6 +101,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     long mTotalVideoDuration;
     Animation animSequential, animFadeIn, animFadeOut, animTranslate;
     boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
+    int maxPreviewSecs = 0;
     private AppCMSPresenter appCMSPresenter;
     private String fontColor;
     private String title;
@@ -148,7 +148,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
-    private boolean showEntitlementDialog=false;
 
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
@@ -156,7 +155,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
         adsManager.init();
     };
-
+    private boolean showEntitlementDialog = false;
     private String mStreamId;
     private long mStartBufferMilliSec = 0l;
     private long mStopBufferMilliSec;
@@ -177,8 +176,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
-    private UserIdentity userIdentityObj;
-    int maxPreviewSecs = 0;
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -195,7 +192,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
-
+    private UserIdentity userIdentityObj;
     private boolean refreshToken;
     private Timer refreshTokenTimer;
     private TimerTask refreshTokenTimerTask;
@@ -519,7 +516,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     }
                     isVideoLoaded = true;
                 }
-                if (shouldRequestAds && !isAdDisplayed) {
+                if (shouldRequestAds && !isAdDisplayed && adsUrl != null) {
                     requestAds(adsUrl);
                 } else {
                     if (beaconBufferingThread != null) {
@@ -756,8 +753,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             //Log.i(TAG, "Playing video: " + title);
         }
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
-        videoPlayerView.requestAudioFocus();
+
         appCMSPresenter.setShowNetworkConnectivity(false);
+        requestAudioFocus();
         resumeVideo();
         super.onResume();
     }

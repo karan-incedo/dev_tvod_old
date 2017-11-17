@@ -8,8 +8,7 @@
     <!--<string name="app_cms_app_name">f2410236-d5e8-4031-8c55-a56c2f8b1e5f</string>-->
 
     <!-- x-api-key -->
-    <string name="x_api_key">XuP7ta1loC80l4J8JBnQp9bS4TYAa60B6Tk0Ct8F</string>
-    <!--<string name="x_api_key">FJhLtOzPji2uvinKSTFNd8FLnnP0bNuw3qtXXALO</string>-->
+    <string name="x_api_key">FJhLtOzPji2uvinKSTFNd8FLnnP0bNuw3qtXXALO</string>
 
     <!-- AppCMS Facebook Login values -->
     <string name="facebook_app_id">910134432450680</string>
