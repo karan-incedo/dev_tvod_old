@@ -79,7 +79,7 @@ public class AppCMSPageAPICall {
                     headersMap.put("x-api-key", apiKey);
                 }
                 if (!TextUtils.isEmpty(authToken)) {
-                    headersMap.put("Authorization", authToken);
+                        headersMap.put("Authorization", authToken);
                 }
                 //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
                 Response<JsonElement> response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
