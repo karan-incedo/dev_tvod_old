@@ -92,4 +92,11 @@
     <dimen name="tray_item_more_dialog_PanelPedding">20dp</dimen>
     <dimen name="tray_item_more_dialog_ButtonMargin">20dp</dimen>
     <dimen name="app_cms_toolbar_margin_top">8dp</dimen>
+
+    <dimen name="app_cms_mini_player_height">170dp</dimen>
+    <dimen name="app_cms_mini_player_width">303dp</dimen>
+    <dimen name="app_cms_mini_player_border_size">5dp</dimen>
+    <dimen name="app_cms_mini_player_margin">20dp</dimen>
+
+
 </resources>
