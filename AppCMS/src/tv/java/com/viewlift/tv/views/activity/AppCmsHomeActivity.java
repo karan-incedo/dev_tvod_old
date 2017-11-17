@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -682,10 +681,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             subNavHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             appCmsSubNavigationFragment.setFocusable(shouldShow);
-            /*if(shouldShow) {
+            if(shouldShow) {
                 // navigationFragment.setSelectorColor();
-                appCmsSubNavigationFragment.notifyDataSetInvalidate();
-            }*/
+                    appCmsSubNavigationFragment.notifyDataSetInvalidate();
+            }
         });
     }
     private void handleNavigationVisibility(){
