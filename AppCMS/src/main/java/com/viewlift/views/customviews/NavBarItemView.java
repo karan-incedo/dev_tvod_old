@@ -159,17 +159,20 @@ public class NavBarItemView extends LinearLayout {
             }
         }
 
-        /*LinearLayout.LayoutParams parentLayoutParams =
-                new LinearLayout.LayoutParams(R.dimen.nav_item_min_width, R.dimen.nav_item_large_height);*/
+        LinearLayout.LayoutParams parentLayoutParams =
+                new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.nav_item_min_width,getContext()),BaseView.dpToPx( R.dimen.nav_item_large_height,getContext()));
+        setLayoutParams(parentLayoutParams);
+
        /* LinearLayout.LayoutParams parentLayoutParams =
                 new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
         setLayoutParams(parentLayoutParams);*/
 
         int navItemTopPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_top_padding), getContext());
         int navItemBottomPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_bottom_padding), getContext());
-        int navItemWidth = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_min_width), getContext());
+
         int navItemLeftRightPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_left_right_padding), getContext());
+
+        int navItemWidth = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_min_width), getContext());
 
        // setPadding(navItemLeftRightPadding, navItemTopPadding, navItemLeftRightPadding, navItemBottomPadding);
         setPadding(BaseView.dpToPx(R.dimen.nav_item_left_right_padding,getContext()),

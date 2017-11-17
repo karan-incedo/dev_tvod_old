@@ -1986,7 +1986,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                 param.weight = weight;
                 param.gravity = Gravity.CENTER;
-                navBarItemView.setLayoutParams(param);
+               // navBarItemView.setLayoutParams(param);
 
                 navBarItemView.setId(i);
 

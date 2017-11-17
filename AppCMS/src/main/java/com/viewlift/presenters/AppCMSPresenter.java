@@ -38,7 +38,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -47,21 +46,15 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.LruCache;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -82,7 +75,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -204,6 +196,7 @@ import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.PopupMenu;
@@ -240,7 +233,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -467,8 +459,8 @@ public class AppCMSPresenter {
     private final ReferenceQueue<Object> referenceQueue;
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
-    VideoPlayerView videoPlayerViewPIP, videoPlayerViewPage;
-    RelativeLayout relativeLayoutPIP, relativeLayoutPIPEvent;
+    VideoPlayerView videoPlayerViewPIP;
+    MiniPlayerView relativeLayoutPIP;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
     private String serverClientId;
@@ -5023,19 +5015,7 @@ public class AppCMSPresenter {
                                 searchQuery) {
                             @Override
                             public void call(final AppCMSPageAPI appCMSPageAPI) {
-                                AppCMSPageUI appCMSPageUI;
-                                if (pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
-                                    appCMSPageUI = new GsonBuilder().create().fromJson(
-                                            loadJsonFromAssets(currentActivity, "home_json_ui.json"),
-                                            AppCMSPageUI.class);
-                                } else if (pageId.equalsIgnoreCase("b5233890-a8aa-4bf9-a9d8-4db6bc54cec2")) {
-                                    appCMSPageUI = new GsonBuilder().create().fromJson(
-                                            loadJsonFromAssets(currentActivity, "live_screen.json"),
-                                            AppCMSPageUI.class);
-                                }
-                                else {
-                                    appCMSPageUI = navigationPages.get(action);
-                                }
+
                                 final AppCMSPageAPIAction appCMSPageAPIAction = this;
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
@@ -5044,7 +5024,7 @@ public class AppCMSPresenter {
                                     navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
                                     if (appCMSPageAPIAction.launchActivity) {
                                         launchPageActivity(currentActivity,
-                                                appCMSPageUI,
+                                                appCMSPageAPIAction.appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
@@ -5059,7 +5039,7 @@ public class AppCMSPresenter {
                                                 ExtraScreenType.NONE);
                                     } else {
                                         Bundle args = getPageActivityBundle(currentActivity,
-                                                appCMSPageUI,
+                                                appCMSPageAPIAction.appCMSPageUI,
                                                 appCMSPageAPI,
                                                 appCMSPageAPIAction.pageId,
                                                 appCMSPageAPIAction.pageTitle,
@@ -11439,36 +11419,9 @@ public class AppCMSPresenter {
                 videoPlayerViewPIP = videoPlayerView;
             }
 
-            relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
-            relativeLayoutPIPEvent = new RelativeLayout(currentActivity);
-
-            Animation slidedown = new TranslateAnimation(videoPlayerView.getX(),relativeLayoutPIP.getX(),videoPlayerView.getY(),relativeLayoutPIP.getY());
-            if (!BaseView.isTablet(currentActivity)) {
-                lpPipView = new RelativeLayout.LayoutParams(750, 450);
-                lpPipView.rightMargin = 50;
-                lpPipView.bottomMargin = 20;
-            } else {
-                lpPipView = new RelativeLayout.LayoutParams(250, 175);
-                lpPipView.rightMargin = 10;
-                lpPipView.bottomMargin = 10;
-            }
-            lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            lpPipView.addRule(RelativeLayout.ABOVE, R.id.app_cms_tab_nav_container);
-
-
-            relativeLayoutPIP.setLayoutParams(lpPipView);
-            videoPlayerView.startAnimation(slidedown);
-
-            relativeLayoutPIPEvent.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-
-
-            relativeLayoutPIP.addView(videoPlayerViewPIP);
-
+            relativeLayoutPIP =new MiniPlayerView(currentActivity,videoPlayerView);
             relativeLayoutPIP.setVisibility(View.VISIBLE);
-
-
-            relativeLayoutPIP.addView(relativeLayoutPIPEvent);
-            relativeLayoutPIPEvent.setOnClickListener(new View.OnClickListener() {
+            relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ((RecyclerView) scrollView).smoothScrollToPosition(0);
@@ -11520,15 +11473,13 @@ public class AppCMSPresenter {
                 rootView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (relativeLayoutPIPEvent != null) {
-                            relativeLayoutPIPEvent.setVisibility(View.GONE);
-                            relativeLayoutPIPEvent.setOnClickListener(null);
-                            relativeLayoutPIP.removeView(relativeLayoutPIPEvent);
+                        if (relativeLayoutPIP.getRelativeLayoutEvent() != null) {
+                            relativeLayoutPIP.disposeRelativeLayoutEvent();
 
                         }
                         rootView.removeView(relativeLayoutPIP);
                         relativeLayoutPIP = null;
-                        relativeLayoutPIPEvent = null;
+
                     }
                 }, 100);
             }
