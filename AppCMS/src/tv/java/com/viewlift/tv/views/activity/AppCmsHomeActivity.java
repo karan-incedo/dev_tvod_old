@@ -242,22 +242,22 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
                             if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                     subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                 TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                                textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                                TextView textView = (TextView) findViewById(R.id.nav_top_line);
+                                textView.setText(getResources().getString(R.string.watch_live_text));
                                 textView.setHeight(10);
                             } else {
-                                  TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                                textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                                TextView textView = (TextView) findViewById(R.id.nav_top_line);
+                                textView.setText(getResources().getString(R.string.watch_live_text));
                                 textView.setHeight(46);
                             }
-                        }else {
-                             TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                            textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                        } else {
+                            TextView textView = (TextView) findViewById(R.id.nav_top_line);
+                            textView.setText(getResources().getString(R.string.watch_live_text));
                             textView.setHeight(46);
                         }
                     } catch (Exception e) {
-                          TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                        textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                        TextView textView = (TextView) findViewById(R.id.nav_top_line);
+                        textView.setText(getResources().getString(R.string.watch_live_text));
                         textView.setHeight(46);
                     }
                 });
@@ -680,10 +680,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             subNavHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             appCmsSubNavigationFragment.setFocusable(shouldShow);
-            /*if(shouldShow) {
+            if(shouldShow) {
                 // navigationFragment.setSelectorColor();
-                appCmsSubNavigationFragment.notifyDataSetInvalidate();
-            }*/
+                    appCmsSubNavigationFragment.notifyDataSetInvalidate();
+            }
         });
     }
     private void handleNavigationVisibility(){
