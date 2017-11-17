@@ -23,11 +23,7 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
     private ContentDatum contentDatum;
     private boolean isAdded,isDownloaded;
 
-    public interface TrayMenuClickListener{
 
-       public void addToWatchListClick(boolean isAddedOrNot, ContentDatum contentDatum);
-       public void downloadClick(ContentDatum contentDatum);
-    }
 
     private TrayMenuClickListener trayMenuClickListener;
 
@@ -65,13 +61,18 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
         Button downloadBtn = (Button) view.findViewById(R.id.moreDialogDownloadBtn);
         Button closeBtn = (Button) view.findViewById(R.id.moreDialogCloseBtn);
         addToWatchList.setText(isAdded?"REMOVE TO WATCHLIST":"ADD TO WATCHLIST");
-        addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-        addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+        addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getBackgroundColor()));
+        addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getTextColor()));
         isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getId());
         downloadBtn.setVisibility(isDownloaded?View.GONE:View.VISIBLE);
-        downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-        downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-        closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+        downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getBackgroundColor()));
+        downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getTextColor()));
+        closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getTextColor()));
         addToWatchList.setOnClickListener(this);
         downloadBtn.setOnClickListener(this);
         closeBtn.setOnClickListener(this);
@@ -94,4 +95,8 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
         }
     }
 
+    public interface TrayMenuClickListener {
+        void addToWatchListClick(boolean isAddedOrNot, ContentDatum contentDatum);
+        void downloadClick(ContentDatum contentDatum);
+    }
 }
