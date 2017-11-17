@@ -565,7 +565,7 @@ public class AppCMSPresenter {
                 public void addToWatchListClick(boolean isAddedOrNot, ContentDatum contentDatum) {
                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                     if (isUserLoggedIn()) {
-                        editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
+                        editWatchlist(contentDatum.getGist().getId(), appCMSAddToWatchlistResult -> {
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
                         }, isAddedOrNot);
@@ -11456,7 +11456,7 @@ public class AppCMSPresenter {
                 videoPlayerViewPIP = videoPlayerView;
             }
 
-            relativeLayoutPIP =new MiniPlayerView(currentActivity,videoPlayerView);
+            relativeLayoutPIP = new MiniPlayerView(currentActivity, videoPlayerView);
             relativeLayoutPIP.setVisibility(View.VISIBLE);
             relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -11510,7 +11510,7 @@ public class AppCMSPresenter {
                 rootView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (relativeLayoutPIP.getRelativeLayoutEvent() != null) {
+                        if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
                             relativeLayoutPIP.disposeRelativeLayoutEvent();
 
                         }
@@ -11552,5 +11552,24 @@ public class AppCMSPresenter {
         return moduleList;
     }
 
+    public ModuleList getModuleListByName(List<ModuleList> listModule, String idOrName) {
+        for (ModuleList moduleList : listModule) {
+            if (idOrName.equalsIgnoreCase(moduleList.getType()) || idOrName.equalsIgnoreCase(moduleList.getId())) {
+                return moduleList;
+
+            }
+        }
+        return null;
+    }
+
+    public Module getModuleById(List<Module> listModule, String idOrName) {
+        for (Module moduleList : listModule) {
+            if (idOrName.equalsIgnoreCase(moduleList.getId())) {
+                return moduleList;
+
+            }
+        }
+        return null;
+    }
 
 }

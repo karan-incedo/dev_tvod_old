@@ -2,11 +2,9 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -14,14 +12,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
@@ -156,29 +153,31 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
             //if ((pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView  ||
             if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView &&
                     appCMSBinder != null &&
+
                     appCMSBinder.getAppCMSPageUI() != null &&
                     appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
                     appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
-                    appCMSBinder.getAppCMSPageUI().getModuleList().get(1) != null &&
-                    appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() != null) {
-                //NestedScrollView nestedScrollView = (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
+                    appCMSBinder.getAppCMSPageAPI() != null &&
+                    appCMSBinder.getAppCMSPageAPI().getModules() != null &&
+                    appCMSPresenter.getModuleListByName(appCMSBinder.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key)) != null) {
+
                 RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
                 nestedScrollView.getRecycledViewPool().setMaxRecycledViews(0, 1);
-                Animation slidedown = AnimationUtils.loadAnimation(getActivity(), R.anim.slide_down);
 
-                if (appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()) {
+
+                ModuleList singleVideoUI = appCMSPresenter.getModuleListByName(appCMSBinder.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key));
+                Module singleVideoAPI = appCMSPresenter.getModuleById(appCMSBinder.getAppCMSPageAPI().getModules(), singleVideoUI.getId());
+
+                if (singleVideoUI.getSettings().isShowPIP() && singleVideoAPI != null) {
 
                     final String videoId;
-                    if (appCMSBinder.getAppCMSPageAPI() != null &&
-                            appCMSBinder.getAppCMSPageAPI().getModules() != null &&
-                            appCMSBinder.getAppCMSPageAPI().getModules().size() > 0 &&
-                            appCMSBinder.getAppCMSPageAPI().getModules().get(0) != null &&
-                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData() != null &&
-                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().size() > 0 &&
-                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0) != null &&
-                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist() != null &&
-                            appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getId() != null) {
-                        videoId = appCMSBinder.getAppCMSPageAPI().getModules().get(0).getContentData().get(0).getGist().getId();
+                    if (singleVideoAPI != null &&
+                            singleVideoAPI.getContentData() != null &&
+                            singleVideoAPI.getContentData().size() > 0 &&
+                            singleVideoAPI.getContentData().get(0) != null &&
+                            singleVideoAPI.getContentData().get(0).getGist() != null &&
+                            singleVideoAPI.getContentData().get(0).getGist().getId() != null) {
+                        videoId = singleVideoAPI.getContentData().get(0).getGist().getId();
                     } else {
                         videoId = null;
                     }
@@ -205,7 +204,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
                                         }
                                         appCMSPresenter.dismissPopupWindowPlayer(false);
                                         resumePlayer(true);
-                                    } else if (!appCMSPresenter.pipPlayerVisible) {
+                                    } else if (!appCMSPresenter.pipPlayerVisible && videoPlayerView!=null) {
 
 
                                         appCMSPresenter.showPopupWindowPlayer(v, videoId, videoPlayerView);
@@ -225,7 +224,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
 
 
                     if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
-                            !appCMSPresenter.pipPlayerVisible) {
+                            !appCMSPresenter.pipPlayerVisible && videoPlayerView!=null)  {
                         appCMSPresenter.showPopupWindowPlayer(nestedScrollView, videoId, videoPlayerView);
                     } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
                         if (videoPlayerView != null && parent != null) {

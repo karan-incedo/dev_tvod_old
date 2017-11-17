@@ -1970,7 +1970,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationTabbar().size(); i++) {
                 NavigationTabBar navigationItem = appCMSPresenter.getNavigation().getNavigationTabbar().get(i);
 
-                NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter);
+                NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter,weight);
                 int highlightColor = 0;
                 if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
                     highlightColor = Color.parseColor("#f4181c");
@@ -1982,11 +1982,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 navBarItemView.setTabImage(navigationItem.getIcon());
                 navBarItemView.setLabel(tabLabel);
                 navBarItemView.setHighlightColor(highlightColor);
-
-                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
-                param.weight = weight;
-                param.gravity = Gravity.CENTER;
-               // navBarItemView.setLayoutParams(param);
 
                 navBarItemView.setId(i);
 

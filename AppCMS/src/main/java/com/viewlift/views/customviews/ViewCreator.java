@@ -3616,21 +3616,15 @@ public class ViewCreator {
                         updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
                         updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg() != null &&
                         !updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().isEmpty()) {
-
+                    System.out.println(" [] "+new Gson().toJson(updatedContentDatum));
                     updatedContentDatum.getGist().setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
                     if (updatedContentDatum.getStreamingInfo().getVideoAssets().getHls() != null
                             ) {
                         hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
                     } else {
-                        //for (int i = 0; i < updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() && !foundMatchingMpeg; i++) {
-                        // int queryIndex = hlsUrl.indexOf("?");
-                                /*if (0 <= queryIndex) {
-                                    if (updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl().contains(hlsUrl.substring(0, queryIndex))) {
-                                        foundMatchingMpeg = true;*/
+
                         hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
-                                    /*}
-                                }*/
-                        // }
+
                     }
                     // TODO: 7/27/2017 Implement CC for multiple languages.
                     if (updatedContentDatum.getContentDetails() != null
