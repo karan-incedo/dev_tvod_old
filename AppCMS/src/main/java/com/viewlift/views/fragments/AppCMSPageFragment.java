@@ -204,7 +204,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
                                         }
                                         appCMSPresenter.dismissPopupWindowPlayer(false);
                                         resumePlayer(true);
-                                    } else if (!appCMSPresenter.pipPlayerVisible) {
+                                    } else if (!appCMSPresenter.pipPlayerVisible && videoPlayerView!=null) {
 
 
                                         appCMSPresenter.showPopupWindowPlayer(v, videoId, videoPlayerView);
@@ -224,7 +224,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
 
 
                     if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
-                            !appCMSPresenter.pipPlayerVisible) {
+                            !appCMSPresenter.pipPlayerVisible && videoPlayerView!=null)  {
                         appCMSPresenter.showPopupWindowPlayer(nestedScrollView, videoId, videoPlayerView);
                     } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
                         if (videoPlayerView != null && parent != null) {

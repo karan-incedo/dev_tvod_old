@@ -560,7 +560,7 @@ public class AppCMSPresenter {
                 public void addToWatchListClick(boolean isAddedOrNot, ContentDatum contentDatum) {
                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                     if (isUserLoggedIn()) {
-                        editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
+                        editWatchlist(contentDatum.getGist().getId(), appCMSAddToWatchlistResult -> {
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
                         }, isAddedOrNot);
@@ -11473,7 +11473,7 @@ public class AppCMSPresenter {
                 rootView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (relativeLayoutPIP.getRelativeLayoutEvent() != null) {
+                        if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
                             relativeLayoutPIP.disposeRelativeLayoutEvent();
 
                         }
