@@ -90,7 +90,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
 
         mNavigation = appCMSPresenter.getNavigation();
-        isUserLogin = /*appCMSPresenter.isUserLoggedIn()*/ true;
+        isUserLogin = appCMSPresenter.isUserLoggedIn();
 
         TextView navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
 
@@ -347,7 +347,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         private int bgColor;
         private Navigation navigation;
         private boolean isuserLoggedIn;
-        private AppCMSPresenter appCmsPresenter;
+        private AppCMSPresenter appCMSPresenter;
         private int currentNavPos;
 
         public STNavigationAdapter(Context activity,
@@ -361,7 +361,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             this.bgColor = bgColor;
             this.navigation = navigation;
             this.isuserLoggedIn = userLoggedIn;
-            this.appCmsPresenter = appCMSPresenter;
+            this.appCMSPresenter = appCMSPresenter;
             createSubNavigationListForST();
         }
         private void createSubNavigationListForST() {
@@ -370,7 +370,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             }
 
             NavigationSubItem navigationSubItem1 = new NavigationSubItem();
-            if (appCmsPresenter.getAutoplayEnabledUserPref(mContext)){
+            if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)){
                 navigationSubItem1.title = "AUTOPLAY ON";
             } else {
                 navigationSubItem1.title = "AUTOPLAY OFF";
@@ -378,11 +378,15 @@ public class AppCmsSubNavigationFragment extends Fragment {
             navigationSubItemList.add(navigationSubItem1);
 
             navigationSubItem1 = new NavigationSubItem();
-            if (appCmsPresenter.getClosedCaptionPreference()){
+            if (appCMSPresenter.getClosedCaptionPreference()){
                 navigationSubItem1.title = "CLOSED CAPTION ON";
             } else {
                 navigationSubItem1.title = "CLOSED CAPTION OFF";
             }
+            navigationSubItemList.add(navigationSubItem1);
+
+            navigationSubItem1 = new NavigationSubItem();
+            navigationSubItem1.title = "MANAGE SUBSCRIPTION";
             navigationSubItemList.add(navigationSubItem1);
 
             for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
@@ -397,9 +401,9 @@ public class AppCmsSubNavigationFragment extends Fragment {
                     navigationSubItemList.add(navigationSubItem);
                 }
             }
-            if (!isUserLogin) {
+            /*if (!isUserLogin) {
                 return;
-            }
+            }*/
 
             for (int i = 0; i < mNavigation.getNavigationFooter().size(); i++) {
                 NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
@@ -416,7 +420,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 }
             }
             navigationSubItem1 = new NavigationSubItem();
-            if (appCmsPresenter.isUserLoggedIn()) {
+            if (appCMSPresenter.isUserLoggedIn()) {
                 navigationSubItem1.title = "SIGN OUT";
             } else {
                 navigationSubItem1.title = "SIGN IN";
@@ -439,9 +443,9 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(STNavItemHolder holder, final int position) {
-            final NavigationSubItem subItem = (NavigationSubItem)getItem(position);
-            holder.navItemView.setText(subItem.title.toString().toUpperCase());
-            holder.navItemView.setTag(R.string.item_position , position);
+            final NavigationSubItem subItem = (NavigationSubItem) getItem(holder.getAdapterPosition());
+            holder.navItemView.setText(subItem.title.toUpperCase());
+            holder.navItemView.setTag(R.string.item_position, holder.getAdapterPosition());
             //Log.d("NavigationAdapter", subItem.title.toString());
 
 
@@ -452,43 +456,123 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 public void onClick(View view) {
                     NavigationSubItem navigationSubItem = navigationSubItemList.get(selectedPosition);
 
-                    if(navigationSubItem.title.toUpperCase().contains("AUTOPLAY")) {
-                        if(appCmsPresenter.getAutoplayEnabledUserPref(mContext)){
+                    if (navigationSubItem.title.toUpperCase().contains("AUTOPLAY")) {
+                        if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
                             navigationSubItem.title = "Autoplay Off";
-                            appCmsPresenter.setAutoplayEnabledUserPref(mContext, false);
+                            appCMSPresenter.setAutoplayEnabledUserPref(mContext, false);
                         } else {
                             navigationSubItem.title = "Autoplay On";
-                            appCmsPresenter.setAutoplayEnabledUserPref(mContext, true);
+                            appCMSPresenter.setAutoplayEnabledUserPref(mContext, true);
                         }
-                    } else if(navigationSubItem.title.toUpperCase().contains("CLOSED CAPTION")) {
-                        if(appCmsPresenter.getClosedCaptionPreference()){
+                    } else if (navigationSubItem.title.toUpperCase().contains("CLOSED CAPTION")) {
+                        if (appCMSPresenter.getClosedCaptionPreference()) {
                             navigationSubItem.title = "Closed Caption Off";
-                            appCmsPresenter.setClosedCaptionPreference(false);
+                            appCMSPresenter.setClosedCaptionPreference(false);
                         } else {
                             navigationSubItem.title = "Closed Caption On";
-                            appCmsPresenter.setClosedCaptionPreference(false);
+                            appCMSPresenter.setClosedCaptionPreference(true);
                         }
-                    }
+                    }  else if (navigationSubItem.title.toUpperCase().contains("SUBSCRIPTION")) {
+                        if (isuserLoggedIn){
+                            if (appCMSPresenter.getActiveSubscriptionPlatform() == null) {
+                                appCMSPresenter.getSubscriptionData(
+                                        appCMSUserSubscriptionPlanResult -> {
+                                            String platform;
+                                            String varMessage = "";
+                                            if (appCMSUserSubscriptionPlanResult != null
+                                                    && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
+                                                    && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
+                                                platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
+                                                if (platform.equalsIgnoreCase("web_browser")) {
+                                                    varMessage = mContext.getString(R.string.subscription_purchased_from_web_msg);
+                                                } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
+                                                    varMessage = mContext.getString(R.string.subscription_purchased_from_android_msg);
+                                                } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")|| platform.contains("ios_apple_tv")) {
+                                                    varMessage = mContext.getString(R.string.subscription_purchased_from_apple_msg);
+                                                } else {
+                                                    varMessage = mContext.getString(R.string.subscription_purchased_from_unknown_msg);
+                                                }
+                                                appCMSPresenter.setActiveSubscriptionPlatform(platform);
+                                            } else {
+                                                varMessage = mContext.getString(R.string.subscription_not_purchased);
+                                            }
+                                            appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription));
+                                        }
+                                );
+                            } else {
+                                String platform = appCMSPresenter.getActiveSubscriptionPlatform();
+                                String varMessage = "";
+                                if (platform.equalsIgnoreCase("web_browser")) {
+                                    varMessage = mContext.getString(R.string.subscription_purchased_from_web_msg);
+                                } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
+                                    varMessage = mContext.getString(R.string.subscription_purchased_from_android_msg);
+                                } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos")|| platform.contains("ios_apple_tv")) {
+                                    varMessage = mContext.getString(R.string.subscription_purchased_from_apple_msg);
+                                } else {
+                                    varMessage = mContext.getString(R.string.subscription_purchased_from_unknown_msg);
+                                }
+                                appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription));
+                            }
+                        } else {
+                            /*Utils.getClearDialogFragment(
+                                    mContext,
+                                    appCMSPresenter,
+                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                    mContext.getString(R.string.subscription),
+                                    mContext.getString(R.string.subscription_not_purchased),
+                                    mContext.getString(R.string.ok),
+                                    "",
+                                    14
+                            );*/
+                            appCMSPresenter.openTVErrorDialog(mContext.getString(R.string.subscription_not_purchased), mContext.getString(R.string.subscription));
+                        }
+                    } else if (navigationSubItem.title.toUpperCase().contains("SIGN")) {
+                        NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                        appCMSPresenter.navigateToTVPage(
+                                navigationUser.getPageId(),
+                                navigationUser.getTitle(),
+                                navigationUser.getUrl(),
+                                false,
+                                Uri.EMPTY,
+                                false,
+                                false,
+                                true
+                        );
+                        navigationVisibilityListener.showSubNavigation(false);
+                    } else if(navigationSubItem.title.toUpperCase().contains("ACCOUNT")) {
+                        if (isuserLoggedIn) {
 
-                    if (ANDROID_WATCHLIST_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
-                            .get(navigationSubItem.title))) {
+                        } else {
+                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                    mContext,
+                                    appCMSPresenter,
+                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                    mContext.getString(R.string.add_to_watchlist),
+                                    mContext.getString(R.string.add_to_watchlist_dialog_text),
+                                    mContext.getString(R.string.sign_in_text),
+                                    mContext.getString(android.R.string.cancel),
+                                    14
 
-                        appCmsPresenter.showLoadingDialog(true);
-                        appCmsPresenter.navigateToWatchlistPage(
-                                navigationSubItem.pageId,
-                                navigationSubItem.title,
-                                navigationSubItem.url,
-                                false);
-                    } else if (ANDROID_HISTORY_NAV_KEY.equals(mAppCMSBinder.getJsonValueKeyMap()
-                            .get(navigationSubItem.title))) {
-                        appCmsPresenter.showLoadingDialog(true);
-                        appCmsPresenter.navigateToHistoryPage(
-                                navigationSubItem.pageId,
-                                navigationSubItem.title,
-                                navigationSubItem.url,
-                                false);
+                            );
+                            newFragment.setOnPositiveButtonClicked(s -> {
+
+                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                appCMSPresenter.navigateToTVPage(
+                                        navigationUser.getPageId(),
+                                        navigationUser.getTitle(),
+                                        navigationUser.getUrl(),
+                                        false,
+                                        Uri.EMPTY,
+                                        false,
+                                        false,
+                                        true
+                                );
+                            });
+                        }
                     } else {
-                        appCmsPresenter.navigateToTVPage(
+                        appCMSPresenter.navigateToTVPage(
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,
                                 navigationSubItem.url,
@@ -499,19 +583,20 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                 isLoginDialogPage
                         );
                     }
-                    STNavigationAdapter.this.notifyItemChanged(position);
+                    STNavigationAdapter.this.notifyItemChanged(holder.getAdapterPosition());
                 }
             });
         }
 
         private int getIcon(String text) {
             text = text.toUpperCase();
-            System.out.println("Anas:: " + text);
             int iconResId = 0;
             if (text.contains("AUTOPLAY")) {
                 iconResId = R.drawable.st_settings_icon_autoplay;
             } else if (text.contains("CLOSED CAPTION")) {
                 iconResId = R.drawable.st_settings_icon_cc;
+            } else if (text.contains("SUBSCRIPTION")) {
+                iconResId = R.drawable.st_settings_icon_manage_subscription;
             } else if (text.contains("ACCOUNT")) {
                 iconResId = R.drawable.st_settings_icon_account;
             } else if (text.contains("FAQ")) {
@@ -553,12 +638,13 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
             public STNavItemHolder(View itemView) {
                 super(itemView);
-                setTypeFaceValue(appCmsPresenter);
+                setTypeFaceValue(appCMSPresenter);
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
+                navItemView.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_medium)));
                 navImageView = (ImageView) itemView.findViewById(R.id.nav_item_image);
                 navItemLayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
-//                navItemLayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false));
-                navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
+//                navItemLayout.setBackground(Utils.getNavigationSelector(mContext, appCMSPresenter, false));
+                navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCMSPresenter)));
                 navItemView.setTypeface(semiBoldTypeFace);
                 navItemLayout.setOnFocusChangeListener((view, hasFocus) -> {
 

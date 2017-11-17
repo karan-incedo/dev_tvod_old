@@ -72,7 +72,9 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
 
 
         View view = inflater.inflate(R.layout.app_cms_my_profile_fragment, null);
-        setSubNavigationFragment();
+        if(appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+            setSubNavigationFragment();
+        }
 
         FrameLayout pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
         pageHolder.addView(tvPageView);
