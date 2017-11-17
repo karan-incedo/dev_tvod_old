@@ -455,6 +455,7 @@
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
 
     <string name="app_cms_module_list_footer_key">footer01</string>
+    <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
     
 

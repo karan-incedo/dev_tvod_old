@@ -28,20 +28,16 @@ import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Switch;
@@ -52,6 +48,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -1030,10 +1027,7 @@ public class ViewCreator {
                 module.setView(moduleInfo.getView());
                 module.setBlockName(moduleInfo.getBlockName());
             }
-            if (module.getBlockName().equalsIgnoreCase("webFrame01")) {
-                module.setComponents(moduleInfo.getComponents());
-                module.setLayout(moduleInfo.getLayout());
-            }
+
 
             /*if(moduleInfo.getBlockName().equalsIgnoreCase("banner01")){
                 module.setLayout(moduleInfo.getLayout());
@@ -1343,12 +1337,12 @@ public class ViewCreator {
 
         @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
-        if (viewType.contains("AC Watchlist 01")) {
-            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
-                    loadJsonFromAssets(context, "watchlist_sports.json"),
-                    AppCMSPageUI.class);
-            component = appCMSPageUI.getModuleList().get(2).getComponents().get(4);
-        }
+//        if (viewType.contains("AC Watchlist 01")) {
+//            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
+//                    loadJsonFromAssets(context, "watchlist_sports.json"),
+//                    AppCMSPageUI.class);
+//            component = appCMSPageUI.getModuleList().get(2).getComponents().get(4);
+//        }
         int size = component.getComponents().size();
         for (int i = 0; i < size; i++) {
             Component childComponent = component.getComponents().get(i);
@@ -1440,18 +1434,15 @@ public class ViewCreator {
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
         switch (componentType) {
-            case PAGE_RATINGBAR:
-                componentViewResult.componentView = new RatingBar(context);
 
-                LayerDrawable stars = (LayerDrawable) ((RatingBar) componentViewResult.componentView).getProgressDrawable();
-                stars.getDrawable(2).setColorFilter(Color.parseColor(getColor(context, component.getFillColor()))
-                        , PorterDuff.Mode.SRC_ATOP);
-                stars.getDrawable(0).setColorFilter(Color.parseColor(getColor(context, component.getBorderColor())),
-                        PorterDuff.Mode.SRC_ATOP);
-                stars.getDrawable(1).setColorFilter(Color.parseColor(getColor(context, component.getBorderColor())),
-                        PorterDuff.Mode.SRC_ATOP);
-                ((RatingBar) componentViewResult.componentView).setEnabled(false);
-                ((RatingBar) componentViewResult.componentView).setRating(moduleAPI.getContentData().get(0).getGist().getAverageStarRating());
+            case PAGE_RATINGBAR:
+                componentViewResult.componentView = new SimpleRatingBar(context);
+                ((SimpleRatingBar) componentViewResult.componentView).setNumberOfStars(5);
+                ((SimpleRatingBar) componentViewResult.componentView).setStarSize(60f);
+                ((SimpleRatingBar) componentViewResult.componentView).setStarsSeparation(10f);
+                ((SimpleRatingBar) componentViewResult.componentView).setStarBorderWidth(2f);
+                ((SimpleRatingBar) componentViewResult.componentView).setFillColor(Color.parseColor(getColor(context, component.getFillColor())));
+                ((SimpleRatingBar) componentViewResult.componentView).setEnabled(false);
                 break;
             case PAGE_TABLE_VIEW_KEY:
                 if (moduleType == AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY) {
@@ -1506,35 +1497,35 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
-                            this,
-                            appCMSPresenter,
-                            settings,
-                            component.getLayout(),
-                            false,
-                            component,
-                            jsonValueKeyMap,
-                            moduleAPI,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            viewType,
-                            appCMSAndroidModules);
-
-//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-//                            moduleAPI.getContentData(),
-//                            component.getComponents(),
+//                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
+//                            this,
 //                            appCMSPresenter,
+//                            settings,
+//                            component.getLayout(),
+//                            false,
+//                            component,
 //                            jsonValueKeyMap,
+//                            moduleAPI,
+//                            ViewGroup.LayoutParams.MATCH_PARENT,
+//                            ViewGroup.LayoutParams.WRAP_CONTENT,
 //                            viewType,
-//                            (RecyclerView) componentViewResult.componentView);
+//                            appCMSAndroidModules);
 
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
-//                    componentViewResult.onInternalEvent = appCMSViewAdapter;
-//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+                            moduleAPI.getContentData(),
+                            component.getComponents(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
+
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
+                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(appCMSViewAdapter)
+                                .adapter(appCMSTrayItemAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleAPI.getId() + component.getKey())
                                 .build());
@@ -1700,9 +1691,6 @@ public class ViewCreator {
                 break;
             case PAGE_WEB_VIEW_KEY:
                 componentViewResult.componentView = getWebViewComponent(context, moduleAPI, component);
-//                ((WebView) componentViewResult.componentView).getSettings().setLoadWithOverviewMode(true);
-//                ((WebView) componentViewResult.componentView).getSettings().setUseWideViewPort(true);
-//                ((WebView) componentViewResult.componentView).getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
                 break;
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
@@ -2694,11 +2682,16 @@ public class ViewCreator {
                 switch (componentKey) {
                     case PAGE_VIDEO_TYPE_KEY:
                         // TODO: have to  add condition depending upon API object
-                        if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_shows))) {
-                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_shows);
-                        }
-                        if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_episode))) {
-                            ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_episode);
+                        if (moduleAPI.getContentData() != null &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null &&
+                                moduleAPI.getContentData().get(0).getGist().getContentType() != null) {
+                            if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_shows))) {
+                                ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_shows);
+                            }
+                            if (moduleAPI.getContentData().get(0).getGist().getContentType().contains(context.getString(R.string.app_cms_content_type_episode))) {
+                                ((ImageView) componentViewResult.componentView).setImageResource(R.drawable.ic_episode);
+                            }
                         }
                         break;
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
@@ -3689,32 +3682,17 @@ public class ViewCreator {
 
         WebView webView = new WebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
-//        webView.getSettings().setLoadWithOverviewMode(false);
-//        webView.getSettings().setUseWideViewPort(true);
-        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setBuiltInZoomControls(false);
         webView.getSettings().setDisplayZoomControls(false);
         webView.setBackgroundColor(Color.TRANSPARENT);
-        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
-        int width1 = display.getWidth();
-        int height1 = 210;
-//        int width1 = BaseView.getDeviceWidth();
-        System.out.println("device width-" + width1);
-//        String html = "<iframe style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
-        String html = "<iframe width=\"" + width1 + "\" height=\"" + height1 + "px\" style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
 
-
-        String htmlStart = "<html> <header><meta name='viewport' content='user-scalable=no'/> </header> <body>";
-        String htmlEnd = "</body></html>";
-//        webView.setInitialScale(100);
-
-//        webView.getSettings().
-//        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
-
-        String webViewUrl = null;
+        int height = ((int) component.getLayout().getMobile().getHeight())-45;
+        int width = BaseView.getDeviceWidth();
+        String webViewUrl = "";
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
             webViewUrl = moduleAPI.getRawText();
         }
-//        String data_html = "<!DOCTYPE html><html> <head> <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"target-densitydpi=high-dpi\" /> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> </head> <body style=\"background:black;margin:0 0 0 0; padding:0 0 0 0;\"> <iframe style=\" width=' " + width1 + "' height='" + height1 + "' src=\"" + webViewUrl + "\" frameborder=\"0\"></iframe> </body> </html> ";
+        String html = "<iframe width=\"" + width + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -3723,23 +3701,9 @@ public class ViewCreator {
                 context.startActivity(browserIntent);
                 return true;
             }
-
         });
-//        webView.loadDataWithBaseURL(webViewUrl, data_html, "text/html", "UTF-8", null);
 
-//        webView.loadData(htmlStart+html+htmlEnd, "text/html", null);
         webView.loadData(html, "text/html", "UTF-8");
-
-//        webView.loadUrl(html);
-        String finalWebViewUrl = html;
-        webView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(finalWebViewUrl));
-                context.startActivity(browserIntent);
-            }
-        });
-
         return webView;
     }
 
