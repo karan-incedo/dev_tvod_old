@@ -176,10 +176,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (((binder != null &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
-                            (binder.getContentData().getGist().getDownloadStatus() != null &&
+                            ((binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null)) &&
+                            binder.getContentData().getGist().getDownloadStatus() == null))) &&
                             (activeNetwork == null ||
                                     !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
@@ -191,10 +191,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if ((binder != null &&
                             binder.getContentData() != null &&
                             binder.getContentData().getGist() != null &&
-                            (binder.getContentData().getGist().getDownloadStatus() != null &&
+                            ((binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null)) {
+                            binder.getContentData().getGist().getDownloadStatus() == null))) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer(),
@@ -317,31 +317,36 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         String finalClosedCaptionUrl = closedCaptionUrl;
         boolean finalFreeContent = freeContent;
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
-                AppCMSPlayVideoFragment.newInstance(this,
-                        primaryCategory,
-                        fontColor,
-                        title,
-                        permaLink,
-                        binder.isTrailer(),
-                        hlsUrl,
-                        filmId,
-                        adsUrl,
-                        playAds,
-                        playIndex,
-                        watchedTime,
-                        videoImageUrl,
-                        finalClosedCaptionUrl,
-                        contentRating, videoRunTime,
-                        finalFreeContent,
-                        appCMSSignedURLResult);
-        fragmentTransaction.add(R.id.app_cms_play_video_page_container,
-                appCMSPlayVideoFragment,
-                getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.commit();
+
+        try {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            final AppCMSPlayVideoFragment appCMSPlayVideoFragment =
+                    AppCMSPlayVideoFragment.newInstance(this,
+                            primaryCategory,
+                            fontColor,
+                            title,
+                            permaLink,
+                            binder.isTrailer(),
+                            hlsUrl,
+                            filmId,
+                            adsUrl,
+                            playAds,
+                            playIndex,
+                            watchedTime,
+                            videoImageUrl,
+                            finalClosedCaptionUrl,
+                            contentRating, videoRunTime,
+                            finalFreeContent,
+                            appCMSSignedURLResult);
+            fragmentTransaction.add(R.id.app_cms_play_video_page_container,
+                    appCMSPlayVideoFragment,
+                    getString(R.string.video_fragment_tag_key));
+            fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
+            fragmentTransaction.commit();
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

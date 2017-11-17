@@ -180,6 +180,11 @@ public class CollectionGridItemView extends BaseView {
         return childrenContainer;
     }
 
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
+
     public void addChild(ItemContainer itemContainer) {
         if (childrenContainer == null) {
             createChildrenContainer();
@@ -385,20 +390,17 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist().getImageGist().get_3x4() != null &&
                             data.getGist().getBadgeImages().get_3x4() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
-                        // TODO: 03 Nov. 2017 - Badges are not yet ready for Production - This should uncommented once that is available
-//                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-//                                data.getGist().getBadgeImages().get_3x4(),
-//                                childViewWidth,
-//                                childViewHeight);
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getBadgeImages().get_3x4(),
+                                childViewWidth,
+                                childViewHeight);
 
-//                        if (view instanceof SimpleDraweeView) {
-//                            ((SimpleDraweeView) view).setImageURI(imageUrl);
-//                        } else {
-//                            Glide.with(context)
-//                                    .load(imageUrl)
-//                                    .override(childViewWidth, childViewHeight)
-//                                    .into((ImageView) view);
-//                        }
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(childViewWidth, childViewHeight)
+                                    .into((ImageView) view);
+                        }
                     }
                     bringToFront = false;
                 }

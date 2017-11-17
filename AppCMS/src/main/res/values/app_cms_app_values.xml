@@ -4,7 +4,6 @@
     <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
     <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
 
-
     <!--<string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>-->
     <string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>
 
@@ -30,4 +29,16 @@
     <string name="default_video_resolution">360p</string>
 
     <bool name="display_chromecast_overlay">false</bool>
+
+    <string name="search_films">Search films</string>
+
+    <string name="app_cms_episodic_key_type">SERIES</string>
+    <string name="app_cms_full_length_feature_key_type">VIDEO</string>
+
+    <integer name="number_of_tabs">4</integer>
+    <integer name="first_primary_page_index">0</integer>
+    <integer name="nav_live_page_index">4</integer>
+    <integer name="second_primary_page_index">1</integer>
+    <integer name="search_page_index">2</integer>
+    <integer name="third_primary_page_index">3</integer>
 </resources>

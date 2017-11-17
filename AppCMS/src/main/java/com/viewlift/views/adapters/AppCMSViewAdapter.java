@@ -1,5 +1,6 @@
 package com.viewlift.views.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -7,6 +8,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -37,6 +39,10 @@ import java.util.Map;
 public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.ViewHolder>
         implements AppCMSBaseAdapter {
     private static final String TAG = "AppCMSViewAdapter";
+
+    private final String episodicContentType;
+    private final String fullLengthFeatureType;
+
     protected Layout parentLayout;
     protected Component component;
     protected AppCMSPresenter appCMSPresenter;
@@ -60,6 +66,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private boolean isClickable;
     private String videoAction;
     private String showAction;
+    private MotionEvent lastTouchDownEvent;
     private String watchVideoAction;
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
@@ -131,6 +138,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.watchTrailerQuailifier = context.getString(R.string.app_cms_action_qualifier_watchvideo_key);
 
         this.appCMSAndroidModules = appCMSAndroidModules;
+
+        this.episodicContentType = context.getString(R.string.app_cms_episodic_key_type);
+        this.fullLengthFeatureType = context.getString(R.string.app_cms_full_length_feature_key_type);
 
         sortPlansByPriceInDescendingOrder();
     }
@@ -306,6 +316,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     void bindView(CollectionGridItemView itemView,
                   final ContentDatum data) throws IllegalArgumentException {
         if (onClickHandler == null) {
@@ -401,17 +412,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     contentType = data.getGist().getContentType();
                                 }
 
-                                switch (contentType) {
-                                    case "SHOW":
-                                        action = showAction;
-                                        break;
-
-                                    case "VIDEO":
-                                        action = videoAction;
-                                        break;
-
-                                    default:
-                                        break;
+                                if (contentType.equals(episodicContentType)) {
+                                    action = showAction;
+                                } else if (contentType.equals(fullLengthFeatureType)) {
+                                    action = videoAction;
                                 }
 
                                 if (data.getGist() == null ||
@@ -492,8 +496,43 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
             //
         } else {
+            itemView.setOnTouchListener((View v, MotionEvent event) -> {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    lastTouchDownEvent = event;
+                }
+
+                return false;
+            });
             itemView.setOnClickListener(v -> {
                 if (isClickable) {
+                    if (v instanceof CollectionGridItemView) {
+                        try {
+                            int eventX = (int) lastTouchDownEvent.getX();
+                            int eventY = (int) lastTouchDownEvent.getY();
+                            ViewGroup childContainer = ((CollectionGridItemView) v).getChildrenContainer();
+                            int childrenCount = childContainer.getChildCount();
+                            for (int i = 0; i < childrenCount; i++) {
+                                View childView = childContainer.getChildAt(i);
+                                if (childView instanceof Button) {
+                                    int[] childLocation = new int[2];
+                                    childView.getLocationOnScreen(childLocation);
+                                    int childX = childLocation[0] - 8;
+                                    int childY = childLocation[1] - 8;
+                                    int childWidth = childView.getWidth() + 8;
+                                    int childHeight = childView.getHeight() + 8;
+                                    if (childX <= eventX && eventX <= childX + childWidth) {
+                                        if (childY <= eventY && eventY <= childY + childHeight) {
+                                            childView.performClick();
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+
+                        }
+                    }
+
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
                     String action = videoAction;
@@ -504,17 +543,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         contentType = data.getGist().getContentType();
                     }
 
-                    switch (contentType) {
-                        case "SHOW":
-                            action = showAction;
-                            break;
-
-                        case "VIDEO":
-                            action = videoAction;
-                            break;
-
-                        default:
-                            break;
+                    if (contentType.equals(episodicContentType)) {
+                        action = showAction;
+                    } else if (contentType.equals(fullLengthFeatureType)) {
+                        action = videoAction;
                     }
 
                     //Log.d(TAG, "Launching " + permalink + ":" + action);

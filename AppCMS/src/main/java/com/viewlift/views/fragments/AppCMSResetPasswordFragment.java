@@ -1,32 +1,25 @@
 package com.viewlift.views.fragments;
 
-import android.app.Dialog;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v4.app.DialogFragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.ViewCreator;
 
-import com.viewlift.R;
-
-/**
+/*
  * Created by viewlift on 7/6/17.
  */
 
@@ -69,9 +62,14 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
         appCMSResetPasswordTextInputDescription.setTextColor(textColor);
 
         Button appCMSSubmitResetPasswordButton = (Button) view.findViewById(R.id.app_cms_submit_reset_password_button);
-        appCMSSubmitResetPasswordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        appCMSSubmitResetPasswordButton.setOnClickListener(v -> {
+            if (appCMSResetPasswordEmailInput.getText().toString().length() == 0) {
+                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.RESET_PASSWORD,
+                        getActivity().getResources().getString(R.string.email_blank_toast_msg_reset_password),
+                        false,
+                        null,
+                        null);
+            } else {
                 appCMSPresenter.resetPassword(appCMSResetPasswordEmailInput.getText().toString());
                 appCMSPresenter.sendCloseOthersAction(null,
                         true,

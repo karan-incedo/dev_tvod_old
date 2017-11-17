@@ -150,12 +150,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        if (adapterData != null && adapterData.size() == 0) {
+            sendEvent(hideRemoveAllButtonEvent);
+        }
+
         if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
             ContentDatum contentDatum = adapterData.get(position);
-
-            if (adapterData.size() == 1) {
-                sendEvent(hideRemoveAllButtonEvent);
-            }
 
             StringBuffer imageUrl;
             if (isDownload) {
@@ -558,7 +558,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @Override
     public void addReceiver(OnInternalEvent e) {
         receivers.add(e);
-        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 1) {
+        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
         } else {
             sendEvent(showRemoveAllButtonEvent);
@@ -765,7 +765,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 }
             });
         } else if (isDownload) {
-            if (!adapterData.isEmpty()) {
+            if (adapterData != null && !adapterData.isEmpty()) {
                 sortData();
                 notifyDataSetChanged();
             }
@@ -778,7 +778,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         sortData();
         notifyDataSetChanged();
 
-        if (adapterData == null || adapterData.isEmpty() || adapterData.size() < 2) {
+        if (adapterData == null || adapterData.isEmpty() || adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
         } else {
             sendEvent(showRemoveAllButtonEvent);
@@ -851,6 +851,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     appCMSDeleteHistoryResult -> {
                         adapterData.remove(contentDatum);
                         notifyDataSetChanged();
+                        if (adapterData.size() == 0) {
+                            sendEvent(hideRemoveAllButtonEvent);
+                        }
                     }, false);
         }
 
@@ -867,6 +870,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         notifyItemRangeRemoved(position, getItemCount());
                                         adapterData.remove(contentDatum);
                                         notifyItemRangeChanged(position, getItemCount());
+                                        if (adapterData.size() == 0) {
+                                            sendEvent(hideRemoveAllButtonEvent);
+                                        }
                                     }),
                     null);
         }
@@ -877,6 +883,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     addToWatchlistResult -> {
                         adapterData.remove(contentDatum);
                         notifyDataSetChanged();
+                        if (adapterData.size() == 0) {
+                            sendEvent(hideRemoveAllButtonEvent);
+                        }
                     }, false);
         }
     }

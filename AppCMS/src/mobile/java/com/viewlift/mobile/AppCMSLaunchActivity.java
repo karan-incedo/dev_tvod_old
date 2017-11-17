@@ -51,24 +51,16 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
 
-        Fresco.initialize(getApplicationContext());
-
-        ImageUtils.registerImageLoader(new FrescoImageLoader());
-
         setContentView(R.layout.activity_launch);
 
-        handleIntent(getIntent());
+        setFullScreenFocus();
 
-        //Log.d(TAG, "Launching application from main.json");
-        //Log.d(TAG, "Search query (optional): " + searchQuery);
-        appCMSPresenterComponent =
-                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
-
-        appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
-
-        if (!BaseView.isTablet(this)) {
-            appCMSPresenterComponent.appCMSPresenter().restrictPortraitOnly();
+        if (getApplication() instanceof AppCMSApplication) {
+            appCMSPresenterComponent =
+                    ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
         }
+
+        handleIntent(getIntent());
 
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
@@ -82,10 +74,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         registerReceiver(presenterCloseActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        //Log.d(TAG, "onCreate()");
-        setCasting();
-        setFullScreenFocus();
-
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
@@ -93,7 +81,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
-                if (!appStartWithNetworkConnected && isConnected) {
+                if (!appStartWithNetworkConnected && isConnected && appCMSPresenterComponent != null) {
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
                             getString(R.string.app_cms_app_name),
                             searchQuery,
@@ -105,9 +93,21 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             }
         };
 
-        UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+        setCasting();
 
-        AppsFlyerLib.getInstance().startTracking(getApplication());
+        new Thread(() -> {
+            if (appCMSPresenterComponent != null) {
+                appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
+            }
+
+            Fresco.initialize(getApplicationContext());
+
+            ImageUtils.registerImageLoader(new FrescoImageLoader());
+
+            UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+
+            AppsFlyerLib.getInstance().startTracking(getApplication());
+        });
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
@@ -137,18 +137,22 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
     public void handleIntent(Intent intent) {
         if (intent != null) {
-            String action = intent.getAction();
-            final Uri data = intent.getData();
-            //Log.i(TAG, "Received intent action: " + action);
-            if (data != null) {
-                //Log.i(TAG, "Received intent data: " + data.toString());
-                searchQuery = data;
-                AppCMSPresenterComponent appCMSPresenterComponent =
-                        ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
-                appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
-            }
+            try {
+                String action = intent.getAction();
+                final Uri data = intent.getData();
+                //Log.i(TAG, "Received intent action: " + action);
+                if (data != null) {
+                    //Log.i(TAG, "Received intent data: " + data.toString());
+                    searchQuery = data;
+                    if (appCMSPresenterComponent != null) {
+                        appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
+                    }
+                }
 
-            forceReloadFromNetwork = intent.getBooleanExtra(getString(R.string.force_reload_from_network_key), false);
+                forceReloadFromNetwork = intent.getBooleanExtra(getString(R.string.force_reload_from_network_key), false);
+            } catch (Exception e) {
+
+            }
         }
     }
 

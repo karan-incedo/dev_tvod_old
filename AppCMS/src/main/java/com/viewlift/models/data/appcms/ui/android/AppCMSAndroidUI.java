@@ -10,6 +10,10 @@ import java.util.List;
 @UseStag
 public class AppCMSAndroidUI implements Serializable {
 
+    @SerializedName("advertising")
+    @Expose
+    Advertising advertising;
+
     @SerializedName("navigation")
     @Expose
     Navigation navigation;
@@ -57,6 +61,14 @@ public class AppCMSAndroidUI implements Serializable {
     @SerializedName("blocksBaseUrl")
     @Expose
     String blocksBaseUrl;
+
+    public Advertising getAdvertising() {
+        return advertising;
+    }
+
+    public void setAdvertising(Advertising advertising) {
+        this.advertising = advertising;
+    }
 
     public String getAppName() {
         return appName;

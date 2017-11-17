@@ -10,29 +10,23 @@ import android.support.v7.app.MediaRouteDiscoveryFragment;
 import android.support.v7.media.MediaRouteSelector;
 import android.support.v7.media.MediaRouter;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
-
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
-import com.viewlift.views.customviews.VideoPlayerView;
-import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -281,6 +275,9 @@ public class CastHelper {
 
         } else if (mMediaRouter.getSelectedRoute().getConnectionState()
                 == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTED) {
+            isCastDeviceConnected = true;
+
+        }else if(mSelectedDevice!=null){
             isCastDeviceConnected = true;
 
         } else if (mMediaRouter.getSelectedRoute().getConnectionState()
@@ -594,7 +591,7 @@ public class CastHelper {
                     }
                     if (isMainMediaId) {
                         playIndexPosition--;
-                    } else {
+                    } else if (listCompareRelatedVideosId != null) {
                         playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
                     }
 
