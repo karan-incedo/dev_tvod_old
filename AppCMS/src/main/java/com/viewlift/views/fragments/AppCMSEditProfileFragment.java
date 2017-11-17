@@ -1,11 +1,10 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
@@ -16,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,13 +24,12 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.AsteriskPasswordTransformation;
 import com.viewlift.views.customviews.ViewCreator;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
+/*
  * Created by viewlift on 7/27/17.
  */
 
@@ -51,7 +48,13 @@ public class AppCMSEditProfileFragment extends DialogFragment {
     Button editProfileConfirmChangeButton;
 
     @BindView(R.id.app_cms_edit_profile_main_layout)
-    RelativeLayout appCMSEditProfileMainLayout;
+    ConstraintLayout appCMSEditProfileMainLayout;
+
+    @BindView(R.id.app_cms_edit_profile_name_text)
+    TextView appCMSEditProfileNameText;
+
+    @BindView(R.id.app_cms_edit_profile_email_text)
+    TextView appCMSEditProfileEmailText;
 
     private String regex = "[a-zA-Z\\s]+";
 
@@ -78,6 +81,8 @@ public class AppCMSEditProfileFragment extends DialogFragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
+        appCMSPresenter.scrollUpWhenSoftKeyboardIsVisible();
+
         int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 .getBackgroundColor());
         int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
@@ -89,25 +94,29 @@ public class AppCMSEditProfileFragment extends DialogFragment {
         String username = args.getString(getContext().getString(R.string.app_cms_edit_profile_username_key));
         String email = args.getString(getContext().getString(R.string.app_cms_password_reset_email_key));
 
-        titleTextView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getTextColor()));
+        titleTextView.setTextColor(textColor);
+        appCMSEditProfileNameText.setTextColor(textColor);
+        appCMSEditProfileEmailText.setTextColor(textColor);
 
-        if (!TextUtils.isEmpty(email)) {
+        appCMSEditProfileNameText.setTypeface(appCMSPresenter.getBoldTypeFace());
+        appCMSEditProfileEmailText.setTypeface(appCMSPresenter.getBoldTypeFace());
+
+        if (!TextUtils.isEmpty(username)) {
             appCMSEditProfileNameInput.setText(username);
+            appCMSEditProfileNameInput.setTextColor(textColor);
         }
 
         if (!TextUtils.isEmpty(email)) {
             appCMSEditProfileEmailInput.setText(email);
+            appCMSEditProfileEmailInput.setTextColor(textColor);
         }
 
-
         editProfileConfirmChangeButton.setOnClickListener((View v) -> {
-
             String userName = appCMSEditProfileNameInput.getText().toString().trim();
-                if (!doesValidNameExist(userName)) {
-                    Toast.makeText(getContext(), getResources().getString(R.string.edit_profile_name_message), Toast.LENGTH_LONG).show();
-                    return;
-                }
+            if (!doesValidNameExist(userName)) {
+                Toast.makeText(getContext(), getResources().getString(R.string.edit_profile_name_message), Toast.LENGTH_LONG).show();
+                return;
+            }
 
             TextInputLayout textInputLayout = new TextInputLayout(view.getContext());
             TextInputEditText password = new TextInputEditText(view.getContext());
@@ -122,33 +131,28 @@ public class AppCMSEditProfileFragment extends DialogFragment {
             builder.setTitle("Verify your password to Continue");
             builder.setPositiveButton(
                     "Proceed",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            appCMSPresenter.closeSoftKeyboardNoView();
+                    (dialog, id) -> {
+                        appCMSPresenter.closeSoftKeyboardNoView();
 
-                            appCMSPresenter.updateUserProfile(userName,
-                                    appCMSEditProfileEmailInput.getText().toString(),
-                                    password.getText().toString(),
-                                    userIdentity -> {
-                                    });
-                        }
+                        appCMSPresenter.updateUserProfile(userName,
+                                appCMSEditProfileEmailInput.getText().toString(),
+                                password.getText().toString(),
+                                userIdentity -> {
+                                });
                     });
 
             builder.setNegativeButton(
                     "Cancel",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                            appCMSPresenter.sendCloseOthersAction(null,
-                                    true,
-                                    false);
-                            appCMSPresenter.closeSoftKeyboardNoView();
-                        }
+                    (dialog, id) -> {
+                        dialog.cancel();
+                        appCMSPresenter.sendCloseOthersAction(null,
+                                true,
+                                false);
+                        appCMSPresenter.closeSoftKeyboardNoView();
                     });
 
             AlertDialog dialog = builder.create();
             dialog.show();
-
         });
 
         editProfileConfirmChangeButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor,
@@ -165,4 +169,5 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
     private boolean doesValidNameExist(String input) {
         return !TextUtils.isEmpty(input) && Pattern.matches(regex, input);
-    }}
+    }
+}
