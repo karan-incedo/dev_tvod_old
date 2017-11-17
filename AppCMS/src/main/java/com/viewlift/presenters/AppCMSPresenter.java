@@ -5865,6 +5865,8 @@ public class AppCMSPresenter {
                     try {
                         if (googleLoginResponse != null) {
                             if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
+                                if(googleAccessToken == null)
+                                  return;
                                 showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else if (!TextUtils.isEmpty(googleLoginResponse.getError())) {
@@ -10922,6 +10924,10 @@ public class AppCMSPresenter {
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
                 .setLogLevel(KMSDKCoreKit.DEBUG);
+        if(isUserLoggedIn())
+          mKit.configUser(getLoggedInUserEmail(), currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
+        else
+          mKit.configUser("guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
         mKit.startKiswePlayerActivity(currentActivity, eventId);
     }
 
