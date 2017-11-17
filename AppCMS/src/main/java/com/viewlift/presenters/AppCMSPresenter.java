@@ -75,6 +75,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -233,6 +234,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1592,6 +1594,7 @@ public class AppCMSPresenter {
 
                                         @Override
                                         public void call(final AppCMSPageAPI appCMSPageAPI) {
+
                                             if (appCMSPageAPI != null) {
                                                 cancelInternalEvents();
                                                 pushActionInternalEvents(this.action
@@ -11515,5 +11518,12 @@ public class AppCMSPresenter {
         return moduleList;
     }
 
+    public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        return formatter.format(calendar.getTime());
+    }
 }

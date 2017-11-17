@@ -449,6 +449,16 @@ public class ViewCreator {
                                                     moduleAPI.getContentData().get(0),
                                                     view);
                                         }
+                                    }else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY) {
+                                                if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0) != null) {
+                                            long publishDateMillseconds= moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                            String publishDate=context.getResources().getString(R.string.published_on)+" "+ appCMSPresenter.getDateFormat(publishDateMillseconds,"MMM dd,YYYY");
+                                            ((TextView) componentViewResult.componentView).setText(publishDate);
+
+                                        }
+
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY) {
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
@@ -1026,7 +1036,6 @@ public class ViewCreator {
                 module.setView(moduleInfo.getView());
                 module.setBlockName(moduleInfo.getBlockName());
             }
-
 
             boolean createModule = !modulesToIgnore.contains(module.getType());
 
@@ -2508,6 +2517,19 @@ public class ViewCreator {
                                         componentViewResult.componentView);
                             }
                             break;
+
+                        case PAGE_VIDEO_PUBLISHDATE_KEY:
+                            if (moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null) {
+                                long publishDateMillseconds= moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                String publishDate=context.getResources().getString(R.string.published_on)+" "+ appCMSPresenter.getDateFormat(publishDateMillseconds,"MMM dd,YYYY");
+                                ((TextView) componentViewResult.componentView).setText(publishDate);
+
+                            }
+
+                            break;
+
 
                         case PAGE_VIDEO_AGE_LABEL_KEY:
                             if (moduleAPI.getContentData() != null &&

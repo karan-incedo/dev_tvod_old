@@ -773,6 +773,9 @@ public class AppCMSUIModule {
                 AppCMSActionType.DELETE_SINGLE_WATCHLIST_ITEM);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_delete_single_history_action),
                 AppCMSActionType.DELETE_SINGLE_HISTORY_ITEM);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_publishdate_key),
+                AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY);
     }
 
     @Provides
