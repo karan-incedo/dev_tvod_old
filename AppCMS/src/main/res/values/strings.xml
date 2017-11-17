@@ -129,7 +129,7 @@
     <string name="app_cms_username_input_text_hint">NAME</string>
     <string name="app_cms_email_input_text_hint">EMAIL</string>
     <string name="please_input_your_email_address_to_send_a_reset_password_link_text">Please input your email address to send a reset password link.</string>
-    <string name="edit_profile_confirm_change_button_text">OK</string>
+    <string name="edit_profile_confirm_change_button_text">Update</string>
     <string name="empty_history_list_message">Your history is currently empty.</string>
     <string name="empty_watchlist_message">Your watchlist is currently empty.</string>
     <!--<string name="empty_download_message">Your download is currently empty.</string>-->
@@ -313,6 +313,7 @@
     <string name="app_cms_subscription_upgrade_cancel_title">You did not purchase the subscription through the Google Play store</string>
     <string name="app_cms_subscription_upgrade_for_web_user_dialog">To upgrade your subscription, go to the My Account section on our website.</string>
     <string name="app_cms_subscription_cancel_for_web_user_dialog">To cancel your subscription, go to the My Account section on our website.</string>
+    <string name="app_cms_subscription_cancel_for_ios_user_dialog">To cancel your subscription, go to Manage Subscription on your iOS device.</string>
 
     <string name="app_cms_download_stream_info_error_title">Streaming Info Error</string>
     <string name="app_cms_download_streaming_info_error_message">Some error occurred with streaming info, Please try again.</string>

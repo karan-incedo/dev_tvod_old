@@ -40,6 +40,7 @@ public class GetAppCMSVideoDetailAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
                     if (result != null && readyAction != null) {
                         Observable.just(result).subscribe(readyAction);

@@ -55,8 +55,10 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         setFullScreenFocus();
 
+        if (getApplication() instanceof AppCMSApplication) {
         appCMSPresenterComponent =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+        }
 
         handleIntent(getIntent());
 
@@ -79,7 +81,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
-                if (!appStartWithNetworkConnected && isConnected) {
+                if (!appStartWithNetworkConnected && isConnected && appCMSPresenterComponent != null) {
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
                             getString(R.string.app_cms_app_name),
                             searchQuery,
@@ -94,7 +96,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         setCasting();
 
         new Thread(() -> {
+            if (appCMSPresenterComponent != null) {
             appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
+            }
 
             Fresco.initialize(getApplicationContext());
 
@@ -133,16 +137,21 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
     public void handleIntent(Intent intent) {
         if (intent != null) {
+            try {
             String action = intent.getAction();
             final Uri data = intent.getData();
             //Log.i(TAG, "Received intent action: " + action);
             if (data != null) {
                 //Log.i(TAG, "Received intent data: " + data.toString());
                 searchQuery = data;
+                    if (appCMSPresenterComponent != null) {
                 appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
             }
+                }
 
             forceReloadFromNetwork = intent.getBooleanExtra(getString(R.string.force_reload_from_network_key), false);
+            } catch (Exception e) {
+            }
         }
     }
 
