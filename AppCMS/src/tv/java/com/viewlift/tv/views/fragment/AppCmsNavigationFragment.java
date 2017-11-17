@@ -50,6 +50,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                                        AppCMSBinder appCMSBinder,
                                                        int textColor,
                                                        int bgColor) {
+
         AppCmsNavigationFragment fragment = new AppCmsNavigationFragment();
         Bundle args = new Bundle();
         args.putBinder(context.getString(R.string.fragment_page_bundle_key), appCMSBinder);
@@ -188,7 +189,7 @@ public class AppCmsNavigationFragment extends Fragment {
         @Override
         public void onBindViewHolder(NavItemHolder holder, final int position) {
             final NavigationPrimary primary = (NavigationPrimary)getItem(position);
-            holder.navItemView.setText(primary.getTitle().toString().toUpperCase());
+            holder.navItemView.setText(primary.getTitle().toUpperCase());
             holder.navItemView.setTag(R.string.item_position , position);
             //Log.d("NavigationAdapter", primary.getTitle().toString());
 
@@ -377,6 +378,7 @@ public class AppCmsNavigationFragment extends Fragment {
             final NavigationPrimary primary = (NavigationPrimary) getItem(position);
             holder.navItemView.setText(primary.getTitle().toUpperCase());
             holder.navItemView.setTag(R.string.item_position, position);
+            navItemView.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_medium)));
             if (primary.getIcon() != null) {
                 holder.navImageView.setImageResource(getIcon(primary.getIcon()));
             }

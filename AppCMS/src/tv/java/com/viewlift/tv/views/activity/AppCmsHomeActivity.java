@@ -27,7 +27,6 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
-import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.modules.AppCMSSearchUrlModule;
@@ -53,8 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-
-import rx.functions.Action1;
 
 /**
  * Created by nitin.tyagi on 6/27/2017.

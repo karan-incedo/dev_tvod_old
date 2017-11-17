@@ -29,7 +29,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:letterSpacing="0.04"
-            android:textSize="@dimen/appcms_tv_navigation_textSize" />
+            android:textSize="10sp" />
 
     </RelativeLayout>
 
