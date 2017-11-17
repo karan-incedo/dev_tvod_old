@@ -378,7 +378,7 @@ public class AppCmsNavigationFragment extends Fragment {
             final NavigationPrimary primary = (NavigationPrimary) getItem(position);
             holder.navItemView.setText(primary.getTitle().toUpperCase());
             holder.navItemView.setTag(R.string.item_position, position);
-            navItemView.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_medium)));
+            holder.navItemView.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_medium)));
             if (primary.getIcon() != null) {
                 holder.navImageView.setImageResource(getIcon(primary.getIcon()));
             }
