@@ -5846,6 +5846,8 @@ public class AppCMSPresenter {
                     try {
                         if (googleLoginResponse != null) {
                             if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
+                                if(googleAccessToken == null)
+                                  return;
                                 showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
                                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                             } else if (!TextUtils.isEmpty(googleLoginResponse.getError())) {
@@ -10897,6 +10899,36 @@ public class AppCMSPresenter {
         PopupMenu popupMenu = new PopupMenu(getCurrentActivity());
         popupMenu.showLocation(v.getId(), getCurrentActivity());
     }
+
+    public void launchKiswePlayer(String eventId){
+
+       // KMSDKCoreKit.initialize(currentActivity);
+        KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
+                .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
+                .setLogLevel(KMSDKCoreKit.DEBUG);
+        mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
+        if(isUserLoggedIn())
+          mKit.configUser(getLoggedInUserEmail(), currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
+        else
+          mKit.configUser("guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
+        mKit.startKiswePlayerActivity(currentActivity, eventId);
+    }
+
+    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
+        @Override
+        public void handleReport(Report report) {
+
+            if (!Reports.STATUS_SOURCE_PLAYER.equals(report.getString(Reports.FIELD_STATUS_SOURCE))) {
+                return;
+            }
+
+            String eventId = report.getString(Reports.FIELD_STATUS_EVENT_ID, "unknown");
+            String msg = report.getString(Reports.FIELD_STATUS_MESSAGE, "unknown status");
+            int code = report.getInt(Reports.FIELD_STATUS_CODE, -1);
+
+            Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
+        }
+    };
 
     public void showEmptySearchToast() {
         showToast(getCurrentActivity().getResources().getString(R.string.search_blank_toast_msg), Toast.LENGTH_SHORT);
