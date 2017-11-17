@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
@@ -225,15 +226,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 }else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
                 }
-
             }
         };
 
         /*Check Subscription in case of SPORTS TEMPLATE*/
          if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
             if(!appCMSPresenter.isUserLoggedIn()){
-                TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text)));
+                TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
+                textView.setText(getResources().getString(R.string.watch_live_text));
                 textView.setHeight(46);
             }else{
                 appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
@@ -242,28 +242,29 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
                             if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                     subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                 TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                                textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                                 TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
+                                textView.setText(getResources().getString(R.string.blank_string));
                                 textView.setHeight(10);
                             } else {
-                                  TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                                textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                                  TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
+                                textView.setText(getResources().getString(R.string.watch_live_text));
                                 textView.setHeight(46);
                             }
                         }else {
-                             TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                            textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                             TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
+                             textView.setText(getResources().getString(R.string.watch_live_text));
+
                             textView.setHeight(46);
                         }
                     } catch (Exception e) {
-                          TextView textView = (TextView)findViewById(R.id.nav_top_line);
-                        textView.setText(Html.fromHtml(getResources().getString(R.string.watch_live_text) , Html.FROM_HTML_MODE_COMPACT));
+                          TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
+                        textView.setText(getResources().getString(R.string.watch_live_text));
                         textView.setHeight(46);
                     }
                 });
             }
         }else{
-            findViewById(R.id.nav_top_line).setVisibility(View.GONE);
+            findViewById(R.id.subscribe_now_strip).setVisibility(View.GONE);
         }
     }
 
@@ -649,6 +650,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             case KeyEvent.ACTION_DOWN:
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_MENU:
+                    case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                         handleNavigationVisibility();
                         hideFooterControl();
                         break;

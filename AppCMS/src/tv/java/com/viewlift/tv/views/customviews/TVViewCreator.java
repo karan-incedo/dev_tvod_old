@@ -244,7 +244,6 @@ public class TVViewCreator {
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
                 }
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
-
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                             pageView, jsonValueKeyMap, appCMSPresenter, false);
@@ -563,11 +562,13 @@ public class TVViewCreator {
                     customHeaderItem.setmIsCarousal(false);
                     customHeaderItem.setmIsLivePlayer(true);
                     customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
-                    PlayerPresenter cardPresenter = new PlayerPresenter();
-                    cardPresenter.setVideoId(moduleData.getContentData().get(0).getGist().getId());
-                    ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
+                    PlayerPresenter playerPresenter = new PlayerPresenter(context,appCMSPresenter);
+                    ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(playerPresenter);
+                    BrowseFragmentRowData browseFragmentRowData = new BrowseFragmentRowData();
+                    browseFragmentRowData.isPlayerComponent = true;
+                    browseFragmentRowData.contentData = moduleData.getContentData().get(0);
+                    listRowAdapter.add(browseFragmentRowData);
                     pageView.setIsStandAlonePlayerEnabled(true);
-                    listRowAdapter.add(1);
                     mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
                 }
                 break;

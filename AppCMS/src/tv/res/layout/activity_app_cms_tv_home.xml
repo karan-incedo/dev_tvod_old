@@ -35,12 +35,13 @@
         android:animateLayoutChanges="true">
 
         <TextView
-            android:id="@+id/nav_top_line"
+            android:id="@+id/subscribe_now_strip"
             android:layout_width="match_parent"
             android:layout_height="23dp"
             android:background="@color/colorAccent"
             android:textAlignment="center"
             android:layout_alignParentTop="true"
+            android:layout_marginTop="5dp"
             android:focusable="false"
             />
 
@@ -48,7 +49,7 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/nav_top_line">
+            android:layout_below="@id/subscribe_now_strip">
 
 
             <FrameLayout

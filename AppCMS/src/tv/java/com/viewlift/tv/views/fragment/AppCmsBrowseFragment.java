@@ -133,6 +133,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
             if (null != item && item instanceof BrowseFragmentRowData) {
                 BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
+                if(rowData.isPlayerComponent){
+                    return;
+                }
                 ContentDatum data = rowData.contentData;
 
                 String action = /*"play"*/rowData.action;
@@ -189,23 +192,21 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             if (null != item && item instanceof BrowseFragmentRowData) {
                 isPlayerComponentSelected = false;
                 rowData = (BrowseFragmentRowData) item;
-                if (rowData != null)
+                if (rowData != null) {
                     data = rowData.contentData;
-                Utils.setBrowseFragmentViewParameters(view,
-                        (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
-                        (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));
-
-            }else {
-                if(pageView.isStandAlonePlayerEnabled()) {
-                    if( null != itemViewHolder && null != itemViewHolder.view
-                            && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoVideoPlayerView){
-                        customVideoVideoPlayerView  =  (CustomVideoVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
+                    if(rowData.isPlayerComponent){
+                        if( null != itemViewHolder && null != itemViewHolder.view
+                                && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoVideoPlayerView){
+                            customVideoVideoPlayerView  =  (CustomVideoVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
+                        }
+                        Utils.setBrowseFragmentViewParameters(view,
+                                -40,
+                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
+                    }else{
+                        Utils.setBrowseFragmentViewParameters(view,
+                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
+                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));
                     }
-
-                    isPlayerComponentSelected = true;
-                    Utils.setBrowseFragmentViewParameters(view,
-                            -40,
-                            (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
                 }
             }
 

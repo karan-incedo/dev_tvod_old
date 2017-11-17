@@ -29,7 +29,7 @@
           "fontSize": 18
         }
       },
-      "fontFamily": "LatoBold",
+      "fontFamily": "Lato",
       "textAlignment": "left",
       "type": "label",
       "textColor": "#008EE0",
@@ -71,7 +71,7 @@
           },
           "type": "label",
           "key": "trayTimeAndDataKey",
-          "fontFamily": "LatoBold",
+          "fontFamily": "Lato",
           "textAlignment": "left",
           "textColor": "#FFFFFF",
           "fontWeight": "Bold",
