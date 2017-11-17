@@ -11419,7 +11419,7 @@ public class AppCMSPresenter {
                 videoPlayerViewPIP = videoPlayerView;
             }
 
-            relativeLayoutPIP =new MiniPlayerView(currentActivity,videoPlayerView);
+            relativeLayoutPIP = new MiniPlayerView(currentActivity, videoPlayerView);
             relativeLayoutPIP.setVisibility(View.VISIBLE);
             relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -11515,5 +11515,24 @@ public class AppCMSPresenter {
         return moduleList;
     }
 
+    public ModuleList getModuleListByName(List<ModuleList> listModule, String idOrName) {
+        for (ModuleList moduleList : listModule) {
+            if (idOrName.equalsIgnoreCase(moduleList.getType()) || idOrName.equalsIgnoreCase(moduleList.getId())) {
+                return moduleList;
+
+            }
+        }
+        return null;
+    }
+
+    public Module getModuleById(List<Module> listModule, String idOrName) {
+        for (Module moduleList : listModule) {
+            if (idOrName.equalsIgnoreCase(moduleList.getId())) {
+                return moduleList;
+
+            }
+        }
+        return null;
+    }
 
 }
