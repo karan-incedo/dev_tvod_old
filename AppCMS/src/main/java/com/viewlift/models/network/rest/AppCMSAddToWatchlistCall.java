@@ -43,6 +43,7 @@ public class AppCMSAddToWatchlistCall {
         try {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Authorization", authToken);
+
             Call<AppCMSAddToWatchlistResult> call;
             if (add) {
                 call = appCMSAddToWatchlistRest.add(url, authTokenMap, request);

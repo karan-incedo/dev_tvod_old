@@ -89,7 +89,21 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
 
             holder.itemView.setOnClickListener(v -> {
                 //Todo need to remove toast and call the respective team pages.
-                Toast.makeText(v.getContext(), holder.navItemLabel.getText().toString() + " Under progress..", Toast.LENGTH_SHORT).show();
+                appCMSPresenter.cancelInternalEvents();
+                if (!appCMSPresenter.navigateToPage(navigationItem.getPageId(),
+                        navigationItem.getTitle(),
+                        navigationItem.getUrl(),
+                        false,
+                        false,
+                        false,
+                        false,
+                        false,
+                        null)) {
+                    //Log.e(TAG, "Could not navigate to page with Title: " +
+//                                        navigationFooter.getTitle() +
+//                                        " Id: " +
+//                                        navigationFooter.getPageId());
+                }
             });
         }
     }
