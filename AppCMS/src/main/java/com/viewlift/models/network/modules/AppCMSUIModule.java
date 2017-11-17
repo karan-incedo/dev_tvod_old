@@ -176,6 +176,9 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_player_key),
                 AppCMSUIKeyType.PAGE_SHOW_PLAYER_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_web_view_key),
+                AppCMSUIKeyType.PAGE_WEB_VIEW_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_image_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_add_to_watchlist_key),
@@ -374,7 +377,6 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key),
                 AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
-
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key),
@@ -422,13 +424,6 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_module_key),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY);
-
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_banner_module_key),
-                AppCMSUIKeyType.PAGE_BANNER_MODULE_KEY);
-
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_player_module_key),
-                AppCMSUIKeyType.PAGE_SHOW_PLAYER_MODULE_KEY);
-
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_tray_module_key),
                 AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY);

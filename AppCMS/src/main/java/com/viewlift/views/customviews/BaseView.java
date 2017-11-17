@@ -51,6 +51,12 @@ public abstract class BaseView extends FrameLayout {
         }
         return 0.0f;
     }
+    public static int dpToPx(int dp, Context context)
+    {
+        return context.getResources().getDimensionPixelSize(dp);
+
+        //return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
 
     public static float convertPixelsToDp(float px, Context context) {
         if (context != null) {

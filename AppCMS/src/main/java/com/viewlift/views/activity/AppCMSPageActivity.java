@@ -905,7 +905,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.setCancelAllLoads(true);
 
-        appCMSPresenter.dismissPopupWindowPlayer();
+        appCMSPresenter.dismissPopupWindowPlayer(true);
         appCMSPresenter.setCancelAllLoads(true);
         //Log.d(TAG, "onDestroy()");
     }
@@ -1387,7 +1387,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     break;
             }
             if (!(appCMSPageFragment instanceof AppCMSPageFragment)) {
-                appCMSPresenter.dismissPopupWindowPlayer();
+                appCMSPresenter.dismissPopupWindowPlayer(true);
             }
 
             if (appCMSPageFragment != null) {
@@ -1952,7 +1952,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             //add navigation item parent view
             appCMSTabNavContainerItems = new LinearLayout(this);
-            appCMSTabNavContainerItems.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
+            LinearLayout.LayoutParams appCMSTabNavContainerItemsParam= new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+           /* if (BaseView.isTablet(this)){
+
+                weight=(weight/2);
+            }else{
+                appCMSTabNavContainerItems.setWeightSum(WEIGHT_SUM);
+            }*/
+
+            appCMSTabNavContainerItemsParam.gravity=Gravity.CENTER;
+
+            appCMSTabNavContainerItems.setLayoutParams(appCMSTabNavContainerItemsParam);
             appCMSTabNavContainerItems.setOrientation(LinearLayout.HORIZONTAL);
             appCMSTabNavContainer.addView(appCMSTabNavContainerItems);
 
@@ -1973,7 +1983,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 navBarItemView.setLabel(tabLabel);
                 navBarItemView.setHighlightColor(highlightColor);
 
-                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
                 param.weight = weight;
                 param.gravity = Gravity.CENTER;
                 navBarItemView.setLayoutParams(param);

@@ -1,6 +1,7 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -25,14 +26,22 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.Display;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Switch;
@@ -150,6 +159,7 @@ public class ViewCreator {
         ((TextView) view).setText(infoText.toString());
         view.setAlpha(0.6f);
     }
+
 
     public static long adjustColor1(long color1, long color2) {
         double ratio = (double) color1 / (double) color2;
@@ -1002,6 +1012,8 @@ public class ViewCreator {
         pageView.clearExistingViewLists();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
+
+
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
@@ -1017,6 +1029,10 @@ public class ViewCreator {
                 module.setType(moduleInfo.getType());
                 module.setView(moduleInfo.getView());
                 module.setBlockName(moduleInfo.getBlockName());
+            }
+            if (module.getBlockName().equalsIgnoreCase("webFrame01")) {
+                module.setComponents(moduleInfo.getComponents());
+                module.setLayout(moduleInfo.getLayout());
             }
 
             /*if(moduleInfo.getBlockName().equalsIgnoreCase("banner01")){
@@ -1681,9 +1697,13 @@ public class ViewCreator {
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
                 componentViewResult.componentView = playerView(context, appCMSPresenter, moduleAPI.getContentData().get(0).getGist().getId());
                 componentViewResult.componentView.setId(R.id.video_player_id);
-
                 break;
-
+            case PAGE_WEB_VIEW_KEY:
+                componentViewResult.componentView = getWebViewComponent(context, moduleAPI, component);
+//                ((WebView) componentViewResult.componentView).getSettings().setLoadWithOverviewMode(true);
+//                ((WebView) componentViewResult.componentView).getSettings().setUseWideViewPort(true);
+//                ((WebView) componentViewResult.componentView).getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+                break;
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)
@@ -3664,6 +3684,65 @@ public class ViewCreator {
 
         return videoPlayerView;
     }
+
+    public static WebView getWebViewComponent(Context context, Module moduleAPI, Component component) {
+
+        WebView webView = new WebView(context);
+        webView.getSettings().setJavaScriptEnabled(true);
+//        webView.getSettings().setLoadWithOverviewMode(false);
+//        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        webView.setBackgroundColor(Color.TRANSPARENT);
+        Display display = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+        int width1 = display.getWidth();
+        int height1 = 210;
+//        int width1 = BaseView.getDeviceWidth();
+        System.out.println("device width-" + width1);
+//        String html = "<iframe style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
+        String html = "<iframe width=\"" + width1 + "\" height=\"" + height1 + "px\" style=\"border: 0px solid #cccccc;\" src=\"https://www.stanza.co/@monumentalbroadcast?embed=true&site=monumentalsportsnetwork.com\" ></iframe>";
+
+
+        String htmlStart = "<html> <header><meta name='viewport' content='user-scalable=no'/> </header> <body>";
+        String htmlEnd = "</body></html>";
+//        webView.setInitialScale(100);
+
+//        webView.getSettings().
+//        webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+
+        String webViewUrl = null;
+        if (moduleAPI != null && moduleAPI.getRawText() != null) {
+            webViewUrl = moduleAPI.getRawText();
+        }
+//        String data_html = "<!DOCTYPE html><html> <head> <meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"target-densitydpi=high-dpi\" /> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> </head> <body style=\"background:black;margin:0 0 0 0; padding:0 0 0 0;\"> <iframe style=\" width=' " + width1 + "' height='" + height1 + "' src=\"" + webViewUrl + "\" frameborder=\"0\"></iframe> </body> </html> ";
+
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                context.startActivity(browserIntent);
+                return true;
+            }
+
+        });
+//        webView.loadDataWithBaseURL(webViewUrl, data_html, "text/html", "UTF-8", null);
+
+//        webView.loadData(htmlStart+html+htmlEnd, "text/html", null);
+        webView.loadData(html, "text/html", "UTF-8");
+
+//        webView.loadUrl(html);
+        String finalWebViewUrl = html;
+        webView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(finalWebViewUrl));
+                context.startActivity(browserIntent);
+            }
+        });
+
+        return webView;
+    }
+
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {
         final View removeAllButton;
