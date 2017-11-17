@@ -446,6 +446,7 @@
 
     <string name="contact_us">Contact Us</string>
 
+    <string name="app_cms_page_show_player_key">playerShow</string>
     <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
     <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
     <string name="app_cms_contact_us_module">AC ContactUs 01</string>
