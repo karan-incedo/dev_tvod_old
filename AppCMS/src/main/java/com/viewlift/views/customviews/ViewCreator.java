@@ -601,6 +601,10 @@ public class ViewCreator {
                                         componentViewResult.componentView.setVisibility(View.GONE);
                                         componentViewResult.shouldHideComponent = true;
                                     }
+                                } else if (componentKey == AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY) {
+                                    if (view instanceof DotSelectorView) {
+                                        ((DotSelectorView) view).select(0);
+                                    }
                                 } else {
                                     if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
                                         String directorTitle = null;
@@ -939,13 +943,13 @@ public class ViewCreator {
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter,
                                  List<String> modulesToIgnore) {
-        if (appCMSPageUI == null || appCMSPageAPI == null) {
+        if (appCMSPageUI == null) {
             return null;
         }
 
         PageView pageView = null;
         try {
-            pageView = appCMSPresenter.getPageViewLruCache().get(appCMSPageAPI.getId()
+            pageView = appCMSPresenter.getPageViewLruCache().get(screenName
                     + BaseView.isLandscape(context));
         } catch (Exception e) {
 
@@ -970,14 +974,14 @@ public class ViewCreator {
             if (appCMSPresenter.isPageAVideoPage(screenName)) {
                 appCMSPresenter.getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
             } else {
-                appCMSPresenter.getPageViewLruCache().put(appCMSPageAPI.getId()
+                appCMSPresenter.getPageViewLruCache().put(screenName
                         + BaseView.isLandscape(context), pageView);
             }
             newView = true;
         }
 
         if (newView ||
-                (!appCMSPresenter.isPagePrimary(appCMSPageAPI.getId()) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
+                (!appCMSPresenter.isPagePrimary(screenName) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
             pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
             pageView.removeAllAddOnViews();
@@ -1041,7 +1045,7 @@ public class ViewCreator {
 
             boolean createModule = !modulesToIgnore.contains(module.getType());
 
-            if (createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+            if (appCMSPageAPI != null && createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY)) {
@@ -1049,7 +1053,7 @@ public class ViewCreator {
             }
 
             if (createModule) {
-                if (appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
+                if (appCMSPageAPI != null && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                         jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY &&
                         jsonValueKeyMap.get(module.getType()) != AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY) {
                 }
@@ -1063,7 +1067,7 @@ public class ViewCreator {
                 if (childView != null) {
 //                    childrenContainer.addView(childView);
                     if (moduleAPI == null) {
-                        childView.setVisibility(View.GONE);
+//                        childView.setVisibility(View.GONE);
                     }
                 }
             }
@@ -1416,9 +1420,9 @@ public class ViewCreator {
         componentViewResult.shouldHideComponent = false;
         componentViewResult.onInternalEvent = null;
 
-        if (moduleAPI == null) {
-            return;
-        }
+//        if (moduleAPI == null) {
+//            return;
+//        }
 
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
@@ -1451,7 +1455,8 @@ public class ViewCreator {
                                     false));
 
                     List<Mpeg> mpegs;
-                    if (moduleAPI.getContentData() != null &&
+                    if (moduleAPI != null &&
+                            moduleAPI.getContentData() != null &&
                             !moduleAPI.getContentData().isEmpty() &&
                             moduleAPI.getContentData().get(0) != null &&
                             moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
@@ -1478,13 +1483,11 @@ public class ViewCreator {
                     ((RecyclerView) componentViewResult.componentView).setAdapter(radioAdapter);
                     componentViewResult.componentView.setId(R.id.download_quality_selection_list);
 
-                    if (pageView != null) {
-                        pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(radioAdapter)
-                                .listview((RecyclerView) componentViewResult.componentView)
-                                .id(moduleAPI.getId() + component.getKey())
-                                .build());
-                    }
+                    pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                            .adapter(radioAdapter)
+                            .listview((RecyclerView) componentViewResult.componentView)
+                            .id(moduleId + component.getKey())
+                            .build());
                 } else {
                     componentViewResult.componentView = new RecyclerView(context);
 
@@ -1494,7 +1497,7 @@ public class ViewCreator {
                                     false));
 
                     AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-                            moduleAPI.getContentData(),
+                            moduleAPI != null ? moduleAPI.getContentData() : null,
                             component.getComponents(),
                             appCMSPresenter,
                             jsonValueKeyMap,
@@ -1567,7 +1570,7 @@ public class ViewCreator {
                             pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                     .adapter(appCMSViewAdapter)
                                     .listview((RecyclerView) componentViewResult.componentView)
-                                    .id(moduleAPI.getId() + component.getKey())
+                                    .id(moduleId + component.getKey())
                                     .build());
                         }
                     } else {
@@ -1611,7 +1614,8 @@ public class ViewCreator {
                         }
 
                         if (parentViewType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null &&
+                                    moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getSeason() != null &&
@@ -1629,7 +1633,7 @@ public class ViewCreator {
                                     pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                             .adapter(appCMSTraySeasonItemAdapter)
                                             .listview((RecyclerView) componentViewResult.componentView)
-                                            .id(moduleAPI.getId() + component.getKey())
+                                            .id(moduleId + component.getKey())
                                             .build());
                                 }
                             }
@@ -1653,14 +1657,14 @@ public class ViewCreator {
                                 pageView.addListWithAdapter(new ListWithAdapter.Builder()
                                         .adapter(appCMSViewAdapter)
                                         .listview((RecyclerView) componentViewResult.componentView)
-                                        .id(moduleAPI.getId() + component.getKey())
+                                        .id(moduleId + component.getKey())
                                         .build());
                             }
                         }
                     }
 
-                    if (moduleAPI.getContentData() == null ||
-                            moduleAPI.getContentData().isEmpty()) {
+                    if (moduleAPI != null && (moduleAPI.getContentData() == null ||
+                            moduleAPI.getContentData().isEmpty())) {
                         componentViewResult.shouldHideModule = true;
                     }
                 }
@@ -1681,31 +1685,30 @@ public class ViewCreator {
                 if (settings.getLoop()) {
                     loop = settings.getLoop();
                 }
-                AppCMSCarouselItemAdapter appCMSCarouselItemAdapter =
-                        new AppCMSCarouselItemAdapter(context,
-                                this,
-                                appCMSPresenter,
-                                settings,
-                                parentLayout,
-                                component,
-                                jsonValueKeyMap,
-                                moduleAPI,
-                                (RecyclerView) componentViewResult.componentView,
-                                loop,
-                                appCMSAndroidModules);
+                AppCMSCarouselItemAdapter appCMSCarouselItemAdapter = new AppCMSCarouselItemAdapter(context,
+                        this,
+                        appCMSPresenter,
+                        settings,
+                        parentLayout,
+                        component,
+                        jsonValueKeyMap,
+                        moduleAPI,
+                        (RecyclerView) componentViewResult.componentView,
+                        loop,
+                        appCMSAndroidModules);
                 ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSCarouselItemAdapter);
                 if (pageView != null) {
                     pageView.addListWithAdapter(new ListWithAdapter.Builder()
                             .adapter(appCMSCarouselItemAdapter)
                             .listview((RecyclerView) componentViewResult.componentView)
-                            .id(moduleAPI.getId() + component.getKey())
+                            .id(moduleId + component.getKey())
                             .build());
                 }
                 componentViewResult.onInternalEvent = appCMSCarouselItemAdapter;
                 componentViewResult.onInternalEvent.setModuleId(moduleId);
 
-                if (moduleAPI.getContentData() == null ||
-                        moduleAPI.getContentData().isEmpty()) {
+                if (moduleAPI != null && (moduleAPI.getContentData() == null ||
+                        moduleAPI.getContentData().isEmpty())) {
                     componentViewResult.shouldHideModule = true;
                 }
                 break;
@@ -1723,8 +1726,11 @@ public class ViewCreator {
                         component,
                         0xff000000 + (int) selectedColor,
                         0xff000000 + (int) deselectedColor);
-                int numDots = moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0;
+                int numDots = moduleAPI != null ? moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0 : 0;
                 ((DotSelectorView) componentViewResult.componentView).addDots(numDots);
+                if (0 < numDots) {
+                    ((DotSelectorView) componentViewResult.componentView).select(0);
+                }
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
                 componentViewResult.onInternalEvent.setModuleId(moduleId);
                 componentViewResult.useMarginsAsPercentagesOverride = false;
@@ -1746,7 +1752,7 @@ public class ViewCreator {
                 if (!gridElement) {
                     if (!TextUtils.isEmpty(component.getText()) && componentKey != AppCMSUIKeyType.PAGE_PLAY_KEY) {
                         ((TextView) componentViewResult.componentView).setText(component.getText());
-                    } else if (moduleAPI.getSettings() != null &&
+                    } else if (moduleAPI != null && moduleAPI.getSettings() != null &&
                             !moduleAPI.getSettings().getHideTitle() &&
                             !TextUtils.isEmpty(moduleAPI.getTitle()) &&
                             componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
@@ -1778,7 +1784,7 @@ public class ViewCreator {
                             !appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                     }
-                } else if (jsonValueKeyMap.get(moduleAPI.getModuleType())
+                } else if (moduleAPI != null && jsonValueKeyMap.get(moduleAPI.getModuleType())
                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY
                         && componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY
                         && component.getBorderWidth() != 0) {
@@ -1877,7 +1883,8 @@ public class ViewCreator {
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                        if (moduleAPI.getContentData() != null &&
+                        if (moduleAPI != null &&
+                                moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null) {
@@ -1900,7 +1907,8 @@ public class ViewCreator {
                                 .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
 
-                        if (moduleAPI.getContentData() != null &&
+                        if (moduleAPI != null &&
+                                moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null) {
@@ -1915,7 +1923,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
-                        if (moduleAPI.getContentData() != null &&
+                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getContentDetails() != null &&
@@ -1955,7 +1963,8 @@ public class ViewCreator {
 
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null &&
+                                    moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
@@ -2041,6 +2050,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setOnClickListener(v -> {
                             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
                             if (appCMSMain != null &&
+                                    moduleAPI != null &&
                                     moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
@@ -2145,7 +2155,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                        if (jsonValueKeyMap.get(moduleAPI.getModuleType())
+                        if (moduleAPI != null && jsonValueKeyMap.get(moduleAPI.getModuleType())
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 if (!appCMSPresenter.sendCloseOthersAction(null,
@@ -2314,7 +2324,7 @@ public class ViewCreator {
                 if (!gridElement) {
                     switch (componentKey) {
                         case PAGE_API_TITLE:
-                            if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
+                            if (moduleAPI != null && !TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
                                 if (component.getNumberOfLines() != 0) {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
@@ -2337,7 +2347,7 @@ public class ViewCreator {
                             break;
 
                         case PAGE_API_DESCRIPTION:
-                            if (!TextUtils.isEmpty(moduleAPI.getRawText())) {
+                            if (moduleAPI != null && !TextUtils.isEmpty(moduleAPI.getRawText())) {
                                 Spannable rawHtmlSpannable = htmlSpanner.fromHtml(moduleAPI.getRawText());
                                 ((TextView) componentViewResult.componentView).setText(rawHtmlSpannable);
                                 ((TextView) componentViewResult.componentView).setMovementMethod(LinkMovementMethod.getInstance());
@@ -2347,7 +2357,7 @@ public class ViewCreator {
                         case PAGE_TRAY_TITLE_KEY:
                             if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
-                            } else if (moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
+                            } else if (moduleAPI != null && moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
                                     !TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
@@ -2357,7 +2367,7 @@ public class ViewCreator {
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                                if (moduleAPI.getContentData() != null &&
+                                if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                         !moduleAPI.getContentData().isEmpty() &&
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getSeason() != null &&
@@ -2371,7 +2381,7 @@ public class ViewCreator {
 
                         case PAGE_AUTOPLAY_MOVIE_DESCRIPTION_KEY:
                             String autoplayVideoDescription = null;
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2390,7 +2400,7 @@ public class ViewCreator {
                             } else if (!BaseView.isLandscape(context)) {
                                 componentViewResult.shouldHideComponent = true;
                             }
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2409,7 +2419,7 @@ public class ViewCreator {
 
                         case PAGE_VIDEO_DESCRIPTION_KEY:
                             String videoDescription = null;
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2428,7 +2438,7 @@ public class ViewCreator {
                             } else if (!BaseView.isLandscape(context)) {
                                 componentViewResult.shouldHideComponent = true;
                             }
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2446,7 +2456,7 @@ public class ViewCreator {
                             break;
 
                         case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2463,7 +2473,7 @@ public class ViewCreator {
                             break;
 
                         case PAGE_VIDEO_TITLE_KEY:
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2481,7 +2491,7 @@ public class ViewCreator {
 
                         case PAGE_VIDEO_SUBTITLE_KEY:
                         case PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY:
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null) {
                                 setViewWithSubtitle(context,
@@ -2491,7 +2501,7 @@ public class ViewCreator {
                             break;
 
                         case PAGE_VIDEO_AGE_LABEL_KEY:
-                            if (moduleAPI.getContentData() != null &&
+                            if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2661,7 +2671,7 @@ public class ViewCreator {
 
                 switch (componentKey) {
                     case PAGE_AUTOPLAY_MOVIE_IMAGE_KEY:
-                        if (moduleAPI.getContentData() != null &&
+                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2744,7 +2754,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_IMAGE_KEY:
-                        if (moduleAPI.getContentData() != null &&
+                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
@@ -2819,7 +2829,7 @@ public class ViewCreator {
                 if (appCMSPresenter.isUserLoggedIn()) {
                     ((ProgressBar) componentViewResult.componentView).setMax(100);
                     ((ProgressBar) componentViewResult.componentView).setProgress(0);
-                    if (moduleAPI.getContentData() != null &&
+                    if (moduleAPI != null && moduleAPI.getContentData() != null &&
                             !moduleAPI.getContentData().isEmpty() &&
                             moduleAPI.getContentData().get(0) != null &&
                             moduleAPI.getContentData().get(0).getGist() != null) {
@@ -2924,7 +2934,7 @@ public class ViewCreator {
                 String starringTitle = null;
                 StringBuilder starringListSb = new StringBuilder();
 
-                if (moduleAPI.getContentData() != null &&
+                if (moduleAPI != null && moduleAPI.getContentData() != null &&
                         !moduleAPI.getContentData().isEmpty() &&
                         moduleAPI.getContentData().get(0) != null &&
                         moduleAPI.getContentData().get(0).getCreditBlocks() != null) {
@@ -2984,7 +2994,7 @@ public class ViewCreator {
                         BaseView.getFontSizeKey(context, component.getLayout()),
                         BaseView.getFontSizeValue(context, component.getLayout()));
 
-                if (!BaseView.isTablet(context)
+                if (moduleAPI != null && !BaseView.isTablet(context)
                         && jsonValueKeyMap.get(moduleAPI.getModuleType())
                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                     componentViewResult.componentView.setVisibility(View.GONE);
@@ -3038,24 +3048,28 @@ public class ViewCreator {
                 break;
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
-                componentViewResult.componentView = new ViewPlansMetaDataView(context,
-                        component,
-                        component.getLayout(),
-                        this,
-                        moduleAPI,
-                        jsonValueKeyMap,
-                        appCMSPresenter,
-                        settings);
+                if (moduleAPI != null) {
+                    componentViewResult.componentView = new ViewPlansMetaDataView(context,
+                            component,
+                            component.getLayout(),
+                            this,
+                            moduleAPI,
+                            jsonValueKeyMap,
+                            appCMSPresenter,
+                            settings);
+                }
                 break;
 
             case PAGE_SETTINGS_KEY:
-                componentViewResult.componentView = createModuleView(context,
-                        component,
-                        moduleAPI,
-                        appCMSAndroidModules,
-                        pageView,
-                        jsonValueKeyMap,
-                        appCMSPresenter);
+                if (moduleAPI != null) {
+                    componentViewResult.componentView = createModuleView(context,
+                            component,
+                            moduleAPI,
+                            appCMSAndroidModules,
+                            pageView,
+                            jsonValueKeyMap,
+                            appCMSPresenter);
+                }
                 break;
 
             case PAGE_TOGGLE_BUTTON_KEY:
@@ -3135,7 +3149,7 @@ public class ViewCreator {
                 break;
 
             default:
-                if (component.getComponents() != null &&
+                if (moduleAPI != null && component.getComponents() != null &&
                         !component.getComponents().isEmpty()) {
                     componentViewResult.componentView = createModuleView(context,
                             component,
@@ -3151,7 +3165,7 @@ public class ViewCreator {
 
         if (pageView != null) {
             pageView.addViewWithComponentId(new ViewWithComponentId.Builder()
-                    .id(moduleAPI.getId() + component.getKey())
+                    .id(moduleId + component.getKey())
                     .view(componentViewResult.componentView)
                     .build());
         }

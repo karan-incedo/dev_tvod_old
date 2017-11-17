@@ -4984,95 +4984,85 @@ public class AppCMSPresenter {
             if (appCMSPageUI != null) {
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
 
-                String baseUrl = appCMSMain.getApiBaseUrl();
-                String endPoint = pageIdToPageAPIUrlMap.get(pageId);
-                String siteId = appCMSSite.getGist().getSiteInternalName();
-                boolean usePageIdQueryParam = true;
-                boolean viewPlans = isViewPlanPage(pageId);
-                boolean showPage = false;
-                String apiUrl = getApiUrl(usePageIdQueryParam,
-                        viewPlans,
-                        showPage,
-                        baseUrl,
-                        endPoint,
-                        siteId,
-                        getPageId(appCMSPageUI));
+                AppCMSPageAPI appCMSPageAPI = null;
+                if (platformType == PlatformType.ANDROID) {
+                    try {
+                        appCMSPageAPI = getPageAPILruCache().get(pageId);
+                    } catch (Exception e) {
+                        appCMSPageAPI = null;
+                    }
+                }
 
-                getPageIdContent(apiUrl,
-                        getPageId(appCMSPageUI),
-                        new AppCMSPageAPIAction(appbarPresent,
-                                fullscreenEnabled,
-                                navbarPresent,
-                                appCMSPageUI,
-                                pageId,
-                                pageId,
-                                pageTitle,
-                                pageId,
-                                launchActivity,
-                                sendCloseAction,
-                                searchQuery) {
-                            @Override
-                            public void call(final AppCMSPageAPI appCMSPageAPI) {
-                                final AppCMSPageAPIAction appCMSPageAPIAction = this;
-                                if (appCMSPageAPI != null) {
-                                    cancelInternalEvents();
-                                    pushActionInternalEvents(appCMSPageAPIAction.pageId
-                                            + BaseView.isLandscape(currentActivity));
-                                    navigationPageData.put(appCMSPageAPIAction.pageId, appCMSPageAPI);
-                                    if (appCMSPageAPIAction.launchActivity) {
-                                        launchPageActivity(currentActivity,
-                                                appCMSPageAPIAction.appCMSPageUI,
-                                                appCMSPageAPI,
-                                                appCMSPageAPIAction.pageId,
-                                                appCMSPageAPIAction.pageTitle,
-                                                appCMSPageAPIAction.pagePath,
-                                                pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
-                                                loadFromFile,
-                                                appCMSPageAPIAction.appbarPresent,
-                                                appCMSPageAPIAction.fullscreenEnabled,
-                                                appCMSPageAPIAction.navbarPresent,
-                                                appCMSPageAPIAction.sendCloseAction,
-                                                appCMSPageAPIAction.searchQuery,
-                                                ExtraScreenType.NONE);
-                                    } else {
-                                        Bundle args = getPageActivityBundle(currentActivity,
-                                                appCMSPageAPIAction.appCMSPageUI,
-                                                appCMSPageAPI,
-                                                appCMSPageAPIAction.pageId,
-                                                appCMSPageAPIAction.pageTitle,
-                                                appCMSPageAPIAction.pagePath,
-                                                pageIdToPageNameMap.get(appCMSPageAPIAction.pageId),
-                                                loadFromFile,
-                                                appCMSPageAPIAction.appbarPresent,
-                                                appCMSPageAPIAction.fullscreenEnabled,
-                                                appCMSPageAPIAction.navbarPresent,
-                                                appCMSPageAPIAction.sendCloseAction,
-                                                appCMSPageAPIAction.searchQuery,
-                                                ExtraScreenType.NONE);
-                                        if (args != null) {
-                                            Intent updatePageIntent =
-                                                    new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
-                                            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                                    args);
-                                            currentActivity.sendBroadcast(updatePageIntent);
-                                            dismissOpenDialogs(null);
-                                        }
-                                    }
+                if (launchActivity) {
+                    launchPageActivity(currentActivity,
+                            appCMSPageUI,
+                            appCMSPageAPI,
+                            pageId,
+                            pageTitle,
+                            pageId,
+                            pageIdToPageNameMap.get(pageId),
+                            loadFromFile,
+                            appbarPresent,
+                            fullscreenEnabled,
+                            navbarPresent,
+                            sendCloseAction,
+                            searchQuery,
+                            ExtraScreenType.NONE);
 
-                                    launched = true;
-                                } else {
-                                    if (launched) {
-                                        sendStopLoadingPageAction(true,
-                                                () -> navigateToPage(pageId, pageTitle, url, launchActivity, appbarPresent, fullscreenEnabled, navbarPresent, sendCloseAction, searchQuery));
-                                        setNavItemToCurrentAction(currentActivity);
-                                    } else {
-                                        launchBlankPage();
-                                    }
-                                }
-                                loadingPage = false;
-                            }
-                        });
-                result = true;
+                    launched = true;
+                } else {
+                    Bundle args = getPageActivityBundle(currentActivity,
+                            appCMSPageUI,
+                            appCMSPageAPI,
+                            pageId,
+                            pageTitle,
+                            pageId,
+                            pageIdToPageNameMap.get(pageId),
+                            loadFromFile,
+                            appbarPresent,
+                            fullscreenEnabled,
+                            navbarPresent,
+                            sendCloseAction,
+                            searchQuery,
+                            ExtraScreenType.NONE);
+                    if (args != null) {
+                        Intent updatePageIntent =
+                                new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
+                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                args);
+                        currentActivity.sendBroadcast(updatePageIntent);
+                        dismissOpenDialogs(null);
+                    }
+
+                    launched = true;
+                }
+
+                if (appCMSPageAPI == null) {
+                    showLoadingDialog(true);
+                    refreshPageAPIData(appCMSPageUI, pageId, appCMSPageAPI1 -> {
+                        loadingPage = false;
+                        try {
+                            getPageAPILruCache().put(pageId, appCMSPageAPI1);
+                        } catch (Exception e) {
+
+                        }
+                        cancelInternalEvents();
+                        if (currentActivity != null) {
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+                            pushActionInternalEvents(pageId
+                                    + BaseView.isLandscape(currentActivity));
+                        }
+                        restartInternalEvents();
+                        navigationPageData.put(pageId, appCMSPageAPI1);
+                    });
+                } else {
+                    loadingPage = false;
+                    cancelInternalEvents();
+                    pushActionInternalEvents(pageId
+                            + BaseView.isLandscape(currentActivity));
+                    navigationPageData.put(pageId, appCMSPageAPI);
+                }
+
                 //Firebase Event when contact us screen is opened.
             }
         } else if (isNetworkConnected() &&
@@ -6228,7 +6218,7 @@ public class AppCMSPresenter {
 
             userHistoryData.clear();
 
-            refreshAPIData(this::navigateToHomePage, false);
+            navigateToHomePage();
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
         }
