@@ -84,7 +84,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-
+        View navTopLine = view.findViewById(R.id.nav_top_line);
         AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
         textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
         bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
@@ -93,7 +93,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         isUserLogin = /*appCMSPresenter.isUserLoggedIn()*/ true;
 
         TextView navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
-        View navTopLine = view.findViewById(R.id.nav_top_line);
+
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -106,11 +106,12 @@ public class AppCmsSubNavigationFragment extends Fragment {
             mRecyclerView.setAdapter(navigationAdapter);
             setFocusable(true);
             navigationAdapter.setFocusOnSelectedPage();
+            navTopLine.setVisibility(View.GONE);
         } else {
             navMenuTile.setText("Settings");
             navMenuTile.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_regular)));
             navMenuTile.setVisibility(View.VISIBLE);
-            navTopLine.setVisibility(View.VISIBLE);
+
             STNavigationAdapter navigationAdapter = new STNavigationAdapter(
                     getActivity(),
                     textColor,
@@ -122,6 +123,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
             mRecyclerView.setAdapter(navigationAdapter);
             setFocusable(true);
             navigationAdapter.setFocusOnSelectedPage();
+            navTopLine.setVisibility(View.VISIBLE);
         }
         return view;
     }
@@ -497,7 +499,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                 isLoginDialogPage
                         );
                     }
-                    STNavigationAdapter.this.notifyDataSetChanged();
+                    STNavigationAdapter.this.notifyItemChanged(position);
                 }
             });
         }

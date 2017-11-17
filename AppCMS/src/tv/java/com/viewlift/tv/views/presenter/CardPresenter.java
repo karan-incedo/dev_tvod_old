@@ -99,7 +99,7 @@ public class CardPresenter extends Presenter {
             }
         });
 
-        if(trayBackground != null && trayBackground.equalsIgnoreCase("gradient")){
+        if(mAppCmsPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
             frameLayout.setBackground(Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)));
         }
         return new ViewHolder(frameLayout);
@@ -157,7 +157,7 @@ public class CardPresenter extends Presenter {
                                         0);
 
                                 imageView.setLayoutParams(parms);
-                                parentLayout.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
+                               // parentLayout.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
 
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);

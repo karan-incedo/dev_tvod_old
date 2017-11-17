@@ -9603,8 +9603,10 @@ public class AppCMSPresenter {
                                 //Log.d(TAG, "Launching first page: " + firstPage.getPageName());
                                 cancelInternalEvents();
 
-                                Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
-                                currentActivity.sendBroadcast(logoAnimIntent);
+                                if(getTemplateType() == TemplateType.ENTERTAINMENT) {
+                                    Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
+                                    currentActivity.sendBroadcast(logoAnimIntent);
+                                }
 
                                 NavigationPrimary homePageNav = findHomePageNavItem();
                                 boolean launchSuccess = navigateToTVPage(homePage.getPageId(),

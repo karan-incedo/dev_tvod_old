@@ -42,7 +42,7 @@
             android:textAlignment="center"
             android:layout_alignParentTop="true"
             android:focusable="false"
-            android:text="@string/watch_live_text"/>
+            />
 
 
         <RelativeLayout

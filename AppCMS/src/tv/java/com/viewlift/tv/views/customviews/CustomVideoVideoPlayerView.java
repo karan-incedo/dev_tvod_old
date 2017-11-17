@@ -109,11 +109,22 @@ public class CustomVideoVideoPlayerView extends VideoPlayerView{
         appCMSPresenter.refreshVideoData(videoId, new Action1<ContentDatum>() {
             @Override
             public void call(ContentDatum contentDatum) {
-                setUri(Uri.parse(contentDatum.getStreamingInfo().getVideoAssets().getHls()),null);
-                getPlayerView().getPlayer().setPlayWhenReady(true);
-                relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
-                currentPlayingIndex = 0;
-                hideProgressBar();
+                String url = null;
+                if(null != contentDatum && null != contentDatum.getStreamingInfo()&& null != contentDatum.getStreamingInfo().getVideoAssets()){
+                    if(null != contentDatum.getStreamingInfo().getVideoAssets().getHls()){
+                        url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
+                    }else if(null != contentDatum.getStreamingInfo().getVideoAssets().getMpeg()
+                            && contentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0){
+                        url = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                    }
+                }
+                if(null != url) {
+                    setUri(Uri.parse(url), null);
+                    getPlayerView().getPlayer().setPlayWhenReady(true);
+                    relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
+                    currentPlayingIndex = 0;
+                    hideProgressBar();
+                }
             }
         });
     }

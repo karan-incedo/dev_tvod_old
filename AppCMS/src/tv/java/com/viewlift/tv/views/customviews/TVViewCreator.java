@@ -531,7 +531,7 @@ public class TVViewCreator {
                     customHeaderItem.setFontFamily(component.getFontFamily());
                     customHeaderItem.setFontWeight(component.getFontWeight());
                     customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
-                    customHeaderItem.setmModuleId(moduleData.getId());
+                    customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
                 }
                 if (null != moduleData) {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
@@ -558,16 +558,18 @@ public class TVViewCreator {
                 break;
 
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
-                customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
-                customHeaderItem.setmIsCarousal(false);
-                customHeaderItem.setmIsLivePlayer(true);
-                customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
-                PlayerPresenter cardPresenter = new PlayerPresenter();
-                cardPresenter.setVideoId(moduleData.getContentData().get(0).getGist().getId());
-                ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
-                pageView.setIsStandAlonePlayerEnabled(true);
-                listRowAdapter.add(1);
-                mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
+                if(null != moduleData){
+                    customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
+                    customHeaderItem.setmIsCarousal(false);
+                    customHeaderItem.setmIsLivePlayer(true);
+                    customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
+                    PlayerPresenter cardPresenter = new PlayerPresenter();
+                    cardPresenter.setVideoId(moduleData.getContentData().get(0).getGist().getId());
+                    ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(cardPresenter);
+                    pageView.setIsStandAlonePlayerEnabled(true);
+                    listRowAdapter.add(1);
+                    mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
+                }
                 break;
         }
     }
@@ -1324,6 +1326,22 @@ public class TVViewCreator {
                             Vto.addOnGlobalLayoutListener(layoutListener);
                             break;
                         case PAGE_VIDEO_TITLE_KEY:
+                            if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                            }
+                            ((TextView) componentViewResult.componentView).setMaxLines(2);
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            /* ViewTreeObserver titleTextVto = componentViewResult.componentView.getViewTreeObserver();
+
+                           ViewCreatorTitleLayoutListener viewCreatorTitleLayoutListener =
+                                    new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
+                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                            ((TextView) componentViewResult.componentView).setSingleLine(true);
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                            ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
+                            componentViewResult.componentView.setSelected(true);*/
+                            break;
+
                         case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
