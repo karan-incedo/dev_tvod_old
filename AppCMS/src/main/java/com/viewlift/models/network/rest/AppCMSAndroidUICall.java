@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Date;
 import java.util.Scanner;
 
 import javax.inject.Inject;
@@ -42,7 +43,10 @@ public class AppCMSAndroidUICall {
     }
 
     @WorkerThread
-    public AppCMSAndroidUI call(String url, boolean loadFromFile, int tryCount) throws IOException {
+    public AppCMSAndroidUI call(String url,
+                                boolean loadFromFile,
+                                boolean bustCache,
+                                int tryCount) throws IOException {
         String filename = getResourceFilename(url);
         AppCMSAndroidUI appCMSAndroidUI = null;
         if (loadFromFile) {
@@ -54,14 +58,21 @@ public class AppCMSAndroidUICall {
         }
         if (appCMSAndroidUI == null) {
             try {
-                appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+                if (bustCache) {
+                    StringBuilder urlWithCacheBuster = new StringBuilder(url);
+                    urlWithCacheBuster.append("&x=");
+                    urlWithCacheBuster.append(new Date().getTime());
+                    appCMSAndroidUI = appCMSAndroidUIRest.get(urlWithCacheBuster.toString()).execute().body();
+                } else {
+                    appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+                }
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +
 //                    e.getMessage());
             }
         }
         if (appCMSAndroidUI == null && tryCount == 0) {
-            return call(url, loadFromFile, tryCount + 1);
+            return call(url, loadFromFile, bustCache, tryCount + 1);
         } else if (appCMSAndroidUI == null) {
             try {
                 appCMSAndroidUI = readAndroidFromFile(filename);

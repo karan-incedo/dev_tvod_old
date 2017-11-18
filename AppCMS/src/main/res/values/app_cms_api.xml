@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
 
     <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>

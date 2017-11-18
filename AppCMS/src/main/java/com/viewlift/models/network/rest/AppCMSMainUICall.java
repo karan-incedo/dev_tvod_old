@@ -61,18 +61,21 @@ public class AppCMSMainUICall {
     }
 
     @WorkerThread
-    public AppCMSMain call(Context context, String siteId, int tryCount, boolean forceReloadFromNetwork) {
+    public AppCMSMain call(Context context, String siteId, int tryCount, boolean bustCache) {
         Date now = new Date();
-        final String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
+        StringBuilder appCMSMainUrlSb = new StringBuilder(context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_baseurl),
-                siteId,
-                now.getTime());
+                siteId));
+        if (bustCache) {
+            appCMSMainUrlSb.append("?x=");
+            appCMSMainUrlSb.append(now.getTime());
+        }
         AppCMSMain main = null;
         AppCMSMain mainInStorage = null;
         try {
             //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
-            final String hostName = new URL(appCMSMainUrl).getHost();
+            final String hostName = new URL(appCMSMainUrlSb.toString()).getHost();
             ExecutorService executor = Executors.newCachedThreadPool();
             Future<List<InetAddress>> future = executor.submit(()
                     -> okHttpClient.dns().lookup(hostName));
@@ -81,22 +84,22 @@ public class AppCMSMainUICall {
             } catch (TimeoutException e) {
                 //Log.e(TAG, "Connection timed out: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
+                    return call(context, siteId, tryCount + 1, bustCache);
                 }
                 return null;
             } catch (InterruptedException e) {
                 //Log.e(TAG, "Connection interrupted: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
+                    return call(context, siteId, tryCount + 1, bustCache);
                 }
                 return null;
             } catch (ExecutionException e) {
                 //Log.e(TAG, "Execution error: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
+                    return call(context, siteId, tryCount + 1, bustCache);
                 }
                 try {
-                    return readMainFromFile(getResourceFilename(appCMSMainUrl));
+                    return readMainFromFile(getResourceFilename(appCMSMainUrlSb.toString()));
                 } catch (Exception e1) {
                     //Log.e(TAG, "Could not retrieve main.json from file: " +
 //                        e1.getMessage());
@@ -108,12 +111,12 @@ public class AppCMSMainUICall {
 
             try {
 //                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
-                main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
+                main = appCMSMainUIRest.get(appCMSMainUrlSb.toString()).execute().body();
             } catch (Exception e) {
                 Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
             }
 
-            String filename = getResourceFilename(appCMSMainUrl);
+            String filename = getResourceFilename(appCMSMainUrlSb.toString());
             try {
                 mainInStorage = readMainFromFile(filename);
             } catch (Exception exception) {
@@ -135,7 +138,7 @@ public class AppCMSMainUICall {
         }
 
         if (main == null && tryCount == 0) {
-            return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
+            return call(context, siteId, tryCount + 1, bustCache);
         }
 
         return main;

@@ -318,18 +318,18 @@ public abstract class BaseView extends FrameLayout {
             if (isTablet(context)) {
                 if (isLandscape(context)) {
                     float maximumWidth = getViewMaximumWidth(layout.getTabletLandscape());
-                    if (maximumWidth != -1.0f) {
+                    if (maximumWidth >= 0.0f) {
                         return DEVICE_WIDTH * (maximumWidth / STANDARD_TABLET_HEIGHT_PX);
                     }
                 } else {
                     float maximumWidth = getViewMaximumWidth(layout.getTabletPortrait());
-                    if (maximumWidth != -1.0f) {
+                    if (maximumWidth >= 0.0f) {
                         return DEVICE_WIDTH * (maximumWidth / STANDARD_TABLET_WIDTH_PX);
                     }
                 }
             } else {
                 float maximumWidth = getViewMaximumWidth(layout.getMobile());
-                if (maximumWidth != -1.0f) {
+                if (maximumWidth >= 0.0f) {
                     return DEVICE_WIDTH * (maximumWidth / STANDARD_TABLET_WIDTH_PX);
                 }
             }
@@ -343,20 +343,20 @@ public abstract class BaseView extends FrameLayout {
                 if (isLandscape(context)) {
                     TabletLandscape tabletLandscape = layout.getTabletLandscape();
                     float height = getViewHeight(tabletLandscape);
-                    if (height != -1.0f) {
+                    if (height >= 0.0f) {
                         return DEVICE_HEIGHT * (height / STANDARD_TABLET_WIDTH_PX);
                     }
                 } else {
                     TabletPortrait tabletPortrait = layout.getTabletPortrait();
                     float height = getViewHeight(tabletPortrait);
-                    if (height != -1.0f) {
+                    if (height >= 0.0f) {
                         return DEVICE_HEIGHT * (height / STANDARD_TABLET_HEIGHT_PX);
                     }
                 }
             } else {
                 Mobile mobile = layout.getMobile();
                 float height = getViewHeight(mobile);
-                if (height != -1.0f) {
+                if (height >= 0.0f) {
                     return DEVICE_HEIGHT * (height / STANDARD_MOBILE_HEIGHT_PX);
                 }
             }
@@ -797,6 +797,11 @@ public abstract class BaseView extends FrameLayout {
                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
 
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                viewHeight = LayoutParams.WRAP_CONTENT;
+                viewWidth = LayoutParams.WRAP_CONTENT;
+            }
+
             switch (componentKey) {
                 case PAGE_TRAY_TITLE_KEY:
                     if (isTablet(getContext())) {
@@ -919,11 +924,6 @@ public abstract class BaseView extends FrameLayout {
                     break;
             }
 
-//            int fontsize = getFontsize(getContext(), childComponent);
-//            if (fontsize > 0) {
-//                ((TextView) view).setTextSize((float) fontsize);
-//            }
-
             if (maxViewWidth != -1) {
                 ((TextView) view).setMaxWidth(maxViewWidth);
             }
@@ -945,6 +945,18 @@ public abstract class BaseView extends FrameLayout {
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
             layoutParams.gravity = gravity;
+        }
+
+        if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+            float scaledY = convertVerticalValue(getContext(),
+                    getYAxis(getContext(), parentLayout, 0.0f));
+            if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
+                tm = (int) (convertVerticalValue(getContext(),
+                        getYAxis(getContext(), layout, 0.0f)));
+            }
+            tm += Math.round(scaledY);
+            layoutParams.setMargins(lm, tm, rm, bm);
+            layoutParams.height = LayoutParams.WRAP_CONTENT;
         }
 
         if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {

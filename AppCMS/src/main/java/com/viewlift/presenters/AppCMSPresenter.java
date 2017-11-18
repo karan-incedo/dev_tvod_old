@@ -6395,7 +6395,7 @@ public class AppCMSPresenter {
                               final String siteId,
                               final Uri searchQuery,
                               final PlatformType platformType,
-                              boolean forceReloadFromNetwork) {
+                              boolean bustCache) {
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
@@ -6405,7 +6405,7 @@ public class AppCMSPresenter {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
-                .forceReloadFromNetwork(forceReloadFromNetwork)
+                .bustCache(bustCache)
                 .build();
 
         try {
@@ -6419,7 +6419,7 @@ public class AppCMSPresenter {
                                             siteId,
                                             searchQuery,
                                             platformType,
-                                            forceReloadFromNetwork));
+                                            bustCache));
                         } else {
                             launchBlankPage();
                         }
@@ -8941,7 +8941,8 @@ public class AppCMSPresenter {
                                                                 }
 
                                                             },
-                                                            false);
+                                                            false,
+                                                            true);
                                                 } catch (Exception e) {
                                                     //Log.e(TAG, "Failed to refresh AppCMS page " +
 //                                                    metaPage.getPageName() +
@@ -8952,7 +8953,10 @@ public class AppCMSPresenter {
                                         }
 
                                         try {
-                                            getAppCMSModules(appCMSAndroid, true, (appCMSAndroidModules) -> {
+                                            getAppCMSModules(appCMSAndroid,
+                                                    true,
+                                                    true,
+                                                    (appCMSAndroidModules) -> {
                                                 if (appCMSAndroidModules != null) {
                                                     //Log.d(TAG, "Received and refreshed module list");
                                                     this.appCMSAndroidModules = appCMSAndroidModules;
@@ -9017,7 +9021,7 @@ public class AppCMSPresenter {
                                 GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                                         .context(currentActivity)
                                         .siteId(currentActivity.getString(R.string.app_cms_app_name))
-                                        .forceReloadFromNetwork(true)
+                                        .bustCache(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
                                     if (readyAction != null && main != null) {
@@ -9036,7 +9040,7 @@ public class AppCMSPresenter {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                             .context(currentActivity)
                             .siteId(currentActivity.getString(R.string.app_cms_app_name))
-                            .forceReloadFromNetwork(true)
+                            .bustCache(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
                         Log.d(TAG, "Refreshed main.json");
@@ -9060,6 +9064,7 @@ public class AppCMSPresenter {
                             .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                     appCMSMain.getAndroid()))
                             .loadFromFile(false)
+                            .bustCache(true)
                             .build();
             try {
                 new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
@@ -9116,6 +9121,7 @@ public class AppCMSPresenter {
                                     .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                                             appCMSMain.getAndroid()))
                                     .loadFromFile(appCMSMain.shouldLoadFromFile())
+                                    .bustCache(false)
                                     .build();
 //                    Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
                     new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
@@ -9133,7 +9139,10 @@ public class AppCMSPresenter {
 //                                    populateUserHistoryData();
                                 }
 
-                                getAppCMSModules(appCMSAndroidUI, false, (appCMSAndroidModules) -> {
+                                getAppCMSModules(appCMSAndroidUI,
+                                        false,
+                                        false,
+                                        (appCMSAndroidModules) -> {
                                     launchBlankPage();
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;
@@ -9217,26 +9226,25 @@ public class AppCMSPresenter {
 
     private void getAppCMSModules(AppCMSAndroidUI appCMSAndroidUI,
                                   boolean forceLoadFromNetwork,
+                                  boolean bustCache,
                                   Action1<AppCMSAndroidModules> readyAction) {
         if (currentActivity != null) {
             appCMSAndroidModuleCall.call(appCMSAndroidUI.getBlocksBundleUrl(),
                     appCMSAndroidUI.getVersion(),
                     forceLoadFromNetwork,
+                    bustCache,
                     readyAction);
         }
     }
 
     private void getAppCMSPage(String url,
                                final Action1<AppCMSPageUI> onPageReady,
-                               boolean loadFromFile) {
-        long timeStamp = 0L;
-        if (appCMSMain != null) {
-            timeStamp = appCMSMain.getTimestamp();
-        }
+                               boolean loadFromFile,
+                               boolean bustCache) {
         GetAppCMSPageUIAsyncTask.Params params =
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
                         .url(url)
-                        .timeStamp(timeStamp)
+                        .bustCache(bustCache)
                         .loadFromFile(loadFromFile)
                         .build();
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
@@ -9340,17 +9348,13 @@ public class AppCMSPresenter {
                 pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
                 pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
-                long timeStamp = 0L;
-                if (appCMSMain != null) {
-                    timeStamp = appCMSMain.getTimestamp();
-                }
                 String url = currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
                         metaPage.getPageUI());
 
                 GetAppCMSPageUIAsyncTask.Params params =
                         new GetAppCMSPageUIAsyncTask.Params.Builder()
                                 .url(url)
-                                .timeStamp(timeStamp)
+                                .bustCache(false)
                                 .loadFromFile(loadFromFile)
                                 .metaPage(metaPage)
                                 .build();
@@ -9433,7 +9437,8 @@ public class AppCMSPresenter {
                             launchBlankPage();
                         }
                     },
-                    loadFromFile);
+                    loadFromFile,
+                    false);
         }
     }
 
