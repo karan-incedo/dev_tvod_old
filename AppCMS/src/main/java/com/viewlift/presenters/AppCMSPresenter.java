@@ -6225,7 +6225,7 @@ public class AppCMSPresenter {
 
             userHistoryData.clear();
 
-            navigateToHomePage();
+            refreshAPIData(this::navigateToHomePage, true);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
         }

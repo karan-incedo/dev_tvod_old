@@ -1527,7 +1527,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            pageLoading(false);
+            if (appCMSBinder.getAppCMSPageAPI() != null) {
+                pageLoading(false);
+            } else {
+                pageLoading(true);
+            }
 
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
@@ -1686,7 +1690,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (fragment instanceof AppCMSPageFragment) {
                     ((AppCMSPageFragment) fragment).refreshView(appCMSBinder);
                 }
-                pageLoading(false);
+                if (appCMSBinder.getAppCMSPageAPI() != null) {
+                    pageLoading(false);
+                } else {
+                    pageLoading(true);
+                }
                 handleToolbar(appCMSBinder.isAppbarPresent(),
                         appCMSBinder.getAppCMSMain(),
                         appCMSBinder.getPageId());
