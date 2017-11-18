@@ -6,7 +6,7 @@ def final customApplicationId = 'FailArmy'
 def final hostName = "failarmy.viewlift.com"
 
 
-def final appVersionName = "0.0.8"
+def final appVersionName = "0.0.9"
 
 buildscript {
     repositories {
@@ -38,7 +38,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 8
+        versionCode 9
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -52,6 +52,9 @@ android {
             minSdkVersion 21
             compileSdkVersion 23
             targetSdkVersion 25
+            aaptOptions {
+                cruncherEnabled = false
+            }
         }
         tv {
 
@@ -100,7 +103,8 @@ android {
         }
         release {
             multiDexEnabled true
-            minifyEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
