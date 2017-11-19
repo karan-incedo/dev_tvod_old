@@ -468,7 +468,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                     Uri.EMPTY,
                                     false,
                                     false,
-                                    true
+                                    false
                             );
                         } else {
                             appCMSPresenter.logoutTV();

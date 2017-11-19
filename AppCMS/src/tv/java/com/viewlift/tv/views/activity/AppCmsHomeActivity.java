@@ -15,10 +15,12 @@ import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -168,7 +170,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
                                         AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
                                     openGenericDialog(intent , false);
-                                }else  if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
+                                }else if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
                                         AppCMSPresenter.ExtraScreenType.EDIT_PROFILE)){
                                     AppCMSBinder binder = (AppCMSBinder)args.getBinder(getString(R.string.app_cms_binder_key));
                                     if(binder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_sign_up_pager_title))){
@@ -176,12 +178,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                     }else{
                                         openLoginDialog(intent,true);
                                     }
-
                                 }else{
                                     openMyProfile();
                                     handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
                                 }
-
                             }else {
                                     updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                     handleLaunchPageAction(updatedAppCMSBinder);
@@ -224,16 +224,36 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
                 }else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
+                }else if(intent.getAction().equals(AppCMSPresenter.UPDATE_SUBSCRIPTION)){
+                    updateSubscriptionStrip();
                 }
             }
         };
 
+
+        updateSubscriptionStrip();
+        //Show "Push menu button for menu" icon.
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+            findViewById(R.id.press_up_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.top_logo).setVisibility(View.VISIBLE);
+
+            findViewById(R.id.footer_logo).setVisibility(View.INVISIBLE);
+            findViewById(R.id.info_icon).setVisibility(View.INVISIBLE);
+
+        }else{
+            findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.top_logo).setVisibility(View.INVISIBLE);
+
+            findViewById(R.id.footer_logo).setVisibility(View.VISIBLE);
+            findViewById(R.id.info_icon).setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void updateSubscriptionStrip(){
         /*Check Subscription in case of SPORTS TEMPLATE*/
-         if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
             if(!appCMSPresenter.isUserLoggedIn()){
-                TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
-                textView.setText(getResources().getString(R.string.watch_live_text));
-                textView.setHeight(46);
+                setSubscriptionText(false);
             }else{
                 appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
                     try {
@@ -241,30 +261,47 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
                             if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                     subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                 TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
-                                textView.setText(getResources().getString(R.string.blank_string));
-                                textView.setHeight(10);
+                                setSubscriptionText(true);
                             } else {
-                                  TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
-                                textView.setText(getResources().getString(R.string.watch_live_text));
-                                textView.setHeight(46);
+                                setSubscriptionText(false);
                             }
                         }else {
-                             TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
-                             textView.setText(getResources().getString(R.string.watch_live_text));
-
-                            textView.setHeight(46);
+                            setSubscriptionText(false);
                         }
                     } catch (Exception e) {
-                          TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
-                        textView.setText(getResources().getString(R.string.watch_live_text));
-                        textView.setHeight(46);
+                        setSubscriptionText(false);
                     }
                 });
             }
         }else{
             findViewById(R.id.subscribe_now_strip).setVisibility(View.GONE);
         }
+    }
+
+    private void setSubscriptionText(boolean isSubscribe){
+        String message = getResources().getString(R.string.blank_string);
+        if(!isSubscribe){
+            if(null != appCMSPresenter && null != appCMSPresenter.getNavigation()
+                    && null != appCMSPresenter.getNavigation().getSettings()
+                    && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()
+                    ) {
+                message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
+            }else{
+                message = getResources().getString(R.string.watch_live_text);
+            }
+        }
+
+        TextView textView = (TextView)findViewById(R.id.subscribe_now_strip);
+        textView.setText(message);
+        textView.setGravity(Gravity.CENTER);
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) textView.getLayoutParams();
+        if(message.length() == 0){
+            layoutParams.height = 10;
+        }else{
+            layoutParams.height = 40;
+        }
+        textView.setLayoutParams(layoutParams);
     }
 
     private void handleProfileFragmentAction(AppCMSBinder updatedAppCMSBinder) {
@@ -304,8 +341,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     protected void onResume() {
         super.onResume();
         registerReceivers();
-        toggleFooterBaseOnTemplate();
-       hideFooterControls();
         isActive = true;
     }
 
@@ -320,6 +355,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.CLOSE_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
+        registerReceiver(presenterActionReceiver , new IntentFilter(AppCMSPresenter.UPDATE_SUBSCRIPTION));
     }
 
     @Override
@@ -663,7 +699,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                            handleNavigationVisibility();
                            return true;
                        }
-
                         break;
                     default:
                         break;
@@ -943,30 +978,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     }
 
-    public void toggleFooterBaseOnTemplate(){
-        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
-            findViewById(R.id.footer_logo).setVisibility(View.INVISIBLE);
-            findViewById(R.id.info_icon).setVisibility(View.INVISIBLE);
-            findViewById(R.id.press_up_button).setVisibility(View.VISIBLE);
-            findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
-        }else if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.ENTERTAINMENT){
-            findViewById(R.id.footer_logo).setVisibility(View.INVISIBLE);
-            findViewById(R.id.info_icon).setVisibility(View.INVISIBLE);
-            findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
-            findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
-        }
-    }
-
-    private void hideFooterControls(){
-        new Handler().postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        hideFooterControl();
-                    }
-                },6000
-        );
-    }
 
     private void hideFooterControl(){
         if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){

@@ -59,61 +59,62 @@ public class CustomVideoVideoPlayerView extends VideoPlayerView {
         appCMSPresenter.refreshVideoData(videoId, new Action1<ContentDatum>() {
             @Override
             public void call(ContentDatum contentDatum) {
-                if (!checkVideoSubscriptionStatus(contentDatum)) {
+                /*if (!checkVideoSubscriptionStatus(contentDatum)) {
                     showRestrictMessage("This video is only available to Monumental Sports Network subscribers");
                     return;
-                }
-                hideRestrictedMessage();
-                String url = null;
-                if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
-                    if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
-                        url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
-                    } else if (null != contentDatum.getStreamingInfo().getVideoAssets().getMpeg()
-                            && contentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
-                        url = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                }*/
+                if (!contentDatum.getGist().getFree()) {
+                    //check login and subscription first.
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                    } else {
+                        //check subscription data
+                        appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                            try {
+                                if (appCMSUserSubscriptionPlanResult != null) {
+                                    String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                    if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                            subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                        playVideos(0,contentDatum);
+                                    } else {
+                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                    }
+                                } else {
+                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                }
+                            } catch (Exception e) {
+                                showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                            }
+                        });
                     }
-                }
-                if (null != url) {
-                    setUri(Uri.parse(url), null);
-                    getPlayerView().getPlayer().setPlayWhenReady(true);
-                    relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
-                    currentPlayingIndex = 0;
-                    hideProgressBar();
+                } else {
+                    playVideos(0,contentDatum);
                 }
             }
         });
     }
 
-    private boolean checkVideoSubscriptionStatus(ContentDatum contentDatum) {
-        final boolean[] isSubscribe = {false};
-        if (!contentDatum.getGist().getFree()) {
-            //check login and subscription first.
-            if (!appCMSPresenter.isUserLoggedIn()) {
-                isSubscribe[0] = false;
-            } else {
-                //check subscription data
-                appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
-                    try {
-                        if (appCMSUserSubscriptionPlanResult != null) {
-                            String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                            if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                    subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                isSubscribe[0] = true;
-                            } else {
-                                isSubscribe[0] = false;
-                            }
-                        } else {
-                            isSubscribe[0] = false;
-                        }
-                    } catch (Exception e) {
-                        isSubscribe[0] = false;
-                    }
-                });
+
+    private void playVideos(int currentIndex , ContentDatum contentDatum){
+        hideRestrictedMessage();
+        String url = null;
+        if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
+            if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
+                url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
+            } else if (null != contentDatum.getStreamingInfo().getVideoAssets().getMpeg()
+                    && contentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
+                url = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
             }
-        } else {
-            isSubscribe[0] = true;
         }
-        return isSubscribe[0];
+        if (null != url) {
+            setUri(Uri.parse(url), null);
+            getPlayerView().getPlayer().setPlayWhenReady(true);
+            if(currentIndex == 0) {
+                relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
+            }
+            currentPlayingIndex = currentIndex;
+            hideProgressBar();
+        }
     }
 
     @Override
@@ -122,19 +123,39 @@ public class CustomVideoVideoPlayerView extends VideoPlayerView {
         switch (playbackState) {
             case STATE_ENDED:
                 getPlayerView().getPlayer().setPlayWhenReady(false);
+                currentPlayingIndex ++;
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     showProgressBar("Loading Next Video...");
                     appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
                         @Override
                         public void call(ContentDatum contentDatum) {
-                            if (!checkVideoSubscriptionStatus(contentDatum)) {
-                                showRestrictMessage("This video is only available to Monumental Sports Network subscribers");
-                                return;
+                            if (!contentDatum.getGist().getFree()) {
+                                //check login and subscription first.
+                                if (!appCMSPresenter.isUserLoggedIn()) {
+                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                } else {
+                                    //check subscription data
+                                    appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                                        try {
+                                            if (appCMSUserSubscriptionPlanResult != null) {
+                                                String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                    playVideos(currentPlayingIndex,contentDatum);
+                                                } else {
+                                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                                }
+                                            } else {
+                                                showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                            }
+                                        } catch (Exception e) {
+                                            showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                        }
+                                    });
+                                }
+                            } else {
+                                playVideos(currentPlayingIndex,contentDatum);
                             }
-                            hideRestrictedMessage();
-                            setUri(Uri.parse(contentDatum.getStreamingInfo().getVideoAssets().getHls()), null);
-                            getPlayerView().getPlayer().setPlayWhenReady(true);
-                            hideProgressBar();
                         }
                     });
                 }

@@ -185,6 +185,7 @@
     <string name="app_cms_page_watchlist_title_key">title</string>
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
+    <string name="app_cms_page_bedge_image_key">bedgeImage</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_show_image_video_key">showImage</string>
     <string name="app_cms_page_thumbnail_image_video_key">videoThumbnailImage</string>

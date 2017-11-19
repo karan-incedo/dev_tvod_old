@@ -202,14 +202,50 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         Utils.setBrowseFragmentViewParameters(view,
                                 -40,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
+                        isPlayerComponentSelected = true;
+                        showMoreContentIcon();
                     }else{
                         Utils.setBrowseFragmentViewParameters(view,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));
+                        hideController();
                     }
                 }
             }
 
+        }
+    }
+
+
+    boolean isFirstTime = true;
+    private void showMoreContentIcon(){
+        if(isPlayerComponentSelected && isFirstTime && mRowsAdapter != null && mRowsAdapter.size() > 1){
+            isFirstTime = false;
+            getActivity().findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
+        }
+        hideFooterControls();
+    }
+
+    private void hideFooterControls(){
+        new Handler().postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                       hideController();
+                    }
+                },6000
+        );
+    }
+
+    private void hideController() {
+        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+            try {
+                getActivity().findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
+                getActivity().findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
+                getActivity().findViewById(R.id.top_logo).setVisibility(View.INVISIBLE);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
     }
 

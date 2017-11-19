@@ -1332,15 +1332,6 @@ public class TVViewCreator {
                             }
                             ((TextView) componentViewResult.componentView).setMaxLines(2);
                             ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                            /* ViewTreeObserver titleTextVto = componentViewResult.componentView.getViewTreeObserver();
-
-                           ViewCreatorTitleLayoutListener viewCreatorTitleLayoutListener =
-                                    new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
-                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
-                            ((TextView) componentViewResult.componentView).setSingleLine(true);
-                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
-                            ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
-                            componentViewResult.componentView.setSelected(true);*/
                             break;
 
                         case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
@@ -1970,7 +1961,7 @@ public class TVViewCreator {
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
         boolean appendFirstSep = runtime > 0 &&
-                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+                (!TextUtils.isEmpty(year) /*|| !TextUtils.isEmpty(primaryCategory)*/);
         boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
                 !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();

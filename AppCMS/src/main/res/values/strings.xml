@@ -89,9 +89,9 @@
     <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
     <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
     <string name="lato_regular">fonts/Lato-Regular.ttf</string>
-    <string name="lato_medium">fonts/Lato-Regular.ttf</string>
-    <string name="lato_light">fonts/Lato-Regular.ttf</string>
-    <string name="lato_bold">fonts/Lato-Regular.ttf</string>
+    <string name="lato_medium">fonts/Lato-Medium.ttf</string>
+    <string name="lato_light">fonts/Lato-Light.ttf</string>
+    <string name="lato_bold">fonts/Lato-Bold.ttf</string>
     <string name="search_button_text">GO</string>
     <string name="bg_color_key">bg_color</string>
     <string name="button_color_key">button_color</string>
