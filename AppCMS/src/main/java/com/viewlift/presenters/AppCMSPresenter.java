@@ -67,6 +67,7 @@ import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.HttpMethod;
 import com.facebook.login.LoginManager;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -196,6 +197,7 @@ import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
@@ -882,6 +884,8 @@ public class AppCMSPresenter {
                     appCMSMain.getApiBaseUrl(),
                     id,
                     appCMSSite.getGist().getSiteInternalName());
+            currentActivity.sendBroadcast(new Intent(
+                    AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
                             .authToken(getAuthToken()).build();
@@ -11408,12 +11412,29 @@ public class AppCMSPresenter {
         }
     }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId, VideoPlayerView videoPlayerView) {
+    public CustomVideoPlayerView playerView(Context context, String videoId) {
+        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
+        videoPlayerView.init(context);
+        videoPlayerView.getPlayerView().hideController();
+        videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
+            @Override
+            public void onVisibilityChange(int i) {
+                if (i == 0) {
+                    videoPlayerView.getPlayerView().hideController();
+                }
+            }
+        });
+
+        videoPlayerView.setVideoUri(videoId);
+        return videoPlayerView;
+    }
+
+    public void showPopupWindowPlayer(View scrollView, String videoId, CustomVideoPlayerView videoPlayerView) {
         if (videoId != null) {
             RelativeLayout.LayoutParams lpPipView = null;
 
             if (videoPlayerView == null) {
-                videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, videoId);
+                videoPlayerViewPIP = playerView(currentActivity,videoId);
             } else {
                 ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
                 videoPlayerViewPIP = videoPlayerView;
@@ -11473,7 +11494,7 @@ public class AppCMSPresenter {
                 rootView.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        if (relativeLayoutPIP.getRelativeLayoutEvent() != null) {
+                        if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
                             relativeLayoutPIP.disposeRelativeLayoutEvent();
 
                         }

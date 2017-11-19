@@ -824,9 +824,10 @@ public abstract class BaseView extends FrameLayout {
                     break;
 
                 case PAGE_PLAY_LIVE_IMAGE_KEY:
-                        gravity = Gravity.CENTER;
+                        gravity = Gravity.RIGHT | Gravity.BOTTOM;
                         tm = 0;
                         lm = 0;
+                        rm = 10;
                     break;
 
                 case PAGE_DOWNLOAD_SETTING_TITLE_KEY:

@@ -23,8 +23,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
+import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.PageView;
-import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
@@ -54,7 +54,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
 
     private boolean shouldSendFirebaseViewItemEvent;
     private ViewGroup pageViewGroup;
-    private VideoPlayerView videoPlayerView;
+    private CustomVideoPlayerView videoPlayerView;
     private ViewGroup parent;
     private Button playLiveImageView;
 
@@ -125,7 +125,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
             onPageCreation.onSuccess(appCMSBinder);
-            videoPlayerView = (VideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
+            videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
             playLiveImageView = (Button) pageView.findChildViewById(R.id.play_live_image_id);
             if (videoPlayerView != null) {
                 parent = (ViewGroup) videoPlayerView.getParent();
@@ -203,12 +203,12 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
                                             parent.addView(videoPlayerView);
                                         }
                                         appCMSPresenter.dismissPopupWindowPlayer(false);
-                                        resumePlayer(true);
+                                        //resumePlayer(true);
                                     } else if (!appCMSPresenter.pipPlayerVisible) {
 
 
                                         appCMSPresenter.showPopupWindowPlayer(v, videoId, videoPlayerView);
-                                        resumePlayer(false);
+                                        //resumePlayer(false);
                                     } else {
 
                                     }
@@ -299,6 +299,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
 
         updateDataLists();
         if (videoPlayerView != null) {
+            videoPlayerView.resumePlayer();
             videoPlayerView.requestAudioFocus();
         }
     }
@@ -307,14 +308,17 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
     public void onPause() {
         super.onPause();
         updateDataLists();
-        resumePlayer(false);
+        if (videoPlayerView != null) {
+            videoPlayerView.pausePlayer();
+        }
+        //resumePlayer(false);
     }
 
     public void updateDataLists() {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
             if (!appCMSPresenter.pipPlayerVisible) {
-                resumePlayer(true);
+                //resumePlayer(true);
             }
         }
     }
@@ -325,6 +329,9 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
         super.onDestroy();
         if (appCMSPresenter != null) {
             appCMSPresenter.closeSoftKeyboard();
+        }
+        if(videoPlayerView != null) {
+            videoPlayerView.releasePlayer();
         }
         appCMSBinder = null;
         pageView = null;
@@ -450,7 +457,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
         viewGroup.removeAllViews();
     }
 
-    private void resumePlayer(boolean playerState) {
+    /*private void resumePlayer(boolean playerState) {
         if (videoPlayerView != null && playLiveImageView != null) {
             if (appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isAppSVOD() && playerState) {
                 playLiveImageView.setVisibility(View.GONE);
@@ -460,7 +467,7 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
                 videoPlayerView.pausePlayer();
             }
         }
-    }
+    }*/
 
     @Override
     public void onAnimationStart(Animation animation) {
@@ -475,5 +482,11 @@ public class AppCMSPageFragment extends Fragment implements Animation.AnimationL
     @Override
     public void onAnimationRepeat(Animation animation) {
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        System.out.println("on Stop fragment");
     }
 }
