@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -59,7 +58,8 @@ import java.util.Stack;
 
 public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         AppCmsNavigationFragment.OnNavigationVisibilityListener ,
-        AppCmsTvErrorFragment.ErrorFragmentListener, AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener {
+        AppCmsTvErrorFragment.ErrorFragmentListener,
+        AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener {
 
     private final String TAG = AppCmsHomeActivity.class.getName();
     private FrameLayout navHolder;
@@ -115,7 +115,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         int textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
         int bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
 
-        navigationFragment = AppCmsNavigationFragment.newInstance(this,this,appCMSBinder,textColor,bgColor);
+        navigationFragment = AppCmsNavigationFragment.newInstance(
+                this,
+                this,
+                this,
+                appCMSBinder,
+                textColor,
+                bgColor);
+
         appCmsSubNavigationFragment = AppCmsSubNavigationFragment.newInstance(this, this);
 
         setContentView(R.layout.activity_app_cms_tv_home);
@@ -594,8 +601,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             return;
         }
         if(isSubNavigationVisible()){
-            handleNavigationVisibility();
-            showSubNavigation(false);
+            if (appCmsSubNavigationFragment.isTeamsShowing()) {
+                handleNavigationVisibility();
+                showSubNavigation(false, false);
+            } else {
+                handleNavigationVisibility();
+                showSubNavigation(false, true);
+            }
             return;
         }
 
@@ -676,14 +688,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     @Override
-    public void showSubNavigation(boolean shouldShow) {
+    public void showSubNavigation(boolean shouldShow, boolean showTeams) {
         new Handler().post(() -> {
             subNavHolder.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             shadowView.setVisibility(shouldShow ? View.VISIBLE : View.GONE);
             appCmsSubNavigationFragment.setFocusable(shouldShow);
             if(shouldShow) {
                 // navigationFragment.setSelectorColor();
-                    appCmsSubNavigationFragment.notifyDataSetInvalidate();
+                    appCmsSubNavigationFragment.notifyDataSetInvalidate(showTeams);
             }
         });
     }

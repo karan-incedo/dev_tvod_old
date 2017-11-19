@@ -42,11 +42,13 @@ public class AppCmsNavigationFragment extends Fragment {
     private int textColor = -1;
     private int bgColor = -1;
     private static OnNavigationVisibilityListener navigationVisibilityListener;
+    private static AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener subNavigationVisibilityListener;
     private Typeface extraBoldTypeFace , semiBoldTypeFace;
     private Component extraBoldComp , semiBoldComp;
     private AppCMSBinder appCmsBinder;
     public static AppCmsNavigationFragment newInstance(Context context,
                                                        OnNavigationVisibilityListener listener,
+                                                       AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener subNavListener,
                                                        AppCMSBinder appCMSBinder,
                                                        int textColor,
                                                        int bgColor) {
@@ -58,6 +60,7 @@ public class AppCmsNavigationFragment extends Fragment {
         args.putInt(context.getString(R.string.app_cms_bg_color_key), bgColor);
         fragment.setArguments(args);
         navigationVisibilityListener = listener;
+        subNavigationVisibilityListener = subNavListener;
         return fragment;
     }
 
@@ -404,7 +407,7 @@ public class AppCmsNavigationFragment extends Fragment {
                         // TODO: 11/15/2017 open subnavigation fragment here
 
                         showNavigation[0] = true;
-                        navigationVisibilityListener.showSubNavigation(true);
+                        subNavigationVisibilityListener.showSubNavigation(true, false);
 
                     } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
                             getString(R.string.profile_label)))) {
@@ -430,6 +433,10 @@ public class AppCmsNavigationFragment extends Fragment {
                                     false
                             );
                         }
+                    } else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_teams_label))){
+                        showNavigation[0] = false;
+                        subNavigationVisibilityListener.showSubNavigation(true, true);
+                        Utils.pageLoading(false, getActivity());
                     } else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                             primary.getTitle(),
                             primary.getUrl(),
@@ -545,7 +552,6 @@ public class AppCmsNavigationFragment extends Fragment {
 
     public interface OnNavigationVisibilityListener {
         void showNavigation(boolean shouldShow);
-        void showSubNavigation(boolean shouldShow);
     }
 
 

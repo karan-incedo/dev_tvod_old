@@ -361,6 +361,7 @@
     <string name="app_cms_movies_label">Movies</string>
     <string name="app_cms_search_icon_name">search_</string>
     <string name="app_cms_search_label">Search</string>
+    <string name="app_cms_teams_label">Teams</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
     <string name="profile_label">Profile</string>
 

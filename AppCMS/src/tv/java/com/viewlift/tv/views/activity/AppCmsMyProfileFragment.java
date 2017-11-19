@@ -117,7 +117,7 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
     }
 
     @Override
-    public void showSubNavigation(boolean shouldShow) {
+    public void showSubNavigation(boolean shouldShow, boolean showTeams) {
 
     }
 
