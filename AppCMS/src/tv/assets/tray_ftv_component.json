@@ -59,7 +59,23 @@
           "type": "image",
           "key": "thumbnailImage"
 
-        },{
+        },
+
+        {
+          "layout": {
+            "ftv": {
+              "padding": 0,
+              "topMargin": 9,
+              "leftMargin": 8,
+              "width": 380,
+              "height": 214
+            }
+          },
+          "type": "image",
+          "key": "bedgeImage"
+        },
+
+        {
           "layout": {
             "ftv": {
               "padding": 1,
@@ -89,7 +105,8 @@
               "height": 70
             }
           },
-          "fontFamily": "LatoRegular",
+          "fontFamily": "Lato",
+          "fontWeight": "Regular",
           "textAlignment": "left",
           "type": "label",
           "textColor": "#ffffff",

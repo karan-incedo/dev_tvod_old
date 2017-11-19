@@ -372,7 +372,7 @@ public class Utils {
     }
 
     private static GradientDrawable getGradientDrawable(String primaryHover, String secondaryHover){
-        return new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, new int[]{Color.parseColor(primaryHover), Color.parseColor(secondaryHover)});
+        return new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor(primaryHover), Color.parseColor(secondaryHover)});
     }
 
     /**
@@ -485,7 +485,7 @@ public class Utils {
             }
         }
 
-        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+        else if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
             if (fontWeight == null) {
                 fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;

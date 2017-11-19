@@ -296,6 +296,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
     public static final String PRESENTER_CLEAR_DIALOG_ACTION = "appcms_presenter_clear_dialog_action";
     public static final String SEARCH_ACTION = "SEARCH_ACTION";
+    public static final String UPDATE_SUBSCRIPTION = "UPDATE_SUBSCRIPTION";
     public static final String CLOSE_DIALOG_ACTION = "CLOSE_DIALOG_ACTION";
     public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
     public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
@@ -6268,12 +6269,16 @@ public class AppCMSPresenter {
             signinAnonymousUser();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
             NavigationPrimary homePageNavItem = findHomePageNavItem();
-            if (homePageNavItem != null) {
+            if (homePage != null) {
                 cancelInternalEvents();
+
+                Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                currentActivity.sendBroadcast(updateSubscription);
+
                 navigateToTVPage(
-                        homePageNavItem.getPageId(),
-                        homePageNavItem.getTitle(),
-                        homePageNavItem.getUrl(),
+                        homePage.getPageId(),
+                        homePage.getPageName(),
+                        homePage.getPageUI(),
                         false,
                         deeplinkSearchQuery,
                         true,
@@ -8222,12 +8227,12 @@ public class AppCMSPresenter {
 
                             if (loginFromNavPage) {
                                 NavigationPrimary homePageNavItem = findHomePageNavItem();
-                                if (homePageNavItem != null) {
+                                if (homePage != null) {
                                     cancelInternalEvents();
                                     if (platformType == PlatformType.ANDROID) {
-                                        navigateToPage(homePageNavItem.getPageId(),
-                                                homePageNavItem.getTitle(),
-                                                homePageNavItem.getUrl(),
+                                        navigateToPage(homePage.getPageId(),
+                                                homePage.getPageName(),
+                                                homePage.getPageUI(),
                                                 false,
                                                 true,
                                                 false,
@@ -8239,10 +8244,13 @@ public class AppCMSPresenter {
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
                                         } else if (getLaunchType() == LaunchType.HOME) {
+                                                Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                                                currentActivity.sendBroadcast(updateSubscription);
+
                                             navigateToTVPage(
-                                                    homePageNavItem.getPageId(),
-                                                    homePageNavItem.getTitle(),
-                                                    homePageNavItem.getUrl(),
+                                                    homePage.getPageId(),
+                                                    homePage.getPageName(),
+                                                    homePage.getPageUI(),
                                                     false,
                                                     deeplinkSearchQuery,
                                                     true,

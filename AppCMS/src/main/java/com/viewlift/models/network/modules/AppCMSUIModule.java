@@ -238,17 +238,10 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
                 AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
 
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_lato_font_key),
+                AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
                 AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
-                AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
-                AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_font_family_key),
-                AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY);
-
-
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_textview_key),
                 AppCMSUIKeyType.PAGE_TEXTVIEW_KEY);
@@ -432,6 +425,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_image_video_key),
                 AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_bedge_image_key),
+                AppCMSUIKeyType.PAGE_BEDGE_IMAGE_KEY);
+
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_thumbnail_image_video_key),
                 AppCMSUIKeyType.PAGE_THUMBNAIL_VIDEO_IMAGE_KEY);
