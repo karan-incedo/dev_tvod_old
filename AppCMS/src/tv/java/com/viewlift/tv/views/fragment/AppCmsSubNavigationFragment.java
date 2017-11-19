@@ -59,7 +59,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
     private AppCMSBinder mAppCMSBinder;
     private boolean isLoginDialogPage;
     private AppCMSPresenter appCMSPresenter;
-
+    TextView navMenuTile;
     private boolean mShowTeams = false;
 
     public static AppCmsSubNavigationFragment newInstance(Context context,
@@ -99,7 +99,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
         mNavigation = appCMSPresenter.getNavigation();
 
-        TextView navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
+        navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
 
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
@@ -188,8 +188,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
             if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.SPORTS)) {
                 if (!showTeams) {
                     createSubNavigationListForST();
+                    navMenuTile.setText("Settings");
                 } else {
                     createTeamsListForST();
+                    navMenuTile.setText("Teams");
                 }
             }
         }
