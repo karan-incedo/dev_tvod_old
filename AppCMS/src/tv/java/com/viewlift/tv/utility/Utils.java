@@ -662,18 +662,21 @@ public class Utils {
     public static String convertSecondsToTime(long runtime) {
         StringBuilder timeInString = new StringBuilder();
         runtime = runtime * 1000;
-        
+
         long days = TimeUnit.MILLISECONDS.toDays(runtime);
         runtime -= TimeUnit.DAYS.toMillis(days);
-        if (days != 0){
+        if (days != 0) {
             timeInString.append(Long.toString(days));
         }
 
         long hours = TimeUnit.MILLISECONDS.toHours(runtime);
         runtime -= TimeUnit.HOURS.toMillis(hours);
-        if (hours != 0 || timeInString.length() > 0){
+        if (hours != 0 || timeInString.length() > 0) {
             if (timeInString.length() > 0) {
                 timeInString.append(":");
+            }
+            if (hours < 9) {
+                timeInString.append("0");
             }
             timeInString.append(Long.toString(hours));
         }
@@ -681,18 +684,24 @@ public class Utils {
         long minutes = TimeUnit.MILLISECONDS.toMinutes(runtime);
         runtime -= TimeUnit.MINUTES.toMillis(minutes);
 //        if (minutes != 0 || timeInString.length() > 0){
-            if (timeInString.length() > 0) {
-                timeInString.append(":");
-            }
-            timeInString.append(Long.toString(minutes));
+        if (timeInString.length() > 0) {
+            timeInString.append(":");
+        }
+        if (minutes < 9) {
+            timeInString.append("0");
+        }
+        timeInString.append(Long.toString(minutes));
 //        }
 
         long seconds = TimeUnit.MILLISECONDS.toSeconds(runtime);
 //        if (seconds != 0 || timeInString.length() > 0){
-            if (timeInString.length() > 0) {
-                timeInString.append(":");
-            }
-            timeInString.append(Long.toString(seconds));
+        if (timeInString.length() > 0) {
+            timeInString.append(":");
+        }
+        if (seconds < 9) {
+            timeInString.append("0");
+        }
+        timeInString.append(Long.toString(seconds));
 //        }
         return timeInString.toString();
     }
