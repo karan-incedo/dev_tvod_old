@@ -675,7 +675,7 @@ public class Utils {
             if (timeInString.length() > 0) {
                 timeInString.append(":");
             }
-            if (hours < 9) {
+            if (hours < 10) {
                 timeInString.append("0");
             }
             timeInString.append(Long.toString(hours));
@@ -687,7 +687,7 @@ public class Utils {
         if (timeInString.length() > 0) {
             timeInString.append(":");
         }
-        if (minutes < 9) {
+        if (minutes < 10) {
             timeInString.append("0");
         }
         timeInString.append(Long.toString(minutes));
@@ -698,7 +698,7 @@ public class Utils {
         if (timeInString.length() > 0) {
             timeInString.append(":");
         }
-        if (seconds < 9) {
+        if (seconds < 10) {
             timeInString.append("0");
         }
         timeInString.append(Long.toString(seconds));
