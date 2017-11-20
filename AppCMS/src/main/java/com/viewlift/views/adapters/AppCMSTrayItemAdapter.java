@@ -146,9 +146,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater
                 .from(parent.getContext())
-//                .inflate(R.layout.continue_watching_item, parent, false);
-                //TODO: continue_watching_item_sports this is only for sports UI - need to change to dynamic before merging with jonathan
-                .inflate(R.layout.continue_watching_item_sports, parent, false);
+                .inflate(R.layout.continue_watching_item, parent, false);
         ViewHolder viewHolder = new ViewHolder(view);
         applyStyles(viewHolder);
         return viewHolder;

@@ -152,7 +152,6 @@ public class AppCMSPageFragment extends Fragment {
             //if ((pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView  ||
             if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView &&
                     appCMSBinder != null &&
-
                     appCMSBinder.getAppCMSPageUI() != null &&
                     appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
                     appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
@@ -203,7 +202,7 @@ public class AppCMSPageFragment extends Fragment {
                                         }
                                         appCMSPresenter.dismissPopupWindowPlayer(false);
                                         resumePlayer(true);
-                                    } else if (!appCMSPresenter.pipPlayerVisible && videoPlayerView!=null) {
+                                    } else if (!appCMSPresenter.pipPlayerVisible) {
 
 
                                         appCMSPresenter.showPopupWindowPlayer(v, videoId, videoPlayerView);
@@ -223,7 +222,7 @@ public class AppCMSPageFragment extends Fragment {
 
 
                     if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
-                            !appCMSPresenter.pipPlayerVisible && videoPlayerView!=null)  {
+                            !appCMSPresenter.pipPlayerVisible )  {
                         appCMSPresenter.showPopupWindowPlayer(nestedScrollView, videoId, videoPlayerView);
                     } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
                         if (videoPlayerView != null && parent != null) {
@@ -231,14 +230,14 @@ public class AppCMSPageFragment extends Fragment {
                             videoPlayerView.setLayoutParams(parent.getLayoutParams());
                             parent.addView(videoPlayerView);
                         }
-                        appCMSPresenter.dismissPopupWindowPlayer(false);
+                        appCMSPresenter.dismissPopupWindowPlayer(true);
                     }
                 } else {
-                    appCMSPresenter.dismissPopupWindowPlayer(false);
+                    appCMSPresenter.dismissPopupWindowPlayer(true);
                 }
 
             } else if (appCMSPresenter.pipPlayerVisible) {
-                appCMSPresenter.dismissPopupWindowPlayer(false);
+                appCMSPresenter.dismissPopupWindowPlayer(true);
             }
         }
 

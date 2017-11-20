@@ -38,8 +38,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputFilter;
@@ -10917,22 +10919,32 @@ public class AppCMSPresenter {
         this.extraBoldTypeFace = extraBoldTypeFace;
     }
 
-    //public int getFirstVisibleChildPosition(NestedScrollView nestedScrollView) {
-    public int getFirstVisibleChildPosition(RecyclerView nestedScrollView) {
-        final Rect scrollBounds = new Rect();
+    public int getFirstVisibleChildPositionNestedScrollView(NestedScrollView nestedScrollView) {
+    final Rect scrollBounds = new Rect();
         nestedScrollView.getHitRect(scrollBounds);
-        FrameLayout holder = (FrameLayout) nestedScrollView.getChildAt(0);
+    FrameLayout holder = (FrameLayout) nestedScrollView.getChildAt(0);
         if (holder != null) {
-            for (int i = 0; i < holder.getChildCount(); i++) {
-                View childView = holder.getChildAt(i);
-                if (childView != null) {
-                    if (childView.getLocalVisibleRect(scrollBounds)) {
-                        return i;
-                    }
+        for (int i = 0; i < holder.getChildCount(); i++) {
+            View childView = holder.getChildAt(i);
+            if (childView != null) {
+                if (childView.getLocalVisibleRect(scrollBounds)) {
+                    return i;
                 }
             }
         }
+    }
         return 0;
+}
+    public int getFirstVisibleChildPosition(RecyclerView v) {
+
+       if( v.getLayoutManager() != null &&
+                (v.getLayoutManager()) instanceof LinearLayoutManager &&
+                ((LinearLayoutManager) v.getLayoutManager()).findFirstVisibleItemPosition() == 0 &&
+                ((LinearLayoutManager) v.getLayoutManager()).findFirstCompletelyVisibleItemPosition() <= 1)
+       {
+            return 0;
+       }
+        return 1;
     }
 
     public void showPopUpMenuSports(View v) {

@@ -2087,11 +2087,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (!foundPage) {
+       /* if (!foundPage) {
             final NavBarItemView menuNavBarItemView =
                     (NavBarItemView) appCMSTabNavContainer.getChildAt(navMenuPageIndex);
             selectNavItem(menuNavBarItemView);
-        }
+        }*/
     }
 
     private void processDeepLink(Uri deeplinkUri) {
