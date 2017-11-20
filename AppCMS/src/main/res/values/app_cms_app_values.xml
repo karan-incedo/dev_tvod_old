@@ -34,6 +34,7 @@
 
     <string name="app_cms_episodic_key_type">SERIES</string>
     <string name="app_cms_full_length_feature_key_type">VIDEO</string>
+    <string name="app_cms_episodic_season_prefix">SEASON</string>
 
     <integer name="number_of_tabs">4</integer>
     <integer name="first_primary_page_index">0</integer>
