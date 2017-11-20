@@ -18,7 +18,7 @@ public class NavigationPrimary implements Serializable {
 
     @SerializedName("items")
     @Expose
-    List<Object> items = null;
+    List<NavigationPrimary> items = null;
 
     @SerializedName("pageId")
     @Expose
@@ -58,11 +58,11 @@ public class NavigationPrimary implements Serializable {
         this.title = title;
     }
 
-    public List<Object> getItems() {
+    public List<NavigationPrimary> getItems() {
         return items;
     }
 
-    public void setItems(List<Object> items) {
+    public void setItems(List<NavigationPrimary> items) {
         this.items = items;
     }
 
