@@ -61,6 +61,7 @@ import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Trailer;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -1394,26 +1395,44 @@ public class TVViewCreator {
                                 ClickableSpan clickableSpan = new ClickableSpan() {
                                     @Override
                                     public void onClick(View textView) {
-                                        NavigationFooter tosNavigation = null;
-                                        List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
-                                        for (NavigationFooter navigationFooter1 : navigationFooter) {
-                                            if (navigationFooter1.getTitle().equalsIgnoreCase("Terms of Service")) {
-                                                tosNavigation = navigationFooter1;
-                                                break;
-                                            }
-                                        }
 
-                                        if (null != tosNavigation) {
+                                        if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                                            MetaPage tosPage = appCMSPresenter.getTosPage();
+                                            if(null != tosPage){
                                             appCMSPresenter.navigateToTVPage(
-                                                    tosNavigation.getPageId(),
-                                                    tosNavigation.getTitle(),
-                                                    tosNavigation.getUrl(),
+                                                    tosPage.getPageId(),
+                                                    tosPage.getPageName(),
+                                                    tosPage.getPageUI(),
                                                     false,
                                                     Uri.EMPTY,
                                                     false,
                                                     true,
                                                     false
                                             );
+                                            }
+                                        }else {
+
+                                            NavigationFooter tosNavigation = null;
+                                            List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
+                                            for (NavigationFooter navigationFooter1 : navigationFooter) {
+                                                if (navigationFooter1.getTitle().equalsIgnoreCase("Terms of Service")) {
+                                                    tosNavigation = navigationFooter1;
+                                                    break;
+                                                }
+                                            }
+
+                                            if (null != tosNavigation) {
+                                                appCMSPresenter.navigateToTVPage(
+                                                        tosNavigation.getPageId(),
+                                                        tosNavigation.getTitle(),
+                                                        tosNavigation.getUrl(),
+                                                        false,
+                                                        Uri.EMPTY,
+                                                        false,
+                                                        true,
+                                                        false
+                                                );
+                                            }
                                         }
 
                                     }
@@ -1435,25 +1454,41 @@ public class TVViewCreator {
                                 ClickableSpan clickableSpan1 = new ClickableSpan() {
                                     @Override
                                     public void onClick(View textView) {
-                                        NavigationFooter tosNavigation = null;
-                                        List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
-                                        for (NavigationFooter navigationFooter1 : navigationFooter) {
-                                            if (navigationFooter1.getTitle().equalsIgnoreCase("Privacy Policy")) {
-                                                tosNavigation = navigationFooter1;
-                                                break;
+                                        if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+                                            MetaPage privacyPolicyPage = appCMSPresenter.getPrivacyPolicyPage();
+                                            if (null != privacyPolicyPage) {
+                                                appCMSPresenter.navigateToTVPage(
+                                                        privacyPolicyPage.getPageId(),
+                                                        privacyPolicyPage.getPageName(),
+                                                        privacyPolicyPage.getPageUI(),
+                                                        false,
+                                                        Uri.EMPTY,
+                                                        false,
+                                                        true,
+                                                        false
+                                                );
                                             }
-                                        }
-                                        if (null != tosNavigation) {
-                                            appCMSPresenter.navigateToTVPage(
-                                                    tosNavigation.getPageId(),
-                                                    tosNavigation.getTitle(),
-                                                    tosNavigation.getUrl(),
-                                                    false,
-                                                    Uri.EMPTY,
-                                                    false,
-                                                    true,
-                                                    false
-                                            );
+                                        } else {
+                                            NavigationFooter tosNavigation = null;
+                                            List<NavigationFooter> navigationFooter = appCMSPresenter.getNavigation().getNavigationFooter();
+                                            for (NavigationFooter navigationFooter1 : navigationFooter) {
+                                                if (navigationFooter1.getTitle().equalsIgnoreCase("Privacy Policy")) {
+                                                    tosNavigation = navigationFooter1;
+                                                    break;
+                                                }
+                                            }
+                                            if (null != tosNavigation) {
+                                                appCMSPresenter.navigateToTVPage(
+                                                        tosNavigation.getPageId(),
+                                                        tosNavigation.getTitle(),
+                                                        tosNavigation.getUrl(),
+                                                        false,
+                                                        Uri.EMPTY,
+                                                        false,
+                                                        true,
+                                                        false
+                                                );
+                                            }
                                         }
                                     }
                                 };

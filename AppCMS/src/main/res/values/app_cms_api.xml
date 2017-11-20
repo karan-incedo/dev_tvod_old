@@ -262,6 +262,8 @@
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
+    <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
+    <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
 
     <!-- AppCMS Action names -->
     <string name="app_cms_action_initialize_key">Initalize</string>

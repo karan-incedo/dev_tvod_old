@@ -489,6 +489,10 @@ public class AppCMSPresenter {
     private MetaPage subscriptionPage;
     private MetaPage historyPage;
     private MetaPage watchlistPage;
+
+    private MetaPage privacyPolicyPage;
+    private MetaPage tosPage;
+
     private PlatformType platformType;
     private TemplateType templateType = TemplateType.SPORTS;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
@@ -9250,6 +9254,19 @@ public class AppCMSPresenter {
                 new SoftReference<Object>(homePage, referenceQueue);
             }
 
+            int privacyPageIndex = getPrivacyPolicyPage(metaPageList);
+            if (privacyPageIndex >= 0) {
+                privacyPolicyPage = metaPageList.get(privacyPageIndex);
+                new SoftReference<Object>(privacyPolicyPage, referenceQueue);
+            }
+
+            int tosPageIndex = getTOSPage(metaPageList);
+            if (tosPageIndex >= 0) {
+                tosPage = metaPageList.get(tosPageIndex);
+                new SoftReference<Object>(tosPage, referenceQueue);
+            }
+
+
             int subscriptionPageIndex = getSubscriptionPage(metaPageList);
             if (subscriptionPageIndex >= 0) {
                 subscriptionPage = metaPageList.get(subscriptionPageIndex);
@@ -9524,6 +9541,29 @@ public class AppCMSPresenter {
         return -1;
     }
 
+
+    private int getPrivacyPolicyPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.PRIVACY_POLICY_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
+    private int getTOSPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.TERMS_OF_SERVICE_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
     private int getSubscriptionPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
@@ -9534,8 +9574,8 @@ public class AppCMSPresenter {
         return -1;
     }
 
-    private String getAutoplayPageId() {
 
+    private String getAutoplayPageId() {
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -11440,4 +11480,13 @@ public class AppCMSPresenter {
             }
         }
     }
+
+    public MetaPage getPrivacyPolicyPage(){
+        return privacyPolicyPage;
+    }
+
+    public MetaPage getTosPage(){
+        return tosPage;
+    }
+
 }

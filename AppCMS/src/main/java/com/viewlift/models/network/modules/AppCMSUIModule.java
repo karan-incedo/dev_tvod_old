@@ -140,6 +140,13 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_privacy_policy_key),
+                AppCMSUIKeyType.PRIVACY_POLICY_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_terms_of_services_key),
+                AppCMSUIKeyType.TERMS_OF_SERVICE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_subscriptionscreen_key),
                 AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_historyscreen_key),
