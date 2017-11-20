@@ -199,6 +199,12 @@ public abstract class TVBaseView extends FrameLayout {
                             gravity = Gravity.CENTER_HORIZONTAL;
                         }
                         break;
+                    case PAGE_TEXTALIGNMENT_CENTER_HORIZONTAL_KEY:
+                        gravity = Gravity.CENTER_HORIZONTAL;
+                        break;
+                    case PAGE_TEXTALIGNMENT_CENTER_VERTICAL_KEY:
+                        gravity = Gravity.CENTER_VERTICAL;
+                        break;
                 }
                 ((TextView) view).setGravity(gravity);
             }

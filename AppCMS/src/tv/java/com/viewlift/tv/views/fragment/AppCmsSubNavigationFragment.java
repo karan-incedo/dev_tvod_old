@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -498,7 +497,17 @@ public class AppCmsSubNavigationFragment extends Fragment {
                         navigationVisibilityListener.showSubNavigation(false, false);
                     } else if (navigationSubItem.title.toUpperCase().contains("ACCOUNT")) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            Toast.makeText(mContext, "WIP", Toast.LENGTH_SHORT).show();
+                            navigationVisibilityListener.showSubNavigation(false, false);
+                            appCMSPresenter.navigateToTVPage(
+                                    navigationSubItem.pageId,
+                                    navigationSubItem.title,
+                                    navigationSubItem.url,
+                                    false,
+                                    Uri.EMPTY,
+                                    false,
+                                    false,
+                                    isLoginDialogPage
+                            );
                         } else {
                             ClearDialogFragment newFragment = Utils.getClearDialogFragment(
                                     mContext,

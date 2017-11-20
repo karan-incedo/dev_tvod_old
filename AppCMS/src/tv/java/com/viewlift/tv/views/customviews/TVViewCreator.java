@@ -265,7 +265,7 @@ public class TVViewCreator {
             }
             return null;
         } else if ("AC UserManagement 01".equalsIgnoreCase(module.getView())) {
-            //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+               module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings_st.json"), ModuleList.class);
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             final TVPageView finalPageView = pageView;
@@ -1559,7 +1559,11 @@ public class TVViewCreator {
                             break;
 
                         case PAGE_SETTINGS_USER_EMAIL_LABEL_KEY:
-                            ((TextView) componentViewResult.componentView).setText(context.getString(R.string.logged_in_as, appCMSPresenter.getLoggedInUserEmail()));
+                            if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                                ((TextView) componentViewResult.componentView).setText(context.getString(R.string.logged_in_as, appCMSPresenter.getLoggedInUserEmail()));
+                            } else {
+                                ((TextView) componentViewResult.componentView).setText(appCMSPresenter.getLoggedInUserEmail());
+                            }
                             break;
                         default:
                             if (!TextUtils.isEmpty(component.getText())) {
