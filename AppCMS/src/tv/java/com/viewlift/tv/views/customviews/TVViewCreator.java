@@ -1966,7 +1966,9 @@ public class TVViewCreator {
                 !TextUtils.isEmpty(primaryCategory);
         StringBuffer infoText = new StringBuffer();
         if (runtime > 0) {
-            infoText.append(runtime + context.getString(R.string.mins_abbreviation));
+            infoText.append(
+                    context.getResources().getQuantityString(R.plurals.mins_plural , (int)runtime , (int)runtime )
+            );
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));

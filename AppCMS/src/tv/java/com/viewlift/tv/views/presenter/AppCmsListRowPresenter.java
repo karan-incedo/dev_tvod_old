@@ -27,7 +27,6 @@ import com.viewlift.R;
 /**
  * Created by nitin.tyagi on 7/2/2017.
  */
-
 public class AppCmsListRowPresenter extends ListRowPresenter {
 
     private Context mContext;

@@ -8243,6 +8243,10 @@ public class AppCMSPresenter {
                                         if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
+
+                                            Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                                            currentActivity.sendBroadcast(updateSubscription);
+
                                         } else if (getLaunchType() == LaunchType.HOME) {
                                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                                 currentActivity.sendBroadcast(updateSubscription);
