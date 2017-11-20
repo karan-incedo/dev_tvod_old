@@ -406,7 +406,7 @@ public class AppCmsNavigationFragment extends Fragment {
                         Utils.pageLoading(false, getActivity());
                         // TODO: 11/15/2017 open subnavigation fragment here
 
-                        showNavigation[0] = true;
+                        showNavigation[0] = false;
                         subNavigationVisibilityListener.showSubNavigation(true, false);
 
                     } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,

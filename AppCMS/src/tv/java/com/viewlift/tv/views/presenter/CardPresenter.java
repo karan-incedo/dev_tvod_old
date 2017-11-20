@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -26,10 +25,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 
-import net.nightwhistler.htmlspanner.spans.CenterSpan;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -256,10 +251,10 @@ public class CardPresenter extends Presenter {
                             tvTitle.setPadding(6, padding, 10, 4);
                             String time = Utils.convertSecondsToTime(contentData.getGist().getRuntime());
 
-                            Date publishedDate = new Date(contentData.getGist().getPublishDate());
+                            /*Date publishedDate = new Date(contentData.getGist().getPublishDate());
                             SimpleDateFormat spf = new SimpleDateFormat("MMM dd");
-                            String date = spf.format(publishedDate);
-                            tvTitle.setText(time + " | " + date);
+                            String date = spf.format(publishedDate);*/
+                            tvTitle.setText(time/* + " | " + date*/);
                         } else {
                             layoutParams = new FrameLayout.LayoutParams(
                                     FrameLayout.LayoutParams.MATCH_PARENT,

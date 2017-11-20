@@ -193,6 +193,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                     createTeamsListForST();
                     navMenuTile.setText("Teams");
                 }
+                mRecyclerView.requestFocus();
             }
         }
         if (null != mRecyclerView && null != mRecyclerView.getAdapter()) {
@@ -527,17 +528,22 @@ public class AppCmsSubNavigationFragment extends Fragment {
                             });
                         }
                     } else {
-                        navigationVisibilityListener.showSubNavigation(false, false);
-                        appCMSPresenter.navigateToTVPage(
-                                navigationSubItem.pageId,
-                                navigationSubItem.title,
-                                navigationSubItem.url,
-                                false,
-                                Uri.EMPTY,
-                                false,
-                                false,
-                                isLoginDialogPage
-                        );
+                        if (navigationSubItem.pageId != null
+                                && navigationSubItem.pageId.length() > 0) {
+                            navigationVisibilityListener.showSubNavigation(false, false);
+                            appCMSPresenter.navigateToTVPage(
+                                    navigationSubItem.pageId,
+                                    navigationSubItem.title,
+                                    navigationSubItem.url,
+                                    false,
+                                    Uri.EMPTY,
+                                    false,
+                                    false,
+                                    isLoginDialogPage
+                            );
+                        } else {
+                            appCMSPresenter.openTVErrorDialog("There is some error opening " + navigationSubItem.title, "");
+                        }
                     }
                     STNavigationAdapter.this.notifyItemChanged(holder.getAdapterPosition());
                 }
