@@ -831,6 +831,11 @@ public abstract class BaseView extends FrameLayout {
                     }
                     break;
 
+                case PAGE_PLAY_LIVE_IMAGE_KEY:
+                        gravity = Gravity.RIGHT | Gravity.BOTTOM;
+                        tm = 0;
+                        lm = 0;
+                        rm = 10;
                 case PAGE_VIDEO_CLOSE_KEY:
                     lm -= 8;
                     bm -= 8;

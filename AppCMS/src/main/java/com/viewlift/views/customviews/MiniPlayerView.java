@@ -19,12 +19,12 @@ import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 
 public class MiniPlayerView extends RelativeLayout {
 
-    private  VideoPlayerView videoPlayerView;
+    private  CustomVideoPlayerView videoPlayerView;
     private Context context;
     private RelativeLayout relativeLayoutEvent;
     private RelativeLayout.LayoutParams lpPipView;
     public MiniPlayerView(Context context,
-                          VideoPlayerView videoPlayerView) {
+                          CustomVideoPlayerView videoPlayerView) {
         super(context);
         this.context=context;
         this.videoPlayerView= videoPlayerView;
