@@ -209,6 +209,8 @@
     <string name="app_cms_page_video_title_key">videoTitle</string>
     <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
+    <string name="app_cms_page_video_publishdate_key">videopublishdate</string>
+
     <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
@@ -482,6 +484,6 @@
     <string name="app_cms_content_type_shows">SHOW</string>
     <string name="app_cms_content_type_episode">EPISODE</string>
 
-    <string name="app_cms_table_background_view">tableBackgroundView</string>
+    <string name="app_cms_table_background_view">tableBackground</string>
 
 </resources>

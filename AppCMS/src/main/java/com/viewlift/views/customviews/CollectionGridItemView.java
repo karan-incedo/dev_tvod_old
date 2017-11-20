@@ -440,7 +440,9 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        String publishDate = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        String runTime = convertSecondsToTime(data.getGist().getRuntime());
+                        String thumbInfo=runTime+" | "+publishDate;
                         ((TextView) view).setText(thumbInfo);
 
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {

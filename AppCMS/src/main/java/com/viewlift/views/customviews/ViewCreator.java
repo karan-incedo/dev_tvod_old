@@ -459,6 +459,16 @@ public class ViewCreator {
                                                     moduleAPI.getContentData().get(0),
                                                     view);
                                         }
+                                    }else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY) {
+                                                if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0) != null) {
+                                            long publishDateMillseconds= moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                            String publishDate=context.getResources().getString(R.string.published_on)+" "+ appCMSPresenter.getDateFormat(publishDateMillseconds,"MMM dd,YYYY");
+                                            ((TextView) componentViewResult.componentView).setText(publishDate);
+
+                                        }
+
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY) {
                                         if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
@@ -1351,12 +1361,6 @@ public class ViewCreator {
 
         @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
         List<OnInternalEvent> onInternalEvents = new ArrayList<>();
-//        if (viewType.contains("AC Watchlist 01")) {
-//            AppCMSPageUI appCMSPageUI = new GsonBuilder().create().fromJson(
-//                    loadJsonFromAssets(context, "watchlist_sports.json"),
-//                    AppCMSPageUI.class);
-//            component = appCMSPageUI.getModuleList().get(2).getComponents().get(4);
-//        }
         int size = component.getComponents().size();
         for (int i = 0; i < size; i++) {
             Component childComponent = component.getComponents().get(i);
@@ -1450,13 +1454,14 @@ public class ViewCreator {
         switch (componentType) {
 
             case PAGE_RATINGBAR:
-                componentViewResult.componentView = new SimpleRatingBar(context);
-                ((SimpleRatingBar) componentViewResult.componentView).setNumberOfStars(5);
-                ((SimpleRatingBar) componentViewResult.componentView).setStarSize(60f);
-                ((SimpleRatingBar) componentViewResult.componentView).setStarsSeparation(10f);
-                ((SimpleRatingBar) componentViewResult.componentView).setStarBorderWidth(2f);
-                ((SimpleRatingBar) componentViewResult.componentView).setFillColor(Color.parseColor(getColor(context, component.getFillColor())));
-                ((SimpleRatingBar) componentViewResult.componentView).setEnabled(false);
+                if (moduleAPI.getContentData() != null &&
+                        !moduleAPI.getContentData().isEmpty() &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getGist() != null) {
+                    componentViewResult.componentView = new StarRating(context, Color.parseColor(getColor(context, component.getBorderColor())),
+                            Color.parseColor(getColor(context, component.getFillColor())),
+                            moduleAPI.getContentData().get(0).getGist().getAverageStarRating());
+                }
                 break;
             case PAGE_TABLE_VIEW_KEY:
                 if (moduleType == AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY) {
@@ -1510,35 +1515,35 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-//                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
-//                            this,
-//                            appCMSPresenter,
-//                            settings,
-//                            component.getLayout(),
-//                            false,
-//                            component,
-//                            jsonValueKeyMap,
-//                            moduleAPI,
-//                            ViewGroup.LayoutParams.MATCH_PARENT,
-//                            ViewGroup.LayoutParams.WRAP_CONTENT,
-//                            viewType,
-//                            appCMSAndroidModules);
-
-                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-                            moduleAPI != null ? moduleAPI.getContentData() : null,
-                            component.getComponents(),
+                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
+                            this,
                             appCMSPresenter,
+                            settings,
+                            component.getLayout(),
+                            false,
+                            component,
                             jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
-                            (RecyclerView) componentViewResult.componentView);
+                            appCMSAndroidModules);
+//
+//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+//                            moduleAPI != null ? moduleAPI.getContentData() : null,
+//                            component.getComponents(),
+//                            appCMSPresenter,
+//                            jsonValueKeyMap,
+//                            viewType,
+//                            (RecyclerView) componentViewResult.componentView);
 
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
-                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
-                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+//                    componentViewResult.onInternalEvent = appCMSViewAdapter;
+//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(appCMSTrayItemAdapter)
+                                .adapter(appCMSViewAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleId + component.getKey())
                                 .build());
@@ -2553,6 +2558,19 @@ public class ViewCreator {
                                         componentViewResult.componentView);
                             }
                             break;
+
+                        case PAGE_VIDEO_PUBLISHDATE_KEY:
+                            if (moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null) {
+                                long publishDateMillseconds= moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                String publishDate=context.getResources().getString(R.string.published_on)+" "+ appCMSPresenter.getDateFormat(publishDateMillseconds,"MMM dd,YYYY");
+                                ((TextView) componentViewResult.componentView).setText(publishDate);
+
+                            }
+
+                            break;
+
 
                         case PAGE_VIDEO_AGE_LABEL_KEY:
                             if (moduleAPI != null && moduleAPI.getContentData() != null &&
