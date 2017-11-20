@@ -459,12 +459,12 @@ public class ViewCreator {
                                                     moduleAPI.getContentData().get(0),
                                                     view);
                                         }
-                                    }else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY) {
-                                                if (moduleAPI.getContentData() != null &&
+                                    } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY) {
+                                        if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0) != null) {
-                                            long publishDateMillseconds= moduleAPI.getContentData().get(0).getGist().getPublishDate();
-                                            String publishDate=context.getResources().getString(R.string.published_on)+" "+ appCMSPresenter.getDateFormat(publishDateMillseconds,"MMM dd,YYYY");
+                                            long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                            String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,YYYY");
                                             ((TextView) componentViewResult.componentView).setText(publishDate);
 
                                         }
@@ -1451,6 +1451,7 @@ public class ViewCreator {
         int tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
+        System.out.println("com--" + componentType.name());
         switch (componentType) {
 
             case PAGE_RATINGBAR:
@@ -1709,7 +1710,7 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0) != null &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                    componentViewResult.componentView = appCMSPresenter.playerView(context, appCMSPresenter, moduleAPI.getContentData().get(0).getGist().getId());
+                    componentViewResult.componentView = playerView(context, moduleAPI.getContentData().get(0).getGist().getId());
                     componentViewResult.componentView.setId(R.id.video_player_id);
                 }
                 break;
@@ -2077,48 +2078,41 @@ public class ViewCreator {
                         break;
 
                     case PAGE_PLAY_LIVE_IMAGE_KEY:
-                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.full_screen_icon));
-                        componentViewResult.componentView.setId(R.id.play_live_image_id);
+                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.full_screen_player_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
 
                         componentViewResult.componentView.setOnClickListener(v -> {
 
-                            appCMSPresenter.refreshVideoData(moduleAPI.getContentData().get(0).getGist().getId(), new Action1<ContentDatum>() {
-                                @Override
-                                public void call(ContentDatum contentDatum) {
-
-                                    VideoAssets videoAssets = contentDatum.getStreamingInfo().getVideoAssets();
-                                    String videoUrl = videoAssets.getHls();
-                                    if (TextUtils.isEmpty(videoUrl)) {
-                                        for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                                            videoUrl = videoAssets.getMpeg().get(i).getUrl();
-                                        }
-                                    }
-                                    if (/*moduleAPI.getContentData() != null &&
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getId() != null) {
+                                appCMSPresenter.refreshVideoData(moduleAPI.getContentData().get(0).getGist().getId(), new Action1<ContentDatum>() {
+                                    @Override
+                                    public void call(ContentDatum contentDatum) {
+                                        if (/*moduleAPI.getContentData() != null &&
                                             !moduleAPI.getContentData().isEmpty() &&*/
-                                            contentDatum != null &&
-                                            contentDatum.getContentDetails() != null) {
+                                                contentDatum != null &&
+                                                        contentDatum.getContentDetails() != null) {
 
-                                        List<String> relatedVideoIds = null;
-                                        if (contentDatum.getContentDetails() != null &&
-                                                contentDatum.getContentDetails().getRelatedVideoIds() != null) {
-                                            relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();
+                                            List<String> relatedVideoIds = null;
+                                            if (contentDatum.getContentDetails() != null &&
+                                                    contentDatum.getContentDetails().getRelatedVideoIds() != null) {
+                                                relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();
+                                            }
+                                            int currentPlayingIndex = -1;
+                                            if (relatedVideoIds == null) {
+                                                currentPlayingIndex = 0;
+                                            }
+
+                                            appCMSPresenter.launchVideoPlayer(contentDatum,
+                                                    currentPlayingIndex,
+                                                    relatedVideoIds,
+                                                    contentDatum.getGist().getWatchedTime(),
+                                                    component.getAction());
+
                                         }
-                                        int currentPlayingIndex = -1;
-                                        if (relatedVideoIds == null) {
-                                            currentPlayingIndex = 0;
-                                        }
-
-                                        appCMSPresenter.launchVideoPlayer(contentDatum,
-                                                currentPlayingIndex,
-                                                relatedVideoIds,
-                                                contentDatum.getGist().getWatchedTime(),
-                                                component.getAction());
-
                                     }
-                                }
-                            });
+                                });
+                            }
                         });
 
                         break;
@@ -2604,8 +2598,8 @@ public class ViewCreator {
                             if (moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null) {
-                                long publishDateMillseconds= moduleAPI.getContentData().get(0).getGist().getPublishDate();
-                                String publishDate=context.getResources().getString(R.string.published_on)+" "+ appCMSPresenter.getDateFormat(publishDateMillseconds,"MMM dd,YYYY");
+                                long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,YYYY");
                                 ((TextView) componentViewResult.componentView).setText(publishDate);
 
                             }
@@ -3722,6 +3716,30 @@ public class ViewCreator {
         }
     }
 
+    static CustomVideoPlayerView videoPlayerView;
+
+    public static CustomVideoPlayerView playerView(Context context, String videoId) {
+        if (videoPlayerView != null) {
+            videoPlayerView.stopPlayer();
+            videoPlayerView.releasePlayer();
+            videoPlayerView.removeAllViews();
+        }
+
+        videoPlayerView = new CustomVideoPlayerView(context);
+        videoPlayerView.init(context);
+        videoPlayerView.getPlayerView().hideController();
+        videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
+            @Override
+            public void onVisibilityChange(int i) {
+                if (i == 0) {
+                    videoPlayerView.getPlayerView().hideController();
+                }
+            }
+        });
+
+        videoPlayerView.setVideoUri(videoId);
+        return videoPlayerView;
+    }
 
     public static WebView getWebViewComponent(Context context, Module moduleAPI, Component component) {
 

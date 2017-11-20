@@ -125,7 +125,6 @@ public class AppCMSPageFragment extends Fragment {
             }
             onPageCreation.onSuccess(appCMSBinder);
             videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
-            playLiveImageView = (Button) pageView.findChildViewById(R.id.play_live_image_id);
             if (videoPlayerView != null) {
                 parent = (ViewGroup) videoPlayerView.getParent();
             }
@@ -202,12 +201,8 @@ public class AppCMSPageFragment extends Fragment {
                                             parent.addView(videoPlayerView);
                                         }
                                         appCMSPresenter.dismissPopupWindowPlayer(false);
-                                        //resumePlayer(true);
                                     } else if (!appCMSPresenter.pipPlayerVisible) {
-
-
                                         appCMSPresenter.showPopupWindowPlayer(v, videoId, videoPlayerView);
-                                        //resumePlayer(false);
                                     } else {
 
                                     }
@@ -297,6 +292,9 @@ public class AppCMSPageFragment extends Fragment {
         }
 
         updateDataLists();
+        if(pageView != null) {
+            videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
+        }
         if (videoPlayerView != null) {
             videoPlayerView.resumePlayer();
             videoPlayerView.requestAudioFocus();
@@ -307,17 +305,20 @@ public class AppCMSPageFragment extends Fragment {
     public void onPause() {
         super.onPause();
         updateDataLists();
+        if(pageView != null) {
+            videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
+        }
+        videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
         if (videoPlayerView != null) {
             videoPlayerView.pausePlayer();
         }
-        //resumePlayer(false);
     }
 
     public void updateDataLists() {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
             if (videoPlayerView != null && !appCMSPresenter.pipPlayerVisible) {
-                videoPlayerView.startPlayer();
+                //videoPlayerView.startPlayer();
             }
         }
     }
@@ -459,18 +460,5 @@ public class AppCMSPageFragment extends Fragment {
         }
         viewGroup.removeAllViews();
     }
-
-    /*private void resumePlayer(boolean playerState) {
-        if (videoPlayerView != null && playLiveImageView != null) {
-            if (appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isAppSVOD() && playerState) {
-                playLiveImageView.setVisibility(View.GONE);
-                videoPlayerView.startPlayer();
-            } else {
-                playLiveImageView.setVisibility(View.VISIBLE);
-                videoPlayerView.pausePlayer();
-            }
-        }
-    }*/
-
 
 }

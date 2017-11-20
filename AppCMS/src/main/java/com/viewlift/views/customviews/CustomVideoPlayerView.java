@@ -1,7 +1,7 @@
 package com.viewlift.views.customviews;
 
 /**
- * Created by vinay.singh on 11/17/2017.
+ * Created by viewlift on 11/17/2017.
  */
 
 
@@ -54,30 +54,60 @@ public class CustomVideoPlayerView extends VideoPlayerView {
         appCMSPresenter.refreshVideoData(videoId, new Action1<ContentDatum>() {
             @Override
             public void call(ContentDatum contentDatum) {
-                if (!checkVideoSubscriptionStatus(contentDatum)) {
-                    showRestrictMessage("This video is only available to Monumental Sports Network subscribers");
-                    return;
-                }
-                hideRestrictedMessage();
-                String url = null;
-                if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
-                    if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
-                        url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
-                    } else if (null != contentDatum.getStreamingInfo().getVideoAssets().getMpeg()
-                            && contentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
-                        url = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+                if (!contentDatum.getGist().getFree()) {
+                    //check login and subscription first.
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
+                    } else {
+                        //check subscription data
+                        appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                            try {
+                                if (appCMSUserSubscriptionPlanResult != null) {
+                                    String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                    if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                            subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                        playVideos(0,contentDatum);
+                                    } else {
+                                        showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
+                                    }
+                                } else {
+                                    showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
+                                }
+                            } catch (Exception e) {
+                                showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
+                            }
+                        });
                     }
-                }
-                if (null != url) {
-                    setUri(Uri.parse(url), null);
-                    getPlayerView().getPlayer().setPlayWhenReady(true);
-                    relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
-                    currentPlayingIndex = 0;
-                    hideProgressBar();
+                } else {
+                    playVideos(0,contentDatum);
                 }
             }
         });
+
     }
+
+    private void playVideos(int currentIndex , ContentDatum contentDatum){
+        hideRestrictedMessage();
+        String url = null;
+        if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
+            if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
+                url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
+            } else if (null != contentDatum.getStreamingInfo().getVideoAssets().getMpeg()
+                    && contentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
+                url = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+            }
+        }
+        if (null != url) {
+            setUri(Uri.parse(url), null);
+            getPlayerView().getPlayer().setPlayWhenReady(true);
+            if(currentIndex == 0) {
+                relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
+            }
+            currentPlayingIndex = currentIndex;
+            hideProgressBar();
+        }
+    }
+
 
     private boolean checkVideoSubscriptionStatus(ContentDatum contentDatum) {
         final boolean[] isSubscribe = {false};
@@ -219,8 +249,10 @@ public class CustomVideoPlayerView extends VideoPlayerView {
     private void showRestrictMessage(String message) {
         if (null != customMessageContainer && null != customMessageView) {
             hideProgressBar();
+            loaderMessageView.setTextColor(getResources().getColor(android.R.color.white));
             customMessageView.setText(message);
             customMessageContainer.setVisibility(View.VISIBLE);
+
         }
     }
 

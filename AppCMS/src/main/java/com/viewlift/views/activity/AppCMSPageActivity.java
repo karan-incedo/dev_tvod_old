@@ -1448,9 +1448,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void selectNavItem(NavBarItemView v) {
-        unselectAllNavItems();
-        NavTabTag navigationTabTag = (NavTabTag) v.getTag();
-        v.select(true, navigationTabTag);
+        if(v!=null && v.getTag()!=null){
+            unselectAllNavItems();
+            NavTabTag navigationTabTag = (NavTabTag) v.getTag();
+            v.select(true, navigationTabTag);
+        }
+
     }
 
     private void unselectAllNavItems() {
