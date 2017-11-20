@@ -15,7 +15,6 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
-import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
     private static final String TAG = "AppCMSTeamItemAdapter";
 
     private final Resources resources;
-    private final NavigationTabBar navigationTabBar;
+    private final NavigationPrimary navigationTabBar;
     private final AppCMSPresenter appCMSPresenter;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final int textColor;
@@ -45,7 +44,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
     private boolean itemSelected;
     private int numItemClickedPosition = -1;
 
-    public AppCMSTeamItemAdapter(List<NavigationTabBar> navigationTabBarList,
+    public AppCMSTeamItemAdapter(List<NavigationPrimary> navigationTabBarList,
                                  AppCMSPresenter appCMSPresenter,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  boolean userLoggedIn,
@@ -71,7 +70,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (navigationTabBar != null) {
-            NavigationTabBar navigationItem = (NavigationTabBar) navigationTabBar.getItems().get(position);
+            NavigationPrimary navigationItem = (NavigationPrimary) navigationTabBar.getItems().get(position);
             holder.navItemLabel.setText(navigationItem.getTitle());
             System.out.println(navigationItem.getIcon());
             if (navigationItem.getIcon().contains("http://") ||navigationItem.getIcon().contains("https://")){

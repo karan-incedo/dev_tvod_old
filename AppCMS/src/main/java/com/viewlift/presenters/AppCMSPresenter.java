@@ -38,8 +38,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputFilter;
@@ -131,7 +133,6 @@ import com.viewlift.models.data.appcms.ui.android.MetaPage;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
-import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
@@ -4990,6 +4991,7 @@ public class AppCMSPresenter {
             currentActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         }
     }
+
     public void initiateAfterLoginAction() {
         if (afterLoginAction != null && shouldLaunchLoginAction) {
             afterLoginAction.call();
@@ -5835,6 +5837,7 @@ public class AppCMSPresenter {
                                     this.facebookEmail = email;
                                 }
 
+                                waithingFor3rdPartyLogin = false;
                                 finalizeLogin(forceSubscribed,
                                         facebookLoginResponse.isSubscribed(),
                                         launchType == LaunchType.INIT_SIGNUP ||
@@ -5938,6 +5941,7 @@ public class AppCMSPresenter {
             sharedPrefs.edit().putBoolean(getLoggedInUser(), userSubscribed).apply();
         }
     }
+
     private boolean getFloodLightStatus() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(FLOODLIGHT_STATUS_PREF_NAME, 0);
@@ -6584,8 +6588,8 @@ public class AppCMSPresenter {
                 pageId.equals(currentActivity.getString(R.string.app_cms_navigation_page_tag));
     }
 
-    public boolean isPageTeamNavigationPage(List<NavigationTabBar> navigationTabBarList) {
-        for (NavigationTabBar navigationTabBarItem : navigationTabBarList) {
+    public boolean isPageTeamNavigationPage(List<NavigationPrimary> navigationTabBarList) {
+        for (NavigationPrimary navigationTabBarItem : navigationTabBarList) {
             if (!TextUtils.isEmpty(navigationTabBarItem.getTitle()) &&
                     navigationTabBarItem.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_team_page_tag))) {
                 return true;
@@ -6594,8 +6598,8 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public NavigationTabBar getPageTeamNavigationPage(List<NavigationTabBar> navigationTabBarList) {
-        for (NavigationTabBar navigationTabBarItem : navigationTabBarList) {
+    public NavigationPrimary getPageTeamNavigationPage(List<NavigationPrimary> navigationTabBarList) {
+        for (NavigationPrimary navigationTabBarItem : navigationTabBarList) {
             if (!TextUtils.isEmpty(navigationTabBarItem.getTitle()) &&
                     navigationTabBarItem.getTitle().equalsIgnoreCase(currentActivity.getString(R.string.app_cms_team_page_tag))) {
                 return navigationTabBarItem;
@@ -10920,22 +10924,32 @@ public class AppCMSPresenter {
         this.extraBoldTypeFace = extraBoldTypeFace;
     }
 
-    //public int getFirstVisibleChildPosition(NestedScrollView nestedScrollView) {
-    public int getFirstVisibleChildPosition(RecyclerView nestedScrollView) {
-        final Rect scrollBounds = new Rect();
+    public int getFirstVisibleChildPositionNestedScrollView(NestedScrollView nestedScrollView) {
+    final Rect scrollBounds = new Rect();
         nestedScrollView.getHitRect(scrollBounds);
-        FrameLayout holder = (FrameLayout) nestedScrollView.getChildAt(0);
+    FrameLayout holder = (FrameLayout) nestedScrollView.getChildAt(0);
         if (holder != null) {
-            for (int i = 0; i < holder.getChildCount(); i++) {
-                View childView = holder.getChildAt(i);
-                if (childView != null) {
-                    if (childView.getLocalVisibleRect(scrollBounds)) {
-                        return i;
-                    }
+        for (int i = 0; i < holder.getChildCount(); i++) {
+            View childView = holder.getChildAt(i);
+            if (childView != null) {
+                if (childView.getLocalVisibleRect(scrollBounds)) {
+                    return i;
                 }
             }
         }
+    }
         return 0;
+}
+    public int getFirstVisibleChildPosition(RecyclerView v) {
+
+       if( v.getLayoutManager() != null &&
+                (v.getLayoutManager()) instanceof LinearLayoutManager &&
+                ((LinearLayoutManager) v.getLayoutManager()).findFirstVisibleItemPosition() == 0 &&
+                ((LinearLayoutManager) v.getLayoutManager()).findFirstCompletelyVisibleItemPosition() <= 1)
+       {
+            return 0;
+       }
+        return 1;
     }
 
     public void showPopUpMenuSports(View v) {
@@ -10943,14 +10957,14 @@ public class AppCMSPresenter {
         popupMenu.showLocation(v.getId(), getCurrentActivity());
     }
 
-    public void launchKiswePlayer(String eventId){
+    public void launchKiswePlayer(String eventId) {
 
         // KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
                 .setLogLevel(KMSDKCoreKit.DEBUG);
         mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        if(isUserLoggedIn())
+        if (isUserLoggedIn())
             mKit.configUser(getLoggedInUserEmail(), currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
         else
             mKit.configUser("guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
@@ -11614,6 +11628,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 
