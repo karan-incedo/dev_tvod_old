@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="102dp"
                 android:gravity="start"
-                android:text="tttt"
+                android:text=""
                 android:textAlignment="viewStart"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
