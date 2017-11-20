@@ -38,7 +38,7 @@ public class Navigation implements Serializable {
 
     @SerializedName("tabBar")
     @Expose
-    List<NavigationTabBar> navigationTabbar = null;
+    List<NavigationPrimary> navigationTabbar = null;
 
 
     public List<NavigationPrimary> getNavigationLeft() {
@@ -82,11 +82,11 @@ public class Navigation implements Serializable {
     }
 
 
-    public List<NavigationTabBar> getNavigationTabbar() {
+    public List<NavigationPrimary> getNavigationTabbar() {
         return navigationTabbar;
     }
 
-    public void setNavigationTabbar(List<NavigationTabBar> navigationTabbar) {
+    public void setNavigationTabbar(List<NavigationPrimary> navigationTabbar) {
         this.navigationTabbar = navigationTabbar;
     }
 

@@ -73,7 +73,6 @@ import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
-import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
@@ -1448,9 +1447,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void selectNavItem(NavBarItemView v) {
-        unselectAllNavItems();
-        NavTabTag navigationTabTag = (NavTabTag) v.getTag();
-        v.select(true, navigationTabTag);
+        if(v!=null && v.getTag()!=null) {
+            unselectAllNavItems();
+            NavTabTag navigationTabTag = (NavTabTag) v.getTag();
+            v.select(true, navigationTabTag);
+        }
     }
 
     private void unselectAllNavItems() {
@@ -1971,7 +1972,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
 
             for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationTabbar().size(); i++) {
-                NavigationTabBar navigationItem = appCMSPresenter.getNavigation().getNavigationTabbar().get(i);
+                NavigationPrimary navigationItem = appCMSPresenter.getNavigation().getNavigationTabbar().get(i);
 
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter,weight);
                 int highlightColor = 0;
@@ -2037,16 +2038,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             this.pageId = pageId;
         }
 
-        public NavigationTabBar getNavigationTabBar() {
+        public NavigationPrimary getNavigationTabBar() {
             return navigationTabBar;
         }
 
-        public void setNavigationTabBar(NavigationTabBar navigationTabBar) {
+        public void setNavigationTabBar(NavigationPrimary navigationTabBar) {
             this.navigationTabBar = navigationTabBar;
         }
 
         private String pageId;
-        private NavigationTabBar navigationTabBar;
+        private NavigationPrimary navigationTabBar;
 
         public ModuleList getNavigationModuleItem() {
             return navigationModuleItem;
