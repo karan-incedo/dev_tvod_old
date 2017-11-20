@@ -174,6 +174,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_player_key),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_player_key),
+                AppCMSUIKeyType.PAGE_SHOW_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_web_view_key),
                 AppCMSUIKeyType.PAGE_WEB_VIEW_KEY);
 
@@ -359,8 +361,12 @@ public class AppCMSUIModule {
                         .app_cms_page_use_sd_card_for_downloads_toggle_button_key),
                 AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_user_management_use_sd_card_for_downloads_text_key),
+                AppCMSUIKeyType.PAGE_SD_CARD_FOR_DOWNLOADS_TEXT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_closed_captions_toggle_button_key),
                 AppCMSUIKeyType.PAGE_CLOSED_CAPTIONS_TOGGLE_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_user_management_autoplay_text_key),
+                AppCMSUIKeyType.PAGE_USER_MANAGEMENT_AUTOPLAY_TEXT_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_title_key),
                 AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY);
@@ -383,6 +389,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_settings_component_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_user_management_download_settings_key),
+                AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
@@ -773,6 +781,9 @@ public class AppCMSUIModule {
                 AppCMSActionType.DELETE_SINGLE_WATCHLIST_ITEM);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_delete_single_history_action),
                 AppCMSActionType.DELETE_SINGLE_HISTORY_ITEM);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_publishdate_key),
+                AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY);
     }
 
     @Provides

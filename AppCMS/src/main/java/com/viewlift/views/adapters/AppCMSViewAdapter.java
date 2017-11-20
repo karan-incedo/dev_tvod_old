@@ -12,12 +12,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
+import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
@@ -31,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 
 /*
  * Created by viewlift on 5/5/17.
@@ -159,7 +163,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 this.componentViewType,
                 false,
                 useRoundedCorners());
+        if (jsonValueKeyMap.get(componentViewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+            setBackgroundToView(view, component);
+        }
 
+        if (jsonValueKeyMap.get(componentViewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+            setBackgroundToView(view, component);
+        }
         if ("AC SelectPlan 02".equals(componentViewType)) {
             applyBgColorToChildren(view, selectedColor);
         }
@@ -187,6 +197,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         return new ViewHolder(view);
+    }
+
+    private void setBackgroundToView(CollectionGridItemView view, Component component) {
+        for (int i = 0; i < component.getComponents().size(); i++) {
+            if (component.getComponents().get(i).getType() != null) {
+                if (component.getComponents().get(i).getType().contains(view.getContext().getString(R.string.app_cms_table_background_view))) {
+                    view.setBackgroundResource(R.drawable.watchlist_item);
+                }
+            }
+        }
     }
 
     private boolean useRoundedCorners() {
@@ -415,8 +435,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         break;
 
                                     case "VIDEO":
-                                        // action = videoAction;  temp changes
-                                        action = action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
+                                       // action = videoAction;  temp changes
+                                        action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                         break;
 
                                     default:
@@ -434,8 +454,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                                        sendEvent(hideRemoveAllButtonEvent);
 //                                                    }
                                                 }, false);
-                                    }
-                                    if (action.contains(deleteSingleWatchlistAction)) {
+                                    } else if (action.contains(deleteSingleWatchlistAction)) {
                                         appCMSPresenter.editWatchlist(data.getGist().getId(),
                                                 addToWatchlistResult -> {
                                                     adapterData.remove(data);

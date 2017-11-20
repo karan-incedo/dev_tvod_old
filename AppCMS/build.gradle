@@ -26,11 +26,24 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
-    google()
+    maven {
+        url "s3://sdkv1.kiswe.com/release"
+        credentials(AwsCredentials) {
+            accessKey 'AKIAIST5GLZEHZKM57SQ'
+            secretKey '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'
+        }
+    }
+    maven {
+        url "s3://sdkv1.kiswe.com/snapshot"
+        credentials(AwsCredentials) {
+            accessKey 'AKIAIST5GLZEHZKM57SQ'
+            secretKey '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'
+        }
+    }
 }
 
 android {
-    buildToolsVersion "26.0.2"
+    buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
@@ -87,6 +100,7 @@ android {
     }
     buildTypes {
         debug {
+            zipAlignEnabled true
             multiDexEnabled true
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
@@ -96,8 +110,10 @@ android {
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
+            zipAlignEnabled true
             multiDexEnabled true
             minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
@@ -264,6 +280,7 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
+    mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
 }
 
 apply plugin: 'com.google.gms.google-services'

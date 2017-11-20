@@ -478,10 +478,10 @@ public class CastServiceProvider {
             if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
                 CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
                         .getSessionManager().endCurrentSession(true);
-                if (appCMSPresenter.isUserLoggedIn()) {
+                if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                             null);
-                } else {
+                } else if (appCMSPresenter.isAppSVOD()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {

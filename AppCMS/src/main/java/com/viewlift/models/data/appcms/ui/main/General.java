@@ -9,37 +9,31 @@ import java.io.Serializable;
 @UseStag
 public class General implements Serializable {
 
-    @SerializedName("textColor")
-    @Expose
-    String textColor;
-
-    @SerializedName("pageTitleColor")
-    @Expose
-    String pageTitleColor;
-
     @SerializedName("backgroundColor")
     @Expose
     String backgroundColor;
-
     @SerializedName("blockTitleColor")
     @Expose
     String blockTitleColor;
 
-    public String getTextColor() {
-        return textColor;
-    }
+    @SerializedName("fontFamily")
+    @Expose
+    String fontFamily;
+    @SerializedName("pageTitleColor")
+    @Expose
+    String pageTitleColor;
 
-    public void setTextColor(String textColor) {
-        this.textColor = textColor;
-    }
+    @SerializedName("fontUrl")
+    @Expose
+    String fontUrl;
 
-    public String getPageTitleColor() {
-        return pageTitleColor;
-    }
+    @SerializedName("textColor")
+    @Expose
 
-    public void setPageTitleColor(String pageTitleColor) {
-        this.pageTitleColor = pageTitleColor;
-    }
+    String textColor;
+
+
+
 
     public String getBackgroundColor() {
         return backgroundColor;
@@ -55,5 +49,29 @@ public class General implements Serializable {
 
     public void setBlockTitleColor(String blockTitleColor) {
         this.blockTitleColor = blockTitleColor;
+    }
+    public String getFontFamily() {
+        return fontFamily;
+    }
+    public void setFontFamily(String fontFamily) {
+        this.fontFamily = fontFamily;
+    }
+    public String getPageTitleColor() {
+        return pageTitleColor;
+    }
+    public void setPageTitleColor(String pageTitleColor) {
+        this.pageTitleColor = pageTitleColor;
+    }
+    public String getFontUrl() {
+        return fontUrl;
+    }
+    public void setFontUrl(String fontUrl) {
+        this.fontUrl = fontUrl;
+    }
+    public String getTextColor() {
+        return textColor;
+    }
+    public void setTextColor(String textColor) {
+        this.textColor = textColor;
     }
 }

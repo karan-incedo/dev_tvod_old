@@ -6,7 +6,7 @@ def final customApplicationId = 'FailArmy'
 def final hostName = "failarmy.viewlift.com"
 
 
-def final appVersionName = "0.0.4"
+def final appVersionName = "0.0.8"
 
 buildscript {
     repositories {
@@ -38,7 +38,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 4
+        versionCode 8
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -132,7 +132,7 @@ android {
     }
 
     dexOptions {
-
+        incremental true
         javaMaxHeapSize "4g"
     }
 }
