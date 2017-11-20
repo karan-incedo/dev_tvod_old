@@ -46,6 +46,13 @@ public class AppCmsNavigationFragment extends Fragment {
     private Typeface extraBoldTypeFace , semiBoldTypeFace;
     private Component extraBoldComp , semiBoldComp;
     private AppCMSBinder appCmsBinder;
+    private TextView navMenuSubscriptionModule;
+    private AppCMSPresenter appCMSPresenter;
+
+    public TextView getNavMenuSubscriptionModule() {
+        return navMenuSubscriptionModule;
+    }
+
     public static AppCmsNavigationFragment newInstance(Context context,
                                                        OnNavigationVisibilityListener listener,
                                                        AppCmsSubNavigationFragment.OnSubNavigationVisibilityListener subNavListener,
@@ -76,11 +83,12 @@ public class AppCmsNavigationFragment extends Fragment {
 
         AppCMSBinder appCMSBinder = ((AppCMSBinder) args.getBinder(getResources().getString(R.string.fragment_page_bundle_key)));
         this.appCmsBinder = appCMSBinder;
-        AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
+        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
         TextView navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
         View navTopLine = view.findViewById(R.id.nav_top_line);
+        navMenuSubscriptionModule = (TextView) view.findViewById(R.id.nav_menu_subscription_module);
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -93,8 +101,12 @@ public class AppCmsNavigationFragment extends Fragment {
             mRecyclerView.setAdapter(navigationAdapter);
             navMenuTile.setVisibility(View.GONE);
             navTopLine.setVisibility(View.GONE);
+            navMenuSubscriptionModule.setVisibility(View.GONE);
         } else {
-            STNavigationAdapter navigationAdapter = new STNavigationAdapter(getActivity(), textColor, bgColor,
+            STNavigationAdapter navigationAdapter = new STNavigationAdapter(
+                    getActivity(),
+                    textColor,
+                    bgColor,
                     appCMSBinder.getNavigation(),
                     appCMSBinder.isUserLoggedIn(),
                     appCMSPresenter);
@@ -104,8 +116,34 @@ public class AppCmsNavigationFragment extends Fragment {
             navMenuTile.setTypeface(Typeface.createFromAsset(getActivity().getAssets(), getActivity().getString(R.string.lato_regular)));
             navMenuTile.setVisibility(View.VISIBLE);
             navTopLine.setVisibility(View.VISIBLE);
+
+            toggleVisibilityOfSubscriptionModule();
+
+            navMenuSubscriptionModule.setOnClickListener(v -> {
+                appCMSPresenter.openTVErrorDialog("Please visit our website to start your subscription", getActivity().getString(R.string.subscription));
+            });
         }
         return view;
+    }
+
+    private void toggleVisibilityOfSubscriptionModule() {
+        appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+            try {
+                if (appCMSUserSubscriptionPlanResult != null) {
+                    String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                    if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                            subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                        navMenuSubscriptionModule.setVisibility(View.GONE);
+                    } else {
+                        navMenuSubscriptionModule.setVisibility(View.VISIBLE);
+                    }
+                }else {
+                    navMenuSubscriptionModule.setVisibility(View.VISIBLE);
+                }
+            } catch (Exception e) {
+                navMenuSubscriptionModule.setVisibility(View.VISIBLE);
+            }
+        });
     }
 
 
@@ -148,6 +186,7 @@ public class AppCmsNavigationFragment extends Fragment {
         if(null != mRecyclerView && null != mRecyclerView.getAdapter()){
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
+        toggleVisibilityOfSubscriptionModule();
     }
 
     class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.NavItemHolder> {

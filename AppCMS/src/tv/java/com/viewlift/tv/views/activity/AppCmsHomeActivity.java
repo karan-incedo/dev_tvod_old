@@ -708,7 +708,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                         break;
                     case KeyEvent.KEYCODE_DPAD_DOWN:
                         //if navigation fragment is open then hold down key event otherwise pass it.
-                       if(isNavigationVisible()){
+                       if(isNavigationVisible() && (navigationFragment.getNavMenuSubscriptionModule() != null && !navigationFragment.getNavMenuSubscriptionModule().isFocused())) {
                            handleNavigationVisibility();
                            return true;
                        }
