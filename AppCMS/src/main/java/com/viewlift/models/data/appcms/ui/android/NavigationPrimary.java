@@ -14,8 +14,6 @@ public class NavigationPrimary implements Serializable {
     @Expose
     String title;
 
-
-
     @SerializedName("items")
     @Expose
     List<NavigationPrimary> items = null;

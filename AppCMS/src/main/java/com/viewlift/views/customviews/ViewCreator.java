@@ -1515,7 +1515,7 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
+                /*    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
                             this,
                             appCMSPresenter,
                             settings,
@@ -1527,23 +1527,23 @@ public class ViewCreator {
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
-                            appCMSAndroidModules);
+                            appCMSAndroidModules);*/
 //
-//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-//                            moduleAPI != null ? moduleAPI.getContentData() : null,
-//                            component.getComponents(),
-//                            appCMSPresenter,
-//                            jsonValueKeyMap,
-//                            viewType,
-//                            (RecyclerView) componentViewResult.componentView);
+                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+                            moduleAPI != null ? moduleAPI.getContentData() : null,
+                            component.getComponents(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
 
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
-//                    componentViewResult.onInternalEvent = appCMSViewAdapter;
-//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
+                   componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(appCMSViewAdapter)
+                                .adapter(appCMSTrayItemAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleId + component.getKey())
                                 .build());
