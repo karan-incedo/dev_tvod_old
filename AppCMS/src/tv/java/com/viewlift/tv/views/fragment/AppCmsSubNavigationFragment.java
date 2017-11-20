@@ -400,8 +400,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
 
             if (!mShowTeams) {
+                holder.navImageView.setPadding(0, 0, 0, 0);
                 holder.navImageView.setImageResource(getIcon(subItem.title));
             } else {
+                holder.navImageView.setPadding(10, 10, 10, 10);
                 Glide.with(mContext)
                         .load(subItem.icon)
                         .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -610,9 +612,9 @@ public class AppCmsSubNavigationFragment extends Fragment {
                     selectedPosition = (int) navItemView.getTag(R.string.item_position);
 
                     if (hasFocus) {
-                        navImageView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                        ((ViewGroup) navImageView.getParent()).setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     } else {
-                        navImageView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+                        ((ViewGroup) navImageView.getParent()).setBackgroundColor(getResources().getColor(android.R.color.transparent));
                     }
                 });
 
