@@ -5031,22 +5031,10 @@ public class AppCMSPresenter {
                         appCMSPageAPI = null;
                     }
                 }
-                AppCMSPageUI appCMSPageUI1;
-                if (pageId.equalsIgnoreCase("5a54eccc-146a-4a12-9ae3-6720460b2c22")) {
-                    appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(currentActivity, "home_screen_ui.json"),
-                            AppCMSPageUI.class);
-                } else if (pageId.equalsIgnoreCase("b5233890-a8aa-4bf9-a9d8-4db6bc54cec2")) {
-                    appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(currentActivity, "live_screen.json"),
-                            AppCMSPageUI.class);
-                }
-                else {
-                    appCMSPageUI1 = navigationPages.get(pageId);
-                }
+
                 if (launchActivity) {
                     launchPageActivity(currentActivity,
-                            appCMSPageUI1,
+                            appCMSPageUI,
                             appCMSPageAPI,
                             pageId,
                             pageTitle,
@@ -5063,7 +5051,7 @@ public class AppCMSPresenter {
                     launched = true;
                 } else {
                     Bundle args = getPageActivityBundle(currentActivity,
-                            appCMSPageUI1,
+                            appCMSPageUI,
                             appCMSPageAPI,
                             pageId,
                             pageTitle,

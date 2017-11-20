@@ -1049,7 +1049,10 @@ public class ViewCreator {
             }
 
 
-
+            /*if(moduleInfo.getBlockName().equalsIgnoreCase("banner01")){
+                module.setLayout(moduleInfo.getLayout());
+                module.setComponents(moduleInfo.getComponents());
+            }*/
 
             boolean createModule = !modulesToIgnore.contains(module.getType());
 
