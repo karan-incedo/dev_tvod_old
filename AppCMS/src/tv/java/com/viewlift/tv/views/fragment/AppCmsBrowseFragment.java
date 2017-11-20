@@ -103,7 +103,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     long clickedTime;
 
     public void pushedPlayKey() {
-        if (null != rowData) {
+        if (null != rowData && !rowData.isPlayerComponent) {
             Utils.pageLoading(true, getActivity());
             String filmId = rowData.contentData.getGist().getId();
             String permaLink = rowData.contentData.getGist().getPermalink();
