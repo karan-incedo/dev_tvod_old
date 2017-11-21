@@ -1527,7 +1527,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         + BaseView.isLandscape(this)) instanceof AppCMSPageFragment) {
             ((AppCMSPageFragment) getSupportFragmentManager().findFragmentByTag(appCMSBinder.getPageId()
                     + BaseView.isLandscape(this))).refreshView(appCMSBinder);
-            if (appCMSBinder.getAppCMSPageAPI() != null) {
+            if (appCMSBinder.getAppCMSPageAPI() != null || appCMSBinder.getExtraScreenType()
+                    != AppCMSPresenter.ExtraScreenType.NONE) {
                 pageLoading(false);
             } else {
                 pageLoading(true);
@@ -1594,7 +1595,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             .getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH
                             && updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH);
                 } catch (Exception e) {
-
+                    //
                 }
             }
 
@@ -1662,7 +1663,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             break;
                     }
                 } catch (Exception e) {
-
+                    //
                 }
             }
 
@@ -1690,7 +1691,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (fragment instanceof AppCMSPageFragment) {
                     ((AppCMSPageFragment) fragment).refreshView(appCMSBinder);
                 }
-                if (appCMSBinder.getAppCMSPageAPI() != null) {
+                if (appCMSBinder.getAppCMSPageAPI() != null || appCMSBinder.getExtraScreenType()
+                        != AppCMSPresenter.ExtraScreenType.NONE) {
                     pageLoading(false);
                 } else {
                     pageLoading(true);
