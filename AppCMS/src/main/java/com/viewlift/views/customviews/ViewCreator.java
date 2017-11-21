@@ -108,7 +108,7 @@ public class ViewCreator {
     }
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        long runtime = (data.getGist().getRuntime() / 60L);
+        long runtime = data.getGist().getRuntime();
 
         String year = data.getGist().getYear();
         String primaryCategory =
@@ -121,12 +121,19 @@ public class ViewCreator {
                 && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
-        if (runtime > 0 && runtime < 2) {
-            infoText.append(runtime).append(" ").append(context.getString(R.string.min_abbreviation));
-        } else if (runtime > 0) {
-            infoText.append(runtime).append(" ").append(context.getString(R.string.mins_abbreviation));
+
+        if (runtime / 60L < 1) {
+            infoText.append(runtime)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_seconds_abbreviation));
+        } else if (runtime / 60L < 2) {
+            infoText.append(runtime / 60L)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_minute_abbreviation));
         } else {
-            infoText.append("0 ").append(context.getString(R.string.mins_abbreviation)).append(context.getString(R.string.text_separator));
+            infoText.append(runtime / 60L)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_minutes_abbreviation));
         }
 
         if (appendFirstSep) {

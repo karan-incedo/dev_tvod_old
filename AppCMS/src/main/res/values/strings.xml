@@ -94,8 +94,6 @@
     <string name="text_color_key">text_color</string>
     <string name="utf8enc">UTF-8</string>
     <string name="https_scheme">https://</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="video_player_request_ads_key">video_player_request_ads</string>
 
 
@@ -190,8 +188,11 @@
 
     <!-- Google Cancel Subscription API -->
     <string name="google_cancel_subscription_api">https://www.googleapis.com/androidpublisher/v2/applications/$1%s/purchases/subscriptions/$2%s/tokens/$3%s:cancel</string>
-    <string name="minute_for_runtime">MIN</string>
-    <string name="minutes_for_runtime">MINS</string>
+
+    <!-- Runtime Abbreviations -->
+    <string name="runtime_minute_abbreviation">MIN</string>
+    <string name="runtime_minutes_abbreviation">MINS</string>
+    <string name="runtime_seconds_abbreviation">SECS</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
