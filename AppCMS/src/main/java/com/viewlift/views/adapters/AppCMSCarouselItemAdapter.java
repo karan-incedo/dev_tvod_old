@@ -89,30 +89,27 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         this.listView.getLayoutManager().scrollToPosition(updatedIndex);
 
         this.carouselHandler = new Handler();
-        this.carouselUpdater = new Runnable() {
-            @Override
-            public void run() {
-                if (adapterData.size() > 1 && !cancelled && (loop || (!loop && updatedIndex < adapterData.size()))) {
-                    int firstVisibleIndex =
-                            ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
-                    int lastVisibleIndex =
-                            ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findLastVisibleItemPosition();
-                    Log.d(TAG, "firstVisibleIndex: " + firstVisibleIndex);
-                    Log.d(TAG, "lastVisibleIndex: " + lastVisibleIndex);
-                    Log.d(TAG, "updatedIndex: " + updatedIndex);
-                    if (updatedIndex < firstVisibleIndex) {
-                        updatedIndex = firstVisibleIndex;
-                    }
-                    if (lastVisibleIndex < updatedIndex) {
-                        updatedIndex = lastVisibleIndex;
-                    }
-                    if (0 <= updatedIndex) {
-                        updateCarousel(updatedIndex + 1, false);
-                    }
-                    postUpdateCarousel();
-                } else if (cancelled) {
-                    updatedIndex = getDefaultIndex();
+        this.carouselUpdater = () -> {
+            if (adapterData.size() > 1 && !cancelled && (loop || (!loop && updatedIndex < adapterData.size()))) {
+                int firstVisibleIndex =
+                        ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
+                int lastVisibleIndex =
+                        ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findLastVisibleItemPosition();
+                Log.d(TAG, "firstVisibleIndex: " + firstVisibleIndex);
+                Log.d(TAG, "lastVisibleIndex: " + lastVisibleIndex);
+                Log.d(TAG, "updatedIndex: " + updatedIndex);
+                if (updatedIndex < firstVisibleIndex) {
+                    updatedIndex = firstVisibleIndex;
                 }
+                if (lastVisibleIndex < updatedIndex) {
+                    updatedIndex = lastVisibleIndex;
+                }
+                if (0 <= updatedIndex) {
+                    updateCarousel(updatedIndex + 1, false);
+                }
+                postUpdateCarousel();
+            } else if (cancelled) {
+                updatedIndex = getDefaultIndex();
             }
         };
 

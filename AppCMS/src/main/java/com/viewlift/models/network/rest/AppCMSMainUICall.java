@@ -111,7 +111,13 @@ public class AppCMSMainUICall {
 
             try {
 //                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
+                long start = System.currentTimeMillis();
+                Log.d(TAG, "Start main.json request: " + start);
                 main = appCMSMainUIRest.get(appCMSMainUrlSb.toString()).execute().body();
+                long end = System.currentTimeMillis();
+                Log.d(TAG, "End main.json request: " + end);
+                Log.d(TAG, "main.json URL: " + appCMSMainUrlSb.toString());
+                Log.d(TAG, "Total Time main.json request: " + (end - start));
             } catch (Exception e) {
                 Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
             }

@@ -64,7 +64,13 @@ public class AppCMSAndroidUICall {
                     urlWithCacheBuster.append(new Date().getTime());
                     appCMSAndroidUI = appCMSAndroidUIRest.get(urlWithCacheBuster.toString()).execute().body();
                 } else {
+                    long start = System.currentTimeMillis();
+                    Log.d(TAG, "Start android.json request: " + start);
                     appCMSAndroidUI = appCMSAndroidUIRest.get(url).execute().body();
+                    long end = System.currentTimeMillis();
+                    Log.d(TAG, "End android.json request: " + end);
+                    Log.d(TAG, "android.json URL: " + url);
+                    Log.d(TAG, "Total Time android.json request: " + (end - start));
                 }
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to retrieve Android UI JSON file from network: " +

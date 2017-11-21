@@ -6,7 +6,7 @@ def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 
 
-def final appVersionName = "2.1.24"
+def final appVersionName = "2.1.26"
 
 buildscript {
     repositories {
@@ -38,7 +38,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 155
+        versionCode 157
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -103,6 +103,7 @@ android {
         }
         release {
             multiDexEnabled true
+            shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
@@ -230,6 +231,7 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
     compile "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
+    compile 'com.amitshekhar.android:android-networking:1.0.0'
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"

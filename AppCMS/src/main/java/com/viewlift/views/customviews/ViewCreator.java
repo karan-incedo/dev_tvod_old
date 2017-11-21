@@ -1072,12 +1072,6 @@ public class ViewCreator {
                         pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
-                if (childView != null) {
-//                    childrenContainer.addView(childView);
-                    if (moduleAPI == null) {
-//                        childView.setVisibility(View.GONE);
-                    }
-                }
             }
         }
         pageView.notifyAdapterDataSetChanged();
@@ -1410,10 +1404,6 @@ public class ViewCreator {
         componentViewResult.addToPageView = false;
         componentViewResult.shouldHideComponent = false;
         componentViewResult.onInternalEvent = null;
-
-//        if (moduleAPI == null) {
-//            return;
-//        }
 
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 

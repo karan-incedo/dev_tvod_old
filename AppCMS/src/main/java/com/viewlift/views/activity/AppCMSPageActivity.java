@@ -328,6 +328,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 if (appCMSBinder != null) {
                                     appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
                                             appCMSBinder.getPageId(),
+                                            null,
                                             appCMSBinderAction);
                                 }
                             }
@@ -741,7 +742,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.checkForExistingSubscription(false);
 
-        appCMSPresenter.refreshPages(() -> {
+        appCMSPresenter.refreshPages(shouldRefresh -> {
             if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             } else if (appCMSPresenter.isAppUpgradeAvailable()) {
@@ -754,7 +755,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.requestLayout();
             } else {
                 newVersionUpgradeAvailable.setVisibility(View.GONE);
-                refreshPageData();
+                if (shouldRefresh) {
+                    refreshPageData();
+                } else {
+                    pageLoading(false);
+                }
             }
         }, true, 0, 0);
 
@@ -2032,6 +2037,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getPagePath());
                 appCMSPresenter.getPageIdContent(apiUrl,
                         appCMSBinder.getPagePath(),
+                        null,
                         appCMSPageAPI -> {
                             if (appCMSPageAPI != null) {
                                 appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
@@ -2101,6 +2107,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                             appCMSPresenter.getPageIdContent(apiUrl,
                                     appCMSBinder.getPagePath(),
+                                    null,
                                     appCMSPageAPI -> {
                                         if (appCMSPageAPI != null) {
                                             if (appCMSPresenter.isUserLoggedIn()) {
