@@ -11639,4 +11639,35 @@ public class AppCMSPresenter {
         calendar.setTimeInMillis(timeMilliSeconds);
         return formatter.format(calendar.getTime());
     }
+
+
+    public  void launchFullScreenStandalonePlayer(String videoId){
+        refreshVideoData(videoId, new Action1<ContentDatum>() {
+            @Override
+            public void call(ContentDatum contentDatum) {
+                if (/*moduleAPI.getContentData() != null &&
+                                            !moduleAPI.getContentData().isEmpty() &&*/
+                        contentDatum != null &&
+                                contentDatum.getContentDetails() != null) {
+
+                    List<String> relatedVideoIds = null;
+                    if (contentDatum.getContentDetails() != null &&
+                            contentDatum.getContentDetails().getRelatedVideoIds() != null) {
+                        relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();
+                    }
+                    int currentPlayingIndex = -1;
+                    if (relatedVideoIds == null) {
+                        currentPlayingIndex = 0;
+                    }
+
+                    launchVideoPlayer(contentDatum,
+                            currentPlayingIndex,
+                            relatedVideoIds,
+                            contentDatum.getGist().getWatchedTime(),
+                            "watchVideo");
+
+                }
+            }
+        });
+    }
 }
