@@ -82,7 +82,7 @@ public class AppCMSTeamListFragment extends DialogFragment {
                 .appCMSPresenter();
 
         if (appCMSBinder != null && appCMSBinder.getNavigation() != null) {
-            appCMSTeamItemAdapter = new AppCMSTeamItemAdapter(appCMSBinder.getNavigation().getNavigationTabbar(),
+            appCMSTeamItemAdapter = new AppCMSTeamItemAdapter(appCMSBinder.getNavigation().getTabBar(),
                     appCMSPresenter,
                     appCMSBinder.getJsonValueKeyMap(),
                     appCMSBinder.isUserLoggedIn(),

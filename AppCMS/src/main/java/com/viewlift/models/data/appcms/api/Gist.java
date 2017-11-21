@@ -94,6 +94,10 @@ public class Gist implements Serializable {
     @Expose
     int watchedPercentage;
 
+    @SerializedName("kisweEventId")
+    @Expose
+    String kisweEventId;
+
     String downloadStatus;
     /**
      * This is to store the url of the downloaded file
@@ -285,5 +289,13 @@ public class Gist implements Serializable {
 
     public void setImageGist(ImageGist imageGist) {
         this.imageGist = imageGist;
+    }
+
+    public String getKisweEventId() {
+        return kisweEventId;
+    }
+
+    public void setKisweEventId(String kisweEventId) {
+        this.kisweEventId = kisweEventId;
     }
 }

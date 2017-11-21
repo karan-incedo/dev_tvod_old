@@ -459,12 +459,12 @@ public class ViewCreator {
                                                     moduleAPI.getContentData().get(0),
                                                     view);
                                         }
-                                    }else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY) {
-                                                if (moduleAPI.getContentData() != null &&
+                                    } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY) {
+                                        if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0) != null) {
-                                            long publishDateMillseconds= moduleAPI.getContentData().get(0).getGist().getPublishDate();
-                                            String publishDate=context.getResources().getString(R.string.published_on)+" "+ appCMSPresenter.getDateFormat(publishDateMillseconds,"MMM dd,YYYY");
+                                            long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                            String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,YYYY");
                                             ((TextView) componentViewResult.componentView).setText(publishDate);
 
                                         }
@@ -1451,6 +1451,7 @@ public class ViewCreator {
         int tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
+        System.out.println("com--" + componentType.name());
         switch (componentType) {
 
             case PAGE_RATINGBAR:
@@ -1515,28 +1516,15 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-//                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
-//                            this,
-//                            appCMSPresenter,
-//                            settings,
-//                            component.getLayout(),
-//                            false,
-//                            component,
-//                            jsonValueKeyMap,
-//                            moduleAPI,
-//                            ViewGroup.LayoutParams.MATCH_PARENT,
-//                            ViewGroup.LayoutParams.WRAP_CONTENT,
-//                            viewType,
-//                            appCMSAndroidModules);
-//
-                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+
+AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
                             moduleAPI != null ? moduleAPI.getContentData() : null,
                             component.getComponents(),
                             appCMSPresenter,
                             jsonValueKeyMap,
                             viewType,
                             (RecyclerView) componentViewResult.componentView);
-//
+
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
                     componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
@@ -1709,7 +1697,7 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0) != null &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                    componentViewResult.componentView = playerView(context, appCMSPresenter, moduleAPI.getContentData().get(0).getGist().getId());
+                    componentViewResult.componentView = playerView(context, moduleAPI.getContentData().get(0).getGist().getId());
                     componentViewResult.componentView.setId(R.id.video_player_id);
                 }
                 break;
@@ -2078,9 +2066,43 @@ public class ViewCreator {
                         break;
 
                     case PAGE_PLAY_LIVE_IMAGE_KEY:
-                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
+                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.full_screen_player_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
+                        componentViewResult.componentView.setOnClickListener(v -> {
+
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getId() != null) {
+                                appCMSPresenter.refreshVideoData(moduleAPI.getContentData().get(0).getGist().getId(), new Action1<ContentDatum>() {
+                                    @Override
+                                    public void call(ContentDatum contentDatum) {
+                                        if (/*moduleAPI.getContentData() != null &&
+                                            !moduleAPI.getContentData().isEmpty() &&*/
+                                                contentDatum != null &&
+                                                        contentDatum.getContentDetails() != null) {
+
+                                            List<String> relatedVideoIds = null;
+                                            if (contentDatum.getContentDetails() != null &&
+                                                    contentDatum.getContentDetails().getRelatedVideoIds() != null) {
+                                                relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();
+                                            }
+                                            int currentPlayingIndex = -1;
+                                            if (relatedVideoIds == null) {
+                                                currentPlayingIndex = 0;
+                                            }
+
+                                            appCMSPresenter.launchVideoPlayer(contentDatum,
+                                                    currentPlayingIndex,
+                                                    relatedVideoIds,
+                                                    contentDatum.getGist().getWatchedTime(),
+                                                    component.getAction());
+
+                                        }
+                                    }
+                                });
+                            }
+                        });
+
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
@@ -2564,8 +2586,8 @@ public class ViewCreator {
                             if (moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null) {
-                                long publishDateMillseconds= moduleAPI.getContentData().get(0).getGist().getPublishDate();
-                                String publishDate=context.getResources().getString(R.string.published_on)+" "+ appCMSPresenter.getDateFormat(publishDateMillseconds,"MMM dd,YYYY");
+                                long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,YYYY");
                                 ((TextView) componentViewResult.componentView).setText(publishDate);
 
                             }
@@ -3682,67 +3704,17 @@ public class ViewCreator {
         }
     }
 
-    public static VideoPlayerView playerView(Context context, AppCMSPresenter appCMSPresenter, String videoId) {
+    static CustomVideoPlayerView videoPlayerView;
 
-        VideoPlayerView videoPlayerView = new VideoPlayerView(context);
+    public static CustomVideoPlayerView playerView(Context context, String videoId) {
+        if (videoPlayerView != null) {
+            videoPlayerView.stopPlayer();
+            videoPlayerView.releasePlayer();
+            videoPlayerView.removeAllViews();
+        }
+
+        videoPlayerView = new CustomVideoPlayerView(context);
         videoPlayerView.init(context);
-        // it should be dynamic when live url come from api
-
-        appCMSPresenter.refreshVideoData(videoId, updatedContentDatum -> {
-            // appCMSPresenter.getAppCMSSignedURL(videoId, appCMSSignedURLResult -> {
-            //     if (videoPlayerView != null && appCMSSignedURLResult != null) {
-            if (videoPlayerView != null) {
-                boolean foundMatchingMpeg = false;
-                String hlsUrl = "";
-                String closedCaptionUrl = "";
-                if (updatedContentDatum != null &&
-                        updatedContentDatum.getStreamingInfo() != null &&
-                        updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
-                        updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg() != null &&
-                        !updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().isEmpty()) {
-                    System.out.println(" [] " + new Gson().toJson(updatedContentDatum));
-                    updatedContentDatum.getGist().setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
-                    if (updatedContentDatum.getStreamingInfo().getVideoAssets().getHls() != null
-                            ) {
-                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
-                    } else {
-
-                        hlsUrl = updatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
-
-                    }
-                    // TODO: 7/27/2017 Implement CC for multiple languages.
-                    if (updatedContentDatum.getContentDetails() != null
-                            && updatedContentDatum.getContentDetails().getClosedCaptions() != null
-                            && !updatedContentDatum.getContentDetails().getClosedCaptions().isEmpty()) {
-                        for (ClosedCaptions cc : updatedContentDatum.getContentDetails().getClosedCaptions()) {
-                            if (cc.getUrl() != null &&
-                                    !cc.getUrl().equalsIgnoreCase(context.getString(R.string.download_file_prefix)) &&
-                                    cc.getFormat() != null &&
-                                    cc.getFormat().equalsIgnoreCase("SRT")) {
-                                closedCaptionUrl = cc.getUrl();
-                            }
-                        }
-                    }
-                }
-
-
-
-                    /*videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
-                            appCMSSignedURLResult.getSignature(),
-                            appCMSSignedURLResult.getKeyPairId());*/
-
-
-                videoPlayerView.setUri(Uri.parse(hlsUrl),
-                        !TextUtils.isEmpty(closedCaptionUrl) ? Uri.parse(closedCaptionUrl) : null);
-                videoPlayerView.setCurrentPosition(updatedContentDatum.getGist().getWatchedTime() * 1000L);
-
-            }
-            //});
-
-        });
-       /* videoPlayerView.setUri(Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4"),
-                null);*/
-        videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
@@ -3753,6 +3725,7 @@ public class ViewCreator {
             }
         });
 
+        videoPlayerView.setVideoUri(videoId);
         return videoPlayerView;
     }
 

@@ -459,7 +459,7 @@
     <string name="app_cms_module_list_footer_key">footer01</string>
     <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
-    
+    <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
 
 </resources>
 

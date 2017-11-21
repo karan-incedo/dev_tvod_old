@@ -73,7 +73,6 @@ import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
-import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
@@ -1333,8 +1332,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 case TEAM:
                     try {
                         if (appCMSBinder != null &&
-                                appCMSBinder.getNavigation().getNavigationTabbar() != null &&
-                                appCMSPresenter.isPageTeamNavigationPage(appCMSBinder.getNavigation().getNavigationTabbar())) {
+                                appCMSBinder.getNavigation().getTabBar() != null &&
+                                appCMSPresenter.isPageTeamNavigationPage(appCMSBinder.getNavigation().getTabBar())) {
                             appCMSPageFragment =
                                     AppCMSTeamListFragment.newInstance(this,
                                             appCMSBinder,
@@ -1448,9 +1447,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void selectNavItem(NavBarItemView v) {
-        unselectAllNavItems();
-        NavTabTag navigationTabTag = (NavTabTag) v.getTag();
-        v.select(true, navigationTabTag);
+        if(v!=null && v.getTag()!=null) {
+            unselectAllNavItems();
+            NavTabTag navigationTabTag = (NavTabTag) v.getTag();
+            v.select(true, navigationTabTag);
+        }
     }
 
     private void unselectAllNavItems() {
@@ -1938,10 +1939,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void createTabBar() {
         ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
-        if (appCMSPresenter.getNavigation().getNavigationTabbar() != null && !isTabCreated && tabBarModule != null) {
+        if (appCMSPresenter.getNavigation().getTabBar() != null && !isTabCreated && tabBarModule != null) {
             isTabCreated = true;
             int WEIGHT_SUM = getResources().getInteger(R.integer.nav_bar_items_weightsum);
-            int weight = WEIGHT_SUM / appCMSPresenter.getNavigation().getNavigationTabbar().size();
+            int weight = WEIGHT_SUM / appCMSPresenter.getNavigation().getTabBar().size();
 
             appCMSTabNavContainer.removeAllViews();
 
@@ -1970,8 +1971,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSTabNavContainer.addView(appCMSTabNavContainerItems);
 
 
-            for (int i = 0; i < appCMSPresenter.getNavigation().getNavigationTabbar().size(); i++) {
-                NavigationTabBar navigationItem = appCMSPresenter.getNavigation().getNavigationTabbar().get(i);
+            for (int i = 0; i < appCMSPresenter.getNavigation().getTabBar().size(); i++) {
+                NavigationPrimary navigationItem = appCMSPresenter.getNavigation().getTabBar().get(i);
 
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter,weight);
                 int highlightColor = 0;
@@ -2011,14 +2012,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (navigationTabTag.getPageId().equals("Menu Screen")) {
                             appCMSPresenter.launchNavigationPage();
                         } else if (navigationTabTag.getPageId().equalsIgnoreCase("TEAMS") ||
-                                navigationTabTag.getNavigationTabBar().getTitle().equalsIgnoreCase("TEAMS")) {
+                                navigationTabTag.getTabBar().getTitle().equalsIgnoreCase("TEAMS")) {
                             appCMSPresenter.launchTeamNavPage();
                         } else if (navigationTabTag.getPageId().equals("Search Screen")) {
                             appCMSPresenter.launchSearchPage();
                         } else if (!TextUtils.isEmpty(navigationTabTag.getPageId().toString())) {
                             selectNavItemAndLaunchPage(navBarItemView,
-                                    appCMSPresenter.getNavigation().getNavigationTabbar().get(v.getId()).getPageId(),
-                                    appCMSPresenter.getNavigation().getNavigationTabbar().get(v.getId()).getTitle());
+                                    appCMSPresenter.getNavigation().getTabBar().get(v.getId()).getPageId(),
+                                    appCMSPresenter.getNavigation().getTabBar().get(v.getId()).getTitle());
                         }
                     }
                 });
@@ -2037,16 +2038,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             this.pageId = pageId;
         }
 
-        public NavigationTabBar getNavigationTabBar() {
+        public NavigationPrimary getTabBar() {
             return navigationTabBar;
         }
 
-        public void setNavigationTabBar(NavigationTabBar navigationTabBar) {
+        public void setNavigationTabBar(NavigationPrimary navigationTabBar) {
             this.navigationTabBar = navigationTabBar;
         }
 
         private String pageId;
-        private NavigationTabBar navigationTabBar;
+        private NavigationPrimary navigationTabBar;
 
         public ModuleList getNavigationModuleItem() {
             return navigationModuleItem;
@@ -2075,7 +2076,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 (navigationTabTag != null && navigationTabTag.getPageId() != null &&
                                         (pageId.equalsIgnoreCase("navigation") && navigationTabTag.getPageId().equals("Menu Screen")) ||
                                         (pageId.equalsIgnoreCase(getString(R.string.app_cms_team_page_tag)) &&
-                                                navigationTabTag.getNavigationTabBar().getTitle().equalsIgnoreCase(getString(R.string.app_cms_team_page_tag)))))) {
+                                                navigationTabTag.getTabBar().getTitle().equalsIgnoreCase(getString(R.string.app_cms_team_page_tag)))))) {
                     selectNavItem(((NavBarItemView) appCMSTabNavContainerItems.getChildAt(i)));
                     //Log.d(TAG, "Nav item - Selecting tab item with page Id: " +
 //                            pageId +
@@ -2087,11 +2088,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
 
-        if (!foundPage) {
+       /* if (!foundPage) {
             final NavBarItemView menuNavBarItemView =
                     (NavBarItemView) appCMSTabNavContainer.getChildAt(navMenuPageIndex);
             selectNavItem(menuNavBarItemView);
-        }
+        }*/
     }
 
     private void processDeepLink(Uri deeplinkUri) {

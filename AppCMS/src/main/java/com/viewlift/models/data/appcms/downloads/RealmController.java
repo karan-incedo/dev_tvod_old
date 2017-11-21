@@ -185,7 +185,7 @@ public class RealmController {
                     .endGroup()
                     .findFirst();
         } catch (Exception e) {
-            //Log.e(TAG, "Failed to get download by ID belonging to user " + userId + " " + videoId + ": " + e.getMessage());
+            Log.e(TAG, "Failed to get download by ID belonging to user " + userId + " " + videoId + ": " + e.getMessage());
         }
         return null;
     }
