@@ -9660,6 +9660,7 @@ public class AppCMSPresenter {
                             .build();
             //Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
             new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                appCMSAndroid = appCMSAndroidUI;
                 if (appCMSAndroidUI == null ||
                         appCMSAndroidUI.getMetaPages() == null ||
                         appCMSAndroidUI.getMetaPages().isEmpty()) {
@@ -10152,7 +10153,7 @@ public class AppCMSPresenter {
                     actionType == AppCMSActionType.WATCH_TRAILER) {
 
                 getUserVideoStatus(contentDatum.getGist().getId(),
-                        userVideoStatusResponse -> {
+                        (UserVideoStatusResponse userVideoStatusResponse) -> {
                             if (userVideoStatusResponse != null) {
                                 contentDatum.getGist().setWatchedTime
                                         (userVideoStatusResponse.getWatchedTime());
@@ -10164,20 +10165,30 @@ public class AppCMSPresenter {
                             } catch (Exception e) {
 
                             }
-                            String adsUrl;
+                            String adsUrl = null;
 
                             boolean svodServiceType = appCMSMain.getServiceType().equals(
                                     currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
 
                             boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
-                            Date now = new Date();
-                            adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
-                                    appCMSAndroid.getAdvertising().getVideoTag(),
-                                    getPermalinkCompletePath(pagePath),
-                                    now.getTime(),
-                                    appCMSMain.getSite());
+                            String videoTag = null;
+                            if (appCMSAndroid != null
+                                    && appCMSAndroid.getAdvertising() != null
+                                    && appCMSAndroid.getAdvertising().getVideoTag() != null) {
+                                videoTag = appCMSAndroid.getAdvertising().getVideoTag();
+                            }
 
+                            Date now = new Date();
+                            if(videoTag != null) {
+                                adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
+                                        videoTag,
+                                        getPermalinkCompletePath(pagePath),
+                                        now.getTime(),
+                                        appCMSMain.getSite());
+                            }else{
+                                requestAds = false;
+                            }
                             String backgroundColor = appCMSMain.getBrand()
                                     .getGeneral()
                                     .getBackgroundColor();
