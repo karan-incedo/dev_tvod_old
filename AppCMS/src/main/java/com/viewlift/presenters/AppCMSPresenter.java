@@ -1179,7 +1179,7 @@ public class AppCMSPresenter {
             //Log.e(TAG, e.getLocalizedMessage());
         }
         final AppCMSActionType actionType = actionToActionTypeMap.get(action);
-        if ((actionType == AppCMSActionType.OPEN_OPTION_DIALOG)) {
+        if (actionType == AppCMSActionType.OPEN_OPTION_DIALOG) {
 
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
 
@@ -11643,10 +11643,12 @@ public class AppCMSPresenter {
     Boolean isMoreOptionsAvailable = false;
 
     public void setMoreIconAvailable() {
+
         isMoreOptionsAvailable = true;
     }
 
     public Boolean getIsMoreOptionsAvailable() {
+
         return isMoreOptionsAvailable;
     }
 }

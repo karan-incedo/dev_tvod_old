@@ -148,6 +148,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     imageWidth,
                     imageHeight);
             Glide.with(viewHolder.view.getContext())
+
                     .load(imageUrl)
                     .asBitmap()
                     .listener(new RequestListener<String, Bitmap>() {
