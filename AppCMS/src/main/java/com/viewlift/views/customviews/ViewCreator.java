@@ -650,31 +650,31 @@ public class ViewCreator {
                                     if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
                                             (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
                                                     appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
                                     }
 
                                     if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
                                             (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
                                                     appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY) {
                                     if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
                                             (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
                                                     appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
                                     }
 
                                     if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
                                             (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
                                                     appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
-                                        componentViewResult.componentView.setVisibility(View.GONE);
-                                        componentViewResult.shouldHideComponent = true;
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
                                     }
-                                } else if (componentKey == AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY) {
+                                } else if (componentType == AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY) {
                                     if (view instanceof DotSelectorView) {
                                         ((DotSelectorView) view).select(0);
                                     }
@@ -1022,13 +1022,14 @@ public class ViewCreator {
 
         PageView pageView = null;
         try {
-            pageView = appCMSPresenter.getPageViewLruCache().get(screenName
-                    + BaseView.isLandscape(context));
+            if (appCMSPresenter.isPageAVideoPage(screenName)) {
+                pageView = appCMSPresenter.getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
+            } else {
+                pageView = appCMSPresenter.getPageViewLruCache().get(screenName
+                        + BaseView.isLandscape(context));
+            }
         } catch (Exception e) {
 
-        }
-        if (appCMSPresenter.isPageAVideoPage(screenName)) {
-            pageView = appCMSPresenter.getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
         }
 
         boolean newView = false;

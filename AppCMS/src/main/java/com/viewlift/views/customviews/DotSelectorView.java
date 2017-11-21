@@ -13,6 +13,8 @@ import android.widget.RelativeLayout;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +35,8 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     private volatile int selectedViewIndex;
     private volatile  boolean cancelled;
 
+    private ReferenceQueue<Object> referenceQueue;
+
     private String moduleId;
 
     public DotSelectorView(Context context,
@@ -45,6 +49,7 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         this.deselectedColor = deselectedColor;
         this.selectedViewIndex = 0;
         this.cancelled = false;
+        this.referenceQueue = new ReferenceQueue<>();
         init();
     }
 
@@ -76,6 +81,9 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     }
 
     public void addDots(int size) {
+        if (childrenContainer != null) {
+            childrenContainer.removeAllViews();
+        }
         for (int i = 0; i < size; i++) {
             addDot();
         }
@@ -87,14 +95,14 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         dotView.addView(dotImageView);
         childrenContainer.addView(dotView);
         childViews.add(dotImageView);
+
+        new SoftReference<>(dotView, referenceQueue);
+
         final int index = childViews.size() - 1;
-        dotView.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deselect(selectedViewIndex);
-                select(index);
-                sendEvent(new InternalEvent<>(index));
-            }
+        dotView.setOnClickListener(v -> {
+            deselect(selectedViewIndex);
+            select(index);
+            sendEvent(new InternalEvent<>(index));
         });
     }
 
