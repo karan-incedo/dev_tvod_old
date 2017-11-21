@@ -231,7 +231,6 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp-urlconnection:$rootProject.ext.okHttp3Version"
     compile "com.squareup.retrofit2:retrofit:$rootProject.ext.retrofit2Version"
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
-    compile 'com.amitshekhar.android:android-networking:1.0.0'
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"

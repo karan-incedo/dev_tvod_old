@@ -19,7 +19,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import com.androidnetworking.AndroidNetworking;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -109,9 +108,6 @@ public class AppCMSPageAPICall {
                 }
                 //Log.d(TAG, "AppCMSPageAPICall Authorization val " + headersMap.toString());
                 Response<ResponseBody> response = null;
-//                String response = null;
-
-//                AndroidNetworking.initialize(context);
 
                 if (modules != null && !modules.isEmpty()) {
                     StringBuilder urlithContentAndModules = new StringBuilder(urlWithContent);
@@ -122,29 +118,12 @@ public class AppCMSPageAPICall {
                     }
 
                     response = appCMSPageAPIRest.get(urlithContentAndModules.toString(), headersMap).execute();
-
-//                    response = AndroidNetworking.get(urlithContentAndModules.toString())
-//                            .addHeaders(headersMap)
-//                            .build()
-//                            .executeForJSONObject()
-//                            .getOkHttpResponse()
-//                            .networkResponse()
-//                            .body()
-//                            .string();
                 } else {
                     long start = System.currentTimeMillis();
 
                     Log.d(TAG, "Start Page API request: " + start);
 
                     response = appCMSPageAPIRest.get(urlWithContent, headersMap).execute();
-//                    response = AndroidNetworking.get(urlWithContent)
-//                            .addHeaders(headersMap)
-//                            .build()
-//                            .executeForJSONObject()
-//                            .getOkHttpResponse()
-//                            .networkResponse()
-//                            .body()
-//                            .string();
 
                     long end = System.currentTimeMillis();
                     Log.d(TAG, "End Page API request: " + end);
