@@ -7319,7 +7319,7 @@ public class AppCMSPresenter {
 
     }
 
-    private String getPermalinkCompletePath(String pagePath) {
+    public String getPermalinkCompletePath(String pagePath) {
         StringBuffer permalinkCompletePath = new StringBuffer();
         permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
         permalinkCompletePath.append(appCMSMain.getDomainName());

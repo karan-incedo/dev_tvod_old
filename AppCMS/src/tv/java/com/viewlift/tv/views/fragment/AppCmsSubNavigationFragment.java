@@ -576,8 +576,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 iconResId = R.drawable.st_settings_icon_contact;
             } else if (text.contains("ABOUT")) {
                 iconResId = R.drawable.st_settings_icon_about;
-            } else if (text.contains("SIGN")) {
+            } else if (text.contains("SIGN OUT")) {
                 iconResId = R.drawable.st_settings_icon_signout;
+            } else if (text.contains("SIGN IN")) {
+                iconResId = R.drawable.st_settings_icon_signin;
             } else if (text.contains("HISTORY")) {
                 iconResId = R.drawable.st_menu_icon_clock;
             } else if (text.contains("WATCHLIST")) {
