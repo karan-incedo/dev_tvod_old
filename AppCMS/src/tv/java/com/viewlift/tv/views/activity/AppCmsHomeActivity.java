@@ -630,9 +630,15 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
 
+    private Fragment getTopFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        String fragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
+        Fragment currentFragment = fragmentManager.findFragmentByTag(fragmentTag);
+        return currentFragment;
+    }
+
     @Override
     public void onBackPressed() {
-
         //if navigation is visible then first hide the navigation.
         if(isNavigationVisible()){
             handleNavigationVisibility();
@@ -647,6 +653,12 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 showSubNavigation(false, true);
             }
             return;
+        }
+
+              if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+            if(null != getTopFragment() && getTopFragment() instanceof AppCmsMyProfileFragment){
+                showSubNavigation(true, false);
+            }
         }
 
         if(appCMSBinderStack.size() > 0){
