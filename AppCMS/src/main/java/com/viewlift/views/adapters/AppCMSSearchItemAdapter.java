@@ -1,18 +1,26 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
@@ -60,6 +68,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private int textWidth = 0;
     private int textTopMargin = 0;
     private List<AppCMSSearchResult> appCMSSearchResults;
+    int defaultHeight = 0;
+    int defaultWidth = 0;
 
     public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter,
                                    List<AppCMSSearchResult> appCMSSearchResults) {
@@ -130,17 +140,72 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             Glide.with(viewHolder.view.getContext())
                     .load(imageUrl)
                     .into(viewHolder.filmThumbnail);
-        }else if(appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
-                appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage() != null && appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage().getSecureUrl() != null){
+        } else if (appCMSSearchResults.get(adapterPosition).getContentDetails() != null &&
+                appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage() != null &&
+                appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage().getSecureUrl() != null) {
+            if (appCMSPresenter.getIsMoreOptionsAvailable()) {
+                if (defaultWidth != 0 && defaultHeight != 0) {
+                    applySportsStyleDefault(viewHolder);
+                }
+            }
+
 
             final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
                     appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage().getSecureUrl(),
                     imageWidth,
                     imageHeight);
             Glide.with(viewHolder.view.getContext())
+
                     .load(imageUrl)
+                    .asBitmap()
+                    .listener(new RequestListener<String, Bitmap>() {
+                        @Override
+                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
+
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                            if (appCMSPresenter.getIsMoreOptionsAvailable()) {
+                                Bitmap bitmap = resource;
+                                defaultHeight = bitmap.getHeight();
+                                defaultWidth = bitmap.getWidth();
+                                viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight()));
+                                viewHolder.filmThumbnail.setImageBitmap(bitmap);
+
+                                viewHolder.titleLayout.setLayoutParams(new FrameLayout.LayoutParams(bitmap.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                                FrameLayout.LayoutParams titleLayoutParams = (FrameLayout.LayoutParams) viewHolder.titleLayout.getLayoutParams();
+                                titleLayoutParams.setMargins(0, bitmap.getHeight(), 0, 0);
+                                viewHolder.titleLayout.setLayoutParams(titleLayoutParams);
+
+                                viewHolder.gridOptions.setVisibility(View.VISIBLE);
+                            }
+
+                            return false;
+                        }
+                    })
                     .into(viewHolder.filmThumbnail);
+
         }
+        viewHolder.gridOptions.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
+                String action = viewHolder.view.getContext().getString(R.string.app_cms_action_open_option_dialog);
+                String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
+                ContentDatum contentDatum = new ContentDatum();
+                contentDatum.setGist(appCMSSearchResults.get(adapterPosition).getGist());
+                appCMSPresenter.launchButtonSelectedAction(permalink,
+                        action,
+                        title,
+                        null,
+                        contentDatum,
+                        true,
+                        0,
+                        null);
+            }
+        });
     }
 
     @Override
@@ -216,7 +281,10 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         View view;
         FrameLayout parentLayout;
         ImageView filmThumbnail;
+        ImageView gridOptions;
         TextView filmTitle;
+        RelativeLayout titleLayout;
+
 
         public ViewHolder(View view,
                           int imageWidth,
@@ -234,19 +302,53 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmThumbnail.setLayoutParams(filmImageThumbnailLayoutParams);
             this.parentLayout.addView(this.filmThumbnail);
 
-            this.filmTitle = new TextView(view.getContext());
-            FrameLayout.LayoutParams filmTitleLayoutParams =
-                    new FrameLayout.LayoutParams(textWidth,
-                            ViewGroup.LayoutParams.WRAP_CONTENT);
-            filmTitleLayoutParams.setMargins(0, textTopMargin, 0, 0);
+            this.titleLayout = new RelativeLayout(view.getContext());
+            FrameLayout.LayoutParams titleLayoutParams =
+                    new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
+                            FrameLayout.LayoutParams.WRAP_CONTENT);
+            titleLayoutParams.setMargins(0, textTopMargin, 0, 0);
+            this.titleLayout.setLayoutParams(titleLayoutParams);
 
+            RelativeLayout.LayoutParams gridLayoutParams =
+                    new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+            gridLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            this.gridOptions = new ImageView(view.getContext());
+            this.gridOptions.setId(View.generateViewId());
+            this.gridOptions.setLayoutParams(gridLayoutParams);
+            this.gridOptions.setImageResource(R.drawable.dots_more);
+            this.gridOptions.setVisibility(View.GONE);
+            this.titleLayout.addView(this.gridOptions);
+
+            this.filmTitle = new TextView(view.getContext());
+            RelativeLayout.LayoutParams filmTitleLayoutParams =
+                    new RelativeLayout.LayoutParams(textWidth,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
+            filmTitleLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            filmTitleLayoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+            filmTitleLayoutParams.addRule(RelativeLayout.LEFT_OF, this.gridOptions.getId());
             this.filmTitle.setLayoutParams(filmTitleLayoutParams);
             this.filmTitle.setTextSize(textSize);
             this.filmTitle.setMaxLines(1);
             this.filmTitle.setTextColor(ContextCompat.getColor(view.getContext(),
                     android.R.color.white));
             this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
-            this.parentLayout.addView(this.filmTitle);
+            this.titleLayout.addView(this.filmTitle);
+
+            this.parentLayout.addView(this.titleLayout);
         }
+    }
+
+    void applySportsStyleDefault(ViewHolder viewHolder) {
+        viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(defaultWidth, defaultHeight));
+//        viewHolder.filmThumbnail.setImageBitmap(bitmap);
+
+        viewHolder.titleLayout.setLayoutParams(new FrameLayout.LayoutParams(defaultWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        FrameLayout.LayoutParams titleLayoutParams = (FrameLayout.LayoutParams) viewHolder.titleLayout.getLayoutParams();
+        titleLayoutParams.setMargins(0, defaultHeight, 0, 0);
+        viewHolder.titleLayout.setLayoutParams(titleLayoutParams);
+
+        viewHolder.gridOptions.setVisibility(View.VISIBLE);
     }
 }

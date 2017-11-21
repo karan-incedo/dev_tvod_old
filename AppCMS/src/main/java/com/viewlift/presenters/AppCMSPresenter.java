@@ -1179,7 +1179,7 @@ public class AppCMSPresenter {
             //Log.e(TAG, e.getLocalizedMessage());
         }
         final AppCMSActionType actionType = actionToActionTypeMap.get(action);
-        if ((actionType == AppCMSActionType.OPEN_OPTION_DIALOG)) {
+        if (actionType == AppCMSActionType.OPEN_OPTION_DIALOG) {
 
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
 
@@ -5077,6 +5077,8 @@ public class AppCMSPresenter {
                     }
 
                     launched = true;
+                    result = true;
+
                 }
                 if (appCMSPageAPI == null) {
                     showLoadingDialog(true);
@@ -11504,9 +11506,9 @@ public class AppCMSPresenter {
         }
     }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId, CustomVideoPlayerView videoPlayerView) {
+    public void showPopupWindowPlayer(View scrollView, String videoId,final CustomVideoPlayerView videoPlayerView) {
         if (videoId != null) {
-            RelativeLayout.LayoutParams lpPipView = null;
+
 
             if (videoPlayerView == null) {
                 videoPlayerViewPIP = ViewCreator.playerView(currentActivity,videoId);
@@ -11515,7 +11517,7 @@ public class AppCMSPresenter {
                 videoPlayerViewPIP = videoPlayerView;
             }
 
-            relativeLayoutPIP = new MiniPlayerView(currentActivity, videoPlayerView);
+            relativeLayoutPIP = new MiniPlayerView(currentActivity, videoPlayerViewPIP);
             relativeLayoutPIP.setVisibility(View.VISIBLE);
             relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -11586,6 +11588,9 @@ public class AppCMSPresenter {
         pipPlayerVisible = false;
     }
 
+    public CustomVideoPlayerView getMiniPlayrView(){
+        return videoPlayerViewPIP;
+    }
     public ModuleList getTabBarUIModule() {
         AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
         ModuleList footerModule = null;
@@ -11669,5 +11674,17 @@ public class AppCMSPresenter {
                 }
             }
         });
+    }
+
+    Boolean isMoreOptionsAvailable = false;
+
+    public void setMoreIconAvailable() {
+
+        isMoreOptionsAvailable = true;
+    }
+
+    public Boolean getIsMoreOptionsAvailable() {
+
+        return isMoreOptionsAvailable;
     }
 }
