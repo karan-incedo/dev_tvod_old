@@ -1908,11 +1908,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         menuNavBarItemView.setLabel(getString(R.string.app_cms_menu_label));
         menuNavBarItemView.setHighlightColor(highlightColor);
         menuNavBarItemView.setOnClickListener(v -> {
-
             currentMenuTabIndex = navMenuPageIndex;
             if (!appCMSBinderStack.isEmpty()) {
-                if (!appCMSPresenter.launchNavigationPage()) {
-                    //Log.e(TAG, "Could not launch navigation page!");
+                if (!appCMSPresenter.isAppSVOD()) {
+                    if (!appCMSPresenter.launchNavigationPage()) {
+                        //Log.e(TAG, "Could not launch navigation page!");
+                    } else {
+                        if (!menuNavBarItemView.isItemSelected()) {
+                            resumeInternalEvents = true;
+                            selectNavItem(menuNavBarItemView);
+                        } else {
+                            unselectNavItem(menuNavBarItemView);
+                            appCMSPresenter.sendCloseOthersAction(null, true, false);
+                        }
+                    }
                 } else {
                     resumeInternalEvents = true;
                     selectNavItem(menuNavBarItemView);
