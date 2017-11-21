@@ -465,7 +465,7 @@ public class ViewCreator {
                                                 moduleAPI.getContentData().get(0) != null) {
                                             long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
                                             String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,YYYY");
-                                            ((TextView) componentViewResult.componentView).setText(publishDate);
+                                            ((TextView) view).setText(publishDate);
 
                                         }
 
