@@ -275,7 +275,7 @@ public class AppCmsNavigationFragment extends Fragment {
                         @Override
                         public void run() {
                             if(primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))){
-                                appCmsPresenter.openSearch();
+                                appCmsPresenter.openSearch(primary.getPageId() , primary.getTitle());
                                 Utils.pageLoading(false,getActivity());
                             }else if(primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label ,
                                     getString(R.string.profile_label)))){
@@ -453,7 +453,7 @@ public class AppCmsNavigationFragment extends Fragment {
 
                 new Handler().postDelayed(() -> {
                     if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
-                        appCmsPresenter.openSearch();
+                        appCmsPresenter.openSearch(primary.getPageId() , primary.getTitle());
                         Utils.pageLoading(false, getActivity());
                     }  else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_settings_page_tag))) {
                         Utils.pageLoading(false, getActivity());

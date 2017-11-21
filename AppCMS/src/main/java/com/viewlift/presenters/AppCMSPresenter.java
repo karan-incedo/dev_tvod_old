@@ -10551,8 +10551,20 @@ public class AppCMSPresenter {
     }
 
     @SuppressWarnings("unused")
-    public void openSearch() {
+    public void openSearch(String pageId , String pageTitle) {
         Intent searchIntent = new Intent(SEARCH_ACTION);
+        Bundle bundle = getPageActivityBundle(
+                currentActivity,
+                navigationPages.get(pageId),
+                navigationPageData.get(pageId),
+                pageId,
+                pageTitle,
+                pageIdToPageNameMap.get(pageId),
+                pageTitle,false,false,false,false,
+                false,Uri.EMPTY,ExtraScreenType.NONE
+        );
+        searchIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                bundle);
         currentActivity.sendBroadcast(searchIntent);
     }
 
