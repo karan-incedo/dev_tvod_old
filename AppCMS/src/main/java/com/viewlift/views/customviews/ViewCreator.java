@@ -1516,21 +1516,8 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                /*    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
-                            this,
-                            appCMSPresenter,
-                            settings,
-                            component.getLayout(),
-                            false,
-                            component,
-                            jsonValueKeyMap,
-                            moduleAPI,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            viewType,
-                            appCMSAndroidModules);*/
-//
-                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+
+AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
                             moduleAPI != null ? moduleAPI.getContentData() : null,
                             component.getComponents(),
                             appCMSPresenter,
@@ -1539,7 +1526,7 @@ public class ViewCreator {
                             (RecyclerView) componentViewResult.componentView);
 
                     ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
-                   componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
@@ -1918,6 +1905,8 @@ public class ViewCreator {
 
                     case PAGE_GRID_OPTION_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
+                        appCMSPresenter.setMoreIconAvailable();
+
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
