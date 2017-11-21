@@ -37,7 +37,6 @@
         android:layout_marginTop="143dp"
         android:background="@drawable/st_menu_color_selector"
         android:gravity="center"
-        android:text="@string/watch_live_text"
         android:visibility="gone"/>
 
     <android.support.v7.widget.RecyclerView

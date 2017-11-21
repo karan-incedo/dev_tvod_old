@@ -449,6 +449,7 @@
     <string name="search_blank_toast_msg">Please enter a value to search.</string>
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
+    <string name="visit_website_msg">Please visit our website to start your subscription.</string>
 
 </resources>
 

@@ -117,10 +117,24 @@ public class AppCmsNavigationFragment extends Fragment {
             navMenuTile.setVisibility(View.VISIBLE);
             navTopLine.setVisibility(View.VISIBLE);
 
+            String message;
+            if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
+                    && null != appCMSPresenter.getNavigation().getSettings()
+                    && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()) {
+                message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
+            } else {
+                message = getResources().getString(R.string.watch_live_text);
+            }
+
+            navMenuSubscriptionModule.setText(message);
+
             toggleVisibilityOfSubscriptionModule();
 
             navMenuSubscriptionModule.setOnClickListener(v -> {
-                appCMSPresenter.openTVErrorDialog("Please visit our website to start your subscription", getActivity().getString(R.string.subscription));
+                appCMSPresenter.openTVErrorDialog(
+                        getActivity().getString(R.string.visit_website_msg),
+                        getActivity().getString(R.string.subscription));
             });
         }
         return view;

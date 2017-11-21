@@ -1,37 +1,18 @@
 package com.viewlift.tv.views.presenter;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.graphics.Color;
-import android.net.Uri;
 import android.support.v17.leanback.widget.Presenter;
-import android.support.v4.content.ContextCompat;
-import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
-import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.customviews.CustomVideoVideoPlayerView;
-import com.viewlift.tv.views.fragment.AppCMSPlayVideoFragment;
-import com.viewlift.views.customviews.VideoPlayerView;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by nitin.tyagi on 11/2/2017.
@@ -77,6 +58,17 @@ public class PlayerPresenter extends Presenter {
             videoPlayerView.setLayoutParams(layoutParams);
 
             cardView.addView(videoPlayerView);
+            boolean svodServiceType = appCmsPresenter.getAppCMSMain().getServiceType().equals(
+                    context.getString(R.string.app_cms_main_svod_service_type_key));
+
+            boolean requestAds = !svodServiceType;
+
+            Date now = new Date();
+            String adsUrl = context.getString(R.string.app_cms_ads_api_url,
+                    appCmsPresenter.getPermalinkCompletePath(contentData.getGist().getPermalink()),
+                    now.getTime(),
+                    appCmsPresenter.getAppCMSMain().getSite());
+            videoPlayerView.setupAds(/*requestAds ? */adsUrl/* : null*/);
             videoPlayerView.setVideoUri(contentData.getGist().getId());
         }
     }
