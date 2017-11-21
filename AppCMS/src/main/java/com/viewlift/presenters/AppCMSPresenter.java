@@ -205,11 +205,11 @@ import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.PopupMenu;
-import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -469,7 +469,7 @@ public class AppCMSPresenter {
     private final ReferenceQueue<Object> referenceQueue;
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
-    VideoPlayerView videoPlayerViewPIP;
+    CustomVideoPlayerView videoPlayerViewPIP;
     MiniPlayerView relativeLayoutPIP;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
@@ -11504,12 +11504,12 @@ public class AppCMSPresenter {
         }
     }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId, VideoPlayerView videoPlayerView) {
+    public void showPopupWindowPlayer(View scrollView, String videoId, CustomVideoPlayerView videoPlayerView) {
         if (videoId != null) {
             RelativeLayout.LayoutParams lpPipView = null;
 
             if (videoPlayerView == null) {
-                videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, videoId);
+                videoPlayerViewPIP = ViewCreator.playerView(currentActivity,videoId);
             } else {
                 ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
                 videoPlayerViewPIP = videoPlayerView;
