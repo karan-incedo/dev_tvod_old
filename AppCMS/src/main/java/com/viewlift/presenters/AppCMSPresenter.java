@@ -11622,4 +11622,14 @@ public class AppCMSPresenter {
         calendar.setTimeInMillis(timeMilliSeconds);
         return formatter.format(calendar.getTime());
     }
+
+    Boolean isMoreOptionsAvailable = false;
+
+    public void setMoreIconAvailable() {
+        isMoreOptionsAvailable = true;
+    }
+
+    public Boolean getIsMoreOptionsAvailable() {
+        return isMoreOptionsAvailable;
+    }
 }

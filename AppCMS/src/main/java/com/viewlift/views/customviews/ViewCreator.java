@@ -1515,35 +1515,35 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
-                            this,
-                            appCMSPresenter,
-                            settings,
-                            component.getLayout(),
-                            false,
-                            component,
-                            jsonValueKeyMap,
-                            moduleAPI,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT,
-                            viewType,
-                            appCMSAndroidModules);
-//
-//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-//                            moduleAPI != null ? moduleAPI.getContentData() : null,
-//                            component.getComponents(),
+//                    AppCMSViewAdapter appCMSViewAdapter = new AppCMSViewAdapter(context,
+//                            this,
 //                            appCMSPresenter,
+//                            settings,
+//                            component.getLayout(),
+//                            false,
+//                            component,
 //                            jsonValueKeyMap,
+//                            moduleAPI,
+//                            ViewGroup.LayoutParams.MATCH_PARENT,
+//                            ViewGroup.LayoutParams.WRAP_CONTENT,
 //                            viewType,
-//                            (RecyclerView) componentViewResult.componentView);
-
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
-//                    componentViewResult.onInternalEvent = appCMSViewAdapter;
-//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+//                            appCMSAndroidModules);
+//
+                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+                            moduleAPI != null ? moduleAPI.getContentData() : null,
+                            component.getComponents(),
+                            appCMSPresenter,
+                            jsonValueKeyMap,
+                            viewType,
+                            (RecyclerView) componentViewResult.componentView);
+//
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
+                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+                    componentViewResult.onInternalEvent.setModuleId(moduleId);
 
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(appCMSViewAdapter)
+                                .adapter(appCMSTrayItemAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleId + component.getKey())
                                 .build());
@@ -1917,6 +1917,7 @@ public class ViewCreator {
 
                     case PAGE_GRID_OPTION_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
+                        appCMSPresenter.setMoreIconAvailable();
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
