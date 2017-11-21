@@ -266,14 +266,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     false,
                                     false,
                                     false);
-                        } else if (updatedAppCMSBinder != null
-                                && updatedAppCMSBinder.shouldSendCloseAction()) {
+                        } else if (updatedAppCMSBinder != null) {
                             Intent appCMSIntent = new Intent(AppCMSPageActivity.this,
                                     AppCMSPageActivity.class);
                             appCMSIntent.putExtra(AppCMSPageActivity.this.getString(R.string.app_cms_bundle_key), args);
                             appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                             AppCMSPageActivity.this.startActivity(appCMSIntent);
-                            shouldSendCloseOthersAction = true;
+                            if (updatedAppCMSBinder.shouldSendCloseAction()){
+                                shouldSendCloseOthersAction = true;
+                            }
                         }
                     } catch (ClassCastException e) {
                         //Log.e(TAG, "Could not read AppCMSBinder: " + e.toString());

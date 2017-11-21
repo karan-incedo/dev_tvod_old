@@ -77,6 +77,15 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         internalEventReceivers = new ArrayList<>();
     }
 
+    public boolean dotsInitialized() {
+        try {
+            return childViews.size() > 0;
+        } catch (Exception e) {
+
+        }
+        return false;
+    }
+
     public void addDots(int size) {
         if (childrenContainer != null) {
             childrenContainer.removeAllViews();

@@ -6320,6 +6320,12 @@ public class AppCMSPresenter {
 
             userHistoryData.clear();
 
+            try {
+                getPageViewLruCache().evictAll();
+            } catch (Exception e) {
+
+            }
+
             refreshAPIData(this::navigateToHomePage, true);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
@@ -9250,6 +9256,12 @@ public class AppCMSPresenter {
                                                         launchBlankPage();
                                                     }
                                                 });
+                                            }
+
+                                            try {
+                                                getPageViewLruCache().evictAll();
+                                            } catch (Exception e) {
+
                                             }
 
                                             if (appCMSMain.getServiceType()

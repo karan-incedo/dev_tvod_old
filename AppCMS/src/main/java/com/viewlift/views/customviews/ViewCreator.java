@@ -677,6 +677,11 @@ public class ViewCreator {
                                 } else if (componentType == AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY) {
                                     if (view instanceof DotSelectorView) {
                                         ((DotSelectorView) view).select(0);
+                                        int numDots = moduleAPI != null ? moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0 : 0;
+                                        if (!((DotSelectorView) view).dotsInitialized()) {
+                                            ((DotSelectorView) view).addDots(numDots);
+                                            ((DotSelectorView) view).select(0);
+                                        }
                                     }
                                 } else {
                                     if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
