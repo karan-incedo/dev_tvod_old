@@ -35,8 +35,6 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
     private volatile int selectedViewIndex;
     private volatile  boolean cancelled;
 
-    private ReferenceQueue<Object> referenceQueue;
-
     private String moduleId;
 
     public DotSelectorView(Context context,
@@ -49,7 +47,6 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         this.deselectedColor = deselectedColor;
         this.selectedViewIndex = 0;
         this.cancelled = false;
-        this.referenceQueue = new ReferenceQueue<>();
         init();
     }
 
@@ -95,8 +92,6 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         dotView.addView(dotImageView);
         childrenContainer.addView(dotView);
         childViews.add(dotImageView);
-
-        new SoftReference<>(dotView, referenceQueue);
 
         final int index = childViews.size() - 1;
         dotView.setOnClickListener(v -> {
