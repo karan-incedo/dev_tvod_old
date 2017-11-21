@@ -5077,6 +5077,8 @@ public class AppCMSPresenter {
                     }
 
                     launched = true;
+                    result = true;
+
                 }
                 if (appCMSPageAPI == null) {
                     showLoadingDialog(true);
