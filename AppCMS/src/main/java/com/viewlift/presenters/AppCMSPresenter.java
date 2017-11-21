@@ -198,6 +198,7 @@ import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AppCMSUpgradeActivity;
 import com.viewlift.views.activity.AutoplayActivity;
+import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
@@ -10940,16 +10941,17 @@ public class AppCMSPresenter {
     }
         return 0;
 }
-    public int getFirstVisibleChildPosition(RecyclerView v) {
+    public boolean getFirstVisibleChild(RecyclerView v,int viewId) {
 
-       if( v.getLayoutManager() != null &&
-                (v.getLayoutManager()) instanceof LinearLayoutManager &&
-                ((LinearLayoutManager) v.getLayoutManager()).findFirstVisibleItemPosition() == 0 &&
-                ((LinearLayoutManager) v.getLayoutManager()).findFirstCompletelyVisibleItemPosition() <= 1)
-       {
-            return 0;
-       }
-        return 1;
+        View childView =((AppCMSPageViewAdapter)v.getAdapter()).findChildViewById(viewId);
+
+        final Rect scrollBounds = new Rect();
+        v.getHitRect(scrollBounds);
+        if (childView!=null && childView.getLocalVisibleRect(scrollBounds)) {
+            return true;
+        }
+        return false;
+
     }
 
     public void showPopUpMenuSports(View v) {
@@ -10959,7 +10961,7 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
-        // KMSDKCoreKit.initialize(currentActivity);
+        KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
                 .setLogLevel(KMSDKCoreKit.DEBUG);

@@ -207,8 +207,6 @@ public class AppCMSPageFragment extends Fragment {
 
                                         appCMSPresenter.showPopupWindowPlayer(v, videoId, videoPlayerView);
                                         resumePlayer(false);
-                                    } else {
-
                                     }
                                     break;
                                 case RecyclerView.SCROLL_STATE_DRAGGING:
@@ -221,10 +219,10 @@ public class AppCMSPageFragment extends Fragment {
                     });
 
 
-                    if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
+                    if (!appCMSPresenter.getFirstVisibleChild(nestedScrollView,R.id.video_player_id) &&
                             !appCMSPresenter.pipPlayerVisible )  {
                         appCMSPresenter.showPopupWindowPlayer(nestedScrollView, videoId, videoPlayerView);
-                    } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
+                    } else if (appCMSPresenter.getFirstVisibleChild(nestedScrollView,R.id.video_player_id)) {
                         if (videoPlayerView != null && parent != null) {
                             ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
                             videoPlayerView.setLayoutParams(parent.getLayoutParams());

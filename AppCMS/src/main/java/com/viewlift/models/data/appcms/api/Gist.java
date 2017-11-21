@@ -96,7 +96,7 @@ public class Gist implements Serializable {
 
     @SerializedName("kisweEventId")
     @Expose
-    int kisweEventId;
+    String kisweEventId;
 
     String downloadStatus;
     /**
@@ -291,11 +291,11 @@ public class Gist implements Serializable {
         this.imageGist = imageGist;
     }
 
-    public int getKisweEventId() {
+    public String getKisweEventId() {
         return kisweEventId;
     }
 
-    public void setKisweEventId(int kisweEventId) {
+    public void setKisweEventId(String kisweEventId) {
         this.kisweEventId = kisweEventId;
     }
 }
