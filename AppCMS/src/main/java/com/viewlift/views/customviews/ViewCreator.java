@@ -1,6 +1,5 @@
 package com.viewlift.views.customviews;
 
-import android.app.ActionBar;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -109,7 +108,7 @@ public class ViewCreator {
     }
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        long runtime = (data.getGist().getRuntime() / 60L);
+        long runtime = data.getGist().getRuntime();
 
         String year = data.getGist().getYear();
         String primaryCategory =
@@ -122,12 +121,19 @@ public class ViewCreator {
                 && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
-        if (runtime > 0 && runtime < 2) {
-            infoText.append(runtime).append(" ").append(context.getString(R.string.min_abbreviation));
-        } else if (runtime > 0) {
-            infoText.append(runtime).append(" ").append(context.getString(R.string.mins_abbreviation));
+
+        if (runtime / 60L < 1) {
+            infoText.append(runtime)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_seconds_abbreviation));
+        } else if (runtime / 60L < 2) {
+            infoText.append(runtime / 60L)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_minute_abbreviation));
         } else {
-            infoText.append("0 ").append(context.getString(R.string.mins_abbreviation)).append(context.getString(R.string.text_separator));
+            infoText.append(runtime / 60L)
+                    .append(" ")
+                    .append(context.getString(R.string.runtime_minutes_abbreviation));
         }
 
         if (appendFirstSep) {
@@ -174,6 +180,65 @@ public class ViewCreator {
         });
 
         return videoPlayerView;
+    }
+
+    private static String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
+
+    private static void setTypeFace(Context context,
+                                    AppCMSPresenter appCMSPresenter,
+                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                    Component component,
+                                    TextView textView) {
+        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            Typeface face;
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = appCMSPresenter.getBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_bold_ttf));
+                        appCMSPresenter.setBoldTypeFace(face);
+                    }
+                    break;
+
+                case PAGE_TEXT_SEMIBOLD_KEY:
+                    face = appCMSPresenter.getSemiBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_semibold_ttf));
+                        appCMSPresenter.setSemiBoldTypeFace(face);
+                    }
+                    break;
+
+                case PAGE_TEXT_EXTRABOLD_KEY:
+                    face = appCMSPresenter.getExtraBoldTypeFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_extrabold_ttf));
+                        appCMSPresenter.setExtraBoldTypeFace(face);
+                    }
+                    break;
+
+                default:
+                    face = appCMSPresenter.getRegularFontFace();
+                    if (face == null) {
+                        face = Typeface.createFromAsset(context.getAssets(),
+                                context.getString(R.string.opensans_regular_ttf));
+                        appCMSPresenter.setRegularFontFace(face);
+                    }
+                    break;
+            }
+            textView.setTypeface(face);
+        }
     }
 
     @SuppressWarnings({"unchecked", "ConstantConditions"})
@@ -1147,14 +1212,18 @@ public class ViewCreator {
 
                         if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
                             componentViewResult.shouldHideComponent = true;
-                            componentViewResult.componentView.setVisibility(View.GONE);
+                            if (componentViewResult.componentView != null) {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                            }
                             adjustOthers = AdjustOtherState.INITIATED;
                         } else if (!appCMSPresenter.isAppSVOD() && jsonValueKeyMap.get(component.getKey()) != null &&
                                 jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
                                 && appCMSPresenter.getAppCMSMain().getFeatures() != null &&
                                 !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                             componentViewResult.shouldHideComponent = true;
-                            componentViewResult.componentView.setVisibility(View.GONE);
+                            if (componentViewResult.componentView != null) {
+                                componentViewResult.componentView.setVisibility(View.GONE);
+                            }
                             adjustOthers = AdjustOtherState.INITIATED;
                         }
 
@@ -1167,8 +1236,7 @@ public class ViewCreator {
                         }
 
                         if (componentViewResult.shouldHideComponent) {
-                            ModuleView.HeightLayoutAdjuster heightLayoutAdjuster =
-                                    new ModuleView.HeightLayoutAdjuster();
+                            ModuleView.HeightLayoutAdjuster heightLayoutAdjuster = new ModuleView.HeightLayoutAdjuster();
                             modulesHasHiddenComponent = true;
                             if (BaseView.isTablet(context)) {
                                 if (BaseView.isLandscape(context)) {
@@ -1217,7 +1285,8 @@ public class ViewCreator {
                                         componentViewResult.useMarginsAsPercentagesOverride,
                                         componentViewResult.useWidthOfScreen,
                                         module.getView());
-                                if ((adjustOthers == AdjustOtherState.IGNORE && componentViewResult.shouldHideComponent) ||
+                                if ((adjustOthers == AdjustOtherState.IGNORE &&
+                                        componentViewResult.shouldHideComponent) ||
                                         adjustOthers == AdjustOtherState.ADJUST_OTHERS) {
                                     moduleView.addChildComponentAndView(component, componentView);
                                 } else {
@@ -1239,12 +1308,11 @@ public class ViewCreator {
                         ModuleView.HeightLayoutAdjuster heightLayoutAdjuster = moduleView.getHeightLayoutAdjuster(i);
 
                         moduleLayoutParams.height -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                        List<ModuleView.ChildComponentAndView> childComponentAndViewList =
-                                moduleView.getChildComponentAndViewList();
+                        List childComponentAndViewList = moduleView.getChildComponentAndViewList();
 
                         int componentViewListSize = childComponentAndViewList.size();
                         for (int j = 0; j < componentViewListSize; j++) {
-                            ModuleView.ChildComponentAndView childComponentAndView = childComponentAndViewList.get(j);
+                            ModuleView.ChildComponentAndView childComponentAndView = (ModuleView.ChildComponentAndView) childComponentAndViewList.get(j);
 
                             ViewGroup.MarginLayoutParams childLayoutParams =
                                     (ViewGroup.MarginLayoutParams) childComponentAndView.childView.getLayoutParams();
@@ -1306,7 +1374,7 @@ public class ViewCreator {
                 }
             }
         } catch (Exception e) {
-
+            //
         }
     }
 
@@ -2229,7 +2297,7 @@ public class ViewCreator {
                                         .getGeneral()
                                         .getBackgroundColor()))));
                     } catch (Exception e) {
-
+                        //
                     }
 
                     ArrayAdapter<String> seasonTrayAdapter = new SeasonsAdapterView(context,
@@ -2245,7 +2313,7 @@ public class ViewCreator {
                         for (int i = 0; i < numSeasons; i++) {
                             StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
                             seasonTitleSb.append(" ");
-                            seasonTitleSb.append(i+1);
+                            seasonTitleSb.append(i + 1);
                             seasonTrayAdapter.add(seasonTitleSb.toString());
                         }
 
@@ -2321,7 +2389,7 @@ public class ViewCreator {
                         }
                         componentViewResult.componentView.setBackgroundColor(textBgColor);
                         ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
-                        ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
+                        ((TextView) componentViewResult.componentView).setGravity(Gravity.START);
 
                         if (!TextUtils.isEmpty(component.getFontFamily())) {
                             setTypeFace(context,
@@ -3193,13 +3261,6 @@ public class ViewCreator {
         }
     }
 
-    private static String getColor(Context context, String color) {
-        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + color;
-        }
-        return color;
-    }
-
     private String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
         if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
             return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
@@ -3256,58 +3317,6 @@ public class ViewCreator {
                 viewBorder.setColor(ContextCompat.getColor(context, android.R.color.transparent));
                 view.setBackground(viewBorder);
             }
-        }
-    }
-
-    private static void setTypeFace(Context context,
-                             AppCMSPresenter appCMSPresenter,
-                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                             Component component,
-                             TextView textView) {
-        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
-            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
-            if (fontWeight == null) {
-                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-            }
-            Typeface face;
-            switch (fontWeight) {
-                case PAGE_TEXT_BOLD_KEY:
-                    face = appCMSPresenter.getBoldTypeFace();
-                    if (face == null) {
-                        face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_bold_ttf));
-                        appCMSPresenter.setBoldTypeFace(face);
-                    }
-                    break;
-
-                case PAGE_TEXT_SEMIBOLD_KEY:
-                    face = appCMSPresenter.getSemiBoldTypeFace();
-                    if (face == null) {
-                        face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_semibold_ttf));
-                        appCMSPresenter.setSemiBoldTypeFace(face);
-                    }
-                    break;
-
-                case PAGE_TEXT_EXTRABOLD_KEY:
-                    face = appCMSPresenter.getExtraBoldTypeFace();
-                    if (face == null) {
-                        face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_extrabold_ttf));
-                        appCMSPresenter.setExtraBoldTypeFace(face);
-                    }
-                    break;
-
-                default:
-                    face = appCMSPresenter.getRegularFontFace();
-                    if (face == null) {
-                        face = Typeface.createFromAsset(context.getAssets(),
-                                context.getString(R.string.opensans_regular_ttf));
-                        appCMSPresenter.setRegularFontFace(face);
-                    }
-                    break;
-            }
-            textView.setTypeface(face);
         }
     }
 
@@ -3420,10 +3429,10 @@ public class ViewCreator {
                         ((TextView) result).setTextColor(
                                 Color.parseColor(
                                         getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
-                                                        .getBrand().getCta().getPrimary().getBackgroundColor())));
+                                                .getBrand().getCta().getPrimary().getBackgroundColor())));
                     }
                 } catch (Exception e) {
-
+                    //
                 }
 
                 try {
@@ -3432,7 +3441,7 @@ public class ViewCreator {
                                     .getGeneral()
                                     .getBackgroundColor())));
                 } catch (Exception e) {
-
+                    //
                 }
 
                 if (component.getFontSize() > 0) {
@@ -3476,7 +3485,7 @@ public class ViewCreator {
                                                 .getBrand().getCta().getPrimary().getBackgroundColor())));
                     }
                 } catch (Exception e) {
-
+                    //
                 }
 
                 try {
@@ -3485,7 +3494,7 @@ public class ViewCreator {
                                     .getGeneral()
                                     .getBackgroundColor())));
                 } catch (Exception e) {
-
+                    //
                 }
 
                 if (component.getFontSize() > 0) {
@@ -3505,7 +3514,9 @@ public class ViewCreator {
                 result.setPadding(8, 8, 8, 8);
             }
 
-            ((TextView) result).setText(getItem(position));
+            if (result != null) {
+                ((TextView) result).setText(getItem(position));
+            }
 
             return result;
         }
@@ -3537,7 +3548,7 @@ public class ViewCreator {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
                             () -> {
                                 appCMSPresenter.setAfterLoginAction(() -> {
-
+                                    //
                                 });
                             });
                 }
@@ -3613,21 +3624,21 @@ public class ViewCreator {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                                     () -> {
                                         appCMSPresenter.setAfterLoginAction(() -> {
-
+                                            //
                                         });
                                     });
                         } else {
                             appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
                                     () -> {
                                         appCMSPresenter.setAfterLoginAction(() -> {
-
+                                            //
                                         });
                                     });
                         }
                     } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
                         appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
                                 () -> {
-
+                                    //
                                 });
                     }
                 }
@@ -3752,7 +3763,7 @@ public class ViewCreator {
     }
 
     private static class EmptyPStyledTextHandler extends StyledTextHandler {
-        public EmptyPStyledTextHandler(Style style) {
+        EmptyPStyledTextHandler(Style style) {
             super(style);
         }
 
