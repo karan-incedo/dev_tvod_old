@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -271,11 +272,16 @@ public class AppCMSSearchActivity extends AppCompatActivity {
     private void updateNoResultsDisplay(AppCMSPresenter appCMSPresenter,
                                         List<AppCMSSearchResult> data) {
         if (data == null || data.isEmpty()) {
-            if (appCMSPresenter.getAppCMSMain().getBrand() != null) {
-                noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                        .getBrand()
-                        .getGeneral()
-                        .getTextColor()));
+            try {
+                if (appCMSPresenter.getAppCMSMain().getBrand() != null) {
+                    noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                            .getBrand()
+                            .getGeneral()
+                            .getTextColor()));
+                    noResultsTextview.setVisibility(View.VISIBLE);
+                }
+            } catch (Exception e) {
+                noResultsTextview.setTextColor(ContextCompat.getColor(this, android.R.color.white));
                 noResultsTextview.setVisibility(View.VISIBLE);
             }
         } else {

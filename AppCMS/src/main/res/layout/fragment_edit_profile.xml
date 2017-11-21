@@ -1,68 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/app_cms_edit_profile_main_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/app_cms_edit_profile_page_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/app_cms_toolbar_logo"
-        android:layout_centerHorizontal="true"
         android:text="@string/app_cms_edit_profile_dialog_title"
         android:textSize="@dimen/app_cms_settings_page_title_textsize"
-        android:textStyle="bold" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/app_cms_edit_profile_name_text"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/app_cms_text_input_height"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/black"
+        android:ems="10"
+        android:gravity="center_vertical|start"
+        android:text="@string/app_cms_username_input_text_hint"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/left_guideline_for_edit_profile_confirm_change_button"
+        app:layout_constraintTop_toBottomOf="@id/app_cms_edit_profile_page_title" />
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/app_cms_edit_profile_name_container"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/app_cms_edit_profile_page_title"
-        android:layout_centerHorizontal="true"
-
-        app:hintEnabled="false">
+        app:hintEnabled="false"
+        app:layout_constraintLeft_toRightOf="@id/app_cms_edit_profile_name_text"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_cms_edit_profile_page_title">
 
         <EditText
             android:id="@+id/app_cms_edit_profile_name_input"
-            android:layout_width="@dimen/app_cms_search_bar_width"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/app_cms_text_input_height"
-            android:layout_alignParentTop="true"
-            android:layout_margin="@dimen/app_cms_text_input_margin"
-            android:hint="@string/app_cms_username_input_text_hint"
-            android:background="@android:color/white"
+            android:background="@android:color/black"
             android:ems="10"
+            android:gravity="center_vertical|start"
             android:inputType="text" />
     </android.support.design.widget.TextInputLayout>
 
+    <TextView
+        android:id="@+id/app_cms_edit_profile_email_text"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/app_cms_text_input_height"
+        android:layout_marginStart="8dp"
+        android:background="@android:color/black"
+        android:ems="10"
+        android:gravity="center_vertical|start"
+        android:text="@string/app_cms_email_input_text_hint"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/left_guideline_for_edit_profile_confirm_change_button"
+        app:layout_constraintTop_toBottomOf="@id/app_cms_edit_profile_name_container" />
+
     <android.support.design.widget.TextInputLayout
         android:id="@+id/app_cms_edit_profile_email_container"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/app_cms_edit_profile_name_container"
-        android:layout_centerHorizontal="true"
-        android:hint="@string/app_cms_email_input_text_hint"
-        app:hintEnabled="false">
+        app:hintEnabled="false"
+        app:layout_constraintLeft_toRightOf="@id/app_cms_edit_profile_email_text"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/app_cms_edit_profile_name_container">
 
         <EditText
             android:id="@+id/app_cms_edit_profile_email_input"
-            android:layout_width="@dimen/app_cms_search_bar_width"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/app_cms_text_input_height"
-            android:layout_alignParentTop="true"
-            android:hint="@string/app_cms_email_input_text_hint"
-            android:layout_margin="@dimen/app_cms_text_input_margin"
-            android:background="@android:color/white"
+            android:background="@android:color/black"
             android:ems="10"
+            android:gravity="center_vertical|start"
             android:inputType="textEmailAddress" />
     </android.support.design.widget.TextInputLayout>
 
+    <android.support.constraint.Guideline
+        android:id="@+id/left_guideline_for_edit_profile_confirm_change_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".25" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/right_guideline_for_edit_profile_confirm_change_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent=".75" />
+
     <Button
         android:id="@+id/edit_profile_confirm_change_button"
-        android:layout_width="@dimen/app_cms_search_bar_width"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_below="@id/app_cms_edit_profile_email_container"
-        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
-        android:text="@string/edit_profile_confirm_change_button_text" />
-</RelativeLayout>
+        android:text="@string/edit_profile_confirm_change_button_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/left_guideline_for_edit_profile_confirm_change_button"
+        app:layout_constraintRight_toRightOf="@id/right_guideline_for_edit_profile_confirm_change_button" />
+</android.support.constraint.ConstraintLayout>
