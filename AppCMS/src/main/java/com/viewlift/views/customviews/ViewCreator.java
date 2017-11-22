@@ -108,17 +108,27 @@ public class ViewCreator {
     }
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+        int numberOfViewsToBeSeparated = 0;
         long runtime = data.getGist().getRuntime();
 
         String year = data.getGist().getYear();
-        String primaryCategory =
-                data.getGist().getPrimaryCategory() != null ?
-                        data.getGist().getPrimaryCategory().getTitle() :
-                        null;
-        boolean appendFirstSep = runtime > 0
-                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
-                && !TextUtils.isEmpty(primaryCategory);
+        String primaryCategory = data.getGist().getPrimaryCategory() != null ?
+                data.getGist().getPrimaryCategory().getTitle() : null;
+
+        if (!TextUtils.isEmpty(String.valueOf(data.getGist().getRuntime()))) {
+            numberOfViewsToBeSeparated++;
+        }
+
+        if (!TextUtils.isEmpty(data.getGist().getYear())) {
+            numberOfViewsToBeSeparated++;
+        }
+
+        if (!TextUtils.isEmpty(data.getGist().getPrimaryCategory().getTitle())) {
+            numberOfViewsToBeSeparated++;
+        }
+
+        boolean appendFirstSep = numberOfViewsToBeSeparated > 1;
+        boolean appendSecondSep = numberOfViewsToBeSeparated == 3;
 
         StringBuilder infoText = new StringBuilder();
 
@@ -2752,21 +2762,13 @@ public class ViewCreator {
                     if (component.getFontSize() > 0) {
                         int fontSize = component.getFontSize();
                         if (resizeText) {
-                            if (BaseView.isTablet(context)) {
-                                fontSize = (int) (0.6 * fontSize);
-                            } else {
-                                fontSize = (int) (0.8 * fontSize);
-                            }
+                            fontSize = (int) (0.66 * fontSize);
                         }
                         ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                     } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
                         int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
                         if (resizeText) {
-                            if (BaseView.isTablet(context)) {
-                                fontSize = (int) (0.6 * fontSize);
-                            } else {
-                                fontSize = (int) (0.8 * fontSize);
-                            }
+                            fontSize = (int) (0.66 * fontSize);
                         }
                         ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                     }
