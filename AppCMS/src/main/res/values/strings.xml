@@ -290,6 +290,7 @@
     <string name="app_cms_subscription_upgrade_unavailable_user_dialog">There are currently no plans available for upgrade for the plan you are currently subscribed.</string>
     <string name="app_cms_subscription_upgrade_cancel_title">You did not purchase the subscription through the Google Play store</string>
     <string name="app_cms_subscription_upgrade_for_web_user_dialog">To upgrade your subscription, go to the My Account section on our website.</string>
+    <string name="app_cms_subscription_upgrade_for_ios_user_dialog">To upgrade your subscription, go to Manage Subscription on your iOS device.</string>
     <string name="app_cms_subscription_cancel_for_web_user_dialog">To cancel your subscription, go to the My Account section on our website.</string>
     <string name="app_cms_subscription_cancel_for_ios_user_dialog">To cancel your subscription, go to Manage Subscription on your iOS device.</string>
 
