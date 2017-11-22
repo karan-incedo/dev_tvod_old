@@ -43,6 +43,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private final String episodicContentType;
     private final String fullLengthFeatureType;
 
+
+    protected Context mContext;
     protected Layout parentLayout;
     protected Component component;
     protected AppCMSPresenter appCMSPresenter;
@@ -84,6 +86,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                              int defaultHeight,
                              String viewType,
                              AppCMSAndroidModules appCMSAndroidModules) {
+        this.mContext =context;
         this.viewCreator = viewCreator;
         this.appCMSPresenter = appCMSPresenter;
         this.parentLayout = parentLayout;
@@ -142,7 +145,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.episodicContentType = context.getString(R.string.app_cms_episodic_key_type);
         this.fullLengthFeatureType = context.getString(R.string.app_cms_full_length_feature_key_type);
 
-        sortPlansByPriceInDescendingOrder();
+        sortPlan();
     }
 
     @Override
@@ -292,7 +295,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         adapterData = contentData;
 
-        sortPlansByPriceInDescendingOrder();
+        sortPlan();
 
         notifyDataSetChanged();
         listView.setAdapter(this);
@@ -642,6 +645,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         itemView.setBackground(planBorder);
     }
 
+    public void sortPlan(){
+        if (mContext.getResources().getBoolean(R.bool.sort_plans_in_ascending_order)){
+            sortPlansByPriceInAscendingOrder();
+        }else
+        {
+            sortPlansByPriceInDescendingOrder();
+        }
+    }
     private void sortPlansByPriceInDescendingOrder() {
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY && adapterData != null) {
 
@@ -658,6 +669,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 .getStrikeThroughPrice());
                     });
         }
+    }
+    private void sortPlansByPriceInAscendingOrder() {
+        sortPlansByPriceInDescendingOrder();
+        Collections.reverse(adapterData);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

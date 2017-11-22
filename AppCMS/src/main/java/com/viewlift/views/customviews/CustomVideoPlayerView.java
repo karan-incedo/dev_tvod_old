@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -81,6 +82,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 } else {
                     playVideos(0,contentDatum);
                 }
+                System.out.println( " JSON for Video details "+ new Gson().toJson(contentDatum));
             }
         });
 

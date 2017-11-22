@@ -2067,9 +2067,13 @@ AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
                         break;
 
                     case PAGE_PLAY_LIVE_IMAGE_KEY:
+                        componentViewResult.componentView.setPadding(40, 40, 40, 40);
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.full_screen_player_icon));
+
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        componentViewResult.componentView.setMinimumHeight(BaseView.dpToPx(R.dimen.nav_image_width,context));
+                        componentViewResult.componentView.setMinimumWidth(BaseView.dpToPx(R.dimen.nav_image_width,context));
 
                         componentViewResult.componentView.setOnClickListener(v -> {
 
@@ -2830,18 +2834,23 @@ AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
                         imageView1.setImageResource(R.drawable.logo);
                         break;
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
-//                        componentViewResult.componentView = new ImageView(context);
-//                        ImageView imageView = (ImageView) componentViewResult.componentView;
-//                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-//                        String iconImageUrl;
-//                        if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
-//                            iconImageUrl = component.getIcon_url();
-//                            Glide.with(context)
-//                                    .load(iconImageUrl)
-//                                    .into(imageView);
-//                        } else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
-//                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
-//                        }
+                        componentViewResult.componentView = new ImageView(context);
+                        ImageView imageView = (ImageView) componentViewResult.componentView;
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        String iconImageUrl;
+                        if (moduleAPI != null && moduleAPI.getContentData()!=null &&
+                                moduleAPI.getContentData().size()>1 &&
+                                moduleAPI.getContentData().get(0)!=null &&
+                                moduleAPI.getContentData().get(0).getGist() !=null &&
+                                moduleAPI.getContentData().get(0).getGist().getBadgeImages() != null &&
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getBadgeImages().toString())) {
+                            iconImageUrl = moduleAPI.getContentData().get(0).getGist().getBadgeImages().toString();
+                            Glide.with(context)
+                                    .load(iconImageUrl)
+                                    .into(imageView);
+                        } /*else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
+                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
+                        }*/
 
 
                         break;

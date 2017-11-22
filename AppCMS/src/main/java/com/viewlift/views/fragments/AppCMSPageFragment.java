@@ -192,7 +192,6 @@ public class AppCMSPageFragment extends Fragment {
                                     if (v.getLayoutManager() != null &&
                                             (v.getLayoutManager()) instanceof LinearLayoutManager &&
                                             ((LinearLayoutManager) v.getLayoutManager()).findFirstVisibleItemPosition() == 0 &&
-                                            ((LinearLayoutManager) v.getLayoutManager()).findFirstCompletelyVisibleItemPosition() <= 1 &&
                                             appCMSPresenter.pipPlayerVisible) {
 
                                         appCMSPresenter.pipPlayerVisible = false;
