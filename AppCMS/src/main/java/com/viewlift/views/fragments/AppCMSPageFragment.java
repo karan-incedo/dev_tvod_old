@@ -310,7 +310,6 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null) {
             videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
         }
-        videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
         if (videoPlayerView != null) {
             videoPlayerView.pausePlayer();
         }

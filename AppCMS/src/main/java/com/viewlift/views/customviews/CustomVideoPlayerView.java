@@ -95,6 +95,26 @@ public class CustomVideoPlayerView extends VideoPlayerView {
 
     }
 
+//    public void showFullScreenController(){
+//        if(getPlayerView()!=null) {
+//            getPlayerView().showController();
+//
+//            if(getPlayerView()!=null) {
+////                getPlayerView().getController();
+//                PlaybackControlView playbackControlView = getPlayerView().getController();
+//                FrameLayout mFullScreenButton = (FrameLayout) playbackControlView.findViewById(R.id.exo_fullscreen_button);
+//                ImageView mFullScreenIcon = (ImageView) playbackControlView.findViewById(R.id.exo_fullscreen_icon);
+//                mFullScreenIcon.setImageResource(R.drawable.ic_fullscreen_expand);
+//                mFullScreenButton.setOnClickListener(new OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+//                    }
+//                });
+//            }
+//        }
+//    }
+
     private void playVideos(int currentIndex , ContentDatum contentDatum){
         hideRestrictedMessage();
 
@@ -240,7 +260,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
         imgFullScreen.setBackground(mContext.getDrawable(R.drawable.full_screen_player_icon));
         LinearLayout.LayoutParams paramsImgFullScreen = new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.full_screen_item_min_width,mContext),BaseView.dpToPx(R.dimen.full_screen_item_min_width,mContext));
 
-        paramsImgFullScreen.setMargins(0,0, 30, 30);
+        paramsImgFullScreen.setMargins(0,0, 32, 32);
 
         imgFullScreen.setLayoutParams(paramsImgFullScreen);
         imgFullScreen.setOnClickListener(new OnClickListener() {
