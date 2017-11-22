@@ -38,7 +38,7 @@
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <ImageView
-        android:id="@+id/logo"
+        android:id="@+id/splash_logo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:src="@drawable/logo"
