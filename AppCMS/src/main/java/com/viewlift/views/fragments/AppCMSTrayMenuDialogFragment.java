@@ -65,16 +65,26 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
                 .getCta().getPrimary().getBackgroundColor()));
         addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getCta().getPrimary().getTextColor()));
-        isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getId());
-        downloadBtn.setVisibility(isDownloaded?View.GONE:View.VISIBLE);
-        downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getBackgroundColor()));
-        downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getTextColor()));
+        isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId());
+        //downloadBtn.setVisibility(isDownloaded?View.GONE:View.VISIBLE);
+        if (!isDownloaded && !appCMSPresenter.isVideoDownloading(contentDatum.getGist().getId())) {
+            downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                    .getCta().getPrimary().getBackgroundColor()));
+            downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                    .getCta().getPrimary().getTextColor()));
+            downloadBtn.setOnClickListener(this);
+        }else {
+            downloadBtn.setBackgroundColor(Color.GRAY);
+            downloadBtn.setText(isDownloaded?"Downloaded":"Downloading...");
+            downloadBtn.setActivated(false);
+            downloadBtn.setOnClickListener(null);
+        }
+
         closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getCta().getPrimary().getTextColor()));
+
         addToWatchList.setOnClickListener(this);
-        downloadBtn.setOnClickListener(this);
+
         closeBtn.setOnClickListener(this);
     }
 
