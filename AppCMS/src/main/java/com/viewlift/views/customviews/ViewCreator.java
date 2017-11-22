@@ -2746,21 +2746,13 @@ public class ViewCreator {
                     if (component.getFontSize() > 0) {
                         int fontSize = component.getFontSize();
                         if (resizeText) {
-                            if (BaseView.isTablet(context)) {
-                                fontSize = (int) (0.6 * fontSize);
-                            } else {
-                                fontSize = (int) (0.8 * fontSize);
-                            }
+                            fontSize = (int) (0.66 * fontSize);
                         }
                         ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                     } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
                         int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
                         if (resizeText) {
-                            if (BaseView.isTablet(context)) {
-                                fontSize = (int) (0.6 * fontSize);
-                            } else {
-                                fontSize = (int) (0.8 * fontSize);
-                            }
+                            fontSize = (int) (0.66 * fontSize);
                         }
                         ((TextView) componentViewResult.componentView).setTextSize(fontSize);
                     }
