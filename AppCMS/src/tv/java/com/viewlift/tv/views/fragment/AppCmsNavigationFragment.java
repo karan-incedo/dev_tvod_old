@@ -457,11 +457,8 @@ public class AppCmsNavigationFragment extends Fragment {
                         Utils.pageLoading(false, getActivity());
                     }  else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_settings_page_tag))) {
                         Utils.pageLoading(false, getActivity());
-                        // TODO: 11/15/2017 open subnavigation fragment here
-
                         showNavigation[0] = false;
                         subNavigationVisibilityListener.showSubNavigation(true, false);
-
                     } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
                             getString(R.string.profile_label)))) {
 
@@ -490,6 +487,28 @@ public class AppCmsNavigationFragment extends Fragment {
                         showNavigation[0] = false;
                         subNavigationVisibilityListener.showSubNavigation(true, true);
                         Utils.pageLoading(false, getActivity());
+                    } else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_watchlist_title))){
+                        if (appCmsPresenter.isUserLoggedIn()) {
+                            showNavigation[0] = false;
+                            Utils.pageLoading(true, getActivity());
+                            appCmsPresenter.navigateToWatchlistPage(
+                                    primary.getPageId(),
+                                    primary.getTitle(),
+                                    primary.getUrl(),
+                                    false);
+                        } else {
+                            NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                            appCMSPresenter.navigateToTVPage(
+                                    navigationUser.getPageId(),
+                                    navigationUser.getTitle(),
+                                    navigationUser.getUrl(),
+                                    false,
+                                    Uri.EMPTY,
+                                    false,
+                                    false,
+                                    true
+                            );
+                        }
                     } else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                             primary.getTitle(),
                             primary.getUrl(),
