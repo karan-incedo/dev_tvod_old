@@ -67,17 +67,25 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:66550532779:android:47ef18d279334d99",
+        "mobilesdk_app_id": "1:525148171038:android:1518edc0290a20d1",
         "android_client_info": {
-          "package_name": "com.mse.monumentalnetworks"
+          "package_name": "com.viewlift.hoichoi"
         }
       },
       "oauth_client": [
         {
-          "client_id": "525148171038-uctag4gitbjb5ba4puffs6j7271su1d7.apps.googleusercontent.com",
+          "client_id": "525148171038-rq5qn2l9hljt73bhemt3e7a5k9h4vr5f.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "air.com.snagfilms",
+            "package_name": "com.viewlift.hoichoi",
+            "certificate_hash": "95fa6a05b3135c752dbb511cde3537a750fbddce"
+          }
+        },
+        {
+          "client_id": "525148171038-1ctc69tbojleakk9l4tlq6vhapmh6qq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.viewlift.hoichoi",
             "certificate_hash": "11af64440dd8648e5fed14370e7e638f44f3c5d2"
           }
         },
@@ -118,25 +126,17 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:525148171038:android:1518edc0290a20d1",
+        "mobilesdk_app_id": "1:66550532779:android:47ef18d279334d99",
         "android_client_info": {
-          "package_name": "com.viewlift.jukinvideo"
+          "package_name": "com.mse.monumentalnetworks"
         }
       },
       "oauth_client": [
         {
-          "client_id": "525148171038-rq5qn2l9hljt73bhemt3e7a5k9h4vr5f.apps.googleusercontent.com",
+          "client_id": "525148171038-uctag4gitbjb5ba4puffs6j7271su1d7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.viewlift.jukinvideo",
-            "certificate_hash": "95fa6a05b3135c752dbb511cde3537a750fbddce"
-          }
-        },
-        {
-          "client_id": "525148171038-1ctc69tbojleakk9l4tlq6vhapmh6qq4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.viewlift.jukinvideo",
+            "package_name": "air.com.snagfilms",
             "certificate_hash": "11af64440dd8648e5fed14370e7e638f44f3c5d2"
           }
         },
@@ -161,7 +161,7 @@
               "client_id": "525148171038-da7vav95ripsg807mp1i985rv91hf2eu.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.viewlift.jukinvideo"
+                "bundle_id": "com.svf.mawja"
               }
             },
             {
