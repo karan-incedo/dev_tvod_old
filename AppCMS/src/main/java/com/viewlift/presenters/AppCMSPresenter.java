@@ -829,7 +829,7 @@ public class AppCMSPresenter {
                 } else {
                     try {
                         if ((pageId.equals(homePage.getPageId()) ||
-                            pageId.equals(moviesPage.getPageId())) &&
+                                pageId.equals(moviesPage.getPageId())) &&
                                 !isUserLoggedIn()) {
                             if (pageId.equals(homePage.getPageId())) {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
@@ -6751,27 +6751,51 @@ public class AppCMSPresenter {
                 }
 
                 if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
-                    title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
-                    message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
-                }
-
-                if (dialogType == DialogType.UPGRADE_UNAVAILABLE) {
-                    title = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_title);
-                    message = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_user_dialog);
+                    String paymentProcessor = getActiveSubscriptionProcessor();
+                    if ((!TextUtils.isEmpty(paymentProcessor) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
+                    } else if (!TextUtils.isEmpty(paymentProcessor) &&
+                            ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
+                                    || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_ios_user_dialog);
+                    } else {
+                        title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                    }
                 }
 
                 if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                     String paymentProcessor = getActiveSubscriptionProcessor();
                     if ((!TextUtils.isEmpty(paymentProcessor) &&
                             !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) {
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
                         title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
                         message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_web_user_dialog);
                     } else if (!TextUtils.isEmpty(paymentProcessor) &&
-                            TextUtils.isEmpty(getExistingGooglePlaySubscriptionId())) {
-                        title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                            ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
+                                    || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_ios_user_dialog);
+                    } else {
+                        if (!TextUtils.isEmpty(paymentProcessor) &&
+                                TextUtils.isEmpty(getExistingGooglePlaySubscriptionId())) {
+                            title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                        }
                     }
+                }
+
+                if (dialogType == DialogType.UPGRADE_UNAVAILABLE) {
+                    title = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_title);
+                    message = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_user_dialog);
                 }
 
                 if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE) {
@@ -9060,28 +9084,28 @@ public class AppCMSPresenter {
                                                     true,
                                                     true,
                                                     (appCMSAndroidModules) -> {
-                                                if (appCMSAndroidModules != null) {
-                                                    //Log.d(TAG, "Received and refreshed module list");
-                                                    this.appCMSAndroidModules = appCMSAndroidModules;
-                                                    if (appCMSAndroidModules.isLoadedFromNetwork() &&
-                                                            pageViewLruCache != null) {
-                                                        Log.d(TAG, "Clearing page cache");
-                                                        try {
-                                                            pageViewLruCache.evictAll();
-                                                        } catch (Exception e) {
+                                                        if (appCMSAndroidModules != null) {
+                                                            //Log.d(TAG, "Received and refreshed module list");
+                                                            this.appCMSAndroidModules = appCMSAndroidModules;
+                                                            if (appCMSAndroidModules.isLoadedFromNetwork() &&
+                                                                    pageViewLruCache != null) {
+                                                                Log.d(TAG, "Clearing page cache");
+                                                                try {
+                                                                    pageViewLruCache.evictAll();
+                                                                } catch (Exception e) {
 
-                                                        }
-                                                    }
-
-                                                    Log.d(TAG, "Refreshing API Data");
-                                                }
-                                                refreshAPIData(() -> {
-                                                            if (onReadyAction != null) {
-                                                                onReadyAction.call(true);
+                                                                }
                                                             }
-                                                        },
-                                                        true);
-                                            });
+
+                                                            Log.d(TAG, "Refreshing API Data");
+                                                        }
+                                                        refreshAPIData(() -> {
+                                                                    if (onReadyAction != null) {
+                                                                        onReadyAction.call(true);
+                                                                    }
+                                                                },
+                                                                true);
+                                                    });
                                         } catch (Exception e) {
                                             //Log.e(TAG, "Failed to refresh AppCMS modules: " +
 //                                            e.getMessage());
@@ -9189,7 +9213,7 @@ public class AppCMSPresenter {
 
     private void getAppCMSAndroid(int tryCount) {
         //Log.d(TAG, "Attempting to retrieve android.json");
-                //Log.d(TAG, "Retrieving android.json");
+        //Log.d(TAG, "Retrieving android.json");
 
         try {
             GetAppCMSAndroidUIAsyncTask.Params params =
@@ -9214,102 +9238,102 @@ public class AppCMSPresenter {
                                 false,
                                 false,
                                 (appCMSAndroidModules) -> {
-                            launchBlankPage();
-                            //Log.d(TAG, "Received module list");
-                            this.appCMSAndroidModules = appCMSAndroidModules;
-                            this.appCMSAndroid = appCMSAndroidUI;
+                                    launchBlankPage();
+                                    //Log.d(TAG, "Received module list");
+                                    this.appCMSAndroidModules = appCMSAndroidModules;
+                                    this.appCMSAndroid = appCMSAndroidUI;
 
-                            initializeAppCMSAnalytics(appCMSAndroidUI);
+                                    initializeAppCMSAnalytics(appCMSAndroidUI);
 
-                            navigation = appCMSAndroidUI.getNavigation();
-                            new SoftReference<>(navigation, referenceQueue);
-                            queueMetaPages(appCMSAndroidUI.getMetaPages());
-                            //Log.d(TAG, "Processing meta pages queue");
+                                    navigation = appCMSAndroidUI.getNavigation();
+                                    new SoftReference<>(navigation, referenceQueue);
+                                    queueMetaPages(appCMSAndroidUI.getMetaPages());
+                                    //Log.d(TAG, "Processing meta pages queue");
 
-                            processMetaPagesList(loadFromFile,
-                                    appCMSAndroidUI.getMetaPages(),
-                                    () -> {
-                                        if (!isNetworkConnected()) {
-                                            openDownloadScreenForNetworkError(true,
-                                                    () -> getAppCMSAndroid(tryCount));
-                                        } else {
-                                            if (!isUserLoggedIn() && tryCount == 0) {
-                                                //Log.d(TAG, "Signing in as an anonymous user");
-                                                signinAnonymousUser(tryCount, null, PlatformType.ANDROID);
-                                            } else if (isUserLoggedIn() && tryCount == 0) {
-                                                //Log.d(TAG, "Updating logged in user data");
-                                                getUserData(userIdentity -> {
-                                                    try {
-                                                        if (userIdentity != null) {
-                                                            //Log.d(TAG, "Retrieved valid user identity");
-                                                            setLoggedInUser(userIdentity.getUserId());
-                                                            setLoggedInUserEmail(userIdentity.getEmail());
-                                                            setLoggedInUserName(userIdentity.getName());
-                                                            setIsUserSubscribed(userIdentity.isSubscribed());
-                                                            if (!userIdentity.isSubscribed()) {
-                                                                setActiveSubscriptionProcessor(null);
-                                                            }
-                                                        }
-                                                    } catch (Exception e) {
-                                                        //Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
+                                    processMetaPagesList(loadFromFile,
+                                            appCMSAndroidUI.getMetaPages(),
+                                            () -> {
+                                                if (!isNetworkConnected()) {
+                                                    openDownloadScreenForNetworkError(true,
+                                                            () -> getAppCMSAndroid(tryCount));
+                                                } else {
+                                                    if (!isUserLoggedIn() && tryCount == 0) {
+                                                        //Log.d(TAG, "Signing in as an anonymous user");
+                                                        signinAnonymousUser(tryCount, null, PlatformType.ANDROID);
+                                                    } else if (isUserLoggedIn() && tryCount == 0) {
+                                                        //Log.d(TAG, "Updating logged in user data");
+                                                        getUserData(userIdentity -> {
+                                                            try {
+                                                                if (userIdentity != null) {
+                                                                    //Log.d(TAG, "Retrieved valid user identity");
+                                                                    setLoggedInUser(userIdentity.getUserId());
+                                                                    setLoggedInUserEmail(userIdentity.getEmail());
+                                                                    setLoggedInUserName(userIdentity.getName());
+                                                                    setIsUserSubscribed(userIdentity.isSubscribed());
+                                                                    if (!userIdentity.isSubscribed()) {
+                                                                        setActiveSubscriptionProcessor(null);
+                                                                    }
+                                                                }
+                                                            } catch (Exception e) {
+                                                                //Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
 //                                e.getMessage());
-                                                        launchBlankPage();
+                                                                launchBlankPage();
+                                                            }
+                                                        });
                                                     }
-                                                });
-                                            }
 
-                                            try {
-                                                getPageViewLruCache().evictAll();
-                                            } catch (Exception e) {
+                                                    try {
+                                                        getPageViewLruCache().evictAll();
+                                                    } catch (Exception e) {
 
-                                            }
+                                                    }
 
-                                            if (appCMSMain.getServiceType()
-                                                    .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
-                                                refreshSubscriptionData(() -> {
+                                                    if (appCMSMain.getServiceType()
+                                                            .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                                        refreshSubscriptionData(() -> {
 
-                                                }, true);
-                                            }
+                                                        }, true);
+                                                    }
 
-                                            if (isUserLoggedIn()) {
-                                                populateUserHistoryData();
-                                            }
+                                                    if (isUserLoggedIn()) {
+                                                        populateUserHistoryData();
+                                                    }
 
-                                            if (appCMSMain.isForceLogin()) {
-                                                boolean launchSuccess = navigateToPage(loginPage.getPageId(),
-                                                        loginPage.getPageName(),
-                                                        loginPage.getPageUI(),
-                                                        false,
-                                                        true,
-                                                        false,
-                                                        false,
-                                                        false,
-                                                        deeplinkSearchQuery);
-                                                if (!launchSuccess) {
-                                                    //Log.e(TAG, "Failed to launch page: "
+                                                    if (appCMSMain.isForceLogin()) {
+                                                        boolean launchSuccess = navigateToPage(loginPage.getPageId(),
+                                                                loginPage.getPageName(),
+                                                                loginPage.getPageUI(),
+                                                                false,
+                                                                true,
+                                                                false,
+                                                                false,
+                                                                false,
+                                                                deeplinkSearchQuery);
+                                                        if (!launchSuccess) {
+                                                            //Log.e(TAG, "Failed to launch page: "
 //                                                                        + loginPage.getPageName());
-                                                    launchBlankPage();
-                                                }
-                                            } else {
-                                                boolean launchSuccess = navigateToPage(homePage.getPageId(),
-                                                        homePage.getPageName(),
-                                                        homePage.getPageUI(),
-                                                        false,
-                                                        true,
-                                                        false,
-                                                        true,
-                                                        false,
-                                                        deeplinkSearchQuery);
-                                                if (!launchSuccess) {
-                                                    //Log.e(TAG, "Failed to launch page: "
+                                                            launchBlankPage();
+                                                        }
+                                                    } else {
+                                                        boolean launchSuccess = navigateToPage(homePage.getPageId(),
+                                                                homePage.getPageName(),
+                                                                homePage.getPageUI(),
+                                                                false,
+                                                                true,
+                                                                false,
+                                                                true,
+                                                                false,
+                                                                deeplinkSearchQuery);
+                                                        if (!launchSuccess) {
+                                                            //Log.e(TAG, "Failed to launch page: "
 //                                                                        + loginPage.getPageName());
-                                                    launchBlankPage();
-                                                }
-                                            }
+                                                            launchBlankPage();
+                                                        }
+                                                    }
 
-                                        }
-                                    });
-                        });
+                                                }
+                                            });
+                                });
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
