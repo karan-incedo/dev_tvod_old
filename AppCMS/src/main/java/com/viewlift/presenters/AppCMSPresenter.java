@@ -586,6 +586,36 @@ public class AppCMSPresenter {
 
                 @Override
                 public void downloadClick(ContentDatum contentDatum) {
+                    //Start Downloading
+                    if ((isAppSVOD() && isUserSubscribed()) ||
+                            !isAppSVOD() && isUserLoggedIn()) {
+                        if (isDownloadQualityScreenShowBefore()) {
+                            editDownload(contentDatum, null, true);
+                        } else {
+                            showDownloadQualityScreen(contentDatum, null);
+                        }
+                    } else {
+                        if (isAppSVOD()) {
+                            if (isUserLoggedIn()) {
+                                showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                        () -> {
+                                            setAfterLoginAction(() -> {
+                                            });
+                                        });
+                            } else {
+                                showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                        () -> {
+                                            setAfterLoginAction(() -> {
+                                            });
+                                        });
+                            }
+                        } else if (!(isAppSVOD() && isUserLoggedIn())) {
+                                showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                    () -> {
+                                    });
+                        }
+                    }
+
                 }
             };
     private Typeface regularFontFace;
@@ -3311,9 +3341,17 @@ public class AppCMSPresenter {
                 getLoggedInUser());
         return downloadVideoRealm != null &&
                 downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
-                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED;
+                (downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED ||
+                        downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL);
     }
-
+    @UiThread
+    public boolean isVideoDownloading(String videoId) {
+        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
+                getLoggedInUser());
+        return downloadVideoRealm != null &&
+                downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
+                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_PENDING;
+    }
     @UiThread
     private boolean isVideoDownloadedByOtherUser(String videoId) {
         DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(videoId);
@@ -11205,7 +11243,7 @@ public class AppCMSPresenter {
                 filmDownloadQueue.add(downloadQueueItem);
                 filmsInQueue.add(downloadQueueItem.contentDatum.getGist().getTitle());
 
-                if (!filmsInQueue.isEmpty()) {
+                if (!filmsInQueue.isEmpty() && downloadQueueItem.resultAction1!=null) {
                     downloadQueueItem.resultAction1.call(null);
                 }
             }
