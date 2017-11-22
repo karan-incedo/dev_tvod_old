@@ -8582,8 +8582,11 @@ public class AppCMSPresenter {
                                          Uri searchQuery,
                                          ExtraScreenType extraScreenType) {
         if (activity != null) {
+            /*FIX for MSEAN-1324*/
+            if (getTabBarUIFooterModule() != null && getTabBarUIFooterModule().getSettings() != null) {
+                appbarPresent = appbarPresent == false ? getTabBarUIFooterModule().getSettings().isShowTabBar() : true;
+            }
             Bundle args = new Bundle();
-
             AppCMSBinder appCMSBinder = getAppCMSBinder(activity,
                     appCMSPageUI,
                     appCMSPageAPI,
@@ -8592,7 +8595,7 @@ public class AppCMSPresenter {
                     pagePath,
                     screenName,
                     loadFromFile,
-                    appbarPresent == false ? getTabBarUIFooterModule().getSettings().isShowTabBar() : true,
+                    appbarPresent,
                     fullscreenEnabled,
                     navbarPresent,
                     sendCloseAction,
@@ -11607,12 +11610,20 @@ public class AppCMSPresenter {
     }
 
     public ModuleList getTabBarUIFooterModule() {
-        ModuleList footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
+        /*FIX for MSEAN-1324*/
+        ModuleList footerModule = null;
+        if (getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key)) != null) {
+            footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
+        }
         return footerModule;
     }
 
     public ModuleList getModuleListComponent(String moduleId) {
-        ModuleList moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
+        ModuleList moduleList = null;
+        /*FIX for MSEAN-1324*/
+        if (appCMSAndroidModules!=null&&appCMSAndroidModules.getModuleListMap() != null) {
+            moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
+        }
         return moduleList;
     }
 
