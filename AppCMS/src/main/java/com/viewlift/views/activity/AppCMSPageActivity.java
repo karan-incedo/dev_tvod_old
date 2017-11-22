@@ -824,7 +824,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
-            //
+
         }
         appCMSPresenter.pausePIP();
     }

@@ -586,6 +586,7 @@ public class AppCMSPresenter {
 
                 @Override
                 public void downloadClick(ContentDatum contentDatum) {
+
                 }
             };
     private Typeface regularFontFace;
