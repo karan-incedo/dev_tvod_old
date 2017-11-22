@@ -100,26 +100,38 @@ public class ViewCreator {
         htmlSpanner.registerHandler("p", pHandler);
     }
 
+    /** Fix for JM-6 */
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        long runtime = (data.getGist().getRuntime() / 60L);
+
+        long durationInSeconds = data.getGist().getRuntime();
+
+        long minutes = durationInSeconds / 60;
+        long seconds = durationInSeconds % 60;
 
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime > 0
+        boolean appendFirstSep = minutes > 0
                 && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
+        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
                 && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
-        if (runtime > 0 && runtime < 2) {
-            infoText.append(runtime).append(" ").append(context.getString(R.string.min_abbreviation));
-        } else if (runtime > 0) {
-            infoText.append(runtime).append(" ").append(context.getString(R.string.mins_abbreviation));
-        } else {
-            infoText.append("0 ").append(context.getString(R.string.mins_abbreviation)).append(context.getString(R.string.text_separator));
+
+        if (minutes == 1) {
+            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.min_abbreviation));
+        } else if (minutes > 1 && minutes < 10) {
+            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+        } else if (minutes >= 10) {
+            infoText.append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+        }
+
+        if (seconds < 10) {
+            infoText.append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
+        } else if (seconds >= 10) {
+            infoText.append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
         }
 
         if (appendFirstSep) {
