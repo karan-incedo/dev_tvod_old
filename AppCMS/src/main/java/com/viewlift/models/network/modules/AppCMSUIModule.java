@@ -179,6 +179,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_web_view_key),
                 AppCMSUIKeyType.PAGE_WEB_VIEW_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_full_screen_key),
+                AppCMSUIKeyType.PAGE_FULL_SCREEN_IMAGE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_image_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_add_to_watchlist_key),

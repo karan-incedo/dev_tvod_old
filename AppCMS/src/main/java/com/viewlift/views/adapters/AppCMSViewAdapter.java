@@ -67,6 +67,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private int selectedColor;
     private boolean isClickable;
     private String videoAction;
+    private String openOptionsAction;
     private String showAction;
     private MotionEvent lastTouchDownEvent;
     private String watchVideoAction;
@@ -127,6 +128,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.defaultAction = getDefaultAction(context);
         this.videoAction = getVideoAction(context);
         this.showAction = getShowAction(context);
+        this.openOptionsAction = getOpenOptionsAction(context);
 
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
@@ -414,11 +416,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
                                     contentType = data.getGist().getContentType();
                                 }
-
-                                if (contentType.equals(episodicContentType)) {
-                                    action = showAction;
-                                } else if (contentType.equals(fullLengthFeatureType)) {
-                                    action = videoAction;
+                                if (!childComponent.getAction().contains(openOptionsAction)) {
+                                    if (contentType.equals(episodicContentType)) {
+                                        action = showAction;
+                                    } else if (contentType.equals(fullLengthFeatureType)) {
+                                        action = videoAction;
+                                    }
                                 }
 
                                 if (data.getGist() == null ||
@@ -439,7 +442,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             action,
                                             title,
                                             null,
-                                            null,
+                                            data,
                                             false,
                                             currentPlayingIndex,
                                             relatedVideoIds)) {
@@ -621,6 +624,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private String getShowAction(Context context) {
         return context.getString(R.string.app_cms_action_showvideopage_key);
+    }
+
+    private String getOpenOptionsAction(Context context) {
+        return context.getString(R.string.app_cms_action_open_option_dialog);
     }
 
     private String getVideoAction(Context context) {
