@@ -9384,6 +9384,25 @@ public class AppCMSPresenter {
             int moviesPageIndex = getMoviesPage(metaPageList);
             if (moviesPageIndex >= 0) {
                 moviesPage = metaPageList.get(moviesPageIndex);
+
+                if (moviesPage != null) {
+                    String baseUrl = appCMSMain.getApiBaseUrl();
+                    String endPoint = pageIdToPageAPIUrlMap.get(moviesPage.getPageId());
+                    String siteId = appCMSSite.getGist().getSiteInternalName();
+
+                    // Cache movies page when the app is loading
+                    getPageIdContent(getApiUrl(true,
+                            false,
+                            false,
+                            baseUrl,
+                            endPoint,
+                            siteId,
+                            moviesPage.getPageId()),
+                            moviesPage.getPageId(),
+                            null,
+                            null);
+                }
+
                 new SoftReference<Object>(moviesPage, referenceQueue);
             }
 

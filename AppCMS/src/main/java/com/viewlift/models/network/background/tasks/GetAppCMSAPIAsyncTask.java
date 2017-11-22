@@ -77,12 +77,13 @@ public class GetAppCMSAPIAsyncTask {
                 .observeOn(AndroidSchedulers.mainThread())
                 .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
-                    if (params.appCMSPageAPILruCache != null &&
-                            readyAction != null) {
+                    if (params.appCMSPageAPILruCache != null ) {
                         if (result != null) {
                             params.appCMSPageAPILruCache.put(params.pageId, result);
                         }
-                        Observable.just(result).subscribe(readyAction);
+                        if (readyAction != null) {
+                            Observable.just(result).subscribe(readyAction);
+                        }
                     }
                 });
     }
