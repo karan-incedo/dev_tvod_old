@@ -38,6 +38,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Switch;
@@ -1049,10 +1050,6 @@ public class ViewCreator {
             }
 
 
-            /*if(moduleInfo.getBlockName().equalsIgnoreCase("banner01")){
-                module.setLayout(moduleInfo.getLayout());
-                module.setComponents(moduleInfo.getComponents());
-            }*/
 
             boolean createModule = !modulesToIgnore.contains(module.getType());
 
@@ -2067,13 +2064,28 @@ AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
                         break;
 
                     case PAGE_PLAY_LIVE_IMAGE_KEY:
-                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.full_screen_player_icon));
+                        componentViewResult.componentView.setPadding(20, 20, 20, 20);
+
+                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
                         componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                        LinearLayout.LayoutParams progressbarParam = new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.full_screen_item_min_width,context),BaseView.dpToPx(R.dimen.full_screen_item_min_width,context));
+                        componentViewResult.componentView.setLayoutParams(progressbarParam);
+
+                        if ((appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isUserSubscribed()) || (moduleAPI!=null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getGist()!=null
+                                && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getGist().getFree()) ){
+                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                        }else{
+                            componentViewResult.componentView.setVisibility(View.GONE);
+
+                        }
+                        componentViewResult.componentView.setVisibility(View.GONE);
+
+                        componentViewResult.componentView.setId(R.id.full_screen_btn_id);
 
                         componentViewResult.componentView.setOnClickListener(v -> {
 
-                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getId() != null) {
+                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null ) {
                                 appCMSPresenter.refreshVideoData(moduleAPI.getContentData().get(0).getGist().getId(), new Action1<ContentDatum>() {
                                     @Override
                                     public void call(ContentDatum contentDatum) {
@@ -2830,18 +2842,23 @@ AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
                         imageView1.setImageResource(R.drawable.logo);
                         break;
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
-//                        componentViewResult.componentView = new ImageView(context);
-//                        ImageView imageView = (ImageView) componentViewResult.componentView;
-//                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-//                        String iconImageUrl;
-//                        if (component.getIcon_url() != null && !TextUtils.isEmpty(component.getIcon_url())) {
-//                            iconImageUrl = component.getIcon_url();
-//                            Glide.with(context)
-//                                    .load(iconImageUrl)
-//                                    .into(imageView);
-//                        } else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
-//                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
-//                        }
+                        componentViewResult.componentView = new ImageView(context);
+                        ImageView imageView = (ImageView) componentViewResult.componentView;
+                        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                        String iconImageUrl;
+                        if (moduleAPI != null && moduleAPI.getContentData()!=null &&
+                                moduleAPI.getContentData().size()>1 &&
+                                moduleAPI.getContentData().get(0)!=null &&
+                                moduleAPI.getContentData().get(0).getGist() !=null &&
+                                moduleAPI.getContentData().get(0).getGist().getBadgeImages() != null &&
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getBadgeImages().toString())) {
+                            iconImageUrl = moduleAPI.getContentData().get(0).getGist().getBadgeImages().toString();
+                            Glide.with(context)
+                                    .load(iconImageUrl)
+                                    .into(imageView);
+                        } /*else if (context.getDrawable(R.drawable.pro_badge_con) != null) {
+                            componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.pro_badge_con));
+                        }*/
 
 
                         break;
@@ -3714,7 +3731,7 @@ AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
             videoPlayerView.removeAllViews();
         }
 
-        videoPlayerView = new CustomVideoPlayerView(context);
+        videoPlayerView = new CustomVideoPlayerView(context,videoId);
         videoPlayerView.init(context);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
@@ -3729,33 +3746,37 @@ AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
         videoPlayerView.setVideoUri(videoId);
         return videoPlayerView;
     }
-
     public static WebView getWebViewComponent(Context context, Module moduleAPI, Component component) {
 
         WebView webView = new WebView(context);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setDisplayZoomControls(false);
-        webView.setBackgroundColor(Color.TRANSPARENT);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.getSettings().setBuiltInZoomControls(false);
+            webView.getSettings().setDisplayZoomControls(false);
+            webView.setBackgroundColor(Color.TRANSPARENT);
+           webView.getSettings().setAppCacheEnabled(true);
 
-        int height = ((int) component.getLayout().getMobile().getHeight()) - 45;
-        int width = BaseView.getDeviceWidth();
-        String webViewUrl = "";
-        if (moduleAPI != null && moduleAPI.getRawText() != null) {
-            webViewUrl = moduleAPI.getRawText();
-        }
-        String html = "<iframe width=\"" + width + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-                context.startActivity(browserIntent);
-                return true;
+            int height = ((int) component.getLayout().getMobile().getHeight()) - 45;
+            int width = BaseView.getDeviceWidth();
+            String webViewUrl = "";
+            if (moduleAPI != null && moduleAPI.getRawText() != null) {
+                webViewUrl = moduleAPI.getRawText();
             }
-        });
+//            String html = "<html><body style=\"margin: 0; padding: 0\"><iframe  width=\"100%\" height=\"100%\" src=\""+webViewUrl+"\" type=\"text/html\" frameborder=\"0\"></iframe><body><html>";
 
-        webView.loadData(html, "text/html", "UTF-8");
+
+            String html = "<iframe width=\"" + width + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                    context.startActivity(browserIntent);
+                    return true;
+                }
+            });
+
+            webView.loadData(html, "text/html", "UTF-8");
+
         return webView;
     }
 

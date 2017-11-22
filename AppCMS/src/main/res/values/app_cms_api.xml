@@ -93,6 +93,7 @@
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_video_player_key">player</string>
     <string name="app_cms_page_web_view_key">web_view</string>
+    <string name="app_cms_page_full_screen_key">full_Screen_icon</string>
 
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>

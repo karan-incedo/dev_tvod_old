@@ -28,6 +28,8 @@
     <dimen name="nav_item_left_right_padding">12dp</dimen>
     <dimen name="nav_item_min_width">80dp</dimen>
 
+    <dimen name="full_screen_item_min_width">30dp</dimen>
+
 
     <dimen name="castview_padding">24dp</dimen>
     <dimen name="searchbar_elevation">36dp</dimen>

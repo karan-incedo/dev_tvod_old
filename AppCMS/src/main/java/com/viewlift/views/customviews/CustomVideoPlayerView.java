@@ -13,10 +13,12 @@ import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -36,12 +38,17 @@ public class CustomVideoPlayerView extends VideoPlayerView {
     private TextView loaderMessageView;
     private LinearLayout customMessageContainer;
     private TextView customMessageView;
+    private LinearLayout customPlayBack;
+    private String videoDataId;
 
-    public CustomVideoPlayerView(Context context) {
+
+    public CustomVideoPlayerView(Context context, String videoId) {
         super(context);
         mContext = context;
+        this.videoDataId=videoId;
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
+        createPlaybackFullScreen();
         createCustomMessageView();
     }
 
@@ -51,6 +58,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
 
     public void setVideoUri(String videoId) {
         showProgressBar(getResources().getString(R.string.loading_video_text));
+
         appCMSPresenter.refreshVideoData(videoId, new Action1<ContentDatum>() {
             @Override
             public void call(ContentDatum contentDatum) {
@@ -81,6 +89,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 } else {
                     playVideos(0,contentDatum);
                 }
+                System.out.println( " JSON for Video details "+ new Gson().toJson(contentDatum));
             }
         });
 
@@ -88,6 +97,10 @@ public class CustomVideoPlayerView extends VideoPlayerView {
 
     private void playVideos(int currentIndex , ContentDatum contentDatum){
         hideRestrictedMessage();
+
+        if (null != customPlayBack )
+            customPlayBack.setVisibility(View.VISIBLE);
+
         String url = null;
         if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
             if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
@@ -214,19 +227,48 @@ public class CustomVideoPlayerView extends VideoPlayerView {
         this.addView(customLoaderContainer);
     }
 
+    private void createPlaybackFullScreen() {
+        customPlayBack = new LinearLayout(mContext);
+        customPlayBack.setOrientation(LinearLayout.HORIZONTAL);
+        LinearLayout.LayoutParams llLinear = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        customPlayBack.setLayoutParams(llLinear);
+
+        customPlayBack.setGravity(Gravity.BOTTOM| Gravity.RIGHT );
+
+        ImageView imgFullScreen = new ImageView(mContext);
+        imgFullScreen.setScaleType(ImageView.ScaleType.FIT_XY);
+        imgFullScreen.setBackground(mContext.getDrawable(R.drawable.full_screen_player_icon));
+        LinearLayout.LayoutParams paramsImgFullScreen = new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.full_screen_item_min_width,mContext),BaseView.dpToPx(R.dimen.full_screen_item_min_width,mContext));
+
+        paramsImgFullScreen.setMargins(0,0, 30, 30);
+
+        imgFullScreen.setLayoutParams(paramsImgFullScreen);
+        imgFullScreen.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+            }
+        });
+        customPlayBack.addView(imgFullScreen);
+        customPlayBack.setVisibility(View.INVISIBLE);
+
+        this.addView(customPlayBack);
+    }
+
 
     private void createCustomMessageView() {
         customMessageContainer = new LinearLayout(mContext);
-        customMessageContainer.setOrientation(LinearLayout.VERTICAL);
+        customMessageContainer.setOrientation(LinearLayout.HORIZONTAL);
         customMessageContainer.setGravity(Gravity.CENTER);
         customMessageContainer.setBackgroundColor(Color.parseColor("#d4000000"));
         customMessageView = new TextView(mContext);
         LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        textViewParams.gravity=Gravity.CENTER;
         customMessageView.setLayoutParams(textViewParams);
+        customMessageView.setTextColor(Color.parseColor("#ffffff"));
+        customMessageView.setTextSize(15);
         customMessageView.setPadding(20, 20, 20, 20);
-        if (customMessageView.getParent() != null) {
-            ((ViewGroup) customMessageView.getParent()).removeView(customMessageView);
-        }
+
         customMessageContainer.addView(customMessageView);
         customMessageContainer.setVisibility(View.INVISIBLE);
         this.addView(customMessageContainer);
@@ -254,12 +296,16 @@ public class CustomVideoPlayerView extends VideoPlayerView {
             customMessageContainer.setVisibility(View.VISIBLE);
 
         }
+
+
     }
 
     private void hideRestrictedMessage() {
         if (null != customMessageContainer) {
             customMessageContainer.setVisibility(View.INVISIBLE);
         }
+
+
     }
 }
 

@@ -237,7 +237,8 @@ public class CollectionGridItemView extends BaseView {
                 if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                        componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ) {
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -389,11 +390,12 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
-                            data.getGist().getImageGist().get_3x4() != null &&
-                            data.getGist().getBadgeImages().get_3x4() != null &&
-                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                            (data.getGist().getImageGist().get_3x4() != null || data.getGist().getImageGist().get_16x9() != null) &&
+                            (data.getGist().getBadgeImages().get_3x4() != null || data.getGist().getBadgeImages().get_16x9() != null) &&
+                            (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
+                            componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE)) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getBadgeImages().get_3x4(),
+                                data.getGist().getBadgeImages().get_3x4()==null?data.getGist().getBadgeImages().get_16x9():data.getGist().getBadgeImages().get_3x4(),
                                 childViewWidth,
                                 childViewHeight);
 
