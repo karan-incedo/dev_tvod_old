@@ -1,12 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.viewlift.hoichoi'
-def final customApplicationId = 'Hoichoi'
-def final hostName = "www.hoichoi.tv"
+//def final packageName = 'com.viewlift.hoichoi'
+//def final customApplicationId = 'Hoichoi'
+//def final hostName = "www.hoichoi.tv"
+//def final appVersionName = "2.1.23"
 
-
-def final appVersionName = "2.1.23"
 
 buildscript {
     repositories {
@@ -34,11 +33,48 @@ repositories {
 android {
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
+
+    def packageName
+    def customApplicationId
+    def hostName
+    def appVersionCode
+    def appVersionName
+    //def minsdkversion
+    //def targetsdkversion
+
+    def versionPropsFile = file('src/main/assets/version.properties')
+
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+
+        versionProps.load(new FileInputStream(versionPropsFile))
+
+        packageName = versionProps['AppPackageName'].toString()
+        customApplicationId = versionProps['AppName'].toString()
+        hostName = versionProps['HostName'].toString()
+        appVersionCode = versionProps['AppVersionCode'].toInteger()
+        appVersionName = versionProps['AppVersionName'].toString()
+        //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
+        //targetsdkversion = versionProps['TARGET_SDK_VERSION'].toInteger()
+
+        versionProps['AppPackageName'] = packageName.toString()
+        versionProps['AppName'] = customApplicationId.toString()
+        versionProps['HostName'] = hostName.toString()
+        versionProps['AppVersionCode'] = appVersionCode.toString()
+        versionProps['AppVersionName'] = appVersionName.toString()
+        //versionProps['MIN_SDK_VERSION'] = minsdkversion.toString()
+        //versionProps['TARGET_SDK_VERSION'] = targetsdkversion.toString()
+
+        versionProps.store(versionPropsFile.newWriter(), null)
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
+
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 154
+        versionCode appVersionCode
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -52,16 +88,13 @@ android {
             minSdkVersion 21
             compileSdkVersion 23
             targetSdkVersion 25
-            aaptOptions {
-                cruncherEnabled = false
-            }
         }
         tv {
 
             minSdkVersion 21
             compileSdkVersion 25
-            versionCode 3010031
-            versionName "1.2.1"
+            versionCode appVersionCode
+            versionName appVersionName
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
@@ -84,6 +117,16 @@ android {
             java.srcDirs = ['src/mobile/java']
             res.srcDirs = ['src/mobile/res']
             manifest.srcFile 'src/mobile/AndroidManifest.xml'
+
+            androidTest {
+                // If all the files for a source set are located under a single root
+                // directory, you can specify that directory using the setRoot property.
+                // When gathering sources for the source set, Gradle looks only in locations
+                // relative to the root directory you specify. For example, after applying the
+                // configuration below for the androidTest source set, Gradle looks for Java
+                // sources only in the src/tests/java/ directory.
+                setRoot 'src/androidTestMobile/java'
+            }
         }
         tv {
             java.srcDirs = ['src/tv/java']
@@ -91,6 +134,9 @@ android {
             manifest.srcFile 'src/tv/AndroidManifest.xml'
         }
     }
+
+
+
     buildTypes {
         debug {
             multiDexEnabled true
@@ -103,8 +149,7 @@ android {
         }
         release {
             multiDexEnabled true
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
@@ -131,16 +176,17 @@ android {
         exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
 
     dexOptions {
         incremental true
         javaMaxHeapSize "4g"
+        preDexLibraries = false
+        additionalParameters = ["--set-max-idx-number=55000"]
     }
 }
-
 afterEvaluate {
     if (!android.applicationVariants.matching { it.flavorName == 'mobile' }.isEmpty()) {
         tasks.matching {
@@ -161,6 +207,14 @@ dependencies {
     testCompile "junit:junit:$rootProject.ext.junitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.0') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
+    androidTestCompile("tools.fastlane:screengrab:1.0.3", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestCompile "com.google.dexmaker:dexmaker:$rootProject.ext.dexmakerVersion"
