@@ -108,17 +108,27 @@ public class ViewCreator {
     }
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+        int numberOfViewsToBeSeparated = 0;
         long runtime = data.getGist().getRuntime();
 
         String year = data.getGist().getYear();
-        String primaryCategory =
-                data.getGist().getPrimaryCategory() != null ?
-                        data.getGist().getPrimaryCategory().getTitle() :
-                        null;
-        boolean appendFirstSep = runtime > 0
-                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
-                && !TextUtils.isEmpty(primaryCategory);
+        String primaryCategory = data.getGist().getPrimaryCategory() != null ?
+                data.getGist().getPrimaryCategory().getTitle() : null;
+
+        if (!TextUtils.isEmpty(String.valueOf(data.getGist().getRuntime()))) {
+            numberOfViewsToBeSeparated++;
+        }
+
+        if (!TextUtils.isEmpty(data.getGist().getYear())) {
+            numberOfViewsToBeSeparated++;
+        }
+
+        if (!TextUtils.isEmpty(data.getGist().getPrimaryCategory().getTitle())) {
+            numberOfViewsToBeSeparated++;
+        }
+
+        boolean appendFirstSep = numberOfViewsToBeSeparated > 1;
+        boolean appendSecondSep = numberOfViewsToBeSeparated == 3;
 
         StringBuilder infoText = new StringBuilder();
 
