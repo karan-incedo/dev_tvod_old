@@ -80,6 +80,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.ccavenue.screens.EnterMobileNumberActivity;
@@ -6479,7 +6480,9 @@ public class AppCMSPresenter {
     public boolean isPageAVideoPage(String pageName) {
         if (currentActivity != null && pageName != null) {
             try {
-                return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
+                // NOTE: Replaced with Utils.getProperty()
+                //setAppsFlyerKey(appCMSAndroidUI.getAnalytics().getAppflyerDevKey());
+                setAppsFlyerKey(Utils.getProperty("AppsFlyerDevKey", currentContext));
             } catch (Exception e) {
                 //Log.e(TAG, "Failed to verify if input page is a video page: " + e.toString());
             }
@@ -7566,7 +7569,9 @@ public class AppCMSPresenter {
 
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+        subscriptionRequest.setSiteId(Utils.getProperty("SiteId", currentActivity));
+        // NOTE: Replaced with Utils.getProperty()
+        //subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
         subscriptionRequest.setPlanId(planToPurchase);
         subscriptionRequest.setPlanIdentifier(skuToPurchase);
@@ -9016,7 +9021,7 @@ public class AppCMSPresenter {
                             try {
                                 GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                                         .context(currentActivity)
-                                        .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                                        .siteId(Utils.getProperty("SiteId", currentActivity))
                                         .forceReloadFromNetwork(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -9035,7 +9040,7 @@ public class AppCMSPresenter {
                 try {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                             .context(currentActivity)
-                            .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                            .siteId(Utils.getProperty("SiteId", currentActivity))
                             .forceReloadFromNetwork(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {

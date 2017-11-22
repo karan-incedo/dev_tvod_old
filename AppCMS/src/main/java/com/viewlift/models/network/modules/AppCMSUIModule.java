@@ -9,6 +9,7 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -94,7 +95,12 @@ public class AppCMSUIModule {
     private final Cache cache;
 
     public AppCMSUIModule(Context context) {
-        this.baseUrl = context.getString(R.string.app_cms_baseurl);
+
+        this.baseUrl = Utils.getProperty("BaseUrl", context);
+
+        // NOTE: Replaced with Utils.getProperty()
+        //this.baseUrl = context.getString(R.string.app_cms_baseurl);
+
         this.storageDirectory = context.getFilesDir();
 
         this.jsonValueKeyMap = new HashMap<>();

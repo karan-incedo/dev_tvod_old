@@ -17,6 +17,7 @@ import com.appsflyer.AppsFlyerLib;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.mobile.imageutils.FrescoImageLoader;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -83,7 +84,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                         activeNetwork.isConnectedOrConnecting();
                 if (!appStartWithNetworkConnected && isConnected && appCMSPresenterComponent != null) {
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
-                            getString(R.string.app_cms_app_name),
+                            Utils.getProperty("SiteId", getApplicationContext()),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
                             true);
@@ -178,7 +179,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         if (appCMSPresenterComponent != null) {
             try {
                 appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                        getString(R.string.app_cms_app_name),
+                        Utils.getProperty("SiteId", getApplicationContext()),
                         searchQuery,
                         AppCMSPresenter.PlatformType.ANDROID,
                         forceReloadFromNetwork);

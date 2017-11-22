@@ -63,8 +63,15 @@ public class AppCMSApplication extends MultiDexApplication {
         };
 
         new Thread(() -> {
+            // NOTE: Replaced with Utils.getProperty()
+            //AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
+            AppsFlyerLib.getInstance().init(Utils.getProperty("AppsFlyerDevKey", getApplicationContext()), conversionDataListener);
+
             Fabric.with(AppCMSApplication.this, new Crashlytics());
-            Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+
+            // NOTE: Replaced with Utils.getProperty()
+            //Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+            Apptentive.register(this, Utils.getProperty("ApptentiveApiKey", getApplicationContext()));
         }).run();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
