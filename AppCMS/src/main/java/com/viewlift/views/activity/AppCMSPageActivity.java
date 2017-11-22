@@ -1939,7 +1939,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void createTabBar() {
         ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
-        if (appCMSPresenter.getNavigation().getTabBar() != null && !isTabCreated && tabBarModule != null) {
+        if (appCMSPresenter.getNavigation()!=null &&
+                appCMSPresenter.getNavigation().getTabBar() != null &&
+                !isTabCreated && tabBarModule != null) {
             isTabCreated = true;
             int WEIGHT_SUM = getResources().getInteger(R.integer.nav_bar_items_weightsum);
             int weight = WEIGHT_SUM / appCMSPresenter.getNavigation().getTabBar().size();
