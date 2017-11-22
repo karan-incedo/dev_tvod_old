@@ -11506,9 +11506,9 @@ public class AppCMSPresenter {
         }
     }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId, CustomVideoPlayerView videoPlayerView) {
+    public void showPopupWindowPlayer(View scrollView, String videoId,final CustomVideoPlayerView videoPlayerView) {
         if (videoId != null) {
-            RelativeLayout.LayoutParams lpPipView = null;
+
 
             if (videoPlayerView == null) {
                 videoPlayerViewPIP = ViewCreator.playerView(currentActivity,videoId);
@@ -11517,7 +11517,7 @@ public class AppCMSPresenter {
                 videoPlayerViewPIP = videoPlayerView;
             }
 
-            relativeLayoutPIP = new MiniPlayerView(currentActivity, videoPlayerView);
+            relativeLayoutPIP = new MiniPlayerView(currentActivity, videoPlayerViewPIP);
             relativeLayoutPIP.setVisibility(View.VISIBLE);
             relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -11588,6 +11588,9 @@ public class AppCMSPresenter {
         pipPlayerVisible = false;
     }
 
+    public CustomVideoPlayerView getMiniPlayrView(){
+        return videoPlayerViewPIP;
+    }
     public ModuleList getTabBarUIModule() {
         AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
         ModuleList footerModule = null;

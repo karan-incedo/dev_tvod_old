@@ -51,7 +51,6 @@ public class AppCMSPageFragment extends Fragment {
     private String authentication_screen_name = "Authentication Screen";
 
 
-
     private boolean shouldSendFirebaseViewItemEvent;
     private ViewGroup pageViewGroup;
     private CustomVideoPlayerView videoPlayerView;
@@ -193,9 +192,12 @@ public class AppCMSPageFragment extends Fragment {
                                     if (v.getLayoutManager() != null &&
                                             (v.getLayoutManager()) instanceof LinearLayoutManager &&
                                             ((LinearLayoutManager) v.getLayoutManager()).findFirstVisibleItemPosition() == 0 &&
-                                            ((LinearLayoutManager) v.getLayoutManager()).findFirstCompletelyVisibleItemPosition() <= 1) {
+                                            ((LinearLayoutManager) v.getLayoutManager()).findFirstCompletelyVisibleItemPosition() <= 1 &&
+                                            appCMSPresenter.pipPlayerVisible) {
+
                                         appCMSPresenter.pipPlayerVisible = false;
-                                        if (videoPlayerView != null && parent != null) {
+                                        if (appCMSPresenter.getMiniPlayrView() != null && parent != null) {
+                                            videoPlayerView = appCMSPresenter.getMiniPlayrView();
                                             ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
                                             videoPlayerView.setLayoutParams(parent.getLayoutParams());
                                             parent.addView(videoPlayerView);
@@ -217,10 +219,10 @@ public class AppCMSPageFragment extends Fragment {
                     });
 
 
-                    if (!appCMSPresenter.getFirstVisibleChild(nestedScrollView,R.id.video_player_id) &&
-                            !appCMSPresenter.pipPlayerVisible )  {
+                    if (!appCMSPresenter.getFirstVisibleChild(nestedScrollView, R.id.video_player_id) &&
+                            !appCMSPresenter.pipPlayerVisible) {
                         appCMSPresenter.showPopupWindowPlayer(nestedScrollView, videoId, videoPlayerView);
-                    } else if (appCMSPresenter.getFirstVisibleChild(nestedScrollView,R.id.video_player_id)) {
+                    } else if (appCMSPresenter.getFirstVisibleChild(nestedScrollView, R.id.video_player_id)) {
                         if (videoPlayerView != null && parent != null) {
                             ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
                             videoPlayerView.setLayoutParams(parent.getLayoutParams());
@@ -292,7 +294,7 @@ public class AppCMSPageFragment extends Fragment {
         }
 
         updateDataLists();
-        if(pageView != null) {
+        if (pageView != null) {
             videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
         }
         if (videoPlayerView != null) {
@@ -305,7 +307,7 @@ public class AppCMSPageFragment extends Fragment {
     public void onPause() {
         super.onPause();
         updateDataLists();
-        if(pageView != null) {
+        if (pageView != null) {
             videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
         }
         videoPlayerView = (CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id);
@@ -330,7 +332,7 @@ public class AppCMSPageFragment extends Fragment {
         if (appCMSPresenter != null) {
             appCMSPresenter.closeSoftKeyboard();
         }
-        if(videoPlayerView != null) {
+        if (videoPlayerView != null) {
             videoPlayerView.releasePlayer();
         }
         appCMSBinder = null;
