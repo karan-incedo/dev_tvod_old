@@ -5023,6 +5023,9 @@ public class AppCMSPresenter {
                     }
                 }
 
+                pushActionInternalEvents(pageId
+                        + BaseView.isLandscape(currentActivity));
+
                 if (launchActivity) {
                     launchPageActivity(currentActivity,
                             appCMSPageUI,
@@ -5077,19 +5080,14 @@ public class AppCMSPresenter {
 
                         }
                         cancelInternalEvents();
-                        if (currentActivity != null) {
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
-                            pushActionInternalEvents(pageId
-                                    + BaseView.isLandscape(currentActivity));
-                        }
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+
                         restartInternalEvents();
                         navigationPageData.put(pageId, appCMSPageAPI1);
                     });
                 } else {
                     loadingPage = false;
                     cancelInternalEvents();
-                    pushActionInternalEvents(pageId
-                            + BaseView.isLandscape(currentActivity));
                     navigationPageData.put(pageId, appCMSPageAPI);
                 }
 

@@ -117,6 +117,12 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         }
     }
 
+    public void deSelectAll() {
+        for (int i = 0; i < childViews.size(); i++) {
+            deselect(i);
+        }
+    }
+
     public void deselect(int index) {
         if (0 <= index && index < childViews.size()) {
             ((GradientDrawable) childViews.get(index).getBackground()).setColor(deselectedColor);

@@ -605,6 +605,21 @@ public class ViewCreator {
                                                             Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                                         }
+                                    } else if (componentKey == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
+                                        if (view instanceof TextView) {
+                                            if (!TextUtils.isEmpty(component.getText())) {
+                                                ((TextView) view).setText(component.getText().toUpperCase());
+                                            } else if (moduleAPI != null && moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
+                                                    !TextUtils.isEmpty(moduleAPI.getTitle())) {
+                                                ((TextView) view).setText(moduleAPI.getTitle().toUpperCase());
+                                            } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                                ((TextView) view).setText(R.string.app_cms_page_watchlist_title);
+                                            } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
+                                                ((TextView) view).setText(R.string.app_cms_page_download_title);
+                                            } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                                                ((TextView) view).setText(R.string.app_cms_page_history_title);
+                                            }
+                                        }
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
@@ -680,6 +695,7 @@ public class ViewCreator {
                                         int numDots = moduleAPI != null ? moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0 : 0;
                                         if (!((DotSelectorView) view).dotsInitialized()) {
                                             ((DotSelectorView) view).addDots(numDots);
+                                            ((DotSelectorView) view).deSelectAll();
                                             ((DotSelectorView) view).select(0);
                                         }
                                     }
