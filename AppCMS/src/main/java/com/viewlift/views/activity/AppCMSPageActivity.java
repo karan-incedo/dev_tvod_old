@@ -918,6 +918,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             processDeepLink(appCMSBinder.getSearchQuery());
             appCMSBinder.clearSearchQuery();
         }
+
+        reportFullyDrawn();
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -27,13 +27,16 @@ import com.viewlift.views.modules.AppCMSPageViewModule;
 import java.lang.ref.SoftReference;
 import java.util.List;
 
-/**
+/*
  * Created by viewlift on 5/3/17.
  */
 
 public class AppCMSPageFragment extends Fragment {
-    private static final String TAG = "AppCMSPageFragment";
-
+    //private static final String TAG = "AppCMSPageFragment";
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final String LOGIN_STATUS_KEY = "logged_in_status";
+    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
+    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
     private AppCMSViewComponent appCMSViewComponent;
     private OnPageCreation onPageCreation;
     private AppCMSPresenter appCMSPresenter;
@@ -41,22 +44,9 @@ public class AppCMSPageFragment extends Fragment {
     private PageView pageView;
     private String videoPageName = "Video Page";
     private String authentication_screen_name = "Authentication Screen";
-
-    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
-
-    private final String LOGIN_STATUS_KEY = "logged_in_status";
-    private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
-    private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
-
     private boolean shouldSendFirebaseViewItemEvent;
     private ViewGroup pageViewGroup;
     private VideoPlayerView videoPlayerView;
-
-    public interface OnPageCreation {
-        void onSuccess(AppCMSBinder appCMSBinder);
-
-        void onError(AppCMSBinder appCMSBinder);
-    }
 
     public static AppCMSPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCMSPageFragment fragment = new AppCMSPageFragment();
@@ -133,15 +123,17 @@ public class AppCMSPageFragment extends Fragment {
             container.removeAllViews();
             pageViewGroup = container;
         }
-        /**
+
+        /*
          * Here we are sending analytics for the screen views. Here we will log the events for
          * the Screen which will come on AppCMSPageActivity.
          */
+
         if (shouldSendFirebaseViewItemEvent) {
             sendFirebaseAnalyticsEvents(appCMSBinder);
             shouldSendFirebaseViewItemEvent = false;
         }
-        if (pageView!=null) {
+        if (pageView != null) {
             if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView &&
                     appCMSBinder != null &&
                     appCMSBinder.getAppCMSPageUI() != null &&
@@ -149,33 +141,29 @@ public class AppCMSPageFragment extends Fragment {
                     appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
                     appCMSBinder.getAppCMSPageUI().getModuleList().get(1) != null &&
                     appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings() != null) {
-                NestedScrollView nestedScrollView = (NestedScrollView) pageView.findViewById(R.id.home_nested_scroll_view);
-
+                NestedScrollView nestedScrollView = (NestedScrollView)
+                        pageView.findViewById(R.id.home_nested_scroll_view);
 
                 //System.out.println(positionToScroll+ " positionToScroll "+holder.getChildCount() );
                 if (appCMSBinder.getAppCMSPageUI().getModuleList().get(1).getSettings().isShowPIP()) {
                     Toast.makeText(getContext(), "Created Scroll Event listener  ", Toast.LENGTH_SHORT).show();
-                    nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
-                        @Override
-                        public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                    nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener)
+                            (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                                if (appCMSPresenter.getFirstVisibleChildPosition(v) == 0) {
+                                    appCMSPresenter.pipPlayerVisible = false;
+                                    appCMSPresenter.dismissPopupWindowPlayer();
 
+                                    if (videoPlayerView != null) {
+                                        videoPlayerView.startPlayer();
+                                    }
 
-                            if (appCMSPresenter.getFirstVisibleChildPosition(v) == 0) {
-                                appCMSPresenter.pipPlayerVisible = false;
-                                appCMSPresenter.dismissPopupWindowPlayer();
-                                if (videoPlayerView != null) {
-                                    videoPlayerView.startPlayer();
+                                } else if (!appCMSPresenter.pipPlayerVisible) {
+                                    appCMSPresenter.showPopupWindowPlayer(v);
+                                    if (videoPlayerView != null) {
+                                        videoPlayerView.pausePlayer();
+                                    }
                                 }
-
-                            } else if (!appCMSPresenter.pipPlayerVisible) {
-                                appCMSPresenter.showPopupWindowPlayer(v);
-                                if (videoPlayerView != null) {
-                                    videoPlayerView.pausePlayer();
-                                }
-                            }
-
-                        }
-                    });
+                            });
 
                     if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
                             !appCMSPresenter.pipPlayerVisible) {
@@ -238,7 +226,6 @@ public class AppCMSPageFragment extends Fragment {
         appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
     }
 
-
     @Override
     public void onResume() {
         super.onResume();
@@ -263,7 +250,6 @@ public class AppCMSPageFragment extends Fragment {
             }
         }
     }
-
 
     @Override
     public void onDestroy() {
@@ -336,6 +322,7 @@ public class AppCMSPageFragment extends Fragment {
         this.appCMSBinder = appCMSBinder;
         ViewCreator viewCreator = getViewCreator();
         List<String> modulesToIgnore = getModulesToIgnore();
+
         if (viewCreator != null && modulesToIgnore != null) {
             boolean updatePage = false;
             if (pageView != null) {
@@ -361,8 +348,13 @@ public class AppCMSPageFragment extends Fragment {
                         updateAllViews(pageViewGroup);
                     }
                 }
-            } catch (Exception e) {
 
+                if (updatePage) {
+                    updateAllViews(pageViewGroup);
+                    pageView.notifyAdaptersOfUpdate();
+                }
+            } catch (Exception e) {
+                //
             }
         }
     }
@@ -394,5 +386,11 @@ public class AppCMSPageFragment extends Fragment {
             }
         }
         viewGroup.removeAllViews();
+    }
+
+    public interface OnPageCreation {
+        void onSuccess(AppCMSBinder appCMSBinder);
+
+        void onError(AppCMSBinder appCMSBinder);
     }
 }

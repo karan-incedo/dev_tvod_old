@@ -220,7 +220,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             bundle);
                     newFragment.show(ft, DIALOG_FRAGMENT_TAG);
                 }else if (intent.getAction().equals(AppCMSPresenter.SEARCH_ACTION)) {
-                   openSearchFragment();
+                   openSearchFragment(intent);
                 }else if(intent.getAction().equals(AppCMSPresenter.CLOSE_DIALOG_ACTION)){
                     Utils.pageLoading(false , AppCmsHomeActivity.this);
                     closeSignInDialog();
@@ -630,9 +630,15 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
 
+    private Fragment getTopFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        String fragmentTag = fragmentManager.getBackStackEntryAt(fragmentManager.getBackStackEntryCount() - 1).getName();
+        Fragment currentFragment = fragmentManager.findFragmentByTag(fragmentTag);
+        return currentFragment;
+    }
+
     @Override
     public void onBackPressed() {
-
         //if navigation is visible then first hide the navigation.
         if(isNavigationVisible()){
             handleNavigationVisibility();
@@ -647,6 +653,12 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 showSubNavigation(false, true);
             }
             return;
+        }
+
+              if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+            if(null != getTopFragment() && getTopFragment() instanceof AppCmsMyProfileFragment){
+                showSubNavigation(true, false);
+            }
         }
 
         if(appCMSBinderStack.size() > 0){
@@ -747,7 +759,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     }
 
     public void keyPressed(View v){
-        String tag = getString(R.string.app_cms_search_label);
+        String tag = appCMSBinderStack.peek();//getString(R.string.app_cms_search_label);
         Fragment fragment = getFragmentManager().findFragmentByTag(tag);
         if(fragment instanceof AppCmsSearchFragment){
             ((AppCmsSearchFragment) fragment).keyPressed(v);
@@ -793,9 +805,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         return (subNavHolder.getVisibility() == View.VISIBLE);
     }
 
-    public void openSearchFragment(){
+    public void openSearchFragment(Intent intent){
+        Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
+        AppCMSBinder appCmsBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
         int distanceFromStackTop = -1;
-        String tag = getString(R.string.app_cms_search_label);
+        String tag = getTag(appCmsBinder);/*getString(R.string.app_cms_search_label);*/
 
         distanceFromStackTop = appCMSBinderStack.search(tag);
 
@@ -813,7 +827,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         showInfoIcon(tag);
         appCMSBinderStack.push(tag);
-        appCMSPresenter.sendGaScreen(tag);
+        appCMSPresenter.sendGaScreen(appCmsBinder.getScreenName());
 
         Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
         if(null != fragment && fragment instanceof AppCmsSearchFragment){

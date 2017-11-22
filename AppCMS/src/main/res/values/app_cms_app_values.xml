@@ -30,6 +30,9 @@
 
     <string name="search_films">Search films</string>
 
+    <string name="app_cms_episodic_key_type">SERIES</string>
+    <string name="app_cms_full_length_feature_key_type">VIDEO</string>
+
     <integer name="number_of_tabs">4</integer>
     <integer name="first_primary_page_index">0</integer>
     <integer name="nav_live_page_index">4</integer>

@@ -180,6 +180,7 @@ public class CustomVideoVideoPlayerView
                                                 String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
                                                 if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                                         subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                    if (shouldRequestAds) requestAds(adsUrl);
                                                     playVideos(currentPlayingIndex,contentDatum);
                                                 } else {
                                                     showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
@@ -193,6 +194,7 @@ public class CustomVideoVideoPlayerView
                                     });
                                 }
                             } else {
+                                if (shouldRequestAds) requestAds(adsUrl);
                                 playVideos(currentPlayingIndex,contentDatum);
                             }
                         }

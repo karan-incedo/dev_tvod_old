@@ -113,16 +113,22 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private void sortData() {
         if (adapterData != null) {
             if (isWatchlist || isDownload) {
-                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
-                        o2.getAddedDate()));
+                sortByAddedDate();
             } else if (isHistory) {
-                Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
-                        o2.getGist().getUpdateDate()));
-
-                // To make the last watched item appear at the top of the list
-                Collections.reverse(adapterData);
+                sortByUpdateDate();
             }
         }
+    }
+
+    private void sortByAddedDate() {
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
+                o2.getAddedDate()));
+    }
+
+    private void sortByUpdateDate() {
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
+                o2.getGist().getUpdateDate()));
+        Collections.reverse(adapterData);
     }
 
     @Override
