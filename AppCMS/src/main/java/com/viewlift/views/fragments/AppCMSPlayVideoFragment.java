@@ -739,6 +739,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerMainContainer.requestLayout();
         videoPlayerView.init(getContext());
         videoPlayerView.enableController();
+        appCMSPresenter.setCancelAllLoads(false);
         if (!TextUtils.isEmpty(hlsUrl)) {
             videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
             videoPlayerView.getPlayerView().getSubtitleView()
