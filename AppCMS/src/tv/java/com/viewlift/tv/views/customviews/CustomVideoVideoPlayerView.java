@@ -26,6 +26,7 @@ import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.customviews.VideoPlayerView;
@@ -150,13 +151,9 @@ public class CustomVideoVideoPlayerView
         hideRestrictedMessage();
         String url = null;
         if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
-            if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
-                url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
-            } else if (null != contentDatum.getStreamingInfo().getVideoAssets().getMpeg()
-                    && contentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
-                url = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
-            }
+           url = getVideoUrl(contentDatum.getStreamingInfo().getVideoAssets());
         }
+
         if (contentDatum != null && contentDatum.getGist() != null) {
             videoImageUrl[0] = contentDatum.getGist().getVideoImageUrl();
         }
@@ -171,6 +168,29 @@ public class CustomVideoVideoPlayerView
             hideProgressBar();
         }
     }
+
+
+    private String getVideoUrl(VideoAssets videoAssets) {
+        String defaultVideoResolution = mContext.getResources().getString(R.string.default_video_resolution);
+        String videoUrl = "";/*videoAssets.getHls();*/
+
+        if (TextUtils.isEmpty(videoUrl)) {
+            if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
+                for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                    if (videoAssets.getMpeg().get(i) != null &&
+                            videoAssets.getMpeg().get(i).getRenditionValue() != null &&
+                            videoAssets.getMpeg().get(i).getRenditionValue().contains(defaultVideoResolution)) {
+                        videoUrl = videoAssets.getMpeg().get(i).getUrl();
+                    }
+                }
+                if (videoAssets.getMpeg().get(0) != null && TextUtils.isEmpty(videoUrl)) {
+                    videoUrl = videoAssets.getMpeg().get(0).getUrl();
+                }
+            }
+        }
+        return videoUrl;
+    }
+
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {

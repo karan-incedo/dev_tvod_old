@@ -62,19 +62,24 @@ public class PlayerPresenter extends Presenter {
                     context.getString(R.string.app_cms_main_svod_service_type_key));
 
             boolean requestAds = !svodServiceType;
-
-            Date now = new Date();
-            String adsUrl = context.getString(R.string.app_cms_ads_api_url,
-                    appCmsPresenter.getPermalinkCompletePath(contentData.getGist().getPermalink()),
-                    now.getTime(),
-                    appCmsPresenter.getAppCMSMain().getSite());
-            videoPlayerView.setupAds(/*requestAds ? */adsUrl/* : null*/);
+            String adsUrl = appCmsPresenter.getAdsUrl(appCmsPresenter.getPermalinkCompletePath(contentData.getGist().getPermalink()));
+            if(adsUrl == null) {
+                requestAds = false;
+            }
+            videoPlayerView.setupAds(requestAds ? adsUrl : null);
             videoPlayerView.setVideoUri(contentData.getGist().getId());
         }
     }
 
     @Override
     public void onUnbindViewHolder(ViewHolder viewHolder) {
+        try {
+            if (null != viewHolder && null != viewHolder.view) {
+                ((FrameLayout) viewHolder.view).removeAllViews();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 

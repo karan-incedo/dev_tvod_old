@@ -10172,21 +10172,8 @@ public class AppCMSPresenter {
 
                             boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
-                            String videoTag = null;
-                            if (appCMSAndroid != null
-                                    && appCMSAndroid.getAdvertising() != null
-                                    && appCMSAndroid.getAdvertising().getVideoTag() != null) {
-                                videoTag = appCMSAndroid.getAdvertising().getVideoTag();
-                            }
-
-                            Date now = new Date();
-                            if(videoTag != null) {
-                                adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
-                                        videoTag,
-                                        getPermalinkCompletePath(pagePath),
-                                        now.getTime(),
-                                        appCMSMain.getSite());
-                            }else{
+                            adsUrl = getAdsUrl(pagePath);
+                            if(adsUrl == null) {
                                 requestAds = false;
                             }
                             String backgroundColor = appCMSMain.getBrand()
@@ -10354,6 +10341,27 @@ public class AppCMSPresenter {
             }
         }
         return result;
+    }
+
+     public String getAdsUrl(String pagePath) {
+
+        String videoTag = null;
+        if (appCMSAndroid != null
+                && appCMSAndroid.getAdvertising() != null
+                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
+            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
+        }
+        if(videoTag == null){
+            return null;
+        }
+
+        Date now = new Date();
+
+        return currentActivity.getString(R.string.app_cms_ads_api_url,
+                videoTag,
+                getPermalinkCompletePath(pagePath),
+                now.getTime(),
+                appCMSMain.getSite());
     }
 
     @SuppressWarnings("unused")
@@ -10563,6 +10571,7 @@ public class AppCMSPresenter {
                 pageTitle,false,false,false,false,
                 false,Uri.EMPTY,ExtraScreenType.NONE
         );
+
         searchIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                 bundle);
         currentActivity.sendBroadcast(searchIntent);
