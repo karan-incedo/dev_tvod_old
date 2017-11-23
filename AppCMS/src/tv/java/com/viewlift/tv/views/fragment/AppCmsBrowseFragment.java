@@ -10,7 +10,6 @@ import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.customviews.CustomVideoVideoPlayerView;
 import com.viewlift.tv.views.customviews.TVPageView;
 
@@ -227,14 +225,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
     private void hideFooterControls(){
-        new Handler().postDelayed(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                       hideController();
-                    }
-                },6000
-        );
+        new Handler().postDelayed(() -> hideController(),8000);
     }
 
     private void hideController() {
