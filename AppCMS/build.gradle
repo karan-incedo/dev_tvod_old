@@ -5,7 +5,7 @@ def final packageName = 'com.mse.monumentalnetworks'
 def final customApplicationId = 'Monumental Sports Network'
 def final hostName = "www.monumentalsportsnetwork.com"
 
-def final appVersionName = "2.0.43"
+def final appVersionName = "2.0.44"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }

@@ -8620,8 +8620,11 @@ public class AppCMSPresenter {
                                          Uri searchQuery,
                                          ExtraScreenType extraScreenType) {
         if (activity != null) {
+            /*FIX for MSEAN-1324*/
+            if (getTabBarUIFooterModule() != null && getTabBarUIFooterModule().getSettings() != null) {
+                appbarPresent = appbarPresent == false ? getTabBarUIFooterModule().getSettings().isShowTabBar() : true;
+            }
             Bundle args = new Bundle();
-
             AppCMSBinder appCMSBinder = getAppCMSBinder(activity,
                     appCMSPageUI,
                     appCMSPageAPI,
@@ -8630,7 +8633,7 @@ public class AppCMSPresenter {
                     pagePath,
                     screenName,
                     loadFromFile,
-                    appbarPresent == false ? getTabBarUIFooterModule().getSettings().isShowTabBar() : true,
+                    appbarPresent,
                     fullscreenEnabled,
                     navbarPresent,
                     sendCloseAction,
@@ -9008,7 +9011,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void refreshPages(Action0 onReadyAction,
+    public void refreshPages(Action1<Boolean> onReadyAction,
                              boolean attemptRetry,
                              int retryAttempts,
                              int maxRetryAttempts) {
@@ -9045,8 +9048,7 @@ public class AppCMSPresenter {
 //                                                metaPage.getPageUI());
                                             if (currentActivity != null) {
                                                 try {
-                                                    getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                                            metaPage.getPageUI()),
+                                                    getAppCMSPage(metaPage.getPageUI(),
                                                             appCMSPageUI -> {
                                                                 if (appCMSPageUI != null) {
                                                                     navigationPages.put(metaPage.getPageId(), appCMSPageUI);
@@ -9054,6 +9056,7 @@ public class AppCMSPresenter {
                                                                     try {
                                                                         pageViewLruCache.evictAll();
                                                                     } catch (Exception e) {
+
                                                                     }
 
                                                                     String action = pageNameToActionMap.get(metaPage.getPageName());
@@ -9074,7 +9077,9 @@ public class AppCMSPresenter {
                                         }
 
                                         try {
-                                            getAppCMSModules(appCMSAndroid, true, (appCMSAndroidModules) -> {
+                                            getAppCMSModules(appCMSAndroid,
+                                                    true,
+                                                    (appCMSAndroidModules) -> {
                                                 if (appCMSAndroidModules != null) {
                                                     //Log.d(TAG, "Received and refreshed module list");
                                                     this.appCMSAndroidModules = appCMSAndroidModules;
@@ -9084,6 +9089,7 @@ public class AppCMSPresenter {
                                                         try {
                                                             pageViewLruCache.evictAll();
                                                         } catch (Exception e) {
+
                                                         }
                                                     }
 
@@ -9091,7 +9097,7 @@ public class AppCMSPresenter {
                                                 }
                                                 refreshAPIData(() -> {
                                                             if (onReadyAction != null) {
-                                                                onReadyAction.call();
+                                                                onReadyAction.call(true);
                                                             }
                                                         },
                                                         true);
@@ -9107,13 +9113,13 @@ public class AppCMSPresenter {
                             }
                         } else {
                             if (onReadyAction != null) {
-                                onReadyAction.call();
+                                onReadyAction.call(false);
                             }
                         }
                     } else {
                         Log.w(TAG, "Resulting main.json from refresh is null");
                         if (onReadyAction != null) {
-                            onReadyAction.call();
+                            onReadyAction.call(false);
                         }
                     }
                 });
@@ -11645,12 +11651,20 @@ public class AppCMSPresenter {
     }
 
     public ModuleList getTabBarUIFooterModule() {
-        ModuleList footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
+        /*FIX for MSEAN-1324*/
+        ModuleList footerModule = null;
+        if (getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key)) != null) {
+            footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
+        }
         return footerModule;
     }
 
     public ModuleList getModuleListComponent(String moduleId) {
-        ModuleList moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
+        ModuleList moduleList = null;
+        /*FIX for MSEAN-1324*/
+        if (appCMSAndroidModules!=null&&appCMSAndroidModules.getModuleListMap() != null) {
+            moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
+        }
         return moduleList;
     }
 

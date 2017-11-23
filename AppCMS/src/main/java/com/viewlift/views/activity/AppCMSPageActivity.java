@@ -748,7 +748,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.checkForExistingSubscription(false);
 
-        appCMSPresenter.refreshPages(() -> {
+        appCMSPresenter.refreshPages(shouldRefresh -> {
             if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             } else if (appCMSPresenter.isAppUpgradeAvailable()) {
@@ -761,7 +761,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.requestLayout();
             } else {
                 newVersionUpgradeAvailable.setVisibility(View.GONE);
+                if (shouldRefresh) {
                 refreshPageData();
+                } else {
+                    pageLoading(false);
+                }
             }
         }, true, 0, 0);
 
@@ -1939,7 +1943,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void createTabBar() {
         ModuleList tabBarModule = appCMSPresenter.getTabBarUIFooterModule();
-        if (appCMSPresenter.getNavigation().getTabBar() != null && !isTabCreated && tabBarModule != null) {
+        if (appCMSPresenter.getNavigation()!=null &&
+                appCMSPresenter.getNavigation().getTabBar() != null &&
+                !isTabCreated && tabBarModule != null) {
             isTabCreated = true;
             int WEIGHT_SUM = getResources().getInteger(R.integer.nav_bar_items_weightsum);
             int weight = WEIGHT_SUM / appCMSPresenter.getNavigation().getTabBar().size();

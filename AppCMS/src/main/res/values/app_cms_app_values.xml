@@ -29,7 +29,7 @@
     <!-- flag to use HLS or not -->
     <bool name="use_hls">false</bool>
 
-
+    <!-- flag for sorting the items -->
     <bool name="sort_plans_in_ascending_order">true</bool>
 
     <!-- Default video resolution -->
