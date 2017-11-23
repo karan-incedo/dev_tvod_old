@@ -6303,7 +6303,7 @@ public class AppCMSPresenter {
 
                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                 currentActivity.sendBroadcast(updateSubscription);
-
+                getPlayerLruCache().evictAll();
                 navigateToTVPage(
                         homePage.getPageId(),
                         homePage.getPageName(),
@@ -8293,6 +8293,7 @@ public class AppCMSPresenter {
                                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                                 currentActivity.sendBroadcast(updateSubscription);
 
+                                            getPlayerLruCache().evictAll();
                                             navigateToTVPage(
                                                     homePage.getPageId(),
                                                     homePage.getPageName(),
@@ -9744,6 +9745,7 @@ public class AppCMSPresenter {
                 appCMSPageAPI = null;
                 if (null != pageId)
                     getPageAPILruCache().remove(pageId);
+                getPlayerLruCache().remove(pageId);
             }
 
             if (appCMSPageAPI == null) {
@@ -11562,6 +11564,15 @@ public class AppCMSPresenter {
 
     public MetaPage getTosPage(){
         return tosPage;
+    }
+
+    private LruCache<String , Object> tvPlayerViewCache;
+    public LruCache<String, Object> getPlayerLruCache() {
+        if (tvPlayerViewCache == null) {
+            int Player_lru_cache_size = 5;
+            tvPlayerViewCache = new LruCache<>(Player_lru_cache_size);
+        }
+        return tvPlayerViewCache;
     }
 
 }

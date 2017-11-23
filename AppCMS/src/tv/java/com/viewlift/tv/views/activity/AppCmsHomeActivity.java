@@ -76,7 +76,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private Map<String, AppCMSBinder> appCMSBinderMap;
     public static final String DIALOG_FRAGMENT_TAG = "text_overlay";
     private AppCmsTvSearchComponent appCMSSearchUrlComponent;
-    private boolean isActive;
+    public boolean isActive;
     private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
     private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
     private FrameLayout subNavHolder;
@@ -593,6 +593,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     protected void onDestroy() {
         unregisterReceiver(updateHistoryDataReciever);
+        appCMSPresenter.getPlayerLruCache().evictAll();
         super.onDestroy();
     }
 
@@ -748,12 +749,28 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         });
     }
     private void handleNavigationVisibility(){
-        //Log.d(TAG , "handleNavigationVisibility*****");
         if(appCMSPresenter.isPagePrimary(appCMSBinderStack.peek())){
+
+            Fragment parentFragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+            AppCmsBrowseFragment browseFragment = null;
+            if(null != parentFragment) {
+                if(parentFragment instanceof AppCmsTVPageFragment){
+                    browseFragment = (AppCmsBrowseFragment) parentFragment.getChildFragmentManager().
+                            findFragmentById(R.id.appcms_browsefragment);
+                }
+            }
+
             if(isNavigationVisible()){
                 showNavigation(false);
+                if(null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView()) {
+                    browseFragment.getCustomVideoVideoPlayerView().resumePlayer();
+                }
             }else{
                 showNavigation(true);
+
+                if(null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView()) {
+                    browseFragment.getCustomVideoVideoPlayerView().pausePlayer();
+                }
             }
         }
     }
@@ -797,11 +814,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         });
     }
 
-    private boolean isNavigationVisible(){
+    public boolean isNavigationVisible(){
         return (navHolder.getVisibility() == View.VISIBLE);
     }
 
-    private boolean isSubNavigationVisible(){
+    public boolean isSubNavigationVisible(){
         return (subNavHolder.getVisibility() == View.VISIBLE);
     }
 

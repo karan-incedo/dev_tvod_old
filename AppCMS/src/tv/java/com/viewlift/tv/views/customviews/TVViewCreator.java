@@ -237,7 +237,7 @@ public class TVViewCreator {
                 }
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
-                            pageView, jsonValueKeyMap, appCMSPresenter, true);
+                            pageView, jsonValueKeyMap, appCMSPresenter, appCMSPageAPI,true);
                 }
             }else if(module.getView().equalsIgnoreCase(context.getResources().getString(R.string.standaloneplayer))){
                 if (null == mRowsAdapter) {
@@ -247,7 +247,7 @@ public class TVViewCreator {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
-                            pageView, jsonValueKeyMap, appCMSPresenter, false);
+                            pageView, jsonValueKeyMap, appCMSPresenter,appCMSPageAPI, false);
                 }
             } else {
                 if(!module.getView().equalsIgnoreCase("AC Tray 03")){
@@ -260,7 +260,7 @@ public class TVViewCreator {
 
                 for (Component component : module.getComponents()) {
                     createTrayModule(context, component, module.getLayout(), module, moduleAPI,
-                            pageView, jsonValueKeyMap, appCMSPresenter, false);
+                            pageView, jsonValueKeyMap, appCMSPresenter,appCMSPageAPI, false);
                 }
             }
             return null;
@@ -451,6 +451,7 @@ public class TVViewCreator {
                                  @Nullable TVPageView pageView,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  final AppCMSPresenter appCMSPresenter,
+                                 AppCMSPageAPI appCMSPageAPI,
                                  boolean isCarousel) {
 
         // Sort the data in case of continue watching tray
@@ -559,11 +560,19 @@ public class TVViewCreator {
 
             case PAGE_VIDEO_PLAYER_VIEW_KEY:
                 if(null != moduleData){
+                    CustomVideoPlayerView videoPlayerView = (CustomVideoPlayerView)appCMSPresenter.getPlayerLruCache().get(appCMSPageAPI.getId());
                     customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
                     customHeaderItem.setmIsCarousal(false);
                     customHeaderItem.setmIsLivePlayer(true);
                     customHeaderItem.setmModuleId( (moduleData!= null) ? moduleData.getId() : null);
                     PlayerPresenter playerPresenter = new PlayerPresenter(context,appCMSPresenter);
+                    if(videoPlayerView == null){
+                        videoPlayerView = playerPresenter.playerView(context);
+                        playerPresenter.setVideoPlayerView(videoPlayerView,true);
+                        appCMSPresenter.getPlayerLruCache().put(appCMSPageAPI.getId() , videoPlayerView);
+                    }else{
+                        playerPresenter.setVideoPlayerView(videoPlayerView,false);
+                    }
                     ArrayObjectAdapter listRowAdapter = new ArrayObjectAdapter(playerPresenter);
                     BrowseFragmentRowData browseFragmentRowData = new BrowseFragmentRowData();
                     browseFragmentRowData.isPlayerComponent = true;

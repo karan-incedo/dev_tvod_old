@@ -1,5 +1,6 @@
 package com.viewlift.tv.views.customviews;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -29,6 +30,9 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
+import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.views.customviews.VideoPlayerView;
 
 import java.util.List;
@@ -43,12 +47,12 @@ import static com.google.android.exoplayer2.Player.STATE_READY;
  * Created by viewlift on 5/31/17.
  */
 
-public class CustomVideoVideoPlayerView
+public class CustomVideoPlayerView
         extends VideoPlayerView
         implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener {
 
-    private static final String TAG = CustomVideoVideoPlayerView.class.getSimpleName();
+    private static final String TAG = CustomVideoPlayerView.class.getSimpleName();
     private Context mContext;
     private AppCMSPresenter appCMSPresenter;
 
@@ -69,7 +73,7 @@ public class CustomVideoVideoPlayerView
     private ImageView imageView;
     final String[] videoImageUrl = new String[1];
 
-    public CustomVideoVideoPlayerView(Context context) {
+    public CustomVideoPlayerView(Context context) {
         super(context);
         mContext = context;
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
@@ -94,8 +98,8 @@ public class CustomVideoVideoPlayerView
         adsLoader.addAdErrorListener(this);
         adsLoader.addAdsLoadedListener(adsManagerLoadedEvent -> {
             adsManager = adsManagerLoadedEvent.getAdsManager();
-            adsManager.addAdErrorListener(CustomVideoVideoPlayerView.this);
-            adsManager.addAdEventListener(CustomVideoVideoPlayerView.this);
+            adsManager.addAdErrorListener(CustomVideoPlayerView.this);
+            adsManager.addAdEventListener(CustomVideoPlayerView.this);
             adsManager.init();
         });
     }
@@ -160,7 +164,16 @@ public class CustomVideoVideoPlayerView
 
         if (null != url) {
             setUri(Uri.parse(url), null);
-            getPlayerView().getPlayer().setPlayWhenReady(true);
+
+            if(null != appCMSPresenter.getCurrentActivity() &&
+                    appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity){
+                if(((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive){
+                    getPlayerView().getPlayer().setPlayWhenReady(true);
+                }else{
+                    getPlayerView().getPlayer().setPlayWhenReady(false);
+                }
+            }
+
             if (currentIndex == 0) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
             }
@@ -172,7 +185,7 @@ public class CustomVideoVideoPlayerView
 
     private String getVideoUrl(VideoAssets videoAssets) {
         String defaultVideoResolution = mContext.getResources().getString(R.string.default_video_resolution);
-        String videoUrl = "";/*videoAssets.getHls();*/
+        String videoUrl = videoAssets.getHls();
 
         if (TextUtils.isEmpty(videoUrl)) {
             if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
@@ -276,12 +289,13 @@ public class CustomVideoVideoPlayerView
 
     public void pausePlayer() {
         super.pausePlayer();
-        super.releasePlayer();
+        //super.releasePlayer();
     }
 
 
     public void resumePlayer() {
         if (null != getPlayer() && !getPlayer().getPlayWhenReady()) {
+            getPlayer().setPlayWhenReady(false);
             getPlayer().setPlayWhenReady(true);
         }
     }
