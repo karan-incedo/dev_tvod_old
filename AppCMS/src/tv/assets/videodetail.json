@@ -28,8 +28,8 @@
         "ftv": {
           "yAxis": 17,
           "xAxis": 20,
-          "width": 338,
-          "height": 102
+          "width": 240,
+          "height": 100
         }
       },
       "type": "image",
