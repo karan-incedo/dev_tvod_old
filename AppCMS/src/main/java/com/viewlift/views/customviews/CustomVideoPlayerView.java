@@ -13,11 +13,13 @@ import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -102,15 +104,17 @@ public class CustomVideoPlayerView extends VideoPlayerView {
 //            if(getPlayerView()!=null) {
 ////                getPlayerView().getController();
 //                PlaybackControlView playbackControlView = getPlayerView().getController();
-//                FrameLayout mFullScreenButton = (FrameLayout) playbackControlView.findViewById(R.id.exo_fullscreen_button);
-//                ImageView mFullScreenIcon = (ImageView) playbackControlView.findViewById(R.id.exo_fullscreen_icon);
-//                mFullScreenIcon.setImageResource(R.drawable.ic_fullscreen_expand);
-//                mFullScreenButton.setOnClickListener(new OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
-//                    }
-//                });
+//                if(playbackControlView!=null) {
+//                    FrameLayout mFullScreenButton = (FrameLayout) playbackControlView.findViewById(R.id.exo_fullscreen_button);
+//                    ImageView mFullScreenIcon = (ImageView) playbackControlView.findViewById(R.id.exo_fullscreen_icon);
+//                    mFullScreenIcon.setImageResource(R.drawable.ic_fullscreen_expand);
+//                    mFullScreenButton.setOnClickListener(new OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+//                        }
+//                    });
+//                }
 //            }
 //        }
 //    }
@@ -186,7 +190,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                         @Override
                         public void call(ContentDatum contentDatum) {
                             if (!checkVideoSubscriptionStatus(contentDatum)) {
-                                showRestrictMessage("This video is only available to Monumental Sports Network subscribers");
+                                showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
                                 return;
                             }
                             hideRestrictedMessage();
@@ -195,6 +199,8 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                             hideProgressBar();
                         }
                     });
+                }else{
+                    showRestrictMessage(getResources().getString(R.string.app_cms_video_ended_text_message));
                 }
                 break;
             case STATE_BUFFERING:
