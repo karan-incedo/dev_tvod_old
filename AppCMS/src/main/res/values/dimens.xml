@@ -100,5 +100,7 @@
     <dimen name="app_cms_mini_player_border_size">5dp</dimen>
     <dimen name="app_cms_mini_player_margin">20dp</dimen>
 
+    <dimen name="app_cms_team_list_view_margin_top">20dp</dimen>
+
 
 </resources>
