@@ -44,6 +44,14 @@ public class Settings implements Serializable {
     @Expose
     boolean showTabBar;
 
+    @SerializedName("image")
+    @Expose
+    String image;
+
+    public String getImage() {
+        return image;
+    }
+
     public String getTitle() {
         return title;
     }
