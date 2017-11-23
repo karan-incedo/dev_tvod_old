@@ -41,7 +41,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputFilter;
@@ -83,7 +82,6 @@ import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
 import com.kiswe.kmsdkcorekit.reports.Report;
 import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
 import com.kiswe.kmsdkcorekit.reports.Reports;
-import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -11000,6 +10998,28 @@ public class AppCMSPresenter {
     public void showPopUpMenuSports(View v) {
         PopupMenu popupMenu = new PopupMenu(getCurrentActivity());
         popupMenu.showLocation(v.getId(), getCurrentActivity());
+        popupMenu.setListener(new PopupMenu.ListenerForPopMenu() {
+            @Override
+            public void ticketsClick() {
+                Toast.makeText(getCurrentActivity(), "ticket clicked", Toast.LENGTH_SHORT).show();
+                Log.e("click", "tickets");
+                popupMenu.dismiss();
+            }
+
+            @Override
+            public void facebookClick() {
+                Toast.makeText(getCurrentActivity(), "fb clicked", Toast.LENGTH_SHORT).show();
+                Log.e("click", "fb");
+                popupMenu.dismiss();
+            }
+
+            @Override
+            public void instagramClick() {
+                Toast.makeText(getCurrentActivity(), "instagram clicked", Toast.LENGTH_SHORT).show();
+                Log.e("click", "instagram");
+                popupMenu.dismiss();
+            }
+        });
     }
 
     public void launchKiswePlayer(String eventId) {
