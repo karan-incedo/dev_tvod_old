@@ -53,7 +53,7 @@
         android:layout_height="@dimen/footer_logo_height"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/logo"
+        android:background="@drawable/tv_logo"
         android:layout_marginBottom="@dimen/footer_logo_margin_bottom"
         android:layout_marginRight="@dimen/footer_logo_margin_right"
         android:layout_gravity="right"/>

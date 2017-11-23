@@ -228,7 +228,7 @@ public class TVViewCreator {
         TVModuleView moduleView = null;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getView())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
+                //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                     mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -239,8 +239,8 @@ public class TVViewCreator {
                             pageView, jsonValueKeyMap, appCMSPresenter, true);
                 }
             } else {
-                if(!module.getView().equalsIgnoreCase("AC ContinueWatching 01")){
-                    module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
+                if(module.getView().equalsIgnoreCase("AC ContinueWatching 01")){
+                 //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "continue_watching_tray.json"), ModuleList.class);
                 }
                 if (null == mRowsAdapter) {
                     AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
@@ -254,7 +254,7 @@ public class TVViewCreator {
             }
             return null;
         } else if ("AC UserManagement 01".equalsIgnoreCase(module.getView())) {
-            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
+           // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             final TVPageView finalPageView = pageView;
@@ -296,7 +296,7 @@ public class TVViewCreator {
                 }
             }
         } else if (context.getResources().getString(R.string.app_cms_page_autoplay_module_key).equalsIgnoreCase(module.getView())) {
-            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "autoplay_module.json"), ModuleList.class);
+            //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "autoplay_module.json"), ModuleList.class);
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
             final TVPageView finalPageView = pageView;
@@ -343,7 +343,7 @@ public class TVViewCreator {
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
             if("AC ResetPassword 01".equalsIgnoreCase(module.getView())){
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
+               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "reset_password.json"), ModuleList.class);
             }
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
                  //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
