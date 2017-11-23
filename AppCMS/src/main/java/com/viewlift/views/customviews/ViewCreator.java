@@ -123,10 +123,11 @@ public class ViewCreator {
             numberOfViewsToBeSeparated++;
         }
 
-        if (!TextUtils.isEmpty(data.getGist().getPrimaryCategory().getTitle())) {
-            numberOfViewsToBeSeparated++;
+        if (data.getGist().getPrimaryCategory()!=null) {
+            if (!TextUtils.isEmpty(data.getGist().getPrimaryCategory().getTitle())) {
+                numberOfViewsToBeSeparated++;
+            }
         }
-
         boolean appendFirstSep = numberOfViewsToBeSeparated > 1;
         boolean appendSecondSep = numberOfViewsToBeSeparated == 3;
 
