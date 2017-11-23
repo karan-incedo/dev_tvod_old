@@ -144,6 +144,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_privacy_policy_key),
                 AppCMSUIKeyType.PRIVACY_POLICY_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_detail_app_logo_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DETAIL_APP_LOGO_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_terms_of_services_key),
                 AppCMSUIKeyType.TERMS_OF_SERVICE_KEY);
 
