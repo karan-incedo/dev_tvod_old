@@ -9,7 +9,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -26,12 +25,10 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -40,20 +37,15 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
-import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -1927,7 +1919,6 @@ public class ViewCreator {
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
                         componentViewResult.componentView.setId(View.generateViewId());
                         componentViewResult.componentView.setOnClickListener(appCMSPresenter::showPopUpMenuSports);
-                        //appCMSPresenter.showPopUpMenuSports(view);
                         break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -2354,6 +2345,9 @@ public class ViewCreator {
                     if (!TextUtils.isEmpty(component.getTextColor())) {
                         textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
                     }
+                    if (!TextUtils.isEmpty(component.getBackgroundColor())) {
+                        textBgColor = Color.parseColor(getColor(context, component.getBackgroundColor()));
+                    }
                     componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.START);
@@ -2371,7 +2365,9 @@ public class ViewCreator {
                     } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
                         ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
                     }
-                    ((TextView) componentViewResult.componentView).setText("Team Detail");
+                    if (settings != null && settings.getTitle() != null) {
+                        ((TextView) componentViewResult.componentView).setText(settings.getTitle());
+                    }
                 }
                 if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                     int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
@@ -2836,10 +2832,7 @@ public class ViewCreator {
                     case PAGE_BADGE_IMAGE_KEY:
                         //
                         break;
-                    case PAGE_BANNER_IMAGE:
-                        ImageView imageView1 = (ImageView) componentViewResult.componentView;
-                        imageView1.setImageResource(R.drawable.logo);
-                        break;
+
                     case PAGE_THUMBNAIL_BADGE_IMAGE:
                         componentViewResult.componentView = new ImageView(context);
                         ImageView imageView = (ImageView) componentViewResult.componentView;
@@ -2863,15 +2856,13 @@ public class ViewCreator {
                         break;
                     case PAGE_BANNER_DETAIL_ICON:
                         componentViewResult.componentView = new ImageView(context);
-//                        int viewWidthForBannerIcon = (int) BaseView.getViewWidth(context,
-//                                component.getLayout(),
-//                                ViewGroup.LayoutParams.WRAP_CONTENT);
-//                        int viewHeightForBannerIcon = (int) BaseView.getViewHeight(context,
-//                                component.getLayout(),
-//                                ViewGroup.LayoutParams.WRAP_CONTENT);
-//
-                        ImageView bannerDetailImage = (ImageView) componentViewResult.componentView;
-                        bannerDetailImage.setImageResource(R.drawable.mastercard);
+                        String bannerUrl = null;
+                        if (settings != null && settings.getImage() != null) {
+                            bannerUrl = settings.getImage();
+                        }
+                        Glide.with(context)
+                                .load(bannerUrl)
+                                .into((ImageView) componentViewResult.componentView);
                         break;
                     case PAGE_VIDEO_IMAGE_KEY:
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
