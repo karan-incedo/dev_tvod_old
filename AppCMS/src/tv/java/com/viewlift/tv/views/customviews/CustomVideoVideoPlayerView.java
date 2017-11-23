@@ -9,10 +9,13 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
 import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
 import com.google.ads.interactivemedia.v3.api.AdEvent;
@@ -62,6 +65,9 @@ public class CustomVideoVideoPlayerView
     private String adsUrl;
     private boolean isAdsDisplaying;
     private boolean isAdDisplayed;
+    private View imageViewContainer;
+    private ImageView imageView;
+    final String[] videoImageUrl = new String[1];
 
     public CustomVideoVideoPlayerView(Context context) {
         super(context);
@@ -69,6 +75,8 @@ public class CustomVideoVideoPlayerView
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         createCustomMessageView();
+        imageViewContainer = findViewById(R.id.videoPlayerThumbnailImageContainer);
+        imageView = (ImageView) findViewById(R.id.videoPlayerThumbnailImage);
     }
 
 
@@ -104,6 +112,7 @@ public class CustomVideoVideoPlayerView
                 if (!contentDatum.getGist().getFree()) {
                     //check login and subscription first.
                     if (!appCMSPresenter.isUserLoggedIn()) {
+                        setBackgroundImage(contentDatum.getGist().getVideoImageUrl());
                         showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                     } else {
                         //check subscription data
@@ -114,38 +123,45 @@ public class CustomVideoVideoPlayerView
                                     if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                             subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
                                         if (shouldRequestAds) requestAds(adsUrl);
-                                        playVideos(0,contentDatum);
+                                        playVideos(0, contentDatum);
                                     } else {
+                                        setBackgroundImage(contentDatum.getGist().getVideoImageUrl());
                                         showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                     }
                                 } else {
+                                    setBackgroundImage(contentDatum.getGist().getVideoImageUrl());
                                     showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                 }
                             } catch (Exception e) {
+                                setBackgroundImage(contentDatum.getGist().getVideoImageUrl());
                                 showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                             }
                         });
                     }
                 } else {
                     if (shouldRequestAds) requestAds(adsUrl);
-                    playVideos(0,contentDatum);
+                    playVideos(0, contentDatum);
                 }
             }
         });
     }
 
 
-    private void playVideos(int currentIndex , ContentDatum contentDatum){
+    private void playVideos(int currentIndex, ContentDatum contentDatum) {
         hideRestrictedMessage();
         String url = null;
         if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
            url = getVideoUrl(contentDatum.getStreamingInfo().getVideoAssets());
         }
 
+        if (contentDatum != null && contentDatum.getGist() != null) {
+            videoImageUrl[0] = contentDatum.getGist().getVideoImageUrl();
+        }
+
         if (null != url) {
             setUri(Uri.parse(url), null);
             getPlayerView().getPlayer().setPlayWhenReady(true);
-            if(currentIndex == 0) {
+            if (currentIndex == 0) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
             }
             currentPlayingIndex = currentIndex;
@@ -182,43 +198,59 @@ public class CustomVideoVideoPlayerView
         switch (playbackState) {
             case STATE_ENDED:
                 getPlayerView().getPlayer().setPlayWhenReady(false);
-                currentPlayingIndex ++;
-                if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
-                    showProgressBar("Loading Next Video...");
-                    appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
-                        @Override
-                        public void call(ContentDatum contentDatum) {
-                            if (!contentDatum.getGist().getFree()) {
-                                //check login and subscription first.
-                                if (!appCMSPresenter.isUserLoggedIn()) {
-                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                } else {
-                                    //check subscription data
-                                    appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
-                                        try {
-                                            if (appCMSUserSubscriptionPlanResult != null) {
-                                                String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                                    if (shouldRequestAds) requestAds(adsUrl);
-                                                    playVideos(currentPlayingIndex,contentDatum);
-                                                } else {
+                currentPlayingIndex++;
+                Log.d(TAG, "appCMSPresenter.getAutoplayEnabledUserPref(mContext): " +
+                        appCMSPresenter.getAutoplayEnabledUserPref(mContext));
+                if (null != relatedVideoId
+                        && currentPlayingIndex <= relatedVideoId.size() - 1) {
+                    if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
+
+                        showProgressBar("Loading Next Video...");
+                        appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
+                            @Override
+                            public void call(ContentDatum contentDatum) {
+                                videoImageUrl[0] = contentDatum.getGist().getVideoImageUrl();
+                                imageViewContainer.setVisibility(GONE);
+                                if (!contentDatum.getGist().getFree()) {
+                                    //check login and subscription first.
+                                    if (!appCMSPresenter.isUserLoggedIn()) {
+                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                        setBackgroundImage(videoImageUrl[0]);
+                                    } else /*User not logged in */{
+                                        //check subscription data
+                                        appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                                            try {
+                                                if (appCMSUserSubscriptionPlanResult != null) {
+                                                    String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                                                    if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                                            subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                        if (shouldRequestAds) requestAds(adsUrl);
+                                                        playVideos(currentPlayingIndex, contentDatum);
+                                                    } else /*user not subscribed*/{
+                                                        setBackgroundImage(videoImageUrl[0]);
+                                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                                    }
+                                                } else /*received null result from API in appCMSUserSubscriptionPlanResult*/{
+                                                    setBackgroundImage(videoImageUrl[0]);
                                                     showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                                 }
-                                            } else {
+                                            } catch (Exception e) {
+                                                setBackgroundImage(videoImageUrl[0]);
                                                 showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                             }
-                                        } catch (Exception e) {
-                                            showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                        }
-                                    });
+                                        });
+                                    }
+                                } else /*Video is free*/{
+                                    if (shouldRequestAds) requestAds(adsUrl);
+                                    playVideos(currentPlayingIndex, contentDatum);
+                                    imageViewContainer.setVisibility(GONE);
                                 }
-                            } else {
-                                if (shouldRequestAds) requestAds(adsUrl);
-                                playVideos(currentPlayingIndex,contentDatum);
                             }
-                        }
-                    });
+                        });
+                    } else /*Autoplay is turned-off*/{
+                        setBackgroundImage(videoImageUrl[0]);
+                        showRestrictMessage(getResources().getString(R.string.autoplay_off_msg));
+                    }
                 }
                 break;
             case STATE_BUFFERING:
@@ -229,6 +261,16 @@ public class CustomVideoVideoPlayerView
                 break;
             default:
                 hideProgressBar();
+        }
+    }
+
+    private void setBackgroundImage(String videoImageUrl) {
+        if (!TextUtils.isEmpty(videoImageUrl)) {
+            imageViewContainer.setVisibility(VISIBLE);
+            Glide.with(mContext)
+                    .load(videoImageUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(imageView);
         }
     }
 
@@ -270,7 +312,6 @@ public class CustomVideoVideoPlayerView
         customMessageContaineer = new LinearLayout(mContext);
         customMessageContaineer.setOrientation(LinearLayout.VERTICAL);
         customMessageContaineer.setGravity(Gravity.CENTER);
-        customMessageContaineer.setBackgroundColor(Color.parseColor("#d4000000"));
         customMessageView = new TextView(mContext);
         LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         customMessageView.setLayoutParams(textViewParams);
