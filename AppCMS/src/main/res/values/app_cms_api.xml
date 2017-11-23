@@ -266,6 +266,7 @@
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
+    <string name="app_cms_page_detail_app_logo_key">appLogo</string>
     <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
 
     <!-- AppCMS Action names -->

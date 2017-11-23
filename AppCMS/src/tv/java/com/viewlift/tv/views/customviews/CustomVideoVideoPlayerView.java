@@ -231,6 +231,9 @@ public class CustomVideoVideoPlayerView
                         setBackgroundImage(videoImageUrl[0]);
                         showRestrictMessage(getResources().getString(R.string.autoplay_off_msg));
                     }
+                } else {
+                    setBackgroundImage(videoImageUrl[0]);
+                    showRestrictMessage(getResources().getString(R.string.no_more_videos_in_queue));
                 }
                 break;
             case STATE_BUFFERING:

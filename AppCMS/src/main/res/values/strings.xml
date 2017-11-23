@@ -451,6 +451,7 @@
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
     <string name="visit_website_msg">Please visit our website to start your subscription.</string>
     <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
+    <string name="no_more_videos_in_queue">No more videos in queue.</string>
 
 </resources>
 

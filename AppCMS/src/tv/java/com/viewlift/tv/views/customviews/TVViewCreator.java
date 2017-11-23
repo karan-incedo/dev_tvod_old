@@ -1769,6 +1769,10 @@ public class TVViewCreator {
                         componentViewResult.componentView.setBackgroundResource(R.drawable.email_icon);
                         break;
 
+                    case PAGE_VIDEO_DETAIL_APP_LOGO_KEY:
+                        componentViewResult.componentView.setBackgroundResource(R.drawable.mse_top_logo);
+                        break;
+
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             Glide.with(context)
