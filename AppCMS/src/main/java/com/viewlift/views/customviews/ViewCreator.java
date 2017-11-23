@@ -76,6 +76,7 @@ import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+import com.viewlift.views.utilities.CustomWebView;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
@@ -1699,6 +1700,7 @@ public class ViewCreator {
                 break;
             case PAGE_WEB_VIEW_KEY:
                 componentViewResult.componentView = getWebViewComponent(context, moduleAPI, component);
+
                 break;
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
@@ -3732,12 +3734,12 @@ public class ViewCreator {
 
         videoPlayerView = new CustomVideoPlayerView(context, videoId);
         videoPlayerView.init(context);
-        videoPlayerView.getPlayerView().hideController();
+        videoPlayerView.getPlayerView().showController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
             public void onVisibilityChange(int i) {
                 if (i == 0) {
-                    videoPlayerView.getPlayerView().hideController();
+//                    videoPlayerView.getPlayerView().showController();
                 }
             }
         });
@@ -3748,14 +3750,14 @@ public class ViewCreator {
 
     public static WebView getWebViewComponent(Context context, Module moduleAPI, Component component) {
 
-        WebView webView = new WebView(context);
+        CustomWebView webView = new CustomWebView(context);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setBuiltInZoomControls(false);
         webView.getSettings().setDisplayZoomControls(false);
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.getSettings().setAppCacheEnabled(true);
 
-        int height = ((int) component.getLayout().getMobile().getHeight()) - 45;
+        int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
         int width = BaseView.getDeviceWidth();
         String webViewUrl = "";
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
