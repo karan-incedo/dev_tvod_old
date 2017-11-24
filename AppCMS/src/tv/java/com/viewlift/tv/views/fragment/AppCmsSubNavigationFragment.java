@@ -401,7 +401,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
             if (!mShowTeams) {
                 holder.navImageView.setPadding(0, 0, 0, 0);
-                holder.navImageView.setImageResource(getIcon(subItem.title));
+                holder.navImageView.setImageResource(getIcon(subItem.icon));
             } else {
                 holder.navImageView.setPadding(10, 10, 10, 10);
                 Glide.with(mContext)
@@ -559,31 +559,25 @@ public class AppCmsSubNavigationFragment extends Fragment {
             });
         }
 
-        private int getIcon(String text) {
-            text = text.toUpperCase();
+        private int getIcon(String icon) {
+
             int iconResId = 0;
-            if (text.contains("AUTOPLAY")) {
+            if (icon.equalsIgnoreCase(getString(R.string.st_autoplay_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_autoplay;
-            } else if (text.contains("CLOSED CAPTION")) {
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_closed_caption_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_cc;
-            } else if (text.contains("SUBSCRIPTION")) {
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_manage_subscription_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_manage_subscription;
-            } else if (text.contains("ACCOUNT")) {
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_account_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_account;
-            } else if (text.contains("FAQ")) {
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_faq_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_faq;
-            } else if (text.contains("CONTACT")) {
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_contact_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_contact;
-            } else if (text.contains("ABOUT")) {
-                iconResId = R.drawable.st_settings_icon_about;
-            } else if (text.contains("SIGN OUT")) {
-                iconResId = R.drawable.st_settings_icon_signout;
-            } else if (text.contains("SIGN IN")) {
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_signin_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_signin;
-            } else if (text.contains("HISTORY")) {
-                iconResId = R.drawable.st_menu_icon_clock;
-            } else if (text.contains("WATCHLIST")) {
-                iconResId = R.drawable.st_menu_icon_watchlist;
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_signout_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_signout;
             }
             return iconResId;
         }
@@ -724,6 +718,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         }
 
         NavigationSubItem navigationSubItem1 = new NavigationSubItem();
+        navigationSubItem1.icon = getString(R.string.st_autoplay_icon_key);
         if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
             navigationSubItem1.title = "AUTOPLAY ON";
         } else {
@@ -732,6 +727,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         navigationSubItemList.add(navigationSubItem1);
 
         navigationSubItem1 = new NavigationSubItem();
+        navigationSubItem1.icon = getString(R.string.st_closed_caption_icon_key);
         if (appCMSPresenter.getClosedCaptionPreference()) {
             navigationSubItem1.title = "CLOSED CAPTION ON";
         } else {
@@ -741,6 +737,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
         navigationSubItem1 = new NavigationSubItem();
         navigationSubItem1.title = "MANAGE SUBSCRIPTION";
+        navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
         navigationSubItemList.add(navigationSubItem1);
 
         for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
@@ -752,6 +749,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navigationSubItem.pageId = navigationUser.getPageId();
                 navigationSubItem.title = navigationUser.getTitle();
                 navigationSubItem.url = navigationUser.getUrl();
+                navigationSubItem.icon = navigationUser.getIcon();
                 navigationSubItem.accessLevels = navigationUser.getAccessLevels();
                 navigationSubItemList.add(navigationSubItem);
             }
@@ -767,6 +765,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 navigationSubItem.pageId = navigationFooter.getPageId();
                 navigationSubItem.title = navigationFooter.getTitle();
                 navigationSubItem.url = navigationFooter.getUrl();
+                navigationSubItem.icon = navigationFooter.getIcon();
                 navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
                 if (null == navigationSubItemList) {
                     navigationSubItemList = new ArrayList<>();
@@ -777,7 +776,9 @@ public class AppCmsSubNavigationFragment extends Fragment {
         navigationSubItem1 = new NavigationSubItem();
         if (appCMSPresenter.isUserLoggedIn()) {
             navigationSubItem1.title = "SIGN OUT";
+            navigationSubItem1.icon = getString(R.string.st_signout_icon_key);
         } else {
+            navigationSubItem1.icon = getString(R.string.st_signin_icon_key);
             navigationSubItem1.title = "SIGN IN";
         }
         navigationSubItemList.add(navigationSubItem1);
