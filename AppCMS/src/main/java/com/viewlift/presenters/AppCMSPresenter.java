@@ -136,7 +136,9 @@ import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.models.data.appcms.ui.page.Links;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
+import com.viewlift.models.data.appcms.ui.page.SocialLinks;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
@@ -210,6 +212,7 @@ import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.PopupMenu;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
+import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSTrayMenuDialogFragment;
 
@@ -10998,31 +11001,36 @@ public class AppCMSPresenter {
 
     }
 
-    public void showPopUpMenuSports(View v) {
-        PopupMenu popupMenu = new PopupMenu(getCurrentActivity());
-        popupMenu.showLocation(v.getId(), getCurrentActivity());
-        popupMenu.setListener(new PopupMenu.ListenerForPopMenu() {
-            @Override
-            public void ticketsClick() {
-                Toast.makeText(getCurrentActivity(), "ticket clicked", Toast.LENGTH_SHORT).show();
-                Log.e("click", "tickets");
-                popupMenu.dismiss();
+    public void showPopUpMenuSports(ArrayList<Links> links, ArrayList<SocialLinks> socialLinks) {
+        AppCMSMoreMenuDialogFragment appCMSMoreMenuDialogFragment = AppCMSMoreMenuDialogFragment.newInstance(getLinks(links, socialLinks));
+        appCMSMoreMenuDialogFragment.show(currentActivity.getFragmentManager(), AppCMSMoreMenuDialogFragment.class.getSimpleName());
+    }
+    private ArrayList<Links> getLinks(ArrayList<Links> links, ArrayList<SocialLinks> socialLinks) {
+        ArrayList<Links> linksToOpen = new ArrayList<>();
+        /*combine both social links and link into a single list of links*/
+        if (links != null && socialLinks != null) {
+            for (int i = 0; i < socialLinks.size(); i++) {
+                Links link = new Links();
+                link.setDisplayedPath(socialLinks.get(i).getDisplayedPath());
+                link.setTitle(socialLinks.get(i).getTitle());
+                links.add(link);
             }
-
-            @Override
-            public void facebookClick() {
-                Toast.makeText(getCurrentActivity(), "fb clicked", Toast.LENGTH_SHORT).show();
-                Log.e("click", "fb");
-                popupMenu.dismiss();
+        }
+        /*check if links are empty , then fill list with social links*/
+        if (links == null && socialLinks != null) {
+            for (int i = 0; i < socialLinks.size(); i++) {
+                Links link = new Links();
+                link.setDisplayedPath(socialLinks.get(i).getDisplayedPath());
+                link.setTitle(socialLinks.get(i).getTitle());
+                links.add(link);
             }
-
-            @Override
-            public void instagramClick() {
-                Toast.makeText(getCurrentActivity(), "instagram clicked", Toast.LENGTH_SHORT).show();
-                Log.e("click", "instagram");
-                popupMenu.dismiss();
-            }
-        });
+        }
+        linksToOpen = links;
+        return linksToOpen;
+    }
+    public void openWebView(String browseURL) {
+        Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(browseURL));
+        currentContext.startActivity(browserIntent);
     }
 
     public void launchKiswePlayer(String eventId) {
@@ -11652,9 +11660,10 @@ public class AppCMSPresenter {
         pipPlayerVisible = false;
     }
 
-    public CustomVideoPlayerView getMiniPlayrView(){
+    public CustomVideoPlayerView getMiniPlayrView() {
         return videoPlayerViewPIP;
     }
+
     public ModuleList getTabBarUIModule() {
         AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
         ModuleList footerModule = null;
@@ -11682,7 +11691,7 @@ public class AppCMSPresenter {
     public ModuleList getModuleListComponent(String moduleId) {
         ModuleList moduleList = null;
         /*FIX for MSEAN-1324*/
-        if (appCMSAndroidModules!=null&&appCMSAndroidModules.getModuleListMap() != null) {
+        if (appCMSAndroidModules != null && appCMSAndroidModules.getModuleListMap() != null) {
             moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
         }
         return moduleList;
@@ -11718,7 +11727,7 @@ public class AppCMSPresenter {
     }
 
 
-    public  void launchFullScreenStandalonePlayer(String videoId){
+    public void launchFullScreenStandalonePlayer(String videoId) {
         refreshVideoData(videoId, new Action1<ContentDatum>() {
             @Override
             public void call(ContentDatum contentDatum) {
