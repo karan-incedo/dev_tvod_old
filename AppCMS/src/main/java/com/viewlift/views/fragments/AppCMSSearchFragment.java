@@ -3,6 +3,7 @@ package com.viewlift.views.fragments;
 import android.app.SearchManager;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -116,7 +117,8 @@ public class AppCMSSearchFragment extends DialogFragment {
             }
         });
 
-        appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
+        appCMSGoButton.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getBackgroundColor()));
         appCMSGoButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
 
         appCMSGoButton.setOnClickListener(v -> {
