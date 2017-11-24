@@ -88,6 +88,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
                         .into((ImageView) holder.navItemLogo);
                 holder.navItemLogo.setVisibility(View.VISIBLE);
             } else {
+
                 int resID = resources.getIdentifier(navigationItem.getIcon().replace("-", "_"), "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
                 holder.navItemLogo.setImageDrawable(resources.getDrawable(resID));
                 holder.navItemLogo.setVisibility(View.VISIBLE);
