@@ -465,6 +465,7 @@
     <string name="pop_dialog_tickets">Tickets</string>
     <string name="pop_dialog_facebook">Facebook</string>
     <string name="pop_dialog_instagram">Instagram</string>
+    <string name="dialog_close_button">Close</string>
 </resources>
 
 
