@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -43,9 +44,10 @@ public class AppCmsNavigationFragment extends Fragment {
     private int textColor = -1;
     private int bgColor = -1;
     private static OnNavigationVisibilityListener navigationVisibilityListener;
-    private Typeface extraBoldTypeFace , semiBoldTypeFace;
-    private Component extraBoldComp , semiBoldComp;
+    private Typeface extraBoldTypeFace, semiBoldTypeFace;
+    private Component extraBoldComp, semiBoldComp;
     private AppCMSBinder appCmsBinder;
+
     public static AppCmsNavigationFragment newInstance(Context context,
                                                        OnNavigationVisibilityListener listener,
                                                        AppCMSBinder appCMSBinder,
@@ -81,18 +83,18 @@ public class AppCmsNavigationFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.navRecylerView);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         NavigationAdapter navigationAdapter = new NavigationAdapter(getActivity(), textColor, bgColor,
-                                                appCMSBinder.getNavigation(),
-                                                appCMSBinder.isUserLoggedIn(),
-                                                appCMSPresenter);
+                appCMSBinder.getNavigation(),
+                appCMSBinder.isUserLoggedIn(),
+                appCMSPresenter);
 
         mRecyclerView.setAdapter(navigationAdapter);
         return view;
     }
 
 
-    private void setTypeFaceValue(AppCMSPresenter appCMSPresenter){
+    private void setTypeFaceValue(AppCMSPresenter appCMSPresenter) {
 
-        if(null == extraBoldTypeFace) {
+        if (null == extraBoldTypeFace) {
             extraBoldComp = new Component();
             extraBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
             extraBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_extrabold_key));
@@ -100,7 +102,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     , extraBoldComp);
         }
 
-        if(null == semiBoldTypeFace) {
+        if (null == semiBoldTypeFace) {
             semiBoldComp = new Component();
             semiBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
             semiBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_semibold_key));
@@ -112,21 +114,22 @@ public class AppCmsNavigationFragment extends Fragment {
 
     public void setFocusable(boolean hasFocus) {
         if (null != mRecyclerView) {
-            if(hasFocus)
-              mRecyclerView.requestFocus();
+            if (hasFocus)
+                mRecyclerView.requestFocus();
             else
                 mRecyclerView.clearFocus();
         }
     }
 
     private String mSelectedPageId = null;
+
     public void setSelectedPageId(String selectedPageId) {
         this.mSelectedPageId = selectedPageId;
         //Log.d("" ,"Navigation setSelectedPageId = " + mSelectedPageId );
     }
 
     public void notifiDataSetInvlidate() {
-        if(null != mRecyclerView && null != mRecyclerView.getAdapter()){
+        if (null != mRecyclerView && null != mRecyclerView.getAdapter()) {
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
     }
@@ -153,7 +156,7 @@ public class AppCmsNavigationFragment extends Fragment {
             this.navigation = navigation;
             this.isuserLoggedIn = userLoggedIn;
             this.appCmsPresenter = appCMSPresenter;
-          //  setSelectorColor();
+            //  setSelectorColor();
         }
 
 
@@ -172,17 +175,17 @@ public class AppCmsNavigationFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(NavItemHolder holder, final int position) {
-            final NavigationPrimary primary = (NavigationPrimary)getItem(position);
+            final NavigationPrimary primary = (NavigationPrimary) getItem(position);
             holder.navItemView.setText(primary.getTitle().toString().toUpperCase());
-            holder.navItemView.setTag(R.string.item_position , position);
+            holder.navItemView.setTag(R.string.item_position, position);
             //Log.d("NavigationAdapter", primary.getTitle().toString());
 
 
-            if(null != mSelectedPageId){
-                if(primary.getPageId().equalsIgnoreCase(mSelectedPageId)){
-                     holder.navItemlayout.requestFocus();
+            if (null != mSelectedPageId) {
+                if (primary.getPageId().equalsIgnoreCase(mSelectedPageId)) {
+                    holder.navItemlayout.requestFocus();
                     //Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----true ");
-                }else{
+                } else {
                     holder.navItemlayout.clearFocus();
                     //Log.d("NavigationAd pageId = " , mSelectedPageId + " title = " + primary.getTitle() + " -----false");
                 }
@@ -197,40 +200,46 @@ public class AppCmsNavigationFragment extends Fragment {
 
                     navigationVisibilityListener.showNavigation(false);
                     //getActivity().sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-                    Utils.pageLoading(true,getActivity());
+                    Utils.pageLoading(true, getActivity());
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if(primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))){
+                            if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
                                 appCmsPresenter.openSearch();
-                                Utils.pageLoading(false,getActivity());
-                            }else if(primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label ,
-                                    getString(R.string.profile_label)))){
+                                Utils.pageLoading(false, getActivity());
+                            } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
+                                    getString(R.string.profile_label)))) {
 
                                 NavigationUser navigationUser = getNavigationUser();
                                 //Log.d("","Selected Title = "+navigationUser.getTitle());
-                                if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
-                                        .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
-                                    appCmsPresenter.navigateToWatchlistPage(
-                                            navigationUser.getPageId(),
-                                            navigationUser.getTitle(),
-                                            navigationUser.getUrl(),
-                                            false);
+
+                                if (navigationUser != null) {
+                                    if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
+                                            .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
+                                        appCmsPresenter.navigateToWatchlistPage(
+                                                navigationUser.getPageId(),
+                                                navigationUser.getTitle(),
+                                                navigationUser.getUrl(),
+                                                false);
+                                    } else {
+                                        appCmsPresenter.navigateToTVPage(
+                                                navigationUser.getPageId(),
+                                                navigationUser.getTitle(),
+                                                navigationUser.getUrl(),
+                                                false,
+                                                Uri.EMPTY,
+                                                false,
+                                                false,
+                                                false
+                                        );
+                                    }
                                 } else {
-                                    appCmsPresenter.navigateToTVPage(
-                                            navigationUser.getPageId(),
-                                            navigationUser.getTitle(),
-                                            navigationUser.getUrl(),
-                                            false,
-                                            Uri.EMPTY,
-                                            false,
-                                            false,
-                                            false
-                                    );
+                                    Toast.makeText(mContext, mContext.getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                                    Utils.pageLoading(false, getActivity());
                                 }
 
-                            }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
+                            } else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),
                                     false,
@@ -241,22 +250,23 @@ public class AppCmsNavigationFragment extends Fragment {
 
                             }
                         }
-                    } , 500);
+                    }, 500);
                 }
             });
         }
 
-        private NavigationUser getNavigationUser(){
-             List<NavigationUser> navigationUserList = navigation.getNavigationUser();
-                for(NavigationUser navigationUser : navigationUserList){
-                if(appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedIn()){
+        private NavigationUser getNavigationUser() {
+            List<NavigationUser> navigationUserList = navigation.getNavigationUser();
+            for (NavigationUser navigationUser : navigationUserList) {
+                if (appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedIn()) {
                     return navigationUser;
-                }else if(!appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedOut()){
+                } else if (!appCmsPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedOut()) {
                     return navigationUser;
                 }
             }
-             return null;
+            return null;
         }
+
         @Override
         public int getItemCount() {
             int totalCount = 0;
@@ -275,15 +285,15 @@ public class AppCmsNavigationFragment extends Fragment {
                 setTypeFaceValue(appCmsPresenter);
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navItemlayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
-                navItemlayout.setBackground(Utils.getNavigationSelector(mContext , appCmsPresenter,false));
-                navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext,appCmsPresenter)));
+                navItemlayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false));
+                navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
                 navItemView.setTypeface(semiBoldTypeFace);
                 navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                     @Override
                     public void onFocusChange(View view, boolean hasFocus) {
 
                         String text = navItemView.getText().toString();
-                        int position = (int)navItemView.getTag(R.string.item_position);
+                        int position = (int) navItemView.getTag(R.string.item_position);
                         selectedPosition = position;
 
                         //Log.d("TAG","Nav position = "+position);
@@ -305,7 +315,7 @@ public class AppCmsNavigationFragment extends Fragment {
                         if (action == KeyEvent.ACTION_DOWN) {
                             switch (keyCode) {
                                 case KeyEvent.KEYCODE_DPAD_LEFT:
-                                    if(isStartPosition()){
+                                    if (isStartPosition()) {
                                         return true;
                                     }
                                     break;
@@ -323,13 +333,14 @@ public class AppCmsNavigationFragment extends Fragment {
         }
     }
 
-  private int selectedPosition = -1;
-  private boolean isEndPosition(){
-        return selectedPosition == appCmsBinder.getNavigation().getNavigationPrimary().size()-1;
+    private int selectedPosition = -1;
+
+    private boolean isEndPosition() {
+        return selectedPosition == appCmsBinder.getNavigation().getNavigationPrimary().size() - 1;
     }
 
-    private boolean isStartPosition(){
-        return (selectedPosition == 0) ;
+    private boolean isStartPosition() {
+        return (selectedPosition == 0);
     }
 
     public interface OnNavigationVisibilityListener {
