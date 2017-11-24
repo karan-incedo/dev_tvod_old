@@ -11589,7 +11589,7 @@ public class AppCMSPresenter {
 
 
             if (videoPlayerView == null) {
-                videoPlayerView = ViewCreator.playerView(currentActivity,videoId);
+                this.videoPlayerView = ViewCreator.playerView(currentActivity,videoId);
             }
 
             relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
@@ -11668,7 +11668,7 @@ public class AppCMSPresenter {
     }
 
     public CustomVideoPlayerView getMiniPlayrView(){
-        return videoPlayerViewPIP;
+        return videoPlayerView;
     }
     public ModuleList getTabBarUIModule() {
         AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());

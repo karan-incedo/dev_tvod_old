@@ -57,10 +57,10 @@ public class PopupMenuAdapter extends BaseAdapter {
 //                    convertView.findViewById(textViewId);
             convertView = LayoutInflater.from(parent.getContext()).
                     inflate(R.layout.pop_element, parent, false);
-            viewHolder.imgViewLeft = (ImageView)
+           /* viewHolder.imgViewLeft = (ImageView)
                     convertView.findViewById(R.id.popImage);
             viewHolder.txtViewRight = (TextView)
-                    convertView.findViewById(R.id.popText);
+                    convertView.findViewById(R.id.popText);*/
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
