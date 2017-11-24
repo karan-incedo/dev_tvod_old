@@ -736,16 +736,19 @@ public class AppCmsSubNavigationFragment extends Fragment {
         }
         navigationSubItemList.add(navigationSubItem1);
 
-        navigationSubItem1 = new NavigationSubItem();
-        navigationSubItem1.title = "MANAGE SUBSCRIPTION";
-        navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
-        navigationSubItemList.add(navigationSubItem1);
+        if (appCMSPresenter.isUserLoggedIn()) {
+            navigationSubItem1 = new NavigationSubItem();
+            navigationSubItem1.title = "MANAGE SUBSCRIPTION";
+            navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
+            navigationSubItemList.add(navigationSubItem1);
+        }
 
         for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
             NavigationUser navigationUser = mNavigation.getNavigationUser().get(i);
             if (/*(isUserLogin && navigationUser.getAccessLevels().getLoggedIn())
                         || (!isUserLogin && navigationUser.getAccessLevels().getLoggedOut())*/
-                    !navigationUser.getAccessLevels().getLoggedOut()) {
+                    !navigationUser.getAccessLevels().getLoggedOut()
+                    && appCMSPresenter.isUserLoggedIn()) {
                 NavigationSubItem navigationSubItem = new NavigationSubItem();
                 navigationSubItem.pageId = navigationUser.getPageId();
                 navigationSubItem.title = navigationUser.getTitle();
