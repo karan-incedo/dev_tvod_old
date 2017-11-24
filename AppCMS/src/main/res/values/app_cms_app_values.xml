@@ -32,6 +32,9 @@
     <!-- flag for sorting the items -->
     <bool name="sort_plans_in_ascending_order">true</bool>
 
+    <!-- MSE Shop URL -->
+    <string name="app_msn_shop_url">http://shop.monumentalsportsnetwork.com/</string>
+
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
     <bool name="display_chromecast_overlay">false</bool>

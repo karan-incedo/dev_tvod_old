@@ -469,7 +469,8 @@ public class AppCMSPresenter {
     private final ReferenceQueue<Object> referenceQueue;
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
-    CustomVideoPlayerView videoPlayerViewPIP;
+    public static CustomVideoPlayerView videoPlayerView=null;
+    public static ViewGroup  videoPlayerViewParent=null;
     MiniPlayerView relativeLayoutPIP;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
@@ -11549,25 +11550,22 @@ public class AppCMSPresenter {
             }
         }
     }
+    public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView){
+        this.videoPlayerView=customVideoPlayerView;
+    }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId,final CustomVideoPlayerView videoPlayerView) {
+    public void showPopupWindowPlayer(View scrollView, String videoId) {
         if (videoId != null) {
 
 
             if (videoPlayerView == null) {
-                videoPlayerViewPIP = ViewCreator.playerView(currentActivity,videoId);
-            } else {
-                ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
-                videoPlayerViewPIP = videoPlayerView;
+                videoPlayerView = ViewCreator.playerView(currentActivity,videoId);
             }
 
-            relativeLayoutPIP = new MiniPlayerView(currentActivity, videoPlayerViewPIP);
+            relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
             relativeLayoutPIP.setVisibility(View.VISIBLE);
-            relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ((RecyclerView) scrollView).smoothScrollToPosition(0);
-                }
+            relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(v -> {
+                ((RecyclerView) scrollView).smoothScrollToPosition(0);
             });
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
             pipPlayerVisible = true;
@@ -11576,8 +11574,8 @@ public class AppCMSPresenter {
 
     public void pausePIP() {
         try {
-            if (videoPlayerViewPIP != null) {
-                videoPlayerViewPIP.pausePlayer();
+            if (videoPlayerView!= null) {
+                videoPlayerView.pausePlayer();
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -11586,8 +11584,8 @@ public class AppCMSPresenter {
 
     public void resumePIP() {
         try {
-            if (videoPlayerViewPIP != null) {
-                videoPlayerViewPIP.startPlayer();
+            if (videoPlayerView != null) {
+                videoPlayerView.startPlayer();
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -11596,10 +11594,10 @@ public class AppCMSPresenter {
 
     public void dismissPopupWindowPlayer(boolean releasePlayer) {
         try {
-            if (releasePlayer && videoPlayerViewPIP != null) {
+            if (releasePlayer && videoPlayerView != null) {
 
-                videoPlayerViewPIP.releasePlayer();
-                videoPlayerViewPIP = null;
+               /* videoPlayerView.releasePlayer();
+                videoPlayerView = null;*/
             }
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
@@ -11607,6 +11605,13 @@ public class AppCMSPresenter {
         try {
             if (relativeLayoutPIP != null) {
 
+                relativeLayoutPIP.removeAllViews();
+                if (videoPlayerViewParent!=null){
+                    videoPlayerView.getPlayerView().getController().show();
+                    relativeLayoutPIP.removeView(videoPlayerView);
+                    videoPlayerViewParent.addView(videoPlayerView);
+                    pipPlayerVisible = false;
+                }
 
                 relativeLayoutPIP.setVisibility(View.GONE);
 
@@ -11632,9 +11637,7 @@ public class AppCMSPresenter {
         pipPlayerVisible = false;
     }
 
-    public CustomVideoPlayerView getMiniPlayrView(){
-        return videoPlayerViewPIP;
-    }
+
     public ModuleList getTabBarUIModule() {
         AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
         ModuleList footerModule = null;

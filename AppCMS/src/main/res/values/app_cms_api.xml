@@ -196,6 +196,7 @@
     <string name="app_cms_page_history_title">History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>
     <string name="app_cms_page_download_title">My Downloads</string>
+    <string name="app_cms_page_shop_title">shop</string>
 
     <string name="app_cms_page_watchlist_duration_key">duration</string>
     <string name="app_cms_page_watchlist_description_key">description</string>
@@ -358,6 +359,7 @@
     <string name="app_cms_subscription_plan_cancel_key">cancel</string>
     <string name="app_cms_user_id">userId</string>
     <string name="app_cms_site_name">site</string>
+
 
     <!-- AppCMS Register Subscription API -->
     <string name="app_cms_register_subscription_api_url">%1$s/subscription/subscribe?site=%2$s&amp;platform=%3$s</string>
