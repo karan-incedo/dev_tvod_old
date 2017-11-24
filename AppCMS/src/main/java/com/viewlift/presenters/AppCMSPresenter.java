@@ -9009,7 +9009,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void refreshPages(Action0 onReadyAction,
+    public void refreshPages(Action1<Boolean> onReadyAction,
                              boolean attemptRetry,
                              int retryAttempts,
                              int maxRetryAttempts) {
@@ -9046,8 +9046,7 @@ public class AppCMSPresenter {
 //                                                metaPage.getPageUI());
                                             if (currentActivity != null) {
                                                 try {
-                                                    getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                                            metaPage.getPageUI()),
+                                                    getAppCMSPage(metaPage.getPageUI(),
                                                             appCMSPageUI -> {
                                                                 if (appCMSPageUI != null) {
                                                                     navigationPages.put(metaPage.getPageId(), appCMSPageUI);
@@ -9055,6 +9054,7 @@ public class AppCMSPresenter {
                                                                     try {
                                                                         pageViewLruCache.evictAll();
                                                                     } catch (Exception e) {
+
                                                                     }
 
                                                                     String action = pageNameToActionMap.get(metaPage.getPageName());
@@ -9075,7 +9075,9 @@ public class AppCMSPresenter {
                                         }
 
                                         try {
-                                            getAppCMSModules(appCMSAndroid, true, (appCMSAndroidModules) -> {
+                                            getAppCMSModules(appCMSAndroid,
+                                                    true,
+                                                    (appCMSAndroidModules) -> {
                                                 if (appCMSAndroidModules != null) {
                                                     //Log.d(TAG, "Received and refreshed module list");
                                                     this.appCMSAndroidModules = appCMSAndroidModules;
@@ -9085,6 +9087,7 @@ public class AppCMSPresenter {
                                                         try {
                                                             pageViewLruCache.evictAll();
                                                         } catch (Exception e) {
+
                                                         }
                                                     }
 
@@ -9092,7 +9095,7 @@ public class AppCMSPresenter {
                                                 }
                                                 refreshAPIData(() -> {
                                                             if (onReadyAction != null) {
-                                                                onReadyAction.call();
+                                                                onReadyAction.call(true);
                                                             }
                                                         },
                                                         true);
@@ -9108,13 +9111,13 @@ public class AppCMSPresenter {
                             }
                         } else {
                             if (onReadyAction != null) {
-                                onReadyAction.call();
+                                onReadyAction.call(false);
                             }
                         }
                     } else {
                         Log.w(TAG, "Resulting main.json from refresh is null");
                         if (onReadyAction != null) {
-                            onReadyAction.call();
+                            onReadyAction.call(false);
                         }
                     }
                 });
