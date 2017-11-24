@@ -32,9 +32,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.exoplayerview.CustomPlaybackControlView;
 
 import java.util.List;
-
 import rx.functions.Action1;
-
 import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
 import static com.google.android.exoplayer2.Player.STATE_READY;
@@ -71,8 +69,6 @@ public class CustomVideoPlayerView extends VideoPlayerView {
 
 
 
-        //baseLayoutParms=(FrameLayout.LayoutParams)getLayoutParams();
-        //baseLayoutParms=new FrameLayout.LayoutParams(appCMSPresenter.videoPlayerView.getWidth(),appCMSPresenter.videoPlayerView.getHeight());
     }
 
 
@@ -241,6 +237,8 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                             hideProgressBar();
                         }
                     });*/
+                }else{
+                    showRestrictMessage(getResources().getString(R.string.app_cms_video_ended_text_message));
                 }
                 break;
             case STATE_BUFFERING:

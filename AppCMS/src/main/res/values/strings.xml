@@ -461,7 +461,12 @@
     <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
     <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
+    <string name="app_cms_video_ended_text_message">Live programming ended, [prees/swipe] down for more content</string>
 
+    <string name="pop_dialog_tickets">Tickets</string>
+    <string name="pop_dialog_facebook">Facebook</string>
+    <string name="pop_dialog_instagram">Instagram</string>
+    <string name="dialog_close_button">Close</string>
 </resources>
 
 
