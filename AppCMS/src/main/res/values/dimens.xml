@@ -102,5 +102,9 @@
 
     <dimen name="app_cms_team_list_view_margin_top">20dp</dimen>
 
+    <dimen name="app_cms_dialog_close_button_margin_top">20dp</dimen>
+    <dimen name="app_cms_dialog__margin">20dp</dimen>
+    <dimen name="app_cms_dialog_list_divider_height">5dp</dimen>
+
 
 </resources>
