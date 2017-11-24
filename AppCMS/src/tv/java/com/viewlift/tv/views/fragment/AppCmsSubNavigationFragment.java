@@ -497,7 +497,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                         navigationVisibilityListener.showSubNavigation(false, false);
                     } else if (navigationSubItem.title.toUpperCase().contains("ACCOUNT")) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            navigationVisibilityListener.showSubNavigation(false, false);
+                           // navigationVisibilityListener.showSubNavigation(false, false);
                             appCMSPresenter.navigateToTVPage(
                                     navigationSubItem.pageId,
                                     navigationSubItem.title,
@@ -505,8 +505,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                     false,
                                     Uri.EMPTY,
                                     false,
-                                    false,
-                                    isLoginDialogPage
+                                    true,
+                                    false
                             );
                         } else {
                             ClearDialogFragment newFragment = Utils.getClearDialogFragment(
@@ -539,6 +539,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                     } else {
                         if (navigationSubItem.pageId != null
                                 && navigationSubItem.pageId.length() > 0) {
+                            if(isTeamsShowing())
                             navigationVisibilityListener.showSubNavigation(false, false);
                             appCMSPresenter.navigateToTVPage(
                                     navigationSubItem.pageId,
@@ -546,8 +547,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                     navigationSubItem.url,
                                     false,
                                     Uri.EMPTY,
-                                    false,
-                                    false,
+                                    true,
+                                    !isTeamsShowing(),
                                     isLoginDialogPage
                             );
                         } else {

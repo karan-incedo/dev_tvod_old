@@ -1,5 +1,6 @@
 package com.viewlift.tv.views.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,7 +23,8 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.customviews.CustomVideoVideoPlayerView;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 import com.viewlift.tv.views.customviews.TVPageView;
 
 /**
@@ -59,9 +61,21 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        if(null != customVideoVideoPlayerView){
-            customVideoVideoPlayerView.resumePlayer();
-        }
+
+        AppCmsHomeActivity activity = (AppCmsHomeActivity) getActivity();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(null != customVideoVideoPlayerView){
+                    if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
+                    } else {
+                        if(activity.isActive)
+                        customVideoVideoPlayerView.resumePlayer();
+                    }
+                }
+            }
+        },500);
     }
 
     public void requestFocus(boolean requestFocus) {
@@ -182,7 +196,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
     boolean isPlayerComponentSelected = false;
-    CustomVideoVideoPlayerView customVideoVideoPlayerView;
+    CustomVideoPlayerView customVideoVideoPlayerView;
     private class ItemViewSelectedListener implements OnItemViewSelectedListener {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
@@ -194,8 +208,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                     data = rowData.contentData;
                     if(rowData.isPlayerComponent){
                         if( null != itemViewHolder && null != itemViewHolder.view
-                                && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoVideoPlayerView){
-                            customVideoVideoPlayerView  =  (CustomVideoVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
+                                && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoPlayerView){
+                            customVideoVideoPlayerView  =  (CustomVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
                         }
                         Utils.setBrowseFragmentViewParameters(view,
                                 -40,
@@ -241,11 +255,23 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
     @Override
+    public void onPause() {
+        if(null != customVideoVideoPlayerView){
+            customVideoVideoPlayerView.pausePlayer();
+        }
+        super.onPause();
+    }
+
+    @Override
     public void onStop() {
         if(null != customVideoVideoPlayerView){
             customVideoVideoPlayerView.pausePlayer();
         }
         super.onStop();
+    }
+
+    public CustomVideoPlayerView getCustomVideoVideoPlayerView(){
+        return customVideoVideoPlayerView;
     }
 
 }

@@ -10,9 +10,7 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
-import com.viewlift.tv.views.customviews.CustomVideoVideoPlayerView;
-
-import java.util.Date;
+import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 
 /**
  * Created by nitin.tyagi on 11/2/2017.
@@ -39,6 +37,19 @@ public class PlayerPresenter extends Presenter {
                     DEVICE_HEIGHT);
         frameLayout.setLayoutParams(layoutParams);
         frameLayout.setFocusable(true);
+
+        if(mCustomVideoPlayerView == null){
+            mCustomVideoPlayerView = playerView(context);
+            setVideoPlayerView(mCustomVideoPlayerView , true);
+        }
+
+        FrameLayout.LayoutParams playerParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT);
+        mCustomVideoPlayerView.setLayoutParams(playerParams);
+        if(mCustomVideoPlayerView != null && mCustomVideoPlayerView.getParent() != null){
+            ((ViewGroup)mCustomVideoPlayerView.getParent()).removeView(mCustomVideoPlayerView);
+        }
+        frameLayout.addView(mCustomVideoPlayerView);
         return new ViewHolder(frameLayout);
     }
 
@@ -48,9 +59,24 @@ public class PlayerPresenter extends Presenter {
         ContentDatum contentData = rowData.contentData;
 
         FrameLayout cardView = (FrameLayout) viewHolder.view;
-        CustomVideoVideoPlayerView videoPlayerView = null;
-        if(null != cardView && cardView.getChildCount() > 0){
-            videoPlayerView = (CustomVideoVideoPlayerView)cardView.getChildAt(0);
+
+        if(shouldStartPlayer){
+            boolean svodServiceType = appCmsPresenter.getAppCMSMain().getServiceType().equals(
+                    context.getString(R.string.app_cms_main_svod_service_type_key));
+
+            boolean requestAds = !svodServiceType;
+            String adsUrl = appCmsPresenter.getAdsUrl(appCmsPresenter.getPermalinkCompletePath(contentData.getGist().getPermalink()));
+            if(adsUrl == null) {
+                requestAds = false;
+            }
+            mCustomVideoPlayerView.setupAds(requestAds ? adsUrl : null);
+            mCustomVideoPlayerView.setVideoUri(contentData.getGist().getId());
+        }
+
+
+       //CustomVideoPlayerView videoPlayerView = null;
+       /* if(null != cardView && cardView.getChildCount() > 0){
+            videoPlayerView = (CustomVideoPlayerView)cardView.getChildAt(0);
         }else {
             videoPlayerView = playerView(cardView.getContext());
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
@@ -68,7 +94,7 @@ public class PlayerPresenter extends Presenter {
             }
             videoPlayerView.setupAds(requestAds ? adsUrl : null);
             videoPlayerView.setVideoUri(contentData.getGist().getId());
-        }
+        }*/
     }
 
     @Override
@@ -84,8 +110,8 @@ public class PlayerPresenter extends Presenter {
 
 
 
-    public static CustomVideoVideoPlayerView playerView(Context context) {
-        CustomVideoVideoPlayerView videoPlayerView = new CustomVideoVideoPlayerView(context);
+    public CustomVideoPlayerView playerView(Context context) {
+        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
         videoPlayerView.init(context);
         videoPlayerView.getPlayerView().hideController();
         videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
@@ -97,6 +123,13 @@ public class PlayerPresenter extends Presenter {
             }
         });
         return videoPlayerView;
+    }
+
+    private CustomVideoPlayerView mCustomVideoPlayerView;
+    private boolean shouldStartPlayer;
+    public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView , boolean shouldStartPlayer){
+        this.mCustomVideoPlayerView = customVideoPlayerView;
+        this.shouldStartPlayer = shouldStartPlayer;
     }
 
 }
