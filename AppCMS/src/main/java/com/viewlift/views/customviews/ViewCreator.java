@@ -1920,7 +1920,13 @@ public class ViewCreator {
                     case PAGE_BANNER_DETAIL_BUTTON:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
                         componentViewResult.componentView.setId(View.generateViewId());
-                        componentViewResult.componentView.setOnClickListener(appCMSPresenter::showPopUpMenuSports);
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (settings != null)
+                                    appCMSPresenter.showPopUpMenuSports(settings.getLinks(), settings.getSocialLinks());
+                            }
+                        });
                         break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
