@@ -1699,7 +1699,9 @@ public class ViewCreator {
                         AppCMSPresenter.videoPlayerView = (CustomVideoPlayerView) componentViewResult.componentView;
                     }else
                     {
-                        ((ViewGroup)AppCMSPresenter.videoPlayerView.getParent()).removeView(AppCMSPresenter.videoPlayerView);
+                        if (((ViewGroup)AppCMSPresenter.videoPlayerView.getParent())!=null ) {
+                            ((ViewGroup) AppCMSPresenter.videoPlayerView.getParent()).removeView(AppCMSPresenter.videoPlayerView);
+                        }
                         componentViewResult.componentView=AppCMSPresenter.videoPlayerView;
                         AppCMSPresenter.videoPlayerView.pausePlayer();
                         AppCMSPresenter.videoPlayerView.setVideoUri(moduleAPI.getContentData().get(0).getGist().getId(),R.string.loading_video_text);

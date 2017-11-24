@@ -75,6 +75,17 @@ public class CustomVideoPlayerView extends VideoPlayerView {
     int currentPlayingIndex = 0;
     List<String> relatedVideoId;
 
+    private int currentIndex(String videoId) {
+        if (relatedVideoId != null && relatedVideoId.size() < currentPlayingIndex)
+            for (int i = 0; i < relatedVideoId.size(); i++) {
+                if (videoId.equalsIgnoreCase(relatedVideoId.get(i))) {
+                    return i;
+                }
+            }
+
+        return 0;
+    }
+
     public void setVideoUri(String videoId, int resIdMessage) {
 
         showProgressBar(getResources().getString(resIdMessage));
@@ -165,6 +176,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                     }
                 }
             }
+
             if (playerView!=null && playerView.getController()!=null ){
                 playerView.getController().setPlayingLive(contentDatum.getStreamingInfo().getIsLiveStream());
             }
@@ -176,7 +188,8 @@ public class CustomVideoPlayerView extends VideoPlayerView {
             if (currentIndex == 0) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
             }
-            currentPlayingIndex = currentIndex;
+            currentPlayingIndex = currentIndex(contentDatum.getGist().getId());
+            videoDataId=(relatedVideoId!=null&& relatedVideoId.size()>currentPlayingIndex)?relatedVideoId.get(currentPlayingIndex):videoDataId;
             hideProgressBar();
         }
     }
@@ -222,7 +235,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 getPlayerView().getPlayer().setPlayWhenReady(false);
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     //showProgressBar("Loading Next Video...");
-                    setVideoUri(relatedVideoId.get(++currentPlayingIndex),R.string.loading_next_video_text);
+                    setVideoUri(relatedVideoId.get(currentPlayingIndex),R.string.loading_next_video_text);
 
                     /*appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
                         @Override
