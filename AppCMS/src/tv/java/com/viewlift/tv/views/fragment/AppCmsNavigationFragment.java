@@ -535,7 +535,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                         Uri.EMPTY,
                                         false,
                                         false,
-                                        false
+                                        true
                                 );
                             });
                         }
@@ -576,7 +576,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                         Uri.EMPTY,
                                         false,
                                         false,
-                                        false
+                                        true
                                 );
                             });
                         }
