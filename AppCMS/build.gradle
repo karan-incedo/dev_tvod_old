@@ -26,13 +26,14 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
-    maven {
+    /*maven {
         url "s3://sdkv1.kiswe.com/release"
         credentials(AwsCredentials) {
             accessKey 'AKIAIST5GLZEHZKM57SQ'
             secretKey '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'
         }
-    }
+    }*/
+
     maven {
         url "s3://sdkv1.kiswe.com/snapshot"
         credentials(AwsCredentials) {
@@ -280,7 +281,7 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-    mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
+     mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
 }
 
 apply plugin: 'com.google.gms.google-services'
