@@ -118,7 +118,6 @@ public class AppCMSPageFragment extends Fragment {
             onPageCreation.onError(appCMSBinder);
         }
 
-
         if (container != null) {
             container.removeAllViews();
             pageViewGroup = container;
@@ -128,7 +127,6 @@ public class AppCMSPageFragment extends Fragment {
          * Here we are sending analytics for the screen views. Here we will log the events for
          * the Screen which will come on AppCMSPageActivity.
          */
-
         if (shouldSendFirebaseViewItemEvent) {
             sendFirebaseAnalyticsEvents(appCMSBinder);
             shouldSendFirebaseViewItemEvent = false;
@@ -388,15 +386,6 @@ public class AppCMSPageFragment extends Fragment {
                 child.requestLayout();
             }
         }
-    }
-
-    private void removeAllViews(ViewGroup viewGroup) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
-                removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
-            }
-        }
-        viewGroup.removeAllViews();
     }
 
     public interface OnPageCreation {
