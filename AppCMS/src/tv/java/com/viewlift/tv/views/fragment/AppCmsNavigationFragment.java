@@ -452,14 +452,22 @@ public class AppCmsNavigationFragment extends Fragment {
                 Utils.pageLoading(true, getActivity());
 
                 new Handler().postDelayed(() -> {
+
+                    /*Search*/
                     if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
-                        appCmsPresenter.openSearch(primary.getPageId() , primary.getTitle());
+                        appCmsPresenter.openSearch(primary.getPageId(), primary.getTitle());
                         Utils.pageLoading(false, getActivity());
-                    }  else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_settings_page_tag))) {
+                    }
+
+                    /*Settings*/
+                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_settings_page_tag))) {
                         Utils.pageLoading(false, getActivity());
-                        showNavigation[0] = false;
+                        navigationVisibilityListener.showNavigation(false);
                         subNavigationVisibilityListener.showSubNavigation(true, false);
-                    } else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
+                    }
+
+                    /*Profile/ My snag, my hoichoi etc*/
+                    else if (primary.getPageId().equalsIgnoreCase(getString(R.string.app_cms_my_profile_label,
                             getString(R.string.profile_label)))) {
 
                         NavigationUser navigationUser = getNavigationUser();
@@ -483,44 +491,107 @@ public class AppCmsNavigationFragment extends Fragment {
                                     false
                             );
                         }
-                    } else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_teams_label))){
-                        showNavigation[0] = false;
+                    }
+
+                    /*Teams*/
+                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_teams_label))) {
+                        navigationVisibilityListener.showNavigation(false);
                         subNavigationVisibilityListener.showSubNavigation(true, true);
                         Utils.pageLoading(false, getActivity());
-                    } else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_watchlist_title))){
+                    }
+
+                    /*Watchlist*/
+                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_watchlist_title))) {
                         if (appCmsPresenter.isUserLoggedIn()) {
-                            showNavigation[0] = false;
+                            navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
                             appCmsPresenter.navigateToWatchlistPage(
                                     primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),
                                     false);
-                        } else {
-                            NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                            appCMSPresenter.navigateToTVPage(
-                                    navigationUser.getPageId(),
-                                    navigationUser.getTitle(),
-                                    navigationUser.getUrl(),
-                                    false,
-                                    Uri.EMPTY,
-                                    false,
-                                    false,
-                                    true
-                            );
-                        }
-                    } else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
-                            primary.getTitle(),
-                            primary.getUrl(),
-                            false,
-                            null,
-                            true,
-                            false,
-                            false)) {
+                        } else /*user not logged in*/ {
+                            Utils.pageLoading(false, getActivity());
+                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                    mContext,
+                                    appCMSPresenter,
+                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                    mContext.getString(R.string.sign_in_text),
+                                    mContext.getString(R.string.open_account_dialog_text),
+                                    mContext.getString(R.string.sign_in_text),
+                                    mContext.getString(android.R.string.cancel),
+                                    14
 
+                            );
+                            newFragment.setOnPositiveButtonClicked(s -> {
+
+                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                appCMSPresenter.navigateToTVPage(
+                                        navigationUser.getPageId(),
+                                        navigationUser.getTitle(),
+                                        navigationUser.getUrl(),
+                                        false,
+                                        Uri.EMPTY,
+                                        false,
+                                        false,
+                                        true
+                                );
+                            });
+                        }
                     }
 
-                    navigationVisibilityListener.showNavigation(showNavigation[0]);
+                    /*History*/
+                    else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_history_title))) {
+                        if (appCmsPresenter.isUserLoggedIn()) {
+                            navigationVisibilityListener.showNavigation(false);
+                            Utils.pageLoading(true, getActivity());
+                            appCmsPresenter.navigateToWatchlistPage(
+                                    primary.getPageId(),
+                                    primary.getTitle(),
+                                    primary.getUrl(),
+                                    false);
+                        } else /*user not logged in*/ {
+                            Utils.pageLoading(false, getActivity());
+                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                    mContext,
+                                    appCMSPresenter,
+                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                    mContext.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                    mContext.getString(R.string.sign_in_text),
+                                    mContext.getString(R.string.open_account_dialog_text),
+                                    mContext.getString(R.string.sign_in_text),
+                                    mContext.getString(android.R.string.cancel),
+                                    14
+
+                            );
+                            newFragment.setOnPositiveButtonClicked(s -> {
+
+                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                appCMSPresenter.navigateToTVPage(
+                                        navigationUser.getPageId(),
+                                        navigationUser.getTitle(),
+                                        navigationUser.getUrl(),
+                                        false,
+                                        Uri.EMPTY,
+                                        false,
+                                        false,
+                                        true
+                                );
+                            });
+                        }
+                    } else {
+                        appCmsPresenter.navigateToTVPage(primary.getPageId(),
+                                primary.getTitle(),
+                                primary.getUrl(),
+                                false,
+                                null,
+                                true,
+                                false,
+                                false);
+                        navigationVisibilityListener.showNavigation(false);
+                    }
+
                 }, 500);
             });
         }
