@@ -659,7 +659,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onResume() {
         videoPlayerView.setListener(this);
-       if (shouldRequestAds && adsManager != null && isAdDisplayed) {
+        appCMSPresenter.setCancelAllLoads(false);
+        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
         }  /*else {
             videoPlayerView.resumePlayer();
