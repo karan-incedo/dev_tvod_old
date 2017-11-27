@@ -3019,7 +3019,7 @@ public class ViewCreator {
                 if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.
                             setBackgroundColor(Color.parseColor(getColor(context,
-                                    component.getBackgroundColor())));
+                                    settings.getBackgroundColor())));
                 }
                 break;
             case PAGE_SEPARATOR_VIEW_KEY:
