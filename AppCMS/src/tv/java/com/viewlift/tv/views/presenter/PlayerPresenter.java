@@ -99,13 +99,13 @@ public class PlayerPresenter extends Presenter {
 
     @Override
     public void onUnbindViewHolder(ViewHolder viewHolder) {
-        try {
+      /*  try {
             if (null != viewHolder && null != viewHolder.view) {
                 ((FrameLayout) viewHolder.view).removeAllViews();
             }
         }catch (Exception e){
             e.printStackTrace();
-        }
+        }*/
     }
 
 
@@ -122,6 +122,7 @@ public class PlayerPresenter extends Presenter {
                 }
             }
         });
+
         return videoPlayerView;
     }
 
