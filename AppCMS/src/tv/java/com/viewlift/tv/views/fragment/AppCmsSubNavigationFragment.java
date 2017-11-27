@@ -90,6 +90,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+        view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
 
         View navTopLine = view.findViewById(R.id.nav_top_line);
         AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();

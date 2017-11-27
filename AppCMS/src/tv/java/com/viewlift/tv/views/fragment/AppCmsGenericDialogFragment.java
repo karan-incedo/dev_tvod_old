@@ -2,13 +2,13 @@ package com.viewlift.tv.views.fragment;
 
 
 import android.app.DialogFragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.viewlift.AppCMSApplication;
-import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
@@ -71,7 +71,8 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
             container.removeAllViews();
         }
 
-        tvPageView.setBackgroundResource(R.drawable.home_screen_background);
+        tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+
 
         return tvPageView;
     }

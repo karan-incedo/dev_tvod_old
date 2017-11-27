@@ -86,6 +86,7 @@ public class AppCmsNavigationFragment extends Fragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+        view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         TextView navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
         View navTopLine = view.findViewById(R.id.nav_top_line);
         navMenuSubscriptionModule = (TextView) view.findViewById(R.id.nav_menu_subscription_module);
