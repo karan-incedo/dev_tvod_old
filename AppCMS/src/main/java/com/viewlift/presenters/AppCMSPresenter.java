@@ -544,6 +544,8 @@ public class AppCMSPresenter {
     private Action0 afterLoginAction;
     private boolean shouldLaunchLoginAction;
     private Map<String, ContentDatum> userHistoryData;
+    private String cachedAPIUserToken;
+    private boolean usedCachedAPI;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -580,6 +582,7 @@ public class AppCMSPresenter {
     private boolean showNetworkConnectivity;
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
+    private boolean forceLoad;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -724,6 +727,8 @@ public class AppCMSPresenter {
         this.waithingFor3rdPartyLogin = false;
 
         this.userHistoryData = new HashMap<>();
+
+        clearMaps();
     }
 
     /*does not let user enter space in editText*/
@@ -830,7 +835,8 @@ public class AppCMSPresenter {
                     try {
                         if ((pageId.equals(homePage.getPageId()) ||
                                 pageId.equals(moviesPage.getPageId())) &&
-                                !isUserLoggedIn()) {
+                                !isUserLoggedIn() &&
+                                usedCachedAPI) {
                             if (pageId.equals(homePage.getPageId())) {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
                                         siteId,
@@ -1172,6 +1178,10 @@ public class AppCMSPresenter {
         }
     }
 
+    public void forceLoad() {
+        this.forceLoad = true;
+    }
+
     public boolean launchButtonSelectedAction(String pagePath,
                                               String action,
                                               String filmTitle,
@@ -1234,7 +1244,8 @@ public class AppCMSPresenter {
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null, null);
-            } else if (currentActivity != null && !loadingPage) {
+            } else if (currentActivity != null && (!loadingPage || forceLoad)) {
+                forceLoad = false;
                 if (actionType == null) {
                     //Log.e(TAG, "Action " + action + " not found!");
                     return false;
@@ -1752,6 +1763,14 @@ public class AppCMSPresenter {
         }
 
         return result;
+    }
+
+    public boolean isLaunched() {
+        return launched;
+    }
+
+    public void resetLaunched() {
+        launched = false;
     }
 
     public void mergeData(AppCMSPageAPI fromAppCMSPageAPI, AppCMSPageAPI toAppCMSPageAPI) {
@@ -5171,7 +5190,7 @@ public class AppCMSPresenter {
         boolean result = false;
         if (currentActivity != null) {
             Intent deeplinkIntent = new Intent(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION);
-            deeplinkIntent.setData(deeplinkUri);
+            deeplinkIntent.putExtra(currentActivity.getString(R.string.deeplink_uri_extra_key), deeplinkUri.toString());
             currentActivity.sendBroadcast(deeplinkIntent);
             result = true;
         }
@@ -5278,7 +5297,8 @@ public class AppCMSPresenter {
                                 try {
                                     if ((pageId.equals(homePage.getPageId()) ||
                                             pageId.equals(moviesPage.getPageId())) &&
-                                            !isUserLoggedIn()) {
+                                            !isUserLoggedIn() &&
+                                            usedCachedAPI) {
                                         authToken = getCachedUserToken();
                                     }
                                 } catch (Exception e) {
@@ -5306,7 +5326,8 @@ public class AppCMSPresenter {
                 try {
                     if ((pageId.equals(homePage.getPageId()) ||
                             pageId.equals(moviesPage.getPageId())) &&
-                            !isUserLoggedIn()) {
+                            !isUserLoggedIn() &&
+                            usedCachedAPI) {
                         authToken = getCachedUserToken();
                     }
                 } catch (Exception e) {
@@ -5545,7 +5566,7 @@ public class AppCMSPresenter {
     }
 
     private String getCachedUserToken() {
-        return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzaXRlIjoiaG9pY2hvaXR2IiwiaWQiOiI0Njg0YjJiZjc2YzQyZWZkMzJiODQ1OWFmZmY1Zjg1YWQ1YTE5ZTE2Y2I2MzhmZTFhYmE3NGIyNDYxNzVjMTlkIiwidXNlcklkIjoiNDY4NGIyYmY3NmM0MmVmZDMyYjg0NTlhZmZmNWY4NWFkNWExOWUxNmNiNjM4ZmUxYWJhNzRiMjQ2MTc1YzE5ZCIsImlwYWRkcmVzcyI6IjI2MDA6MTcwMDoxOTYwOjMzYjA6MTA2MTo4YmI4OmNhODpiNzQwIiwiaXBhZGRyZXNzZXMiOiIyNjAwOjE3MDA6MTk2MDozM2IwOjEwNjE6OGJiODpjYTg6Yjc0MCwgMzQuMjAzLjE4OC4xNjMsIDU0LjI0MC4xNDQuNjUiLCJ1c2VybmFtZSI6ImFub255bW91cyIsImNvdW50cnlDb2RlIjoiVVMiLCJwcm92aWRlciI6InZpZXdsaWZ0IiwiaWF0IjoxNTExMjMwOTQwLCJleHAiOjE1NDI3NjY5NDB9.0eeLtDZtzgPqM2zJA6JzVrvfZ5mmY1yKaV2Wr_Of9V4";
+        return cachedAPIUserToken;
     }
 
     private String getAnonymousUserToken() {
@@ -8606,6 +8627,12 @@ public class AppCMSPresenter {
 
     public void setCurrentContext(Context context) {
         this.currentContext = context;
+        try {
+            this.cachedAPIUserToken = context.getString(R.string.app_cms_cached_api_user_token);
+            this.usedCachedAPI = context.getResources().getBoolean(R.bool.use_cached_api);
+        } catch (Exception e) {
+
+        }
     }
 
     private Bundle getPageActivityBundle(Activity activity,
@@ -8984,8 +9011,6 @@ public class AppCMSPresenter {
                                                 apikey,
                                                 appCMSSearchCall))
                                         .build();
-
-                                clearMaps();
                                 switch (platformType) {
                                     case ANDROID:
                                         getAppCMSAndroid(0);
@@ -9328,7 +9353,6 @@ public class AppCMSPresenter {
                                                             launchBlankPage();
                                                         }
                                                     }
-
                                                 }
                                             });
                                 });
@@ -9411,7 +9435,7 @@ public class AppCMSPresenter {
 
                 if (moviesPage != null) {
                     String baseUrl = appCMSMain.getApiBaseUrl();
-                    String endPoint = pageIdToPageAPIUrlMap.get(moviesPage.getPageId());
+                    String endPoint = moviesPage.getPageAPI();
                     String siteId = appCMSSite.getGist().getSiteInternalName();
 
                     // Cache movies page when the app is loading

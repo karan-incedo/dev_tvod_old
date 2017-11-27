@@ -48,7 +48,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -58,8 +58,32 @@
                     android:pathPrefix="/films/title" />
                 <data
                     android:scheme="https"
-                    android:host="@string/app_cms_app_host_name"
+                    android:host="@string/app_cms_app_host_name_suffix"
                     android:pathPrefix="/films/title" />
+                <data
+                    android:scheme="http"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title" />
+                <data
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title" />
+                <data
+                    android:scheme="http"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films/title/" />
+                <data
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/films/title/" />
+                <data
+                    android:scheme="http"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title/" />
+                <data
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/show/title/" />
             </intent-filter>
         </activity>
 
