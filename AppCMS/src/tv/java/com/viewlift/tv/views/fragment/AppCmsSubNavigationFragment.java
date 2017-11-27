@@ -273,6 +273,11 @@ public class AppCmsSubNavigationFragment extends Fragment {
             navigationSubItem1.title = "MANAGE SUBSCRIPTION";
             navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
             navigationSubItemList.add(navigationSubItem1);
+        } else /*Guest User*/{
+            navigationSubItem1 = new NavigationSubItem();
+            navigationSubItem1.title = "SUBSCRIBE NOW";
+            navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
+            navigationSubItemList.add(navigationSubItem1);
         }
 
         for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
@@ -578,7 +583,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                             navigationSubItem.title = "Closed Caption On";
                             appCMSPresenter.setClosedCaptionPreference(true);
                         }
-                    } else if (navigationSubItem.title.toUpperCase().contains("SUBSCRIPTION")) {
+                    } else if (navigationSubItem.title.toUpperCase().contains("SUBSCRI")) {
                         if (appCMSPresenter.isUserLoggedIn()) {
                             mContext.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                             if (appCMSPresenter.getActiveSubscriptionPlatform() == null) {
