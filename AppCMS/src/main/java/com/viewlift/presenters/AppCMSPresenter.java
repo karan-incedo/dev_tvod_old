@@ -211,7 +211,6 @@ import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
-import com.viewlift.views.customviews.PopupMenu;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
@@ -11008,15 +11007,33 @@ public class AppCMSPresenter {
         AppCMSMoreMenuDialogFragment appCMSMoreMenuDialogFragment = AppCMSMoreMenuDialogFragment.newInstance(getLinks(links, socialLinks));
         appCMSMoreMenuDialogFragment.show(currentActivity.getFragmentManager(), AppCMSMoreMenuDialogFragment.class.getSimpleName());
     }
+
     private ArrayList<Links> getLinks(ArrayList<Links> links, ArrayList<SocialLinks> socialLinks) {
         ArrayList<Links> linksToOpen = new ArrayList<>();
+        ArrayList<Links> tempLinks = new ArrayList<>();
+
         /*combine both social links and link into a single list of links*/
         if (links != null && socialLinks != null) {
             for (int i = 0; i < socialLinks.size(); i++) {
                 Links link = new Links();
                 link.setDisplayedPath(socialLinks.get(i).getDisplayedPath());
                 link.setTitle(socialLinks.get(i).getTitle());
-                links.add(link);
+                tempLinks.add(link);
+            }
+            for (int i = 0; i < links.size(); i++) {
+                Links link = new Links();
+                link.setDisplayedPath(links.get(i).getDisplayedPath());
+                link.setTitle(links.get(i).getTitle());
+                tempLinks.add(link);
+            }
+        }
+        /*check if socialLinks are empty , then fill list with links*/
+        if (links != null && socialLinks == null) {
+            for (int i = 0; i < links.size(); i++) {
+                Links link = new Links();
+                link.setDisplayedPath(links.get(i).getDisplayedPath());
+                link.setTitle(links.get(i).getTitle());
+                tempLinks.add(link);
             }
         }
         /*check if links are empty , then fill list with social links*/
@@ -11025,12 +11042,13 @@ public class AppCMSPresenter {
                 Links link = new Links();
                 link.setDisplayedPath(socialLinks.get(i).getDisplayedPath());
                 link.setTitle(socialLinks.get(i).getTitle());
-                links.add(link);
+                tempLinks.add(link);
             }
         }
-        linksToOpen = links;
+        linksToOpen = tempLinks;
         return linksToOpen;
     }
+
     public void openWebView(String browseURL) {
         Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(browseURL));
         currentContext.startActivity(browserIntent);

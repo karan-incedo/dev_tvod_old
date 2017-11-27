@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,13 +62,6 @@ public class AppCMSMoreMenuDialogFragment extends DialogFragment implements View
 
         closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getCta().getPrimary().getTextColor()));
-        dialogList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                appCMSPresenter.openWebView(links.get(position).getDisplayedPath());
-            }
-        });
-
         closeBtn.setOnClickListener(this);
     }
 

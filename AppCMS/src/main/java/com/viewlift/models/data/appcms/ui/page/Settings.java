@@ -48,6 +48,9 @@ public class Settings implements Serializable {
     @SerializedName("image")
     @Expose
     String image;
+    @SerializedName("backgroundColor")
+    @Expose
+    String backgroundColor;
 
     @SerializedName("socialLinks")
     @Expose
@@ -56,6 +59,10 @@ public class Settings implements Serializable {
     @SerializedName("links")
     @Expose
     ArrayList<Links> links;
+
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
 
     public ArrayList<SocialLinks> getSocialLinks() {
         return socialLinks;
