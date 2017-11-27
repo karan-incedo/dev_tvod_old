@@ -68,8 +68,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
     private int textWidth = 0;
     private int textTopMargin = 0;
     private List<AppCMSSearchResult> appCMSSearchResults;
-    int defaultHeight = 0;
-    int defaultWidth = 0;
 
     public AppCMSSearchItemAdapter(Context context, AppCMSPresenter appCMSPresenter,
                                    List<AppCMSSearchResult> appCMSSearchResults) {
@@ -144,11 +142,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage() != null &&
                 appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage().getSecureUrl() != null) {
             if (appCMSPresenter.getIsMoreOptionsAvailable()) {
-                if (defaultWidth != 0 && defaultHeight != 0) {
-                    applySportsStyleDefault(viewHolder);
-                }
+                applySportsStyleDefault(viewHolder, createEmptyBitmap());
             }
-
 
             final String imageUrl = viewHolder.view.getContext().getString(R.string.app_cms_image_with_resize_query,
                     appCMSSearchResults.get(adapterPosition).getContentDetails().getVideoImage().getSecureUrl(),
@@ -168,8 +163,6 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                         public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
                             if (appCMSPresenter.getIsMoreOptionsAvailable()) {
                                 Bitmap bitmap = resource;
-                                defaultHeight = bitmap.getHeight();
-                                defaultWidth = bitmap.getWidth();
                                 viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight()));
                                 viewHolder.filmThumbnail.setImageBitmap(bitmap);
 
@@ -339,14 +332,19 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         }
     }
 
-    void applySportsStyleDefault(ViewHolder viewHolder) {
-        viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(defaultWidth, defaultHeight));
-//        viewHolder.filmThumbnail.setImageBitmap(bitmap);
+    Bitmap createEmptyBitmap() {
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap emptyBitmap = Bitmap.createBitmap(426, 239, conf);
+        return emptyBitmap;
+    }
 
-        viewHolder.titleLayout.setLayoutParams(new FrameLayout.LayoutParams(defaultWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+    void applySportsStyleDefault(ViewHolder viewHolder, Bitmap image) {
+        viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(), image.getHeight()));
+
+        viewHolder.titleLayout.setLayoutParams(new FrameLayout.LayoutParams(image.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
 
         FrameLayout.LayoutParams titleLayoutParams = (FrameLayout.LayoutParams) viewHolder.titleLayout.getLayoutParams();
-        titleLayoutParams.setMargins(0, defaultHeight, 0, 0);
+        titleLayoutParams.setMargins(0, image.getHeight(), 0, 0);
         viewHolder.titleLayout.setLayoutParams(titleLayoutParams);
 
         viewHolder.gridOptions.setVisibility(View.VISIBLE);

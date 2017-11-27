@@ -57,7 +57,15 @@ public class MoreMenuDialogAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.buttonDialog.setText(links.get(position).getTitle());
+        if (links != null && links.get(position).getTitle() != null) {
+            viewHolder.buttonDialog.setText(links.get(position).getTitle());
+        }
+        viewHolder.buttonDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                appCMSPresenter.openWebView(links.get(position).getDisplayedPath());
+            }
+        });
         return convertView;
 
     }
