@@ -460,6 +460,7 @@
     <string name="visit_website_msg">Please visit our website to start your subscription.</string>
     <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
     <string name="no_more_videos_in_queue">No more videos in queue.</string>
+    <string name="shouldNavigateToLogin">shouldNavigateToLogin</string>
 
 </resources>
 

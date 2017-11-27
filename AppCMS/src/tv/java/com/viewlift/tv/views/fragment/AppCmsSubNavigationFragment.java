@@ -93,6 +93,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+        view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
 
         View navTopLine = view.findViewById(R.id.nav_top_line);
         AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
@@ -604,7 +605,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                             } else {
                                                 varMessage = mContext.getString(R.string.subscription_not_purchased);
                                             }
-                                            appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription));
+                                            appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription), false);
                                         }
                                 );
                             } else {
@@ -619,10 +620,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                 } else {
                                     varMessage = mContext.getString(R.string.subscription_purchased_from_unknown_msg);
                                 }
-                                appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription));
+                                appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription), false);
                             }
                         } else {
-                            appCMSPresenter.openTVErrorDialog(mContext.getString(R.string.subscription_not_purchased), mContext.getString(R.string.subscription));
+                            appCMSPresenter.openTVErrorDialog(mContext.getString(R.string.subscription_not_purchased), mContext.getString(R.string.subscription), false);
                         }
                     } else if (navigationSubItem.title.toUpperCase().contains("SIGN")) {
                         if (!appCMSPresenter.isUserLoggedIn()) {
@@ -696,7 +697,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                     !isTeamsShowing(),
                                     isLoginDialogPage);
                         } else {
-                            appCMSPresenter.openTVErrorDialog("There is some error opening " + navigationSubItem.title, "");
+                            appCMSPresenter.openTVErrorDialog("There is some error opening " + navigationSubItem.title, "", false);
                         }
                     }
                     STNavigationAdapter.this.notifyItemChanged(holder.getAdapterPosition());

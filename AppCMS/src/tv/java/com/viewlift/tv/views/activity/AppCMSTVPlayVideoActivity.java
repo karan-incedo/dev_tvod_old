@@ -401,6 +401,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     protected void onResume() {
         super.onResume();
         registerRecievers();
+        appCMSPresenter.setCancelAllLoads(false);
         if (!appCMSPresenter.isNetworkConnected()) {
            // appCMSPresenter.showErrorDialog(AppCMSPresenter.Error.NETWORK, null); //TODO : need to show error dialog.
             finish();
