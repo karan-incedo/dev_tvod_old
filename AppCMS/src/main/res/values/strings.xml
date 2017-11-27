@@ -8,6 +8,7 @@
     <string name="app_cms_download_setting_bundle_key">app_cms_download_setting_bundle_key</string>
     <string name="app_cms_download_setting_binder_key">app_cms_download_setting_binder_key</string>
 
+    <string name="something_wrong">Something went wrong. Please try again!</string>
     <string name="app_cms_bundle_key">app_cms_bundle</string>
     <string name="launch_binder_key">launch_binder</string>
     <string name="video_player_data_key">video_player_data</string>
@@ -22,6 +23,7 @@
     <string name="ellipse_char">&#8230;</string>
     <string name="min_abbreviation">MIN</string>
     <string name="sec_abbreviation">SEC</string>
+    <string name="secs_abbreviation">SECS</string>
     <string name="mins_abbreviation">MINS</string>
     <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
