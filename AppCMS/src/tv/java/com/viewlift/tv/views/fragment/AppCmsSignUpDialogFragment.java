@@ -193,8 +193,7 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
                         Uri.EMPTY,
                         false,
                         false,
-                        true
-                );
+                        true);
 
             }
         });

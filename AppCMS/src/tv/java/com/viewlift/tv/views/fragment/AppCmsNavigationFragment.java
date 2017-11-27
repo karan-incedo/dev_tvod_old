@@ -298,8 +298,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                             Uri.EMPTY,
                                             false,
                                             false,
-                                            false
-                                    );
+                                            false);
                                 }
 
                             }else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
@@ -488,8 +487,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                     Uri.EMPTY,
                                     false,
                                     false,
-                                    false
-                            );
+                                    false);
                         }
                     }
 
@@ -535,8 +533,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                         Uri.EMPTY,
                                         false,
                                         false,
-                                        true
-                                );
+                                        true);
                             });
                         }
                     }
@@ -576,8 +573,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                         Uri.EMPTY,
                                         false,
                                         false,
-                                        true
-                                );
+                                        true);
                             });
                         }
                     } else {

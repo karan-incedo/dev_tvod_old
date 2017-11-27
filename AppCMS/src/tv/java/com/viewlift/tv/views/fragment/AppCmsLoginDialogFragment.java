@@ -166,8 +166,7 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
                         Uri.EMPTY,
                         false,
                         false,
-                        true
-                );
+                        true);
             }
         });
 

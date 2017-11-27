@@ -223,7 +223,7 @@ public class CustomVideoPlayerView
 
         switch (playbackState) {
             case STATE_ENDED:
-                getPlayerView().getPlayer().setPlayWhenReady(false);
+//                getPlayerView().getPlayer().setPlayWhenReady(false);
                 currentPlayingIndex++;
                 Log.d(TAG, "appCMSPresenter.getAutoplayEnabledUserPref(mContext): " +
                         appCMSPresenter.getAutoplayEnabledUserPref(mContext));
@@ -425,7 +425,7 @@ public class CustomVideoPlayerView
         }
     }
 
-    private void showRestrictMessage(String message) {
+     private void showRestrictMessage(String message) {
         if (null != customMessageContaineer && null != customMessageView) {
             hideProgressBar();
             customMessageView.setText(message);
