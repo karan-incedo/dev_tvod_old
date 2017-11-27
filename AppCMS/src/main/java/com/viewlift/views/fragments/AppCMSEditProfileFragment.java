@@ -106,9 +106,9 @@ public class AppCMSEditProfileFragment extends DialogFragment {
         appCMSEditProfileEmailText.setTypeface(appCMSPresenter.getBoldTypeFace());
         appCMSEditProfileEmailText.setBackgroundColor(transparentColor);
 
+        appCMSEditProfileNameInput.setTextColor(textColor);
         if (!TextUtils.isEmpty(username)) {
             appCMSEditProfileNameInput.setText(username);
-            appCMSEditProfileNameInput.setTextColor(textColor);
         }
 
         if (!TextUtils.isEmpty(email)) {
