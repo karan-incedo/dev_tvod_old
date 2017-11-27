@@ -126,6 +126,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 System.out.println(" JSON for Video details " + new Gson().toJson(contentDatum));
             }
         });
+        videoDataId=videoId;
 
     }
 
@@ -189,7 +190,6 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
             }
             currentPlayingIndex = currentIndex(contentDatum.getGist().getId());
-            videoDataId=(relatedVideoId!=null&& relatedVideoId.size()>currentPlayingIndex)?relatedVideoId.get(currentPlayingIndex):videoDataId;
             hideProgressBar();
         }
     }
