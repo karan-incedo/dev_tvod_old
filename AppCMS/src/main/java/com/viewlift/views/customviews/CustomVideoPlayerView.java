@@ -13,18 +13,24 @@ import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
-import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.exoplayerview.CustomPlaybackControlView;
+
 import java.util.List;
 import rx.functions.Action1;
 import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
@@ -35,31 +41,57 @@ public class CustomVideoPlayerView extends VideoPlayerView {
 
     private Context mContext;
     private AppCMSPresenter appCMSPresenter;
-
+    private  FrameLayout.LayoutParams baseLayoutParms;
     private LinearLayout customLoaderContainer;
     private TextView loaderMessageView;
     private LinearLayout customMessageContainer;
     private TextView customMessageView;
     private LinearLayout customPlayBack;
     private String videoDataId;
+    private ToggleButton mFullScreenButton;
+
 
 
     public CustomVideoPlayerView(Context context, String videoId) {
         super(context);
         mContext = context;
-        this.videoDataId=videoId;
+        this.videoDataId = videoId;
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
-        createPlaybackFullScreen();
+        //createPlaybackFullScreen();
         createCustomMessageView();
+
+
+
+
+        mFullScreenButton = createFullScreenToggleButton();
+        ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
+
+
+
     }
 
 
     int currentPlayingIndex = 0;
     List<String> relatedVideoId;
 
-    public void setVideoUri(String videoId) {
-        showProgressBar(getResources().getString(R.string.loading_video_text));
+    private int currentIndex(String videoId) {
+        if (relatedVideoId != null && relatedVideoId.size() < currentPlayingIndex)
+            for (int i = 0; i < relatedVideoId.size(); i++) {
+                if (videoId.equalsIgnoreCase(relatedVideoId.get(i))) {
+                    return i;
+                }
+            }
+
+        return 0;
+    }
+
+    public void setVideoUri(String videoId, int resIdMessage) {
+
+        showProgressBar(getResources().getString(resIdMessage));
+        releasePlayer();
+        init(mContext);
+        getPlayerView().hideController();
 
         appCMSPresenter.refreshVideoData(videoId, new Action1<ContentDatum>() {
             @Override
@@ -76,7 +108,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                                     String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
                                     if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                             subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                        playVideos(0,contentDatum);
+                                        playVideos(0, contentDatum);
                                     } else {
                                         showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
                                     }
@@ -89,9 +121,9 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                         });
                     }
                 } else {
-                    playVideos(0,contentDatum);
+                    playVideos(0, contentDatum);
                 }
-                System.out.println( " JSON for Video details "+ new Gson().toJson(contentDatum));
+                System.out.println(" JSON for Video details " + new Gson().toJson(contentDatum));
             }
         });
 
@@ -104,28 +136,27 @@ public class CustomVideoPlayerView extends VideoPlayerView {
 //            if(getPlayerView()!=null) {
 ////                getPlayerView().getController();
 //                PlaybackControlView playbackControlView = getPlayerView().getController();
-//                if(playbackControlView!=null) {
-//                    FrameLayout mFullScreenButton = (FrameLayout) playbackControlView.findViewById(R.id.exo_fullscreen_button);
-//                    ImageView mFullScreenIcon = (ImageView) playbackControlView.findViewById(R.id.exo_fullscreen_icon);
-//                    mFullScreenIcon.setImageResource(R.drawable.ic_fullscreen_expand);
-//                    mFullScreenButton.setOnClickListener(new OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
-//                        }
-//                    });
-//                }
+//                FrameLayout mFullScreenButton = (FrameLayout) playbackControlView.findViewById(R.id.exo_fullscreen_button);
+//                ImageView mFullScreenIcon = (ImageView) playbackControlView.findViewById(R.id.exo_fullscreen_icon);
+//                mFullScreenIcon.setImageResource(R.drawable.ic_fullscreen_expand);
+//                mFullScreenButton.setOnClickListener(new OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+//                    }
+//                });
 //            }
 //        }
 //    }
 
-    private void playVideos(int currentIndex , ContentDatum contentDatum){
+    private void playVideos(int currentIndex, ContentDatum contentDatum) {
         hideRestrictedMessage();
 
-        if (null != customPlayBack )
+        if (null != customPlayBack)
             customPlayBack.setVisibility(View.VISIBLE);
 
         String url = null;
+        String closedCaptionUrl = null;
         if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
             if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
                 url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
@@ -133,14 +164,32 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                     && contentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
                 url = contentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
             }
+            if (contentDatum.getContentDetails() != null
+                    && contentDatum.getContentDetails().getClosedCaptions() != null
+                    && !contentDatum.getContentDetails().getClosedCaptions().isEmpty()) {
+                for (ClosedCaptions cc : contentDatum.getContentDetails().getClosedCaptions()) {
+                    if (cc.getUrl() != null &&
+                            !cc.getUrl().equalsIgnoreCase(getContext().getString(R.string.download_file_prefix)) &&
+                            cc.getFormat() != null &&
+                            cc.getFormat().equalsIgnoreCase("SRT")) {
+                        closedCaptionUrl = cc.getUrl();
+                    }
+                }
+            }
+
+            if (playerView!=null && playerView.getController()!=null ){
+                playerView.getController().setPlayingLive(contentDatum.getStreamingInfo().getIsLiveStream());
+            }
         }
+
         if (null != url) {
-            setUri(Uri.parse(url), null);
+            setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
             getPlayerView().getPlayer().setPlayWhenReady(true);
-            if(currentIndex == 0) {
+            if (currentIndex == 0) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
             }
-            currentPlayingIndex = currentIndex;
+            currentPlayingIndex = currentIndex(contentDatum.getGist().getId());
+            videoDataId=(relatedVideoId!=null&& relatedVideoId.size()>currentPlayingIndex)?relatedVideoId.get(currentPlayingIndex):videoDataId;
             hideProgressBar();
         }
     }
@@ -185,12 +234,14 @@ public class CustomVideoPlayerView extends VideoPlayerView {
             case STATE_ENDED:
                 getPlayerView().getPlayer().setPlayWhenReady(false);
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
-                    showProgressBar("Loading Next Video...");
-                    appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
+                    //showProgressBar("Loading Next Video...");
+                    setVideoUri(relatedVideoId.get(currentPlayingIndex),R.string.loading_next_video_text);
+
+                    /*appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
                         @Override
                         public void call(ContentDatum contentDatum) {
                             if (!checkVideoSubscriptionStatus(contentDatum)) {
-                                showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
+                                showRestrictMessage("This video is only available to Monumental Sports Network subscribers");
                                 return;
                             }
                             hideRestrictedMessage();
@@ -198,7 +249,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                             getPlayerView().getPlayer().setPlayWhenReady(true);
                             hideProgressBar();
                         }
-                    });
+                    });*/
                 }else{
                     showRestrictMessage(getResources().getString(R.string.app_cms_video_ended_text_message));
                 }
@@ -259,14 +310,14 @@ public class CustomVideoPlayerView extends VideoPlayerView {
         LinearLayout.LayoutParams llLinear = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         customPlayBack.setLayoutParams(llLinear);
 
-        customPlayBack.setGravity(Gravity.BOTTOM| Gravity.RIGHT );
+        customPlayBack.setGravity(Gravity.BOTTOM | Gravity.RIGHT);
 
         ImageView imgFullScreen = new ImageView(mContext);
         imgFullScreen.setScaleType(ImageView.ScaleType.FIT_XY);
         imgFullScreen.setBackground(mContext.getDrawable(R.drawable.full_screen_player_icon));
-        LinearLayout.LayoutParams paramsImgFullScreen = new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.full_screen_item_min_width,mContext),BaseView.dpToPx(R.dimen.full_screen_item_min_width,mContext));
+        LinearLayout.LayoutParams paramsImgFullScreen = new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.full_screen_item_min_width, mContext), BaseView.dpToPx(R.dimen.full_screen_item_min_width, mContext));
 
-        paramsImgFullScreen.setMargins(0,0, 32, 32);
+        paramsImgFullScreen.setMargins(0, 0, 32, 32);
 
         imgFullScreen.setLayoutParams(paramsImgFullScreen);
         imgFullScreen.setOnClickListener(new OnClickListener() {
@@ -289,7 +340,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
         customMessageContainer.setBackgroundColor(Color.parseColor("#d4000000"));
         customMessageView = new TextView(mContext);
         LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        textViewParams.gravity=Gravity.CENTER;
+        textViewParams.gravity = Gravity.CENTER;
         customMessageView.setLayoutParams(textViewParams);
         customMessageView.setTextColor(Color.parseColor("#ffffff"));
         customMessageView.setTextSize(15);
@@ -332,6 +383,35 @@ public class CustomVideoPlayerView extends VideoPlayerView {
         }
 
 
+    }
+
+    protected ToggleButton createFullScreenToggleButton() {
+        ToggleButton mToggleButton = new ToggleButton(getContext());
+        RelativeLayout.LayoutParams toggleLP = new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()), BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()));
+        toggleLP.addRule(RelativeLayout.CENTER_VERTICAL);
+        toggleLP.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        toggleLP.setMarginStart(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
+        mToggleButton.setLayoutParams(toggleLP);
+        mToggleButton.setChecked(false);
+        mToggleButton.setTextOff("");
+        mToggleButton.setTextOn("");
+        mToggleButton.setText("");
+        mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.full_screen_toggle_selector, null));
+        mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //todo work on maximizing the player on this event
+                /*if (isChecked){
+                    FrameLayout.LayoutParams frameLayoutParams=new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                    setLayoutParams(frameLayoutParams);
+                }else{
+                    setLayoutParams(baseLayoutParms);
+                }*/
+                appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+            }
+        });
+
+        return mToggleButton;
     }
 }
 

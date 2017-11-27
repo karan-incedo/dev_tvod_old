@@ -7,8 +7,15 @@
     android:layoutDirection="ltr"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/exo_controller_container"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/exo_media_controller"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
@@ -31,19 +38,42 @@
             android:id="@id/exo_ffwd"
             style="@style/ExoMediaButton.FastForward" />
 
-        <ToggleButton
+
+
+    </LinearLayout>
+       <!-- <ToggleButton
             android:id="@+id/ccButton"
+            style="@style/ExoMediaButton"
             android:layout_width="@dimen/app_cms_video_controller_cc_width"
             android:layout_height="@dimen/app_cms_video_controller_cc_height"
             android:layout_gravity="right|center_vertical"
             android:layout_marginStart="@dimen/app_cms_video_controller_cc_left_margin"
+            android:layout_marginEnd="@dimen/app_cms_video_controller_cc_left_margin"
             android:background="@drawable/cc_toggle_selector"
             android:checked="false"
             android:textOff=""
-            android:textOn="" />
-    </LinearLayout>
+            android:textOn=""
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            />-->
+<!--
+        <ToggleButton
+            android:id="@+id/fullScreenButton"
+            android:layout_width="@dimen/app_cms_video_controller_cc_width"
+            android:layout_height="@dimen/app_cms_video_controller_cc_height"
+            android:layout_gravity="right|center_vertical"
+            android:layout_marginStart="@dimen/app_cms_video_controller_cc_left_margin"
+            android:background="@drawable/full_screen_toggle_selector"
+            android:checked="false"
+            android:textOff=""
+            android:textOn=""
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            />-->
+    </RelativeLayout>
 
     <LinearLayout
+        android:id="@+id/exo_position_progress"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"

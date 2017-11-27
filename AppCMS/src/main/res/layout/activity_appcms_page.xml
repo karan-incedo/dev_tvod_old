@@ -127,6 +127,15 @@
             </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
+        <TextView
+            android:id="@+id/app_cms_start_free_trial_tool"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/btn_add_contact"
+            />
 
     </android.support.design.widget.AppBarLayout>
 

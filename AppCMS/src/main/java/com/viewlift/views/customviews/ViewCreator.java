@@ -9,6 +9,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -25,10 +26,12 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -37,8 +40,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
@@ -46,6 +51,7 @@ import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -68,6 +74,7 @@ import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+import com.viewlift.views.customviews.exoplayerview.CustomPlaybackControlView;
 import com.viewlift.views.utilities.CustomWebView;
 import com.viewlift.views.utilities.ImageUtils;
 
@@ -1686,13 +1693,26 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0) != null &&
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                    componentViewResult.componentView = playerView(context, moduleAPI.getContentData().get(0).getGist().getId());
-                    componentViewResult.componentView.setId(R.id.video_player_id);
+                    if (AppCMSPresenter.videoPlayerView==null) {
+                        componentViewResult.componentView = playerView(context, moduleAPI.getContentData().get(0).getGist().getId());
+                        componentViewResult.componentView.setId(R.id.video_player_id);
+                        AppCMSPresenter.videoPlayerView = (CustomVideoPlayerView) componentViewResult.componentView;
+                    }else
+                    {
+                        if (((ViewGroup)AppCMSPresenter.videoPlayerView.getParent())!=null ) {
+                            ((ViewGroup) AppCMSPresenter.videoPlayerView.getParent()).removeView(AppCMSPresenter.videoPlayerView);
+                        }
+                        componentViewResult.componentView=AppCMSPresenter.videoPlayerView;
+                        AppCMSPresenter.videoPlayerView.pausePlayer();
+                        AppCMSPresenter.videoPlayerView.setVideoUri(moduleAPI.getContentData().get(0).getGist().getId(),R.string.loading_video_text);
+                        AppCMSPresenter.videoPlayerViewParent =(ViewGroup)AppCMSPresenter.videoPlayerView.getParent();
+                    }
+
+
                 }
                 break;
             case PAGE_WEB_VIEW_KEY:
                 componentViewResult.componentView = getWebViewComponent(context, moduleAPI, component);
-
                 break;
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
@@ -2062,7 +2082,8 @@ public class ViewCreator {
                         break;
 
                     case PAGE_PLAY_LIVE_IMAGE_KEY:
-                        componentViewResult.componentView.setPadding(20, 20, 20, 20);
+                        componentViewResult.componentView.setVisibility(View.GONE);
+                        /*componentViewResult.componentView.setPadding(20, 20, 20, 20);
 
                         componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
                         componentViewResult.componentView.getBackground().setTint(tintColor);
@@ -2087,8 +2108,8 @@ public class ViewCreator {
                                 appCMSPresenter.refreshVideoData(moduleAPI.getContentData().get(0).getGist().getId(), new Action1<ContentDatum>() {
                                     @Override
                                     public void call(ContentDatum contentDatum) {
-                                        if (/*moduleAPI.getContentData() != null &&
-                                            !moduleAPI.getContentData().isEmpty() &&*/
+                                        if (*//*moduleAPI.getContentData() != null &&
+                                            !moduleAPI.getContentData().isEmpty() &&*//*
                                                 contentDatum != null &&
                                                         contentDatum.getContentDetails() != null) {
 
@@ -2113,7 +2134,7 @@ public class ViewCreator {
                                 });
                             }
                         });
-
+*/
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
@@ -3744,7 +3765,7 @@ public class ViewCreator {
         videoPlayerView = new CustomVideoPlayerView(context, videoId);
         videoPlayerView.init(context);
         videoPlayerView.getPlayerView().hideController();
-        videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
+        videoPlayerView.getPlayerView().setControllerVisibilityListener(new CustomPlaybackControlView.VisibilityListener() {
             @Override
             public void onVisibilityChange(int i) {
                 if (i == 0) {
@@ -3753,7 +3774,7 @@ public class ViewCreator {
             }
         });
 
-        videoPlayerView.setVideoUri(videoId);
+        videoPlayerView.setVideoUri(videoId,R.string.loading_video_text);
         return videoPlayerView;
     }
 

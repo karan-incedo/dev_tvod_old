@@ -565,6 +565,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         int tabCount = getResources().getInteger(R.integer.number_of_tabs);
         manageTopBar();
         createTabBar();
+        //checkStartFreeTrialTool();
 		/* for (int i = 0; i < tabCount; i++) {
             addNavigationItem();
         }
@@ -910,7 +911,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.setCancelAllLoads(true);
 
-        appCMSPresenter.dismissPopupWindowPlayer(true);
+        //appCMSPresenter.dismissPopupWindowPlayer(true);
         appCMSPresenter.setCancelAllLoads(true);
         //Log.d(TAG, "onDestroy()");
     }
@@ -2481,6 +2482,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 }
             }
+        }
+    }
+    public void checkStartFreeTrialTool(){
+        int buttonColor =Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        int textColor =Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+        TextView appCMSNavFreeTrialTool = (TextView) findViewById(R.id.app_cms_start_free_trial_tool);
+        if (appCMSPresenter.getAppCMSMain()
+                .getServiceType()
+                .equals(getString(R.string.app_cms_main_svod_service_type_key))) {
+            appCMSNavFreeTrialTool.setTextColor(textColor);
+            appCMSNavFreeTrialTool.setOnClickListener(v -> {
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                    appCMSPresenter.navigateToSubscriptionPlansPage(true);
+                }
+            });
+            appCMSNavFreeTrialTool.setBackgroundColor(buttonColor);
+            appCMSNavFreeTrialTool.setVisibility(View.VISIBLE);
+
         }
     }
 }
