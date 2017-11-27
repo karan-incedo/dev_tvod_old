@@ -1021,12 +1021,12 @@ public class TVViewCreator {
 
                                     if ((emailId != null && emailId.length() == 0)) {
                                         appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_email_error_msg),
-                                                context.getString(R.string.app_cms_login));
+                                                context.getString(R.string.app_cms_login), false);
                                         return;
                                     }
                                     if ((password != null && password.length() == 0)) {
                                         appCMSPresenter.openTVErrorDialog(context.getString(R.string.blank_password_error_msg),
-                                                context.getString(R.string.app_cms_login));
+                                                context.getString(R.string.app_cms_login), false);
                                         return;
                                     }
                                     String[] authData = new String[2];
@@ -1141,7 +1141,7 @@ public class TVViewCreator {
                                                 } else {
                                                     varMessage = context.getString(R.string.subscription_not_purchased);
                                                 }
-                                                appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription));
+                                                appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription), false);
                                             }
                                     );
                                 } else {
@@ -1156,7 +1156,7 @@ public class TVViewCreator {
                                     } else {
                                         varMessage = context.getString(R.string.subscription_purchased_from_unknown_msg);
                                     }
-                                    appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription));
+                                    appCMSPresenter.openTVErrorDialog(varMessage, context.getString(R.string.subscription), false);
                                 }
                             });
                         } else {
@@ -2200,7 +2200,7 @@ public class TVViewCreator {
                 } else {
                     appCMSPresenter.openTVErrorDialog(context.getString(R.string.api_error_message,
                             context.getString(R.string.app_name)),
-                            context.getString(R.string.app_connectivity_dialog_title));
+                            context.getString(R.string.app_connectivity_dialog_title), false);
                 }
             }
 

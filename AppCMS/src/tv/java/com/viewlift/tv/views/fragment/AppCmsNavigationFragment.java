@@ -134,7 +134,7 @@ public class AppCmsNavigationFragment extends Fragment {
             navMenuSubscriptionModule.setOnClickListener(v -> {
                 appCMSPresenter.openTVErrorDialog(
                         getActivity().getString(R.string.visit_website_msg),
-                        getActivity().getString(R.string.subscription));
+                        getActivity().getString(R.string.subscription), false);
             });
         }
         return view;
@@ -457,6 +457,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_search_label))) {
                         appCmsPresenter.openSearch(primary.getPageId(), primary.getTitle());
                         Utils.pageLoading(false, getActivity());
+                        navigationVisibilityListener.showNavigation(false);
                     }
 
                     /*Settings*/
@@ -546,7 +547,7 @@ public class AppCmsNavigationFragment extends Fragment {
                         if (appCmsPresenter.isUserLoggedIn()) {
                             navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
-                            appCmsPresenter.navigateToWatchlistPage(
+                            appCmsPresenter.navigateToHistoryPage(
                                     primary.getPageId(),
                                     primary.getTitle(),
                                     primary.getUrl(),

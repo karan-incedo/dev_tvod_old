@@ -4727,7 +4727,7 @@ public class AppCMSPresenter {
 
                                 if (platformType == PlatformType.TV) {
                                     openTVErrorDialog(currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
-                                            currentActivity.getString(R.string.app_cms_forgot_password_title));
+                                            currentActivity.getString(R.string.app_cms_forgot_password_title), true);
                                 } else {
                                     showDialog(DialogType.RESET_PASSWORD,
                                             currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
@@ -4739,7 +4739,7 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Failed to reset password for email: " + email);
                                 if (platformType == PlatformType.TV) {
                                     openTVErrorDialog(forgotPasswordResponse.getError(),
-                                            currentActivity.getString(R.string.app_cms_forgot_password_title));
+                                            currentActivity.getString(R.string.app_cms_forgot_password_title), false);
                                 } else {
                                     showDialog(DialogType.RESET_PASSWORD,
                                             forgotPasswordResponse.getError(),
@@ -4757,11 +4757,11 @@ public class AppCMSPresenter {
 
     /**
      * this dialog is use for showing a message with OK button in case of TV.
-     *
-     * @param message
+     *  @param message
      * @param headerTitle
+     * @param shouldNavigateToLogin
      */
-    public void openTVErrorDialog(String message, String headerTitle) {
+    public void openTVErrorDialog(String message, String headerTitle, boolean shouldNavigateToLogin) {
         try {
             Bundle bundle = new Bundle();
             bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
@@ -4770,6 +4770,7 @@ public class AppCMSPresenter {
             bundle.putString(currentActivity.getString(R.string.tv_dialog_header_key),
                     headerTitle.toUpperCase()
             );
+            bundle.putBoolean(currentActivity.getString(R.string.shouldNavigateToLogin), shouldNavigateToLogin);
 
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
@@ -8151,7 +8152,7 @@ public class AppCMSPresenter {
                                 try {
                                     openTVErrorDialog(signInResponse.getErrorResponse().getError(),
                                             signup ? currentActivity.getString(R.string.app_cms_signup).toUpperCase() :
-                                                    currentActivity.getString(R.string.app_cms_login).toUpperCase());
+                                                    currentActivity.getString(R.string.app_cms_login).toUpperCase(), false);
                                 } catch (Exception e) {
                                     Log.e(TAG, "DialogType launching TV DialogType Activity");
                                 }
@@ -10664,7 +10665,7 @@ public class AppCMSPresenter {
                                                     } else {
                                                         openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                                                 currentActivity.getString(R.string.app_name)),
-                                                                currentActivity.getString(R.string.app_connectivity_dialog_title));
+                                                                currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                                                     }
                                                 }
                                             }
@@ -10672,7 +10673,7 @@ public class AppCMSPresenter {
                             } else {
                                 openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                         currentActivity.getString(R.string.app_name)),
-                                        currentActivity.getString(R.string.app_connectivity_dialog_title));
+                                        currentActivity.getString(R.string.app_connectivity_dialog_title), false);
                             }
                         }).execute(params);
             } else {

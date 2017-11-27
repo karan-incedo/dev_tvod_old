@@ -3,7 +3,6 @@ package com.viewlift.tv.views.fragment;
 
 import android.app.DialogFragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
 import com.viewlift.tv.views.customviews.TVModuleView;
@@ -99,7 +97,7 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
 
                         if (emailId.getEditableText().toString().length() == 0) {
                             appCMSPresenter.openTVErrorDialog(getString(R.string.blank_email_error_msg),
-                                    getString(R.string.app_cms_forgot_password_title));
+                                    getString(R.string.app_cms_forgot_password_title), false);
                             return;
                         }
 
