@@ -192,6 +192,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                     handleProfileFragmentAction((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key)));
                                 }
                             }else {
+                                    showSubNavigation(false, false); //close subnavigation if any.
                                     updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                     handleLaunchPageAction(updatedAppCMSBinder);
                             }
@@ -516,8 +517,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             Uri.EMPTY,
                             false,
                             isTosPage,
-                            isLoginPage
-                    );
+                            isLoginPage);
                     break;
 
                 case SEARCH_RETRY_ACTION:

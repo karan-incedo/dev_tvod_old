@@ -47,10 +47,11 @@ import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.ANDROID_WATCHLI
 public class AppCmsSubNavigationFragment extends Fragment {
 
     private static Context mContext;
+    private static OnSubNavigationVisibilityListener navigationVisibilityListener;
+    TextView navMenuTile;
     private RecyclerView mRecyclerView;
     private int textColor = -1;
     private int bgColor = -1;
-    private static OnSubNavigationVisibilityListener navigationVisibilityListener;
     private Typeface extraBoldTypeFace, semiBoldTypeFace;
     private Component extraBoldComp, semiBoldComp;
     private AppCMSBinder appCmsBinder;
@@ -58,8 +59,10 @@ public class AppCmsSubNavigationFragment extends Fragment {
     private AppCMSBinder mAppCMSBinder;
     private boolean isLoginDialogPage;
     private AppCMSPresenter appCMSPresenter;
-    TextView navMenuTile;
     private boolean mShowTeams = false;
+    private String mSelectedPageId = null;
+    private int selectedPosition = 0;
+    private List<NavigationSubItem> navigationSubItemList;
 
     public static AppCmsSubNavigationFragment newInstance(Context context,
                                                           OnSubNavigationVisibilityListener listener
@@ -151,7 +154,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
         }
     }
 
-
     public void setFocusable(boolean hasFocus) {
         if (null != mRecyclerView) {
             if (hasFocus)
@@ -160,8 +162,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 mRecyclerView.clearFocus();
         }
     }
-
-    private String mSelectedPageId = null;
 
     public void setSelectedPageId(String selectedPageId) {
         this.mSelectedPageId = selectedPageId;
@@ -199,6 +199,157 @@ public class AppCmsSubNavigationFragment extends Fragment {
         if (null != mRecyclerView && null != mRecyclerView.getAdapter()) {
             mRecyclerView.getAdapter().notifyDataSetChanged();
         }
+    }
+
+    private boolean isEndPosition() {
+        return selectedPosition == navigationSubItemList.size() - 1;
+    }
+
+    private boolean isStartPosition() {
+        return (selectedPosition == 0);
+    }
+
+    private void createSubNavigationList() {
+        for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
+            NavigationUser navigationUser = mNavigation.getNavigationUser().get(i);
+            if ((appCMSPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedIn())
+                    || (!appCMSPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedOut())) {
+                NavigationSubItem navigationSubItem = new NavigationSubItem();
+                navigationSubItem.pageId = navigationUser.getPageId();
+                navigationSubItem.title = navigationUser.getTitle();
+                navigationSubItem.url = navigationUser.getUrl();
+                navigationSubItem.accessLevels = navigationUser.getAccessLevels();
+                if (null == navigationSubItemList) {
+                    navigationSubItemList = new ArrayList<NavigationSubItem>();
+                }
+                navigationSubItemList.add(navigationSubItem);
+            }
+        }
+        if (!appCMSPresenter.isUserLoggedIn()) {
+            return;
+        }
+
+        for (int i = 0; i < mNavigation.getNavigationFooter().size(); i++) {
+            NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
+            {
+                NavigationSubItem navigationSubItem = new NavigationSubItem();
+                navigationSubItem.pageId = navigationFooter.getPageId();
+                navigationSubItem.title = navigationFooter.getTitle();
+                navigationSubItem.url = navigationFooter.getUrl();
+                navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
+                if (null == navigationSubItemList) {
+                    navigationSubItemList = new ArrayList<NavigationSubItem>();
+                }
+                navigationSubItemList.add(navigationSubItem);
+            }
+        }
+    }
+
+    private void createSubNavigationListForST() {
+        if (null == navigationSubItemList) {
+            navigationSubItemList = new ArrayList<>();
+        }
+
+        NavigationSubItem navigationSubItem1 = new NavigationSubItem();
+        navigationSubItem1.icon = getString(R.string.st_autoplay_icon_key);
+        if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
+            navigationSubItem1.title = "AUTOPLAY ON";
+        } else {
+            navigationSubItem1.title = "AUTOPLAY OFF";
+        }
+        navigationSubItemList.add(navigationSubItem1);
+
+        navigationSubItem1 = new NavigationSubItem();
+        navigationSubItem1.icon = getString(R.string.st_closed_caption_icon_key);
+        if (appCMSPresenter.getClosedCaptionPreference()) {
+            navigationSubItem1.title = "CLOSED CAPTION ON";
+        } else {
+            navigationSubItem1.title = "CLOSED CAPTION OFF";
+        }
+        navigationSubItemList.add(navigationSubItem1);
+
+        if (appCMSPresenter.isUserLoggedIn()) {
+            navigationSubItem1 = new NavigationSubItem();
+            navigationSubItem1.title = "MANAGE SUBSCRIPTION";
+            navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
+            navigationSubItemList.add(navigationSubItem1);
+        }
+
+        for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
+            NavigationUser navigationUser = mNavigation.getNavigationUser().get(i);
+            if (/*(isUserLogin && navigationUser.getAccessLevels().getLoggedIn())
+                        || (!isUserLogin && navigationUser.getAccessLevels().getLoggedOut())*/
+                    !navigationUser.getAccessLevels().getLoggedOut()
+                            && appCMSPresenter.isUserLoggedIn()) {
+                NavigationSubItem navigationSubItem = new NavigationSubItem();
+                navigationSubItem.pageId = navigationUser.getPageId();
+                navigationSubItem.title = navigationUser.getTitle();
+                navigationSubItem.url = navigationUser.getUrl();
+                navigationSubItem.icon = navigationUser.getIcon();
+                navigationSubItem.accessLevels = navigationUser.getAccessLevels();
+                navigationSubItemList.add(navigationSubItem);
+            }
+        }
+            /*if (!isUserLogin) {
+                return;
+            }*/
+
+        for (int i = 0; i < mNavigation.getNavigationFooter().size(); i++) {
+            NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
+            {
+                NavigationSubItem navigationSubItem = new NavigationSubItem();
+                navigationSubItem.pageId = navigationFooter.getPageId();
+                navigationSubItem.title = navigationFooter.getTitle();
+                navigationSubItem.url = navigationFooter.getUrl();
+                navigationSubItem.icon = navigationFooter.getIcon();
+                navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
+                if (null == navigationSubItemList) {
+                    navigationSubItemList = new ArrayList<>();
+                }
+                navigationSubItemList.add(navigationSubItem);
+            }
+        }
+        navigationSubItem1 = new NavigationSubItem();
+        if (appCMSPresenter.isUserLoggedIn()) {
+            navigationSubItem1.title = "SIGN OUT";
+            navigationSubItem1.icon = getString(R.string.st_signout_icon_key);
+        } else {
+            navigationSubItem1.icon = getString(R.string.st_signin_icon_key);
+            navigationSubItem1.title = "SIGN IN";
+        }
+        navigationSubItemList.add(navigationSubItem1);
+    }
+
+    private void createTeamsListForST() {
+        if (null == navigationSubItemList) {
+            navigationSubItemList = new ArrayList<>();
+        }
+
+        for (NavigationPrimary primary :
+                mNavigation.getTabBar()) {
+            if (primary.getTitle().equalsIgnoreCase("teams")) {
+                if (primary.getItems() != null) {
+                    for (NavigationPrimary team :
+                            primary.getItems()) {
+                        NavigationSubItem navigationSubItem = new NavigationSubItem();
+                        navigationSubItem.pageId = team.getPageId();
+                        navigationSubItem.title = team.getTitle();
+                        navigationSubItem.url = team.getUrl();
+                        navigationSubItem.accessLevels = team.getAccessLevels();
+                        navigationSubItem.icon = team.getIcon();
+                        navigationSubItemList.add(navigationSubItem);
+                    }
+                }
+            }
+        }
+    }
+
+    public boolean isTeamsShowing() {
+        return mShowTeams;
+    }
+
+    public interface OnSubNavigationVisibilityListener {
+        void showSubNavigation(boolean shouldShow, boolean showTeams);
     }
 
     class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.NavItemHolder> {
@@ -284,8 +435,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                 Uri.EMPTY,
                                 false,
                                 false,
-                                isLoginDialogPage
-                        );
+                                isLoginDialogPage);
                     }
                 }
             });
@@ -311,6 +461,12 @@ public class AppCmsSubNavigationFragment extends Fragment {
             return totalCount;
         }
 
+        private void setFocusOnSelectedPage() {
+            int selectedPos = getSelectedPagePosition();
+            notifyItemChanged(selectedPosition);
+            selectedPosition = selectedPos;
+            notifyItemChanged(selectedPosition);
+        }
 
         class NavItemHolder extends RecyclerView.ViewHolder {
             TextView navItemView;
@@ -347,21 +503,12 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 });
             }
         }
-
-        private void setFocusOnSelectedPage() {
-            int selectedPos = getSelectedPagePosition();
-            notifyItemChanged(selectedPosition);
-            selectedPosition = selectedPos;
-            notifyItemChanged(selectedPosition);
-        }
     }
-
 
     class STNavigationAdapter extends RecyclerView.Adapter<STNavigationAdapter.STNavItemHolder> {
         private Context mContext;
         private LayoutInflater inflater;
         private int textColor;
-        private int bgColor;
         private Navigation navigation;
         private AppCMSPresenter appCMSPresenter;
         private int currentNavPos;
@@ -373,7 +520,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                    AppCMSPresenter appCMSPresenter) {
             mContext = activity;
             this.textColor = textColor;
-            this.bgColor = bgColor;
             this.navigation = navigation;
             this.appCMSPresenter = appCMSPresenter;
             createSubNavigationListForST();
@@ -481,6 +627,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                         }
                     } else if (navigationSubItem.title.toUpperCase().contains("SIGN")) {
                         if (!appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
                             NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
                             appCMSPresenter.navigateToTVPage(
                                     navigationUser.getPageId(),
@@ -490,15 +637,15 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                     Uri.EMPTY,
                                     false,
                                     false,
-                                    false
+                                    true
                             );
                         } else {
                             appCMSPresenter.logoutTV();
                         }
-                        navigationVisibilityListener.showSubNavigation(false, false);
+                      //  navigationVisibilityListener.showSubNavigation(false, false);
                     } else if (navigationSubItem.title.toUpperCase().contains("ACCOUNT")) {
                         if (appCMSPresenter.isUserLoggedIn()) {
-                           // navigationVisibilityListener.showSubNavigation(false, false);
+                            // navigationVisibilityListener.showSubNavigation(false, false);
                             appCMSPresenter.navigateToTVPage(
                                     navigationSubItem.pageId,
                                     navigationSubItem.title,
@@ -507,8 +654,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                     Uri.EMPTY,
                                     false,
                                     true,
-                                    false
-                            );
+                                    false);
                         } else {
                             ClearDialogFragment newFragment = Utils.getClearDialogFragment(
                                     mContext,
@@ -533,15 +679,14 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                         Uri.EMPTY,
                                         false,
                                         false,
-                                        true
-                                );
+                                        true);
                             });
                         }
                     } else {
                         if (navigationSubItem.pageId != null
                                 && navigationSubItem.pageId.length() > 0) {
-                            if(isTeamsShowing())
-                            navigationVisibilityListener.showSubNavigation(false, false);
+                            if (isTeamsShowing())
+                                navigationVisibilityListener.showSubNavigation(false, false);
                             appCMSPresenter.navigateToTVPage(
                                     navigationSubItem.pageId,
                                     navigationSubItem.title,
@@ -550,8 +695,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                     Uri.EMPTY,
                                     true,
                                     !isTeamsShowing(),
-                                    isLoginDialogPage
-                            );
+                                    isLoginDialogPage);
                         } else {
                             appCMSPresenter.openTVErrorDialog("There is some error opening " + navigationSubItem.title, "", false);
                         }
@@ -604,6 +748,12 @@ public class AppCmsSubNavigationFragment extends Fragment {
             return totalCount;
         }
 
+        private void setFocusOnSelectedPage() {
+            int selectedPos = getSelectedPagePosition();
+            notifyItemChanged(selectedPosition);
+            selectedPosition = selectedPos;
+            notifyItemChanged(selectedPosition);
+        }
 
         class STNavItemHolder extends RecyclerView.ViewHolder {
             TextView navItemView;
@@ -652,165 +802,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 });
             }
         }
-
-        private void setFocusOnSelectedPage() {
-            int selectedPos = getSelectedPagePosition();
-            notifyItemChanged(selectedPosition);
-            selectedPosition = selectedPos;
-            notifyItemChanged(selectedPosition);
-        }
-    }
-
-
-    private int selectedPosition = 0;
-
-    private boolean isEndPosition() {
-        return selectedPosition == navigationSubItemList.size() - 1;
-    }
-
-    private boolean isStartPosition() {
-        return (selectedPosition == 0);
-    }
-
-    public interface OnSubNavigationVisibilityListener {
-        void showSubNavigation(boolean shouldShow, boolean showTeams);
-    }
-
-    private List<NavigationSubItem> navigationSubItemList;
-
-    private void createSubNavigationList() {
-        for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
-            NavigationUser navigationUser = mNavigation.getNavigationUser().get(i);
-            if ((appCMSPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedIn())
-                    || (!appCMSPresenter.isUserLoggedIn() && navigationUser.getAccessLevels().getLoggedOut())) {
-                NavigationSubItem navigationSubItem = new NavigationSubItem();
-                navigationSubItem.pageId = navigationUser.getPageId();
-                navigationSubItem.title = navigationUser.getTitle();
-                navigationSubItem.url = navigationUser.getUrl();
-                navigationSubItem.accessLevels = navigationUser.getAccessLevels();
-                if (null == navigationSubItemList) {
-                    navigationSubItemList = new ArrayList<NavigationSubItem>();
-                }
-                navigationSubItemList.add(navigationSubItem);
-            }
-        }
-        if (!appCMSPresenter.isUserLoggedIn()) {
-            return;
-        }
-
-        for (int i = 0; i < mNavigation.getNavigationFooter().size(); i++) {
-            NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
-            {
-                NavigationSubItem navigationSubItem = new NavigationSubItem();
-                navigationSubItem.pageId = navigationFooter.getPageId();
-                navigationSubItem.title = navigationFooter.getTitle();
-                navigationSubItem.url = navigationFooter.getUrl();
-                navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
-                if (null == navigationSubItemList) {
-                    navigationSubItemList = new ArrayList<NavigationSubItem>();
-                }
-                navigationSubItemList.add(navigationSubItem);
-            }
-        }
-    }
-
-    private void createSubNavigationListForST() {
-        if (null == navigationSubItemList) {
-            navigationSubItemList = new ArrayList<>();
-        }
-
-        NavigationSubItem navigationSubItem1 = new NavigationSubItem();
-        navigationSubItem1.icon = getString(R.string.st_autoplay_icon_key);
-        if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
-            navigationSubItem1.title = "AUTOPLAY ON";
-        } else {
-            navigationSubItem1.title = "AUTOPLAY OFF";
-        }
-        navigationSubItemList.add(navigationSubItem1);
-
-        navigationSubItem1 = new NavigationSubItem();
-        navigationSubItem1.icon = getString(R.string.st_closed_caption_icon_key);
-        if (appCMSPresenter.getClosedCaptionPreference()) {
-            navigationSubItem1.title = "CLOSED CAPTION ON";
-        } else {
-            navigationSubItem1.title = "CLOSED CAPTION OFF";
-        }
-        navigationSubItemList.add(navigationSubItem1);
-
-        if (appCMSPresenter.isUserLoggedIn()) {
-            navigationSubItem1 = new NavigationSubItem();
-            navigationSubItem1.title = "MANAGE SUBSCRIPTION";
-            navigationSubItem1.icon = getString(R.string.st_manage_subscription_icon_key);
-            navigationSubItemList.add(navigationSubItem1);
-        }
-
-        for (int i = 0; i < mNavigation.getNavigationUser().size(); i++) {
-            NavigationUser navigationUser = mNavigation.getNavigationUser().get(i);
-            if (/*(isUserLogin && navigationUser.getAccessLevels().getLoggedIn())
-                        || (!isUserLogin && navigationUser.getAccessLevels().getLoggedOut())*/
-                    !navigationUser.getAccessLevels().getLoggedOut()
-                    && appCMSPresenter.isUserLoggedIn()) {
-                NavigationSubItem navigationSubItem = new NavigationSubItem();
-                navigationSubItem.pageId = navigationUser.getPageId();
-                navigationSubItem.title = navigationUser.getTitle();
-                navigationSubItem.url = navigationUser.getUrl();
-                navigationSubItem.icon = navigationUser.getIcon();
-                navigationSubItem.accessLevels = navigationUser.getAccessLevels();
-                navigationSubItemList.add(navigationSubItem);
-            }
-        }
-            /*if (!isUserLogin) {
-                return;
-            }*/
-
-        for (int i = 0; i < mNavigation.getNavigationFooter().size(); i++) {
-            NavigationFooter navigationFooter = mNavigation.getNavigationFooter().get(i);
-            {
-                NavigationSubItem navigationSubItem = new NavigationSubItem();
-                navigationSubItem.pageId = navigationFooter.getPageId();
-                navigationSubItem.title = navigationFooter.getTitle();
-                navigationSubItem.url = navigationFooter.getUrl();
-                navigationSubItem.icon = navigationFooter.getIcon();
-                navigationSubItem.accessLevels = navigationFooter.getAccessLevels();
-                if (null == navigationSubItemList) {
-                    navigationSubItemList = new ArrayList<>();
-                }
-                navigationSubItemList.add(navigationSubItem);
-            }
-        }
-        navigationSubItem1 = new NavigationSubItem();
-        if (appCMSPresenter.isUserLoggedIn()) {
-            navigationSubItem1.title = "SIGN OUT";
-            navigationSubItem1.icon = getString(R.string.st_signout_icon_key);
-        } else {
-            navigationSubItem1.icon = getString(R.string.st_signin_icon_key);
-            navigationSubItem1.title = "SIGN IN";
-        }
-        navigationSubItemList.add(navigationSubItem1);
-    }
-
-    private void createTeamsListForST() {
-        if (null == navigationSubItemList) {
-            navigationSubItemList = new ArrayList<>();
-        }
-
-        for (NavigationPrimary primary:
-             mNavigation.getTabBar()) {
-            if (primary.getTitle().equalsIgnoreCase("teams")){
-                if (primary.getItems() != null) {
-                    for (NavigationPrimary team :
-                            primary.getItems()) {
-                        NavigationSubItem navigationSubItem = new NavigationSubItem();
-                        navigationSubItem.pageId = team.getPageId();
-                        navigationSubItem.title = team.getTitle();
-                        navigationSubItem.url = team.getUrl();
-                        navigationSubItem.accessLevels = team.getAccessLevels();
-                        navigationSubItem.icon = team.getIcon();
-                        navigationSubItemList.add(navigationSubItem);
-                    }
-                }
-            }
-        }
     }
 
     class NavigationSubItem {
@@ -819,9 +810,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
         String url;
         AccessLevels accessLevels;
         String icon;
-    }
-    public boolean isTeamsShowing() {
-        return mShowTeams;
     }
 
 }

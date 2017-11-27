@@ -483,8 +483,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                                                         Uri.EMPTY,
                                                                         false,
                                                                         false,
-                                                                        true
-                                                                );
+                                                                        true);
                                                             }
                                                         });
 

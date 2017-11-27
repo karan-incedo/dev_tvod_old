@@ -803,8 +803,7 @@ public class TVViewCreator {
                                                         Uri.EMPTY,
                                                         false,
                                                         false,
-                                                        true
-                                                );
+                                                        true);
                                             });
                                         }
                                     } else {
@@ -1032,7 +1031,10 @@ public class TVViewCreator {
                                     String[] authData = new String[2];
                                     authData[0] = emailId;
                                     authData[1] = password;
-                                    appCMSPresenter.setLaunchType(isFromLoginDialog ? AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP : AppCMSPresenter.LaunchType.HOME);
+                                    if((appCMSPresenter.getLaunchType() != (AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) )){
+                                        appCMSPresenter.setLaunchType(isFromLoginDialog ? AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP : AppCMSPresenter.LaunchType.HOME);
+                                    }
+
                                     appCMSPresenter.launchTVButtonSelectedAction(null,
                                             component.getAction(),
                                             null,
@@ -1416,8 +1418,7 @@ public class TVViewCreator {
                                                     Uri.EMPTY,
                                                     false,
                                                     true,
-                                                    false
-                                            );
+                                                    false);
                                             }
                                         }else {
 
@@ -1439,8 +1440,7 @@ public class TVViewCreator {
                                                         Uri.EMPTY,
                                                         false,
                                                         true,
-                                                        false
-                                                );
+                                                        false);
                                             }
                                         }
 
@@ -1474,8 +1474,7 @@ public class TVViewCreator {
                                                         Uri.EMPTY,
                                                         false,
                                                         true,
-                                                        false
-                                                );
+                                                        false);
                                             }
                                         } else {
                                             NavigationFooter tosNavigation = null;
@@ -1495,8 +1494,7 @@ public class TVViewCreator {
                                                         Uri.EMPTY,
                                                         false,
                                                         true,
-                                                        false
-                                                );
+                                                        false);
                                             }
                                         }
                                     }

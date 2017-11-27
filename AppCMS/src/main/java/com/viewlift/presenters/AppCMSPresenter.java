@@ -8286,11 +8286,26 @@ public class AppCMSPresenter {
                                         if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
-
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
 
-                                        } else if (getLaunchType() == LaunchType.HOME) {
+                                        }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                                            Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                            currentActivity.sendBroadcast(myProfileIntent);
+                                            Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                                            currentActivity.sendBroadcast(updateSubscription);
+                                            getPlayerLruCache().evictAll();
+                                            navigateToTVPage(
+                                                    homePage.getPageId(),
+                                                    homePage.getPageName(),
+                                                    homePage.getPageUI(),
+                                                    false,
+                                                    deeplinkSearchQuery,
+                                                    true,
+                                                    false,
+                                                    false);
+
+                                        }  else if (getLaunchType() == LaunchType.HOME) {
                                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                                 currentActivity.sendBroadcast(updateSubscription);
 
@@ -8356,11 +8371,34 @@ public class AppCMSPresenter {
                             if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
                                 Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                 currentActivity.sendBroadcast(myProfileIntent);
-                            } else if (getLaunchType() == LaunchType.HOME) {
+                                Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                                currentActivity.sendBroadcast(updateSubscription);
+
+                            }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                                Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                currentActivity.sendBroadcast(myProfileIntent);
+                                Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                                currentActivity.sendBroadcast(updateSubscription);
+                                getPlayerLruCache().evictAll();
                                 navigateToTVPage(
-                                        homePageNavItem.getPageId(),
-                                        homePageNavItem.getTitle(),
-                                        homePageNavItem.getUrl(),
+                                        homePage.getPageId(),
+                                        homePage.getPageName(),
+                                        homePage.getPageUI(),
+                                        false,
+                                        deeplinkSearchQuery,
+                                        true,
+                                        false,
+                                        false);
+
+                            }  else if (getLaunchType() == LaunchType.HOME) {
+                                Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                                currentActivity.sendBroadcast(updateSubscription);
+
+                                getPlayerLruCache().evictAll();
+                                navigateToTVPage(
+                                        homePage.getPageId(),
+                                        homePage.getPageName(),
+                                        homePage.getPageUI(),
                                         false,
                                         deeplinkSearchQuery,
                                         true,
@@ -8766,25 +8804,29 @@ public class AppCMSPresenter {
     }
 
     public void launchBlankPage() {
-        if (currentActivity != null) {
-            Bundle args = getPageActivityBundle(currentActivity,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    false,
-                    true,
-                    false,
-                    true,
-                    false,
-                    null,
-                    ExtraScreenType.BLANK);
-            Intent appCMSIntent = new Intent(currentActivity, AppCMSPageActivity.class);
-            appCMSIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
-            appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            currentActivity.startActivity(appCMSIntent);
+        if(getPlatformType() == PlatformType.ANDROID) {
+            if (currentActivity != null) {
+                Bundle args = getPageActivityBundle(currentActivity,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        true,
+                        false,
+                        true,
+                        false,
+                        null,
+                        ExtraScreenType.BLANK);
+                Intent appCMSIntent = new Intent(currentActivity, AppCMSPageActivity.class);
+                appCMSIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
+                appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                currentActivity.startActivity(appCMSIntent);
+            }
+        }else if(getPlatformType() == PlatformType.TV){
+            launchErrorActivity(PlatformType.TV);
         }
     }
 
@@ -9744,9 +9786,10 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             if (forcedDownload) {
                 appCMSPageAPI = null;
-                if (null != pageId)
+                if (null != pageId) {
                     getPageAPILruCache().remove(pageId);
-                getPlayerLruCache().remove(pageId);
+                    getPlayerLruCache().remove(pageId);
+                }
             }
 
             if (appCMSPageAPI == null) {
@@ -11056,7 +11099,7 @@ public class AppCMSPresenter {
     }
 
     public enum LaunchType {
-        SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, HOME
+        SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME
     }
 
     public enum PlatformType {
