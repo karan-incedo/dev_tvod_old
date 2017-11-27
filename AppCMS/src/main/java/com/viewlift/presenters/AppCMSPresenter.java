@@ -3625,21 +3625,11 @@ public class AppCMSPresenter {
             appCMSDeleteHistoryCall.call(url, getAuthToken(),
                     appCMSDeleteHistoryResult -> {
                         try {
-                            showDialog(DialogType.DELETE_ONE_HISTORY_ITEM,
-                                    currentActivity.getString(R.string.app_cms_delete_one_history_item_message),
-                                    true,
-                                    () -> {
-                                        try {
-                                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
-                                        } catch (Exception e) {
-                                            //Log.e(TAG, "Error deleting history: " + e.getMessage());
-                                        } finally {
-                                            sendUpdateHistoryAction();
-                                        }
-                                    },
-                                    null);
+                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
                         } catch (Exception e) {
-                            //Log.e(TAG, "deleteHistoryContent: " + e.toString());
+                            //Log.e(TAG, "Error deleting history: " + e.getMessage());
+                        } finally {
+                            sendUpdateHistoryAction();
                         }
                     }, request, post);
         } catch (Exception e) {
