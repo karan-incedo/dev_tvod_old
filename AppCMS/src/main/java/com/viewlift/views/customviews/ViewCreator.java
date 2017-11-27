@@ -100,7 +100,7 @@ public class ViewCreator {
         htmlSpanner.registerHandler("p", pHandler);
     }
 
-    /** Fix for JM-6 */
+    /** Fix for JM-26 */
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
 
         long durationInSeconds = data.getGist().getRuntime();
@@ -128,18 +128,22 @@ public class ViewCreator {
             infoText.append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
         }
 
-        if (seconds < 10) {
-            infoText.append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
+        if (seconds == 1) {
+            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
+        } else if (seconds > 1 && seconds < 10) {
+            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
         } else if (seconds >= 10) {
-            infoText.append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
-        }
-
-        if (appendFirstSep) {
-            infoText.append(context.getString(R.string.text_separator));
+            infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
         }
 
         if (!TextUtils.isEmpty(year)) {
+
+            if (appendFirstSep) {
+                infoText.append(context.getString(R.string.text_separator));
+            }
+
             infoText.append(year);
+
         }
 
         if (appendSecondSep) {
@@ -1159,14 +1163,14 @@ public class ViewCreator {
                             adjustOthers = AdjustOtherState.ADJUST_OTHERS;
                         }
 
-                        if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                        if (!appCMSPresenter.isAppSVOD() && component.isSvod() && componentViewResult.componentView != null) {
                             componentViewResult.shouldHideComponent = true;
                             componentViewResult.componentView.setVisibility(View.GONE);
                             adjustOthers = AdjustOtherState.INITIATED;
                         } else if (!appCMSPresenter.isAppSVOD() && jsonValueKeyMap.get(component.getKey()) != null &&
                                 jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
                                 && appCMSPresenter.getAppCMSMain().getFeatures() != null &&
-                                !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                                !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() && componentViewResult.componentView != null) {
                             componentViewResult.shouldHideComponent = true;
                             componentViewResult.componentView.setVisibility(View.GONE);
                             adjustOthers = AdjustOtherState.INITIATED;
