@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -104,6 +105,8 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
         if (navTopLine != null && appCMSPresenter.getTemplateType()
                 .equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
             navTopLine.setVisibility(View.GONE);
+        } else {
+            view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         }
         LinearLayout navHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
         TextView loginView = (TextView) view.findViewById(R.id.textView_login);
