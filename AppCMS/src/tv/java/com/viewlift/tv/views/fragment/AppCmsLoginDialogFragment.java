@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -100,6 +99,12 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
         }
 
         View view = inflater.inflate(R.layout.app_cms_login_dialog_fragment, null);
+
+        View navTopLine = view.findViewById(R.id.nav_top_line);
+        if (navTopLine != null && appCMSPresenter.getTemplateType()
+                .equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+            navTopLine.setVisibility(View.GONE);
+        }
         LinearLayout navHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
         TextView loginView = (TextView) view.findViewById(R.id.textView_login);
         TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
