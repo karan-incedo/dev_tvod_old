@@ -134,7 +134,7 @@ public class AppCmsNavigationFragment extends Fragment {
 
             navMenuSubscriptionModule.setOnClickListener(v -> {
                 appCMSPresenter.openTVErrorDialog(
-                        getActivity().getString(R.string.visit_website_msg),
+                        getActivity().getString(R.string.subscription_not_purchased),
                         getActivity().getString(R.string.subscription), false);
             });
         }
