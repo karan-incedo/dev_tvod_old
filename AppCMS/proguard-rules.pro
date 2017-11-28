@@ -16,6 +16,7 @@
    public *;
 }
 
+
 -keep class com.viewlift.AppCMSApplication { *;}
 -keep class com.urbanairship.Autopilot { *;}
 

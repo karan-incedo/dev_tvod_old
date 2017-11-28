@@ -44,7 +44,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
     private OnPageCreation onPageCreation;
     private CountDownTimer countdownTimer;
 
-    private final int totalCountdownInMillis = 13000;
+    private final int totalCountdownInMillis = 11000;
     private final int countDownIntervalInMillis = 1000;
     private TextView tvCountdown;
     private Context context;

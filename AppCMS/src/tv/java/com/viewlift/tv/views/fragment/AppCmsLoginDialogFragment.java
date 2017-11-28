@@ -109,9 +109,36 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
             view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         }
         LinearLayout navHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
+        LinearLayout subNavHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
+
+        String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
+        view.setBackgroundColor(Color.parseColor(backGroundColor));
+
+
         TextView loginView = (TextView) view.findViewById(R.id.textView_login);
         TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
 
+        loginView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    subNavHolder.setAlpha(1f);
+                }else{
+                    subNavHolder.setAlpha(0.52f);
+                }
+            }
+        });
+
+       signupView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+           @Override
+           public void onFocusChange(View v, boolean hasFocus) {
+               if(hasFocus){
+                   subNavHolder.setAlpha(1f);
+               }else{
+                   subNavHolder.setAlpha(0.52f);
+               }
+           }
+       });
 
         loginView.setOnKeyListener(new View.OnKeyListener() {
             @Override

@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.mse.monumentalnetworks'
+def final packageName = 'com.mse.monumentalsnetwork'
 def final customApplicationId = 'Monumental Sports Network'
 def final hostName = "www.monumentalsportsnetwork.com"
 
@@ -60,8 +60,8 @@ android {
 
             minSdkVersion 21
             compileSdkVersion 25
-            versionCode 3010031
-            versionName "1.2.1"
+            versionCode 3010036
+            versionName "0.0.6"
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
@@ -103,7 +103,7 @@ android {
         }
         release {
             multiDexEnabled true
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"

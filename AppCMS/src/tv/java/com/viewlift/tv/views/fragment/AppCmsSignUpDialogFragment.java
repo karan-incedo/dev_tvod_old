@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.viewlift.AppCMSApplication;
@@ -123,10 +125,35 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
 
 
         View view = inflater.inflate(R.layout.app_cms_login_dialog_fragment, null);
+        LinearLayout subNavHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
         TextView loginView = (TextView) view.findViewById(R.id.textView_login);
         TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
 
+        String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
+        view.setBackgroundColor(Color.parseColor(backGroundColor));
 
+
+        loginView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    subNavHolder.setAlpha(1f);
+                }else{
+                    subNavHolder.setAlpha(0.52f);
+                }
+            }
+        });
+
+        signupView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    subNavHolder.setAlpha(1f);
+                }else{
+                    subNavHolder.setAlpha(0.52f);
+                }
+            }
+        });
 
         loginView.setOnKeyListener(new View.OnKeyListener() {
             @Override
