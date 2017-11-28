@@ -407,6 +407,8 @@
     <string name="add_to_watchlist">ADD TO WATCHLIST</string>
     <string name="add_to_watchlist_dialog_text">You have to be signed in to add this to your watchlist.</string>
     <string name="open_account_dialog_text">You have to be signed in to view account.</string>
+    <string name="open_watchlist_dialog_text">You have to be signed in to view your Watchlist.</string>
+    <string name="open_history_dialog_text">You have to be signed in to view your History.</string>
     <string name="sign_up_tos_and_pp_text">By creating an account, you agree to our terms of use and privacy policy.</string>
     <string name="close">Close</string>
     <string name="yes">YES</string>

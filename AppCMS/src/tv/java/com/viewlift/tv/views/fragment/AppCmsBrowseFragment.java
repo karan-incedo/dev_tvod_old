@@ -40,7 +40,6 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     public static AppCmsBrowseFragment newInstance(Context context){
         AppCmsBrowseFragment appCmsBrowseFragment = new AppCmsBrowseFragment();
-        //Log.d("" , "appcmsBrowseFragment newInstance");
         return appCmsBrowseFragment;
     }
 

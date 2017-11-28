@@ -518,7 +518,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                     mContext.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
                                     mContext.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
                                     mContext.getString(R.string.sign_in_text),
-                                    mContext.getString(R.string.open_account_dialog_text),
+                                    mContext.getString(R.string.open_watchlist_dialog_text),
                                     mContext.getString(R.string.sign_in_text),
                                     mContext.getString(android.R.string.cancel),
                                     14
@@ -558,7 +558,7 @@ public class AppCmsNavigationFragment extends Fragment {
                                     mContext.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
                                     mContext.getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
                                     mContext.getString(R.string.sign_in_text),
-                                    mContext.getString(R.string.open_account_dialog_text),
+                                    mContext.getString(R.string.open_history_dialog_text),
                                     mContext.getString(R.string.sign_in_text),
                                     mContext.getString(android.R.string.cancel),
                                     14

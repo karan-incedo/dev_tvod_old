@@ -2,6 +2,8 @@ package com.viewlift.tv.views.presenter;
 
 import android.content.Context;
 import android.support.v17.leanback.widget.Presenter;
+import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -11,6 +13,8 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
+
+import java.util.logging.Handler;
 
 /**
  * Created by nitin.tyagi on 11/2/2017.
@@ -36,7 +40,8 @@ public class PlayerPresenter extends Presenter {
         layoutParams = new FrameLayout.LayoutParams(DEVICE_WIDTH,
                     DEVICE_HEIGHT);
         frameLayout.setLayoutParams(layoutParams);
-        frameLayout.setFocusable(true);
+
+
 
         if(mCustomVideoPlayerView == null){
             mCustomVideoPlayerView = playerView(context);
@@ -50,6 +55,9 @@ public class PlayerPresenter extends Presenter {
             ((ViewGroup)mCustomVideoPlayerView.getParent()).removeView(mCustomVideoPlayerView);
         }
         frameLayout.addView(mCustomVideoPlayerView);
+
+        frameLayout.setFocusable(true);
+
         return new ViewHolder(frameLayout);
     }
 
