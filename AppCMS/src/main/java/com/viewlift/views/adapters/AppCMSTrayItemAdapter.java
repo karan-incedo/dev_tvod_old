@@ -76,7 +76,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                  String viewType,
                                  RecyclerView listView) {
         this.adapterData = adapterData;
-        this.sortData();
         this.components = components;
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
@@ -98,7 +97,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             default:
                 break;
         }
-
+        this.sortData();
         this.receivers = new ArrayList<>();
         this.tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
