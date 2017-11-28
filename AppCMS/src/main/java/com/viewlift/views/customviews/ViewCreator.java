@@ -2410,6 +2410,7 @@ public class ViewCreator {
                     componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
+                   // ((TextView) componentViewResult.componentView).setWidth();
 
                     if (!TextUtils.isEmpty(component.getFontFamily())) {
                         setTypeFace(context,
