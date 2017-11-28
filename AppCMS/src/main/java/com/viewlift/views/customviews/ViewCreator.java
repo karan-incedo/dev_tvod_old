@@ -465,7 +465,7 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0) != null) {
                                             long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
-                                            String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,YYYY");
+                                            String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");
                                             ((TextView) view).setText(publishDate);
 
                                         }
@@ -2410,7 +2410,7 @@ public class ViewCreator {
                     componentViewResult.componentView.setBackgroundColor(textBgColor);
                     ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
                     ((TextView) componentViewResult.componentView).setGravity(Gravity.LEFT);
-                   // ((TextView) componentViewResult.componentView).setWidth();
+
 
                     if (!TextUtils.isEmpty(component.getFontFamily())) {
                         setTypeFace(context,
@@ -2625,7 +2625,7 @@ public class ViewCreator {
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null) {
                                 long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
-                                String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,YYYY");
+                                String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");
                                 ((TextView) componentViewResult.componentView).setText(publishDate);
 
                             }
