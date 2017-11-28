@@ -2364,17 +2364,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             try {
                 int lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
                 if (0 < lastBackStackCount) {
-                String lastBackStackEntryName = getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount)
-                        .getName();
-                String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
-                        lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
-                                lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
-                                        lastBackStackEntryName.length());
-                while (lastBackStackCount > 0 &&
-                        getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
-                    getSupportFragmentManager().popBackStackImmediate();
-                    lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
-                }
+                    String lastBackStackEntryName = getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount)
+                            .getName();
+                    String lastBackStackEntryWithoutOrientationName = lastBackStackEntryName.substring(0,
+                            lastBackStackEntryName.indexOf("true") > 0 ? lastBackStackEntryName.indexOf("true") :
+                                    lastBackStackEntryName.indexOf("false") > 0 ? lastBackStackEntryName.indexOf("false") :
+                                            lastBackStackEntryName.length());
+                    while (lastBackStackCount > 0 &&
+                            getSupportFragmentManager().getBackStackEntryAt(lastBackStackCount).getName().contains(lastBackStackEntryWithoutOrientationName)) {
+                        if (appCMSPresenter.isViewPlanPage(appCMSBinderStack.peek())) {
+                            if (appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE) {
+                                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
+                                return;
+                            }
+                        }
+                        getSupportFragmentManager().popBackStackImmediate();
+                        lastBackStackCount = getSupportFragmentManager().getBackStackEntryCount() - 1;
+                    }
                 }
             } catch (Exception e) {
                 //Log.e(TAG, "DialogType popping back stack: " + e.getMessage());
