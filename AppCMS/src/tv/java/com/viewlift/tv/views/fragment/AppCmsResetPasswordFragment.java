@@ -2,6 +2,7 @@ package com.viewlift.tv.views.fragment;
 
 
 import android.app.DialogFragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -109,7 +110,11 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
 
         }
 
-        tvPageView.setBackgroundResource(R.drawable.home_screen_background);
+        if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+            tvPageView.setBackgroundResource(R.drawable.home_screen_background);
+        } else {
+            tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+        }
         return tvPageView;
     }
 

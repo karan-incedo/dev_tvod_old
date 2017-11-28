@@ -35,7 +35,7 @@
         android:layout_height="35dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="143dp"
-        android:background="@drawable/st_menu_color_selector"
+        android:background="@drawable/st_subscriber_module_color_selector"
         android:gravity="center"
         android:visibility="gone"/>
 
