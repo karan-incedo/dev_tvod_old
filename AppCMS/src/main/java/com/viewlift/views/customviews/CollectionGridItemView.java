@@ -16,6 +16,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -442,10 +443,13 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String publishDate = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        //String publishDate = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        //String thumbInfo=runTime+" | "+publishDate;  Removed publish date as per Clients request.
                         String runTime = convertSecondsToTime(data.getGist().getRuntime());
-                        String thumbInfo=runTime+" | "+publishDate;
+                        String thumbInfo=runTime;
                         ((TextView) view).setText(thumbInfo);
+                        ((TextView) view).setGravity(Gravity.CENTER_HORIZONTAL|Gravity.LEFT);
+                        ((TextView) view).setPadding(10,0,10,0);
 
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
                         ((TextView) view).setText(data.getGist().getTitle());
