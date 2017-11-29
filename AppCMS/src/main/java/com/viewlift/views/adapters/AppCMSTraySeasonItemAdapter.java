@@ -427,7 +427,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
     private String getDefaultAction(Context context) {
-        return context.getString(R.string.app_cms_action_detailvideopage_key);
+        return context.getString(R.string.app_cms_action_videopage_key);
     }
 
     private String getColor(Context context, String color) {
