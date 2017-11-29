@@ -5815,6 +5815,7 @@ public class AppCMSPresenter {
             }
 
             if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
+                closeSoftKeyboard();
                 navigateToHomePage();
                 sendCloseOthersAction(null, true, true);
             }
