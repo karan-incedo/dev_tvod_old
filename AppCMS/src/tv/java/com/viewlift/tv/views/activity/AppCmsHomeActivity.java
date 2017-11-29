@@ -335,6 +335,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == AppCMSPresenter.PLAYER_REQUEST_CODE){
+            updateSubscriptionStrip();
             Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
             if(null != fragment && fragment instanceof AppCmsTVPageFragment){
                 ((AppCmsTVPageFragment)fragment).refreshBrowseFragment();
