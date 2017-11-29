@@ -443,7 +443,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             action,
                                             title,
                                             null,
-                                            null,
+                                            // TODO merge Need to pass this for getting data for opening Option Dialog.
+                                            data,
                                             false,
                                             currentPlayingIndex,
                                             relatedVideoIds)) {

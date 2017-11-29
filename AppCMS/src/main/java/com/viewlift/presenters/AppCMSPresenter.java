@@ -590,9 +590,13 @@ public class AppCMSPresenter {
                     if ((isAppSVOD() && isUserSubscribed()) ||
                             !isAppSVOD() && isUserLoggedIn()) {
                         if (isDownloadQualityScreenShowBefore()) {
-                            editDownload(contentDatum, null, true);
+                            editDownload(contentDatum, userVideoDownloadStatus -> {
+
+                            }, true);
                         } else {
-                            showDownloadQualityScreen(contentDatum, null);
+                            showDownloadQualityScreen(contentDatum, userVideoDownloadStatus -> {
+
+                            });
                         }
                     } else {
                         if (isAppSVOD()) {
