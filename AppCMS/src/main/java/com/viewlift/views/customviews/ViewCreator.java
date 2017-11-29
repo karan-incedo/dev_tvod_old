@@ -1739,6 +1739,14 @@ public class ViewCreator {
                                             .id(moduleId + component.getKey())
                                             .build());
                                 }
+
+                                int numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
+
+                                if (numSeasons == 1) {
+                                    componentViewResult.componentView.setEnabled(false);
+                                } else {
+                                    componentViewResult.componentView.setEnabled(true);
+                                }
                             }
                         } else {
                             appCMSViewAdapter = new AppCMSViewAdapter(context,
@@ -2371,6 +2379,12 @@ public class ViewCreator {
 
                         ((Spinner) componentViewResult.componentView)
                                 .setOnItemSelectedListener((AdapterView.OnItemSelectedListener) componentViewResult.onInternalEvent);
+
+                        if (numSeasons == 1) {
+                            componentViewResult.componentView.setEnabled(false);
+                        } else {
+                            componentViewResult.componentView.setEnabled(true);
+                        }
                     }
                     seasonTrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
