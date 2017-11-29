@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +29,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.views.customviews.ViewCreatorMultiLineLayoutListener;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 
@@ -132,6 +134,21 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
             if (contentDatum.getGist() != null && contentDatum.getGist().getDescription() != null) {
                 Spannable rawHtmlSpannable = new HtmlSpanner().fromHtml(contentDatum.getGist().getDescription());
                 holder.appCMSEpisodeDescription.setText(rawHtmlSpannable);
+
+                try {
+                    ViewTreeObserver titleTextVto = holder.appCMSEpisodeDescription.getViewTreeObserver();
+                    ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
+                            new ViewCreatorMultiLineLayoutListener(holder.appCMSEpisodeDescription,
+                                    contentDatum.getGist().getTitle(),
+                                    contentDatum.getGist().getDescription(),
+                                    appCMSPresenter,
+                                    false,
+                                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                    true);
+                    titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                } catch (Exception e) {
+
+                }
             }
 
             holder.appCMSEpisodeTitle.setOnClickListener(v -> click(contentDatum));
@@ -340,6 +357,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                             if (component.getFontSize() != 0) {
                                 viewHolder.appCMSEpisodeTitle.setTextSize(component.getFontSize());
                             }
+
                             break;
 
                         default:

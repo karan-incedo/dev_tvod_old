@@ -628,7 +628,8 @@ public class ViewCreator {
                                                             videoDescription,
                                                             appCMSPresenter,
                                                             false,
-                                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                                            false);
                                             textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY) {
@@ -2563,7 +2564,8 @@ public class ViewCreator {
                                                     autoplayVideoDescription,
                                                     appCMSPresenter,
                                                     true,
-                                                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                                                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                                    false);
                                     viewTreeObserver.addOnGlobalLayoutListener(viewCreatorMultiLineLayoutListener);
                                 }
                                 break;
@@ -2601,7 +2603,8 @@ public class ViewCreator {
                                                     videoDescription,
                                                     appCMSPresenter,
                                                     false,
-                                                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                                                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
+                                                    false);
                                     textVto.addOnGlobalLayoutListener(viewCreatorLayoutListener);
                                 }
                                 break;
