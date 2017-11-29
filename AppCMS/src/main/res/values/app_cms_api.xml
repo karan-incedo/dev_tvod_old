@@ -489,6 +489,6 @@
 
     <string name="app_cms_table_background_view">tableBackground</string>
 
-    <string name="btn_add_contact">WATCH LIVE GAMES - <u>START FREE TRIAL NOW</u></string>
+    <string name="navigation_settings_primaryCta_placement">Banner</string>
 
 </resources>
