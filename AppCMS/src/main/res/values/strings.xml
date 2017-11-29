@@ -436,6 +436,11 @@
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
     <string name="deeplink_uri_extra_key">deeplink_uri</string>
 
+    <plurals name="episode_subtitle_text">
+        <item quantity="one">EPISODE</item>
+        <item quantity="other">EPISODES</item>
+    </plurals>
+
 </resources>
 
 

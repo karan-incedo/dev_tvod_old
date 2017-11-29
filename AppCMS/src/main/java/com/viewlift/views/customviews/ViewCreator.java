@@ -542,11 +542,26 @@ public class ViewCreator {
 
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY) {
-                                        if (moduleAPI.getContentData() != null &&
-                                                !moduleAPI.getContentData().isEmpty()) {
-                                            setViewWithSubtitle(context,
-                                                    moduleAPI.getContentData().get(0),
-                                                    view);
+                                        if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0) != null &&
+                                                moduleAPI.getContentData().get(0).getSeason() != null) {
+                                            int totalEpisodes = 0;
+                                            List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
+                                            int numSeasons = seasons.size();
+                                            for (int i = 0; i < numSeasons; i++) {
+                                                if (seasons.get(i).getEpisodes() != null) {
+                                                    totalEpisodes += seasons.get(i).getEpisodes().size();
+                                                }
+                                            }
+
+                                            StringBuilder subtitleSb = new StringBuilder(String.valueOf(totalEpisodes));
+                                            subtitleSb.append(" ");
+                                            subtitleSb.append(context.getResources().getQuantityString(R.plurals.episode_subtitle_text,
+                                                    totalEpisodes));
+
+                                            ((TextView) componentViewResult.componentView).setText(subtitleSb.toString());
+                                            componentViewResult.componentView.setAlpha(0.6f);
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY) {
                                         if (moduleAPI.getContentData() != null &&
@@ -2612,6 +2627,29 @@ public class ViewCreator {
                                 break;
 
                             case PAGE_VIDEO_SUBTITLE_KEY:
+                                if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                        !moduleAPI.getContentData().isEmpty() &&
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getSeason() != null) {
+                                    int totalEpisodes = 0;
+                                    List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
+                                    int numSeasons = seasons.size();
+                                    for (int i = 0; i < numSeasons; i++) {
+                                        if (seasons.get(i).getEpisodes() != null) {
+                                            totalEpisodes += seasons.get(i).getEpisodes().size();
+                                        }
+                                    }
+
+                                    StringBuilder subtitleSb = new StringBuilder(String.valueOf(totalEpisodes));
+                                    subtitleSb.append(" ");
+                                    subtitleSb.append(context.getResources().getQuantityString(R.plurals.episode_subtitle_text,
+                                            totalEpisodes));
+
+                                    ((TextView) componentViewResult.componentView).setText(subtitleSb.toString());
+                                    componentViewResult.componentView.setAlpha(0.6f);
+                                }
+                                break;
+
                             case PAGE_AUTOPLAY_MOVIE_SUBHEADING_KEY:
                                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                         !moduleAPI.getContentData().isEmpty() &&
