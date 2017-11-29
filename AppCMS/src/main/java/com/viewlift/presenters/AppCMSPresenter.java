@@ -6641,7 +6641,14 @@ public class AppCMSPresenter {
         }
         return false;
     }
-
+    public boolean isPageSearch(String pageId) {
+        if (pageId != null &&
+                !TextUtils.isEmpty(pageId) &&
+                pageId.contains(currentActivity.getString(R.string.app_cms_search_page_tag))) {
+            return true;
+        }
+        return false;
+    }
     public NavigationPrimary getPageTeamNavigationPage(List<NavigationPrimary> navigationTabBarList) {
         for (NavigationPrimary navigationTabBarItem : navigationTabBarList) {
             if (!TextUtils.isEmpty(navigationTabBarItem.getTitle()) &&
