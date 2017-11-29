@@ -192,6 +192,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver downloadReceiver;
     private BroadcastReceiver notifyUpdateListsReceiver;
     private BroadcastReceiver refreshPageDataReceiver;
+    private BroadcastReceiver processDeeplinkReceiver;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -209,6 +210,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private String searchQuery;
     private boolean isDownloadPageOpen = false;
     private boolean loaderWaitingFor3rdPartyLogin = false;
+    private Uri pendingDeeplinkUri;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -289,10 +291,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                    Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
 //                            intent.getStringExtra(getString(R.string.navigation_item_key)));
                     selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
-                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION)) {
-                    if (intent.getData() != null) {
-                        processDeepLink(intent.getData());
-                    }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
@@ -303,6 +301,30 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 false,
                                 false,
                                 false);
+                    }
+                }
+            }
+        };
+
+        processDeeplinkReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String deeplinkUrl = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
+                if (!TextUtils.isEmpty(deeplinkUrl)) {
+                    if (!isActive) {
+                        if (appCMSPresenter.getCurrentActivity() != null) {
+                            try {
+                                Intent appCMSIntent = new Intent(appCMSPresenter.getCurrentActivity() ,
+                                        AppCMSPageActivity.class);
+                                appCMSIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                appCMSIntent.putExtra(getString(R.string.deeplink_uri_extra_key), deeplinkUrl);
+                                appCMSPresenter.getCurrentActivity().startActivity(appCMSIntent);
+                            } catch (Exception e) {
+
+                            }
+                        }
+                    } else {
+                        processDeepLink(Uri.parse(deeplinkUrl));
                     }
                 }
             }
@@ -438,8 +460,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
         registerReceiver(presenterActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
-        registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION));
@@ -451,6 +471,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
         registerReceiver(refreshPageDataReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+        registerReceiver(processDeeplinkReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
 
         resumeInternalEvents = false;
 
@@ -783,6 +805,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } catch (Exception e) {
             //
         }
+
+        if (pendingDeeplinkUri != null) {
+            processDeepLink(pendingDeeplinkUri);
+            pendingDeeplinkUri = null;
+        }
     }
 
     private void refreshPageData() {
@@ -819,7 +846,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.cancelInternalEvents();
 
-        unregisterReceiver(presenterCloseActionReceiver);
         isActive = false;
 
         appCMSPresenter.closeSoftKeyboard();
@@ -838,16 +864,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             if (intent != null) {
                 Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-                updatedAppCMSBinder =
-                        (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
-                if (updatedAppCMSBinder != null) {
-                    mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
+                if (args != null) {
+                    updatedAppCMSBinder =
+                            (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
+                    if (updatedAppCMSBinder != null) {
+                        mergeInputData(updatedAppCMSBinder, updatedAppCMSBinder.getPageId());
+                    }
+                    if (isActive) {
+                        handleLaunchPageAction(updatedAppCMSBinder,
+                                false,
+                                false,
+                                false);
+                    }
                 }
-                if (isActive) {
-                    handleLaunchPageAction(updatedAppCMSBinder,
-                            false,
-                            false,
-                            false);
+
+                String deeplinkUri = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
+                if (!TextUtils.isEmpty(deeplinkUri)) {
+                    pendingDeeplinkUri = Uri.parse(deeplinkUri);
                 }
             }
         } catch (Exception e) {
@@ -892,6 +925,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(downloadReceiver);
         unregisterReceiver(notifyUpdateListsReceiver);
         unregisterReceiver(refreshPageDataReceiver);
+        unregisterReceiver(processDeeplinkReceiver);
 
         if (inAppBillingServiceConn != null) {
             try {
@@ -913,6 +947,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.dismissPopupWindowPlayer();
         appCMSPresenter.setCancelAllLoads(true);
+
+        appCMSPresenter.resetLaunched();
+
         //Log.d(TAG, "onDestroy()");
     }
 
@@ -920,16 +957,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     public void onSuccess(AppCMSBinder appCMSBinder) {
         appCMSPresenter.restartInternalEvents();
         resumeInternalEvents = true;
-
-        if (appCMSBinder != null && appCMSBinder.getSearchQuery() != null) {
-            //Log.d(TAG, "Successfully loaded page " + appCMSBinder.getPageName());
-            //Log.d(TAG, "Processing search query for deeplink " +
-//                    appCMSBinder.getSearchQuery().toString());
-            processDeepLink(appCMSBinder.getSearchQuery());
-            appCMSBinder.clearSearchQuery();
-        }
-
-        reportFullyDrawn();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -1986,15 +2013,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    private void processDeepLink(Uri deeplinkUri) {
+    public void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();
         String action = getString(R.string.app_cms_action_detailvideopage_key);
+
         StringBuffer pagePath = new StringBuffer();
 
         for (String pathSegment : deeplinkUri.getPathSegments()) {
             pagePath.append(File.separatorChar);
             pagePath.append(pathSegment);
+            if (pathSegment.contains(getString(R.string.app_cms_shows_deeplink_path_name))) {
+                action = getString(R.string.app_cms_action_showvideopage_key);
+            }
         }
+
+        appCMSPresenter.forceLoad();
 
         //Log.d(TAG, "Launching deep link " +
 //                deeplinkUri.toString() +
@@ -2205,6 +2238,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
+
+        if (updatedAppCMSBinder != null && updatedAppCMSBinder.getSearchQuery() != null) {
+            //Log.d(TAG, "Successfully loaded page " + appCMSBinder.getPageName());
+            //Log.d(TAG, "Processing search query for deeplink " +
+//                    appCMSBinder.getSearchQuery().toString());
+            appCMSPresenter.sendDeepLinkAction(updatedAppCMSBinder.getSearchQuery());
+            updatedAppCMSBinder.clearSearchQuery();
+        }
+
+        reportFullyDrawn();
     }
 
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

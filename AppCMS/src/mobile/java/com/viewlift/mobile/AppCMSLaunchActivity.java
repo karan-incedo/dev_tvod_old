@@ -138,7 +138,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     public void handleIntent(Intent intent) {
         if (intent != null) {
             try {
-                String action = intent.getAction();
                 final Uri data = intent.getData();
                 //Log.i(TAG, "Received intent action: " + action);
                 if (data != null) {
@@ -177,11 +176,15 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         if (appCMSPresenterComponent != null) {
             try {
-                appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                        getString(R.string.app_cms_app_name),
-                        searchQuery,
-                        AppCMSPresenter.PlatformType.ANDROID,
-                        false);
+                if (appCMSPresenterComponent.appCMSPresenter().isLaunched()) {
+                    appCMSPresenterComponent.appCMSPresenter().sendCloseOthersAction(null, true, true);
+                } else {
+                    appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
+                            getString(R.string.app_cms_app_name),
+                            searchQuery,
+                            AppCMSPresenter.PlatformType.ANDROID,
+                            false);
+                }
             } catch (Exception e) {
                 //Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
             }
