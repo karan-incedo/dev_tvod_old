@@ -145,11 +145,18 @@ public class CardPresenter extends Presenter {
 
                                         Utils.getViewXAxisAsPerScreen(mContext, itemWidth),
                                         Utils.getViewYAxisAsPerScreen(mContext, itemHeight));
-                                parms.setMargins(
-                                        Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
-                                        Integer.valueOf(component.getLayout().getTv().getTopMargin()),
-                                        0,
-                                        0);
+                                int leftMargin = 0;
+                                int topMargin = 0;
+                                if (component.getLayout() != null
+                                        && component.getLayout().getTv() != null){
+                                    if (component.getLayout().getTv().getLeftMargin() != null) {
+                                        leftMargin = Integer.valueOf(component.getLayout().getTv().getLeftMargin());
+                                    }
+                                    if (component.getLayout().getTv().getTopMargin() != null) {
+                                        topMargin = Integer.valueOf(component.getLayout().getTv().getTopMargin());
+                                    }
+                                }
+                                parms.setMargins(leftMargin, topMargin, 0, 0);
 
                                 imageView.setLayoutParams(parms);
                                // parentLayout.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
@@ -231,7 +238,7 @@ public class CardPresenter extends Presenter {
                         tvTitle.setLayoutParams(layoutParams);
                         tvTitle.setMaxLines(2);
                         tvTitle.setTextColor(Color.parseColor(component.getTextColor()));
-                        if (fontType == null)
+                        if (component.getFontFamily() != null)
                             fontType = getFontType(component);
                         if (fontType != null) {
                             tvTitle.setTypeface(fontType);
@@ -288,6 +295,24 @@ public class CardPresenter extends Presenter {
                     break;
                 default:
                     face = Typeface.createFromAsset(mContext.getAssets(), mContext.getString(R.string.opensans_regular_ttf));
+            }
+        } else if (mJsonKeyValuemap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = mJsonKeyValuemap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(mContext.getAssets(), mContext.getString(R.string.lato_bold));
+                    break;
+                case PAGE_TEXT_SEMIBOLD_KEY:
+                    face = Typeface.createFromAsset(mContext.getAssets(), mContext.getString(R.string.lato_medium));
+                    break;
+                case PAGE_TEXT_EXTRABOLD_KEY:
+                    face = Typeface.createFromAsset(mContext.getAssets(), mContext.getString(R.string.lato_bold));
+                    break;
+                default:
+                    face = Typeface.createFromAsset(mContext.getAssets(), mContext.getString(R.string.lato_regular));
             }
         }
         return face;

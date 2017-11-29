@@ -114,21 +114,19 @@ public class TVViewCreator {
     }
 
     public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        long runtime = (data.getGist().getRuntime() / 60);
+        long runtimeInSeconds = data.getGist().getRuntime();
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime > 0 &&
+        boolean appendFirstSep = runtimeInSeconds > 0 &&
                 (!TextUtils.isEmpty(year) /*|| !TextUtils.isEmpty(primaryCategory)*/);
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year)) &&
+        boolean appendSecondSep = (runtimeInSeconds > 0 || !TextUtils.isEmpty(year)) &&
                 !TextUtils.isEmpty(primaryCategory);
-        StringBuffer infoText = new StringBuffer();
-        if (runtime > 0) {
-            infoText.append(
-                    context.getResources().getQuantityString(R.plurals.mins_plural, (int) runtime, (int) runtime)
-            );
+        StringBuilder infoText = new StringBuilder();
+        if (runtimeInSeconds > 0) {
+            infoText.append(Utils.convertSecondsToTime(runtimeInSeconds));
         }
         if (appendFirstSep) {
             infoText.append(context.getString(R.string.text_separator));
@@ -399,7 +397,7 @@ public class TVViewCreator {
                         if (moduleData != null) {
                             customHeaderItem = null;
                             customHeaderItem = new CustomHeaderItem(context, trayIndex++,
-                                    (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle().toUpperCase() : "");
+                                    (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle() : "");
                             customHeaderItem.setmIsCarousal(isCarousel);
                             customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                             customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
