@@ -19,9 +19,11 @@ public class Facebook implements Serializable {
     @SerializedName("appId")
     @Expose
     String appId;
+
     @SerializedName("authenticate")
     @Expose
     boolean authenticate;
+
     @SerializedName("secretKey")
     @Expose
     String secretKey;
@@ -41,15 +43,19 @@ public class Facebook implements Serializable {
     public void setAppId(String appId) {
         this.appId = appId;
     }
+
     public boolean isAuthenticate() {
         return authenticate;
     }
+
     public void setAuthenticate(boolean authenticate) {
         this.authenticate = authenticate;
     }
+
     public String getSecretKey() {
         return secretKey;
     }
+
     public void setSecretKey(String secretKey) {
         this.secretKey = secretKey;
     }

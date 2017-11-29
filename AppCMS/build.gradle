@@ -4,6 +4,7 @@ apply plugin: 'realm-android'
 def final packageName = 'com.mse.monumentalnetworks'
 def final customApplicationId = 'Monumental Sports Network'
 def final hostName = "www.monumentalsportsnetwork.com"
+def final hostNameSuffix = "*.com"
 
 def final appVersionName = "2.0.46"
 buildscript {
@@ -26,6 +27,7 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
+    google()
     /*maven {
         url "s3://sdkv1.kiswe.com/release"
         credentials(AwsCredentials) {
@@ -63,6 +65,9 @@ android {
             minSdkVersion 21
             compileSdkVersion 23
             targetSdkVersion 25
+            aaptOptions {
+                cruncherEnabled = false
+            }
         }
         tv {
 
@@ -101,24 +106,24 @@ android {
     }
     buildTypes {
         debug {
-            zipAlignEnabled true
             multiDexEnabled true
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
-            zipAlignEnabled true
             multiDexEnabled true
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
@@ -145,7 +150,7 @@ android {
         sourceCompatibility 1.8
     }
     dexOptions {
-
+        incremental true
         javaMaxHeapSize "4g"
     }
 }

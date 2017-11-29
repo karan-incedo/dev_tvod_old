@@ -135,12 +135,10 @@ public class AppCMSPlayVideoFragment extends Fragment
     private OnUpdateContentDatumEvent onUpdateContentDatumEvent;
     private BeaconPingThread beaconMessageThread;
     private long beaconMsgTimeoutMsec;
-
     private String policyCookie;
     private String signatureCookie;
     private String keyPairIdCookie;
     private boolean isVideoLoaded = false;
-
     private BeaconBufferingThread beaconBufferingThread;
     private long beaconBufferingTimeoutMsec;
     private boolean sentBeaconPlay;
@@ -148,7 +146,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
-
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
         adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
@@ -575,12 +572,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                 if (appCMSPresenter.isAppSVOD() &&
                         !isTrailer &&
                         !freeContent &&
-                        !appCMSPresenter.isUserSubscribed()&& !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
-                    showEntitlementDialog=true;
+                        !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
+                    showEntitlementDialog = true;
                 }
                 if (onClosePlayerEvent != null && playerState.isPlayWhenReady() && !showEntitlementDialog) {
 
-                            // tell the activity that the movie is finished
+                    // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
                 if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {
@@ -755,6 +752,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerView.setCurrentPosition(videoPlayTime * SECS_TO_MSECS);
 
         appCMSPresenter.setShowNetworkConnectivity(false);
+
         requestAudioFocus();
         resumeVideo();
         super.onResume();
@@ -1551,7 +1549,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 videoPlayerView.getPlayer().getPlayWhenReady() &&
                                 videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) { // For not to sent PIN in PAUSE mode
                             bufferCount++;
-                            if (bufferCount>=5) {
+                            if (bufferCount >= 5) {
 
                                 appCMSPresenter.sendBeaconMessage(filmId,
                                         permaLink,
@@ -1567,7 +1565,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                                         0d,
                                         0,
                                         isVideoDownloaded);
-                                bufferCount=0;
+                                bufferCount = 0;
 
                             }
 

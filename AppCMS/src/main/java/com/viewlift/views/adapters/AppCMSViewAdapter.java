@@ -443,7 +443,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             action,
                                             title,
                                             null,
-                                            data,
+                                            null,
                                             false,
                                             currentPlayingIndex,
                                             relatedVideoIds)) {

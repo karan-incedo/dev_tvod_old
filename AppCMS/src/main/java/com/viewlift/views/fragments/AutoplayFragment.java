@@ -106,6 +106,7 @@ public class AutoplayFragment extends Fragment {
             if (pageView.getParent() != null) {
                 ((ViewGroup) pageView.getParent()).removeAllViews();
             }
+
             if (!BaseView.isTablet(getContext())) {
                 appCMSPresenter.restrictPortraitOnly();
             } else {
@@ -134,16 +135,20 @@ public class AutoplayFragment extends Fragment {
                                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                                         .getBackgroundColor().replace("#", "#DD")));
             }
+
             String imageUrl = null;
             Uri imageURI = null;
             boolean loadImageFromLocalSystem;
+
+            // TODO: Nov 15, '17 getVideoImageUrl & getPosterImageUrl will be replaced with imageGist.
+
             if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
                 if (URLUtil.isFileUrl(binder.getContentData().getGist().getVideoImageUrl())) {
                     loadImageFromLocalSystem = true;
                     imageURI = Uri.parse(binder.getContentData().getGist().getVideoImageUrl());
                 } else {
                     loadImageFromLocalSystem = false;
-                imageUrl = binder.getContentData().getGist().getVideoImageUrl();
+                    imageUrl = binder.getContentData().getGist().getVideoImageUrl();
                 }
             } else {
                 if (URLUtil.isFileUrl(binder.getContentData().getGist().getPosterImageUrl())) {
@@ -151,7 +156,7 @@ public class AutoplayFragment extends Fragment {
                     imageURI = Uri.parse(binder.getContentData().getGist().getPosterImageUrl());
                 } else {
                     loadImageFromLocalSystem = false;
-                imageUrl = binder.getContentData().getGist().getPosterImageUrl();
+                    imageUrl = binder.getContentData().getGist().getPosterImageUrl();
                 }
             }
 
@@ -169,18 +174,18 @@ public class AutoplayFragment extends Fragment {
                             }
                         });
             } else {
-            Glide.with(getContext()).load(imageUrl)
-                    .bitmapTransform(new BlurTransformation(getContext()))
-                    .into(new SimpleTarget<GlideDrawable>() {
-                        @Override
-                        public void onResourceReady(GlideDrawable resource,
-                                                    GlideAnimation<? super GlideDrawable>
-                                                            glideAnimation) {
-                            if (isAdded() && isVisible()) {
-                                pageView.setBackground(resource);
+                Glide.with(getContext()).load(imageUrl)
+                        .bitmapTransform(new BlurTransformation(getContext()))
+                        .into(new SimpleTarget<GlideDrawable>() {
+                            @Override
+                            public void onResourceReady(GlideDrawable resource,
+                                                        GlideAnimation<? super GlideDrawable>
+                                                                glideAnimation) {
+                                if (isAdded() && isVisible()) {
+                                    pageView.setBackground(resource);
+                                }
                             }
-                        }
-                    });
+                        });
             }
         }
         return pageView;
@@ -217,6 +222,7 @@ public class AutoplayFragment extends Fragment {
                 //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
+
         if (countdownTimer == null) {
             startCountdown();
         }
@@ -235,6 +241,7 @@ public class AutoplayFragment extends Fragment {
         } else {
             pageView.notifyAdaptersOfUpdate();
         }
+
         if (appCMSPresenter != null) {
             appCMSPresenter.dismissOpenDialogs(null);
         }
@@ -256,14 +263,15 @@ public class AutoplayFragment extends Fragment {
         if (binder != null && appCMSViewComponent.viewCreator() != null) {
             appCMSPresenter.removeLruCacheItem(getContext(), binder.getPageID());
         }
+
         if (countdownTimer != null) {
             countdownTimer.cancel();
             countdownTimer = null;
         }
+
         binder = null;
         pageView = null;
     }
-
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

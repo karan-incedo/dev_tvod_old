@@ -85,7 +85,7 @@ public class CastServiceProvider {
     private ShowcaseView mShowCaseView;
     private boolean allowFreePlay;
     /**
-     * callBackCastHelper gets the calls related to chormecast devices selections
+     * callBackCastHelper gets the calls related to chromecast devices selections
      */
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
@@ -443,7 +443,7 @@ public class CastServiceProvider {
         if (mMediaRouteButton == null)
             return;
 
-        mMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.GONE);
+        mMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.INVISIBLE);
 
         //Setting the Casting Overlay for Casting
         if (mCastHelper.isCastDeviceAvailable)

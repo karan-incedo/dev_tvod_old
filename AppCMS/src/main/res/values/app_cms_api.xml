@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
 
-    <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
     <!-- AppCMS StreamingInfo API -->
@@ -62,6 +61,8 @@
     <!-- AppCMS Shows Status API-->
     <!--<string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>-->
     <string name="app_cms_shows_status_api_url">%1$s%2$s?path=%3$s&amp;site=%4$s&amp;includeContent=true</string>
+
+    <string name="app_cms_pages_api_url">%1$s/pages?site=%2$s&amp;modules=%3$s</string>
 
     <!-- Restore Purchase API -->
     <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/android?site=%2$s</string>
@@ -275,6 +276,7 @@
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
+    <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
@@ -325,6 +327,9 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
+    <string name="app_cms_cached_page_api_url">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
+    <string name="app_cms_cached_page_api_url_with_user_id">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=null&amp;gzip=true</string>
+
     <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
     <string name="app_cms_page_path_query_parameter">path=</string>
@@ -486,6 +491,7 @@
     <string name="app_cms_delete_single_history_action">deleteSingleItemHistory</string>
     <!--video content type-->
     <string name="app_cms_content_type_shows">SHOW</string>
+    <string name="app_cms_shows_deeplink_path_name">show</string>
     <string name="app_cms_content_type_episode">EPISODE</string>
 
     <string name="app_cms_table_background_view">tableBackground</string>

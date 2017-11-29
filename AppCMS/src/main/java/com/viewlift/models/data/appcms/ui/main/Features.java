@@ -6,12 +6,13 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 
-/**
+/*
  * Created by viewlift on 9/6/17.
  */
 
 @UseStag
 public class Features implements Serializable {
+
     @SerializedName("mobile_app_downloads")
     @Expose
     boolean mobileAppDownloads;

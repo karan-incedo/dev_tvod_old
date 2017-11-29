@@ -136,7 +136,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 binder.getContentData().getContentDetails().getTrailers() != null &&
                                 !binder.getContentData().getContentDetails().getTrailers().isEmpty() &&
                                 binder.getContentData().getContentDetails().getTrailers().get(0) != null)
-                            id = binder.getContentData().getContentDetails().getTrailers().get(0).getId();
+                        id = binder.getContentData().getContentDetails().getTrailers().get(0).getId();
                     }
                     if (id != null) {
                         appCMSPresenter.refreshVideoData(id,
@@ -144,6 +144,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                     try {
                                         binder.setContentData(updatedContentDatum);
                                     } catch (Exception e) {
+
                                     }
                                     launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
                                 });
@@ -178,7 +179,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                                    binder.getContentData().getGist().getDownloadStatus() == null))) &&
+                            binder.getContentData().getGist().getDownloadStatus() == null))) &&
                             (activeNetwork == null ||
                                     !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
@@ -193,7 +194,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                                    binder.getContentData().getGist().getDownloadStatus() == null))) {
+                            binder.getContentData().getGist().getDownloadStatus() == null))) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer(),
