@@ -109,7 +109,6 @@
                 android:maxLines="2"
                 android:padding="2dp" />
 
-
         </LinearLayout>
 
         <LinearLayout

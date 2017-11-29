@@ -51,6 +51,7 @@ public class AppCMSAndroidModuleCall {
     public void call(String bundleUrl,
                      String version,
                      boolean forceLoadFromNetwork,
+                     boolean bustCache,
                      Action1<AppCMSAndroidModules> readyAction) {
         //Log.d(TAG, "Retrieving list of modules at URL: " + bundleUrl);
 
@@ -58,6 +59,7 @@ public class AppCMSAndroidModuleCall {
 
         readModuleListFromFile(bundleUrl,
                 version,
+                bustCache,
                 forceLoadFromNetwork,
                 (moduleDataMap) -> {
                     appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
@@ -110,11 +112,21 @@ public class AppCMSAndroidModuleCall {
     }
 
     private ModuleDataMap readModuleListFromNetwork(ModuleDataMap moduleDataMap,
+                                                    boolean bustCache,
                                                     String blocksBaseUrl,
                                                     String version) {
         try {
-            Response<JsonElement> moduleListResponse =
-                    appCMSAndroidModuleRest.get(blocksBaseUrl).execute();
+            Response<JsonElement> moduleListResponse = null;
+
+            if (bustCache) {
+                StringBuilder urlWithCacheBuster = new StringBuilder(blocksBaseUrl);
+                urlWithCacheBuster.append("?x=");
+                urlWithCacheBuster.append(new Date().getTime());
+                moduleListResponse =
+                        appCMSAndroidModuleRest.get(urlWithCacheBuster.toString()).execute();
+            } else {
+                moduleListResponse = appCMSAndroidModuleRest.get(blocksBaseUrl).execute();
+            }
             if (moduleListResponse != null &&
                     moduleListResponse.body() != null) {
                 moduleDataMap.appCMSAndroidModule = gson.fromJson(moduleListResponse.body(),
@@ -133,12 +145,16 @@ public class AppCMSAndroidModuleCall {
     private void readModuleListFromFile(String blocksBaseUrl,
                                         String version,
                                         boolean forceLoadFromNetwork,
+                                        boolean bustCache,
                                         Action1<ModuleDataMap> readyAction) {
         Observable.fromCallable(() -> {
             ModuleDataMap moduleDataMap = new ModuleDataMap();
             moduleDataMap.loadedFromNetwork = false;
             if (forceLoadFromNetwork) {
-                moduleDataMap = readModuleListFromNetwork(moduleDataMap, blocksBaseUrl, version);
+                moduleDataMap = readModuleListFromNetwork(moduleDataMap,
+                        bustCache,
+                        blocksBaseUrl,
+                        version);
             } else {
                 try {
                     InputStream inputStream = new FileInputStream(
@@ -159,7 +175,10 @@ public class AppCMSAndroidModuleCall {
                     inputStream.close();
                 } catch (Exception e) {
                     //Log.w(TAG, "Failed to load block modules from file: " + e.getMessage());
-                    moduleDataMap = readModuleListFromNetwork(moduleDataMap, blocksBaseUrl, version);
+                    moduleDataMap = readModuleListFromNetwork(moduleDataMap,
+                            bustCache,
+                            blocksBaseUrl,
+                            version);
                 }
             }
 

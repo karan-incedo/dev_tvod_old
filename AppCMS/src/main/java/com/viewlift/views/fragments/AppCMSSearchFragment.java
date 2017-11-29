@@ -117,8 +117,7 @@ public class AppCMSSearchFragment extends DialogFragment {
             }
         });
 
-        appCMSGoButton.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getBackgroundColor()));
+        appCMSGoButton.setBackgroundColor(0xff000000 + (int) buttonColor);
         appCMSGoButton.setTextColor(0xff000000 + (int) ViewCreator.adjustColor1(textColor, buttonColor));
 
         appCMSGoButton.setOnClickListener(v -> {

@@ -3,7 +3,6 @@ package com.viewlift.views.adapters;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -278,10 +277,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             //Log.d(TAG, "Navigating to page with Title position: " + i);
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
-                            if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.app_cms_page_shop_title))){
-                                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(viewHolder.itemView.getContext().getString(R.string.app_msn_shop_url)));
-                                viewHolder.itemView.getContext().startActivity(browserIntent);
-                            }else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
+                            if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
                                     navigationFooter.getUrl(),
                                     false,

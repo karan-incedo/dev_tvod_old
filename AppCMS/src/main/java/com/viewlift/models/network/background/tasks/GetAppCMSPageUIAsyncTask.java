@@ -24,23 +24,28 @@ public class GetAppCMSPageUIAsyncTask {
     public static class MetaPageUI {
         private AppCMSPageUI appCMSPageUI;
         private MetaPage metaPage;
+
         public AppCMSPageUI getAppCMSPageUI() {
             return appCMSPageUI;
         }
+
         public void setAppCMSPageUI(AppCMSPageUI appCMSPageUI) {
             this.appCMSPageUI = appCMSPageUI;
         }
+
         public MetaPage getMetaPage() {
             return metaPage;
         }
+
         public void setMetaPage(MetaPage metaPage) {
             this.metaPage = metaPage;
         }
     }
+
     public static class Params {
         String url;
-        long timeStamp;
         boolean loadFromFile;
+        boolean bustCache;
         MetaPage metaPage;
 
         public static class Builder {
@@ -55,13 +60,13 @@ public class GetAppCMSPageUIAsyncTask {
                 return this;
             }
 
-            public Builder timeStamp(long timeStamp) {
-                params.timeStamp = timeStamp;
+            public Builder loadFromFile(boolean loadFromFile) {
+                params.loadFromFile = loadFromFile;
                 return this;
             }
 
-            public Builder loadFromFile(boolean loadFromFile) {
-                params.loadFromFile = loadFromFile;
+            public Builder bustCache(boolean bustCache) {
+                params.bustCache = bustCache;
                 return this;
             }
 
@@ -69,6 +74,7 @@ public class GetAppCMSPageUIAsyncTask {
                 params.metaPage = metaPage;
                 return this;
             }
+
             public Params build() {
                 return params;
             }
@@ -79,6 +85,7 @@ public class GetAppCMSPageUIAsyncTask {
         this.call = call;
         this.readyAction = readyAction;
     }
+
     public Observable<MetaPageUI> getObservable(Params params) {
         if (params != null) {
             return Observable
@@ -86,9 +93,12 @@ public class GetAppCMSPageUIAsyncTask {
                         try {
                             MetaPageUI metaPageUI = new MetaPageUI();
                             metaPageUI.setMetaPage(params.metaPage);
-                            metaPageUI.setAppCMSPageUI(call.call(params.url, params.timeStamp, params.loadFromFile));
+                            metaPageUI.setAppCMSPageUI(call.call(params.url,
+                                    params.bustCache,
+                                    params.loadFromFile));
                             return metaPageUI;
                         } catch (IOException e) {
+                            //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
                         }
                         return null;
                     })
@@ -103,7 +113,7 @@ public class GetAppCMSPageUIAsyncTask {
             Observable
                     .fromCallable(() -> {
                         try {
-                            return call.call(params.url, params.timeStamp, params.loadFromFile);
+                            return call.call(params.url, params.bustCache, params.loadFromFile);
                         } catch (IOException e) {
                             //Log.e(TAG, "Could not retrieve Page UI data - " + params.url + ": " + e.toString());
                         }
