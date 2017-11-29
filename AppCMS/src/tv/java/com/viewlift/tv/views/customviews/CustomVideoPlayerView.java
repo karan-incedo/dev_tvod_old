@@ -90,6 +90,7 @@ public class CustomVideoPlayerView
 
     public CustomVideoPlayerView(Context context) {
         super(context);
+        getPlayerView().setUseController(false);
         mContext = context;
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
