@@ -768,18 +768,29 @@ public class AppCMSSimpleExoPlayerView extends FrameLayout {
         }
 
         @Override
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+        }
+
+        @Override
         public void onPlayerError(ExoPlaybackException e) {
             // Do nothing.
         }
 
         @Override
-        public void onPositionDiscontinuity() {
-            // Do nothing.
+        public void onPositionDiscontinuity(int reason) {
+
         }
+
 
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
             // Do nothing.
+        }
+
+        @Override
+        public void onSeekProcessed() {
+
         }
 
         @Override

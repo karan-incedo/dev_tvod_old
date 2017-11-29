@@ -260,7 +260,7 @@ public class CustomPlaybackControlView extends FrameLayout {
         positionView = (TextView) findViewById(com.google.android.exoplayer2.ui.R.id.exo_position);
         timeBar = (TimeBar) findViewById(com.google.android.exoplayer2.ui.R.id.exo_progress);
         if (timeBar != null) {
-            timeBar.setListener(componentListener);
+            timeBar.addListener(componentListener);
         }
         playButton = findViewById(com.google.android.exoplayer2.ui.R.id.exo_play);
         if (playButton != null) {
@@ -554,23 +554,20 @@ public class CustomPlaybackControlView extends FrameLayout {
         boolean isSeekable = false;
         boolean enablePrevious = false;
         boolean enableNext = false;
-        if (haveNonEmptyTimeline) {
+        if (haveNonEmptyTimeline && !player.isPlayingAd()) {
             int windowIndex = player.getCurrentWindowIndex();
             timeline.getWindow(windowIndex, window);
             isSeekable = window.isSeekable;
             enablePrevious = isSeekable || !window.isDynamic
-                    || timeline.getPreviousWindowIndex(windowIndex, player.getRepeatMode()) != C.INDEX_UNSET;
-            enableNext = window.isDynamic
-                    || timeline.getNextWindowIndex(windowIndex, player.getRepeatMode()) != C.INDEX_UNSET;
-            if (player.isPlayingAd()) {
-                // Always hide player controls during ads.
-                hide();
-            }
+                    || player.getPreviousWindowIndex() != C.INDEX_UNSET;
+            enableNext = window.isDynamic || player.getNextWindowIndex() != C.INDEX_UNSET;
         }
         setButtonEnabled(enablePrevious, previousButton);
         setButtonEnabled(enableNext, nextButton);
-        setButtonEnabled(fastForwardMs > 0 && isSeekable , fastForwardButton);
-        setButtonEnabled(rewindMs > 0 && isSeekable , rewindButton);
+        setButtonEnabled(fastForwardMs > 0 && isSeekable, fastForwardButton);
+        setButtonEnabled(rewindMs > 0 && isSeekable, rewindButton);
+
+
 
 
         setViewVisibility(isPlayingLive,fastForwardButton);
@@ -763,7 +760,7 @@ public class CustomPlaybackControlView extends FrameLayout {
         }
         int windowIndex = player.getCurrentWindowIndex();
         timeline.getWindow(windowIndex, window);
-        int previousWindowIndex = timeline.getPreviousWindowIndex(windowIndex, player.getRepeatMode());
+        int previousWindowIndex = player.getPreviousWindowIndex();
         if (previousWindowIndex != C.INDEX_UNSET
                 && (player.getCurrentPosition() <= MAX_POSITION_FOR_SEEK_TO_PREVIOUS
                 || (window.isDynamic && !window.isSeekable))) {
@@ -779,7 +776,7 @@ public class CustomPlaybackControlView extends FrameLayout {
             return;
         }
         int windowIndex = player.getCurrentWindowIndex();
-        int nextWindowIndex = timeline.getNextWindowIndex(windowIndex, player.getRepeatMode());
+        int nextWindowIndex = player.getNextWindowIndex();
         if (nextWindowIndex != C.INDEX_UNSET) {
             seekTo(nextWindowIndex, C.TIME_UNSET);
         } else if (timeline.getWindow(windowIndex, window, false).isDynamic) {
@@ -982,14 +979,19 @@ public class CustomPlaybackControlView extends FrameLayout {
         }
 
         @Override
-        public void onPositionDiscontinuity() {
-            updateNavigation();
-            updateProgress();
+        public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
         }
+
 
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
             // Do nothing.
+        }
+
+        @Override
+        public void onSeekProcessed() {
+
         }
 
         @Override
@@ -1012,6 +1014,12 @@ public class CustomPlaybackControlView extends FrameLayout {
         @Override
         public void onPlayerError(ExoPlaybackException error) {
             // Do nothing.
+        }
+
+        @Override
+        public void onPositionDiscontinuity(int reason) {
+            updateNavigation();
+            updateProgress();
         }
 
         @Override
