@@ -41,3 +41,6 @@ local.properties
 library/build/
 sample/build/
 htmlspanner/build/
+AppCMS/.idea/
+AppCMS/local.properties
+AppCMS/gradle/
