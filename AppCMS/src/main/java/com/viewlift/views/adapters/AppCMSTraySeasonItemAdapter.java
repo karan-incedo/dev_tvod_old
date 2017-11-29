@@ -301,6 +301,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                             break;
 
                         case PAGE_API_TITLE:
+                        case PAGE_EPISODE_TITLE_KEY:
                             viewHolder.appCMSEpisodeTitle.setTextColor(textColor);
 
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
