@@ -49,14 +49,29 @@ public class CustomVideoPlayerView extends VideoPlayerView {
     private LinearLayout customMessageContainer;
     private TextView customMessageView;
     private LinearLayout customPlayBack;
-    private String videoDataId;
+    private String videoDataId=null;
     private ToggleButton mFullScreenButton;
 
 
-    public CustomVideoPlayerView(Context context, String videoId) {
+//    public CustomVideoPlayerView(Context context, String videoId) {
+//        super(context);
+//        mContext = context;
+//        this.videoDataId = videoId;
+//        appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
+//        createLoader();
+//        //createPlaybackFullScreen();
+//        createCustomMessageView();
+//
+//
+//        mFullScreenButton = createFullScreenToggleButton();
+//        ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
+//
+//
+//    }
+
+    public CustomVideoPlayerView(Context context) {
         super(context);
         mContext = context;
-        this.videoDataId = videoId;
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         //createPlaybackFullScreen();
@@ -66,9 +81,16 @@ public class CustomVideoPlayerView extends VideoPlayerView {
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
 
-
     }
 
+    public void setVideoId(String videoId) {
+        this.videoDataId = videoId;
+
+    }
+    public String getVideoId() {
+        return videoDataId ;
+
+    }
 
     int currentPlayingIndex = 0;
     List<String> relatedVideoId;

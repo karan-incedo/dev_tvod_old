@@ -293,11 +293,16 @@ public class AppCMSPageFragment extends Fragment {
 
         updateDataLists();
 
-        if (videoPlayerView != null &&  pageView.findChildViewById(R.id.video_player_id)!=null) {
-            videoPlayerView.resumePlayer();
-            videoPlayerView.requestAudioFocus();
-        }if (videoPlayerView!=null ){
+//        if (videoPlayerView != null &&  pageView.findChildViewById(R.id.video_player_id)!=null) {
+//            videoPlayerView.resumePlayer();
+//            videoPlayerView.requestAudioFocus();
+//        }
+        /*if (videoPlayerView!=null ){
             videoPlayerView.pausePlayer();
+        }*/
+        if (pageView.findChildViewById(R.id.video_player_id) != null) {
+//            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).resumePlayer();
+            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
         }
     }
 
@@ -306,8 +311,12 @@ public class AppCMSPageFragment extends Fragment {
         super.onPause();
         updateDataLists();
 
-        if (appCMSPresenter.videoPlayerView != null) {
-            appCMSPresenter.videoPlayerView.pausePlayer();
+//        if (appCMSPresenter.videoPlayerView != null) {
+//            appCMSPresenter.videoPlayerView.pausePlayer();
+//        }
+        if (pageView.findChildViewById(R.id.video_player_id) != null) {
+            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).pausePlayer();
+//            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
         }
     }
 
@@ -327,11 +336,18 @@ public class AppCMSPageFragment extends Fragment {
         if (appCMSPresenter != null) {
             appCMSPresenter.closeSoftKeyboard();
         }
-        if (appCMSPresenter != null && videoPlayerView != null) {
-            videoPlayerView.releasePlayer();
+//        if (appCMSPresenter != null && videoPlayerView != null) {
+//            videoPlayerView.releasePlayer();
+//        }
+        if (pageView.findChildViewById(R.id.video_player_id) != null) {
+            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).pausePlayer();
+            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).releasePlayer();
+
+//            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
         }
         appCMSBinder = null;
         pageView = null;
+
     }
 
     @Override

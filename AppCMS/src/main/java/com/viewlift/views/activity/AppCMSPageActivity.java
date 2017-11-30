@@ -212,6 +212,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private WifiManager wifiManager;
     private String FIREBASE_SEARCH_SCREEN = "Search Screen";
     private String FIREBASE_MENU_SCREEN = "MENU";
+    private String FIREBASE_TEAM_NAVIGATION_SCREEN = "Team Navigation Page";
+
     private String searchQuery;
     private boolean isDownloadPageOpen = false;
     private boolean loaderWaitingFor3rdPartyLogin = false;
@@ -866,7 +868,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } catch (Exception e) {
 
         }
-        appCMSPresenter.pausePIP();
+        //appCMSPresenter.pausePIP();
     }
 
     @Override
@@ -1190,10 +1192,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 appCMSTabNavContainer.getChildAt(i).setEnabled(true);
-
-
-            for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
-                appCMSTabNavContainer.getChildAt(i).setEnabled(true);
             }
             appCMSPresenter.setPageLoading(false);
         }
@@ -1350,7 +1348,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
                         //send menu screen event for firebase
-                        sendFireBaseMenuScreenEvent();
+                        sendFireBaseMenuScreenEvent(FIREBASE_MENU_SCREEN);
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
@@ -1367,7 +1365,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
 
                         //send menu screen event for firebase
-                        sendFireBaseMenuScreenEvent();
+                        sendFireBaseMenuScreenEvent(FIREBASE_MENU_SCREEN);
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
@@ -1385,7 +1383,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                             Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
                                             Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
                             //send menu screen event for firebase
-                            sendFireBaseMenuScreenEvent();
+                            sendFireBaseMenuScreenEvent(FIREBASE_TEAM_NAVIGATION_SCREEN);
                         }
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
@@ -1455,9 +1453,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    private void sendFireBaseMenuScreenEvent() {
+    private void sendFireBaseMenuScreenEvent(String eventName) {
         Bundle bundle = new Bundle();
-        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, FIREBASE_MENU_SCREEN);
+        bundle.putString(FIREBASE_SCREEN_VIEW_EVENT, eventName);
         if (appCMSPresenter.getmFireBaseAnalytics() != null)
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
