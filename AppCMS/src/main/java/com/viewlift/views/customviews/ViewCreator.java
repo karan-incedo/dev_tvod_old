@@ -28,6 +28,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -208,6 +209,8 @@ public class ViewCreator {
             try {
                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             } catch (Exception e) {
+                Log.e("excep 3",e.toString());
+
             }
             if (module == null) {
                 module = moduleInfo;
@@ -219,7 +222,7 @@ public class ViewCreator {
                 module.setView(moduleInfo.getView());
                 module.setBlockName(moduleInfo.getBlockName());
             }
-            boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
+              boolean createModule = !modulesToIgnore.contains(module.getType()) && pageView != null;
 
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_BANNER_MODULE_KEY ||
@@ -245,7 +248,7 @@ public class ViewCreator {
                                 moduleAPI.getContentData());
 
                         for (Component component : module.getComponents()) {
-                            shouldHideComponent = false;
+                             shouldHideComponent = false;
 
                             AppCMSUIKeyType componentType = jsonValueKeyMap.get(component.getType());
 
@@ -259,12 +262,12 @@ public class ViewCreator {
                                 componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
                             }
 
-                            View view = pageView.findViewFromComponentId(moduleAPI.getId()
+                             View view = pageView.findViewFromComponentId(moduleAPI.getId()
                                     + component.getKey());
 
-                            if (view != null) {
+                               if (view != null) {
 
-                                if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ||
+                                 if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY ||
                                         componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY ||
                                         componentType == AppCMSUIKeyType.PAGE_CAROUSEL_VIEW_KEY ||
                                         componentType == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY) {
@@ -1084,6 +1087,8 @@ public class ViewCreator {
             try {
                 module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             } catch (Exception e) {
+                Log.e("excep 4",e.toString());
+
             }
             if (module == null) {
                 module = moduleInfo;
