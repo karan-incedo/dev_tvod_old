@@ -971,7 +971,8 @@ public abstract class BaseView extends FrameLayout {
         }
 
         if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY||
+                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 layoutParams.setMargins(0, tm, 0, bm);
