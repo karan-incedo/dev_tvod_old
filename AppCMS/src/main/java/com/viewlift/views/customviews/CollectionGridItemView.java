@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -422,7 +423,12 @@ public class CollectionGridItemView extends BaseView {
                     viewsToUpdateOnClickEvent.add(view);
                 }
 
-                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
+                    String userId = appCMSPresenter.getLoggedInUser();
+                    appCMSPresenter.getUserVideoDownloadStatus(
+                            data.getGist().getId(), new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
+                                    data, userId), userId);
+                } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data));
                 }

@@ -2058,7 +2058,8 @@ public class ViewCreator {
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
-                        if (moduleAPI != null &&
+                        if (!gridElement &&
+                                moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
