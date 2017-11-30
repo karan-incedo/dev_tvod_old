@@ -403,8 +403,6 @@ public class CollectionGridItemView extends BaseView {
                         if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                             Glide.with(context)
                                     .load(imageUrl)
-//                            Glide.with(context)
-//                                    .load(imageUrl)
                                     .override(childViewWidth, childViewHeight)
                                     .into((ImageView) view);
                         }
@@ -443,6 +441,7 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
+					// Todo thumbinfo and runtime to be separated
                         //String publishDate = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         //String thumbInfo=runTime+" | "+publishDate;  Removed publish date as per Clients request.
                         String runTime = convertSecondsToTime(data.getGist().getRuntime());

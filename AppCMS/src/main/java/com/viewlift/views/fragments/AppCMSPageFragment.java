@@ -59,12 +59,6 @@ public class AppCMSPageFragment extends Fragment {
      private ViewGroup parent;*/
     private Button playLiveImageView;
 
-    public interface OnPageCreation {
-        void onSuccess(AppCMSBinder appCMSBinder);
-
-        void onError(AppCMSBinder appCMSBinder);
-    }
-
     public static AppCMSPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCMSPageFragment fragment = new AppCMSPageFragment();
         fragment.shouldSendFirebaseViewItemEvent = false;
@@ -371,12 +365,16 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public AppCMSViewComponent buildAppCMSViewComponent() {
+        String screenName = appCMSBinder.getScreenName();
+        if (!appCMSPresenter.isPageAVideoPage(screenName)) {
+            screenName = appCMSBinder.getPageId();
+        }
         return DaggerAppCMSViewComponent.builder()
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
                         appCMSBinder.getAppCMSPageAPI(),
                         appCMSPresenter.getAppCMSAndroidModules(),
-                        appCMSBinder.getScreenName(),
+                        screenName,
                         appCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter))
                 .build();
@@ -408,11 +406,16 @@ public class AppCMSPageFragment extends Fragment {
             }
 
             try {
+                String screenName = appCMSBinder.getScreenName();
+                if (!appCMSPresenter.isPageAVideoPage(screenName)) {
+                    screenName = appCMSBinder.getPageId();
+                }
+
                 pageView = viewCreator.generatePage(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
                         appCMSBinder.getAppCMSPageAPI(),
                         appCMSPresenter.getAppCMSAndroidModules(),
-                        appCMSBinder.getScreenName(),
+                        screenName,
                         appCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter,
                         modulesToIgnore);
@@ -420,7 +423,9 @@ public class AppCMSPageFragment extends Fragment {
                 if (pageViewGroup != null &&
                         pageView != null &&
                         pageView.getParent() == null) {
-                    removeAllViews(pageViewGroup);
+                    if (pageViewGroup.getChildCount() > 0) {
+                        pageViewGroup.removeAllViews();
+                    }
                     pageViewGroup.addView(pageView);
                     if (updatePage) {
                         updateAllViews(pageViewGroup);
@@ -431,6 +436,7 @@ public class AppCMSPageFragment extends Fragment {
                     pageView.notifyAdaptersOfUpdate();
                 }
             } catch (Exception e) {
+                //
             }
         }
     }
@@ -455,13 +461,10 @@ public class AppCMSPageFragment extends Fragment {
         }
     }
 
-    private void removeAllViews(ViewGroup viewGroup) {
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
-                removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
-            }
-        }
-        viewGroup.removeAllViews();
+    public interface OnPageCreation {
+        void onSuccess(AppCMSBinder appCMSBinder);
+
+        void onError(AppCMSBinder appCMSBinder);
     }
 
 }

@@ -165,7 +165,7 @@ public class AppCMSSubscriptionPlanCall {
 //                                    String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
                                     //Log.d(TAG, "Response: " + responseValue);
                                     if (response.body() != null) {
-                                    Observable.just(response.body()).subscribe(resultAction1);
+                                        Observable.just(response.body()).subscribe(resultAction1);
                                     } else if (response.errorBody() != null) {
                                         AppCMSSubscriptionPlanResult errorResponse =
                                                 gson.fromJson(response.errorBody().string(), AppCMSSubscriptionPlanResult.class);

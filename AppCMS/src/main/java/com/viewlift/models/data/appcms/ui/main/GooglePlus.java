@@ -20,15 +20,19 @@ public class GooglePlus implements Serializable {
     @SerializedName("googlePlusUrl")
     @Expose
     String googlePlusUrl;
+
     @SerializedName("apiKey")
     @Expose
     String apiKey;
+
     @SerializedName("authenticate")
     @Expose
     boolean authenticate;
+
     @SerializedName("credentials")
     @Expose
     Credentials credentials;
+
     public boolean isSignin() {
         return signin;
     }
@@ -36,27 +40,35 @@ public class GooglePlus implements Serializable {
     public void setSignin(boolean signin) {
         this.signin = signin;
     }
+
     public String getGooglePlusUrl() {
         return googlePlusUrl;
     }
+
     public void setGooglePlusUrl(String googlePlusUrl) {
         this.googlePlusUrl = googlePlusUrl;
     }
+
     public String getApiKey() {
         return apiKey;
     }
+
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
+
     public boolean isAuthenticate() {
         return authenticate;
     }
+
     public void setAuthenticate(boolean authenticate) {
         this.authenticate = authenticate;
     }
+
     public Credentials getCredentials() {
         return credentials;
     }
+
     public void setCredentials(Credentials credentials) {
         this.credentials = credentials;
     }

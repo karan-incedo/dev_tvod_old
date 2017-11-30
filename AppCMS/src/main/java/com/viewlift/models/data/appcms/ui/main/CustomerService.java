@@ -3,6 +3,7 @@ package com.viewlift.models.data.appcms.ui.main;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
+
 import java.io.Serializable;
 
 /**
@@ -14,9 +15,11 @@ public class CustomerService implements Serializable {
     @SerializedName("email")
     @Expose
     String email;
+
     @SerializedName("phoneNumber")
     @Expose
     String phone;
+
     @SerializedName("address")
     @Expose
     String address;

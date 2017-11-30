@@ -270,11 +270,11 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                                         List<AppCMSSearchResult> data) {
         if (data == null || data.isEmpty()) {
             try {
-            if (appCMSPresenter.getAppCMSMain().getBrand() != null) {
-                noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                        .getBrand()
-                        .getGeneral()
-                        .getTextColor()));
+                if (appCMSPresenter.getAppCMSMain().getBrand() != null) {
+                    noResultsTextview.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                            .getBrand()
+                            .getGeneral()
+                            .getTextColor()));
                     noResultsTextview.setVisibility(View.VISIBLE);
                 }
             } catch (Exception e) {

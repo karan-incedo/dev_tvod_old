@@ -164,10 +164,11 @@ public class AppCMSNavItemsFragment extends DialogFragment {
     public void onResume() {
         super.onResume();
         try {
-        appCMSNavItemsAdapter.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
-        appCMSNavItemsAdapter.setUserSubscribed(appCMSPresenter.isUserSubscribed());
-        appCMSNavItemsAdapter.notifyDataSetChanged();
+            appCMSNavItemsAdapter.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
+            appCMSNavItemsAdapter.setUserSubscribed(appCMSPresenter.isUserSubscribed());
+            appCMSNavItemsAdapter.notifyDataSetChanged();
         } catch (Exception e) {
+
         }
     }
 

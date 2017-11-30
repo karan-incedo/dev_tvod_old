@@ -63,6 +63,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     int currentPlayingIndex = 0;
     List<String> relatedVideoId;
     private ToggleButton mFullScreenButton;
+
+
     private boolean shouldRequestAds = false;
     private boolean isADPlay;
     private ImaSdkFactory sdkFactory;
@@ -74,15 +76,18 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     public CustomVideoPlayerView(Context context, String videoId) {
         super(context);
-        System.out.println("video player view" + "constructor");
         mContext = context;
         this.videoDataId = videoId;
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         //createPlaybackFullScreen();
         createCustomMessageView();
+
+
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
+
+
         setupAds();
     }
 
@@ -105,7 +110,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     public void setVideoUri(String videoId, int resIdMessage) {
         System.out.println("video player view" + "set video uri");
         showProgressBar(getResources().getString(resIdMessage));
-        //releasePlayer();
+        releasePlayer();
         init(mContext);
         getPlayerView().hideController();
 
@@ -213,7 +218,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
 
         if (null != url) {
-            System.out.println("video player view" + "start player");
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
             getPlayerView().getPlayer().setPlayWhenReady(true);
             if (currentIndex == 0) {
@@ -437,7 +441,31 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 }else{
                     setLayoutParams(baseLayoutParms);
                 }*/
-                appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+                if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
+                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+
+                } else {
+                    if (appCMSPresenter.isAppSVOD()) {
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                        });
+                                    });
+                        } else {
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                        });
+                                    });
+                        }
+                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                () -> {
+                                });
+                    }
+                }
             }
         });
 
