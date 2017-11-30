@@ -250,7 +250,8 @@
     <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
 
     <!-- Subscription Keys -->
-    <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>
+    <string name="app_cms_page_subscription_selectionplan_02_key">AC SelectPlan 02</string>
+    <string name="app_cms_page_subscription_selectionplan_01_key">AC SelectPlan 01</string>
     <string name="app_cms_page_subscription_selection_plan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_imagetextrow_key">AC ImageTextRow 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
@@ -498,6 +499,6 @@
 
     <string name="app_cms_table_background_view">tableBackground</string>
 
-    <string name="btn_add_contact">WATCH LIVE GAMES - <u>START FREE TRIAL NOW</u></string>
+    <string name="navigation_settings_primaryCta_placement">Banner</string>
 
 </resources>

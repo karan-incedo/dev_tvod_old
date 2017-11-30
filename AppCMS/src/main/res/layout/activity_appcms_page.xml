@@ -136,7 +136,6 @@
             android:textSize="16sp"
             android:gravity="center"
             android:visibility="gone"
-            android:text="@string/btn_add_contact"
             />
 
     </android.support.design.widget.AppBarLayout>
