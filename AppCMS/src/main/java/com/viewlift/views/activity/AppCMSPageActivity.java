@@ -31,7 +31,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.UnderlineSpan;
 import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -178,6 +180,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @BindView(R.id.app_cms_toolbar)
     Toolbar toolbar;
+    @BindView(R.id.app_cms_start_free_trial_tool)
+    TextView appCMSNavFreeTrialTool;
 
     private int navMenuPageIndex;
     private int homePageIndex;
@@ -595,8 +599,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         int tabCount = getResources().getInteger(R.integer.number_of_tabs);
         manageTopBar();
         createTabBar();
-        //checkStartFreeTrialTool();
-		/* for (int i = 0; i < tabCount; i++) {
+        startFreeTrialTool();
+        /* for (int i = 0; i < tabCount; i++) {
             addNavigationItem();
         }
         createMenuNavItem();
@@ -622,6 +626,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     appCMSPresenter.sendCloseOthersAction(null, true, false);
                 }
         );
+        appCMSNavFreeTrialTool.setOnClickListener(v -> {
+            if (appCMSPresenter != null) {
+                appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
+                appCMSPresenter.navigateToSubscriptionPlansPage(true);
+            }
+        });
 
         //ToDo:  dynamically visible/hide search /profile btn as per API response, currently showing for MSE
         mSearchTopButton.setOnClickListener(v -> {
@@ -1593,6 +1603,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         boolean keepPage) {
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
+        setVisibilityForStartFreeTrial(appCMSBinder.getPageId());
         int lastBackStackEntry = getSupportFragmentManager().getBackStackEntryCount();
         boolean poppedStack = false;
         if (!appCMSBinder.shouldSendCloseAction() &&
@@ -2571,23 +2582,46 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
     }
-    public void checkStartFreeTrialTool(){
-        int buttonColor =Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
-        int textColor =Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
-        TextView appCMSNavFreeTrialTool = (TextView) findViewById(R.id.app_cms_start_free_trial_tool);
-        if (appCMSPresenter.getAppCMSMain()
-                .getServiceType()
-                .equals(getString(R.string.app_cms_main_svod_service_type_key))) {
-            appCMSNavFreeTrialTool.setTextColor(textColor);
-            appCMSNavFreeTrialTool.setOnClickListener(v -> {
-                if (appCMSPresenter != null) {
-                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.SUBSCRIBE);
-                    appCMSPresenter.navigateToSubscriptionPlansPage(true);
-                }
-            });
-            appCMSNavFreeTrialTool.setBackgroundColor(buttonColor);
-            appCMSNavFreeTrialTool.setVisibility(View.VISIBLE);
 
+    public void startFreeTrialTool() {
+        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+        appCMSNavFreeTrialTool.setTextColor(textColor);
+        appCMSNavFreeTrialTool.setBackgroundColor(buttonColor);
+        if (appCMSPresenter.getNavigation() != null &&
+                appCMSPresenter.getNavigation().getSettings() != null &&
+                appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
+                appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement() != null &&
+                appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement().contains(getString(R.string.navigation_settings_primaryCta_placement))) {
+            if (appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() != null &&
+                    appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
+
+                SpannableString content = new SpannableString(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
+                content.setSpan(new UnderlineSpan(), appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText().length(),
+                        content.length(), 0);
+                appCMSNavFreeTrialTool.setText(content);
+            }
+        }
+
+    }
+
+    void setVisibilityForStartFreeTrial(String pageId) {
+        if (appCMSPresenter.getNavigation() != null &&
+                appCMSPresenter.getNavigation().getSettings() != null &&
+                appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
+                appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement() != null &&
+                appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getPlacement().contains(getString(R.string.navigation_settings_primaryCta_placement))) {
+
+            if (appCMSPresenter.isViewPlanPage(pageId) || appCMSPresenter.isPageLoginPage(pageId)) {
+                appCMSNavFreeTrialTool.setVisibility(View.GONE);
+                return;
+            }
+            if (!appCMSPresenter.isUserSubscribed()) {
+                appCMSNavFreeTrialTool.setVisibility(View.VISIBLE);
+            } else {
+                appCMSNavFreeTrialTool.setVisibility(View.GONE);
+            }
         }
     }
 }
