@@ -2101,36 +2101,60 @@ public class ViewCreator {
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
-                                moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
-                                !moduleAPI.getContentData().get(0).getContentDetails().getTrailers().isEmpty() &&
-                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink() != null &&
-                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId() != null &&
-                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
-                            componentViewResult.componentView.setOnClickListener(v -> {
-                                String[] extraData = new String[3];
-                                extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
-                                extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
-                                extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
-                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink(),
-                                        component.getAction(),
-                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                        extraData,
-                                        moduleAPI.getContentData().get(0),
-                                        false,
-                                        -1,
-                                        null)) {
-                                    //Log.e(TAG, "Could not launch action: " +
+                                moduleAPI.getContentData().get(0) != null) {
+
+                            if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
+                                    !moduleAPI.getContentData().get(0).getContentDetails().getTrailers().isEmpty() &&
+                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink() != null &&
+                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId() != null &&
+                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+                                componentViewResult.componentView.setOnClickListener(v -> {
+                                    String[] extraData = new String[3];
+                                    extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
+                                    extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                    extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
+                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink(),
+                                            component.getAction(),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            extraData,
+                                            moduleAPI.getContentData().get(0),
+                                            false,
+                                            -1,
+                                            null)) {
+                                        //Log.e(TAG, "Could not launch action: " +
 //                                            " permalink: " +
 //                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
 //                                            " action: " +
 //                                            component.getAction() +
 //                                            " hls URL: " +
 //                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
-                                }
-                            });
+                                    }
+                                });
+                            } else if (moduleAPI.getContentData().get(0).getShowDetails() != null &&
+                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers() != null &&
+                                    !moduleAPI.getContentData().get(0).getShowDetails().getTrailers().isEmpty() &&
+                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink() != null &&
+                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId() != null &&
+                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
+                                componentViewResult.componentView.setOnClickListener(v -> {
+                                    String[] extraData = new String[3];
+                                    extraData[0] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink();
+                                    extraData[1] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                    extraData[2] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId();
+                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink(),
+                                            component.getAction(),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            extraData,
+                                            moduleAPI.getContentData().get(0),
+                                            false,
+                                            -1,
+                                            null)) {}
+                                });
+
+                            }
                         } else {
                             componentViewResult.shouldHideComponent = true;
                             componentViewResult.componentView.setVisibility(View.GONE);

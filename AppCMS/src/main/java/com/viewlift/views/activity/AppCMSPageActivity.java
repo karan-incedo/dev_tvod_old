@@ -2419,6 +2419,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
+    private int getAppCMSBinderStackSize() {
+        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            try {
+                return appCMSBinderStack.size();
+            } catch (Exception e) {
+
+            }
+        }
+        return 0;
+    }
+
     private String getAppCMSBinderStackEntry(int index) {
         String result = null;
         if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {

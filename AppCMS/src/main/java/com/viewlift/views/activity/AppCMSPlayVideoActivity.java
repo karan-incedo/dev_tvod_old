@@ -135,8 +135,15 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 binder.getContentData().getContentDetails() != null &&
                                 binder.getContentData().getContentDetails().getTrailers() != null &&
                                 !binder.getContentData().getContentDetails().getTrailers().isEmpty() &&
-                                binder.getContentData().getContentDetails().getTrailers().get(0) != null)
-                        id = binder.getContentData().getContentDetails().getTrailers().get(0).getId();
+                                binder.getContentData().getContentDetails().getTrailers().get(0) != null) {
+                            id = binder.getContentData().getContentDetails().getTrailers().get(0).getId();
+                        } else if (binder.getContentData().getShowDetails() != null &&
+                                binder.getContentData().getShowDetails().getTrailers() != null &&
+                                !binder.getContentData().getShowDetails().getTrailers().isEmpty() &&
+                                binder.getContentData().getShowDetails().getTrailers().get(0) != null &&
+                                binder.getContentData().getShowDetails().getTrailers().get(0).getId() != null) {
+                            id = binder.getContentData().getShowDetails().getTrailers().get(0).getId();
+                        }
                     }
                     if (id != null) {
                         appCMSPresenter.refreshVideoData(id,
