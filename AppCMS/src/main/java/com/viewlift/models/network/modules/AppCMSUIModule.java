@@ -421,8 +421,11 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_page_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_PAGE_KEY);
 
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_selectionplan_key),
-                AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_selectionplan_02_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_selectionplan_01_key),
+                AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_imagetextrow_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_IMAGEROW_KEY);

@@ -1586,7 +1586,8 @@ public class ViewCreator {
                     componentViewResult.componentView = new RecyclerView(context);
 
                     AppCMSViewAdapter appCMSViewAdapter;
-                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY||
+                            moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                         if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new GridLayoutManager(context, 2,
