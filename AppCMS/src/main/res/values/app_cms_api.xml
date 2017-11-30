@@ -93,6 +93,8 @@
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_video_player_key">player</string>
+    <string name="app_cms_page_video_player_key_value">videoPlayer</string>
+
     <string name="app_cms_page_web_view_key">web_view</string>
     <string name="app_cms_page_full_screen_key">full_Screen_icon</string>
 

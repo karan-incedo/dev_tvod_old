@@ -59,12 +59,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private LinearLayout customMessageContainer;
     private TextView customMessageView;
     private LinearLayout customPlayBack;
-    private String videoDataId;
+    private String videoDataId=null;
     int currentPlayingIndex = 0;
     List<String> relatedVideoId;
     private ToggleButton mFullScreenButton;
-
-
     private boolean shouldRequestAds = false;
     private boolean isADPlay;
     private ImaSdkFactory sdkFactory;
@@ -74,10 +72,26 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private boolean isAdDisplayed;
     private boolean isAdsDisplaying;
 
-    public CustomVideoPlayerView(Context context, String videoId) {
+
+//    public CustomVideoPlayerView(Context context, String videoId) {
+//        super(context);
+//        mContext = context;
+//        this.videoDataId = videoId;
+//        appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
+//        createLoader();
+//        //createPlaybackFullScreen();
+//        createCustomMessageView();
+//
+//
+//        mFullScreenButton = createFullScreenToggleButton();
+//        ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
+//
+//
+//    }
+
+    public CustomVideoPlayerView(Context context) {
         super(context);
         mContext = context;
-        this.videoDataId = videoId;
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         //createPlaybackFullScreen();
@@ -86,11 +100,18 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
-
-
         setupAds();
     }
 
+    public void setVideoId(String videoId) {
+        this.videoDataId = videoId;
+
+
+    }
+    public String getVideoId() {
+        return videoDataId ;
+
+    }
 
     public void setupAds() {
         //this.adsUrl = adsUrl;
@@ -106,6 +127,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             adsManager.init();
         });
     }
+
 
     public void setVideoUri(String videoId, int resIdMessage) {
         System.out.println("video player view" + "set video uri");
