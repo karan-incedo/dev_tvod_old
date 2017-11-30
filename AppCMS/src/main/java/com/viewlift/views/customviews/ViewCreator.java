@@ -1542,6 +1542,14 @@ public class ViewCreator {
 
         AppCMSUIKeyType moduleType = jsonValueKeyMap.get(viewType);
 
+        if (moduleType == null) {
+            moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
+        if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+            componentViewResult.useMarginsAsPercentagesOverride = false;
+        }
+
         int tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
@@ -1598,7 +1606,26 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
+                    CollectionGridItemViewCreator collectionGridItemViewCreator =
+                            new CollectionGridItemViewCreator(this,
+                                    parentLayout,
+                                    false,
+                                    component,
+                                    appCMSPresenter,
+                                    moduleAPI,
+                                    appCMSAndroidModules,
+                                    settings,
+                                    jsonValueKeyMap,
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    true,
+                                    true,
+                                    viewType,
+                                    false,
+                                    false);
+
                     AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+                            collectionGridItemViewCreator,
                             moduleAPI != null ? moduleAPI.getContentData() : null,
                             component.getComponents(),
                             appCMSPresenter,
@@ -1723,8 +1750,28 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0).getSeason() != null &&
                                     !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
                                     moduleAPI.getContentData().get(0).getSeason().get(0) != null) {
+
+                                CollectionGridItemViewCreator collectionGridItemViewCreator =
+                                        new CollectionGridItemViewCreator(this,
+                                                parentLayout,
+                                                false,
+                                                component,
+                                                appCMSPresenter,
+                                                moduleAPI,
+                                                appCMSAndroidModules,
+                                                settings,
+                                                jsonValueKeyMap,
+                                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                                false,
+                                                true,
+                                                viewType,
+                                                false,
+                                                false);
+
                                 AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
                                         new AppCMSTraySeasonItemAdapter(context,
+                                                collectionGridItemViewCreator,
                                                 moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
                                                 component.getComponents(),
                                                 appCMSPresenter,
@@ -2340,7 +2387,8 @@ public class ViewCreator {
             case PAGE_TEXTVIEW_KEY:
                 boolean resizeText = false;
                 int textColor = ContextCompat.getColor(context, R.color.colorAccent);
-                if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY &&
+                        moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                     componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
 
                     try {
@@ -2798,8 +2846,10 @@ public class ViewCreator {
                                 break;
                         }
                     } else {
-                        ((TextView) componentViewResult.componentView).setSingleLine(true);
-                        ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                        if (moduleType != AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                            ((TextView) componentViewResult.componentView).setSingleLine(true);
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                        }
                     }
 
                     if (!TextUtils.isEmpty(component.getBackgroundColor())) {
@@ -3853,6 +3903,83 @@ public class ViewCreator {
                 builder.append('\n');
             }
             super.beforeChildren(node, builder, spanStack);
+        }
+    }
+
+    public static class CollectionGridItemViewCreator {
+        final ViewCreator viewCreator;
+        final Layout parentLayout;
+        final boolean useParentLayout;
+        final Component component;
+        final AppCMSPresenter appCMSPresenter;
+        final Module moduleAPI;
+        final AppCMSAndroidModules appCMSAndroidModules;
+        Settings settings;
+        Map<String, AppCMSUIKeyType> jsonValueKeyMap;
+        int defaultWidth;
+        int defaultHeight;
+        boolean useMarginsAsPercentages;
+        boolean gridElement;
+        String viewType;
+        boolean createMultipleContainersForChildren;
+        boolean createRoundedCorners;
+
+        public CollectionGridItemViewCreator(final ViewCreator viewCreator,
+                                             final Layout parentLayout,
+                                             final boolean useParentLayout,
+                                             final Component component,
+                                             final AppCMSPresenter appCMSPresenter,
+                                             final Module moduleAPI,
+                                             final AppCMSAndroidModules appCMSAndroidModules,
+                                             Settings settings,
+                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                             int defaultWidth,
+                                             int defaultHeight,
+                                             boolean useMarginsAsPercentages,
+                                             boolean gridElement,
+                                             String viewType,
+                                             boolean createMultipleContainersForChildren,
+                                             boolean createRoundedCorners) {
+            this.viewCreator = viewCreator;
+            this.parentLayout = parentLayout;
+            this.useParentLayout = useParentLayout;
+            this.component = component;
+            this.appCMSPresenter = appCMSPresenter;
+            this.moduleAPI = moduleAPI;
+            this.appCMSAndroidModules = appCMSAndroidModules;
+            this.settings = settings;
+            this.jsonValueKeyMap = jsonValueKeyMap;
+            this.defaultWidth = defaultWidth;
+            this.defaultHeight = defaultHeight;
+            this.useMarginsAsPercentages = useMarginsAsPercentages;
+            this.gridElement = gridElement;
+            this.viewType = viewType;
+            this.createMultipleContainersForChildren = createMultipleContainersForChildren;
+            this.createRoundedCorners = createRoundedCorners;
+        }
+
+        public View createView(Context context) {
+            try {
+                return viewCreator.createCollectionGridItemView(context,
+                        parentLayout,
+                        useParentLayout,
+                        component,
+                        appCMSPresenter,
+                        moduleAPI,
+                        appCMSAndroidModules,
+                        settings,
+                        jsonValueKeyMap,
+                        defaultWidth,
+                        defaultHeight,
+                        useMarginsAsPercentages,
+                        gridElement,
+                        viewType,
+                        createMultipleContainersForChildren,
+                        createRoundedCorners);
+            } catch (Exception e) {
+
+            }
+            return null;
         }
     }
 }

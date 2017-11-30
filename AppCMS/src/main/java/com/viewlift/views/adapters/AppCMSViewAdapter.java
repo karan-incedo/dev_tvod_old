@@ -600,12 +600,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                    appCMSPresenter);
         }
-    }
-
-    public boolean isClickable() {
-        return isClickable;
     }
 
     public void setClickable(boolean clickable) {

@@ -18,6 +18,7 @@ import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +33,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.utilities.ImageUtils;
 
 import java.text.SimpleDateFormat;
@@ -227,7 +229,8 @@ public class CollectionGridItemView extends BaseView {
                           Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                           final OnClickHandler onClickHandler,
                           final String componentViewType,
-                          int themeColor) {
+                          int themeColor,
+                          AppCMSPresenter appCMSPresenter) {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
@@ -389,7 +392,9 @@ public class CollectionGridItemView extends BaseView {
                             data.getGist().getBadgeImages() != null &&
                             data.getGist().getImageGist().get_3x4() != null &&
                             data.getGist().getBadgeImages().get_3x4() != null &&
-                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
+                            0 < childViewWidth &&
+                            0 < childViewHeight) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getBadgeImages().get_3x4(),
                                 childViewWidth,
@@ -414,15 +419,18 @@ public class CollectionGridItemView extends BaseView {
                     viewsToUpdateOnClickEvent.add(view);
                 }
 
-                view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                        childComponent, data));
+                if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
+                    view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                            childComponent, data));
+                }
             } else if (componentType == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
 
 
                 view.setOnClickListener(v ->
                         onClickHandler.click(CollectionGridItemView.this,
                                 childComponent, data));
-            } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
+            } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
+                    view instanceof TextView) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
                     if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_TITLE_KEY &&
                             !TextUtils.isEmpty(data.getGist().getTitle())) {
@@ -438,10 +446,27 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
+                            componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
+                        ((TextView) view).setSingleLine(true);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
                         ((TextView) view).setText(data.getGist().getDescription());
+                        try {
+                            ViewTreeObserver titleTextVto = view.getViewTreeObserver();
+                            ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
+                                    new ViewCreatorMultiLineLayoutListener((TextView) view,
+                                            data.getGist().getTitle(),
+                                            data.getGist().getDescription(),
+                                            appCMSPresenter,
+                                            false,
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            true);
+                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                        } catch (Exception e) {
+
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                         ((TextView) view).setText(data.getName());
                         if ("AC SelectPlan 02".equals(componentViewType)) {
