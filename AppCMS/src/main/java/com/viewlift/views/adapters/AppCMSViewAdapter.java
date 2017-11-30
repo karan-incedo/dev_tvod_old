@@ -504,7 +504,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 return false;
             });
             itemView.setOnClickListener(v -> {
-                if (isClickable) {
+                if (isClickable && data != null && data.getGist() != null) {
                     if (v instanceof CollectionGridItemView) {
                         try {
                             int eventX = (int) lastTouchDownEvent.getX();
