@@ -288,7 +288,11 @@ public class AppCMSTVTrayAdapter
                                     View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
                                     if (view != null) {
                                         view.setFocusable(adapterData.size() != 0);
-                                        view.setVisibility(View.INVISIBLE);
+                                        if (adapterData.size() > 0) {
+                                            view.setVisibility(View.VISIBLE);
+                                        } else {
+                                            view.setVisibility(View.INVISIBLE);
+                                        }
                                     }
                                     notifyDataSetChanged();
                                 }, false);
@@ -300,7 +304,11 @@ public class AppCMSTVTrayAdapter
                                     View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
                                     if (view != null) {
                                         view.setFocusable(adapterData.size() != 0);
-                                        view.setVisibility(View.INVISIBLE);
+                                        if (adapterData.size() > 0) {
+                                            view.setVisibility(View.VISIBLE);
+                                        } else {
+                                            view.setVisibility(View.INVISIBLE);
+                                        }
                                     }
                                     notifyDataSetChanged();
                                 });

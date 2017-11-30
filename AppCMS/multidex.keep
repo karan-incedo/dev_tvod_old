@@ -1,3 +1,4 @@
 dalvik/system/BaseDexClassLoader/BaseDexClassLoader.class
 com/google/firebase/iid/FirebaseInstanceIdService.class
 com/urbanairship/UrbanAirshipProvider.class
+com/amazon/android/Kiwi.class
