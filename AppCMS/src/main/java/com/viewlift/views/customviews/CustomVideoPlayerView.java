@@ -32,7 +32,9 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.exoplayerview.CustomPlaybackControlView;
 
 import java.util.List;
+
 import rx.functions.Action1;
+
 import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
 import static com.google.android.exoplayer2.Player.STATE_READY;
@@ -41,7 +43,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
 
     private Context mContext;
     private AppCMSPresenter appCMSPresenter;
-    private  FrameLayout.LayoutParams baseLayoutParms;
+    private FrameLayout.LayoutParams baseLayoutParms;
     private LinearLayout customLoaderContainer;
     private TextView loaderMessageView;
     private LinearLayout customMessageContainer;
@@ -49,7 +51,6 @@ public class CustomVideoPlayerView extends VideoPlayerView {
     private LinearLayout customPlayBack;
     private String videoDataId;
     private ToggleButton mFullScreenButton;
-
 
 
     public CustomVideoPlayerView(Context context, String videoId) {
@@ -62,11 +63,8 @@ public class CustomVideoPlayerView extends VideoPlayerView {
         createCustomMessageView();
 
 
-
-
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
-
 
 
     }
@@ -126,7 +124,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 System.out.println(" JSON for Video details " + new Gson().toJson(contentDatum));
             }
         });
-        videoDataId=videoId;
+        videoDataId = videoId;
 
     }
 
@@ -178,7 +176,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 }
             }
 
-            if (playerView!=null && playerView.getController()!=null ){
+            if (playerView != null && playerView.getController() != null) {
                 playerView.getController().setPlayingLive(contentDatum.getStreamingInfo().getIsLiveStream());
             }
         }
@@ -235,7 +233,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 getPlayerView().getPlayer().setPlayWhenReady(false);
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     //showProgressBar("Loading Next Video...");
-                    setVideoUri(relatedVideoId.get(currentPlayingIndex),R.string.loading_next_video_text);
+                    setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
 
                     /*appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
                         @Override
@@ -250,7 +248,7 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                             hideProgressBar();
                         }
                     });*/
-                }else{
+                } else {
                     showRestrictMessage(getResources().getString(R.string.app_cms_video_ended_text_message));
                 }
                 break;
@@ -407,7 +405,31 @@ public class CustomVideoPlayerView extends VideoPlayerView {
                 }else{
                     setLayoutParams(baseLayoutParms);
                 }*/
-                appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+                if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
+                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+
+                } else {
+                    if (appCMSPresenter.isAppSVOD()) {
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                        });
+                                    });
+                        } else {
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+                                        });
+                                    });
+                        }
+                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                () -> {
+                                });
+                    }
+                }
             }
         });
 

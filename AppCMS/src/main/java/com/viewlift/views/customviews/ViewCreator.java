@@ -2119,58 +2119,7 @@ public class ViewCreator {
 
                     case PAGE_PLAY_LIVE_IMAGE_KEY:
                         componentViewResult.componentView.setVisibility(View.GONE);
-                        /*componentViewResult.componentView.setPadding(20, 20, 20, 20);
 
-                        componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
-                        componentViewResult.componentView.getBackground().setTint(tintColor);
-                        componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
-                        LinearLayout.LayoutParams progressbarParam = new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.full_screen_item_min_width, context), BaseView.dpToPx(R.dimen.full_screen_item_min_width, context));
-                        componentViewResult.componentView.setLayoutParams(progressbarParam);
-
-                        if ((appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isUserSubscribed()) || (moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getGist() != null
-                                && moduleAPI.getContentData().get(0) != null && moduleAPI.getContentData().get(0).getGist().getFree())) {
-                            componentViewResult.componentView.setVisibility(View.VISIBLE);
-                        } else {
-                            componentViewResult.componentView.setVisibility(View.GONE);
-
-                        }
-                        componentViewResult.componentView.setVisibility(View.GONE);
-
-                        componentViewResult.componentView.setId(R.id.full_screen_btn_id);
-
-                        componentViewResult.componentView.setOnClickListener(v -> {
-
-                            if (moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0) != null) {
-                                appCMSPresenter.refreshVideoData(moduleAPI.getContentData().get(0).getGist().getId(), new Action1<ContentDatum>() {
-                                    @Override
-                                    public void call(ContentDatum contentDatum) {
-                                        if (*//*moduleAPI.getContentData() != null &&
-                                            !moduleAPI.getContentData().isEmpty() &&*//*
-                                                contentDatum != null &&
-                                                        contentDatum.getContentDetails() != null) {
-
-                                            List<String> relatedVideoIds = null;
-                                            if (contentDatum.getContentDetails() != null &&
-                                                    contentDatum.getContentDetails().getRelatedVideoIds() != null) {
-                                                relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();
-                                            }
-                                            int currentPlayingIndex = -1;
-                                            if (relatedVideoIds == null) {
-                                                currentPlayingIndex = 0;
-                                            }
-
-                                            appCMSPresenter.launchVideoPlayer(contentDatum,
-                                                    currentPlayingIndex,
-                                                    relatedVideoIds,
-                                                    contentDatum.getGist().getWatchedTime(),
-                                                    component.getAction());
-
-                                        }
-                                    }
-                                });
-                            }
-                        });
-*/
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
