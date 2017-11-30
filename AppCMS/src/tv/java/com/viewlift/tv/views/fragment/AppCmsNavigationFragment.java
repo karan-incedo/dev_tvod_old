@@ -509,6 +509,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_teams_label))) {
                         navigationVisibilityListener.showNavigation(false);
                         subNavigationVisibilityListener.showSubNavigation(true, true);
+                        appCmsPresenter.sendGaScreen("Team Navigation Page");
                         Utils.pageLoading(false, getActivity());
                     }
 

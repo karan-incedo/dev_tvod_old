@@ -42,8 +42,13 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
         if (getArguments() != null) {
             appCMSBinder = (AppCMSBinder) getArguments().getBinder("app_cms_binder_key");
         }
+
         appCMSPresenter =
                 ((AppCMSApplication) getActivity().getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
+
+        if(null != appCMSBinder)
+            appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
+
         appCmsViewComponent = buildAppCMSViewComponent();
     }
 
