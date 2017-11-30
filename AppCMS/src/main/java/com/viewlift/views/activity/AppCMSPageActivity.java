@@ -94,6 +94,7 @@ import java.io.File;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -2416,5 +2417,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         }
+    }
+
+    private String getAppCMSBinderStackEntry(int index) {
+        String result = null;
+        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            try {
+                ListIterator<String> listIterator = appCMSBinderStack.listIterator();
+                int currentIndex = 0;
+                while (listIterator.hasNext() && currentIndex < index) {
+                    currentIndex++;
+                }
+                result = listIterator.next();
+            } catch (Exception e) {
+
+            }
+        }
+
+        return result;
     }
 }
