@@ -107,6 +107,34 @@ public class ViewCreator {
         htmlSpanner.registerHandler("p", pHandler);
     }
 
+    static void setViewWithShowSubtitle(Context context, ContentDatum data, View view) {
+        int totalEpisodes = 0;
+        List<Season_> seasons = data.getSeason();
+        int numSeasons = seasons.size();
+        for (int i = 0; i < numSeasons; i++) {
+            if (seasons.get(i).getEpisodes() != null) {
+                totalEpisodes += seasons.get(i).getEpisodes().size();
+            }
+        }
+
+        StringBuilder subtitleSb = new StringBuilder(String.valueOf(totalEpisodes));
+        subtitleSb.append(context.getString(R.string.blank_separator));
+        subtitleSb.append(context.getResources().getQuantityString(R.plurals.episode_subtitle_text,
+                totalEpisodes));
+
+        String primaryCategory = data.getGist().getPrimaryCategory() != null ?
+                data.getGist().getPrimaryCategory().getTitle() : null;
+
+        subtitleSb.append(context.getString(R.string.text_separator));
+
+        if (!TextUtils.isEmpty(primaryCategory)) {
+            subtitleSb.append(primaryCategory.toUpperCase());
+        }
+
+        ((TextView) view).setText(subtitleSb.toString());
+        view.setAlpha(0.6f);
+    }
+
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
         int numberOfViewsToBeSeparated = 0;
         long runtime = data.getGist().getRuntime();
@@ -546,22 +574,10 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0) != null &&
                                                 moduleAPI.getContentData().get(0).getSeason() != null) {
-                                            int totalEpisodes = 0;
-                                            List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
-                                            int numSeasons = seasons.size();
-                                            for (int i = 0; i < numSeasons; i++) {
-                                                if (seasons.get(i).getEpisodes() != null) {
-                                                    totalEpisodes += seasons.get(i).getEpisodes().size();
-                                                }
-                                            }
 
-                                            StringBuilder subtitleSb = new StringBuilder(String.valueOf(totalEpisodes));
-                                            subtitleSb.append(" ");
-                                            subtitleSb.append(context.getResources().getQuantityString(R.plurals.episode_subtitle_text,
-                                                    totalEpisodes));
-
-                                            ((TextView) componentViewResult.componentView).setText(subtitleSb.toString());
-                                            componentViewResult.componentView.setAlpha(0.6f);
+                                            setViewWithShowSubtitle(context,
+                                                    moduleAPI.getContentData().get(0),
+                                                    view);
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_AGE_LABEL_KEY) {
                                         if (moduleAPI.getContentData() != null &&
@@ -2696,22 +2712,10 @@ public class ViewCreator {
                                         !moduleAPI.getContentData().isEmpty() &&
                                         moduleAPI.getContentData().get(0) != null &&
                                         moduleAPI.getContentData().get(0).getSeason() != null) {
-                                    int totalEpisodes = 0;
-                                    List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
-                                    int numSeasons = seasons.size();
-                                    for (int i = 0; i < numSeasons; i++) {
-                                        if (seasons.get(i).getEpisodes() != null) {
-                                            totalEpisodes += seasons.get(i).getEpisodes().size();
-                                        }
-                                    }
 
-                                    StringBuilder subtitleSb = new StringBuilder(String.valueOf(totalEpisodes));
-                                    subtitleSb.append(" ");
-                                    subtitleSb.append(context.getResources().getQuantityString(R.plurals.episode_subtitle_text,
-                                            totalEpisodes));
-
-                                    ((TextView) componentViewResult.componentView).setText(subtitleSb.toString());
-                                    componentViewResult.componentView.setAlpha(0.6f);
+                                    setViewWithShowSubtitle(context,
+                                            moduleAPI.getContentData().get(0),
+                                            componentViewResult.componentView);
                                 }
                                 break;
 
