@@ -1,6 +1,7 @@
 package com.viewlift.models.network.rest;
 
 import android.support.annotation.NonNull;
+
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordRequest;
 import com.viewlift.models.data.appcms.ui.authentication.ForgotPasswordResponse;
@@ -13,7 +14,7 @@ import retrofit2.Response;
 import rx.Observable;
 import rx.functions.Action1;
 
-/**
+/*
  * Created by viewlift on 7/6/17.
  */
 

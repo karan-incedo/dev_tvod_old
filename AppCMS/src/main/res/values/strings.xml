@@ -126,8 +126,8 @@
     <string name="dialog_item_description_key">description</string>
     <string name="dialog_item_text_color_key">text_color</string>
 
-    <string name="app_cms_username_input_text_hint">NAME</string>
-    <string name="app_cms_email_input_text_hint">EMAIL</string>
+    <string name="app_cms_username_input_text_hint">Name</string>
+    <string name="app_cms_email_input_text_hint">Email</string>
     <string name="please_input_your_email_address_to_send_a_reset_password_link_text">Please input your email address to send a reset password link.</string>
     <string name="edit_profile_confirm_change_button_text">Update</string>
     <string name="empty_history_list_message">Your history is currently empty.</string>
@@ -213,8 +213,11 @@
 
     <!-- Google Cancel Subscription API -->
     <string name="google_cancel_subscription_api">https://www.googleapis.com/androidpublisher/v2/applications/$1%s/purchases/subscriptions/$2%s/tokens/$3%s:cancel</string>
-    <string name="minute_for_runtime">MIN</string>
-    <string name="minutes_for_runtime">MINS</string>
+
+    <!-- Runtime Abbreviations -->
+    <string name="runtime_minute_abbreviation">MIN</string>
+    <string name="runtime_minutes_abbreviation">MINS</string>
+    <string name="runtime_seconds_abbreviation">SECS</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
@@ -312,6 +315,7 @@
     <string name="app_cms_subscription_upgrade_unavailable_user_dialog">There are currently no plans available for upgrade for the plan you are currently subscribed.</string>
     <string name="app_cms_subscription_upgrade_cancel_title">You did not purchase the subscription through the Google Play store</string>
     <string name="app_cms_subscription_upgrade_for_web_user_dialog">To upgrade your subscription, go to the My Account section on our website.</string>
+    <string name="app_cms_subscription_upgrade_for_ios_user_dialog">To upgrade your subscription, go to Manage Subscription on your iOS device.</string>
     <string name="app_cms_subscription_cancel_for_web_user_dialog">To cancel your subscription, go to the My Account section on our website.</string>
     <string name="app_cms_subscription_cancel_for_ios_user_dialog">To cancel your subscription, go to Manage Subscription on your iOS device.</string>
 
@@ -460,6 +464,8 @@
     <string name="app_cms_module_list_footer_key">footer01</string>
     <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
+    
+     <string name="deeplink_uri_extra_key">deeplink_uri</string>
     <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
     <string name="app_cms_video_ended_text_message">Live programming ended, [prees/swipe] down for more content</string>
 

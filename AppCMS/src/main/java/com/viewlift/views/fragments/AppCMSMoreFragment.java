@@ -89,8 +89,8 @@ public class AppCMSMoreFragment extends DialogFragment {
         });
 
         try {
-        appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getTextColor()));
+            appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getGeneral().getTextColor()));
         } catch (Exception e) {
             appCMSMoreText.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
         }
@@ -99,8 +99,8 @@ public class AppCMSMoreFragment extends DialogFragment {
                 args.getString(getContext().getString(R.string.app_cms_more_text_key)))));
 
         try {
-        appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getGeneral().getTextColor()));
+            appCMSMoreText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
+                    .getBrand().getGeneral().getTextColor()));
         } catch (Exception e) {
             appCMSMoreText.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
         }
@@ -110,7 +110,7 @@ public class AppCMSMoreFragment extends DialogFragment {
         appCMSPresenter.dismissOpenDialogs(null);
 
         try {
-        setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+            setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         } catch (Exception e) {
             setBgColor(ContextCompat.getColor(getContext(), android.R.color.black));
         }

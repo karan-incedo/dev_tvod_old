@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @UseStag(UseStag.FieldOption.SERIALIZED_NAME)
-public class    Component implements ModuleWithComponents, Serializable {
+public class Component implements ModuleWithComponents, Serializable {
 
     @SerializedName("text")
     @Expose

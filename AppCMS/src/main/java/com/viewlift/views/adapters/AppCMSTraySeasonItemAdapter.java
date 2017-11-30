@@ -31,6 +31,7 @@ import com.viewlift.views.customviews.OnInternalEvent;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -74,6 +75,8 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
         this.tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+
+        this.receivers = new ArrayList<>();
     }
 
     private void sortData() {
@@ -192,7 +195,15 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     @Override
     public void receiveEvent(InternalEvent<?> event) {
-        adapterData.clear();
+        if (event.getEventData() instanceof List<?>) {
+            try {
+                adapterData = (List<ContentDatum>) event.getEventData();
+            } catch (Exception e) {
+
+            }
+        } else {
+            adapterData.clear();
+        }
         notifyDataSetChanged();
     }
 

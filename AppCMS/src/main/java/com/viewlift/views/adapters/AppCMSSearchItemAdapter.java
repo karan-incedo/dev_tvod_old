@@ -101,6 +101,9 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             }
             String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
             String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
+            if (permalink.contains(viewHolder.view.getContext().getString(R.string.app_cms_shows_deeplink_path_name))) {
+                action = viewHolder.view.getContext().getString(R.string.app_cms_action_showvideopage_key);
+            }
             String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
             //Log.d(TAG, "Launching " + permalink + ":" + action);
             if (!appCMSPresenter.launchButtonSelectedAction(permalink,
