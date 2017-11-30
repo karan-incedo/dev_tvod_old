@@ -433,8 +433,6 @@ public class CollectionGridItemView extends BaseView {
                             childComponent, data));
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
-
-
                 view.setOnClickListener(v ->
                         onClickHandler.click(CollectionGridItemView.this,
                                 childComponent, data));
