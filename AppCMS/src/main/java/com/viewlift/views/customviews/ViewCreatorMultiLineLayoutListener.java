@@ -26,7 +26,7 @@ import com.viewlift.R;
  */
 
 public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
-    private static final int EXTRA_TRUNC_CHARS = 8;
+    private static final int EXTRA_TRUNC_CHARS = 9;
     private static final int CLICKABLE_CHAR_COUNT = 4;
 
     private final TextView textView;
@@ -62,7 +62,6 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
         }
         if (!forceMaxLines && textView.getLayout() != null) {
             int lineEnd = textView.getLayout().getLineVisibleEnd(linesCompletelyVisible - 1) -
-                    textView.getLayout().getEllipsisCount(linesCompletelyVisible - 1) -
                     EXTRA_TRUNC_CHARS;
             if (0 <= lineEnd &&
                     lineEnd < fullText.length() &&
