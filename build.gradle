@@ -57,6 +57,7 @@ allprojects {
         jsoupVersion = "1.10.3"
         frescoVersion = "1.5.0"
         multiDexVersion = "1.0.2"
+        draggablePanelVersion = "1.9"
     }
 }
 
