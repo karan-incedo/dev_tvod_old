@@ -81,6 +81,7 @@ import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
+import com.viewlift.views.fragments.AppCMSDraggableFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -275,7 +276,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             appCMSIntent.putExtra(AppCMSPageActivity.this.getString(R.string.app_cms_bundle_key), args);
                             appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                             AppCMSPageActivity.this.startActivity(appCMSIntent);
-                            if (updatedAppCMSBinder.shouldSendCloseAction()){
+                            if (updatedAppCMSBinder.shouldSendCloseAction()) {
                                 shouldSendCloseOthersAction = true;
                             }
                         }
@@ -315,7 +316,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     if (!isActive) {
                         if (appCMSPresenter.getCurrentActivity() != null) {
                             try {
-                                Intent appCMSIntent = new Intent(appCMSPresenter.getCurrentActivity() ,
+                                Intent appCMSIntent = new Intent(appCMSPresenter.getCurrentActivity(),
                                         AppCMSPageActivity.class);
                                 appCMSIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                                 appCMSIntent.putExtra(getString(R.string.deeplink_uri_extra_key), deeplinkUrl);
@@ -1359,6 +1360,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                     break;
 
+                case DRAGGABLE_PANEL:
+                    appCMSPageFragment = AppCMSDraggableFragment.newInstance(this, appCMSBinder);
+                    break;
+
                 case SEARCH:
                     try {
                         appCMSPageFragment = AppCMSSearchFragment.newInstance(this,
@@ -2333,7 +2338,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false,
                             recurse,
                             true);
-
                 }
 
                 if (appCMSBinderStack.isEmpty()) {
@@ -2380,6 +2384,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return searchQuery;
     }
 
+    private String getAppCMSBinderStackEntry(int index) {
+        String result = null;
+        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            try {
+                ListIterator<String> listIterator = appCMSBinderStack.listIterator();
+                int currentIndex = 0;
+                while (listIterator.hasNext() && currentIndex < index) {
+                    currentIndex++;
+                }
+                result = listIterator.next();
+            } catch (Exception e) {
+                //
+            }
+        }
+
+        return result;
+    }
+
     private static class RefreshAppCMSBinderAction implements Action1<AppCMSPageAPI> {
         private AppCMSPresenter appCMSPresenter;
         private AppCMSBinder appCMSBinder;
@@ -2417,23 +2439,5 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         }
-    }
-
-    private String getAppCMSBinderStackEntry(int index) {
-        String result = null;
-        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
-            try {
-                ListIterator<String> listIterator = appCMSBinderStack.listIterator();
-                int currentIndex = 0;
-                while (listIterator.hasNext() && currentIndex < index) {
-                    currentIndex++;
-                }
-                result = listIterator.next();
-            } catch (Exception e) {
-
-            }
-        }
-
-        return result;
     }
 }

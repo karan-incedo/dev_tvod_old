@@ -544,9 +544,6 @@ public class AppCMSPresenter {
     private Action0 afterLoginAction;
     private boolean shouldLaunchLoginAction;
     private Map<String, ContentDatum> userHistoryData;
-    private String cachedAPIUserToken;
-    private boolean usedCachedAPI;
-
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -573,7 +570,8 @@ public class AppCMSPresenter {
                     // DOWNLOAD API CALLING
                 }
             };
-
+    private String cachedAPIUserToken;
+    private boolean usedCachedAPI;
     private Typeface regularFontFace;
     private Typeface boldTypeFace;
     private Typeface semiBoldTypeFace;
@@ -11196,6 +11194,7 @@ public class AppCMSPresenter {
     public enum ExtraScreenType {
         NAVIGATION,
         SEARCH,
+        DRAGGABLE_PANEL,
         RESET_PASSWORD,
         CHANGE_PASSWORD,
         EDIT_PROFILE,

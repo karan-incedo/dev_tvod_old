@@ -18,6 +18,8 @@ import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -48,7 +50,8 @@ public class AppCMSDraggableFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_draggable, container, false);
 
@@ -57,6 +60,9 @@ public class AppCMSDraggableFragment extends Fragment {
         final AppCMSPresenter appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+
+        AppCMSPageFragment topFragment = new AppCMSPageFragment();
+//        getActivity().getSupportFragmentManager().getBackStackEntryAt();
 
         Bundle args = getArguments();
 
@@ -76,6 +82,10 @@ public class AppCMSDraggableFragment extends Fragment {
         setBgColor(bgColor);
 
         return view;
+    }
+
+    protected List<Fragment> getFragmentCount() {
+        return getActivity().getSupportFragmentManager().getFragments();
     }
 
     private void setBgColor(int bgColor) {
