@@ -406,6 +406,9 @@ public class CollectionGridItemView extends BaseView {
                                     .override(childViewWidth, childViewHeight)
                                     .into((ImageView) view);
                         }
+                        view.setVisibility(VISIBLE);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                        view.setVisibility(GONE);
                     }
                     bringToFront = false;
                 }
