@@ -1889,9 +1889,8 @@ public class AppCMSPresenter {
                                 (AppCMSViewAdapter) ((RecyclerView) viewGroup.getChildAt(i)).getAdapter();
                         appCMSViewAdapter.setClickable(isEnabled);
                     }
-                } else {
-                    setAllChildrenEnabled(isEnabled, (ViewGroup) viewGroup.getChildAt(i));
                 }
+                setAllChildrenEnabled(isEnabled, (ViewGroup) viewGroup.getChildAt(i));
             } else {
                 viewGroup.getChildAt(i).setEnabled(isEnabled);
                 viewGroup.getChildAt(i).setClickable(isEnabled);
