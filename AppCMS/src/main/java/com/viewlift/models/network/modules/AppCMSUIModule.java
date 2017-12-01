@@ -406,6 +406,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_title_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_TITLE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_episode_title_key),
+                AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_contact_number_label),
                 AppCMSUIKeyType.CONTACT_US_PHONE_LABEL);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_email_id_label),
