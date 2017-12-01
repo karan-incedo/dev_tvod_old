@@ -797,6 +797,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
     }
 
+    @Override
+    public void setClickable(boolean clickable) {
+        
+    }
+
     private void click(ContentDatum data) {
         //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
         String permalink = data.getGist().getPermalink();

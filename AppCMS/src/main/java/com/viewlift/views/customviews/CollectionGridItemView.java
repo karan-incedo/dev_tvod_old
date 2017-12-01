@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -425,9 +426,26 @@ public class CollectionGridItemView extends BaseView {
 
                 if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
                     String userId = appCMSPresenter.getLoggedInUser();
-                    appCMSPresenter.getUserVideoDownloadStatus(
-                            data.getGist().getId(), new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                    data, userId), userId);
+
+                    try {
+                        Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
+                                appCMSPresenter.getUpdateDownloadImageIconActionMap();
+
+                        ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
+                                updateDownloadImageIconActionMap.get(data.getGist().getId());
+                        if (updateDownloadImageIconAction == null) {
+                            updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
+                                    data, userId);
+                            updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
+                        }
+
+                        updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) view);
+
+                        appCMSPresenter.getUserVideoDownloadStatus(
+                                data.getGist().getId(), updateDownloadImageIconAction, userId);
+                    } catch (Exception e) {
+
+                    }
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data));

@@ -96,8 +96,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     @SuppressLint("SetTextI18n")
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (adapterData != null && !adapterData.isEmpty()) {
-            ContentDatum contentDatum = adapterData.get(position);
-
             if (0 <= position && position < adapterData.size()) {
                 for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
                     if (holder.componentView.getChild(i) instanceof TextView) {
@@ -180,6 +178,11 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void setClickable(boolean clickable) {
+        this.isClickable = clickable;
     }
 
     private void bindView(CollectionGridItemView itemView,

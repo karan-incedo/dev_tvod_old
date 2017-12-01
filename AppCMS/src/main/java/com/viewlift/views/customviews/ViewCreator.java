@@ -3890,11 +3890,13 @@ public class ViewCreator {
                         break;
 
                     case STATUS_SUCCESSFUL:
-                        appCMSPresenter.setDownloadInProgress(false);
-                        appCMSPresenter.cancelDownloadIconTimerTask();
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
-                        appCMSPresenter.notifyDownloadHasCompleted();
+                        if (appCMSPresenter.downloadTaskRunning(contentDatum.getGist().getId())) {
+                            appCMSPresenter.setDownloadInProgress(false);
+                            appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
+                            appCMSPresenter.notifyDownloadHasCompleted();
+                        }
                         break;
 
                     case STATUS_INTERRUPTED:
@@ -3917,6 +3919,10 @@ public class ViewCreator {
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.setOnClickListener(addClickListener);
             }
+        }
+
+        public void updateDownloadImageButton(ImageButton imageButton) {
+            this.imageButton = imageButton;
         }
     }
 
