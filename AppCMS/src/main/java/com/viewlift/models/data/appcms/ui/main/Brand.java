@@ -33,6 +33,10 @@ public class Brand implements Serializable {
     @Expose
     General general;
 
+    @SerializedName("metadata")
+    @Expose
+    Metadata metadata;
+
     public Footer getFooter() {
         return footer;
     }
@@ -79,5 +83,13 @@ public class Brand implements Serializable {
 
     public void setGeneral(General general) {
         this.general = general;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 }

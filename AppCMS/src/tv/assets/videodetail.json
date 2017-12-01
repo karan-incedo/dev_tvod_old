@@ -1,12 +1,15 @@
 {
-  "id": "5f18b8ed-7158-4fba-a613-00987a58cba2",
-  "settings": {},
-  "view": "AC VideoPlayerWithInfo 01",
-  "type": "AC VideoPlayerWithInfo 01",
+  "id": "4fd1f96c-b533-4ddf-839a-5b83af814da6",
+  "settings": {
+    "fileType": "hls"
+  },
+  "view": "AC VideoPlayerWithInfo 02",
+  "type": "AC VideoPlayerWithInfo 02",
+  "blockName": "videoPlayerInfo02",
   "layout": {
     "ftv": {
       "yAxis": 0,
-      "height": 560
+      "height": 620
     }
   },
   "components": [
@@ -16,7 +19,7 @@
           "yAxis": 14,
           "xAxis": 0,
           "width": 1100,
-          "height": 618,
+          "height": 620,
           "padding": 4
         }
       },
@@ -38,29 +41,8 @@
     {
       "layout": {
         "ftv": {
-          "leftMargin": 1540,
-          "yAxis": 485,
-          "width": 319.3,
-          "height": 70,
-          "fontSize": 12
-        }
-      },
-      "padding": 15,
-      "borderColor": "#66ffffff",
-      "fontFamily": "OpenSans",
-      "borderWidth": 4,
-      "action": "addToWatchlist",
-      "text": "ADD TO WATCHLIST",
-      "type": "button",
-      "textColor": "ffffff",
-      "fontWeight": "Semibold",
-      "key": "addToWatchlist"
-    },
-    {
-      "layout": {
-        "ftv": {
           "leftMargin": 1170,
-          "yAxis": 485,
+          "yAxis": 550,
           "width": 319.3,
           "height": 70,
           "fontSize": 12
@@ -76,6 +58,27 @@
       "textColor": "ffffff",
       "fontWeight": "Semibold",
       "key": "startWatching"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1540,
+          "yAxis": 550,
+          "width": 319.3,
+          "height": 70,
+          "fontSize": 12
+        }
+      },
+      "padding": 15,
+      "borderColor": "#66ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "addToWatchlist",
+      "text": "ADD TO WATCHLIST",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "Semibold",
+      "key": "addToWatchlist"
     },
     {
       "layout": {
