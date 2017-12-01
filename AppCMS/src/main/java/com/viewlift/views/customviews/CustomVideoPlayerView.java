@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -47,6 +48,8 @@ import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import rx.functions.Action1;
 
@@ -65,6 +68,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private LinearLayout customLoaderContainer;
     private TextView loaderMessageView;
     private LinearLayout customMessageContainer;
+    private LinearLayout customPreviewContainer;
+
     private TextView customMessageView;
     private LinearLayout customPlayBack;
     private String videoDataId = null;
@@ -80,8 +85,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private String adsUrl;
     private boolean isAdDisplayed;
     private boolean isAdsDisplaying;
+    private Button btnLogin;
+    private Button btnStartFreeTrial;
     private boolean isLiveStream;
 
+    private long watchedPercentage = 0;
     private final String FIREBASE_STREAM_START = "stream_start";
     private final String FIREBASE_STREAM_25 = "stream_25_pct";
     private final String FIREBASE_STREAM_50 = "stream_50_pct";
@@ -150,6 +158,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
         setupAds();
+        createPreviewMessageView();
+
 
         try {
             mStreamId = appCMSPresenter.getStreamingId(videoDataId);
@@ -191,7 +201,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     public String getVideoId() {
-        return videoDataId;
+        return videoDataId ;
 
     }
 
@@ -210,6 +220,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         });
     }
 
+    ContentDatum onUpdatedContentDatum;
 
     public void setVideoUri(String videoId, int resIdMessage) {
         showProgressBar(getResources().getString(resIdMessage));
@@ -218,11 +229,17 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         getPlayerView().hideController();
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(videoDataId);
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
+            onUpdatedContentDatum = contentDatum;
             getPermalink(contentDatum);
+            setWatchedTime(contentDatum);
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn()) {
-                    showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
+                    if (shouldRequestAds) requestAds(adsUrl);
+                    playVideos(0, contentDatum);
+
+                    getVideoPreview();
+                    //showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
                 } else {
                     //check subscription data
                     appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
@@ -234,10 +251,19 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                     if (shouldRequestAds) requestAds(adsUrl);
                                     playVideos(0, contentDatum);
                                 } else {
-                                    showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
+                                    if (shouldRequestAds) requestAds(adsUrl);
+                                    playVideos(0, contentDatum);
+
+                                    getVideoPreview();
+                                    //showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
                                 }
                             } else {
-                                showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
+
+                                if (shouldRequestAds) requestAds(adsUrl);
+                                playVideos(0, contentDatum);
+
+                                getVideoPreview();
+                                //showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
                             }
                         } catch (Exception e) {
                             showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
@@ -290,6 +316,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void playVideos(int currentIndex, ContentDatum contentDatum) {
+        customPreviewContainer.setVisibility(View.GONE);
+
         hideRestrictedMessage();
 
         if (null != customPlayBack)
@@ -325,6 +353,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         if (null != url) {
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
+            setCurrentPosition(watchedPercentage);
             getPlayerView().getPlayer().setPlayWhenReady(true);
             if (currentIndex == 0) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
@@ -378,6 +407,80 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         return isSubscribe[0];
     }
 
+    public Timer entitlementCheckTimer;
+    public TimerTask entitlementCheckTimerTask;
+    private boolean entitlementCheckCancelled = false;
+    int maxPreviewSecs = 0;
+
+    private void getVideoPreview() {
+
+        if (appCMSPresenter.isAppSVOD() &&
+//                !isTrailer &&
+//                !freeContent &&
+                !appCMSPresenter.isUserSubscribed()) {
+            int entitlementCheckMultiplier = 5;
+            entitlementCheckCancelled = false;
+
+            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+            if (appCMSMain != null &&
+                    appCMSMain.getFeatures() != null &&
+                    appCMSMain.getFeatures().getFreePreview() != null &&
+                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
+                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
+                try {
+                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
+                } catch (Exception e) {
+                    //Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                }
+            }
+
+            maxPreviewSecs = entitlementCheckMultiplier * 60;
+
+            entitlementCheckTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    appCMSPresenter.getUserData(userIdentity -> {
+                        if (!entitlementCheckCancelled) {
+                            int secsViewed = (int) getPlayer().getCurrentPosition() / 1000;
+                            if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
+
+                                if (onUpdatedContentDatum != null) {
+                                    AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
+                                            = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
+                                            .action(getContext().getString(R.string.app_cms_page_play_key))
+                                            .closerLauncher(false)
+                                            .contentDatum(onUpdatedContentDatum)
+                                            .currentlyPlayingIndex(0)
+                                            .pagePath(onUpdatedContentDatum.getGist().getPermalink())
+                                            .filmTitle(onUpdatedContentDatum.getGist().getTitle())
+                                            .extraData(null)
+                                            .relatedVideoIds(onUpdatedContentDatum.getContentDetails().getRelatedVideoIds())
+                                            .currentWatchedTime(getPlayer().getCurrentPosition() / 1000)
+                                            .build();
+                                    appCMSPresenter.setEntitlementPendingVideoData(entitlementPendingVideoData);
+                                }
+                                pausePlayer();
+                                customPreviewContainer.setVisibility(View.VISIBLE);
+                                if (appCMSPresenter.isUserLoggedIn()) {
+                                    btnLogin.setVisibility(View.GONE);
+                                }
+                                cancel();
+                                entitlementCheckCancelled = true;
+                            } else {
+                                //Log.d(TAG, "User is subscribed - resuming video");
+                            }
+                        }
+                    });
+
+                }
+            };
+
+            entitlementCheckTimer = new Timer();
+            entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
+        }
+    }
+
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
 
@@ -389,6 +492,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 getPlayerView().getPlayer().setPlayWhenReady(false);
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     //showProgressBar("Loading Next Video...");
+                    entitlementCheckTimer.cancel();
                     setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
 
                     /*appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
@@ -605,6 +709,69 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         this.addView(customMessageContainer);
     }
 
+    private void createPreviewMessageView() {
+        customPreviewContainer = new LinearLayout(mContext);
+        customPreviewContainer.setOrientation(LinearLayout.VERTICAL);
+        customPreviewContainer.setGravity(Gravity.CENTER);
+        customPreviewContainer.setBackgroundColor(Color.parseColor("#000000"));
+        customMessageView = new TextView(mContext);
+        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        textViewParams.gravity = Gravity.CENTER;
+        customMessageView.setText(getResources().getString(R.string.app_cms_live_preview_text_message));
+        customMessageView.setLayoutParams(textViewParams);
+        customMessageView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+        customMessageView.setTextSize(15);
+        customMessageView.setPadding(20, 20, 20, 20);
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        buttonParams.setMargins(5,5,5,5);
+
+        LinearLayout previewBtnsLayout = new LinearLayout(mContext);
+        previewBtnsLayout.setOrientation(LinearLayout.HORIZONTAL);
+        previewBtnsLayout.setGravity(Gravity.CENTER);
+
+        btnStartFreeTrial = new Button(mContext);
+        btnStartFreeTrial.setBackgroundColor(Color.parseColor(appCMSPresenter.getTabBarUIFooterModule().getTabSeparator_color()));
+        btnStartFreeTrial.setText(getResources().getString(R.string.app_cms_start_free_trial));
+        btnStartFreeTrial.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+        btnStartFreeTrial.setPadding(10, 10, 10, 10);
+        btnStartFreeTrial.setLayoutParams(buttonParams);
+
+        btnStartFreeTrial.setGravity(Gravity.CENTER);
+
+        btnStartFreeTrial.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appCMSPresenter.setEntitlementPendingVideoData(null);
+                appCMSPresenter.navigateToSubscriptionPlansPage(false);
+
+            }
+        });
+        btnLogin = new Button(mContext);
+        btnLogin.setText(getResources().getString(R.string.app_cms_login));
+        btnLogin.setBackgroundColor(Color.parseColor(appCMSPresenter.getTabBarUIFooterModule().getTabSeparator_color()));
+        btnLogin.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+        btnLogin.setPadding(10, 10, 10, 10);
+        btnLogin.setGravity(Gravity.CENTER);
+        btnLogin.setLayoutParams(buttonParams);
+
+        btnLogin.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appCMSPresenter.setEntitlementPendingVideoData(null);
+                appCMSPresenter.navigateToLoginPage(false);
+            }
+        });
+
+        previewBtnsLayout.addView(btnStartFreeTrial);
+        previewBtnsLayout.addView(btnLogin);
+
+        customPreviewContainer.addView(customMessageView);
+        customPreviewContainer.addView(previewBtnsLayout);
+
+        customPreviewContainer.setVisibility(View.INVISIBLE);
+        this.addView(customPreviewContainer);
+    }
+
     private void showProgressBar(String text) {
         if (null != customLoaderContainer && null != loaderMessageView) {
             loaderMessageView.setText(text);
@@ -695,13 +862,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private void getPermalink(ContentDatum contentDatum) {
         boolean serviceType = appCMSPresenter.getAppCMSMain().getServiceType().equals(
                 mContext.getString(R.string.app_cms_main_svod_service_type_key));
-        adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+        if(contentDatum != null) {
+            adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+        }
         if (!serviceType && adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
             shouldRequestAds = true;
         } else {
             shouldRequestAds = false;
         }
-
     }
 
     private void requestAds(String adTagUrl) {
@@ -849,6 +1017,20 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_100, bundle);
             isStream100 = true;
+        }
+    }
+
+    private void setWatchedTime(ContentDatum contentDatum){
+        if(contentDatum != null) {
+            if (contentDatum.getGist().getWatchedPercentage() > 0) {
+                watchedPercentage = contentDatum.getGist().getWatchedPercentage();
+            } else {
+                long watchedTime = contentDatum.getGist().getWatchedTime();
+                long runTime = contentDatum.getGist().getRuntime();
+                if (watchedTime > 0 && runTime > 0) {
+                    watchedPercentage = (long) (((double) watchedTime / (double) runTime) * 100.0);
+                }
+            }
         }
     }
 

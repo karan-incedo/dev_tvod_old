@@ -1688,8 +1688,7 @@ public class ViewCreator {
 
                     AppCMSViewAdapter appCMSViewAdapter;
 
-                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                            moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
 
                         if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                             ((RecyclerView) componentViewResult.componentView)
@@ -1728,8 +1727,7 @@ public class ViewCreator {
                                     .id(moduleId + component.getKey())
                                     .build());
                         }
-                    } else if (
-                            moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                    } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                         if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new GridLayoutManager(context, 2,
@@ -3437,14 +3435,27 @@ public class ViewCreator {
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
                 if (moduleAPI != null) {
-                    componentViewResult.componentView = new ViewPlansMetaDataView(context,
-                            component,
-                            component.getLayout(),
-                            this,
-                            moduleAPI,
-                            jsonValueKeyMap,
-                            appCMSPresenter,
-                            settings);
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                        componentViewResult.componentView = new ViewPlansMetaDataView(context,
+                                component,
+                                component.getLayout(),
+                                this,
+                                moduleAPI,
+                                jsonValueKeyMap,
+                                appCMSPresenter,
+                                settings);
+                    }
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                        componentViewResult.componentView = new SubscriptionMetaDataView(context,
+                                component,
+                                component.getLayout(),
+                                this,
+                                moduleAPI,
+                                jsonValueKeyMap,
+                                appCMSPresenter,
+                                settings,
+                                appCMSAndroidModules);
+                    }
                 }
                 break;
 
