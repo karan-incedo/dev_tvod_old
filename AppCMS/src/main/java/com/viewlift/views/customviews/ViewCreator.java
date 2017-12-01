@@ -445,6 +445,28 @@ public class ViewCreator {
 //                                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                                 }
                                             });
+                                        } else if (moduleAPI.getContentData().get(0).getShowDetails() != null &&
+                                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers() != null &&
+                                                !moduleAPI.getContentData().get(0).getShowDetails().getTrailers().isEmpty() &&
+                                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0) != null &&
+                                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink() != null &&
+                                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId() != null &&
+                                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
+                                            view.setOnClickListener(v -> {
+                                                String[] extraData = new String[3];
+                                                extraData[0] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink();
+                                                extraData[1] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                                extraData[2] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId();
+                                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink(),
+                                                        component.getAction(),
+                                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                        extraData,
+                                                        moduleAPI.getContentData().get(0),
+                                                        false,
+                                                        -1,
+                                                        null)) {}
+                                            });
+
                                         } else {
                                             shouldHideComponent = true;
                                             view.setVisibility(View.GONE);
@@ -2166,6 +2188,9 @@ public class ViewCreator {
                                             null)) {}
                                 });
 
+                            } else {
+                                componentViewResult.shouldHideComponent = true;
+                                componentViewResult.componentView.setVisibility(View.GONE);
                             }
                         } else {
                             componentViewResult.shouldHideComponent = true;
