@@ -3320,14 +3320,27 @@ public class ViewCreator {
 
             case PAGE_PLAN_META_DATA_VIEW_KEY:
                 if (moduleAPI != null) {
-                    componentViewResult.componentView = new ViewPlansMetaDataView(context,
-                            component,
-                            component.getLayout(),
-                            this,
-                            moduleAPI,
-                            jsonValueKeyMap,
-                            appCMSPresenter,
-                            settings);
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
+                        componentViewResult.componentView = new ViewPlansMetaDataView(context,
+                                component,
+                                component.getLayout(),
+                                this,
+                                moduleAPI,
+                                jsonValueKeyMap,
+                                appCMSPresenter,
+                                settings);
+                    }
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                        componentViewResult.componentView = new SubscriptionMetaDataView(context,
+                                component,
+                                component.getLayout(),
+                                this,
+                                moduleAPI,
+                                jsonValueKeyMap,
+                                appCMSPresenter,
+                                settings,
+                                appCMSAndroidModules);
+                    }
                 }
                 break;
 
