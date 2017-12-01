@@ -52,7 +52,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -282,7 +281,7 @@ public class TVViewCreator {
             }
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
             }
 
             moduleView = new TVModuleView<>(context, module);
@@ -750,26 +749,20 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_START_WATCHING_BUTTON_KEY:
-                        Log.d(TAG , "Title = "+moduleAPI.getContentData().get(0).getGist().getTitle() + "\n" +
-                                          "Watched Time = " +moduleAPI.getContentData().get(0).getGist().getWatchedTime() + "\n" +
-                                "Watched Percentage = " +moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() + "\n"
-                        );
-                         Button startWatchingButton = (Button)componentViewResult.componentView;
+                        Button startWatchingButton = (Button)componentViewResult.componentView;
                         if (appCMSPresenter.isUserLoggedIn()) {
-                        appCMSPresenter.getUserVideoStatus(
-                                moduleAPI.getContentData().get(0).getGist().getId(),
-                                userVideoStatusResponse -> {
-                                    if (null != userVideoStatusResponse) {
-                                        Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
-                                        );
-                                        if(userVideoStatusResponse.getWatchedTime() > 0){
-                                            startWatchingButton.setText("Resume Watching");
+                            appCMSPresenter.getUserVideoStatus(
+                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                                    userVideoStatusResponse -> {
+                                        if (null != userVideoStatusResponse) {
+                                            Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
+                                            );
+                                            if(userVideoStatusResponse.getWatchedTime() > 0){
+                                                startWatchingButton.setText(context.getString(R.string.resume_watching));
+                                            }
                                         }
-                                    }
-                                });
-                    }
-
-
+                                    });
+                        }
 
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
