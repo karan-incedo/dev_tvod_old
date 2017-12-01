@@ -5925,9 +5925,11 @@ public class AppCMSPresenter {
             }
 
             if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
+
                 closeSoftKeyboard();
-                navigateToHomePage();
                 sendCloseOthersAction(null, true, true);
+                navigateToHomePage();
+
             }
 
             return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();
@@ -6757,7 +6759,14 @@ public class AppCMSPresenter {
         }
         return false;
     }
-
+    public boolean isPageSearch(String pageId) {
+        if (pageId != null &&
+                !TextUtils.isEmpty(pageId) &&
+                pageId.contains(currentActivity.getString(R.string.app_cms_search_page_tag))) {
+            return true;
+        }
+        return false;
+    }
     public NavigationPrimary getPageTeamNavigationPage(List<NavigationPrimary> navigationTabBarList) {
         for (NavigationPrimary navigationTabBarItem : navigationTabBarList) {
             if (!TextUtils.isEmpty(navigationTabBarItem.getTitle()) &&
@@ -7612,7 +7621,25 @@ public class AppCMSPresenter {
 
     }
 
-    private String getPermalinkCompletePath(String pagePath) {
+    public String getAdsUrl(String pagePath) {
+        String videoTag = null;
+        if (appCMSAndroid != null
+                && appCMSAndroid.getAdvertising() != null
+                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
+            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
+        }
+        if(videoTag == null){
+            return null;
+        }
+        Date now = new Date();
+        return currentActivity.getString(R.string.app_cms_ads_api_url,
+                videoTag,
+                getPermalinkCompletePath(pagePath),
+                now.getTime(),
+                appCMSMain.getSite());
+    }
+
+    public String getPermalinkCompletePath(String pagePath) {
         StringBuffer permalinkCompletePath = new StringBuffer();
         permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
         permalinkCompletePath.append(appCMSMain.getDomainName());

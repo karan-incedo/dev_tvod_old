@@ -23,6 +23,7 @@ public class CustomWebView extends WebView {
     public CustomWebView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
+    public boolean isPageLoaded=false;
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
