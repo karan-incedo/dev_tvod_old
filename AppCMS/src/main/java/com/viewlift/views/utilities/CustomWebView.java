@@ -40,10 +40,5 @@ public class CustomWebView extends WebView {
         return super.onTouchEvent(event);
     }
 
-    @Override
-    protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
-        requestDisallowInterceptTouchEvent(true);
-    }
 
 }
