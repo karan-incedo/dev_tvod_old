@@ -258,7 +258,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             findViewById(R.id.footer_logo).setVisibility(View.VISIBLE);
             findViewById(R.id.info_icon).setVisibility(View.VISIBLE);
         }
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
