@@ -39,6 +39,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
     private List<OnInternalEvent> receivers;
+    private List<String> allEpisodeIds;
     private String moduleId;
     private ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     private CollectionGridItemView.OnClickHandler onClickHandler;
@@ -55,6 +56,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
                                        List<ContentDatum> adapterData,
                                        List<Component> components,
+                                       List<String> allEpisodeIds,
                                        AppCMSPresenter appCMSPresenter,
                                        Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                        String viewType) {
@@ -62,6 +64,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         this.adapterData = adapterData;
         this.sortData();
         this.components = components;
+        this.allEpisodeIds = allEpisodeIds;
         this.appCMSPresenter = appCMSPresenter;
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.defaultAction = getDefaultAction(context);
@@ -204,12 +207,14 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                 extraData[1] = hlsUrl;
                                 extraData[2] = data.getGist().getId();
                                 //Log.d(TAG, "Launching " + permalink + ": " + action);
-                                List<String> relatedVideoIds = null;
-                                if (data.getContentDetails() != null &&
-                                        data.getContentDetails().getRelatedVideoIds() != null) {
-                                    relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                                }
+                                List<String> relatedVideoIds = allEpisodeIds;
                                 int currentPlayingIndex = -1;
+                                if (allEpisodeIds != null) {
+                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
+                                        currentPlayingIndex = currentEpisodeIndex;
+                                    }
+                                }
                                 if (relatedVideoIds == null) {
                                     currentPlayingIndex = 0;
                                 }
@@ -252,12 +257,14 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                                List<String> relatedVideoIds = null;
-                                if (data.getContentDetails() != null &&
-                                        data.getContentDetails().getRelatedVideoIds() != null) {
-                                    relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                                }
+                                List<String> relatedVideoIds = allEpisodeIds;
                                 int currentPlayingIndex = -1;
+                                if (allEpisodeIds != null) {
+                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
+                                        currentPlayingIndex = currentEpisodeIndex;
+                                    }
+                                }
                                 if (relatedVideoIds == null) {
                                     currentPlayingIndex = 0;
                                 }
@@ -322,12 +329,14 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                 String action = defaultAction;
 
                 //Log.d(TAG, "Launching " + permalink + ":" + action);
-                List<String> relatedVideoIds = null;
-                if (data.getContentDetails() != null &&
-                        data.getContentDetails().getRelatedVideoIds() != null) {
-                    relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                }
+                List<String> relatedVideoIds = allEpisodeIds;
                 int currentPlayingIndex = -1;
+                if (allEpisodeIds != null) {
+                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                    if (currentEpisodeIndex < allEpisodeIds.size()) {
+                        currentPlayingIndex = currentEpisodeIndex;
+                    }
+                }
                 if (relatedVideoIds == null) {
                     currentPlayingIndex = 0;
                 }

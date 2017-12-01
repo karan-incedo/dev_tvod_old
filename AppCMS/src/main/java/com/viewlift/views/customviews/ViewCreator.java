@@ -1785,11 +1785,31 @@ public class ViewCreator {
                                                 false,
                                                 false);
 
+                                List<String> allEpisodeIds = new ArrayList<>();
+                                List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
+                                int numSeasons = seasons.size();
+                                for (int i = 0; i < numSeasons; i++) {
+                                    Season_ season = seasons.get(i);
+                                    List<ContentDatum> episodes = season.getEpisodes();
+                                    int numEpisodes = episodes.size();
+                                    if (season.getEpisodes() != null) {
+                                        for (int j = 0; j < numEpisodes; j++) {
+                                            ContentDatum episodeContentDatum = episodes.get(j);
+                                            if (episodeContentDatum != null &&
+                                                    episodeContentDatum.getGist() != null &&
+                                                    episodeContentDatum.getGist().getId() != null) {
+                                                allEpisodeIds.add(episodeContentDatum.getGist().getId());
+                                            }
+                                        }
+                                    }
+                                }
+
                                 AppCMSTraySeasonItemAdapter appCMSTraySeasonItemAdapter =
                                         new AppCMSTraySeasonItemAdapter(context,
                                                 collectionGridItemViewCreator,
                                                 moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes(),
                                                 component.getComponents(),
+                                                allEpisodeIds,
                                                 appCMSPresenter,
                                                 jsonValueKeyMap,
                                                 viewType);
@@ -1802,14 +1822,6 @@ public class ViewCreator {
                                             .listview((RecyclerView) componentViewResult.componentView)
                                             .id(moduleId + component.getKey())
                                             .build());
-                                }
-
-                                int numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
-
-                                if (numSeasons == 1) {
-                                    componentViewResult.componentView.setEnabled(false);
-                                } else {
-                                    componentViewResult.componentView.setEnabled(true);
                                 }
                             }
                         } else {

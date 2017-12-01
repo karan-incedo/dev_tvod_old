@@ -999,7 +999,7 @@ public class AppCMSPresenter {
                                         appCMSVideoDetail.getRecords().get(0),
                                         false,
                                         currentlyPlayingIndex,
-                                        appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                        relateVideoIds);
                             } else {
                                 if (!isNetworkConnected()) {
                                     // Fix of SVFA-1435
@@ -10127,7 +10127,6 @@ public class AppCMSPresenter {
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-        sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
