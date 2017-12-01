@@ -71,7 +71,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private String adsUrl;
     private boolean isAdDisplayed;
     private boolean isAdsDisplaying;
-
+    private long watchedPercentage = 0;
 
 //    public CustomVideoPlayerView(Context context, String videoId) {
 //        super(context);
@@ -139,6 +139,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             @Override
             public void call(ContentDatum contentDatum) {
                 getPermalink(contentDatum);
+                setWatchedTime(contentDatum);
                 if (!contentDatum.getGist().getFree()) {
                     //check login and subscription first.
                     if (!appCMSPresenter.isUserLoggedIn()) {
@@ -240,6 +241,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         if (null != url) {
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
+            setCurrentPosition(watchedPercentage);
             getPlayerView().getPlayer().setPlayWhenReady(true);
             if (currentIndex == 0) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
@@ -496,7 +498,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private void getPermalink(ContentDatum contentDatum) {
         boolean serviceType = appCMSPresenter.getAppCMSMain().getServiceType().equals(
                 mContext.getString(R.string.app_cms_main_svod_service_type_key));
-        adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+        if(contentDatum != null) {
+            adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+        }
         if (!serviceType && adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
             shouldRequestAds = true;
         } else {
@@ -555,6 +559,20 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 break;
             default:
                 break;
+        }
+    }
+
+    private void setWatchedTime(ContentDatum contentDatum){
+        if(contentDatum != null) {
+            if (contentDatum.getGist().getWatchedPercentage() > 0) {
+                watchedPercentage = contentDatum.getGist().getWatchedPercentage();
+            } else {
+                long watchedTime = contentDatum.getGist().getWatchedTime();
+                long runTime = contentDatum.getGist().getRuntime();
+                if (watchedTime > 0 && runTime > 0) {
+                    watchedPercentage = (long) (((double) watchedTime / (double) runTime) * 100.0);
+                }
+            }
         }
     }
 
