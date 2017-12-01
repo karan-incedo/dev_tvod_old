@@ -1647,8 +1647,7 @@ public class ViewCreator {
                     componentViewResult.componentView = new RecyclerView(context);
 
                     AppCMSViewAdapter appCMSViewAdapter;
-                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY||
-                            moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                    if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                         if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new GridLayoutManager(context, 2,
@@ -1657,6 +1656,45 @@ public class ViewCreator {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
                                             LinearLayoutManager.VERTICAL,
+                                            false));
+                        }
+
+                        appCMSViewAdapter = new AppCMSViewAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                settings,
+                                component.getLayout(),
+                                false,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                viewType,
+                                appCMSAndroidModules);
+
+                        if (!BaseView.isTablet(context)) {
+                            componentViewResult.useWidthOfScreen = true;
+                        }
+
+                        ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+                        if (pageView != null) {
+                            pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                    .adapter(appCMSViewAdapter)
+                                    .listview((RecyclerView) componentViewResult.componentView)
+                                    .id(moduleId + component.getKey())
+                                    .build());
+                        }
+                    } else if (
+                            moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                        if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new GridLayoutManager(context, 2,
+                                            GridLayoutManager.HORIZONTAL, false));
+                        } else {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new LinearLayoutManager(context,
+                                            LinearLayoutManager.HORIZONTAL,
                                             false));
                         }
 
@@ -2496,7 +2534,8 @@ public class ViewCreator {
                         } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
                             ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
                         }
-                        ((TextView) componentViewResult.componentView).setText("Team Detail");
+                        if (settings != null && settings.getTitle() != null)
+                            ((TextView) componentViewResult.componentView).setText(settings.getTitle());
                     }
                     if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
@@ -3098,10 +3137,10 @@ public class ViewCreator {
                 break;
             case PAGE_BANNER_DETAIL_BACKGROUND:
                 componentViewResult.componentView = new View(context);
-                if (component.getBackgroundColor() != null && !TextUtils.isEmpty(component.getBackgroundColor())) {
+                if (settings != null && settings.getBackgroundColor() != null) {
                     componentViewResult.componentView.
                             setBackgroundColor(Color.parseColor(getColor(context,
-                                    component.getBackgroundColor())));
+                                    settings.getBackgroundColor())));
                 }
                 break;
             case PAGE_SEPARATOR_VIEW_KEY:
