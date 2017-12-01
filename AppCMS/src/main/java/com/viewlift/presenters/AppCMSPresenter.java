@@ -54,8 +54,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
@@ -199,6 +201,7 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.PopupMenu;
+import com.viewlift.views.customviews.ResponsiveButton;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
@@ -1877,23 +1880,24 @@ public class AppCMSPresenter {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setAllChildrenEnabled(boolean isEnabled, ViewGroup viewGroup) {
-        viewGroup.setEnabled(isEnabled);
-        viewGroup.setClickable(isEnabled);
         viewGroup.setNestedScrollingEnabled(isEnabled);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
-                if (viewGroup.getChildAt(i) instanceof RecyclerView) {
-                    ((RecyclerView) viewGroup.getChildAt(i)).setLayoutFrozen(!isEnabled);
-                    if (((RecyclerView) viewGroup.getChildAt(i)).getAdapter() instanceof AppCMSViewAdapter) {
+            View view = viewGroup.getChildAt(i);
+            if (view instanceof ViewGroup) {
+                if (view instanceof RecyclerView) {
+                    ((RecyclerView) view).setLayoutFrozen(!isEnabled);
+                    if (((RecyclerView) view).getAdapter() instanceof AppCMSViewAdapter) {
                         AppCMSViewAdapter appCMSViewAdapter =
-                                (AppCMSViewAdapter) ((RecyclerView) viewGroup.getChildAt(i)).getAdapter();
+                                (AppCMSViewAdapter) ((RecyclerView) view).getAdapter();
                         appCMSViewAdapter.setClickable(isEnabled);
                     }
                 }
-                setAllChildrenEnabled(isEnabled, (ViewGroup) viewGroup.getChildAt(i));
+                setAllChildrenEnabled(isEnabled, (ViewGroup) view);
             } else {
-                viewGroup.getChildAt(i).setEnabled(isEnabled);
-                viewGroup.getChildAt(i).setClickable(isEnabled);
+                if (view instanceof Button || view instanceof ImageButton) {
+                    view.setEnabled(isEnabled);
+                    view.setClickable(isEnabled);
+                }
             }
         }
     }
