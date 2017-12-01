@@ -80,7 +80,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
             holder.parentLayout.setLayoutParams(parentParams);
             NavigationPrimary navigationItem = navigationTabBar.getItems().get(position);
             holder.navItemLabel.setText(navigationItem.getTitle());
-            System.out.println(navigationItem.getIcon());
+
             if (navigationItem.getIcon().contains("http://") || navigationItem.getIcon().contains("https://")) {
                 Glide.with(holder.itemView.getContext())
                         .load(navigationItem.getIcon())
