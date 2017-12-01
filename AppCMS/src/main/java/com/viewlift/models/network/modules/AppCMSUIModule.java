@@ -515,6 +515,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_DETAIL_HEADER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_module_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_module_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY);
 

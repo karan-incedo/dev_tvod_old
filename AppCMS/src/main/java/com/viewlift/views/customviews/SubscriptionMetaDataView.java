@@ -214,7 +214,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                 gridLayoutParams.setGravity(Gravity.END);
                 gridLayoutParams.setMarginEnd((int) getContext().getResources().getDimension(R.dimen.app_cms_planmetapage_end_margin));
                 ((TextView) componentViewResult.componentView)
-                        .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                        .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                        //.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
                 planLayout.addView(componentViewResult.componentView);
             }
         }

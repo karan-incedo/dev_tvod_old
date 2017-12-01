@@ -43,6 +43,7 @@ import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.thread.BeaconBufferingThread;
 import com.viewlift.models.data.appcms.beacon.thread.BeaconPingThread;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
@@ -492,7 +493,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 getPlayerView().getPlayer().setPlayWhenReady(false);
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     //showProgressBar("Loading Next Video...");
-                    entitlementCheckTimer.cancel();
+                    if (entitlementCheckTimer!=null) {
+                        entitlementCheckTimer.cancel();
+                    }
                     setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
 
                     /*appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
