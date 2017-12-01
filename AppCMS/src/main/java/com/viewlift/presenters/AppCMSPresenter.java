@@ -3562,7 +3562,7 @@ public class AppCMSPresenter {
 
                     }
                 }
-            }, 500, 1000);
+            }, 0, 1000);
         } catch (Exception e) {
             Log.e(TAG, "Error updating download status: " + e.getMessage());
         }

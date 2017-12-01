@@ -174,12 +174,12 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     @Override
     public void resetData(RecyclerView listView) {
-        //
+        notifyDataSetChanged();
     }
 
     @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
-        //
+        notifyDataSetChanged();
     }
 
     private void bindView(CollectionGridItemView itemView,
