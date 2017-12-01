@@ -130,7 +130,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
 
     public void setVideoUri(String videoId, int resIdMessage) {
-        System.out.println("video player view" + "set video uri");
         showProgressBar(getResources().getString(resIdMessage));
         releasePlayer();
         init(mContext);
