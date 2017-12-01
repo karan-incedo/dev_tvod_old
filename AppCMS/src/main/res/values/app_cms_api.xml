@@ -352,15 +352,17 @@
     <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userid=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Navigation menu -->
-    <string name="app_cms_menu_icon_name">menu_</string>
+    <string name="app_cms_menu_icon_name">icon-menu</string>
     <string name="app_cms_menu_label">Menu</string>
     <string name="app_cms_live_icon_name">live_</string>
-    <string name="app_cms_home_icon_name">home_page_</string>
+    <string name="app_cms_home_icon_name">icon-home</string>
     <string name="app_cms_home_label">Home</string>
-    <string name="app_cms_movies_icon_name">categories_page_categories</string>
+    <string name="app_cms_movies_icon_name">icon-movies</string>
     <string name="app_cms_movies_label">Movies</string>
-    <string name="app_cms_search_icon_name">search_</string>
+    <string name="app_cms_search_icon_name">icon-search</string>
     <string name="app_cms_search_label">Search</string>
+    <string name="app_cms_shows_icon_name">icon-shows</string>
+    <string name="app_cms_shows_label">Shows</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
     <string name="profile_label">Profile</string>
 

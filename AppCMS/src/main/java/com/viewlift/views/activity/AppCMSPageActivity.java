@@ -78,6 +78,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.NavBarItemView;
+import com.viewlift.views.customviews.TabCreator;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
@@ -112,7 +113,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         AppCMSPageFragment.OnPageCreation,
         FragmentManager.OnBackStackChangedListener,
         GoogleApiClient.OnConnectionFailedListener,
-        AppCMSSearchFragment.OnSaveSearchQuery {
+        AppCMSSearchFragment.OnSaveSearchQuery,
+        TabCreator.OnClickHandler {
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int DEFAULT_NAV_MENU_PAGE_INDEX = 0;
@@ -213,6 +215,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private boolean isDownloadPageOpen = false;
     private boolean loaderWaitingFor3rdPartyLogin = false;
     private Uri pendingDeeplinkUri;
+    private TabCreator tabCreator;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -535,7 +538,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 });
 
         appCMSPresenter.sendCloseOthersAction(null, false, false);
-
 //        Log.d(TAG, "onCreate()");
     }
 
@@ -587,14 +589,55 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         int tabCount = getResources().getInteger(R.integer.number_of_tabs);
 
-        for (int i = 0; i < tabCount; i++) {
-            addNavigationItem();
+        if (shouldReadNavItemsFromAppCMS()) {
+            tabCreator = new TabCreator();
+            tabCreator.setAppCMSPresenter(appCMSPresenter);
+            tabCreator.setAppCMSTabNavContainer(appCMSTabNavContainer);
+            tabCreator.setOnClickHandler(this);
+
+            List<NavigationPrimary> tabBarNav = appCMSPresenter.getNavigation().getTabBar();
+            tabCount = tabBarNav.size();
+            for (int i = 0; i < tabCount; i++) {
+                addNavigationItem();
+                NavigationPrimary tabItem = tabBarNav.get(i);
+                tabCreator.create(this, i, tabItem);
+            }
+
+        } else {
+            for (int i = 0; i < tabCount; i++) {
+                addNavigationItem();
+            }
+            createHomeNavItem(tabCount, appCMSPresenter.findHomePageNavItem());
+            createLiveNavItem(tabCount, appCMSPresenter.findLivePageNavItem());
+            createMoviesNavItem(tabCount, appCMSPresenter.findMoviesPageNavItem());
         }
 
-        createHomeNavItem(tabCount, appCMSPresenter.findHomePageNavItem());
-        createLiveNavItem(tabCount, appCMSPresenter.findLivePageNavItem());
-        createMoviesNavItem(tabCount, appCMSPresenter.findMoviesPageNavItem());
-        createSearchNavItem(tabCount, getString(R.string.app_cms_search_page_tag));
+        if (shouldShowSearchInToolbar()) {
+            mSearchTopButton.setVisibility(View.VISIBLE);
+
+            mSearchTopButton.setOnClickListener(v -> {
+                if (!appCMSPresenter.isNetworkConnected()) {
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                () -> appCMSPresenter.launchBlankPage(),
+                                null);
+                        return;
+                    }
+
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                            true,
+                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                    null, null, false),
+                            null);
+                    return;
+                }
+                appCMSPresenter.launchSearchPage();
+            });
+        } else {
+            createSearchNavItem(tabCount, getString(R.string.app_cms_search_page_tag));
+        }
+
         createMenuNavItem(tabCount);
 
         FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -688,6 +731,33 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             set.setInterpolator(new AccelerateDecelerateInterpolator());
             set.start();
         });
+    }
+
+    private boolean shouldReadNavItemsFromAppCMS() {
+        if (appCMSPresenter.getNavigation() != null &&
+                appCMSPresenter.getNavigation().getTabBar() != null &&
+                !appCMSPresenter.getNavigation().getTabBar().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean shouldShowSearchInToolbar() {
+        if (appCMSPresenter.getNavigation() != null &&
+                appCMSPresenter.getNavigation().getRight() != null &&
+                !appCMSPresenter.getNavigation().getRight().isEmpty()) {
+            List<NavigationPrimary> rightNav = appCMSPresenter.getNavigation().getRight();
+            int numNavItems = rightNav.size();
+            for (int i = 0; i < numNavItems; i++) {
+                NavigationPrimary navItem = rightNav.get(i);
+                if (navItem != null &&
+                        navItem.getTitle() != null &&
+                        navItem.getTitle().equals(getString(R.string.app_cms_search_label))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void inflateCastMiniController() {
@@ -1276,6 +1346,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.BLANK) {
             pageLoading(true);
         }
+
+        if (updatedAppCMSBinder != null &&
+                updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH) {
+            mSearchTopButton.setVisibility(View.GONE);
+        } else if (shouldShowSearchInToolbar()) {
+            mSearchTopButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private boolean shouldPopStack(String newPageId) {
@@ -1442,7 +1519,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.getmFireBaseAnalytics().logEvent(FirebaseAnalytics.Event.VIEW_ITEM, bundle);
     }
 
-    private void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
+    @Override
+    public void selectNavItemAndLaunchPage(NavBarItemView v, String pageId, String pageTitle) {
         if (!appCMSPresenter.navigateToPage(pageId,
                 pageTitle,
                 null,
@@ -1478,13 +1556,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         v.select(false);
     }
 
-    private NavBarItemView getSelectedNavItem() {
+    @Override
+    public NavBarItemView getSelectedNavItem() {
         for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
             if (((NavBarItemView) appCMSTabNavContainer.getChildAt(i)).isItemSelected()) {
                 return (NavBarItemView) appCMSTabNavContainer.getChildAt(i);
             }
         }
         return null;
+    }
+
+    @Override
+    public void setSelectedMenuTabIndex(int selectedMenuTabIndex) {
+        currentMenuTabIndex = selectedMenuTabIndex;
     }
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
@@ -1744,6 +1828,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getPageId());
             }
         }
+
+        if (appCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.SEARCH) {
+            mSearchTopButton.setVisibility(View.GONE);
+        } else if (shouldShowSearchInToolbar()) {
+            mSearchTopButton.setVisibility(View.VISIBLE);
+        }
     }
 
     private void hideSystemUI(View decorView) {
@@ -2000,6 +2090,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!TextUtils.isEmpty(pageId)) {
             for (int i = 0; i < appCMSTabNavContainer.getChildCount(); i++) {
                 if (appCMSTabNavContainer.getChildAt(i).getTag() != null &&
+                        !TextUtils.isEmpty(appCMSTabNavContainer.getChildAt(i).getTag().toString()) &&
                         pageId.contains(appCMSTabNavContainer.getChildAt(i).getTag().toString())) {
                     selectNavItem(((NavBarItemView) appCMSTabNavContainer.getChildAt(i)));
                     //Log.d(TAG, "Nav item - Selecting tab item with page Id: " +

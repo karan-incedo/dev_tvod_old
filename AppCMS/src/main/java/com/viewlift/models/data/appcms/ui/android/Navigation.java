@@ -27,6 +27,10 @@ public class Navigation implements Serializable {
     @Expose
     List<NavigationPrimary> tabBar = null;
 
+    @SerializedName("right")
+    @Expose
+    List<NavigationPrimary> right;
+
     @SerializedName("settings")
     @Expose
     Settings settings;
@@ -69,5 +73,13 @@ public class Navigation implements Serializable {
 
     public void setSettings(Settings settings) {
         this.settings = settings;
+    }
+
+    public List<NavigationPrimary> getRight() {
+        return right;
+    }
+
+    public void setRight(List<NavigationPrimary> right) {
+        this.right = right;
     }
 }
