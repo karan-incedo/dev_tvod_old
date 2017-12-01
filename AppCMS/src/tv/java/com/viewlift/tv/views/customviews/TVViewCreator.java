@@ -31,6 +31,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -749,6 +750,27 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_START_WATCHING_BUTTON_KEY:
+                        Log.d(TAG , "Title = "+moduleAPI.getContentData().get(0).getGist().getTitle() + "\n" +
+                                          "Watched Time = " +moduleAPI.getContentData().get(0).getGist().getWatchedTime() + "\n" +
+                                "Watched Percentage = " +moduleAPI.getContentData().get(0).getGist().getWatchedPercentage() + "\n"
+                        );
+                         Button startWatchingButton = (Button)componentViewResult.componentView;
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.getUserVideoStatus(
+                                moduleAPI.getContentData().get(0).getGist().getId(),
+                                userVideoStatusResponse -> {
+                                    if (null != userVideoStatusResponse) {
+                                        Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
+                                        );
+                                        if(userVideoStatusResponse.getWatchedTime() > 0){
+                                            startWatchingButton.setText("Resume Watching");
+                                        }
+                                    }
+                                });
+                    }
+
+
+
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -758,7 +780,6 @@ public class TVViewCreator {
                                 new Handler().postDelayed(() -> {
                                     componentViewResult.componentView.setClickable(true);
                                 }, 3000);
-
                             }
                         });
                         break;
