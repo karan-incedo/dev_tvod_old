@@ -159,7 +159,7 @@ public class FileDownloadCompleteReceiver extends BroadcastReceiver {
                 reasonText = "Filename:\n" + downloadFileLocalUri;
                 String extension = MimeTypeMap.getFileExtensionFromUrl(downloadFileLocalUri);
                 if (extension.equals("mp4")) {
-                  //  encryptTheFile(filename);
+                    encryptTheFile(filename);
                 }
                 break;
 

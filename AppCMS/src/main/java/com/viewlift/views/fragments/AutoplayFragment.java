@@ -1,6 +1,5 @@
 package com.viewlift.views.fragments;
 
-
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
