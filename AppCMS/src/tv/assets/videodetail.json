@@ -1,8 +1,11 @@
 {
-  "id": "5f18b8ed-7158-4fba-a613-00987a58cba2",
-  "settings": {},
-  "view": "AC VideoPlayerWithInfo 01",
-  "type": "AC VideoPlayerWithInfo 01",
+  "id": "4fd1f96c-b533-4ddf-839a-5b83af814da6",
+  "settings": {
+    "fileType": "hls"
+  },
+  "view": "AC VideoPlayerWithInfo 02",
+  "type": "AC VideoPlayerWithInfo 02",
+  "blockName": "videoPlayerInfo02",
   "layout": {
     "ftv": {
       "yAxis": 0,
