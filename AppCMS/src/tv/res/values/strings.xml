@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="carousel_nodule">AC Carousel 01</string>
-    <string name="appcms_detail_module">AC VideoPlayerWithInfo 02</string>
+    <string name="appcms_detail_module">AC VideoPlayerWithInfo 01</string>
     <string name="appcms_watchlist_module">AC Watchlist 01</string>
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="sample_text">SimpleText superseded TeachText, which was included in System Software up until Mac OS 8. The need for SimpleText arose after Apple stopped bundling MacWrite, to ensure that every user could open and read Readme documents.</string>
