@@ -248,6 +248,7 @@
     <string name="app_cms_page_thumbnail_option_key">thumbnailInfo</string>
     <string name="app_cms_page_thumbnail_badgeimage">thumbnailBadgeImage</string>
     <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
+    <string name="app_cms_action_purchase_plan">purchasePlan</string>
 
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_02_key">AC SelectPlan 02</string>
