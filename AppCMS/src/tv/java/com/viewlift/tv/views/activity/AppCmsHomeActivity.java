@@ -18,6 +18,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -257,6 +258,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             findViewById(R.id.footer_logo).setVisibility(View.VISIBLE);
             findViewById(R.id.info_icon).setVisibility(View.VISIBLE);
         }
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void updateSubscriptionStrip(){
