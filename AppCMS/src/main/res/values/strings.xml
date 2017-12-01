@@ -24,6 +24,7 @@
     <string name="mins_abbreviation">MINS</string>
     <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
+    <string name="blank_separator">&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>
     <string name="string_with_ellipse_and_more">%1$s&#8230; MORE</string>
@@ -464,8 +465,9 @@
     <string name="app_cms_module_list_footer_key">footer01</string>
     <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
-    
-     <string name="deeplink_uri_extra_key">deeplink_uri</string>
+
+    <string name="deeplink_uri_extra_key">deeplink_uri</string>
+
     <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
     <string name="app_cms_video_ended_text_message">Live programming ended, [prees/swipe] down for more content</string>
 
@@ -473,6 +475,13 @@
     <string name="pop_dialog_facebook">Facebook</string>
     <string name="pop_dialog_instagram">Instagram</string>
     <string name="dialog_close_button">Close</string>
+
+<plurals name="episode_subtitle_text">
+        <item quantity="one">EPISODE</item>
+        <item quantity="other">EPISODES</item>
+    </plurals>
+
+
 </resources>
 
 
