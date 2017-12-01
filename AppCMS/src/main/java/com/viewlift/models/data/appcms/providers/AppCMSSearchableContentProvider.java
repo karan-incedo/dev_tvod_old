@@ -30,7 +30,7 @@ import okhttp3.OkHttpClient;
 
 import static android.app.SearchManager.SUGGEST_URI_PATH_QUERY;
 
-/**
+/*
  * Created by viewlift on 6/12/17.
  */
 

@@ -85,6 +85,7 @@ import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
+import com.viewlift.views.fragments.AppCMSDraggableFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -99,6 +100,7 @@ import java.io.File;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Stack;
 
@@ -1399,6 +1401,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
                     break;
+				case DRAGGABLE_PANEL:
+					appCMSPageFragment = AppCMSDraggableFragment.newInstance(this, appCMSBinder);
+				break;
                 case SEARCH:
                     try {
                         appCMSPageFragment = AppCMSSearchFragment.newInstance(this,
@@ -2092,7 +2097,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (navigationTabTag.isTabSelected()) {
                             return;
                         }
-//                        navigationItemSelection(navigationTabTag.getPageId());
                         selectNavItem(navigationTabTag.getPageId());
 
                         selectNavItem((NavBarItemView) v);
@@ -2205,23 +2209,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }*/
     }
 
-    private void navigationItemSelection(String pageId) {
-        if (!TextUtils.isEmpty(pageId) && appCMSTabNavContainerItems != null) {
-            for (int i = 0; i < appCMSTabNavContainerItems.getChildCount(); i++) {
-                NavTabTag navigationTabTag = null;
-                if (appCMSTabNavContainerItems.getChildAt(i).getTag() != null) {
-                    navigationTabTag = (NavTabTag) appCMSTabNavContainerItems.getChildAt(i).getTag();
-                }
 
-                if (navigationTabTag != null && !TextUtils.isEmpty(navigationTabTag.getPageId()) &&
-                        pageId.contains(navigationTabTag.getPageId())) {
-                    navigationTabTag.setTabSelected(true);
-                } else {
-                    navigationTabTag.setTabSelected(false);
-                }
-            }
-        }
-    }
 
     private void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();
@@ -2667,5 +2655,33 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSNavFreeTrialTool.setVisibility(View.GONE);
             }
         }
+    }
+	private int getAppCMSBinderStackSize() {
+        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            try {
+                return appCMSBinderStack.size();
+            } catch (Exception e) {
+
+            }
+        }
+        return 0;
+    }
+
+    private String getAppCMSBinderStackEntry(int index) {
+        String result = null;
+        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            try {
+                ListIterator<String> listIterator = appCMSBinderStack.listIterator();
+                int currentIndex = 0;
+                while (listIterator.hasNext() && currentIndex < index) {
+                    currentIndex++;
+                }
+                result = listIterator.next();
+            } catch (Exception e) {
+
+            }
+        }
+
+        return result;
     }
 }

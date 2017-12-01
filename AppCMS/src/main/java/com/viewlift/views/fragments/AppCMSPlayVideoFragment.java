@@ -60,7 +60,7 @@ import java.util.TimerTask;
 
 import rx.functions.Action1;
 
-/**
+/*
  * Created by viewlift on 6/14/17.
  */
 
@@ -146,12 +146,14 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
         adsManager.addAdErrorListener(AppCMSPlayVideoFragment.this);
         adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
         adsManager.init();
     };
+
     private boolean showEntitlementDialog = false;
     private String mStreamId;
     private long mStartBufferMilliSec = 0l;
@@ -173,6 +175,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
+
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
             pauseVideo();
@@ -189,6 +192,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     });
         }
     };
+
     private UserIdentity userIdentityObj;
     private boolean refreshToken;
     private Timer refreshTokenTimer;
@@ -1246,6 +1250,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
     }
 
+    // TODO: 11/30/17 Replace countdown timer with value coming from Template Builder.
     private void startCountdown() {
         new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
             @Override

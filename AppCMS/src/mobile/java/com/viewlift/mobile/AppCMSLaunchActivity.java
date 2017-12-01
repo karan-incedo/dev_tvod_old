@@ -56,8 +56,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         setFullScreenFocus();
 
         if (getApplication() instanceof AppCMSApplication) {
-        appCMSPresenterComponent =
-                ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
+            appCMSPresenterComponent =
+                    ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent();
         }
 
         handleIntent(getIntent());
@@ -86,7 +86,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                             getString(R.string.app_cms_app_name),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
-                            true);
+                            false);
                 } else if (!isConnected) {
                     appStartWithNetworkConnected = false;
                 }
@@ -97,7 +97,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         new Thread(() -> {
             if (appCMSPresenterComponent != null) {
-            appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
+                appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
             }
 
             Fresco.initialize(getApplicationContext());
@@ -138,19 +138,19 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     public void handleIntent(Intent intent) {
         if (intent != null) {
             try {
-            String action = intent.getAction();
-            final Uri data = intent.getData();
-            //Log.i(TAG, "Received intent action: " + action);
-            if (data != null) {
-                //Log.i(TAG, "Received intent data: " + data.toString());
-                searchQuery = data;
+                final Uri data = intent.getData();
+                //Log.i(TAG, "Received intent action: " + action);
+                if (data != null) {
+                    //Log.i(TAG, "Received intent data: " + data.toString());
+                    searchQuery = data;
                     if (appCMSPresenterComponent != null) {
-                appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
-            }
+                        appCMSPresenterComponent.appCMSPresenter().sendDeepLinkAction(searchQuery);
+                    }
                 }
 
-            forceReloadFromNetwork = intent.getBooleanExtra(getString(R.string.force_reload_from_network_key), false);
+                forceReloadFromNetwork = intent.getBooleanExtra(getString(R.string.force_reload_from_network_key), false);
             } catch (Exception e) {
+
             }
         }
     }
@@ -176,11 +176,15 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         if (appCMSPresenterComponent != null) {
             try {
-                appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                        getString(R.string.app_cms_app_name),
-                        searchQuery,
-                        AppCMSPresenter.PlatformType.ANDROID,
-                        forceReloadFromNetwork);
+                if (appCMSPresenterComponent.appCMSPresenter().isLaunched()) {
+                    appCMSPresenterComponent.appCMSPresenter().sendCloseOthersAction(null, true, true);
+                } else {
+                    appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
+                            getString(R.string.app_cms_app_name),
+                            searchQuery,
+                            AppCMSPresenter.PlatformType.ANDROID,
+                            false);
+                }
             } catch (Exception e) {
                 //Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
             }

@@ -622,6 +622,7 @@ public class AppCMSPresenter {
 
                 }
             };
+
     private Typeface regularFontFace;
     private Typeface boldTypeFace;
     private Typeface semiBoldTypeFace;
@@ -11379,6 +11380,7 @@ public class AppCMSPresenter {
         TERM_OF_SERVICE,
         BLANK,
         NONE,
+        DRAGGABLE_PANEL,
         TEAM
     }
 
