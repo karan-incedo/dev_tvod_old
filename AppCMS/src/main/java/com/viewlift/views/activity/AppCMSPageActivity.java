@@ -2092,7 +2092,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (navigationTabTag.isTabSelected()) {
                             return;
                         }
-//                        navigationItemSelection(navigationTabTag.getPageId());
                         selectNavItem(navigationTabTag.getPageId());
 
                         selectNavItem((NavBarItemView) v);
@@ -2205,23 +2204,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }*/
     }
 
-    private void navigationItemSelection(String pageId) {
-        if (!TextUtils.isEmpty(pageId) && appCMSTabNavContainerItems != null) {
-            for (int i = 0; i < appCMSTabNavContainerItems.getChildCount(); i++) {
-                NavTabTag navigationTabTag = null;
-                if (appCMSTabNavContainerItems.getChildAt(i).getTag() != null) {
-                    navigationTabTag = (NavTabTag) appCMSTabNavContainerItems.getChildAt(i).getTag();
-                }
 
-                if (navigationTabTag != null && !TextUtils.isEmpty(navigationTabTag.getPageId()) &&
-                        pageId.contains(navigationTabTag.getPageId())) {
-                    navigationTabTag.setTabSelected(true);
-                } else {
-                    navigationTabTag.setTabSelected(false);
-                }
-            }
-        }
-    }
 
     private void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();
