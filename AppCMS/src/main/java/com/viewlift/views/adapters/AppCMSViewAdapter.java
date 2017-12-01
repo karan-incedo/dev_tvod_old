@@ -69,6 +69,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private boolean isClickable;
     private String videoAction;
     private String openOptionsAction;
+    private String purchasePlanAction;
     private String showAction;
     private MotionEvent lastTouchDownEvent;
     private String watchVideoAction;
@@ -115,6 +116,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.videoAction = getVideoAction(context);
         this.showAction = getShowAction(context);
         this.openOptionsAction = getOpenOptionsAction(context);
+        this.purchasePlanAction = getPurchasePlanAction(context);
 
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
@@ -155,20 +157,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 false,
                 useRoundedCorners());
 
-        if (mContext.getString(R.string.app_cms_page_subscription_selectionplan_02_key).equals(componentViewType)) {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
             applyBgColorToChildren(view, selectedColor);
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-            if (!mContext.getString(R.string.app_cms_page_subscription_selectionplan_02_key).equals(componentViewType)&&
-                    !mContext.getString(R.string.app_cms_page_subscription_selectionplan_01_key).equals(componentViewType)) {
+            if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                 setBorder(view, unselectedColor);
             }
 
             view.setOnClickListener(v -> {
-                if (!mContext.getString(R.string.app_cms_page_subscription_selectionplan_02_key).equals(componentViewType) &&
-                        !mContext.getString(R.string.app_cms_page_subscription_selectionplan_01_key).equals(componentViewType)) {
+                if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                     for (int i = 0; i < parent.getChildCount(); i++) {
                         View childView = parent.getChildAt(i);
                         setBorder(childView, unselectedColor);
@@ -256,7 +256,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             }
 
             if (selectableIndex == position) {
-                if (!mContext.getString(R.string.app_cms_page_subscription_selectionplan_02_key).equals(componentViewType) && !mContext.getString(R.string.app_cms_page_subscription_selectionplan_01_key).equals(componentViewType)) {
+                if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+                        viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                     holder.componentView.setSelectable(true);
                     holder.componentView.performClick();
                 }
@@ -264,7 +265,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 //
             }
 
-            if (mContext.getString(R.string.app_cms_page_subscription_selectionplan_02_key).equals(componentViewType) || mContext.getString(R.string.app_cms_page_subscription_selectionplan_01_key).equals(componentViewType)) {
+            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+                    viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 holder.componentView.setSelectable(true);
             }
         }
@@ -299,52 +301,47 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     void bindView(CollectionGridItemView itemView,
                   final ContentDatum data) throws IllegalArgumentException {
         if (onClickHandler == null) {
-            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                    viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                onClickHandler = new CollectionGridItemView.OnClickHandler() {
+                    @Override
+                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data) {
+                        RecyclerView parentView = (RecyclerView) collectionGridItemView.getParent();
+                        if (parentView != null) {
+                            for (int i = 0; i < parentView.getChildCount(); i++) {
+                                View childView = parentView.getChildAt(i);
+                                if (childView != null) {
+                                    if (childView instanceof CollectionGridItemView) {
+                                        setBorder(childView, unselectedColor);
+                                        deselectViewPlan((CollectionGridItemView) childView);
+                                    }
+                                }
+                            }
+                            setBorder(collectionGridItemView, selectedColor);
+                            selectViewPlan(collectionGridItemView);
+                            if (childComponent != null &&
+                                    childComponent.getAction() != null &&
+                                    purchasePlanAction != null) {
+                                if (childComponent.getAction().contains(purchasePlanAction)) {
+                                    subcriptionPlanClick(collectionGridItemView, data);
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void play(Component childComponent, ContentDatum data) {
+                        // NO-OP - Play is not implemented here
+                    }
+                };
+            } else if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
                                       ContentDatum data) {
                         if (isClickable) {
-                            if (collectionGridItemView.isSelectable()) {
-                                //Log.d(TAG, "Initiating signup and subscription: " +
-//                                        data.getIdentifier());
+                            subcriptionPlanClick(collectionGridItemView, data);
 
-                                double price = data.getPlanDetails().get(0).getStrikeThroughPrice();
-                                if (price == 0) {
-                                    price = data.getPlanDetails().get(0).getRecurringPaymentAmount();
-                                }
-
-                                double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
-
-                                boolean upgradesAvailable = false;
-                                for (ContentDatum plan : adapterData) {
-                                    if (plan != null &&
-                                            plan.getPlanDetails() != null &&
-                                            !plan.getPlanDetails().isEmpty() &&
-                                            ((plan.getPlanDetails().get(0).getStrikeThroughPrice() != 0 &&
-                                                    price < plan.getPlanDetails().get(0).getStrikeThroughPrice()) ||
-                                                    (plan.getPlanDetails().get(0).getRecurringPaymentAmount() != 0 &&
-                                                            price < plan.getPlanDetails().get(0).getRecurringPaymentAmount()))) {
-                                        upgradesAvailable = true;
-                                    }
-                                }
-
-                                appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
-                                        data.getId(),
-                                        data.getPlanDetails().get(0).getCountryCode(),
-                                        data.getName(),
-                                        price,
-                                        discountedPrice,
-                                        data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
-                                        data.getPlanDetails().get(0).getCountryCode(),
-                                        data.getRenewable(),
-                                        data.getRenewalCycleType(),
-                                        upgradesAvailable);
-                            } else {
-                                collectionGridItemView.performClick();
-                            }
                         }
                     }
 
@@ -470,7 +467,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             }
         }
 
-        if (mContext.getString(R.string.app_cms_page_subscription_selectionplan_02_key).equals(componentViewType) || mContext.getString(R.string.app_cms_page_subscription_selectionplan_01_key).equals(componentViewType)) {
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
+                viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnClickListener(v -> onClickHandler.click(itemView,
                     component, data));
         }
@@ -588,6 +586,47 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
+    void subcriptionPlanClick(CollectionGridItemView collectionGridItemView, ContentDatum data) {
+        if (collectionGridItemView.isSelectable()) {
+            //Log.d(TAG, "Initiating signup and subscription: " +
+//                                        data.getIdentifier());
+
+            double price = data.getPlanDetails().get(0).getStrikeThroughPrice();
+            if (price == 0) {
+                price = data.getPlanDetails().get(0).getRecurringPaymentAmount();
+            }
+
+            double discountedPrice = data.getPlanDetails().get(0).getRecurringPaymentAmount();
+
+            boolean upgradesAvailable = false;
+            for (ContentDatum plan : adapterData) {
+                if (plan != null &&
+                        plan.getPlanDetails() != null &&
+                        !plan.getPlanDetails().isEmpty() &&
+                        ((plan.getPlanDetails().get(0).getStrikeThroughPrice() != 0 &&
+                                price < plan.getPlanDetails().get(0).getStrikeThroughPrice()) ||
+                                (plan.getPlanDetails().get(0).getRecurringPaymentAmount() != 0 &&
+                                        price < plan.getPlanDetails().get(0).getRecurringPaymentAmount()))) {
+                    upgradesAvailable = true;
+                }
+            }
+
+            appCMSPresenter.initiateSignUpAndSubscription(data.getIdentifier(),
+                    data.getId(),
+                    data.getPlanDetails().get(0).getCountryCode(),
+                    data.getName(),
+                    price,
+                    discountedPrice,
+                    data.getPlanDetails().get(0).getRecurringPaymentCurrencyCode(),
+                    data.getPlanDetails().get(0).getCountryCode(),
+                    data.getRenewable(),
+                    data.getRenewalCycleType(),
+                    upgradesAvailable);
+        } else {
+            collectionGridItemView.performClick();
+        }
+    }
+
     public boolean isClickable() {
         return isClickable;
     }
@@ -606,6 +645,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     private String getOpenOptionsAction(Context context) {
         return context.getString(R.string.app_cms_action_open_option_dialog);
+    }
+
+    private String getPurchasePlanAction(Context context) {
+        return context.getString(R.string.app_cms_action_purchase_plan);
     }
 
     private String getVideoAction(Context context) {
