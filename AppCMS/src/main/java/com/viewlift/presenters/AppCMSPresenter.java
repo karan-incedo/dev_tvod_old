@@ -6413,7 +6413,7 @@ public class AppCMSPresenter {
 
             }
 
-            refreshAPIData(this::navigateToHomePage, true);
+            refreshAPIData(this::navigateToHomePage, false);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
         }
