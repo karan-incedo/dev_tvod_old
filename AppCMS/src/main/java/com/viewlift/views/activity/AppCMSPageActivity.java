@@ -829,6 +829,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             registerReceiver(networkConnectedReceiver,
                     new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+            registerReceiver(presenterCloseActionReceiver,
+                    new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
         } catch (Exception e) {
             //
         }
@@ -925,6 +927,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         try {
             unregisterReceiver(networkConnectedReceiver);
+            unregisterReceiver(presenterCloseActionReceiver);
         } catch (Exception e) {
             //
         }
@@ -1339,9 +1342,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         setCastingInstance();
 
-        registerReceiver(presenterCloseActionReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
-
         if (updatedAppCMSBinder != null &&
                 updatedAppCMSBinder.getExtraScreenType() == AppCMSPresenter.ExtraScreenType.BLANK) {
             pageLoading(true);
@@ -1731,11 +1731,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             AppCMSPresenter.ExtraScreenType.NONE)) {
                 if (!isBinderStackEmpty() &&
                         !isBinderStackTopNull() &&
-                        appCMSPresenter.isPageNavigationPage(appCMSBinderStack.peek()) &&
+                        (appCMSPresenter.isPageNavigationPage(appCMSBinderStack.peek()) ||
+                        isDownloadPageOpen) &&
                         appCMSPresenter.isPagePrimary(appCMSBinder.getPageId())) {
                     getSupportFragmentManager().popBackStackImmediate();
                     appCMSBinderMap.remove(appCMSBinderStack.peek());
                     appCMSBinderStack.pop();
+                    isDownloadPageOpen = false;
                 }
 
                 if (appCMSBinderStack.search(appCMSBinder.getPageId()) < 0) {

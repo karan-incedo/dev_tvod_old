@@ -5921,8 +5921,8 @@ public class AppCMSPresenter {
             }
 
             if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
-                navigateToHomePage();
                 sendCloseOthersAction(null, true, true);
+                navigateToHomePage();
             }
 
             return sharedPrefs.edit().putBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, networkConnected).commit();
@@ -6599,7 +6599,7 @@ public class AppCMSPresenter {
         try {
             new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
                 try {
-                    if (main == null) {
+                    if (main == null && appCMSMain == null) {
                         //Log.e(TAG, "DialogType retrieving main.json");
                         if (!isNetworkConnected()) {//Fix for SVFA-1435 issue 2nd by manoj comment
                             openDownloadScreenForNetworkError(true,
@@ -6611,19 +6611,21 @@ public class AppCMSPresenter {
                         } else {
                             launchBlankPage();
                         }
-                    } else if (TextUtils.isEmpty(main
+                    } else if (main != null && TextUtils.isEmpty(main
                             .getAndroid())) {
                         //Log.e(TAG, "AppCMS key for main not found");
                         launchBlankPage();
-                    } else if (TextUtils.isEmpty(main
+                    } else if (main != null && TextUtils.isEmpty(main
                             .getApiBaseUrl())) {
                         //Log.e(TAG, "AppCMS key for API Base URL not found");
                         launchBlankPage();
                     } else {
-                        appCMSMain = main;
+                        if (main != null) {
+                            appCMSMain = main;
+                        }
                         new SoftReference<Object>(appCMSMain, referenceQueue);
-                        String version = main.getVersion();
-                        String oldVersion = main.getOldVersion();
+                        String version = appCMSMain.getVersion();
+                        String oldVersion = appCMSMain.getOldVersion();
                         //Log.d(TAG, "Version: " + version);
                         //Log.d(TAG, "OldVersion: " + oldVersion);
                         loadFromFile = appCMSMain.shouldLoadFromFile();
