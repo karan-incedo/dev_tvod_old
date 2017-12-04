@@ -6,7 +6,7 @@ def final customApplicationId = 'Monumental Sports Network'
 def final hostName = "www.monumentalsportsnetwork.com"
 def final hostNameSuffix = "*.monumentalsportsnetwork.com"
 
-def final appVersionName = "2.0.48"
+def final appVersionName = "2.0.49"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }

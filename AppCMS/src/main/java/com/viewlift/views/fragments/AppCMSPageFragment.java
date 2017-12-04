@@ -293,9 +293,14 @@ public class AppCMSPageFragment extends Fragment {
 
         updateDataLists();
 
-        if (pageView.findChildViewById(R.id.video_player_id) != null) {
+        if (pageView != null &&
+                pageView.findChildViewById(R.id.video_player_id) != null) {
 //            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).resumePlayer();
             ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
+        } else if (pageView != null &&
+                AppCMSPresenter.videoPlayerView != null) {
+            AppCMSPresenter.videoPlayerView.pausePlayer();
+
         }
     }
 
@@ -304,7 +309,8 @@ public class AppCMSPageFragment extends Fragment {
         super.onPause();
         updateDataLists();
 
-        if (pageView.findChildViewById(R.id.video_player_id) != null) {
+        if (pageView.findChildViewById(R.id.video_player_id) != null &&
+                getActivity().isFinishing()) {
             ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).pausePlayer();
 
         }
@@ -337,11 +343,12 @@ public class AppCMSPageFragment extends Fragment {
         if (pageViewGroup != null) {
             pageViewGroup.removeAllViews();
         }
-        if (pageView!=null && pageView.findChildViewById(R.id.video_player_id) != null) {
+        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
+                getActivity().isFinishing()) {
             ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).releasePlayer();
-            if(((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer!=null)
-            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer.cancel();
-            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer=null;
+            if (((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer != null)
+                ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer.cancel();
+            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer = null;
         }
     }
 
@@ -440,6 +447,7 @@ public class AppCMSPageFragment extends Fragment {
                 }
             } catch (Exception e) {
                 //
+                e.printStackTrace();
             }
         }
     }

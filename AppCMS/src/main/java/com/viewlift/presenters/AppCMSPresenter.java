@@ -12,6 +12,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -208,6 +209,7 @@ import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
+import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
@@ -472,8 +474,10 @@ public class AppCMSPresenter {
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
     public static CustomVideoPlayerView videoPlayerView = null;
+    public static FrameLayout.LayoutParams videoPlayerViewLP = null;
     public static ViewGroup videoPlayerViewParent = null;
     MiniPlayerView relativeLayoutPIP;
+    public static FullPlayerView relativeLayoutFull;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
     private String serverClientId;
@@ -11906,6 +11910,72 @@ public class AppCMSPresenter {
         return videoPlayerView;
     }
 
+    public static boolean isFullScreenVisible;
+    public void showFullScreenPlayer(){
+        if(videoPlayerViewParent==null){
+            videoPlayerViewParent= (ViewGroup)videoPlayerView.getParent();
+        }
+        relativeLayoutFull = new FullPlayerView(currentActivity, this);
+        relativeLayoutFull.setVisibility(View.VISIBLE);
+        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
+        isFullScreenVisible=true;
+        restrictLandscapeOnly();
+        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity){
+            ((AppCMSPageActivity)currentActivity).setFullScreenFocus();
+        }
+
+    }
+    public void exitFullScreenPlayer(){
+        try {
+            if (relativeLayoutFull != null) {
+
+                relativeLayoutFull.removeAllViews();
+                if (videoPlayerViewParent != null) {
+                    relativeLayoutFull.removeView(videoPlayerView);
+                    videoPlayerView.setLayoutParams(videoPlayerViewLP);
+                    videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
+                    videoPlayerViewParent.addView(videoPlayerView);
+
+                }
+
+                relativeLayoutFull.setVisibility(View.GONE);
+
+                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+
+                rootView.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        rootView.removeView(relativeLayoutFull);
+                        relativeLayoutFull = null;
+
+                    }
+                }, 100);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+
+
+
+        if(currentActivity!= null && BaseView.isTablet(currentActivity)) {
+            unrestrictPortraitOnly();
+        }else {
+            restrictPortraitOnly();
+        }
+        if (currentActivity!= null && currentActivity instanceof AppCMSPageActivity){
+            ((AppCMSPageActivity)currentActivity).exitFullScreenFocus();
+        }
+        isFullScreenVisible=false;
+    }
+
+
+    public boolean isAutoRotate(){
+        if (currentActivity != null) {
+            return (android.provider.Settings.System.getInt(currentActivity.getContentResolver(), android.provider.Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
+        }
+        return false;
+    }
     public ModuleList getTabBarUIModule() {
         AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
         ModuleList footerModule = null;
