@@ -919,7 +919,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private void getPermalink(ContentDatum contentDatum) {
         boolean serviceType = appCMSPresenter.getAppCMSMain().getServiceType().equals(
                 mContext.getString(R.string.app_cms_main_svod_service_type_key));
-        if(contentDatum != null) {
+        if(!serviceType && contentDatum != null) {
             adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
         }
         if ( adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
