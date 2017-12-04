@@ -54,6 +54,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.ui.PlaybackControlView;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -323,242 +324,247 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist() != null &&
                                             moduleAPI.getContentData().get(0).getGist().getId() != null) {
                                         videoId = moduleAPI.getContentData().get(0).getGist().getId();
-                                        ( view).setVisibility(View.VISIBLE);
-                                    }
-                                    if (videoId != null) {
-                                            //((CustomVideoPlayerView) view).getPlayerView().hideController();
-                                            View finalView = view;
-                                            /*((CustomVideoPlayerView) view).getPlayerView().setControllerVisibilityListener(new CustomPlaybackControlView.VisibilityListener() {
-                                                @Override
-                                                public void onVisibilityChange(int i) {
-                                                    if (i == 0) {
-                                                        ((CustomVideoPlayerView) finalView).getPlayerView().hideController();
-                                                    }
-                                                }
-                                            });*/
-                                            ((CustomVideoPlayerView) view).setVideoUri(videoId, R.string.loading_video_text);
-                                            (view).setId(R.id.video_player_id);
-
-                                    }
-                                }else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
-                                        if (appCMSPresenter.isUserLoggedIn()) {
-                                            ((ProgressBar) view).setMax(100);
-                                            ((ProgressBar) view).setProgress(0);
-                                            if (moduleAPI.getContentData() != null &&
-                                                    !moduleAPI.getContentData().isEmpty() &&
-                                                    moduleAPI.getContentData().get(0) != null &&
-                                                    moduleAPI.getContentData().get(0).getGist() != null) {
-                                                if (moduleAPI.getContentData()
-                                                        .get(0).getGist().getWatchedPercentage() > 0) {
-                                                    view.setVisibility(View.VISIBLE);
-                                                    ((ProgressBar) view)
-                                                            .setProgress(moduleAPI.getContentData()
-                                                                    .get(0).getGist().getWatchedPercentage());
-                                                } else {
-                                                    long watchedTime =
-                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime();
-                                                    long runTime =
-                                                            moduleAPI.getContentData().get(0).getGist().getRuntime();
-                                                    if (watchedTime > 0 && runTime > 0) {
-                                                        long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
-                                                        ((ProgressBar) view)
-                                                                .setProgress((int) percentageWatched);
-                                                        view.setVisibility(View.VISIBLE);
-                                                    } else {
-                                                        view.setVisibility(View.INVISIBLE);
-                                                        ((ProgressBar) view).setProgress(0);
-                                                    }
-                                                }
-                                            } else {
-                                                view.setVisibility(View.INVISIBLE);
-                                                ((ProgressBar) view).setProgress(0);
-                                            }
+                                        (view).setVisibility(View.VISIBLE);
+                                        AppCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) view);
+                                        if (AppCMSPresenter.videoPlayerViewLP == null &&
+                                                ((CustomVideoPlayerView) view).getLayoutParams() instanceof FrameLayout.LayoutParams) {
+                                            AppCMSPresenter.videoPlayerViewLP = (FrameLayout.LayoutParams) ((CustomVideoPlayerView) view).getLayoutParams();
                                         }
-                                    } else if (componentType == AppCMSUIKeyType.PAGE_WEB_VIEW_KEY) {
+                                    }
+                                    if (videoId != null &&
+                                            AppCMSPresenter.videoPlayerView !=null &&
+                                            AppCMSPresenter.videoPlayerView.getVideoId() != null &&
+                                            !AppCMSPresenter.videoPlayerView.getVideoId().equalsIgnoreCase(videoId)) {
+                                        //((CustomVideoPlayerView) view).getPlayerView().hideController();
+                                        View finalView = view;
+                                        ((CustomVideoPlayerView) view).setVideoUri(videoId, R.string.loading_video_text);
+                                        (view).setId(R.id.video_player_id);
+                                        AppCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) view);
+                                        if (AppCMSPresenter.videoPlayerViewLP == null &&
+                                                ((CustomVideoPlayerView) view).getLayoutParams() instanceof FrameLayout.LayoutParams) {
+                                            AppCMSPresenter.videoPlayerViewLP = (FrameLayout.LayoutParams) ((CustomVideoPlayerView) view).getLayoutParams();
+                                        }
 
-                                        String webViewUrl = "";
-                                        if (moduleAPI != null && moduleAPI.getRawText() != null) {
-                                            webViewUrl = moduleAPI.getRawText();
-                                            view.setVisibility(View.VISIBLE);
+                                    }
+                                } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+                                    if (appCMSPresenter.isUserLoggedIn()) {
+                                        ((ProgressBar) view).setMax(100);
+                                        ((ProgressBar) view).setProgress(0);
+                                        if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0) != null &&
+                                                moduleAPI.getContentData().get(0).getGist() != null) {
+                                            if (moduleAPI.getContentData()
+                                                    .get(0).getGist().getWatchedPercentage() > 0) {
+                                                view.setVisibility(View.VISIBLE);
+                                                ((ProgressBar) view)
+                                                        .setProgress(moduleAPI.getContentData()
+                                                                .get(0).getGist().getWatchedPercentage());
+                                            } else {
+                                                long watchedTime =
+                                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime();
+                                                long runTime =
+                                                        moduleAPI.getContentData().get(0).getGist().getRuntime();
+                                                if (watchedTime > 0 && runTime > 0) {
+                                                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
+                                                    ((ProgressBar) view)
+                                                            .setProgress((int) percentageWatched);
+                                                    view.setVisibility(View.VISIBLE);
+                                                } else {
+                                                    view.setVisibility(View.INVISIBLE);
+                                                    ((ProgressBar) view).setProgress(0);
+                                                }
+                                            }
                                         } else {
                                             view.setVisibility(View.INVISIBLE);
+                                            ((ProgressBar) view).setProgress(0);
+                                        }
+                                    }
+                                } else if (componentType == AppCMSUIKeyType.PAGE_WEB_VIEW_KEY) {
+
+                                    String webViewUrl = "";
+                                    if (moduleAPI != null && moduleAPI.getRawText() != null) {
+                                        webViewUrl = moduleAPI.getRawText();
+                                        view.setVisibility(View.VISIBLE);
+                                    } else {
+                                        view.setVisibility(View.INVISIBLE);
+                                    }
+
+                                    int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
+                                    int width = BaseView.getDeviceWidth();
+                                    String html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+
+                                    ((CustomWebView) view).setWebViewClient(new WebViewClient() {
+                                        @Override
+                                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                                            Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                                            context.startActivity(browserIntent);
+                                            return true;
                                         }
 
-                                        int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
-                                        int width = BaseView.getDeviceWidth();
-                                        String html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
-
-                                        ((CustomWebView) view).setWebViewClient(new WebViewClient() {
-                                            @Override
-                                            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                                                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-                                                context.startActivity(browserIntent);
-                                                return true;
-                                            }
-
-                                            @Override
-                                            public void onPageFinished(WebView view, String url) {
-                                                super.onPageFinished(view, url);
-                                                ((CustomWebView) view).isPageLoaded=true;
-                                            }
-                                        });
-                                            ((CustomWebView) view).loadData(html, "text/html", "UTF-8");
-                                        (view).setVisibility(View.VISIBLE);
-                                    } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
-                                        if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
-                                            if (moduleAPI.getContentData() != null &&
-                                                    !moduleAPI.getContentData().isEmpty() &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
-                                                    !moduleAPI.getContentData().get(0).getContentDetails().getTrailers().isEmpty() &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink() != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId() != null &&
-                                                    moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
-                                                view.setVisibility(View.VISIBLE);
-                                                view.setOnClickListener(v -> {
-                                                    String[] extraData = new String[3];
-                                                    extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
-                                                    extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
-                                                    extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
-                                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                                            component.getAction(),
-                                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                                            extraData,
-                                                            moduleAPI.getContentData().get(0),
-                                                            false,
-                                                            -1,
-                                                            null)) {
-                                                        //Log.e(TAG, "Could not launch action: " +
+                                        @Override
+                                        public void onPageFinished(WebView view, String url) {
+                                            super.onPageFinished(view, url);
+                                            ((CustomWebView) view).isPageLoaded = true;
+                                        }
+                                    });
+                                    ((CustomWebView) view).loadData(html, "text/html", "UTF-8");
+                                    (view).setVisibility(View.VISIBLE);
+                                } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+                                    if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
+                                        if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers() != null &&
+                                                !moduleAPI.getContentData().get(0).getContentDetails().getTrailers().isEmpty() &&
+                                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0) != null &&
+                                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink() != null &&
+                                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId() != null &&
+                                                moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+                                            view.setVisibility(View.VISIBLE);
+                                            view.setOnClickListener(v -> {
+                                                String[] extraData = new String[3];
+                                                extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
+                                                extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                                extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
+                                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                                        component.getAction(),
+                                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                        extraData,
+                                                        moduleAPI.getContentData().get(0),
+                                                        false,
+                                                        -1,
+                                                        null)) {
+                                                    //Log.e(TAG, "Could not launch action: " +
 //                                                            " permalink: " +
 //                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
 //                                                            " action: " +
 //                                                            component.getAction() +
 //                                                            " hls URL: " +
 //                                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                                }
+                                            });
+                                        } else {
+                                            shouldHideComponent = true;
+                                            view.setVisibility(View.GONE);
+                                        }
+                                    } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PLAY_BUTTON_KEY) {
+                                        view.setOnClickListener(v -> {
+                                            if (moduleAPI.getContentData() != null &&
+                                                    !moduleAPI.getContentData().isEmpty() &&
+                                                    moduleAPI.getContentData().get(0) != null &&
+                                                    moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
+                                                    moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
+                                                VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
+                                                String videoUrl = videoAssets.getHls();
+                                                if (TextUtils.isEmpty(videoUrl)) {
+                                                    for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+                                                        videoUrl = videoAssets.getMpeg().get(i).getUrl();
                                                     }
-                                                });
-                                            } else {
-                                                shouldHideComponent = true;
-                                                view.setVisibility(View.GONE);
-                                            }
-                                        } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_PLAY_BUTTON_KEY) {
-                                            view.setOnClickListener(v -> {
+                                                }
                                                 if (moduleAPI.getContentData() != null &&
                                                         !moduleAPI.getContentData().isEmpty() &&
                                                         moduleAPI.getContentData().get(0) != null &&
-                                                        moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
-                                                        moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
-                                                    VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
-                                                    String videoUrl = videoAssets.getHls();
-                                                    if (TextUtils.isEmpty(videoUrl)) {
-                                                        for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-                                                            videoUrl = videoAssets.getMpeg().get(i).getUrl();
-                                                        }
+                                                        moduleAPI.getContentData().get(0).getContentDetails() != null) {
+
+                                                    List<String> relatedVideoIds = null;
+                                                    if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+                                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
+                                                        relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
                                                     }
-                                                    if (moduleAPI.getContentData() != null &&
-                                                            !moduleAPI.getContentData().isEmpty() &&
-                                                            moduleAPI.getContentData().get(0) != null &&
-                                                            moduleAPI.getContentData().get(0).getContentDetails() != null) {
-
-                                                        List<String> relatedVideoIds = null;
-                                                        if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                                                moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
-                                                            relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
-                                                        }
-                                                        int currentPlayingIndex = -1;
-                                                        if (relatedVideoIds == null) {
-                                                            currentPlayingIndex = 0;
-                                                        }
-
-                                                        appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
-                                                                currentPlayingIndex,
-                                                                relatedVideoIds,
-                                                                moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
-                                                                component.getAction());
-
+                                                    int currentPlayingIndex = -1;
+                                                    if (relatedVideoIds == null) {
+                                                        currentPlayingIndex = 0;
                                                     }
+
+                                                    appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
+                                                            currentPlayingIndex,
+                                                            relatedVideoIds,
+                                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
+                                                            component.getAction());
+
                                                 }
-                                            });
-                                        } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY) {
-                                            view.setOnClickListener(v -> {
-                                                AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
-                                                if (appCMSMain != null &&
-                                                        moduleAPI.getContentData() != null &&
-                                                        !moduleAPI.getContentData().isEmpty() &&
-                                                        moduleAPI.getContentData().get(0) != null &&
-                                                        moduleAPI.getContentData().get(0).getGist() != null &&
-                                                        moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
-                                                        moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
-                                                    StringBuilder filmUrl = new StringBuilder();
-                                                    filmUrl.append(appCMSMain.getDomainName());
-                                                    filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
-                                                    String[] extraData = new String[1];
-                                                    extraData[0] = filmUrl.toString();
-                                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                                            component.getAction(),
-                                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                                            extraData,
-                                                            moduleAPI.getContentData().get(0),
-                                                            false,
-                                                            0,
-                                                            null)) {
-                                                        //Log.e(TAG, "Could not launch action: " +
+                                            }
+                                        });
+                                    } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY) {
+                                        view.setOnClickListener(v -> {
+                                            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+                                            if (appCMSMain != null &&
+                                                    moduleAPI.getContentData() != null &&
+                                                    !moduleAPI.getContentData().isEmpty() &&
+                                                    moduleAPI.getContentData().get(0) != null &&
+                                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
+                                                    moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
+                                                StringBuilder filmUrl = new StringBuilder();
+                                                filmUrl.append(appCMSMain.getDomainName());
+                                                filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
+                                                String[] extraData = new String[1];
+                                                extraData[0] = filmUrl.toString();
+                                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                                        component.getAction(),
+                                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                                        extraData,
+                                                        moduleAPI.getContentData().get(0),
+                                                        false,
+                                                        0,
+                                                        null)) {
+                                                    //Log.e(TAG, "Could not launch action: " +
 //                                                            " permalink: " +
 //                                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
 //                                                            " action: " +
 //                                                            component.getAction() +
 //                                                            " film URL: " +
 //                                                            filmUrl.toString());
-                                                    }
                                                 }
-                                            });
-                                        } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY
-                                                && view != null) {
-                                            if (moduleAPI.getContentData() != null &&
-                                                    !moduleAPI.getContentData().isEmpty() &&
-                                                    moduleAPI.getContentData().get(0).getGist() != null &&
-                                                    moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                                                String userId = appCMSPresenter.getLoggedInUser();
-                                                appCMSPresenter.getUserVideoDownloadStatus(
-                                                        moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                                                moduleAPI.getContentData().get(0), userId), userId);
+                                            }
+                                        });
+                                    } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY
+                                            && view != null) {
+                                        if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0).getGist() != null &&
+                                                moduleAPI.getContentData().get(0).getGist().getId() != null) {
+                                            String userId = appCMSPresenter.getLoggedInUser();
+                                            appCMSPresenter.getUserVideoDownloadStatus(
+                                                    moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
+                                                            moduleAPI.getContentData().get(0), userId), userId);
 
-                                            }
-                                            if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
-                                                    appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
-                                                view.setVisibility(View.VISIBLE);
-                                            } else {
-                                                view.setVisibility(View.GONE);
-                                            }
-                                        } else if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY
-                                                && view != null) {
-                                            if (moduleAPI.getContentData() != null &&
-                                                    !moduleAPI.getContentData().isEmpty() &&
-                                                    moduleAPI.getContentData().get(0).getGist() != null &&
-                                                    moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                                                appCMSPresenter.getUserVideoStatus(
-                                                        moduleAPI.getContentData().get(0).getGist().getId(),
-                                                        new UpdateImageIconAction((ImageButton) view, appCMSPresenter, moduleAPI.getContentData()
-                                                                .get(0).getGist().getId()));
-                                            }
-                                            view.setVisibility(View.VISIBLE);
                                         }
-                                    } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
-                                        if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY) {
-                                            if (moduleAPI.getContentData() != null &&
-                                                    !moduleAPI.getContentData().isEmpty() &&
-                                                    moduleAPI.getContentData().get(0).getGist() != null &&
-                                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
-                                                if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
-                                                    ((TextView) view).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
-                                                }
-                                                ViewTreeObserver titleTextVto = view.getViewTreeObserver();
-                                                ViewCreatorTitleLayoutListener viewCreatorTitleLayoutListener =
-                                                        new ViewCreatorTitleLayoutListener((TextView) view);
-                                                titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
-                                                ((TextView) view).setSingleLine(true);
-                                                ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                                        if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
+                                                appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                                            view.setVisibility(View.VISIBLE);
+                                        } else {
+                                            view.setVisibility(View.GONE);
+                                        }
+                                    } else if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY
+                                            && view != null) {
+                                        if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0).getGist() != null &&
+                                                moduleAPI.getContentData().get(0).getGist().getId() != null) {
+                                            appCMSPresenter.getUserVideoStatus(
+                                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                                                    new UpdateImageIconAction((ImageButton) view, appCMSPresenter, moduleAPI.getContentData()
+                                                            .get(0).getGist().getId()));
+                                        }
+                                        view.setVisibility(View.VISIBLE);
+                                    }
+                                } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
+                                    if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY) {
+                                        if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0).getGist() != null &&
+                                                moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
+                                            if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                                                ((TextView) view).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                            }
+                                            ViewTreeObserver titleTextVto = view.getViewTreeObserver();
+                                            ViewCreatorTitleLayoutListener viewCreatorTitleLayoutListener =
+                                                    new ViewCreatorTitleLayoutListener((TextView) view);
+                                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                                            ((TextView) view).setSingleLine(true);
+                                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
 
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY) {
@@ -697,335 +703,316 @@ public class ViewCreator {
                                     }
                                 } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_EDIT_PROFILE_KEY) {
 
-                                        if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
-                                                (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
-                                                        appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
-                                            view.setVisibility(View.GONE);
-                                            shouldHideComponent = true;
-                                        }
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
+                                            (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                                    appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
+                                    }
 
-                                        if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
-                                                (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
-                                                        appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
-                                            view.setVisibility(View.GONE);
-                                            shouldHideComponent = true;
-                                        }
-                                    } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY) {
-                                        if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
-                                                (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
-                                                        appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
-                                            view.setVisibility(View.GONE);
-                                            shouldHideComponent = true;
-                                        }
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
+                                            (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                                    appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
+                                    }
+                                } else if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CHANGE_PASSWORD_KEY) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getFacebookAccessToken()) ||
+                                            (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                                    appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.facebook_auth_provider_name_key)))) {
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
+                                    }
 
-                                        if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
-                                                (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
-                                                        appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
-                                            view.setVisibility(View.GONE);
-                                            shouldHideComponent = true;
-                                        }
-                                    } else if (componentType == AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY) {
-                                        if (view instanceof DotSelectorView) {
+                                    if (!TextUtils.isEmpty(appCMSPresenter.getGoogleAccessToken()) ||
+                                            (!TextUtils.isEmpty(appCMSPresenter.getUserAuthProviderName()) &&
+                                                    appCMSPresenter.getUserAuthProviderName().equalsIgnoreCase(context.getString(R.string.google_auth_provider_name_key)))) {
+                                        view.setVisibility(View.GONE);
+                                        shouldHideComponent = true;
+                                    }
+                                } else if (componentType == AppCMSUIKeyType.PAGE_PAGE_CONTROL_VIEW_KEY) {
+                                    if (view instanceof DotSelectorView) {
+                                        ((DotSelectorView) view).select(0);
+                                        int numDots = moduleAPI != null ? moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0 : 0;
+                                        if (!((DotSelectorView) view).dotsInitialized()) {
+                                            ((DotSelectorView) view).addDots(numDots);
+                                            ((DotSelectorView) view).deSelectAll();
                                             ((DotSelectorView) view).select(0);
-                                            int numDots = moduleAPI != null ? moduleAPI.getContentData() != null ? moduleAPI.getContentData().size() : 0 : 0;
-                                            if (!((DotSelectorView) view).dotsInitialized()) {
-                                                ((DotSelectorView) view).addDots(numDots);
-                                                ((DotSelectorView) view).deSelectAll();
-                                                ((DotSelectorView) view).select(0);
-                                            }
-                                        }
-                                    } else {
-                                        if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
-                                            String directorTitle = null;
-                                            StringBuffer directorListSb = new StringBuffer();
-                                            String starringTitle = null;
-                                            StringBuffer starringListSb = new StringBuffer();
-
-                                            if (moduleAPI.getContentData() != null &&
-                                                    !moduleAPI.getContentData().isEmpty() &&
-                                                    moduleAPI.getContentData().get(0) != null &&
-                                                    moduleAPI.getContentData().get(0).getCreditBlocks() != null) {
-                                                for (CreditBlock creditBlock : moduleAPI.getContentData().get(0).getCreditBlocks()) {
-                                                    AppCMSUIKeyType creditBlockType = jsonValueKeyMap.get(creditBlock.getTitle());
-                                                    if (creditBlockType != null &&
-                                                            (creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY ||
-                                                                    creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY ||
-                                                                    creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTORS_KEY)) {
-                                                        if (!TextUtils.isEmpty(creditBlock.getTitle())) {
-                                                            directorTitle = creditBlock.getTitle().toUpperCase();
-                                                        }
-                                                        if (creditBlock != null && creditBlock.getCredits() != null) {
-                                                            for (int j = 0; j < creditBlock.getCredits().size(); j++) {
-                                                                directorListSb.append(creditBlock.getCredits().get(j).getTitle());
-                                                                if (j < creditBlock.getCredits().size() - 1) {
-                                                                    directorListSb.append(", ");
-                                                                }
-                                                            }
-                                                        }
-                                                    } else if (creditBlockType != null &&
-                                                            creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_STARRING_KEY) {
-                                                        if (!TextUtils.isEmpty(creditBlock.getTitle())) {
-                                                            starringTitle = creditBlock.getTitle().toUpperCase();
-                                                        }
-                                                        if (creditBlock != null && creditBlock.getCredits() != null) {
-                                                            for (int j = 0; j < creditBlock.getCredits().size(); j++) {
-                                                                if (creditBlock.getCredits().get(j).getTitle() != null && !TextUtils.isEmpty(creditBlock.getCredits().get(j).getTitle())) {
-                                                                    starringListSb.append(creditBlock.getCredits().get(j).getTitle());
-                                                                    if (j < creditBlock.getCredits().size() - 1) {
-                                                                        starringListSb.append(", ");
-                                                                    }
-                                                                }
-
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            if (TextUtils.isEmpty(starringListSb)) {
-                                                starringListSb.append("-");
-
-                                            }
-                                            if (directorListSb.length() == 0 && starringListSb.length() == 0) {
-                                                if (!BaseView.isLandscape(context)) {
-                                                    shouldHideComponent = true;
-                                                    view.setVisibility(View.GONE);
-                                                }
-                                            } else {
-                                                ((CreditBlocksView) view).updateText(directorTitle,
-                                                        directorListSb.toString(),
-                                                        starringTitle,
-                                                        starringListSb.toString());
-                                                view.setVisibility(View.VISIBLE);
-                                                view.forceLayout();
-                                            }
-                                        } else if (componentType == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
-                                            //Log.d(TAG, "checkForExistingSubscription() - 574");
-                                            appCMSPresenter.checkForExistingSubscription(false);
-                                            if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
-                                                shouldHideComponent = true;
-                                            } else {
-                                                for (Component settingsComponent : component.getComponents()) {
-                                                    shouldHideComponent = false;
-
-                                                    AppCMSUIKeyType settingsComponentKey = jsonValueKeyMap.get(settingsComponent.getKey());
-
-                                                    if (settingsComponentKey == null) {
-                                                        settingsComponentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
-                                                    }
-
-                                                    View settingsView = pageView.findViewFromComponentId(module.getId()
-                                                            + settingsComponent.getKey());
-
-                                                    String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor();
-
-                                                    if (settingsView != null) {
-                                                        if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY) {
-                                                            ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName());
-                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
-                                                            ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail());
-                                                        } else if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
-                                                            settingsView.setVisibility(View.GONE);
-                                                        } else {
-                                                            if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY) {
-                                                                if (appCMSPresenter.isUserSubscribed() &&
-                                                                        !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor())) {
-                                                                    settingsView.setVisibility(View.VISIBLE);
-                                                                } else {
-                                                                    settingsView.setVisibility(View.GONE);
-                                                                    shouldHideComponent = true;
-                                                                }
-                                                            } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
-                                                                if (appCMSPresenter.isUserSubscribed() &&
-                                                                        !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
-                                                                    ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
-                                                                } else if (!appCMSPresenter.isUserSubscribed()) {
-                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
-                                                                }
-                                                            } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
-                                                                if (paymentProcessor != null && appCMSPresenter.isUserSubscribed()) {
-                                                                    if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
-                                                                            paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
-                                                                        ((TextView) settingsView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
-                                                                    } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
-                                                                        ((TextView) settingsView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
-                                                                    } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
-                                                                            paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
-                                                                        ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
-                                                                    } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
-                                                                        ((TextView) settingsView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
-                                                                    } else {
-                                                                        ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
-                                                                    }
-                                                                } else {
-                                                                    ((TextView) settingsView).setText("");
-                                                                }
-                                                            } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY) {
-                                                                ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref());
-                                                            } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
-                                                                if (!appCMSPresenter.isUserSubscribed()) {
-                                                                    ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
-                                                                } else if (!TextUtils.isEmpty(component.getText())) {
-                                                                    ((TextView) settingsView).setText(component.getText());
-                                                                    if (!appCMSPresenter.upgradesAvailableForUser()) {
-                                                                        settingsView.setVisibility(View.GONE);
-                                                                    }
-                                                                }
-                                                            } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                                                if (appCMSPresenter.isUserSubscribed()) {
-                                                                    //Log.d(TAG, "checkForExistingSubscription() - 647");
-                                                                    appCMSPresenter.checkForExistingSubscription(false);
-
-                                                                    if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
-                                                                            appCMSPresenter.isSubscriptionCompleted()) {
-                                                                        settingsView.setVisibility(View.VISIBLE);
-                                                                    } else {
-                                                                        settingsView.setVisibility(View.GONE);
-                                                                    }
-                                                                } else {
-                                                                    settingsView.setVisibility(View.GONE);
-                                                                }
-                                                            }
-                                                        }
-                                                        settingsView.requestLayout();
-                                                    }
-                                                }
-                                            }
-                                        } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
-                                            switch (componentType) {
-                                                case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
-                                                    ((Switch) view).setChecked(appCMSPresenter
-                                                            .getAutoplayEnabledUserPref(context));
-                                                    break;
-
-                                                case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
-                                                    ((Switch) view).setChecked(appCMSPresenter
-                                                            .getUserDownloadLocationPref());
-                                                    if (appCMSPresenter.isExternalStorageAvailable()) {
-                                                        componentViewResult.componentView.setEnabled(true);
-                                                        appCMSPresenter.setUserDownloadLocationPref(true);
-                                                    } else {
-                                                        componentViewResult.componentView.setEnabled(false);
-                                                        ((Switch) componentViewResult.componentView).setChecked(false);
-                                                        appCMSPresenter.setUserDownloadLocationPref(false);
-                                                    }
-
-                                                    break;
-
-                                                default:
-                                                    break;
-                                            }
-                                        }
-                                    }
-
-                                    if (shouldHideComponent) {
-                                        ModuleView.HeightLayoutAdjuster heightLayoutAdjuster =
-                                                new ModuleView.HeightLayoutAdjuster();
-                                        if (BaseView.isTablet(context)) {
-                                            if (BaseView.isLandscape(context)) {
-                                                heightLayoutAdjuster.heightAdjustment =
-                                                        (int) (component.getLayout().getTabletLandscape().getHeight() * 0.6);
-                                                heightLayoutAdjuster.topMargin =
-                                                        (int) component.getLayout().getTabletLandscape().getTopMargin();
-                                                heightLayoutAdjuster.yAxis =
-                                                        (int) component.getLayout().getTabletLandscape().getYAxis();
-                                                heightLayoutAdjuster.component = component;
-                                            } else {
-                                                heightLayoutAdjuster.heightAdjustment =
-                                                        (int) (component.getLayout().getTabletPortrait().getHeight() * 0.8);
-                                                heightLayoutAdjuster.topMargin =
-                                                        (int) component.getLayout().getTabletPortrait().getTopMargin();
-                                                heightLayoutAdjuster.yAxis =
-                                                        (int) component.getLayout().getTabletPortrait().getYAxis();
-                                                heightLayoutAdjuster.component = component;
-                                            }
-                                        } else {
-                                            heightLayoutAdjuster.heightAdjustment =
-                                                    (int) (component.getLayout().getMobile().getHeight() * 0.6);
-                                            heightLayoutAdjuster.topMargin =
-                                                    (int) component.getLayout().getMobile().getTopMargin();
-                                            heightLayoutAdjuster.yAxis =
-                                                    (int) component.getLayout().getMobile().getYAxis();
-                                            heightLayoutAdjuster.component = component;
-                                        }
-                                        moduleView.addHeightAdjuster(heightLayoutAdjuster);
-                                    }
-                                }
-                            }
-                        } else{
-                            moduleView.setVisibility(View.GONE);
-                            shouldHideModule = true;
-                        }
-
-                        ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
-                        moduleView.verifyHeightAdjustments();
-
-                        for (int j = 0; j < moduleView.getHeightAdjusterListSize(); j++) {
-                            ModuleView.HeightLayoutAdjuster heightLayoutAdjuster = moduleView.getHeightLayoutAdjuster(j);
-
-                            if (heightLayoutAdjuster.reset) {
-                                moduleLayoutParams.height += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                            } else {
-                                moduleLayoutParams.height -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                            }
-                            List<ModuleView.ChildComponentAndView> childComponentAndViewList =
-                                    moduleView.getChildComponentAndViewList();
-
-                            for (int k = 0; k < childComponentAndViewList.size(); k++) {
-                                ModuleView.ChildComponentAndView childComponentAndView = childComponentAndViewList.get(k);
-
-                                ViewGroup.MarginLayoutParams childLayoutParams =
-                                        (ViewGroup.MarginLayoutParams) childComponentAndView.childView.getLayoutParams();
-                                if (BaseView.isTablet(context)) {
-                                    if (BaseView.isLandscape(context)) {
-                                        if (childComponentAndView.component.getLayout().getTabletLandscape().getYAxis() > 0 &&
-                                                heightLayoutAdjuster.yAxis <
-                                                        childComponentAndView.component.getLayout().getTabletLandscape().getYAxis()) {
-                                            if (heightLayoutAdjuster.reset) {
-                                                childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                            } else {
-                                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                            }
-                                        } else if (childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin() > 0 &&
-                                                heightLayoutAdjuster.topMargin <
-                                                        childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin()) {
-                                            if (heightLayoutAdjuster.reset) {
-                                                childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                            } else {
-                                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                            }
-                                        }
-                                    } else {
-                                        if (childComponentAndView.component.getLayout().getTabletPortrait().getYAxis() > 0 &&
-                                                heightLayoutAdjuster.yAxis <
-                                                        childComponentAndView.component.getLayout().getTabletPortrait().getYAxis()) {
-                                            if (heightLayoutAdjuster.reset) {
-                                                childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                            } else {
-                                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                            }
-                                        } else if (childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin() > 0 &&
-                                                heightLayoutAdjuster.topMargin <
-                                                        childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin()) {
-                                            if (heightLayoutAdjuster.reset) {
-                                                childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                            } else {
-                                                childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
-                                            }
                                         }
                                     }
                                 } else {
-                                    if (childComponentAndView.component.getLayout().getMobile().getYAxis() > 0 &&
+                                    if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
+                                        String directorTitle = null;
+                                        StringBuffer directorListSb = new StringBuffer();
+                                        String starringTitle = null;
+                                        StringBuffer starringListSb = new StringBuffer();
+
+                                        if (moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0) != null &&
+                                                moduleAPI.getContentData().get(0).getCreditBlocks() != null) {
+                                            for (CreditBlock creditBlock : moduleAPI.getContentData().get(0).getCreditBlocks()) {
+                                                AppCMSUIKeyType creditBlockType = jsonValueKeyMap.get(creditBlock.getTitle());
+                                                if (creditBlockType != null &&
+                                                        (creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTEDBY_KEY ||
+                                                                creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY ||
+                                                                creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTORS_KEY)) {
+                                                    if (!TextUtils.isEmpty(creditBlock.getTitle())) {
+                                                        directorTitle = creditBlock.getTitle().toUpperCase();
+                                                    }
+                                                    if (creditBlock != null && creditBlock.getCredits() != null) {
+                                                        for (int j = 0; j < creditBlock.getCredits().size(); j++) {
+                                                            directorListSb.append(creditBlock.getCredits().get(j).getTitle());
+                                                            if (j < creditBlock.getCredits().size() - 1) {
+                                                                directorListSb.append(", ");
+                                                            }
+                                                        }
+                                                    }
+                                                } else if (creditBlockType != null &&
+                                                        creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_STARRING_KEY) {
+                                                    if (!TextUtils.isEmpty(creditBlock.getTitle())) {
+                                                        starringTitle = creditBlock.getTitle().toUpperCase();
+                                                    }
+                                                    if (creditBlock != null && creditBlock.getCredits() != null) {
+                                                        for (int j = 0; j < creditBlock.getCredits().size(); j++) {
+                                                            if (creditBlock.getCredits().get(j).getTitle() != null && !TextUtils.isEmpty(creditBlock.getCredits().get(j).getTitle())) {
+                                                                starringListSb.append(creditBlock.getCredits().get(j).getTitle());
+                                                                if (j < creditBlock.getCredits().size() - 1) {
+                                                                    starringListSb.append(", ");
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if (TextUtils.isEmpty(starringListSb)) {
+                                            starringListSb.append("-");
+
+                                        }
+                                        if (directorListSb.length() == 0 && starringListSb.length() == 0) {
+                                            if (!BaseView.isLandscape(context)) {
+                                                shouldHideComponent = true;
+                                                view.setVisibility(View.GONE);
+                                            }
+                                        } else {
+                                            ((CreditBlocksView) view).updateText(directorTitle,
+                                                    directorListSb.toString(),
+                                                    starringTitle,
+                                                    starringListSb.toString());
+                                            view.setVisibility(View.VISIBLE);
+                                            view.forceLayout();
+                                        }
+                                    } else if (componentType == AppCMSUIKeyType.PAGE_SETTINGS_KEY) {
+                                        //Log.d(TAG, "checkForExistingSubscription() - 574");
+                                        appCMSPresenter.checkForExistingSubscription(false);
+                                        if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                                            shouldHideComponent = true;
+                                        } else {
+                                            for (Component settingsComponent : component.getComponents()) {
+                                                shouldHideComponent = false;
+
+                                                AppCMSUIKeyType settingsComponentKey = jsonValueKeyMap.get(settingsComponent.getKey());
+
+                                                if (settingsComponentKey == null) {
+                                                    settingsComponentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                                                }
+
+                                                View settingsView = pageView.findViewFromComponentId(module.getId()
+                                                        + settingsComponent.getKey());
+
+                                                String paymentProcessor = appCMSPresenter.getActiveSubscriptionProcessor();
+
+                                                if (settingsView != null) {
+                                                    if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_NAME_VALUE_KEY) {
+                                                        ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserName());
+                                                    } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_EMAIL_VALUE_KEY) {
+                                                        ((TextView) settingsView).setText(appCMSPresenter.getLoggedInUserEmail());
+                                                    } else if (TextUtils.isEmpty(appCMSPresenter.getLoggedInUserEmail())) {
+                                                        settingsView.setVisibility(View.GONE);
+                                                    } else {
+                                                        if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY) {
+                                                            if (appCMSPresenter.isUserSubscribed() &&
+                                                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionProcessor())) {
+                                                                settingsView.setVisibility(View.VISIBLE);
+                                                            } else {
+                                                                settingsView.setVisibility(View.GONE);
+                                                                shouldHideComponent = true;
+                                                            }
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_VALUE_KEY) {
+                                                            if (appCMSPresenter.isUserSubscribed() &&
+                                                                    !TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionPlanName())) {
+                                                                ((TextView) settingsView).setText(appCMSPresenter.getActiveSubscriptionPlanName());
+                                                            } else if (!appCMSPresenter.isUserSubscribed()) {
+                                                                ((TextView) settingsView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
+                                                            }
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_PLAN_PROCESSOR_VALUE_KEY) {
+                                                            if (paymentProcessor != null && appCMSPresenter.isUserSubscribed()) {
+                                                                if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor)) ||
+                                                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ios_payment_processor_friendly))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_ios_payment_processor_friendly));
+                                                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_web_payment_processor_friendly))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_web_payment_processor_friendly));
+                                                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor)) ||
+                                                                        paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_android_payment_processor_friendly))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_android_payment_processor_friendly));
+                                                                } else if (paymentProcessor.equalsIgnoreCase(context.getString(R.string.subscription_ccavenue_payment_processor))) {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+                                                                } else {
+                                                                    ((TextView) settingsView).setText(context.getString(R.string.subscription_unknown_payment_processor_friendly));
+                                                                }
+                                                            } else {
+                                                                ((TextView) settingsView).setText("");
+                                                            }
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_DOWNLOAD_QUALITY_PROFILE_KEY) {
+                                                            ((TextView) settingsView).setText(appCMSPresenter.getUserDownloadQualityPref());
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
+                                                            if (!appCMSPresenter.isUserSubscribed()) {
+                                                                ((TextView) settingsView).setText(context.getString(R.string.app_cms_page_upgrade_subscribe_button_text));
+                                                            } else if (!TextUtils.isEmpty(component.getText())) {
+                                                                ((TextView) settingsView).setText(component.getText());
+                                                                if (!appCMSPresenter.upgradesAvailableForUser()) {
+                                                                    settingsView.setVisibility(View.GONE);
+                                                                }
+                                                            }
+                                                        } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
+                                                            if (appCMSPresenter.isUserSubscribed()) {
+                                                                //Log.d(TAG, "checkForExistingSubscription() - 647");
+                                                                appCMSPresenter.checkForExistingSubscription(false);
+
+                                                                if (!appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
+                                                                        appCMSPresenter.isSubscriptionCompleted()) {
+                                                                    settingsView.setVisibility(View.VISIBLE);
+                                                                } else {
+                                                                    settingsView.setVisibility(View.GONE);
+                                                                }
+                                                            } else {
+                                                                settingsView.setVisibility(View.GONE);
+                                                            }
+                                                        }
+                                                    }
+                                                    settingsView.requestLayout();
+                                                }
+                                            }
+                                        }
+                                    } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
+                                        switch (componentType) {
+                                            case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
+                                                ((Switch) view).setChecked(appCMSPresenter
+                                                        .getAutoplayEnabledUserPref(context));
+                                                break;
+
+                                            case PAGE_SD_CARD_FOR_DOWNLOADS_TOGGLE_BUTTON_KEY:
+                                                ((Switch) view).setChecked(appCMSPresenter
+                                                        .getUserDownloadLocationPref());
+                                                if (appCMSPresenter.isExternalStorageAvailable()) {
+                                                    componentViewResult.componentView.setEnabled(true);
+                                                    appCMSPresenter.setUserDownloadLocationPref(true);
+                                                } else {
+                                                    componentViewResult.componentView.setEnabled(false);
+                                                    ((Switch) componentViewResult.componentView).setChecked(false);
+                                                    appCMSPresenter.setUserDownloadLocationPref(false);
+                                                }
+
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                }
+
+                                if (shouldHideComponent) {
+                                    ModuleView.HeightLayoutAdjuster heightLayoutAdjuster =
+                                            new ModuleView.HeightLayoutAdjuster();
+                                    if (BaseView.isTablet(context)) {
+                                        if (BaseView.isLandscape(context)) {
+                                            heightLayoutAdjuster.heightAdjustment =
+                                                    (int) (component.getLayout().getTabletLandscape().getHeight() * 0.6);
+                                            heightLayoutAdjuster.topMargin =
+                                                    (int) component.getLayout().getTabletLandscape().getTopMargin();
+                                            heightLayoutAdjuster.yAxis =
+                                                    (int) component.getLayout().getTabletLandscape().getYAxis();
+                                            heightLayoutAdjuster.component = component;
+                                        } else {
+                                            heightLayoutAdjuster.heightAdjustment =
+                                                    (int) (component.getLayout().getTabletPortrait().getHeight() * 0.8);
+                                            heightLayoutAdjuster.topMargin =
+                                                    (int) component.getLayout().getTabletPortrait().getTopMargin();
+                                            heightLayoutAdjuster.yAxis =
+                                                    (int) component.getLayout().getTabletPortrait().getYAxis();
+                                            heightLayoutAdjuster.component = component;
+                                        }
+                                    } else {
+                                        heightLayoutAdjuster.heightAdjustment =
+                                                (int) (component.getLayout().getMobile().getHeight() * 0.6);
+                                        heightLayoutAdjuster.topMargin =
+                                                (int) component.getLayout().getMobile().getTopMargin();
+                                        heightLayoutAdjuster.yAxis =
+                                                (int) component.getLayout().getMobile().getYAxis();
+                                        heightLayoutAdjuster.component = component;
+                                    }
+                                    moduleView.addHeightAdjuster(heightLayoutAdjuster);
+                                }
+                            }
+                        }
+                    } else {
+                        moduleView.setVisibility(View.GONE);
+                        shouldHideModule = true;
+                    }
+
+                    ViewGroup.LayoutParams moduleLayoutParams = moduleView.getLayoutParams();
+                    moduleView.verifyHeightAdjustments();
+
+                    for (int j = 0; j < moduleView.getHeightAdjusterListSize(); j++) {
+                        ModuleView.HeightLayoutAdjuster heightLayoutAdjuster = moduleView.getHeightLayoutAdjuster(j);
+
+                        if (heightLayoutAdjuster.reset) {
+                            moduleLayoutParams.height += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                        } else {
+                            moduleLayoutParams.height -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                        }
+                        List<ModuleView.ChildComponentAndView> childComponentAndViewList =
+                                moduleView.getChildComponentAndViewList();
+
+                        for (int k = 0; k < childComponentAndViewList.size(); k++) {
+                            ModuleView.ChildComponentAndView childComponentAndView = childComponentAndViewList.get(k);
+
+                            ViewGroup.MarginLayoutParams childLayoutParams =
+                                    (ViewGroup.MarginLayoutParams) childComponentAndView.childView.getLayoutParams();
+                            if (BaseView.isTablet(context)) {
+                                if (BaseView.isLandscape(context)) {
+                                    if (childComponentAndView.component.getLayout().getTabletLandscape().getYAxis() > 0 &&
                                             heightLayoutAdjuster.yAxis <
-                                                    childComponentAndView.component.getLayout().getMobile().getYAxis()) {
+                                                    childComponentAndView.component.getLayout().getTabletLandscape().getYAxis()) {
                                         if (heightLayoutAdjuster.reset) {
                                             childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                         } else {
                                             childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                         }
-                                    } else if (childComponentAndView.component.getLayout().getMobile().getTopMargin() > 0 &&
+                                    } else if (childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin() > 0 &&
                                             heightLayoutAdjuster.topMargin <
-                                                    childComponentAndView.component.getLayout().getMobile().getTopMargin()) {
+                                                    childComponentAndView.component.getLayout().getTabletLandscape().getTopMargin()) {
+                                        if (heightLayoutAdjuster.reset) {
+                                            childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                        } else {
+                                            childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                        }
+                                    }
+                                } else {
+                                    if (childComponentAndView.component.getLayout().getTabletPortrait().getYAxis() > 0 &&
+                                            heightLayoutAdjuster.yAxis <
+                                                    childComponentAndView.component.getLayout().getTabletPortrait().getYAxis()) {
+                                        if (heightLayoutAdjuster.reset) {
+                                            childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                        } else {
+                                            childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                        }
+                                    } else if (childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin() > 0 &&
+                                            heightLayoutAdjuster.topMargin <
+                                                    childComponentAndView.component.getLayout().getTabletPortrait().getTopMargin()) {
                                         if (heightLayoutAdjuster.reset) {
                                             childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
                                         } else {
@@ -1033,25 +1020,44 @@ public class ViewCreator {
                                         }
                                     }
                                 }
-                                childComponentAndView.childView.setLayoutParams(childLayoutParams);
+                            } else {
+                                if (childComponentAndView.component.getLayout().getMobile().getYAxis() > 0 &&
+                                        heightLayoutAdjuster.yAxis <
+                                                childComponentAndView.component.getLayout().getMobile().getYAxis()) {
+                                    if (heightLayoutAdjuster.reset) {
+                                        childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                    } else {
+                                        childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                    }
+                                } else if (childComponentAndView.component.getLayout().getMobile().getTopMargin() > 0 &&
+                                        heightLayoutAdjuster.topMargin <
+                                                childComponentAndView.component.getLayout().getMobile().getTopMargin()) {
+                                    if (heightLayoutAdjuster.reset) {
+                                        childLayoutParams.topMargin += BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                    } else {
+                                        childLayoutParams.topMargin -= BaseView.convertDpToPixel(heightLayoutAdjuster.heightAdjustment, context);
+                                    }
+                                }
                             }
+                            childComponentAndView.childView.setLayoutParams(childLayoutParams);
                         }
-                        moduleView.removeResetHeightAdjusters();
-
-                        moduleView.setLayoutParams(moduleLayoutParams);
-
-                        if (!shouldHideModule) {
-                            moduleView.setVisibility(View.VISIBLE);
-                        }
-
-                        moduleView.requestLayout();
                     }
+                    moduleView.removeResetHeightAdjusters();
+
+                    moduleView.setLayoutParams(moduleLayoutParams);
+
+                    if (!shouldHideModule) {
+                        moduleView.setVisibility(View.VISIBLE);
+                    }
+
+                    moduleView.requestLayout();
                 }
             }
-            if (pageView != null) {
-                forceRedrawOfAllChildren(pageView);
-            }
         }
+        if (pageView != null) {
+            forceRedrawOfAllChildren(pageView);
+        }
+    }
 
     private void forceRedrawOfAllChildren(ViewGroup viewGroup) {
         viewGroup.requestLayout();
@@ -1249,7 +1255,7 @@ public class ViewCreator {
                         updateUserHistory(appCMSPresenter,
                                 moduleAPI.getContentData());
                     }
-
+                    System.out.println("\n\n new Plan " + new Gson().toJson(moduleAPI));
                     int size = module.getComponents().size();
                     for (int i = 0; i < size; i++) {
                         Component component = module.getComponents().get(i);
@@ -2229,32 +2235,32 @@ public class ViewCreator {
 //                                            component.getAction() +
 //                                            " hls URL: " +
 //                                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
-                                    }
-                                });
-                            } else if (moduleAPI.getContentData().get(0).getShowDetails() != null &&
-                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers() != null &&
-                                    !moduleAPI.getContentData().get(0).getShowDetails().getTrailers().isEmpty() &&
-                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0) != null &&
-                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink() != null &&
-                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId() != null &&
-                                    moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
-                                componentViewResult.componentView.setOnClickListener(v -> {
-                                    String[] extraData = new String[3];
-                                    extraData[0] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink();
-                                    extraData[1] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets().getHls();
-                                    extraData[2] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId();
-                                    if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink(),
-                                            component.getAction(),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
-                                            extraData,
-                                            moduleAPI.getContentData().get(0),
-                                            false,
-                                            -1,
-                                            null)) {}
-                                });
+                                }
+                            });
+                        } else if (moduleAPI.getContentData().get(0).getShowDetails() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers() != null &&
+                                !moduleAPI.getContentData().get(0).getShowDetails().getTrailers().isEmpty() &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                String[] extraData = new String[3];
+                                extraData[0] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink();
+                                extraData[1] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets().getHls();
+                                extraData[2] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId();
+                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink(),
+                                        component.getAction(),
+                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                        extraData,
+                                        moduleAPI.getContentData().get(0),
+                                        false,
+                                        -1,
+                                        null)) {
+                                }
+                            });
 
-                            }
-                         else {
+                        } else {
                             componentViewResult.shouldHideComponent = true;
                             componentViewResult.componentView.setVisibility(View.GONE);
                         }
@@ -2516,7 +2522,7 @@ public class ViewCreator {
                         ((Button) componentViewResult.componentView)
                                 .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
                                         .getBrand().getCta().getPrimary().getBackgroundColor()));
-                                        //.getGeneral().getBlockTitleColor()));
+                        //.getGeneral().getBlockTitleColor()));
                     }
                 }
                 break;
@@ -2531,9 +2537,9 @@ public class ViewCreator {
                 if (componentKey == AppCMSUIKeyType.PAGE_TRAY_TITLE_KEY &&
                         moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
                         moduleAPI != null && moduleAPI.getContentData() != null &&
-                            !moduleAPI.getContentData().isEmpty() &&
-                            moduleAPI.getContentData().get(0) != null &&
-                            moduleAPI.getContentData().get(0).getSeason() != null) {
+                        !moduleAPI.getContentData().isEmpty() &&
+                        moduleAPI.getContentData().get(0) != null &&
+                        moduleAPI.getContentData().get(0).getSeason() != null) {
                     int numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
                     if (1 < numSeasons) {
                         showTrayLabel = true;
@@ -4189,7 +4195,29 @@ public class ViewCreator {
     }
 
     public static CustomVideoPlayerView playerView(Context context, String videoId) {
-        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
+        CustomVideoPlayerView videoPlayerView;
+        if (AppCMSPresenter.videoPlayerView!=null && videoId != null &&
+                AppCMSPresenter.videoPlayerView.getVideoId() != null &&
+                AppCMSPresenter.videoPlayerView.getVideoId().equalsIgnoreCase(videoId)){
+            if (AppCMSPresenter.videoPlayerViewLP !=null &&
+                    AppCMSPresenter.videoPlayerViewLP instanceof FrameLayout.LayoutParams){
+                AppCMSPresenter.videoPlayerView.setLayoutParams(AppCMSPresenter.videoPlayerViewLP);
+            }
+            if(AppCMSPresenter.videoPlayerView.getParent() !=null)
+            {
+                ((ViewGroup)AppCMSPresenter.videoPlayerView.getParent()).removeView(AppCMSPresenter.videoPlayerView);
+            }
+
+            return AppCMSPresenter.videoPlayerView;
+        }else {
+            videoPlayerView = new CustomVideoPlayerView(context);
+
+        }
+        videoPlayerView = new CustomVideoPlayerView(context);
+        if (AppCMSPresenter.videoPlayerView != null ){
+            AppCMSPresenter.videoPlayerView.releasePlayer();
+            AppCMSPresenter.videoPlayerView= null;
+        }
         if (videoId != null) {
             /*videoPlayerView.getPlayerView().hideController();
             videoPlayerView.getPlayerView().setControllerVisibilityListener(new CustomPlaybackControlView.VisibilityListener() {
@@ -4201,6 +4229,7 @@ public class ViewCreator {
                 }
             });*/
             videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
+            AppCMSPresenter.videoPlayerView = videoPlayerView;
         }
 
         return videoPlayerView;

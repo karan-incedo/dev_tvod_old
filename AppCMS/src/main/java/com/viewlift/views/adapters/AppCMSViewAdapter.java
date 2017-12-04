@@ -121,7 +121,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
         this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getGeneral().getBlockTitleColor());
+                .getCta().getPrimary().getBackgroundColor());
         this.isClickable = true;
 
         this.setHasStableIds(false);

@@ -730,6 +730,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+
+        if (AppCMSPresenter.isFullScreenVisible){
+            appCMSPresenter.exitFullScreenPlayer();
+            return;
+        }
         appCMSPresenter.setEntitlementPendingVideoData(null);
         if (!handlingClose && !isPageLoading()) {
             if (appCMSPresenter.isAddOnFragmentVisible()) {
@@ -875,6 +880,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.closeSoftKeyboard();
         appCMSPresenter.cancelCustomToast();
 
+        if (AppCMSPresenter.isFullScreenVisible)
+        {
+            appCMSPresenter.exitFullScreenPlayer();
+        }
+        if (AppCMSPresenter.videoPlayerView!=null){
+            AppCMSPresenter.videoPlayerView.pausePlayer();
+        }
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
@@ -1157,6 +1169,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        if (AppCMSPresenter.isFullScreenVisible){
+            return;
+        }
         if (appCMSPresenter != null) {
             appCMSPresenter.cancelInternalEvents();
             appCMSPresenter.onConfigurationChange(true);
@@ -1447,8 +1462,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 default:
                     break;
             }
-            if (!(appCMSPageFragment instanceof AppCMSPageFragment)) {
-                appCMSPresenter.dismissPopupWindowPlayer(true);
+            if (!(appCMSPageFragment instanceof AppCMSPageFragment) && AppCMSPresenter.videoPlayerView!=null) {
+                AppCMSPresenter.videoPlayerView.pausePlayer();
             }
 
             if (appCMSPageFragment != null) {
@@ -2447,7 +2462,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             updatedAppCMSBinder.clearSearchQuery();
         }
 
-        reportFullyDrawn();
+        //reportFullyDrawn();
     }
 
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -2686,5 +2701,32 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         return result;
+    }
+    public void setFullScreenFocus() {
+        synchronized (this){
+            getWindow().getDecorView()
+                    .setSystemUiVisibility(
+                            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
+            appCMSTabNavContainer.setVisibility(View.GONE);
+            appBarLayout.setVisibility(View.GONE);
+
+        }
+    }
+
+    public void exitFullScreenFocus() {
+        synchronized(this){
+            getWindow().getDecorView()
+                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            appCMSTabNavContainer.setVisibility(View.VISIBLE);
+            appBarLayout.setVisibility(View.VISIBLE);
+
+
+        }
     }
 }
