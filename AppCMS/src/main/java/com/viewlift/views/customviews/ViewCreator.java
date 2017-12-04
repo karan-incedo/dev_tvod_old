@@ -1078,18 +1078,19 @@ public class ViewCreator {
             }
         }
         if (pageView != null) {
+            pageView.notifyAdapterDataSetChanged();
             forceRedrawOfAllChildren(pageView);
         }
     }
 
     private void forceRedrawOfAllChildren(ViewGroup viewGroup) {
-        viewGroup.requestLayout();
+        viewGroup.invalidate();
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View v = viewGroup.getChildAt(i);
             if (v instanceof ViewGroup) {
                 forceRedrawOfAllChildren((ViewGroup) v);
             } else {
-                v.requestLayout();
+                v.invalidate();
             }
         }
     }
@@ -1226,7 +1227,6 @@ public class ViewCreator {
                         appCMSPresenter);
             }
         }
-        pageView.notifyAdapterDataSetChanged();
 
         List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
         if (presenterOnInternalEvents != null) {

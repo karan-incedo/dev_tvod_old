@@ -194,7 +194,6 @@ import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AppCMSUpgradeActivity;
 import com.viewlift.views.activity.AutoplayActivity;
 import com.viewlift.views.adapters.AppCMSBaseAdapter;
-import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
@@ -203,7 +202,6 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.PopupMenu;
-import com.viewlift.views.customviews.ResponsiveButton;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
@@ -2700,11 +2698,12 @@ public class AppCMSPresenter {
         }
     }
 
-    public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
+    public void clearPageAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
         if (isNetworkConnected()) {
             cancelInternalEvents();
             showLoadingDialog(true);
             try {
+                getPageViewLruCache().evictAll();
                 getPageAPILruCache().evictAll();
             } catch (Exception e) {
                 //
@@ -5167,10 +5166,9 @@ public class AppCMSPresenter {
 
                         }
                         cancelInternalEvents();
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
-
                         restartInternalEvents();
                         navigationPageData.put(pageId, appCMSPageAPI1);
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
                     });
                 } else {
                     loadingPage = false;
@@ -6406,14 +6404,8 @@ public class AppCMSPresenter {
             }
 
             userHistoryData.clear();
-
-            try {
-                getPageViewLruCache().evictAll();
-            } catch (Exception e) {
-
-            }
-
-            refreshAPIData(this::navigateToHomePage, false);
+            getPageViewLruCache().evictAll();
+            clearPageAPIData(this::navigateToHomePage, false);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
         }
@@ -6638,7 +6630,7 @@ public class AppCMSPresenter {
                         appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
                         appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
                         if (!loadFromFile) {
-                            refreshAPIData(() -> {
+                            clearPageAPIData(() -> {
                                         getAppCMSSite(platformType);
                                     },
                                     false);
@@ -8234,6 +8226,7 @@ public class AppCMSPresenter {
                     endPoint,
                     siteId,
                     getPageId(appCMSPageUI));
+            getPageViewLruCache().remove(pageId);
             getPageIdContent(apiUrl,
                     getPageId(appCMSPageUI),
                     modules,
@@ -8457,7 +8450,7 @@ public class AppCMSPresenter {
 
                         }
 
-                        refreshAPIData(() -> {
+                        clearPageAPIData(() -> {
                             if (!loginFromNavPage) {
                                 sendCloseOthersAction(null, true, !loginFromNavPage);
                             }
@@ -8506,7 +8499,7 @@ public class AppCMSPresenter {
 //                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                 }, true);
             } else {
-                refreshAPIData(() -> {
+                clearPageAPIData(() -> {
                 }, false);
                 if (entitlementPendingVideoData != null) {
                     sendRefreshPageAction();
@@ -9190,7 +9183,7 @@ public class AppCMSPresenter {
 
                                                             Log.d(TAG, "Refreshing API Data");
                                                         }
-                                                        refreshAPIData(() -> {
+                                                        clearPageAPIData(() -> {
                                                                     if (onReadyAction != null) {
                                                                         onReadyAction.call(true);
                                                                     }
