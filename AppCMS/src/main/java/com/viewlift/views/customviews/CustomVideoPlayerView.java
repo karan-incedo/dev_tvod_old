@@ -58,6 +58,7 @@ import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
 import static com.google.android.exoplayer2.Player.STATE_IDLE;
 import static com.google.android.exoplayer2.Player.STATE_READY;
+import static com.google.android.gms.internal.zzagr.runOnUiThread;
 
 public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener {
@@ -130,6 +131,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private static final long SECS_TO_MSECS = 1000L;
     private long videoPlayTime = 0l;
     private boolean isVideoLoaded = false;
+    private boolean isVideoPlaying=false;
 
 //    public CustomVideoPlayerView(Context context, String videoId) {
 //        super(context);
@@ -251,6 +253,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                         subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
                                     if (shouldRequestAds) requestAds(adsUrl);
                                     playVideos(0, contentDatum);
+
+                                    appCMSPresenter.setPreviewStatus(false);
+
                                 } else {
                                     if (shouldRequestAds) requestAds(adsUrl);
                                     playVideos(0, contentDatum);
@@ -412,13 +417,17 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     public TimerTask entitlementCheckTimerTask;
     private boolean entitlementCheckCancelled = false;
     int maxPreviewSecs = 0;
-
+    int playedVideoSecs = 0;
+    int secsViewed=0;
     private void getVideoPreview() {
 
         if (appCMSPresenter.isAppSVOD() &&
-//                !isTrailer &&
-//                !freeContent &&
                 !appCMSPresenter.isUserSubscribed()) {
+            if(appCMSPresenter.getPreviewStatus()){
+                pausePlayer();
+                showPreviewFrame();
+                return;
+            }
             int entitlementCheckMultiplier = 5;
             entitlementCheckCancelled = false;
 
@@ -442,9 +451,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 @Override
                 public void run() {
                     appCMSPresenter.getUserData(userIdentity -> {
-                        if (!entitlementCheckCancelled) {
-                            int secsViewed = (int) getPlayer().getCurrentPosition() / 1000;
-                            if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
+                        if (!entitlementCheckCancelled &&  getPlayerView().getPlayer()!=null &&  getPlayerView().getPlayer().getPlayWhenReady()) {
+                            if(!isLiveStream){
+                                secsViewed = (int) getPlayer().getCurrentPosition() / 1000;
+                            }
+                            if (((maxPreviewSecs < playedVideoSecs )|| (maxPreviewSecs < secsViewed ))&& (userIdentity == null || !userIdentity.isSubscribed()) ) {
+
+                                System.out.println("maxPreviewSecs-"+maxPreviewSecs);
+                                System.out.println("playedVideoSecs-"+playedVideoSecs);
 
                                 if (onUpdatedContentDatum != null) {
                                     AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
@@ -461,16 +475,22 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                             .build();
                                     appCMSPresenter.setEntitlementPendingVideoData(entitlementPendingVideoData);
                                 }
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showPreviewFrame();
+                                    }
+                                });
                                 pausePlayer();
-                                customPreviewContainer.setVisibility(View.VISIBLE);
-                                if (appCMSPresenter.isUserLoggedIn()) {
-                                    btnLogin.setVisibility(View.GONE);
-                                }
                                 cancel();
                                 entitlementCheckCancelled = true;
+
+
                             } else {
                                 //Log.d(TAG, "User is subscribed - resuming video");
                             }
+                            playedVideoSecs++;
+
                         }
                     });
 
@@ -479,6 +499,16 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
             entitlementCheckTimer = new Timer();
             entitlementCheckTimer.schedule(entitlementCheckTimerTask, 1000, 1000);
+        }else{
+            appCMSPresenter.setPreviewStatus(false);
+        }
+    }
+
+    private void showPreviewFrame(){
+        appCMSPresenter.setPreviewStatus(true);
+        customPreviewContainer.setVisibility(View.VISIBLE);
+        if (appCMSPresenter.isUserLoggedIn()) {
+            btnLogin.setVisibility(View.GONE);
         }
     }
 
@@ -526,6 +556,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 break;
             case STATE_BUFFERING:
             case STATE_IDLE:
+                isVideoPlaying=false;
                 showProgressBar("Streaming...");
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = false;
@@ -536,9 +567,16 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                         beaconBufferingThread.start();
                     }
                 }
+
                 break;
             case STATE_READY:
                 hideProgressBar();
+
+                if( getPlayerView().getPlayer().getPlayWhenReady()){
+                    isVideoPlaying=true;
+                }else{
+                    isVideoPlaying=false;
+                }
 
                 long updatedRunTime = 0;
                 try {
