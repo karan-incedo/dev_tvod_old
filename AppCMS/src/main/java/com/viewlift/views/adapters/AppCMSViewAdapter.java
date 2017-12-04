@@ -252,7 +252,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         setBorder(planItemView[i], selectedColor);
                         selectViewPlan(planItemView[i]);
                     } else {
-                        setBorder(planItemView[i], ContextCompat.getColor(mContext, R.color.disabledButtonColor));
+                        setBorder(planItemView[i], ContextCompat.getColor(mContext, android.R.color.white));
                         deselectViewPlan01(planItemView[i]);
                     }
                 }
@@ -330,7 +330,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     setBorder(planItemView[i], selectedColor);
                                     selectViewPlan(planItemView[i]);
                                 } else {
-                                    setBorder(planItemView[i], ContextCompat.getColor(mContext, R.color.disabledButtonColor));
+                                    setBorder(planItemView[i], ContextCompat.getColor(mContext, android.R.color.white));
                                     deselectViewPlan01(planItemView[i]);
                                 }
                             }
