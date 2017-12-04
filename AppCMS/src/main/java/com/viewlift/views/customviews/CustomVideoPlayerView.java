@@ -252,13 +252,13 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
                                 if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                         subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                    if (shouldRequestAds) requestAds(adsUrl);
+                                    if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) requestAds(adsUrl);
                                     playVideos(0, contentDatum);
 
                                     appCMSPresenter.setPreviewStatus(false);
 
                                 } else {
-                                    if (shouldRequestAds) requestAds(adsUrl);
+                                    if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) requestAds(adsUrl);
                                     playVideos(0, contentDatum);
 
                                     getVideoPreview();
@@ -266,7 +266,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 }
                             } else {
 
-                                if (shouldRequestAds) requestAds(adsUrl);
+                                if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) requestAds(adsUrl);
                                 playVideos(0, contentDatum);
 
                                 getVideoPreview();
@@ -957,7 +957,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private void getPermalink(ContentDatum contentDatum) {
         boolean serviceType = appCMSPresenter.getAppCMSMain().getServiceType().equals(
                 mContext.getString(R.string.app_cms_main_svod_service_type_key));
-        if(contentDatum != null) {
+        if(!serviceType && contentDatum != null) {
             adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
         }
         if ( adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
@@ -965,7 +965,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         } else {
             shouldRequestAds = false;
         }
-        shouldRequestAds = true;
+
     }
 
     private void requestAds(String adTagUrl) {
