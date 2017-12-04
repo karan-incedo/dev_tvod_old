@@ -3614,7 +3614,7 @@ public class AppCMSPresenter {
 
                         } else {
                             //noinspection ConstantConditions
-                            System.out.println(" Downloading fails" + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
+
                         }
                     } catch (Exception exception) {
                         //Log.e(TAG, filmIdLocal + " Removed from top +++ " + exception.getMessage());
@@ -6691,7 +6691,7 @@ public class AppCMSPresenter {
             public void call(Object o) {
                 String res = (String) o;
                 Toast.makeText(context, res, Toast.LENGTH_LONG).show();
-                System.out.println("Res ----" + res);
+
                 if (res != null) {
                     saveFloodLightStatus(true);
                 }
@@ -7566,7 +7566,6 @@ public class AppCMSPresenter {
                 BeaconRequest beaconRequest = getBeaconRequest(vid, screenName, parentScreenName, currentPosition, event,
                         usingChromecast, mediaType, bitrate, height, width, streamid, ttfirstframe, apod, isDownloaded);
 
-
                 if (!isNetworkConnected()) {
                     currentActivity.runOnUiThread(() -> {
                         try {
@@ -7909,7 +7908,6 @@ public class AppCMSPresenter {
                                         subscriptionRequest.getCurrencyCode());
                             }
 
-                            System.out.println("Plan to purchase-" + planToPurchasePrice);
                             //Subscription Succes Firebase Log Event
                             Bundle bundle = new Bundle();
                             bundle.putString(FIREBASE_PLAN_ID, subscriptionRequest.getPlanId());
@@ -12011,5 +12009,24 @@ public class AppCMSPresenter {
     public Boolean getIsMoreOptionsAvailable() {
 
         return isMoreOptionsAvailable;
+    }
+
+    public long setCurrentWatchProgress(long runTime, long watchedTime) {
+        long videoPlayTime;
+        if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
+            long playDifference = runTime - watchedTime;
+            long playTimePercentage = ((watchedTime * 100) / runTime);
+
+            // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
+            if (playTimePercentage >= 98 && playDifference <= 30) {
+                videoPlayTime = 0;
+            } else {
+                videoPlayTime = watchedTime;
+            }
+        } else {
+            videoPlayTime = 0;
+        }
+        return videoPlayTime;
+
     }
 }

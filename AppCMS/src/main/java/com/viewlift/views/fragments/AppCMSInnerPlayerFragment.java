@@ -502,7 +502,6 @@ public class AppCMSInnerPlayerFragment extends Fragment
                 beaconMessageThread.playbackState = playerState.getPlaybackState();
             }
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
-                System.out.println("videoPlayerView run time onready-" + videoPlayerView.getDuration());
                 long updatedRunTime = 0;
                 try {
                     updatedRunTime = videoPlayerView.getDuration() / 1000;
@@ -682,7 +681,6 @@ public class AppCMSInnerPlayerFragment extends Fragment
     }
 
     private void setCurrentWatchProgress(long runTime, long watchedTime) {
-        System.out.println("videoPlayerView run time on setcurrent progress-" + runTime + " watch time-" + watchedTime);
 
         if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
             long playDifference = runTime - watchedTime;

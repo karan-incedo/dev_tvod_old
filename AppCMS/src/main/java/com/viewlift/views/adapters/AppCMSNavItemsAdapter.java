@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -277,7 +278,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             //Log.d(TAG, "Navigating to page with Title position: " + i);
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
-                            if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
+                            if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.app_cms_page_shop_title)) &&
+                                    !TextUtils.isEmpty(navigationFooter.getTitle())){
+                               appCMSPresenter.openWebView(navigationFooter.getUrl());
+                            }else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
                                     navigationFooter.getUrl(),
                                     false,

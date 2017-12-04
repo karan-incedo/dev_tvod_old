@@ -93,6 +93,7 @@ public class CastServiceProvider {
             if (mActivity != null && mActivity instanceof AppCMSPlayVideoActivity) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             }
+
             stopRokuDiscovery();
         }
 

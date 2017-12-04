@@ -1358,7 +1358,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                                        //Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                         //send menu screen event for firebase
                         sendFireBaseMenuScreenEvent(FIREBASE_MENU_SCREEN);
                     } catch (IllegalArgumentException e) {
@@ -1374,7 +1375,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
                                         Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                                       // Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
 
                         //send menu screen event for firebase
                         sendFireBaseMenuScreenEvent(FIREBASE_MENU_SCREEN);
@@ -1393,7 +1395,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                             Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
                                             Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
                                             Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                                            //Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                                            Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                             //send menu screen event for firebase
                             sendFireBaseMenuScreenEvent(FIREBASE_TEAM_NAVIGATION_SCREEN);
                         }
@@ -2097,7 +2100,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (navigationTabTag.isTabSelected()) {
                             return;
                         }
-//                        navigationItemSelection(navigationTabTag.getPageId());
                         selectNavItem(navigationTabTag.getPageId());
 
                         selectNavItem((NavBarItemView) v);
@@ -2210,23 +2212,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }*/
     }
 
-    private void navigationItemSelection(String pageId) {
-        if (!TextUtils.isEmpty(pageId) && appCMSTabNavContainerItems != null) {
-            for (int i = 0; i < appCMSTabNavContainerItems.getChildCount(); i++) {
-                NavTabTag navigationTabTag = null;
-                if (appCMSTabNavContainerItems.getChildAt(i).getTag() != null) {
-                    navigationTabTag = (NavTabTag) appCMSTabNavContainerItems.getChildAt(i).getTag();
-                }
 
-                if (navigationTabTag != null && !TextUtils.isEmpty(navigationTabTag.getPageId()) &&
-                        pageId.contains(navigationTabTag.getPageId())) {
-                    navigationTabTag.setTabSelected(true);
-                } else {
-                    navigationTabTag.setTabSelected(false);
-                }
-            }
-        }
-    }
 
     private void processDeepLink(Uri deeplinkUri) {
         String title = deeplinkUri.getLastPathSegment();
@@ -2447,7 +2433,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.restartInternalEvents();
         if (appCMSPresenter.isViewPlanPage(updatedAppCMSBinder.getPageId())) {
             //Log.d(TAG, "checkForExistingSubscription() - 1532");
-            appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE && appCMSPresenter.isUserLoggedIn() && !appCMSPresenter.isUserSubscribed());
+            appCMSPresenter.checkForExistingSubscription(appCMSPresenter.getLaunchType() == AppCMSPresenter.LaunchType.SUBSCRIBE  && !appCMSPresenter.isUserSubscribed());
             appCMSPresenter.refreshSubscriptionData(null, true);
         }
 
@@ -2633,7 +2619,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void startFreeTrialTool() {
-        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
         int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
         appCMSNavFreeTrialTool.setTextColor(textColor);
         appCMSNavFreeTrialTool.setBackgroundColor(buttonColor);

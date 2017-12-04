@@ -2040,11 +2040,11 @@ public class ViewCreator {
                             component,
                             -1);
                 } else {
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                            .getBlockTitleColor())) {
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                            .getPrimary().getBackgroundColor())) {
                         componentViewResult.componentView.setBackgroundColor(Color.parseColor(
                                 getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
-                                        .getGeneral().getBlockTitleColor())));
+                                        .getCta().getPrimary().getBackgroundColor())));
 
                         applyBorderToComponent(context, componentViewResult.componentView, component,
                                 Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
@@ -2515,9 +2515,8 @@ public class ViewCreator {
                     if (componentViewResult.componentView instanceof Button) {
                         ((Button) componentViewResult.componentView)
                                 .setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                                        .getBrand()
-                                        .getGeneral()
-                                        .getBlockTitleColor()));
+                                        .getBrand().getCta().getPrimary().getBackgroundColor()));
+                                        //.getGeneral().getBlockTitleColor()));
                     }
                 }
                 break;
