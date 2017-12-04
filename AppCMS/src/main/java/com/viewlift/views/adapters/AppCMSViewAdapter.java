@@ -75,7 +75,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private String watchVideoAction;
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
-
+    CollectionGridItemView planItemView[];
+    int selectedPosition = -1;
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
                              AppCMSPresenter appCMSPresenter,
@@ -134,7 +135,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
         this.episodicContentType = context.getString(R.string.app_cms_episodic_key_type);
         this.fullLengthFeatureType = context.getString(R.string.app_cms_full_length_feature_key_type);
-
+        planItemView = new CollectionGridItemView[adapterData.size()];
         //sortPlan(); as per MSEAN-1434
     }
 
@@ -166,24 +167,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (viewTypeKey != AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
                 setBorder(view, unselectedColor);
             }
-
-            view.setOnClickListener(v -> {
-                if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-                    for (int i = 0; i < parent.getChildCount(); i++) {
-                        View childView = parent.getChildAt(i);
-                        setBorder(childView, unselectedColor);
-                        if (childView instanceof CollectionGridItemView) {
-                            deselectViewPlan((CollectionGridItemView) childView);
-                        }
-                    }
-                    setBorder(v, selectedColor);
-                    if (v instanceof CollectionGridItemView) {
-                        selectViewPlan((CollectionGridItemView) v);
-                    }
-                }
-            });
         }
-
         return new ViewHolder(view);
     }
 
@@ -232,15 +216,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && position < adapterData.size()) {
             for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
                 if (holder.componentView.getChild(i) instanceof TextView) {
                     ((TextView) holder.componentView.getChild(i)).setText("");
                 }
             }
-            bindView(holder.componentView, adapterData.get(position));
+            if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                planItemView[position] = holder.componentView;
+            }
+            bindView(holder.componentView, adapterData.get(position), position);
         }
+
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
@@ -299,31 +287,31 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
     @SuppressLint("ClickableViewAccessibility")
     void bindView(CollectionGridItemView itemView,
-                  final ContentDatum data) throws IllegalArgumentException {
+                  final ContentDatum data, int position) throws IllegalArgumentException {
         if (onClickHandler == null) {
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data) {
-                        RecyclerView parentView = (RecyclerView) collectionGridItemView.getParent();
-                        if (parentView != null) {
-                            for (int i = 0; i < parentView.getChildCount(); i++) {
-                                View childView = parentView.getChildAt(i);
-                                if (childView != null) {
-                                    if (childView instanceof CollectionGridItemView) {
-                                        setBorder(childView, unselectedColor);
-                                        deselectViewPlan((CollectionGridItemView) childView);
-                                    }
+                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data,
+                                      int clickPosition) {
+
+                        selectedPosition = clickPosition;
+                        for (int i = 0; i < planItemView.length; i++) {
+                            if (planItemView[i] != null) {
+                                if (selectedPosition == i) {
+                                    setBorder(planItemView[i], selectedColor);
+                                    selectViewPlan(planItemView[i]);
+                                } else {
+                                    setBorder(planItemView[i], unselectedColor);
+                                    deselectViewPlan(planItemView[i]);
                                 }
                             }
-                            setBorder(collectionGridItemView, selectedColor);
-                            selectViewPlan(collectionGridItemView);
-                            if (childComponent != null &&
-                                    childComponent.getAction() != null &&
-                                    purchasePlanAction != null) {
-                                if (childComponent.getAction().contains(purchasePlanAction)) {
-                                    subcriptionPlanClick(collectionGridItemView, data);
-                                }
+                        }
+                        if (childComponent != null &&
+                                childComponent.getAction() != null &&
+                                purchasePlanAction != null) {
+                            if (childComponent.getAction().contains(purchasePlanAction)) {
+                                subcriptionPlanClick(collectionGridItemView, data);
                             }
                         }
                     }
@@ -338,7 +326,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data) {
+                                      ContentDatum data,
+                                      int clickPosition) {
                         if (isClickable) {
                             subcriptionPlanClick(collectionGridItemView, data);
 
@@ -355,7 +344,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data) {
+                                      ContentDatum data,
+                                      int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -470,7 +460,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnClickListener(v -> onClickHandler.click(itemView,
-                    component, data));
+                    component, data, position));
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
@@ -582,7 +572,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     jsonValueKeyMap,
                     onClickHandler,
                     componentViewType,
-                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),appCMSPresenter);
+                    Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()), appCMSPresenter, position);
         }
     }
 

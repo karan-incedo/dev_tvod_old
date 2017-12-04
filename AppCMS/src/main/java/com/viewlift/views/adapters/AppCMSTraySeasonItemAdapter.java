@@ -104,7 +104,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                         ((TextView) holder.componentView.getChild(i)).setText("");
                     }
                 }
-                bindView(holder.componentView, adapterData.get(position));
+                bindView(holder.componentView, adapterData.get(position),position);
             }
         }
     }
@@ -183,13 +183,14 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
     private void bindView(CollectionGridItemView itemView,
-                          final ContentDatum data) {
+                          final ContentDatum data, int position) {
         if (onClickHandler == null) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data) {
+                                      ContentDatum data,
+                                      int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -371,7 +372,8 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                     onClickHandler,
                     componentViewType,
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
-                    appCMSPresenter);
+                    appCMSPresenter,
+                    position);
         }
     }
 
