@@ -7731,14 +7731,16 @@ public class AppCMSPresenter {
                     entitlementPendingVideoData.closeLauncher,
                     entitlementPendingVideoData.currentlyPlayingIndex,
                     entitlementPendingVideoData.relateVideoIds);
-            entitlementPendingVideoData.pagePath = null;
-            entitlementPendingVideoData.action = null;
-            entitlementPendingVideoData.filmTitle = null;
-            entitlementPendingVideoData.extraData = null;
-            entitlementPendingVideoData.contentDatum = null;
-            entitlementPendingVideoData.closeLauncher = false;
-            entitlementPendingVideoData.currentlyPlayingIndex = -1;
-            entitlementPendingVideoData.relateVideoIds = null;
+            if (entitlementPendingVideoData != null) {
+                entitlementPendingVideoData.pagePath = null;
+                entitlementPendingVideoData.action = null;
+                entitlementPendingVideoData.filmTitle = null;
+                entitlementPendingVideoData.extraData = null;
+                entitlementPendingVideoData.contentDatum = null;
+                entitlementPendingVideoData.closeLauncher = false;
+                entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                entitlementPendingVideoData.relateVideoIds = null;
+            }
         } else {
             sendCloseOthersAction(null, true, false);
             cancelInternalEvents();
@@ -7906,14 +7908,16 @@ public class AppCMSPresenter {
                                             entitlementPendingVideoData.closeLauncher,
                                             entitlementPendingVideoData.currentlyPlayingIndex,
                                             entitlementPendingVideoData.relateVideoIds);
-                                    entitlementPendingVideoData.pagePath = null;
-                                    entitlementPendingVideoData.action = null;
-                                    entitlementPendingVideoData.filmTitle = null;
-                                    entitlementPendingVideoData.extraData = null;
-                                    entitlementPendingVideoData.contentDatum = null;
-                                    entitlementPendingVideoData.closeLauncher = false;
-                                    entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                                    entitlementPendingVideoData.relateVideoIds = null;
+                                    if (entitlementPendingVideoData != null) {
+                                        entitlementPendingVideoData.pagePath = null;
+                                        entitlementPendingVideoData.action = null;
+                                        entitlementPendingVideoData.filmTitle = null;
+                                        entitlementPendingVideoData.extraData = null;
+                                        entitlementPendingVideoData.contentDatum = null;
+                                        entitlementPendingVideoData.closeLauncher = false;
+                                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                                        entitlementPendingVideoData.relateVideoIds = null;
+                                    }
                                 } else {
                                     sendCloseOthersAction(null, true, false);
                                     cancelInternalEvents();
@@ -8522,14 +8526,16 @@ public class AppCMSPresenter {
                             entitlementPendingVideoData.closeLauncher,
                             entitlementPendingVideoData.currentlyPlayingIndex,
                             entitlementPendingVideoData.relateVideoIds);
-                    entitlementPendingVideoData.pagePath = null;
-                    entitlementPendingVideoData.action = null;
-                    entitlementPendingVideoData.filmTitle = null;
-                    entitlementPendingVideoData.extraData = null;
-                    entitlementPendingVideoData.contentDatum = null;
-                    entitlementPendingVideoData.closeLauncher = false;
-                    entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                    entitlementPendingVideoData.relateVideoIds = null;
+                    if (entitlementPendingVideoData != null) {
+                        entitlementPendingVideoData.pagePath = null;
+                        entitlementPendingVideoData.action = null;
+                        entitlementPendingVideoData.filmTitle = null;
+                        entitlementPendingVideoData.extraData = null;
+                        entitlementPendingVideoData.contentDatum = null;
+                        entitlementPendingVideoData.closeLauncher = false;
+                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                        entitlementPendingVideoData.relateVideoIds = null;
+                    }
                 } else {
                     if (!loginFromNavPage) {
                         sendCloseOthersAction(null, true, !loginFromNavPage);
