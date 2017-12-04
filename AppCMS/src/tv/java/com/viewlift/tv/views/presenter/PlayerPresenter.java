@@ -81,7 +81,7 @@ public class PlayerPresenter extends Presenter {
             mCustomVideoPlayerView.setVideoUri(contentData.getGist().getId());
         }
 
-
+        mCustomVideoPlayerView.requestFocusOnLogin();
        //CustomVideoPlayerView videoPlayerView = null;
        /* if(null != cardView && cardView.getChildCount() > 0){
             videoPlayerView = (CustomVideoPlayerView)cardView.getChildAt(0);

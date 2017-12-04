@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -29,9 +30,11 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.ui.android.NavigationUser;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+import com.viewlift.tv.views.fragment.ClearDialogFragment;
 import com.viewlift.views.customviews.VideoPlayerView;
 
 import java.util.Date;
@@ -99,6 +102,13 @@ public class CustomVideoPlayerView
         imageView = (ImageView) findViewById(R.id.videoPlayerThumbnailImage);
         setListener(this);
         parentScreenName = mContext.getString(R.string.app_cms_beacon_video_player_parent_screen_name);
+    }
+
+
+    public void requestFocusOnLogin(){
+        if(customMessageContaineer.getVisibility() == View.VISIBLE){
+            loginButton.requestFocus();
+        }
     }
 
     public void setupAds(String adsUrl) {
@@ -175,6 +185,8 @@ public class CustomVideoPlayerView
             url = getVideoUrl(contentDatum.getStreamingInfo().getVideoAssets());
         }
 
+
+        Log.d(TAG , "Url is = "+url);
         if (contentDatum != null && contentDatum.getGist() != null) {
             videoImageUrl[0] = contentDatum.getGist().getVideoImageUrl();
         }
@@ -397,6 +409,7 @@ public class CustomVideoPlayerView
         this.addView(custonLoaderContaineer);
     }
 
+    private Button loginButton ,  cancelButton;
     private void createCustomMessageView() {
         customMessageContaineer = new LinearLayout(mContext);
         customMessageContaineer.setOrientation(LinearLayout.VERTICAL);
@@ -410,6 +423,55 @@ public class CustomVideoPlayerView
         }
         customMessageContaineer.addView(customMessageView);
         customMessageContaineer.setVisibility(View.INVISIBLE);
+
+
+        loginButton = new Button(mContext);
+        loginButton.setText("Login");
+        loginButton.setLayoutParams(textViewParams);
+        loginButton.setPadding(5,5,5,5);
+        loginButton.setBackground(getResources().getDrawable(R.drawable.st_subscriber_module_color_selector));
+        customMessageContaineer.addView(loginButton);
+        loginButton.setVisibility(View.VISIBLE);
+
+        loginButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(appCMSPresenter.isNetworkConnected()) {
+                    NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
+                    appCMSPresenter.navigateToTVPage(
+                            navigationUser.getPageId(),
+                            navigationUser.getTitle(),
+                            navigationUser.getUrl(),
+                            false,
+                            Uri.EMPTY,
+                            false,
+                            false,
+                            true);
+                }
+            }
+        });
+
+
+/*
+
+        cancelButton = new Button(mContext);
+        cancelButton.setText("Cancel");
+        cancelButton.setPadding(5,5,5,5);
+        customMessageContaineer.addView(cancelButton);
+        cancelButton.setLayoutParams(textViewParams);
+        cancelButton.setBackground(getResources().getDrawable(R.drawable.st_subscriber_module_color_selector));
+        cancelButton.setVisibility(View.VISIBLE);
+
+        cancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(mContext,"Cancel ",Toast.LENGTH_SHORT).show();
+            }
+        });
+*/
+
+
         this.addView(customMessageContaineer);
     }
 
@@ -431,6 +493,7 @@ public class CustomVideoPlayerView
             hideProgressBar();
             customMessageView.setText(message);
             customMessageContaineer.setVisibility(View.VISIBLE);
+            loginButton.requestFocus();
         }
     }
 

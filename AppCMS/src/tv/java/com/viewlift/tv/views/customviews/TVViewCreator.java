@@ -52,6 +52,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -281,7 +282,7 @@ public class TVViewCreator {
             }
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
             }
 
             moduleView = new TVModuleView<>(context, module);

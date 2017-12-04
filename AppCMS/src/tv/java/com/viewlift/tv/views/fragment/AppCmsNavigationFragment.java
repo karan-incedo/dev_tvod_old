@@ -135,9 +135,38 @@ public class AppCmsNavigationFragment extends Fragment {
             toggleVisibilityOfSubscriptionModule();
 
             navMenuSubscriptionModule.setOnClickListener(v -> {
-                appCMSPresenter.openTVErrorDialog(
-                        getActivity().getString(R.string.subscription_not_purchased),
-                        getActivity().getString(R.string.subscription), false);
+
+                        if(!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
+                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
+                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                    getActivity(),
+                                    appCMSPresenter,
+                                    getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                    getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                    getString(R.string.subscription),
+                                    getString(R.string.subscription_not_purchased),
+                                    getString(R.string.sign_in_text),
+                                    getString(android.R.string.cancel),
+                                    14
+                            );
+
+                            newFragment.setOnPositiveButtonClicked(s -> {
+                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                appCMSPresenter.navigateToTVPage(
+                                        navigationUser.getPageId(),
+                                        navigationUser.getTitle(),
+                                        navigationUser.getUrl(),
+                                        false,
+                                        Uri.EMPTY,
+                                        false,
+                                        false,
+                                        true);
+                            });
+                        }else{
+                            appCMSPresenter.openTVErrorDialog(
+                                    getActivity().getString(R.string.subscription_not_purchased),
+                                    getActivity().getString(R.string.subscription), false);
+                        }
             });
         }
         return view;

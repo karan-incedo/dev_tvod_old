@@ -69,8 +69,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 if(null != customVideoVideoPlayerView){
                     if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
                     } else {
-                        if(activity.isActive)
-                        customVideoVideoPlayerView.resumePlayer();
+                        if(activity.isActive) {
+                            customVideoVideoPlayerView.resumePlayer();
+                        }
                     }
                 }
             }
@@ -209,6 +210,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         if( null != itemViewHolder && null != itemViewHolder.view
                                 && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoPlayerView){
                             customVideoVideoPlayerView  =  (CustomVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
+                            customVideoVideoPlayerView.requestFocusOnLogin();
                         }
                         Utils.setBrowseFragmentViewParameters(view,
                                 -40,
