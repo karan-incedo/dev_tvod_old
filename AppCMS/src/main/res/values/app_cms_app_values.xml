@@ -30,7 +30,7 @@
     <bool name="use_hls">false</bool>
 
     <!-- flag for sorting the items -->
-    <bool name="sort_plans_in_ascending_order">true</bool>
+    <bool name="sort_plans_in_ascending_order">false</bool>
 
     <!-- MSE Shop URL -->
     <string name="app_msn_shop_url">http://shop.monumentalsportsnetwork.com/</string>
