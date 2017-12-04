@@ -197,6 +197,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (collectionGridChild instanceof Button) {
                 Component childComponent = collectionGridItemView.matchComponentToView(collectionGridChild);
                 ((TextView) collectionGridChild).setText(childComponent.getSelectedText());
+                ((TextView) collectionGridChild).setTextColor(Color.parseColor(appCMSPresenter.getColor(mContext,
+                        childComponent.getTextColor())));
                 collectionGridChild.setBackgroundColor(selectedColor);
             }
         }
@@ -215,6 +217,20 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
+    private void deselectViewPlan01(CollectionGridItemView collectionGridItemView) {
+        collectionGridItemView.setSelectable(false);
+        for (View collectionGridChild : collectionGridItemView
+                .getViewsToUpdateOnClickEvent()) {
+            if (collectionGridChild instanceof Button) {
+                Component childComponent = collectionGridItemView.matchComponentToView(collectionGridChild);
+                ((TextView) collectionGridChild).setText(childComponent.getText());
+                setBorder(((TextView) collectionGridChild), ContextCompat.getColor(mContext, R.color.disabledButtonColor));
+                ((TextView) collectionGridChild).setTextColor(ContextCompat.getColor(mContext, R.color.disabledButtonColor));
+            }
+        }
+    }
+
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && position < adapterData.size()) {
@@ -229,7 +245,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             bindView(holder.componentView, adapterData.get(position), position);
         }
 
-
+        if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+            for (int i = 0; i < planItemView.length; i++) {
+                if (planItemView[i] != null) {
+                    if (selectedPosition == i) {
+                        setBorder(planItemView[i], selectedColor);
+                        selectViewPlan(planItemView[i]);
+                    } else {
+                        setBorder(planItemView[i], ContextCompat.getColor(mContext, R.color.disabledButtonColor));
+                        deselectViewPlan01(planItemView[i]);
+                    }
+                }
+            }
+        }
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             int selectableIndex = -1;
@@ -302,8 +330,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     setBorder(planItemView[i], selectedColor);
                                     selectViewPlan(planItemView[i]);
                                 } else {
-                                    setBorder(planItemView[i], unselectedColor);
-                                    deselectViewPlan(planItemView[i]);
+                                    setBorder(planItemView[i], ContextCompat.getColor(mContext, R.color.disabledButtonColor));
+                                    deselectViewPlan01(planItemView[i]);
                                 }
                             }
                         }

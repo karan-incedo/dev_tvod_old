@@ -12099,4 +12099,11 @@ public class AppCMSPresenter {
         return videoPlayTime;
 
     }
+
+    public static String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
 }
