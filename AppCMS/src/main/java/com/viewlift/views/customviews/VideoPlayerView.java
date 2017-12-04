@@ -197,6 +197,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (player != null) {
             player.setPlayWhenReady(false);
         }
+
     }
 
     public void stopPlayer() {

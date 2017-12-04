@@ -121,7 +121,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.isSelected = false;
         this.unselectedColor = ContextCompat.getColor(context, android.R.color.white);
         this.selectedColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getGeneral().getBlockTitleColor());
+                .getCta().getPrimary().getBackgroundColor());
         this.isClickable = true;
 
         this.setHasStableIds(false);
@@ -135,7 +135,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.episodicContentType = context.getString(R.string.app_cms_episodic_key_type);
         this.fullLengthFeatureType = context.getString(R.string.app_cms_full_length_feature_key_type);
 
-        sortPlan();
+        //sortPlan(); as per MSEAN-1434
     }
 
     @Override
@@ -289,7 +289,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         notifyDataSetChanged();
         adapterData = contentData;
 
-        sortPlan();
+        //sortPlan(); as per MSEAN-1434
 
         notifyDataSetChanged();
         listView.setAdapter(this);

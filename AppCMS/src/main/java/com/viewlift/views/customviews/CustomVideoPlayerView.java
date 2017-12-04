@@ -6,6 +6,7 @@ package com.viewlift.views.customviews;
 
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -863,15 +864,54 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //todo work on maximizing the player on this event
+                if (isChecked) {
+                        /*new Handler().postDelayed(() -> {
+                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
+                                appCMSPresenter.unrestrictPortraitOnly();
+                            }
+                        }, 3000);*/
+                    //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                    appCMSPresenter.showFullScreenPlayer();
+
+                } else {
+                    //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
+                       /* new Handler().postDelayed(() -> {
+                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
+                                appCMSPresenter.unrestrictPortraitOnly();
+                            }
+                        }, 3000);*/
+                    appCMSPresenter.exitFullScreenPlayer();
+                }
                 /*if (isChecked){
                     FrameLayout.LayoutParams frameLayoutParams=new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                     setLayoutParams(frameLayoutParams);
                 }else{
                     setLayoutParams(baseLayoutParms);
                 }*/
-                if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
+                /*if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
                         !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-                    appCMSPresenter.launchFullScreenStandalonePlayer(videoDataId);
+
+                    if (isChecked) {
+                        new Handler().postDelayed(() -> {
+                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
+                                appCMSPresenter.unrestrictPortraitOnly();
+                            }
+                        }, 3000);
+                        //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                        appCMSPresenter.showFullScreenPlayer();
+
+                    } else {
+                        //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
+                        new Handler().postDelayed(() -> {
+                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
+                                appCMSPresenter.unrestrictPortraitOnly();
+                            }
+                        }, 3000);
+                        appCMSPresenter.exitFullScreenPlayer();
+                    }
+
 
                 } else {
                     if (appCMSPresenter.isAppSVOD()) {
@@ -893,11 +933,25 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 () -> {
                                 });
                     }
-                }
+                }*/
             }
         });
 
         return mToggleButton;
+    }
+
+    public void updateFullscreenButtonState(int screenMode) {
+        switch (screenMode) {
+            case Configuration.ORIENTATION_LANDSCAPE:
+                mFullScreenButton.setChecked(true);
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                mFullScreenButton.setChecked(false);
+                break;
+            default:
+                mFullScreenButton.setChecked(true);
+                break;
+        }
     }
 
     private void getPermalink(ContentDatum contentDatum) {
@@ -906,11 +960,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         if(contentDatum != null) {
             adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
         }
-        if (!serviceType && adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
+        if ( adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
             shouldRequestAds = true;
         } else {
             shouldRequestAds = false;
         }
+        shouldRequestAds = true;
     }
 
     private void requestAds(String adTagUrl) {
@@ -939,8 +994,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         switch (adEvent.getType()) {
             case LOADED:
-                adsManager.start();
-                isAdsDisplaying = true;
+                if (adsManager != null) {
+                    adsManager.start();
+                    isAdsDisplaying = true;
+                }
+
                 break;
 
             case CONTENT_PAUSE_REQUESTED:
@@ -950,7 +1008,13 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-                this.startPlayer();
+                if (this.getVisibility()==VISIBLE){
+                    this.startPlayer();
+                }else
+                {
+                    setVideoUri(videoDataId,R.string.loading_next_video_text);
+                }
+
 
                 break;
 
