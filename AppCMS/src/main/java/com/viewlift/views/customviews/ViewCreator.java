@@ -1107,65 +1107,27 @@ public class ViewCreator {
             return null;
         }
 
-        PageView pageView = null;
-        try {
-            if (appCMSPresenter.isPageAVideoPage(screenName)) {
-                pageView = appCMSPresenter.getPageViewLruCache().get(screenName + BaseView.isLandscape(context));
-            } else {
-                pageView = appCMSPresenter.getPageViewLruCache().get(screenName
-                        + BaseView.isLandscape(context));
-            }
-        } catch (Exception e) {
-
-        }
-
-        boolean newView = false;
-
-        if (pageView != null) {
-            String oldVersion = pageView.getAppCMSPageUI().getVersion();
-            String newVersion = appCMSPageUI.getVersion();
-            if (!TextUtils.isEmpty(oldVersion) && !oldVersion.equals(newVersion)) {
-                pageView = null;
-            }
-        }
-
-        if (pageView == null || pageView.getContext() != context) {
-            pageView = new PageView(context, appCMSPageUI, appCMSPresenter);
-            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
-            if (appCMSPresenter.isPageAVideoPage(screenName)) {
-                appCMSPresenter.getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
-            } else {
-                appCMSPresenter.getPageViewLruCache().put(screenName
-                        + BaseView.isLandscape(context), pageView);
-            }
-            newView = true;
-        }
-
-        if (newView ||
-                (!appCMSPresenter.isPagePrimary(screenName) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
-                appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
-            pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
-            pageView.removeAllAddOnViews();
-            pageView.getChildrenContainer().removeAllViews();
-            componentViewResult = new ComponentViewResult();
-            createPageView(context,
-                    appCMSPageUI,
-                    appCMSPageAPI,
-                    appCMSAndroidModules,
-                    pageView,
-                    jsonValueKeyMap,
-                    appCMSPresenter,
-                    modulesToIgnore);
+        PageView pageView = new PageView(context, appCMSPageUI, appCMSPresenter);
+        pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
+        if (appCMSPresenter.isPageAVideoPage(screenName)) {
+            appCMSPresenter.getPageViewLruCache().put(screenName + BaseView.isLandscape(context), pageView);
         } else {
-            refreshPageView(pageView,
-                    context,
-                    appCMSPageUI,
-                    appCMSPageAPI,
-                    appCMSAndroidModules,
-                    jsonValueKeyMap,
-                    appCMSPresenter,
-                    modulesToIgnore);
+            appCMSPresenter.getPageViewLruCache().put(screenName
+                    + BaseView.isLandscape(context), pageView);
         }
+
+        pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
+        pageView.removeAllAddOnViews();
+        pageView.getChildrenContainer().removeAllViews();
+        componentViewResult = new ComponentViewResult();
+        createPageView(context,
+                appCMSPageUI,
+                appCMSPageAPI,
+                appCMSAndroidModules,
+                pageView,
+                jsonValueKeyMap,
+                appCMSPresenter,
+                modulesToIgnore);
         pageView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         return pageView;
     }
@@ -2375,18 +2337,6 @@ public class ViewCreator {
                         componentViewResult.componentView.setId(R.id.autoplay_play_button);
                         break;
 
-                    case PAGE_AUTOPLAY_MOVIE_CANCEL_BUTTON_KEY:
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.sendCloseOthersAction(null,
-                                    true,
-                                    false)) {
-                                //Log.e(TAG, "Could not perform close action: " +
-//                                        " action: " +
-//                                        component.getAction());
-                            }
-                        });
-                        break;
-
                     case PAGE_DOWNLOAD_QUALITY_CONTINUE_BUTTON_KEY:
                         componentViewResult.componentView.setId(R.id.download_quality_continue_button);
                         break;
@@ -2394,23 +2344,15 @@ public class ViewCreator {
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
                         if (moduleAPI != null && jsonValueKeyMap.get(moduleAPI.getModuleType())
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
-                            componentViewResult.componentView.setOnClickListener(v -> {
-                                if (!appCMSPresenter.sendCloseOthersAction(null,
-                                        true,
-                                        false)) {
-                                    //Log.e(TAG, "Could not perform close action: " +
-//                                            " action: " +
-//                                            component.getAction());
-                                }
-                            });
+                            componentViewResult.componentView.setId(R.id.autoplay_cancel_button);
                         } else {
                             componentViewResult.componentView.setId(R.id.download_quality_cancel_button);
-                            applyBorderToComponent(
-                                    context,
-                                    componentViewResult.componentView,
-                                    component,
-                                    -1);
                         }
+                        applyBorderToComponent(
+                                context,
+                                componentViewResult.componentView,
+                                component,
+                                -1);
                         break;
 
                     default:

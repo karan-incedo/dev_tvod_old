@@ -2698,6 +2698,14 @@ public class AppCMSPresenter {
         }
     }
 
+    public void clearPageViewCache() {
+        try {
+            getPageViewLruCache().evictAll();
+        } catch (Exception e) {
+
+        }
+    }
+
     public void clearPageAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
         if (isNetworkConnected()) {
             cancelInternalEvents();

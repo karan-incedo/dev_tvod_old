@@ -89,6 +89,11 @@ public class AutoplayActivity
     }
 
     @Override
+    public void cancelCountdown() {
+        finish();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(handoffReceiver);
