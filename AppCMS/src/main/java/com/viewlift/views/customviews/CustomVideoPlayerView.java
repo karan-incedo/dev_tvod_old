@@ -326,6 +326,13 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         customPreviewContainer.setVisibility(View.GONE);
 
         hideRestrictedMessage();
+        if (contentDatum!=null &&
+                contentDatum.getGist() != null &&
+                contentDatum.getGist().getKisweEventId()!= null ){
+            appCMSPresenter.launchKiswePlayer(contentDatum.getGist().getKisweEventId());
+            pausePlayer();
+            return;
+        }
 
         if (null != customPlayBack)
             customPlayBack.setVisibility(View.VISIBLE);
