@@ -239,9 +239,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn()) {
-                    if (shouldRequestAds) requestAds(adsUrl);
-                    playVideos(0, contentDatum);
-
+                    if (shouldRequestAds){
+                        requestAds(adsUrl);
+                    }else{
+                        playVideos(0, contentDatum);
+                    }
                     getVideoPreview();
                     //showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
                 } else {
@@ -252,23 +254,29 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
                                 if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                         subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                    if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) requestAds(adsUrl);
-                                    playVideos(0, contentDatum);
-
+                                    if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()){
+                                        requestAds(adsUrl);
+                                    }else{
+                                        playVideos(0, contentDatum);
+                                    }
                                     appCMSPresenter.setPreviewStatus(false);
 
                                 } else {
-                                    if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) requestAds(adsUrl);
-                                    playVideos(0, contentDatum);
-
+                                    if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()){
+                                        requestAds(adsUrl);
+                                    }else{
+                                        playVideos(0, contentDatum);
+                                    }
                                     getVideoPreview();
                                     //showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
                                 }
                             } else {
 
-                                if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) requestAds(adsUrl);
-                                playVideos(0, contentDatum);
-
+                                if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()){
+                                    requestAds(adsUrl);
+                                }else{
+                                    playVideos(0, contentDatum);
+                                }
                                 getVideoPreview();
                                 //showRestrictMessage(getResources().getString(R.string.app_cms_subscribe_text_message));
                             }
@@ -278,8 +286,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     });
                 }
             } else {
-                if (shouldRequestAds) requestAds(adsUrl);
-                playVideos(0, contentDatum);
+                if (shouldRequestAds){
+                    requestAds(adsUrl);
+                }else{
+                    playVideos(0, contentDatum);
+                }
+
             }
 
 
@@ -368,7 +380,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         if (null != url) {
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
             setCurrentPosition(watchedPercentage);
-            getPlayerView().getPlayer().setPlayWhenReady(true);
+            resumePlayer();
             if (currentIndex == 0) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
             }
@@ -528,7 +540,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
         switch (playbackState) {
             case STATE_ENDED:
-                getPlayerView().getPlayer().setPlayWhenReady(false);
+                pausePlayer();
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     //showProgressBar("Loading Next Video...");
                     if (entitlementCheckTimer!=null) {
@@ -602,7 +614,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     isVideoLoaded = true;
                 }
                 if (shouldRequestAds && !isAdDisplayed && adsUrl != null) {
-                    requestAds(adsUrl);
+                    //requestAds(adsUrl);
                 } else {
                     if (beaconBufferingThread != null) {
                         beaconBufferingThread.sendBeaconBuffering = false;
@@ -962,9 +974,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void getPermalink(ContentDatum contentDatum) {
-        boolean serviceType = appCMSPresenter.getAppCMSMain().getServiceType().equals(
-                mContext.getString(R.string.app_cms_main_svod_service_type_key));
-        if(!serviceType && contentDatum != null) {
+       /* boolean serviceType = appCMSPresenter.getAppCMSMain().getServiceType().equals(
+                mContext.getString(R.string.app_cms_main_svod_service_type_key));*/
+        if(/*!serviceType &&*/ contentDatum != null) {
             adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
         }
         if ( adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
@@ -993,6 +1005,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.d(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
+        playVideos(0,onUpdatedContentDatum);
     }
 
     @Override
@@ -1010,19 +1023,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
             case CONTENT_PAUSE_REQUESTED:
                 isAdDisplayed = true;
-                getPlayer().setPlayWhenReady(false);
+                pausePlayer();
                 break;
 
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-                if (this.getVisibility()==VISIBLE){
-                    this.startPlayer();
-                }else
-                {
-                    setVideoUri(videoDataId,R.string.loading_next_video_text);
-                }
-
-
                 break;
 
             case ALL_ADS_COMPLETED:
@@ -1031,7 +1036,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     adsManager = null;
                 }
                 isAdsDisplaying = false;
-                getPlayer().setPlayWhenReady(true);
+                playVideos(0,onUpdatedContentDatum);
                 break;
             default:
                 break;
