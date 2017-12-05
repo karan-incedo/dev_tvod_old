@@ -165,6 +165,11 @@
         <item quantity="other">%d seconds</item>
     </plurals>
 
+    <plurals name="min_duration_unit">
+        <item quantity="one">MIN</item>
+        <item quantity="other">MINS</item>
+    </plurals>
+
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
     <string name="app_cms_subscribe_now">SUBSCRIBE NOW</string>

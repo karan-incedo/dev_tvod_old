@@ -180,6 +180,7 @@
     <string name="app_cms_page_download_title">My Downloads</string>
 
     <string name="app_cms_page_watchlist_duration_key">duration</string>
+    <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>
     <string name="app_cms_page_watchlist_description_key">description</string>
     <string name="app_cms_page_watchlist_title_key">title</string>
 
@@ -452,4 +453,5 @@
 
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
     <string name="app_cms_shows_deeplink_path_name">show</string>
+    <string name="app_cms_text_alignment_right">right</string>
 </resources>

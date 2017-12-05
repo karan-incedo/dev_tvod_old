@@ -41,7 +41,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -409,10 +408,11 @@ public class CollectionGridItemView extends BaseView {
                                     .into((ImageView) view);
                         }
                         view.setVisibility(VISIBLE);
+                        bringToFront = true;
                     } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                         view.setVisibility(GONE);
+                        bringToFront = false;
                     }
-                    bringToFront = false;
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
@@ -468,6 +468,9 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_UNIT_KEY) {
+                        ((TextView) view).setText(context.getResources().getQuantityString(R.plurals.min_duration_unit,
+                                (int) (data.getGist().getRuntime() / 60)));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
