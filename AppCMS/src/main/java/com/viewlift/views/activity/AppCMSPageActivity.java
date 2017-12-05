@@ -74,6 +74,7 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -197,6 +198,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver notifyUpdateListsReceiver;
     private BroadcastReceiver refreshPageDataReceiver;
     private BroadcastReceiver processDeeplinkReceiver;
+
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -1226,6 +1228,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false,
                             false);
                 }
+
+                if (!BaseView.isTablet(this)) {
+                    if (BaseView.isLandscape(this)) {
+                        ViewCreator.openFullScreenVideoPlayer(appCMSPresenter);
+                    } else {
+                        ViewCreator.closeFullScreenVideoPlayer(appCMSPresenter);
+                    }
+                }
             }
         }
     }
@@ -1407,14 +1417,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             switch (appCMSBinder.getExtraScreenType()) {
                 case CCAVENUE:
                     try {
-                        appCMSPageFragment =
-                                AppCMSCCAvenueFragment.newInstance(this,
-                                        appCMSBinder,
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-                        //send menu screen event for firebase
+                        appCMSPageFragment = AppCMSCCAvenueFragment.newInstance(this,
+                                appCMSBinder,
+                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
                         sendFireBaseMenuScreenEvent();
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
@@ -1423,14 +1431,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 case NAVIGATION:
                     try {
-                        appCMSPageFragment =
-                                AppCMSNavItemsFragment.newInstance(this,
-                                        appCMSBinder,
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
-                                        Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
-                        //send menu screen event for firebase
+                        appCMSPageFragment = AppCMSNavItemsFragment.newInstance(this,
+                                appCMSBinder,
+                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
+                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
+                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
                         sendFireBaseMenuScreenEvent();
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
@@ -1450,7 +1456,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         .replace("#", ""), 16),
                                 Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()
                                         .replace("#", ""), 16));
-                        //Need to FireEvents When User click on Search
                         sendFireBaseSearchScreenEvent();
 
                     } catch (NumberFormatException e) {
@@ -1459,15 +1464,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     break;
 
                 case RESET_PASSWORD:
-                    appCMSPageFragment =
-                            AppCMSResetPasswordFragment.newInstance(this, appCMSBinder.getPagePath());
+                    appCMSPageFragment = AppCMSResetPasswordFragment.newInstance(this,
+                            appCMSBinder.getPagePath());
                     break;
 
                 case EDIT_PROFILE:
-                    appCMSPageFragment =
-                            AppCMSEditProfileFragment.newInstance(this,
-                                    appCMSPresenter.getLoggedInUserName(),
-                                    appCMSPresenter.getLoggedInUserEmail());
+                    appCMSPageFragment = AppCMSEditProfileFragment.newInstance(this,
+                            appCMSPresenter.getLoggedInUserName(), appCMSPresenter.getLoggedInUserEmail());
                     break;
 
                 case CHANGE_PASSWORD:
@@ -1481,6 +1484,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 default:
                     break;
             }
+
             if (!(appCMSPageFragment instanceof AppCMSPageFragment)) {
                 appCMSPresenter.dismissPopupWindowPlayer();
             }
@@ -1732,7 +1736,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!isBinderStackEmpty() &&
                         !isBinderStackTopNull() &&
                         (appCMSPresenter.isPageNavigationPage(appCMSBinderStack.peek()) ||
-                        isDownloadPageOpen) &&
+                                isDownloadPageOpen) &&
                         appCMSPresenter.isPagePrimary(appCMSBinder.getPageId())) {
                     getSupportFragmentManager().popBackStackImmediate();
                     appCMSBinderMap.remove(appCMSBinderStack.peek());
@@ -1843,8 +1847,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
     }
 
@@ -2044,7 +2048,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         final NavBarItemView menuNavBarItemView =
                 (NavBarItemView) appCMSTabNavContainer.getChildAt(navMenuPageIndex);
-        int highlightColor = 0;
+        int highlightColor;
 
         if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
             highlightColor =
@@ -2062,11 +2066,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!appCMSPresenter.launchNavigationPage()) {
                     //Log.e(TAG, "Could not launch navigation page!");
                 } else {
-                    if (appCMSPresenter.isAppSVOD()) {
+                    if (getResources().getBoolean(R.bool.menu_icon_dismisses_menu_page)) {
+                        closeMenuPageIfHighlighted(menuNavBarItemView);
+                    } else {
                         resumeInternalEvents = true;
                         selectNavItem(menuNavBarItemView);
-                    } else {
-                        closeMenuPageIfHighlighted(menuNavBarItemView);
                     }
                 }
             }
@@ -2128,12 +2132,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.forceLoad();
 
+        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+        actionPresenter.setAction(action);
+
         //Log.d(TAG, "Launching deep link " +
 //                deeplinkUri.toString() +
 //                " with path: " +
 //                pagePath.toString());
         appCMSPresenter.launchButtonSelectedAction(pagePath.toString(),
-                action,
+                actionPresenter,
                 title,
                 null,
                 null,
@@ -2481,6 +2488,35 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return searchQuery;
     }
 
+    private int getAppCMSBinderStackSize() {
+        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            try {
+                return appCMSBinderStack.size();
+            } catch (Exception e) {
+
+            }
+        }
+        return 0;
+    }
+
+    private String getAppCMSBinderStackEntry(int index) {
+        String result = null;
+        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+            try {
+                ListIterator<String> listIterator = appCMSBinderStack.listIterator();
+                int currentIndex = 0;
+                while (listIterator.hasNext() && currentIndex < index) {
+                    currentIndex++;
+                }
+                result = listIterator.next();
+            } catch (Exception e) {
+
+            }
+        }
+
+        return result;
+    }
+
     private static class RefreshAppCMSBinderAction implements Action1<AppCMSPageAPI> {
         private AppCMSPresenter appCMSPresenter;
         private AppCMSBinder appCMSBinder;
@@ -2518,34 +2554,5 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         }
-    }
-
-    private int getAppCMSBinderStackSize() {
-        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
-            try {
-                return appCMSBinderStack.size();
-            } catch (Exception e) {
-
-            }
-        }
-        return 0;
-    }
-
-    private String getAppCMSBinderStackEntry(int index) {
-        String result = null;
-        if (appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
-            try {
-                ListIterator<String> listIterator = appCMSBinderStack.listIterator();
-                int currentIndex = 0;
-                while (listIterator.hasNext() && currentIndex < index) {
-                    currentIndex++;
-                }
-                result = listIterator.next();
-            } catch (Exception e) {
-
-            }
-        }
-
-        return result;
     }
 }

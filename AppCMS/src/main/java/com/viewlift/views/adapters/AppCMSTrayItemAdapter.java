@@ -27,6 +27,7 @@ import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -53,7 +54,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private static final int SECONDS_PER_MINS = 60;
 
-    protected  ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
+    protected ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
@@ -279,9 +280,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.itemView.setOnClickListener(v -> {
                 if (isDownload) {
-                    playDownloaded(contentDatum,
-                            holder.itemView.getContext(),
-                            position);
+                    playDownloaded(contentDatum, holder.itemView.getContext(), position);
                 } else {
                     if (!adapterData.isEmpty()) {
                         click(adapterData.get(position));
@@ -293,9 +292,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.appCMSContinueWatchingVideoImage.setOnClickListener(v -> {
                 if (isDownload) {
-                    playDownloaded(contentDatum,
-                            holder.itemView.getContext(),
-                            position);
+                    playDownloaded(contentDatum, holder.itemView.getContext(), position);
                 } else {
                     click(adapterData.get(position));
                 }
@@ -303,13 +300,10 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.appCMSContinueWatchingPlayButton.setOnClickListener(v -> {
                 if (isDownload) {
-                    playDownloaded(contentDatum,
-                            holder.itemView.getContext(),
-                            position);
+                    playDownloaded(contentDatum, holder.itemView.getContext(), position);
                 } else {
                     play(adapterData.get(position),
-                            holder.itemView.getContext()
-                                    .getString(R.string.app_cms_action_watchvideo_key));
+                            holder.itemView.getContext().getString(R.string.app_cms_action_watchvideo_key));
                 }
             });
 
@@ -335,9 +329,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
             holder.appCMSContinueWatchingTitle.setOnClickListener(v -> {
                 if (isDownload) {
-                    playDownloaded(contentDatum,
-                            holder.itemView.getContext(),
-                            position);
+                    playDownloaded(contentDatum, holder.itemView.getContext(), position);
                 } else {
                     click(contentDatum);
                 }
@@ -540,12 +532,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (Boolean.parseBoolean(extraData[3])) {
             relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_COMPLETED);
         }
+
+        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+        actionPresenter.setAction(action);
+
         if (permalink == null ||
                 hlsUrl == null ||
                 extraData[2] == null ||
                 !appCMSPresenter.launchButtonSelectedAction(
                         permalink,
-                        action,
+                        actionPresenter,
                         title,
                         extraData,
                         data,
@@ -799,7 +795,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     @Override
     public void setClickable(boolean clickable) {
-        
+
     }
 
     private void click(ContentDatum data) {
@@ -822,8 +818,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         //Log.d(TAG, "Launching " + permalink + ": " + action);
 
+        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+        actionPresenter.setAction(action);
+
         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                action,
+                actionPresenter,
                 title,
                 extraData,
                 data,

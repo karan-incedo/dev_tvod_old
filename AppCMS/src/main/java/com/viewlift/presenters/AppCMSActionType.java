@@ -1,6 +1,6 @@
 package com.viewlift.presenters;
 
-/**
+/*
  * Created by viewlift on 5/22/17.
  */
 
@@ -11,6 +11,7 @@ public enum AppCMSActionType {
     HISTORY_PAGE,
     WATCHLIST_PAGE,
     VIDEO_PAGE,
+    DRAGGABLE_VIDEO_PAGE,
     SHOW_PAGE,
     PLAY_VIDEO_PAGE,
     WATCH_TRAILER,

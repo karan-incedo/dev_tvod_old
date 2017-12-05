@@ -448,6 +448,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (!TextUtils.isEmpty(title)) {
             videoPlayerTitleView.setText(title);
         }
+
         if (!TextUtils.isEmpty(fontColor)) {
             videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
         }
@@ -490,8 +491,8 @@ public class AppCMSPlayVideoFragment extends Fragment
             //Log.e(TAG, e.getMessage());
             mStreamId = filmId + appCMSPresenter.getCurrentTimeStamp();
         }
-        isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
+        isVideoDownloaded = appCMSPresenter.isVideoDownloaded(filmId);
 
         setCurrentWatchProgress(runTime, watchedTime);
 
@@ -499,14 +500,17 @@ public class AppCMSPlayVideoFragment extends Fragment
             if (beaconMessageThread != null) {
                 beaconMessageThread.playbackState = playerState.getPlaybackState();
             }
+
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
                 System.out.println("videoPlayerView run time onready-" + videoPlayerView.getDuration());
                 long updatedRunTime = 0;
+
                 try {
                     updatedRunTime = videoPlayerView.getDuration() / 1000;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
                 setCurrentWatchProgress(updatedRunTime, watchedTime);
 
                 if (!isVideoLoaded) {
@@ -517,14 +521,17 @@ public class AppCMSPlayVideoFragment extends Fragment
                     }
                     isVideoLoaded = true;
                 }
+
                 if (shouldRequestAds && !isAdDisplayed && adsUrl != null) {
                     requestAds(adsUrl);
                 } else {
                     if (beaconBufferingThread != null) {
                         beaconBufferingThread.sendBeaconBuffering = false;
                     }
+
                     if (beaconMessageThread != null) {
                         beaconMessageThread.sendBeaconPing = true;
+
                         if (!beaconMessageThread.isAlive()) {
                             try {
                                 beaconMessageThread.start();
@@ -532,9 +539,10 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 mTotalVideoDuration -= mTotalVideoDuration % 4;
                                 mProgressHandler.post(mProgressRunnable);
                             } catch (Exception e) {
-
+                                //
                             }
                         }
+
                         if (!sentBeaconFirstFrame) {
                             mStopBufferMilliSec = new Date().getTime();
                             ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
@@ -557,6 +565,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         }
                     }
                 }
+
                 videoLoadingProgress.setVisibility(View.GONE);
             } else if (playerState.getPlaybackState() == ExoPlayer.STATE_ENDED) {
                 //Log.d(TAG, "Video ended");
@@ -579,11 +588,13 @@ public class AppCMSPlayVideoFragment extends Fragment
                         !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
                     showEntitlementDialog = true;
                 }
+
                 if (onClosePlayerEvent != null && playerState.isPlayWhenReady() && !showEntitlementDialog) {
 
                     // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
                 }
+
                 if (!isTrailer && 30 <= (videoPlayerView.getCurrentPosition() / 1000)) {
                     appCMSPresenter.updateWatchedTime(filmId,
                             videoPlayerView.getCurrentPosition() / 1000);
@@ -626,6 +637,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 mStartBufferMilliSec = new Date().getTime();
             }
         });
+
         videoPlayerView.setOnPlayerControlsStateChanged(visibility -> {
             if (visibility == View.GONE) {
                 videoPlayerInfoContainer.setVisibility(View.GONE);
@@ -676,8 +688,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         }*/
 
         return rootView;
-
     }
+
 
     private void setCurrentWatchProgress(long runTime, long watchedTime) {
         System.out.println("videoPlayerView run time on setcurrent progress-" + runTime + " watch time-" + watchedTime);
@@ -1098,67 +1110,67 @@ public class AppCMSPlayVideoFragment extends Fragment
                 onUpdateContentDatumEvent.getCurrentContentDatum() != null &&
                 onUpdateContentDatumEvent.getCurrentContentDatum().getGist() != null) {
             appCMSPresenter.refreshVideoData(onUpdateContentDatumEvent.getCurrentContentDatum()
-                    .getGist()
-                    .getId(),
+                            .getGist()
+                            .getId(),
                     updatedContentDatum -> {
-                onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
-                appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
-                    if (videoPlayerView != null && appCMSSignedURLResult != null) {
-                        boolean foundMatchingMpeg = false;
-                        if (!TextUtils.isEmpty(hlsUrl) && hlsUrl.contains("mp4")) {
-                            if (updatedContentDatum != null &&
-                                    updatedContentDatum.getStreamingInfo() != null &&
-                                    updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
-                                    updatedContentDatum.getStreamingInfo()
-                                            .getVideoAssets()
-                                            .getMpeg() != null &&
-                                    !updatedContentDatum.getStreamingInfo()
-                                            .getVideoAssets()
-                                            .getMpeg()
-                                            .isEmpty()) {
-                                updatedContentDatum.getGist()
-                                        .setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
-                                for (int i = 0;
-                                     i < updatedContentDatum.getStreamingInfo()
-                                        .getVideoAssets()
-                                        .getMpeg()
-                                        .size() &&
-                                        !foundMatchingMpeg;
-                                     i++) {
-                                    int queryIndex = hlsUrl.indexOf("?");
-                                    if (0 <= queryIndex) {
-                                        if (updatedContentDatum.getStreamingInfo()
-                                                .getVideoAssets()
-                                                .getMpeg()
-                                                .get(0)
-                                                .getUrl()
-                                                .contains(hlsUrl.substring(0, queryIndex))) {
-                                            foundMatchingMpeg = true;
-                                            hlsUrl = updatedContentDatum.getStreamingInfo()
+                        onUpdateContentDatumEvent.updateContentDatum(updatedContentDatum);
+                        appCMSPresenter.getAppCMSSignedURL(filmId, appCMSSignedURLResult -> {
+                            if (videoPlayerView != null && appCMSSignedURLResult != null) {
+                                boolean foundMatchingMpeg = false;
+                                if (!TextUtils.isEmpty(hlsUrl) && hlsUrl.contains("mp4")) {
+                                    if (updatedContentDatum != null &&
+                                            updatedContentDatum.getStreamingInfo() != null &&
+                                            updatedContentDatum.getStreamingInfo().getVideoAssets() != null &&
+                                            updatedContentDatum.getStreamingInfo()
+                                                    .getVideoAssets()
+                                                    .getMpeg() != null &&
+                                            !updatedContentDatum.getStreamingInfo()
                                                     .getVideoAssets()
                                                     .getMpeg()
-                                                    .get(0)
-                                                    .getUrl();
+                                                    .isEmpty()) {
+                                        updatedContentDatum.getGist()
+                                                .setWatchedTime(videoPlayerView.getCurrentPosition() / 1000L);
+                                        for (int i = 0;
+                                             i < updatedContentDatum.getStreamingInfo()
+                                                     .getVideoAssets()
+                                                     .getMpeg()
+                                                     .size() &&
+                                                     !foundMatchingMpeg;
+                                             i++) {
+                                            int queryIndex = hlsUrl.indexOf("?");
+                                            if (0 <= queryIndex) {
+                                                if (updatedContentDatum.getStreamingInfo()
+                                                        .getVideoAssets()
+                                                        .getMpeg()
+                                                        .get(0)
+                                                        .getUrl()
+                                                        .contains(hlsUrl.substring(0, queryIndex))) {
+                                                    foundMatchingMpeg = true;
+                                                    hlsUrl = updatedContentDatum.getStreamingInfo()
+                                                            .getVideoAssets()
+                                                            .getMpeg()
+                                                            .get(0)
+                                                            .getUrl();
+                                                }
+                                            }
                                         }
                                     }
                                 }
+
+                                videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
+                                        appCMSSignedURLResult.getSignature(),
+                                        appCMSSignedURLResult.getKeyPairId());
+
+                                if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
+                                    videoPlayerView.setUri(Uri.parse(hlsUrl),
+                                            !TextUtils.isEmpty(closedCaptionUrl) ?
+                                                    Uri.parse(closedCaptionUrl) : null);
+                                    videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
+                                            .getWatchedTime() * 1000L);
+                                }
                             }
-                        }
-
-                        videoPlayerView.updateSignatureCookies(appCMSSignedURLResult.getPolicy(),
-                                appCMSSignedURLResult.getSignature(),
-                                appCMSSignedURLResult.getKeyPairId());
-
-                        if (foundMatchingMpeg && updatedContentDatum.getGist() != null) {
-                            videoPlayerView.setUri(Uri.parse(hlsUrl),
-                                    !TextUtils.isEmpty(closedCaptionUrl) ?
-                                            Uri.parse(closedCaptionUrl) : null);
-                            videoPlayerView.setCurrentPosition(updatedContentDatum.getGist()
-                                    .getWatchedTime() * 1000L);
-                        }
-                    }
-                });
-            });
+                        });
+                    });
         }
     }
 
