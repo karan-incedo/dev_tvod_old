@@ -28,13 +28,13 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     google()
-    /*maven {
+    maven {
         url "s3://sdkv1.kiswe.com/release"
         credentials(AwsCredentials) {
             accessKey 'AKIAIST5GLZEHZKM57SQ'
             secretKey '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'
         }
-    }*/
+    }
 
     maven {
         url "s3://sdkv1.kiswe.com/snapshot"
