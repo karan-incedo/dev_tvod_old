@@ -23,6 +23,7 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -65,6 +66,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private int selectedColor;
     private boolean isClickable;
     private String videoAction;
+    private String draggableVideoAction;
     private String showAction;
     private MotionEvent lastTouchDownEvent;
     private String watchVideoAction;
@@ -123,6 +125,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         this.useMarginsAsPercentages = true;
         this.defaultAction = getDefaultAction(context);
         this.videoAction = getVideoAction(context);
+        this.draggableVideoAction = getDraggableVideoAction(context);
         this.showAction = getShowAction(context);
 
         this.isSelected = false;
@@ -384,6 +387,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
                                 String permalink = data.getGist().getPermalink();
                                 String action = videoAction;
+
                                 if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
                                     action = childComponent.getAction();
                                 }
@@ -401,6 +405,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getContentDetails().getRelatedVideoIds() != null) {
                                     relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
                                 }
+
                                 int currentPlayingIndex = -1;
                                 if (relatedVideoIds == null) {
                                     currentPlayingIndex = 0;
@@ -411,6 +416,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
                                     contentType = data.getGist().getContentType();
                                 }
+
+//                                if (!appCMSPresenter.isAppSVOD()) { // FIXME: Change to use T-Builder.
+//                                    action = draggableVideoAction;
+//                                } else if (contentType.equals(episodicContentType)) {
+//                                    action = showAction;
+//                                } else if (contentType.equals(fullLengthFeatureType)) {
+//                                    action = videoAction;
+//                                }
 
                                 if (contentType.equals(episodicContentType)) {
                                     action = showAction;
@@ -432,19 +445,37 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                                action);
                                     }
                                 } else {
-                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            action,
-                                            title,
-                                            null,
-                                            null,
-                                            false,
-                                            currentPlayingIndex,
-                                            relatedVideoIds)) {
-                                        //Log.e(TAG, "Could not launch action: " +
+                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                    actionPresenter.setAction(action);
+
+                                    if (appCMSPresenter.getCurrentActivity().getResources()
+                                            .getBoolean(R.bool.video_detail_page_plays_video)) {
+                                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                                currentPlayingIndex,
+                                                relatedVideoIds,
+                                                -1,
+                                                action)) {
+                                            //Log.e(TAG, "Could not launch action: " +
 //                                                " permalink: " +
 //                                                permalink +
 //                                                " action: " +
 //                                                action);
+                                        }
+                                    } else {
+                                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                                actionPresenter,
+                                                title,
+                                                null,
+                                                null,
+                                                false,
+                                                currentPlayingIndex,
+                                                relatedVideoIds)) {
+                                            //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
+                                        }
                                     }
                                 }
                             }
@@ -489,8 +520,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
 
         if ("AC SelectPlan 02".equals(componentViewType)) {
-            itemView.setOnClickListener(v -> onClickHandler.click(itemView,
-                    component, data));
+            itemView.setOnClickListener(v -> onClickHandler.click(itemView, component, data));
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
@@ -503,6 +533,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
                 return false;
             });
+
             itemView.setOnClickListener(v -> {
                 if (isClickable && data != null && data.getGist() != null) {
                     if (v instanceof CollectionGridItemView) {
@@ -529,7 +560,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 }
                             }
                         } catch (Exception e) {
-
+                            //
                         }
                     }
 
@@ -542,6 +573,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     if (data.getGist() != null && data.getGist().getContentType() != null) {
                         contentType = data.getGist().getContentType();
                     }
+
+//                    if (action != draggableVideoAction) { // FIXME: HARDCODED - should rely on T-Builder.
+//                        if (contentType.equals(episodicContentType)) {
+//                            action = showAction;
+//                        } else if (contentType.equals(fullLengthFeatureType)) {
+//                            action = videoAction;
+//                        }
+//                    } else {
+//                        action = draggableVideoAction;
+//                    }
 
                     if (contentType.equals(episodicContentType)) {
                         action = showAction;
@@ -574,19 +615,40 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                    action);
                         }
                     } else {
-                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                action,
-                                title,
-                                null,
-                                null,
-                                false,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            //Log.e(TAG, "Could not launch action: " +
+                        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                        actionPresenter.setAction(action);
+
+                        if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.use_draggable_panel)) {
+                            actionPresenter.setExtraScreenType(AppCMSPresenter.ExtraScreenType.DRAGGABLE_PANEL);
+                        }
+
+                        if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
+                            if (!appCMSPresenter.launchVideoPlayer(data,
+                                    currentPlayingIndex,
+                                    relatedVideoIds,
+                                    -1,
+                                    action)) {
+                                //Log.e(TAG, "Could not launch action: " +
 //                                    " permalink: " +
 //                                    permalink +
 //                                    " action: " +
 //                                    action);
+                            }
+                        } else {
+                            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                    actionPresenter,
+                                    title,
+                                    null,
+                                    null,
+                                    false,
+                                    currentPlayingIndex,
+                                    relatedVideoIds)) {
+                                //Log.e(TAG, "Could not launch action: " +
+//                                    " permalink: " +
+//                                    permalink +
+//                                    " action: " +
+//                                    action);
+                            }
                         }
                     }
                 }
@@ -614,12 +676,16 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         return context.getString(R.string.app_cms_action_videopage_key);
     }
 
-    private String getShowAction(Context context) {
-        return context.getString(R.string.app_cms_action_showvideopage_key);
-    }
-
     private String getVideoAction(Context context) {
         return context.getString(R.string.app_cms_action_detailvideopage_key);
+    }
+
+    private String getDraggableVideoAction(Context context) {
+        return context.getString(R.string.app_cms_action_draggablevideopage_key);
+    }
+
+    private String getShowAction(Context context) {
+        return context.getString(R.string.app_cms_action_showvideopage_key);
     }
 
     private String getHlsUrl(ContentDatum data) {

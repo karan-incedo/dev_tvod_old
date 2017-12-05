@@ -26,7 +26,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
 
-/**
+/*
  * Created by viewlift on 5/4/17.
  */
 
@@ -40,6 +40,8 @@ public class PageView extends BaseView {
     private SwipeRefreshLayout mainView;
     private AppCMSPageViewAdapter appCMSPageViewAdapter;
 
+    private ViewDimensions fullScreenViewOriginalDimensions;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -51,6 +53,37 @@ public class PageView extends BaseView {
         this.appCMSPresenter = appCMSPresenter;
         this.appCMSPageViewAdapter = new AppCMSPageViewAdapter();
         init();
+    }
+
+    public void openViewInFullScreen(View view, ViewGroup viewParent) {
+        if (fullScreenViewOriginalDimensions == null) {
+            fullScreenViewOriginalDimensions = new ViewDimensions();
+        }
+        try {
+            fullScreenViewOriginalDimensions.width = view.getLayoutParams().width;
+            fullScreenViewOriginalDimensions.height = view.getLayoutParams().height;
+        } catch (Exception e) {
+            //
+        }
+
+        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+        view.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        childrenContainer.setVisibility(GONE);
+        viewParent.removeView(view);
+        addView(view);
+    }
+
+    public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
+        if (fullScreenViewOriginalDimensions != null) {
+            removeView(view);
+
+            view.getLayoutParams().width = fullScreenViewOriginalDimensions.width;
+            view.getLayoutParams().height = fullScreenViewOriginalDimensions.height;
+
+            viewParent.addView(view);
+            childrenContainer.setVisibility(VISIBLE);
+        }
     }
 
     @Override
@@ -170,7 +203,7 @@ public class PageView extends BaseView {
         mainView.setOnRefreshListener(() -> {
             appCMSPresenter.clearPageAPIData(() -> {
                         mainView.setRefreshing(false);
-            },
+                    },
                     true);
         });
         addView(mainView);
@@ -227,11 +260,13 @@ public class PageView extends BaseView {
         boolean removedChild = false;
         while (index < getChildCount() && !removedChild) {
             View child = getChildAt(index);
+
             if (child != mainView) {
                 removeView(child);
                 removedChild = true;
                 removeAllAddOnViews();
             }
+
             index++;
         }
     }
@@ -246,6 +281,12 @@ public class PageView extends BaseView {
         if (appCMSPageViewAdapter != null) {
             return appCMSPageViewAdapter.findChildViewById(id);
         }
+
         return null;
+    }
+
+    private static class ViewDimensions {
+        int width;
+        int height;
     }
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 
@@ -97,9 +98,13 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 action = viewHolder.view.getContext().getString(R.string.app_cms_action_showvideopage_key);
             }
             String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
+
+            AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+            actionPresenter.setAction(action);
+
             //Log.d(TAG, "Launching " + permalink + ":" + action);
             if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                    action,
+                    actionPresenter,
                     title,
                     null,
                     null,

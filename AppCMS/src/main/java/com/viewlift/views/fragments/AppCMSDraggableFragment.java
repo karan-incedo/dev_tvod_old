@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.github.pedrovgs.DraggablePanel;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -24,7 +25,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AppCMSDraggableFragment extends Fragment {
-
     @BindView(R.id.draggable_main_layout)
     ConstraintLayout appCMSDraggableMainLayout;
 
@@ -39,6 +39,8 @@ public class AppCMSDraggableFragment extends Fragment {
 
     @BindView(R.id.draggable_related_videos)
     RecyclerView draggableRelatedVideos;
+
+    private DraggablePanel draggablePanel;
 
     public static AppCMSDraggableFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCMSDraggableFragment fragment = new AppCMSDraggableFragment();
@@ -61,10 +63,15 @@ public class AppCMSDraggableFragment extends Fragment {
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
+
         AppCMSPageFragment topFragment = new AppCMSPageFragment();
-//        getActivity().getSupportFragmentManager().getBackStackEntryAt();
+        int lastFragment = getActivity().getSupportFragmentManager().getFragments().size();
+        Fragment bottomFragment = getActivity().getSupportFragmentManager().getFragments().get(lastFragment - 1);
+
+        initializeDraggablePanel(topFragment, bottomFragment);
 
         Bundle args = getArguments();
+        //
 
         int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 .getBackgroundColor());
@@ -82,6 +89,14 @@ public class AppCMSDraggableFragment extends Fragment {
         setBgColor(bgColor);
 
         return view;
+    }
+
+    private void initializeDraggablePanel(Fragment topFrag, Fragment bottomFrag) {
+        draggablePanel.setFragmentManager(getActivity().getSupportFragmentManager());
+        draggablePanel.setTopFragment(topFrag);
+        draggablePanel.setBottomFragment(bottomFrag);
+        draggablePanel.setClickToMaximizeEnabled(true);
+        draggablePanel.initializeView();
     }
 
     protected List<Fragment> getFragmentCount() {

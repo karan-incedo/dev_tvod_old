@@ -66,7 +66,7 @@ import java.util.Map;
 import rx.Observable;
 import rx.functions.Action1;
 
-/**
+/*
  * Created by viewlift on 5/31/17.
  */
 
@@ -106,6 +106,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private String keyPairIdCookie;
 
     private boolean playerJustInitialized;
+
+    private String filmId;
+
+    private PageView pageView;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -165,6 +169,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 ccToggleButton.setChecked(isClosedCaptionEnabled);
             }
         }
+    }
+
+    public Uri getUri() {
+        return uri;
     }
 
     public boolean shouldPlayWhenReady() {
@@ -228,28 +236,28 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
-    public void setBitrate(long bitrate) {
-        this.bitrate = bitrate;
-    }
-
     public long getBitrate() {
         return bitrate;
     }
 
-    public void setVideoHeight(int videoHeight) {
-        this.videoHeight = videoHeight;
+    public void setBitrate(long bitrate) {
+        this.bitrate = bitrate;
     }
 
     public int getVideoHeight() {
         return videoHeight;
     }
 
-    public void setVideoWidth(int videoWidth) {
-        this.videoWidth = videoWidth;
+    public void setVideoHeight(int videoHeight) {
+        this.videoHeight = videoHeight;
     }
 
     public int getVideoWidth() {
         return videoWidth;
+    }
+
+    public void setVideoWidth(int videoWidth) {
+        this.videoWidth = videoWidth;
     }
 
     public void setClosedCaptionEnabled(boolean closedCaptionEnabled) {
@@ -264,7 +272,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (BaseView.isLandscape(getContext())) {
             playerView.setResizeMode(fullscreenResizeMode);
         } else {
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+//            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         }
     }
 
@@ -427,17 +436,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onTimelineChanged(Timeline timeline, Object o) {
-
+        //
     }
 
     @Override
     public void onTracksChanged(TrackGroupArray trackGroupArray, TrackSelectionArray trackSelectionArray) {
-
+        //
     }
 
     @Override
     public void onLoadingChanged(boolean b) {
-
+        //
     }
 
     @Override
@@ -471,12 +480,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onPositionDiscontinuity() {
-
+        //
     }
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
-
+        //
     }
 
     public void sendPlayerPosition(long position) {
@@ -538,13 +547,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onUpstreamDiscarded(int trackType, long mediaStartTimeMs, long mediaEndTimeMs) {
-
+        //
     }
 
     @Override
     public void onDownstreamFormatChanged(int trackType, Format trackFormat, int trackSelectionReason,
                                           Object trackSelectionData, long mediaTimeMs) {
-
+        //
     }
 
     public void setListener(ErrorEventListener errorEventListener) {
@@ -553,24 +562,24 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onVideoEnabled(DecoderCounters counters) {
-
+        //
     }
 
     @Override
     public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
-
+        //
     }
 
     @Override
     public void onVideoInputFormatChanged(Format format) {
-        setBitrate(format.bitrate/1000);
+        setBitrate(format.bitrate / 1000);
         setVideoHeight(format.height);
         setVideoWidth(format.width);
     }
 
     @Override
     public void onDroppedFrames(int count, long elapsedMs) {
-
+        //
     }
 
     @Override
@@ -597,17 +606,31 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onRenderedFirstFrame(Surface surface) {
-
+        //
     }
 
     @Override
     public void onVideoDisabled(DecoderCounters counters) {
-
+        //
     }
 
     @Override
     public void onRenderedFirstFrame() {
         //Log.d(TAG, "Rendered first frame");
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        pausePlayer();
+    }
+
+    public String getFilmId() {
+        return filmId;
+    }
+
+    public void setFilmId(String filmId) {
+        this.filmId = filmId;
     }
 
     public String getPolicyCookie() {
@@ -632,6 +655,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setKeyPairIdCookie(String keyPairIdCookie) {
         this.keyPairIdCookie = keyPairIdCookie;
+    }
+
+    public PageView getPageView() {
+        return pageView;
+    }
+
+    public void setPageView(PageView pageView) {
+        this.pageView = pageView;
     }
 
     public interface ErrorEventListener {

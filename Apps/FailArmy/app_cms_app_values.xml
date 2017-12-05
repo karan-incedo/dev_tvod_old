@@ -45,7 +45,6 @@
 
     <bool name="use_cached_api">true</bool>
     <bool name="menu_icon_dismisses_menu_page">true</bool>
-    <bool name="play_button_visible_on_video_detail_page">false</bool>
     <bool name="video_detail_page_plays_video">true</bool>
     <bool name="use_draggable_panel">false</bool>
 

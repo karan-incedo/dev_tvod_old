@@ -306,6 +306,7 @@ public class AppCMSPresenter {
     public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
     public static final int PLAYER_REQUEST_CODE = 1111;
     private static final String TAG = "AppCMSPresenter";
+
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String CASTING_OVERLAY_PREF_NAME = "cast_intro_pref";
     private static final String USER_ID_SHARED_PREF_NAME = "user_id_pref";
@@ -332,6 +333,7 @@ public class AppCMSPresenter {
     private static final String RESTORE_SUBSCRIPTION_RECEIPT = "restore_subscription_payment_process_key";
     private static final String ACTIVE_SUBSCRIPTION_COUNTRY_CODE = "active_subscription_country_code_key";
     private static final String IS_USER_SUBSCRIBED = "is_user_subscribed_pref_key";
+
     private static final String AUTO_PLAY_ENABLED_PREF_NAME = "autoplay_enabled_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_DESCRIPTION = "existing_google_play_subscription_title_pref_key";
     private static final String EXISTING_GOOGLE_PLAY_SUBSCRIPTION_ID = "existing_google_play_subscription_id_key_pref_key";
@@ -442,6 +444,7 @@ public class AppCMSPresenter {
             "/sdcard2", // HTC One M8s
             "/storage/microsd" // ASUS ZenFone 2
     };
+
     private final Map<String, AppCMSPageUI> navigationPages;
     private final Map<String, AppCMSPageAPI> navigationPageData;
     private final Map<String, String> pageIdToPageAPIUrlMap;
@@ -458,6 +461,7 @@ public class AppCMSPresenter {
     private final List<DownloadTimerTask> downloadProgressTimerList = new ArrayList<>();
     private final ReferenceQueue<Object> referenceQueue;
     public boolean pipPlayerVisible = false;
+
     public PopupWindow pipDialog;
     VideoPlayerView videoPlayerViewPIP, videoPlayerViewPage;
     RelativeLayout relativeLayoutPIP;
@@ -501,6 +505,7 @@ public class AppCMSPresenter {
     private String subscriptionUserPassword;
     private boolean isSignupFromFacebook;
     private boolean isSignupFromGoogle;
+
     private String facebookAccessToken;
     private String facebookUserId;
     private String facebookUsername;
@@ -527,6 +532,7 @@ public class AppCMSPresenter {
     private LruCache<String, PageView> pageViewLruCache;
     private LruCache<String, AppCMSPageAPI> pageAPILruCache;
     private EntitlementPendingVideoData entitlementPendingVideoData;
+
     private List<SubscriptionPlan> subscriptionPlans;
     private boolean configurationChanged;
     private FirebaseAnalytics mFireBaseAnalytics;
@@ -547,6 +553,7 @@ public class AppCMSPresenter {
     private Action0 afterLoginAction;
     private boolean shouldLaunchLoginAction;
     private Map<String, ContentDatum> userHistoryData;
+
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -573,6 +580,7 @@ public class AppCMSPresenter {
                     // DOWNLOAD API CALLING
                 }
             };
+
     private String cachedAPIUserToken;
     private boolean usedCachedAPI;
     private Typeface regularFontFace;
@@ -703,8 +711,10 @@ public class AppCMSPresenter {
 
         this.entitlementCheckActive = new EntitlementCheckActive(() -> {
             sendCloseOthersAction(null, true, false);
+            AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+            actionPresenter.setAction(entitlementCheckActive.getAction());
             launchButtonSelectedAction(entitlementCheckActive.getPagePath(),
-                    entitlementCheckActive.getAction(),
+                    actionPresenter,
                     entitlementCheckActive.getFilmTitle(),
                     entitlementCheckActive.getExtraData(),
                     entitlementCheckActive.getContentDatum(),
@@ -905,8 +915,7 @@ public class AppCMSPresenter {
         return appCMSAndroidModules;
     }
 
-    public void refreshVideoData(final String id,
-                                 Action1<ContentDatum> readyAction) {
+    public void refreshVideoData(final String id, Action1<ContentDatum> readyAction) {
         if (currentActivity != null) {
             String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
@@ -922,9 +931,11 @@ public class AppCMSPresenter {
                                 appCMSVideoDetail.getRecords().get(0) != null) {
                             ContentDatum currentContentDatum = appCMSVideoDetail.getRecords().get(0);
                             ContentDatum userHistoryContentDatum = getUserHistoryContentDatum(currentContentDatum.getGist().getId());
+
                             if (userHistoryContentDatum != null) {
                                 currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
                             }
+
                             readyAction.call(currentContentDatum);
                         }
                     }).execute(params);
@@ -999,8 +1010,11 @@ public class AppCMSPresenter {
                                 appCMSVideoDetail.getRecords().get(0).getGist().setWatchedTime(contentDatum.getGist().getWatchedTime());
                                 appCMSVideoDetail.getRecords().get(0).getGist().setWatchedPercentage(contentDatum.getGist().getWatchedPercentage());
 
+                                AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                actionPresenter.setAction(updatedAction);
+
                                 launchButtonSelectedAction(appCMSVideoDetail.getRecords().get(0).getGist().getPermalink(),
-                                        updatedAction,
+                                        actionPresenter,
                                         appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
                                         null,
                                         appCMSVideoDetail.getRecords().get(0),
@@ -1020,9 +1034,13 @@ public class AppCMSPresenter {
                                     if (watchedTime >= 0) {
                                         contentDatum.getGist().setWatchedTime(watchedTime);
                                     }
+
+                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                    actionPresenter.setAction(action);
+
                                     launchButtonSelectedAction(
                                             contentDatum.getGist().getPermalink(),
-                                            action,
+                                            actionPresenter,
                                             contentDatum.getGist().getTitle(),
                                             null,
                                             contentDatum,
@@ -1192,7 +1210,7 @@ public class AppCMSPresenter {
     }
 
     public boolean launchButtonSelectedAction(String pagePath,
-                                              String action,
+                                              AppCMSActionPresenter actionPresenter,
                                               String filmTitle,
                                               String[] extraData,
                                               ContentDatum contentDatum,
@@ -1207,7 +1225,7 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             //Log.e(TAG, e.getLocalizedMessage());
         }
-        final AppCMSActionType actionType = actionToActionTypeMap.get(action);
+        final AppCMSActionType actionType = actionToActionTypeMap.get(actionPresenter.getAction());
         if ((actionType == AppCMSActionType.OPEN_OPTION_DIALOG)) {
 
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
@@ -1237,7 +1255,7 @@ public class AppCMSPresenter {
             List<String> finalRelateVideoIds = relateVideoIds;
             openDownloadScreenForNetworkError(false,
                     () -> launchButtonSelectedAction(pagePath,
-                            action,
+                            actionPresenter,
                             filmTitle,
                             extraData,
                             contentDatum,
@@ -1281,7 +1299,7 @@ public class AppCMSPresenter {
 
                         if (!freePreview && !entitlementCheckActive.isSuccess()) {
                             entitlementCheckActive.setPagePath(pagePath);
-                            entitlementCheckActive.setAction(action);
+                            entitlementCheckActive.setAction(actionPresenter.getAction());
                             entitlementCheckActive.setFilmTitle(filmTitle);
                             entitlementCheckActive.setExtraData(extraData);
                             entitlementCheckActive.setContentDatum(contentDatum);
@@ -1449,7 +1467,7 @@ public class AppCMSPresenter {
                         currentActivity.startActivity(playVideoIntent);
                     } else {
                         entitlementPendingVideoData = new EntitlementPendingVideoData();
-                        entitlementPendingVideoData.action = action;
+                        entitlementPendingVideoData.action = actionPresenter.getAction();
                         entitlementPendingVideoData.closeLauncher = closeLauncher;
                         entitlementPendingVideoData.contentDatum = contentDatum;
                         entitlementPendingVideoData.currentlyPlayingIndex = currentlyPlayingIndex;
@@ -1475,6 +1493,9 @@ public class AppCMSPresenter {
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
+                    if (!BaseView.isTablet(currentContext)) {
+                        restrictPortraitOnly();
+                    }
                     sendCloseOthersAction(null, true, false);
                 } else if (actionType == AppCMSActionType.LOGIN) {
                     //Log.d(TAG, "Login action selected: " + extraData[0]);
@@ -1563,14 +1584,17 @@ public class AppCMSPresenter {
                         boolean appbarPresent = true;
                         boolean fullscreenEnabled = false;
                         boolean navbarPresent = true;
+                        ExtraScreenType screenType;
                         final StringBuffer screenName = new StringBuffer();
-                        if (!TextUtils.isEmpty(actionToPageNameMap.get(action))) {
-                            screenName.append(actionToPageNameMap.get(action));
+
+                        if (!TextUtils.isEmpty(actionToPageNameMap.get(actionPresenter.getAction()))) {
+                            screenName.append(actionToPageNameMap.get(actionPresenter.getAction()));
                         }
+
                         loadingPage = true;
 
                         String baseUrl = appCMSMain.getApiBaseUrl();
-                        String endPoint = actionToPageAPIUrlMap.get(action);
+                        String endPoint = actionToPageAPIUrlMap.get(actionPresenter.getAction());
                         String siteId = appCMSSite.getGist().getSiteInternalName();
                         boolean usePageIdQueryParam = false;
                         boolean viewPlans = isViewPlanPage(endPoint);
@@ -1581,6 +1605,7 @@ public class AppCMSPresenter {
                                 appbarPresent = false;
                                 fullscreenEnabled = false;
                                 navbarPresent = false;
+                                screenType = ExtraScreenType.NONE;
                                 break;
 
                             case SHOW_PAGE:
@@ -1589,19 +1614,29 @@ public class AppCMSPresenter {
                                 appbarPresent = false;
                                 fullscreenEnabled = false;
                                 navbarPresent = false;
+                                screenType = ExtraScreenType.NONE;
                                 screenName.append(currentActivity.getString(
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
+                                break;
+
+                            case DRAGGABLE_VIDEO_PAGE:
+                                appbarPresent = false;
+                                fullscreenEnabled = true;
+                                navbarPresent = false;
+                                screenType = ExtraScreenType.DRAGGABLE_PANEL;
                                 break;
 
                             case PLAY_VIDEO_PAGE:
                                 appbarPresent = false;
                                 fullscreenEnabled = false;
                                 navbarPresent = false;
+                                screenType = ExtraScreenType.NONE;
                                 break;
 
                             case HOME_PAGE:
                             default:
+                                screenType = ExtraScreenType.NONE;
                                 break;
                         }
 
@@ -1615,7 +1650,7 @@ public class AppCMSPresenter {
 
                         currentActivity.sendBroadcast(new Intent(
                                 AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-                        AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
+                        AppCMSPageUI appCMSPageUI = actionToPageMap.get(actionPresenter.getAction());
                         if (appCMSPageUI != null) {
                             int finalCurrentlyPlayingIndex1 = currentlyPlayingIndex;
                             List<String> finalRelateVideoIds1 = relateVideoIds;
@@ -1626,7 +1661,7 @@ public class AppCMSPresenter {
                                             fullscreenEnabled,
                                             navbarPresent,
                                             appCMSPageUI,
-                                            action,
+                                            actionPresenter.getAction(),
                                             getPageId(appCMSPageUI),
                                             filmTitle,
                                             pagePath,
@@ -1655,7 +1690,7 @@ public class AppCMSPresenter {
                                                         this.navbarPresent,
                                                         this.sendCloseAction,
                                                         this.searchQuery,
-                                                        ExtraScreenType.NONE);
+                                                        screenType);
                                                 if (args != null) {
                                                     Intent updatePageIntent =
                                                             new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
@@ -1669,7 +1704,7 @@ public class AppCMSPresenter {
                                             } else {
                                                 if (launched) {
                                                     sendStopLoadingPageAction(true,
-                                                            () -> launchButtonSelectedAction(pagePath, action, filmTitle, extraData, contentDatum, closeLauncher, finalCurrentlyPlayingIndex1, finalRelateVideoIds1));
+                                                            () -> launchButtonSelectedAction(pagePath, actionPresenter, filmTitle, extraData, contentDatum, closeLauncher, finalCurrentlyPlayingIndex1, finalRelateVideoIds1));
                                                     setNavItemToCurrentAction(currentActivity);
                                                 } else {
                                                     launchBlankPage();
@@ -1848,7 +1883,6 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             FrameLayout mainFragmentView =
                     (FrameLayout) currentActivity.findViewById(R.id.app_cms_fragment);
-
             if (mainFragmentView != null) {
                 return (mainFragmentView.getVisibility() == View.VISIBLE);
             }
@@ -1886,7 +1920,6 @@ public class AppCMSPresenter {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     private void setAllChildrenEnabled(boolean isEnabled, ViewGroup viewGroup) {
         viewGroup.setNestedScrollingEnabled(isEnabled);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
@@ -3506,141 +3539,6 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Intent notifiyDownloadHasCompleted = new Intent(PRESENTER_UPDATE_LISTS_ACTION);
             currentActivity.sendBroadcast(notifiyDownloadHasCompleted);
-        }
-    }
-
-    private interface OnRunOnUIThread {
-        void runOnUiThread(Action0 runOnUiThreadAction);
-    }
-
-    private static class DownloadTimerTask extends TimerTask {
-        final String filmIdLocal;
-        final long videoId;
-        final OnRunOnUIThread onRunOnUIThread;
-        final boolean isTablet;
-        final AppCMSPresenter appCMSPresenter;
-        final ImageView imageView;
-        final Action1<UserVideoDownloadStatus> responseAction;
-        final Timer timer;
-
-        public DownloadTimerTask(String filmId,
-                                 long videoId,
-                                 OnRunOnUIThread onRunOnUIThread,
-                                 boolean isTablet,
-                                 AppCMSPresenter appCMSPresenter,
-                                 ImageView imageView,
-                                 Action1<UserVideoDownloadStatus> responseAction,
-                                 Timer timer) {
-            this.filmIdLocal = filmId;
-            this.videoId = videoId;
-            this.onRunOnUIThread = onRunOnUIThread;
-            this.isTablet = isTablet;
-            this.appCMSPresenter = appCMSPresenter;
-            this.imageView = imageView;
-            this.responseAction = responseAction;
-            this.timer = timer;
-        }
-
-        @Override
-        public void run() {
-            try {
-                DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(videoId);
-                Cursor c = appCMSPresenter.downloadManager.query(query);
-                if (c != null && c.moveToFirst()) {
-                    long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                    long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                    c.close();
-                    int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
-                    //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
-                    //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
-                    if ((downloaded >= totalSize || downloadPercent > 100) && totalSize > 0) {
-                        if (onRunOnUIThread != null && appCMSPresenter.isUserLoggedIn())
-                            onRunOnUIThread.runOnUiThread(() -> appCMSPresenter.appCMSUserDownloadVideoStatusCall
-                                    .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser()));
-                        this.cancel();
-                    } else {
-                        if (onRunOnUIThread != null && appCMSPresenter.runUpdateDownloadIconTimer)
-                            onRunOnUIThread.runOnUiThread(() -> {
-                                try {
-                                    circularImageBar(imageView, downloadPercent);
-                                } catch (Exception e) {
-                                    //Log.e(TAG, "Error rendering circular image bar");
-                                }
-                            });
-                    }
-
-                } else {
-                    //noinspection ConstantConditions
-                    System.out.println(" Downloading fails" + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
-                }
-            } catch (StaleDataException exception) {
-
-            } catch (Exception exception) {
-                //Log.e(TAG, filmIdLocal + " Removed from top +++ " + exception.getMessage());
-                this.cancel();
-                UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
-                statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
-
-                if (onRunOnUIThread != null) {
-                    try {
-                        onRunOnUIThread.runOnUiThread(() -> {
-                            try {
-                                DownloadVideoRealm downloadVideoRealm = appCMSPresenter.realmController.getRealm()
-                                        .copyFromRealm(
-                                                appCMSPresenter.realmController
-                                                        .getDownloadByIdBelongstoUser(filmIdLocal, appCMSPresenter.getLoggedInUser()));
-                                downloadVideoRealm.setDownloadStatus(statusResponse.getDownloadStatus());
-                                appCMSPresenter.realmController.updateDownload(downloadVideoRealm);
-
-                                Observable.just(statusResponse).subscribe(responseAction);
-                                //   removeDownloadedFile(filmIdLocal);
-                            } catch (Exception e) {
-                                //Log.e(TAG, "Error rendering circular image bar");
-                            }
-                        });
-                    } catch (Exception e) {
-
-                    }
-                }
-            }
-        }
-
-        private void circularImageBar(ImageView iv2, int i) {
-            if (appCMSPresenter.runUpdateDownloadIconTimer) {
-                Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(b);
-                Paint paint = new Paint();
-
-                paint.setColor(Color.DKGRAY);
-                paint.setStrokeWidth(iv2.getWidth() / 10);
-                paint.setStyle(Paint.Style.STROKE);
-                if (isTablet) {
-                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
-                } else {
-                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
-                }
-
-                int tintColor = Color.parseColor((appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
-                paint.setColor(tintColor);
-                paint.setStrokeWidth(iv2.getWidth() / 10);
-                paint.setStyle(Paint.Style.FILL);
-                final RectF oval = new RectF();
-                paint.setStyle(Paint.Style.STROKE);
-                if (isTablet) {
-                    oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
-                } else {
-                    oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 4); //Fix SVFA-1561  change 2 to 6
-                }
-                canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
-
-
-                iv2.setImageBitmap(b);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
-                }
-                iv2.requestLayout();
-            }
         }
     }
 
@@ -7380,7 +7278,7 @@ public class AppCMSPresenter {
                     try {
                         return activeNetworkInfo.isConnectedOrConnecting();
                     } catch (Exception e) {
-
+                        //
                     }
                 }
             } else {
@@ -7390,7 +7288,7 @@ public class AppCMSPresenter {
                             return true;
                         }
                     } catch (Exception e) {
-
+                        //
                     }
                 }
             }
@@ -7736,8 +7634,12 @@ public class AppCMSPresenter {
             isVideoPlayerStarted = false;
             sendRefreshPageAction();
             sendCloseOthersAction(null, true, false);
+
+            AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+            actionPresenter.setAction(entitlementPendingVideoData.action);
+
             launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                    entitlementPendingVideoData.action,
+                    actionPresenter,
                     entitlementPendingVideoData.filmTitle,
                     entitlementPendingVideoData.extraData,
                     entitlementPendingVideoData.contentDatum,
@@ -7913,8 +7815,12 @@ public class AppCMSPresenter {
                                     if (!loginFromNavPage) {
                                         sendCloseOthersAction(null, true, !loginFromNavPage);
                                     }
+
+                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                    actionPresenter.setAction(entitlementPendingVideoData.action);
+
                                     launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                                            entitlementPendingVideoData.action,
+                                            actionPresenter,
                                             entitlementPendingVideoData.filmTitle,
                                             entitlementPendingVideoData.extraData,
                                             entitlementPendingVideoData.contentDatum,
@@ -8460,8 +8366,12 @@ public class AppCMSPresenter {
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
                         }
+
+                        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                        actionPresenter.setAction(entitlementPendingVideoData.action);
+
                         launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                                entitlementPendingVideoData.action,
+                                actionPresenter,
                                 entitlementPendingVideoData.filmTitle,
                                 entitlementPendingVideoData.extraData,
                                 entitlementPendingVideoData.contentDatum,
@@ -8472,7 +8382,7 @@ public class AppCMSPresenter {
                         try {
                             getPageViewLruCache().evictAll();
                         } catch (Exception e) {
-
+                            //
                         }
 
                         clearPageAPIData(() -> {
@@ -8531,8 +8441,12 @@ public class AppCMSPresenter {
                     if (!loginFromNavPage) {
                         sendCloseOthersAction(null, true, !loginFromNavPage);
                     }
+
+                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                    actionPresenter.setAction(entitlementPendingVideoData.action);
+
                     launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
-                            entitlementPendingVideoData.action,
+                            actionPresenter,
                             entitlementPendingVideoData.filmTitle,
                             entitlementPendingVideoData.extraData,
                             entitlementPendingVideoData.contentDatum,
@@ -10255,9 +10169,12 @@ public class AppCMSPresenter {
             extraData[3] = "true"; // to know that this is an offline video
             //Log.d(TAG, "Launching " + permalink + ": " + action);
 
+            AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+            actionPresenter.setAction(action);
+
             if (!launchButtonSelectedAction(
                     permalink,
-                    action,
+                    actionPresenter,
                     title,
                     extraData,
                     binder.getContentData(),
@@ -10485,6 +10402,12 @@ public class AppCMSPresenter {
                         navbarPresent = false;
                         screenName.append(currentActivity.getString(R.string.app_cms_template_page_separator));
                         screenName.append(filmTitle);
+                        break;
+
+                    case DRAGGABLE_VIDEO_PAGE:
+                        appbarPresent = false;
+                        fullscreenEnabled = true;
+                        navbarPresent = false;
                         break;
 
                     case PLAY_VIDEO_PAGE:
@@ -11007,9 +10930,12 @@ public class AppCMSPresenter {
         }
         String title = searchResultClick[0];
         String runtime = searchResultClick[1];
+
+        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+        actionPresenter.setAction(action);
         //Log.d(TAG, "Launching " + permalink + ":" + action);
         if (!launchButtonSelectedAction(permalink,
-                action,
+                actionPresenter,
                 title,
                 null,
                 null,
@@ -11091,7 +11017,7 @@ public class AppCMSPresenter {
                     }, action1
             );
         } catch (IOException e) {
-
+            //
         }
     }
 
@@ -11129,14 +11055,45 @@ public class AppCMSPresenter {
 
     public void showPopupWindowPlayer(View v) {
         //  dismissPopupWindowPlayer();
-        // FIXME: 11/8/17 this should not be using a hardcoded url.
-        Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
+        // FIXME: this should not be using a hardcoded url.
+//        Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
+        Uri mp4VideoUri = Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8");
         pipPlayerVisible = true;
 
-        videoPlayerViewPIP = ViewCreator.playerView(currentActivity);
+        videoPlayerViewPIP = ViewCreator.playerView(currentActivity,
+                mp4VideoUri.toString(),
+                null);
 
         //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
-        relativeLayoutPIP = new RelativeLayout(currentActivity);// currentActivity.findViewById(R.id.appCMSPipWindow);
+        relativeLayoutPIP = new RelativeLayout(currentActivity);
+
+        RelativeLayout.LayoutParams lpPipView = new RelativeLayout.LayoutParams(750, 450);
+        lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lpPipView.addRule(RelativeLayout.ABOVE, R.id.app_cms_tab_nav_container);
+        lpPipView.rightMargin = 50;
+        lpPipView.bottomMargin = 20;
+
+        relativeLayoutPIP.setLayoutParams(lpPipView);
+
+        relativeLayoutPIP.addView(videoPlayerViewPIP);
+        relativeLayoutPIP.setVisibility(View.VISIBLE);
+
+        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+    }
+
+    public void showPopupWindowPlayer(View v, String url) {
+        //  dismissPopupWindowPlayer();
+        // FIXME: this should not be using a hardcoded url.
+//        Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
+        Uri mp4VideoUri = Uri.parse("https://vhoichoi.viewlift.com/encodes/originals/12/hls/master.m3u8");
+//        Uri mp4VideoUri = Uri.parse(url);
+        pipPlayerVisible = true;
+
+//        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, mp4VideoUri.toString());
+        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, url, null);
+
+        //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
+        relativeLayoutPIP = new RelativeLayout(currentActivity);
 
         RelativeLayout.LayoutParams lpPipView = new RelativeLayout.LayoutParams(750, 450);
         lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
@@ -11303,6 +11260,141 @@ public class AppCMSPresenter {
         TERM_OF_SERVICE,
         BLANK,
         NONE
+    }
+
+    private interface OnRunOnUIThread {
+        void runOnUiThread(Action0 runOnUiThreadAction);
+    }
+
+    private static class DownloadTimerTask extends TimerTask {
+        final String filmIdLocal;
+        final long videoId;
+        final OnRunOnUIThread onRunOnUIThread;
+        final boolean isTablet;
+        final AppCMSPresenter appCMSPresenter;
+        final ImageView imageView;
+        final Action1<UserVideoDownloadStatus> responseAction;
+        final Timer timer;
+
+        public DownloadTimerTask(String filmId,
+                                 long videoId,
+                                 OnRunOnUIThread onRunOnUIThread,
+                                 boolean isTablet,
+                                 AppCMSPresenter appCMSPresenter,
+                                 ImageView imageView,
+                                 Action1<UserVideoDownloadStatus> responseAction,
+                                 Timer timer) {
+            this.filmIdLocal = filmId;
+            this.videoId = videoId;
+            this.onRunOnUIThread = onRunOnUIThread;
+            this.isTablet = isTablet;
+            this.appCMSPresenter = appCMSPresenter;
+            this.imageView = imageView;
+            this.responseAction = responseAction;
+            this.timer = timer;
+        }
+
+        @Override
+        public void run() {
+            try {
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(videoId);
+                Cursor c = appCMSPresenter.downloadManager.query(query);
+                if (c != null && c.moveToFirst()) {
+                    long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    c.close();
+                    int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
+                    //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
+                    //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
+                    if ((downloaded >= totalSize || downloadPercent > 100) && totalSize > 0) {
+                        if (onRunOnUIThread != null && appCMSPresenter.isUserLoggedIn())
+                            onRunOnUIThread.runOnUiThread(() -> appCMSPresenter.appCMSUserDownloadVideoStatusCall
+                                    .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser()));
+                        this.cancel();
+                    } else {
+                        if (onRunOnUIThread != null && appCMSPresenter.runUpdateDownloadIconTimer)
+                            onRunOnUIThread.runOnUiThread(() -> {
+                                try {
+                                    circularImageBar(imageView, downloadPercent);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error rendering circular image bar");
+                                }
+                            });
+                    }
+
+                } else {
+                    //noinspection ConstantConditions
+                    System.out.println(" Downloading fails" + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
+                }
+            } catch (StaleDataException exception) {
+
+            } catch (Exception exception) {
+                //Log.e(TAG, filmIdLocal + " Removed from top +++ " + exception.getMessage());
+                this.cancel();
+                UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
+                statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
+
+                if (onRunOnUIThread != null) {
+                    try {
+                        onRunOnUIThread.runOnUiThread(() -> {
+                            try {
+                                DownloadVideoRealm downloadVideoRealm = appCMSPresenter.realmController.getRealm()
+                                        .copyFromRealm(
+                                                appCMSPresenter.realmController
+                                                        .getDownloadByIdBelongstoUser(filmIdLocal, appCMSPresenter.getLoggedInUser()));
+                                downloadVideoRealm.setDownloadStatus(statusResponse.getDownloadStatus());
+                                appCMSPresenter.realmController.updateDownload(downloadVideoRealm);
+
+                                Observable.just(statusResponse).subscribe(responseAction);
+                                //   removeDownloadedFile(filmIdLocal);
+                            } catch (Exception e) {
+                                //Log.e(TAG, "Error rendering circular image bar");
+                            }
+                        });
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        }
+
+        private void circularImageBar(ImageView iv2, int i) {
+            if (appCMSPresenter.runUpdateDownloadIconTimer) {
+                Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(b);
+                Paint paint = new Paint();
+
+                paint.setColor(Color.DKGRAY);
+                paint.setStrokeWidth(iv2.getWidth() / 10);
+                paint.setStyle(Paint.Style.STROKE);
+                if (isTablet) {
+                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
+                } else {
+                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
+                }
+
+                int tintColor = Color.parseColor((appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                paint.setColor(tintColor);
+                paint.setStrokeWidth(iv2.getWidth() / 10);
+                paint.setStyle(Paint.Style.FILL);
+                final RectF oval = new RectF();
+                paint.setStyle(Paint.Style.STROKE);
+                if (isTablet) {
+                    oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
+                } else {
+                    oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 4); //Fix SVFA-1561  change 2 to 6
+                }
+                canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
+
+
+                iv2.setImageBitmap(b);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
+                }
+                iv2.requestLayout();
+            }
+        }
     }
 
     private static class EntitlementCheckActive implements Action1<UserIdentity> {

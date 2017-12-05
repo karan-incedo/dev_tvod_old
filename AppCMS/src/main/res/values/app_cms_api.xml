@@ -186,6 +186,7 @@
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
+    <!--<string name="app_cms_page_video_player_key">videoPlayer</string>-->
     <string name="app_cms_page_show_image_video_key">showImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
@@ -269,6 +270,7 @@
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
+    <string name="app_cms_action_draggablevideopage_key">draggableDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>

@@ -669,9 +669,11 @@ public class AppCMSUIModule {
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_detailvideopage_key),
                 AppCMSActionType.VIDEO_PAGE);
 
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_draggablevideopage_key),
+                AppCMSActionType.DRAGGABLE_VIDEO_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_showvideopage_key),
                 AppCMSActionType.SHOW_PAGE);
-
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchvideo_key),
                 AppCMSActionType.PLAY_VIDEO_PAGE);

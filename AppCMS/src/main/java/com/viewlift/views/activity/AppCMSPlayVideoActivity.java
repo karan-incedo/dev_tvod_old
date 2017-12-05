@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -65,13 +66,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setFullScreenFocus();
+//        setFullScreenFocus();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_player_page);
 
         appCMSPresenter = ((AppCMSApplication) getApplication()).
                 getAppCMSPresenterComponent().appCMSPresenter();
-
 
         getBundleData();
     }
@@ -81,12 +81,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             Fragment fragmentPlayer = getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container);
             if (fragmentPlayer != null) {
-                getSupportFragmentManager()
-                        .beginTransaction().
+                getSupportFragmentManager().beginTransaction().
                         remove(getSupportFragmentManager().findFragmentById(R.id.app_cms_play_video_page_container)).commitAllowingStateLoss();
             }
         } catch (Exception e) {
-
+            //
         }
         getBundleData();
         super.onNewIntent(intent);
@@ -121,9 +120,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     String finalFontColor = fontColor;
                     handler.postDelayed(() -> {
                         try {
-                            launchVideoPlayer(gist, extra, useHls, finalFontColor, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                            launchVideoPlayer(gist, extra, useHls, finalFontColor, defaultVideoResolution,
+                                    intent, appCMSPlayVideoPageContainer, null);
                         } catch (Exception e) {
-
+                            //
                         }
                     }, 500);
                 } else {
@@ -151,9 +151,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                     try {
                                         binder.setContentData(updatedContentDatum);
                                     } catch (Exception e) {
-
+                                        //
                                     }
-                                    launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
+                                    launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
+                                            finalFontColor1, defaultVideoResolution, intent,
+                                            appCMSPlayVideoPageContainer, null);
                                 });
                     }
                 }
@@ -186,7 +188,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null))) &&
+                                    binder.getContentData().getGist().getDownloadStatus() == null))) &&
                             (activeNetwork == null ||
                                     !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
@@ -201,7 +203,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null))) {
+                                    binder.getContentData().getGist().getDownloadStatus() == null))) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer(),
@@ -352,7 +354,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
             fragmentTransaction.commit();
         } catch (Exception e) {
-
+            //
         }
     }
 
@@ -410,10 +412,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         && relateVideoIds != null
                         && currentlyPlayingIndex < relateVideoIds.size() - 1) {
                     binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
-                        @Override
-                        public void call(Object o) {
-                        }
+                    appCMSPresenter.openAutoPlayScreen(binder, o -> {
+                        //
                     });
                 } else {
                     closePlayer();
@@ -421,10 +421,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             } else {
                 if (binder.getRelateVideoIds() != null
                         && currentlyPlayingIndex < relateVideoIds.size() - 1) {
-                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
-                        @Override
-                        public void call(Object o) {
-                        }
+                    appCMSPresenter.openAutoPlayScreen(binder, o -> {
+                        //
                     });
                 } else {
                     closePlayer();
@@ -441,7 +439,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
-
+            //
         }
     }
 
@@ -469,19 +467,36 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        setFullScreenFocus();
+//        setFullScreenFocus();
         super.onWindowFocusChanged(hasFocus);
     }
 
     private void setFullScreenFocus() {
+//        getWindow().getDecorView()
+//                .setSystemUiVisibility(
+//                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+//                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+
         getWindow().getDecorView()
                 .setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+//                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    private void unsetFullScreenFocus() {
+//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        //        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
     @Override
@@ -507,5 +522,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         return null;
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
 
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            setFullScreenFocus();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            unsetFullScreenFocus();
+        }
+    }
 }
