@@ -169,17 +169,17 @@ public class CustomVideoPlayerView
                                     startFreePlayTimer();
                                 } else {
                                     setBackgroundImage();
-                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_logged_in_text));
+                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                     toggleLoginButtonVisibility(false);
                                 }
                             } else {
                                 setBackgroundImage();
-                                showRestrictMessage(getResources().getString(R.string.unsubscribe_logged_in_text));
+                                showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                 toggleLoginButtonVisibility(false);
                             }
                         } catch (Exception e) {
                             setBackgroundImage();
-                            showRestrictMessage(getResources().getString(R.string.unsubscribe_logged_in_text));
+                            showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                             toggleLoginButtonVisibility(false);
                         }
                     });
@@ -235,19 +235,19 @@ public class CustomVideoPlayerView
                                                 subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION"))) {
                                             pausePlayer();
                                             setBackgroundImage();
-                                            showRestrictMessage(getResources().getString(R.string.unsubscribe_logged_in_text));
+                                            showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                             toggleLoginButtonVisibility(false);
                                         }
                                     } else /*Unsubscribed*/{
                                         pausePlayer();
                                         setBackgroundImage();
-                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_logged_in_text));
+                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                         toggleLoginButtonVisibility(false);
                                     }
                                 } catch (Exception e) {
                                     pausePlayer();
                                     setBackgroundImage();
-                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_logged_in_text));
+                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                     toggleLoginButtonVisibility(false);
                                 }
                             });
