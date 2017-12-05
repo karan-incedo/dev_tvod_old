@@ -1929,6 +1929,17 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isAdditionalFragmentVisibile() {
+        if (currentActivity != null) {
+            FrameLayout additionalFragmentView =
+                    (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
+            if (additionalFragmentView != null) {
+                return additionalFragmentView.getVisibility() == View.VISIBLE;
+            }
+        }
+        return false;
+    }
+
     public void showAddOnFragment(boolean showMainFragment, float mainFragmentTransparency) {
         if (currentActivity != null) {
             showMainFragmentView(showMainFragment);
@@ -6747,7 +6758,7 @@ public class AppCMSPresenter {
     }
 
     public void showMoreDialog(String title, String fullText) {
-        if (platformType == PlatformType.ANDROID) {
+        if (platformType == PlatformType.ANDROID && !isAdditionalFragmentVisibile()) {
             if (currentActivity != null &&
                     currentActivity instanceof AppCompatActivity &&
                     isAdditionalFragmentViewAvailable()) {
