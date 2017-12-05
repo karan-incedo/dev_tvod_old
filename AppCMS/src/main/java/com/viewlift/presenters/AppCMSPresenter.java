@@ -359,6 +359,7 @@ public class AppCMSPresenter {
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
     private static final String SUBSCRIPTION_STATUS = "subscription_status_pref_name";
     private static final String PREVIEW_LIVE_STATUS = "live_preview_status_pref_name";
+    private static final String PREVIEW_LIVE_TIMER_VALUE = "live_preview_timer_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String FLOODLIGHT_STATUS_PREF_NAME = "floodlight_status_pref_key";
@@ -5862,7 +5863,21 @@ public class AppCMSPresenter {
         }
         return false;
     }
+    public boolean setPreviewTimerValue(int previewTimer) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(SUBSCRIPTION_STATUS, 0);
+            sharedPrefs.edit().putInt(PREVIEW_LIVE_TIMER_VALUE, previewTimer).apply();
+        }
+        return false;
+    }
 
+    public int getPreviewTimerValue() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(SUBSCRIPTION_STATUS, 0);
+            return sharedPrefs.getInt(PREVIEW_LIVE_TIMER_VALUE, 0);
+        }
+        return 0;
+    }
     public DownloadManager getDownloadManager() {
         return downloadManager;
     }

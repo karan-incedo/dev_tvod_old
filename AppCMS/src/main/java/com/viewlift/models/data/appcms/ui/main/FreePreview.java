@@ -20,6 +20,18 @@ public class FreePreview implements Serializable {
     @Expose
     Length length;
 
+    public boolean isPer_video() {
+        return per_video;
+    }
+
+    public void setPer_video(boolean per_video) {
+        this.per_video = per_video;
+    }
+
+    @SerializedName("per_video")
+    @Expose
+    boolean per_video;
+
     public boolean isFreePreview() {
         return isFreePreview;
     }
