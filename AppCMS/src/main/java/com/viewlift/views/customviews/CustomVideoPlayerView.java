@@ -133,6 +133,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private long videoPlayTime = 0l;
     private boolean isVideoLoaded = false;
     private boolean isVideoPlaying=false;
+    private boolean isTimerRun=true;
 
 //    public CustomVideoPlayerView(Context context, String videoId) {
 //        super(context);
@@ -236,9 +237,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             onUpdatedContentDatum = contentDatum;
             getPermalink(contentDatum);
             setWatchedTime(contentDatum);
+            System.out.println("Runnung Timer is free "+contentDatum.getGist().getFree());
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
-                if (!appCMSPresenter.isUserLoggedIn()) {
+                if (!appCMSPresenter.isUserLoggedIn() && !appCMSPresenter.getPreviewStatus()) {
                     if (shouldRequestAds){
                         requestAds(adsUrl);
                     }else{
@@ -471,14 +473,15 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 @Override
                 public void run() {
                     appCMSPresenter.getUserData(userIdentity -> {
-                        if (!entitlementCheckCancelled &&  getPlayerView().getPlayer()!=null &&  getPlayerView().getPlayer().getPlayWhenReady()) {
-                            if(!isLiveStream){
+                        if (!entitlementCheckCancelled &&  getPlayerView().getPlayer()!=null &&  getPlayerView().getPlayer().getPlayWhenReady() && isTimerRun) {
+                            if(!isLiveStream && appCMSMain.getFeatures().getFreePreview().isPer_video()){
                                 secsViewed = (int) getPlayer().getCurrentPosition() / 1000;
+                            }
+                            if(!appCMSMain.getFeatures().getFreePreview().isPer_video()){
+                                playedVideoSecs=appCMSPresenter.getPreviewTimerValue();
                             }
                             if (((maxPreviewSecs < playedVideoSecs )|| (maxPreviewSecs < secsViewed ))&& (userIdentity == null || !userIdentity.isSubscribed()) ) {
 
-                                System.out.println("maxPreviewSecs-"+maxPreviewSecs);
-                                System.out.println("playedVideoSecs-"+playedVideoSecs);
 
                                 if (onUpdatedContentDatum != null) {
                                     AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
@@ -509,8 +512,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                             } else {
                                 //Log.d(TAG, "User is subscribed - resuming video");
                             }
+                            System.out.println("Runnung Timer"+playedVideoSecs);
                             playedVideoSecs++;
-
+                            appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
                         }
                     });
 
@@ -984,7 +988,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         } else {
             shouldRequestAds = false;
         }
-
+        shouldRequestAds = true;
     }
 
     private void requestAds(String adTagUrl) {
@@ -1005,6 +1009,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.d(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
+        isTimerRun=true;
         playVideos(0,onUpdatedContentDatum);
     }
 
@@ -1022,6 +1027,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 break;
 
             case CONTENT_PAUSE_REQUESTED:
+                isTimerRun=false;
                 isAdDisplayed = true;
                 pausePlayer();
                 break;
@@ -1031,6 +1037,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 break;
 
             case ALL_ADS_COMPLETED:
+                isTimerRun=true;
+
                 if (adsManager != null) {
                     adsManager.destroy();
                     adsManager = null;
