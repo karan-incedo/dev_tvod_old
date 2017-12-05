@@ -864,12 +864,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }, true, 0, 0);
 
-        if (appCMSBinderMap != null && !appCMSBinderMap.isEmpty() && appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
-            AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
-            isDownloadPageOpen = appCMSBinder != null && appCMSBinder.getPageId().equalsIgnoreCase(appCMSPresenter.getDownloadPageId());
-        }
-
         try {
+            if (appCMSBinderMap != null && !appCMSBinderMap.isEmpty() && appCMSBinderStack != null && !appCMSBinderStack.isEmpty()) {
+                AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
+                isDownloadPageOpen = appCMSBinder != null && appCMSBinder.getPageId().equalsIgnoreCase(appCMSPresenter.getDownloadPageId());
+            }
+
             if (appCMSPresenter.isDownloadPage(updatedAppCMSBinder.getPageId()) &&
                     !appCMSPresenter.isNetworkConnected() &&
                     appCMSPresenter.shouldShowNetworkContectivity()) {
