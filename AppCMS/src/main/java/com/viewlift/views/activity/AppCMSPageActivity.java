@@ -2346,7 +2346,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             updatedAppCMSBinder.clearSearchQuery();
         }
 
-        reportFullyDrawn();
+        try {
+            reportFullyDrawn();
+        } catch (Exception e) {
+
+        }
     }
 
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
