@@ -7,7 +7,7 @@ def final hostName = "failarmy.viewlift.com"
 def final hostNameSuffix = "*.failarmy.viewlift.com"
 
 
-def final appVersionName = "0.0.12"
+def final appVersionName = "0.0.13"
 
 buildscript {
     repositories {
@@ -39,7 +39,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 12
+        versionCode 13
 
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -277,6 +277,8 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
+
+    compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'
