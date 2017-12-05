@@ -972,6 +972,7 @@ public class AppCMSPresenter {
                             if (userHistoryContentDatum != null) {
                                 currentContentDatum.getGist().setWatchedTime(userHistoryContentDatum.getGist().getWatchedTime());
                             }
+                            System.out.println("==== "+gson.toJson(currentContentDatum));
                             readyAction.call(currentContentDatum);
                         }
                     }).execute(params);

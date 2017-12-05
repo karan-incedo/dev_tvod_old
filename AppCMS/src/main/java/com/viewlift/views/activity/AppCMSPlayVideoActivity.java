@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
@@ -227,6 +228,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         String videoUrl = "";
         String closedCaptionUrl = null;
         title = gist.getTitle();
+
         if (gist != null && gist.getKisweEventId() != null &&
                 gist.getKisweEventId().trim().length() > 0) {
             appCMSPresenter.launchKiswePlayer(gist.getKisweEventId());
