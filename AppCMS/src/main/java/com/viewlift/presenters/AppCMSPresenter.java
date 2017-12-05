@@ -547,6 +547,7 @@ public class AppCMSPresenter {
     private Action0 afterLoginAction;
     private boolean shouldLaunchLoginAction;
     private Map<String, ContentDatum> userHistoryData;
+    private AppCMSWatchlistResult filmsInUserWatchList;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -1114,6 +1115,31 @@ public class AppCMSPresenter {
 
             }
         });
+    }
+
+    private void populateFilmsInUserWatchlist() {
+        MetaPage watchlistMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.WATCHLIST_PAGE);
+        AppCMSPageUI appCMSPageUI = navigationPages.get(watchlistMetaPage.getPageId());
+        getWatchlistPageContent(appCMSMain.getApiBaseUrl(),
+                watchlistMetaPage.getPageAPI(),
+                appCMSSite.getGist().getSiteInternalName(),
+                true,
+                getPageId(appCMSPageUI),
+                new AppCMSWatchlistAPIAction(true,
+                        false,
+                        true,
+                        appCMSPageUI,
+                        watchlistMetaPage.getPageId(),
+                        watchlistMetaPage.getPageId(),
+                        watchlistMetaPage.getPageName(),
+                        watchlistMetaPage.getPageId(),
+                        false,
+                        null) {
+                    @Override
+                    public void call(AppCMSWatchlistResult appCMSWatchlistResult) {
+                        AppCMSPresenter.this.filmsInUserWatchList = appCMSWatchlistResult;
+                    }
+                });
     }
 
     private void sendUpdateHistoryAction() {
@@ -1735,6 +1761,28 @@ public class AppCMSPresenter {
 
         }
         return null;
+    }
+
+    public boolean isFilmAddedToWatchlist(String filmId) {
+        try {
+            if (filmId != null) {
+                List<Record> watchlistRecords = filmsInUserWatchList.getRecords();
+                int numWatchlistRecords = watchlistRecords.size();
+                for (int i = 0; i < numWatchlistRecords; i++) {
+                    Record watchlistRecord = watchlistRecords.get(i);
+                    if (watchlistRecord != null &&
+                            watchlistRecord.getContentResponse() != null &&
+                            watchlistRecord.getContentResponse().getGist() != null) {
+                        if (filmId.equals(watchlistRecord.getContentResponse().getGist().getId())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return false;
     }
 
     public boolean launchNavigationPage() {
@@ -2796,6 +2844,7 @@ public class AppCMSPresenter {
                             } else {
                                 displayCustomToast("Removed from Watchlist");
                             }
+                            populateFilmsInUserWatchlist();
                         } catch (Exception e) {
                             //Log.e(TAG, "addToWatchlistContent: " + e.toString());
                         }
@@ -3793,6 +3842,7 @@ public class AppCMSPresenter {
             appCMSAddToWatchlistCall.call(url, getAuthToken(),
                     addToWatchlistResult -> {
                         try {
+                            populateFilmsInUserWatchlist();
                             Observable.just(addToWatchlistResult).subscribe(resultAction1);
                         } catch (Exception e) {
                             //Log.e(TAG, "Error deleting all watchlist items: " + e.getMessage());
@@ -6423,6 +6473,7 @@ public class AppCMSPresenter {
             }
 
             userHistoryData.clear();
+            filmsInUserWatchList = null;
             getPageViewLruCache().evictAll();
             clearPageAPIData(this::navigateToHomePage, false);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
@@ -8448,6 +8499,8 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
         } else {
             shouldLaunchLoginAction = true;
+
+            populateFilmsInUserWatchlist();
 
             //Log.d(TAG, "Logging in");
             if (appCMSMain.getServiceType()

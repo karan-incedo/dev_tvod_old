@@ -567,10 +567,11 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                                            appCMSPresenter.getUserVideoStatus(
-                                                    moduleAPI.getContentData().get(0).getGist().getId(),
-                                                    new UpdateImageIconAction((ImageButton) view, appCMSPresenter, moduleAPI.getContentData()
-                                                            .get(0).getGist().getId()));
+                                            UpdateImageIconAction updateImageIconAction =
+                                                    new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
+                                                            appCMSPresenter,
+                                                            moduleAPI.getContentData().get(0).getGist().getId());
+                                            updateImageIconAction.updateWatchlistResponse(appCMSPresenter.isFilmAddedToWatchlist(moduleAPI.getContentData().get(0).getGist().getId()));
                                         }
                                         view.setVisibility(View.VISIBLE);
                                     }
@@ -2084,14 +2085,14 @@ public class ViewCreator {
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null) {
-                            appCMSPresenter.getUserVideoStatus(
-                                    moduleAPI.getContentData().get(0).getGist().getId(),
-                                    new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
-                                            .get(0).getGist().getId()));
+                            UpdateImageIconAction updateImageIconAction =
+                                    new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
+                                            appCMSPresenter,
+                                            moduleAPI.getContentData().get(0).getGist().getId());
+                            updateImageIconAction.updateWatchlistResponse(appCMSPresenter.isFilmAddedToWatchlist(moduleAPI.getContentData().get(0).getGist().getId()));
                         }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
-                        componentViewResult.componentView.setVisibility(View.VISIBLE);
                         break;
 
                     case PAGE_VIDEO_WATCH_TRAILER_KEY:
@@ -3697,7 +3698,8 @@ public class ViewCreator {
         private View.OnClickListener addClickListener;
         private View.OnClickListener removeClickListener;
 
-        UpdateImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+        UpdateImageIconAction(ImageButton imageButton,
+                              AppCMSPresenter presenter,
                               String filmId) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
@@ -3726,6 +3728,16 @@ public class ViewCreator {
                                 R.drawable.add_to_watchlist);
                         UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
                     }, false);
+        }
+
+        public void updateWatchlistResponse(boolean filmQueued) {
+            if (filmQueued) {
+                imageButton.setImageResource(R.drawable.remove_from_watchlist);
+                imageButton.setOnClickListener(removeClickListener);
+            } else {
+                imageButton.setImageResource(R.drawable.add_to_watchlist);
+                imageButton.setOnClickListener(addClickListener);
+            }
         }
 
         @Override
