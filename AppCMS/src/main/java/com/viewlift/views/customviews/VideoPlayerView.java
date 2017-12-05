@@ -75,7 +75,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener,AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
-    protected DataSource.Factory mediaDataSourceFactory;
+    protected Factory mediaDataSourceFactory;
     protected String userAgent;
     boolean isLoadedNext;
     protected ToggleButton ccToggleButton;
@@ -421,11 +421,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
-    private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
+    private Factory buildDataSourceFactory(boolean useBandwidthMeter) {
         return buildDataSourceFactory(useBandwidthMeter ? BANDWIDTH_METER : null);
     }
 
-    private DataSource.Factory buildDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
+    private Factory buildDataSourceFactory(DefaultBandwidthMeter bandwidthMeter) {
         return new UpdatedUriDataSourceFactory(getContext(),
                 bandwidthMeter,
                 buildHttpDataSourceFactory(bandwidthMeter),
@@ -736,7 +736,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private static class UpdatedUriDataSourceFactory implements Factory {
         private final Context context;
         private final TransferListener<? super DataSource> listener;
-        private final DataSource.Factory baseDataSourceFactory;
+        private final Factory baseDataSourceFactory;
         private SignatureCookies signatureCookies;
 
         /**
@@ -763,13 +763,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         /**
          * @param context               A context.
          * @param listener              An optional listener.
-         * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
+         * @param baseDataSourceFactory A {@link Factory} to be used to create a base {@link DataSource}
          *                              for {@link DefaultDataSource}.
          * @param policyCookie          The cookie used for accessing CDN protected data.
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
-                                           DataSource.Factory baseDataSourceFactory, String policyCookie,
+                                           Factory baseDataSourceFactory, String policyCookie,
                                            String signatureCookie, String keyPairIdCookie) {
             this.context = context.getApplicationContext();
             this.listener = listener;

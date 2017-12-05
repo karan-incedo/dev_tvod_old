@@ -983,7 +983,6 @@ public class CustomPlaybackControlView extends FrameLayout {
 
         }
 
-
         @Override
         public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
             // Do nothing.
