@@ -27,7 +27,8 @@ import com.viewlift.views.utilities.ImageLoader;
 public class FrescoImageLoader implements ImageLoader {
     private GradientPostProcessor gradientPostProcessor;
 
-    public FrescoImageLoader() {
+    public FrescoImageLoader(Context context) {
+        Fresco.initialize(context);
         this.gradientPostProcessor = new GradientPostProcessor();
     }
 
