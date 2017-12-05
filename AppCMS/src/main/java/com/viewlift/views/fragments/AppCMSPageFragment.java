@@ -352,6 +352,11 @@ public class AppCMSPageFragment extends Fragment {
                 ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer.cancel();
             ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer = null;
         }
+        if(AppCMSPresenter.videoPlayerView!=null && AppCMSPresenter.videoPlayerView.entitlementCheckTimer!=null){
+            AppCMSPresenter.videoPlayerView.entitlementCheckTimer.cancel();
+            AppCMSPresenter.videoPlayerView.entitlementCheckTimer=null;
+
+        }
     }
 
     @Override
