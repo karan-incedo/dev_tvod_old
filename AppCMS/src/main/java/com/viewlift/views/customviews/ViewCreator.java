@@ -3069,43 +3069,14 @@ public class ViewCreator {
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
+                            setAutoPlayImage(context, component, moduleAPI.getContentData().get(0).getGist().getPosterImageUrl());
+                        } else if (moduleAPI != null && moduleAPI.getContentData() != null &&
+                                !moduleAPI.getContentData().isEmpty() &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getGist() != null &&
                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
-                            int viewWidth = (int) BaseView.getViewWidth(context,
-                                    component.getLayout(),
-                                    ViewGroup.LayoutParams.WRAP_CONTENT);
-                            int viewHeight = (int) BaseView.getViewHeight(context,
-                                    component.getLayout(),
-                                    ViewGroup.LayoutParams.WRAP_CONTENT);
-                            if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                        moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
-                                    Glide.with(context)
-//                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .override(viewWidth, viewHeight)
-                                            .into((ImageView) componentViewResult.componentView);
-                                }
-                            } else if (viewWidth > 0) {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
-                                    Glide.with(context)
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .override(viewWidth, viewHeight)
-                                            .centerCrop()
-                                            .into((ImageView) componentViewResult.componentView);
-                                }
-                            } else {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
-                                    Glide.with(context)
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .into((ImageView) componentViewResult.componentView);
-                                }
-                            }
-                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
-                                    android.R.color.transparent));
-                            componentViewResult.useWidthOfScreen = false;
+                            setAutoPlayImage(context, component, moduleAPI.getContentData().get(0).getGist().getVideoImageUrl());
                         }
                         break;
 
@@ -4412,5 +4383,39 @@ public class ViewCreator {
             }
             return null;
         }
+    }
+
+    void setAutoPlayImage(Context context, Component component, String imgUrl) {
+        int viewWidth = (int) BaseView.getViewWidth(context,
+                component.getLayout(),
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        int viewHeight = (int) BaseView.getViewHeight(context,
+                component.getLayout(),
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
+            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl)) {
+                Glide.with(context)
+                        .load(imgUrl)
+                        .override(viewWidth, viewHeight)
+                        .into((ImageView) componentViewResult.componentView);
+            }
+        } else if (viewWidth > 0) {
+            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl)) {
+                Glide.with(context)
+                        .load(imgUrl)
+                        .override(viewWidth, viewHeight)
+                        .centerCrop()
+                        .into((ImageView) componentViewResult.componentView);
+            }
+        } else {
+            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl)) {
+                Glide.with(context)
+                        .load(imgUrl)
+                        .into((ImageView) componentViewResult.componentView);
+            }
+        }
+        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
+                android.R.color.transparent));
+        componentViewResult.useWidthOfScreen = false;
     }
 }
