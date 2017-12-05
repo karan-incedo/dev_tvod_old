@@ -41,7 +41,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
         setShadowEnabled(false);
         setSelectEffectEnabled(false);
         mAppCMSPresenter  = appCMSPresenter;
-        textColor = mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+        textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             LinearLayout headerTitleContainer =  ((LinearLayout)holder.getHeaderViewHolder().view);
             final RowHeaderView headerTitle = (RowHeaderView)headerTitleContainer.findViewById(R.id.row_header);
             if(null == textColor){
-                textColor = mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+                textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter); /*mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor();*/
             }
             headerTitle.setTextColor(Color.parseColor(textColor));
             //set Alpha for removing any shadow.

@@ -238,8 +238,8 @@ public class Utils {
 
     public static float getItemViewWidth(FireTV fireTV) {
         if (fireTV != null) {
-            if (fireTV.getWidth() != null) {
-                return Float.valueOf(fireTV.getItemHeight());
+            if (fireTV.getItemWidth() != null) {
+                return Float.valueOf(fireTV.getItemWidth());
             }
         }
         return -1.0f;
@@ -548,7 +548,7 @@ public class Utils {
         if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
                 && null != appCMSPresenter.getAppCMSMain().getBrand()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()){
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()){
             color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor();
         }
         return color;

@@ -146,7 +146,7 @@ public class CustomVideoPlayerView
                         toggleLoginButtonVisibility(true);
                     } else {
                         videoData = contentDatum;
-                        if (shouldRequestAds) requestAds(adsUrl);
+                       // if (shouldRequestAds) requestAds(adsUrl);
                         playVideos(0, contentDatum);
                         startFreePlayTimer();
                     }
@@ -159,12 +159,12 @@ public class CustomVideoPlayerView
                                 if ((subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                         subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION"))) {
                                     videoData = contentDatum;
-                                    if (shouldRequestAds) requestAds(adsUrl);
+                                  //  if (shouldRequestAds) requestAds(adsUrl);
                                     playVideos(0, contentDatum);
                                     // start free play time timer
                                 } else if (!userFreePlayTimeExceeded()){
                                     videoData = contentDatum;
-                                    if (shouldRequestAds) requestAds(adsUrl);
+                                  //  if (shouldRequestAds) requestAds(adsUrl);
                                     playVideos(0, contentDatum);
                                     startFreePlayTimer();
                                 } else {
@@ -186,7 +186,7 @@ public class CustomVideoPlayerView
                 }
             } else {
                 videoData = contentDatum;
-                if (shouldRequestAds) requestAds(adsUrl);
+              //  if (shouldRequestAds) requestAds(adsUrl);
                 playVideos(0, contentDatum);
             }
         });
@@ -320,7 +320,11 @@ public class CustomVideoPlayerView
             if (null != appCMSPresenter.getCurrentActivity() &&
                     appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
                 if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
-                    getPlayerView().getPlayer().setPlayWhenReady(true);
+                    if(shouldRequestAds){
+                        requestAds(adsUrl);
+                    }else {
+                        getPlayerView().getPlayer().setPlayWhenReady(true);
+                    }
                 } else {
                     getPlayerView().getPlayer().setPlayWhenReady(false);
                 }
@@ -385,7 +389,7 @@ public class CustomVideoPlayerView
                                                     String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
                                                     if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                                             subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                                        if (shouldRequestAds) requestAds(adsUrl);
+                                                       // if (shouldRequestAds) requestAds(adsUrl);
                                                         playVideos(currentPlayingIndex, contentDatum);
                                                     } else /*user not subscribed*/ {
                                                         setBackgroundImage();
@@ -402,7 +406,7 @@ public class CustomVideoPlayerView
                                         });
                                     }
                                 } else /*Video is free*/ {
-                                    if (shouldRequestAds) requestAds(adsUrl);
+                                   // if (shouldRequestAds) requestAds(adsUrl);
                                     playVideos(currentPlayingIndex, contentDatum);
                                     imageViewContainer.setVisibility(GONE);
                                 }
@@ -689,6 +693,7 @@ public class CustomVideoPlayerView
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
+        startPlayer();
     }
 
     @Override
@@ -726,7 +731,7 @@ public class CustomVideoPlayerView
                 break;
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-                this.startPlayer();
+               // this.startPlayer();
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = true;
                 }
@@ -760,7 +765,7 @@ public class CustomVideoPlayerView
                     adsManager = null;
                 }
                 isAdsDisplaying = false;
-                getPlayer().setPlayWhenReady(true);
+                startPlayer();
                 /*if (isVisible() && isAdded()) {
                     preparePlayer();
                 }
