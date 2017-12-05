@@ -343,6 +343,7 @@ public class AppCMSPresenter {
     private static final String APPS_FLYER_KEY_PREF_NAME = "apps_flyer_pref_name_key";
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
     private static final String SUBSCRIPTION_STATUS = "subscription_status_pref_name";
+    private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -5558,6 +5559,21 @@ public class AppCMSPresenter {
         }
     }
 
+    public long getUserFreePlayTimePreference() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_FREE_PLAY_TIME_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getLong(USER_FREE_PLAY_TIME_SHARED_PREF_NAME, 0);
+        }
+        return 0;
+    }
+
+    public void setUserFreePlayTimePreference(long userFreePlayTime) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_FREE_PLAY_TIME_SHARED_PREF_NAME, 0);
+            sharedPrefs.edit().putLong(USER_FREE_PLAY_TIME_SHARED_PREF_NAME, userFreePlayTime).apply();
+        }
+    }
+
     public String getLoggedInUserName() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_NAME_SHARED_PREF_NAME, 0);
@@ -10213,10 +10229,7 @@ public class AppCMSPresenter {
                             }
                             String adsUrl = null;
 
-                            boolean svodServiceType = appCMSMain.getServiceType().equals(
-                                    currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
-
-                            boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                            boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                             adsUrl = getAdsUrl(pagePath);
                             if(adsUrl == null) {

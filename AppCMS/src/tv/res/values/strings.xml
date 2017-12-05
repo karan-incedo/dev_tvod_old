@@ -63,5 +63,6 @@
     <string name="watch_live_text">WATCH LIVE GAMES - <u>START FREE TRIAL NOW</u> </string>
 
     <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
-    <string name="unsubscribe_text">This video is only available to Monumental Sports Network subscribers.</string>
+    <string name="unsubscribe_text">To continue watching, and access so much more,\nlogin below!</string>
+    <string name="unsubscribe_logged_in_text">To continue watching, and access so much more,\nplease subscribe with this account at our website.</string>
 </resources>
