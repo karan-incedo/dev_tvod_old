@@ -100,7 +100,9 @@ public class ViewCreator {
         htmlSpanner.registerHandler("p", pHandler);
     }
 
-    /** Fix for JM-26 */
+    /**
+     * Fix for JM-26
+     */
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
 
         long durationInSeconds = data.getGist().getRuntime();
@@ -113,10 +115,10 @@ public class ViewCreator {
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = minutes > 0
-                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
-                && !TextUtils.isEmpty(primaryCategory);
+//        boolean appendFirstSep = minutes > 0
+//                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+//        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
+//                && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
 
@@ -137,20 +139,12 @@ public class ViewCreator {
         }
 
         if (!TextUtils.isEmpty(year)) {
-
-            if (appendFirstSep) {
-                infoText.append(context.getString(R.string.text_separator));
-            }
-
-            infoText.append(year);
-
-        }
-
-        if (appendSecondSep) {
             infoText.append(context.getString(R.string.text_separator));
+            infoText.append(year);
         }
 
         if (!TextUtils.isEmpty(primaryCategory)) {
+            infoText.append(context.getString(R.string.text_separator));
             infoText.append(primaryCategory.toUpperCase());
         }
 
@@ -1124,7 +1118,10 @@ public class ViewCreator {
                     appCMSAndroidModules);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView);
         } else {
+
+
             if (module.getComponents() != null) {
+
                 updateModuleHeight(context,
                         module.getLayout(),
                         module.getComponents(),
@@ -1690,6 +1687,11 @@ public class ViewCreator {
                 componentViewResult.componentView = playerView(context);
                 componentViewResult.componentView.setId(R.id.video_player_id);
                 break;
+
+
+            case PAGE_VIDEO_DETAIL_PLAYER_VIEW_KEY:
+                break;
+
 
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
