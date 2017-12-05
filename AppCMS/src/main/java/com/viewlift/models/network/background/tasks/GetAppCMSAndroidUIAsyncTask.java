@@ -78,6 +78,7 @@ public class GetAppCMSAndroidUIAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 }
