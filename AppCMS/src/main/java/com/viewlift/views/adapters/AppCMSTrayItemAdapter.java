@@ -301,6 +301,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             holder.appCMSContinueWatchingPlayButton.setOnClickListener(v -> {
+
                 if (isDownload) {
                     playDownloaded(contentDatum,
                             holder.itemView.getContext(),

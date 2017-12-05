@@ -332,9 +332,7 @@ public class ViewCreator {
                                         }
                                     }
                                     if (videoId != null &&
-                                            AppCMSPresenter.videoPlayerView !=null &&
-                                            AppCMSPresenter.videoPlayerView.getVideoId() != null &&
-                                            !AppCMSPresenter.videoPlayerView.getVideoId().equalsIgnoreCase(videoId)) {
+                                            AppCMSPresenter.videoPlayerView !=null ) {
                                         //((CustomVideoPlayerView) view).getPlayerView().hideController();
                                         View finalView = view;
                                         ((CustomVideoPlayerView) view).setVideoUri(videoId, R.string.loading_video_text);
@@ -4213,7 +4211,7 @@ public class ViewCreator {
             videoPlayerView = new CustomVideoPlayerView(context);
 
         }
-        videoPlayerView = new CustomVideoPlayerView(context);
+       // videoPlayerView = new CustomVideoPlayerView(context);
         if (AppCMSPresenter.videoPlayerView != null ){
             AppCMSPresenter.videoPlayerView.releasePlayer();
             AppCMSPresenter.videoPlayerView= null;
