@@ -100,14 +100,12 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
             }
 
-            Fresco.initialize(getApplicationContext());
-
-            ImageUtils.registerImageLoader(new FrescoImageLoader());
+            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
 
             UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
 
             AppsFlyerLib.getInstance().startTracking(getApplication());
-        });
+        }).run();
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
