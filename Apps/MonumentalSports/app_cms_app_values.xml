@@ -15,7 +15,8 @@
     <string name="fb_login_protocol_scheme">fb910134432450680</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">831155c17a5b911a3d13140c1e00ff34a9b111182810a751c711b1c0ac1a86d2</string>
+    <!--<string name="app_cms_apptentive_api_key">831155c17a5b911a3d13140c1e00ff34a9b111182810a751c711b1c0ac1a86d2</string>-->
+    <string name="app_cms_apptentive_api_key">dfde9505539f2dc1d24700c09fb096b5280ed4cbed0828084540ada79a2b00f7</string>
 
     <!-- apps flyer keys --> <!-- flyer key for now, will change in the future after proper setup-->
     <string name="app_cms_appsflyer_dev_key">5qcxTGtWfXSo746pkCDawf</string>

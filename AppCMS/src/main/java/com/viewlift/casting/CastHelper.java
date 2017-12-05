@@ -17,7 +17,6 @@ import com.google.android.gms.cast.MediaQueueItem;
 import com.google.android.gms.cast.MediaStatus;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
-
 import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.viewlift.R;
@@ -280,6 +279,7 @@ public class CastHelper {
 
         }else if(mSelectedDevice!=null){
             isCastDeviceConnected = true;
+
         } else if (mMediaRouter.getSelectedRoute().getConnectionState()
                 == MediaRouter.RouteInfo.CONNECTION_STATE_CONNECTING) {
             isCastDeviceConnected = true;
@@ -591,7 +591,7 @@ public class CastHelper {
                     }
                     if (isMainMediaId) {
                         playIndexPosition--;
-                    } else {
+                    } else if (listCompareRelatedVideosId != null) {
                         playIndexPosition = listCompareRelatedVideosId.indexOf(CastingUtils.castingMediaId);
                     }
 

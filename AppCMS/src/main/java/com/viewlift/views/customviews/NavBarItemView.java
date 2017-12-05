@@ -134,7 +134,7 @@ public class NavBarItemView extends LinearLayout {
                                 (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_height), getContext());
                     }*/
 
-                    System.out.println(navImageWidth + " imageNave " + navImageHeight);
+
                     LinearLayout.LayoutParams navImageLayoutParams =
                             new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.nav_image_width, getContext()), BaseView.dpToPx(R.dimen.nav_image_height, getContext()));
                     navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
@@ -239,6 +239,12 @@ public class NavBarItemView extends LinearLayout {
         this.highlightColor = highlightColor;
     }
 
+   /* @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+        navImage.setOnClickListener(l);
+        navLabel.setOnClickListener(l);
+    }*/
     private void applyTintToDrawable(@Nullable Drawable drawable, int color) {
         if (drawable != null) {
             drawable.setTint(color);

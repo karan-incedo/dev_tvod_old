@@ -6,15 +6,16 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 
-/**
+/*
  * Created by viewlift on 9/6/17.
  */
 
 @UseStag
 public class Features implements Serializable {
+
     @SerializedName("mobile_app_downloads")
     @Expose
-    boolean mobileAppDonwloads;
+    boolean mobileAppDownloads;
 
     @SerializedName("user_content_rating")
     @Expose
@@ -40,12 +41,12 @@ public class Features implements Serializable {
     @Expose
     boolean trickPlay;
 
-    public boolean isMobileAppDonwloads() {
-        return mobileAppDonwloads;
+    public boolean isMobileAppDownloads() {
+        return mobileAppDownloads;
     }
 
-    public void setMobileAppDonwloads(boolean mobileAppDonwloads) {
-        this.mobileAppDonwloads = mobileAppDonwloads;
+    public void setMobileAppDonwloads(boolean mobileAppDownloads) {
+        this.mobileAppDownloads = mobileAppDownloads;
     }
 
     public boolean isUserContentRating() {

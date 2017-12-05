@@ -108,22 +108,6 @@
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:padding="2dp" />
-            <RatingBar
-                android:id="@+id/app_cms_rating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:numStars="5"
-                android:scaleX="0.5"
-                android:scaleY="0.5"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/app_cms_continue_watching_video_type_image"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:background="@android:color/transparent"
-                android:scaleType="fitCenter"
-                android:visibility="gone" />
 
         </LinearLayout>
 

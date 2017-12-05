@@ -10,4 +10,7 @@
     <item name="download_quality_cancel_button" type="id">download_quality_cancel_button</item>
     <item name="video_player_id" type="id">video_player_id</item>
     <item name="play_live_image_id" type="id">play_live_image_id</item>
+    <item name="full_screen_btn_id" type="id">full_screen_btn_id</item>
+    <item name="custom_exo_controller" type="id"/>
+
 </resources>

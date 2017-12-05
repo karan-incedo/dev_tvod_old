@@ -1,2 +1,0 @@
-Alias name: failarmy
-Password: failarmy

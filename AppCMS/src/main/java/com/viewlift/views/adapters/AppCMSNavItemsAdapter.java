@@ -3,9 +3,8 @@ package com.viewlift.views.adapters;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +28,7 @@ import butterknife.ButterKnife;
  */
 
 public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAdapter.ViewHolder> {
-    private static final String TAG = "AppCMSNavItemsAdapter";
+    //private static final String TAG = "AppCMSNavItemsAdapter";
 
     private final Navigation navigation;
     private final AppCMSPresenter appCMSPresenter;
@@ -124,9 +123,9 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
 
                         if (titleKey == AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY) {
                             appCMSPresenter.navigateToSubscriptionPlansPage(true);
-                        }else if(titleKey==AppCMSUIKeyType.PAGE_TEAMS_KEY) {
+                        } else if (titleKey == AppCMSUIKeyType.PAGE_TEAMS_KEY) {
                             appCMSPresenter.launchTeamNavPage();
-                        }else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
+                        } else if (!appCMSPresenter.navigateToPage(navigationPrimary.getPageId(),
                                 navigationPrimary.getTitle(),
                                 navigationPrimary.getUrl(),
                                 false,
@@ -187,13 +186,12 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                             navigationUser.getTitle(), navigationUser.getUrl(), false);
                                     break;
 
-                                case ANDROID_WATCHLIST_SCREEN_KEY:
                                 case ANDROID_WATCHLIST_NAV_KEY:
 
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                                    () -> appCMSPresenter.launchBlankPage(),
+                                                    appCMSPresenter::launchBlankPage,
                                                     null);
                                             return;
                                         }
@@ -212,7 +210,6 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                                     break;
 
                                 case ANDROID_HISTORY_NAV_KEY:
-                                case ANDROID_HISTORY_SCREEN_KEY:
 
                                     if (!appCMSPresenter.isNetworkConnected()) {
                                         if (!appCMSPresenter.isUserLoggedIn()) {
@@ -281,7 +278,10 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             //Log.d(TAG, "Navigating to page with Title position: " + i);
                             appCMSPresenter.cancelInternalEvents();
                             itemSelected = true;
-                            if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
+                            if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.app_cms_page_shop_title)) &&
+                                    !TextUtils.isEmpty(navigationFooter.getTitle())){
+                               appCMSPresenter.openWebView(navigationFooter.getUrl());
+                            }else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
                                     navigationFooter.getUrl(),
                                     false,

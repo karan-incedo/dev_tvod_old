@@ -6,6 +6,7 @@ import com.viewlift.models.data.appcms.api.Columns;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 @UseStag
 public class Settings implements Serializable {
@@ -43,6 +44,37 @@ public class Settings implements Serializable {
     @SerializedName("showTabBar")
     @Expose
     boolean showTabBar;
+
+    @SerializedName("image")
+    @Expose
+    String image;
+    @SerializedName("backgroundColor")
+    @Expose
+    String backgroundColor;
+
+    @SerializedName("socialLinks")
+    @Expose
+    ArrayList<SocialLinks> socialLinks;
+
+    @SerializedName("links")
+    @Expose
+    ArrayList<Links> links;
+
+    public String getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    public ArrayList<SocialLinks> getSocialLinks() {
+        return socialLinks;
+    }
+
+    public ArrayList<Links> getLinks() {
+        return links;
+    }
+
+    public String getImage() {
+        return image;
+    }
 
     public String getTitle() {
         return title;

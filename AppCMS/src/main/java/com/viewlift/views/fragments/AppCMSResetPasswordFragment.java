@@ -19,8 +19,7 @@ import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.ViewCreator;
 
-
-/**
+/*
  * Created by viewlift on 7/6/17.
  */
 
@@ -43,7 +42,8 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
                 .appCMSPresenter();
 
         int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
-        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        //int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
         int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
 
         Bundle args = getArguments();
@@ -64,13 +64,13 @@ public class AppCMSResetPasswordFragment extends DialogFragment {
 
         Button appCMSSubmitResetPasswordButton = (Button) view.findViewById(R.id.app_cms_submit_reset_password_button);
         appCMSSubmitResetPasswordButton.setOnClickListener(v -> {
-                if (appCMSResetPasswordEmailInput.getText().toString().length() == 0) {
-                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.RESET_PASSWORD,
-                            getActivity().getResources().getString(R.string.email_blank_toast_msg_reset_password),
-                            false,
-                            null,
-                            null);
-                } else {
+            if (appCMSResetPasswordEmailInput.getText().toString().length() == 0) {
+                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.RESET_PASSWORD,
+                        getActivity().getResources().getString(R.string.email_blank_toast_msg_reset_password),
+                        false,
+                        null,
+                        null);
+            } else {
                 appCMSPresenter.resetPassword(appCMSResetPasswordEmailInput.getText().toString());
                 appCMSPresenter.sendCloseOthersAction(null,
                         true,

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.ToggleButton;
 
 import com.google.android.exoplayer2.C;
@@ -40,7 +41,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -58,6 +58,7 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.viewlift.R;
+import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -77,15 +78,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
     boolean isLoadedNext;
-    private ToggleButton ccToggleButton;
+    protected ToggleButton ccToggleButton;
     private boolean isClosedCaptionEnabled = false;
     private Uri uri;
     private Action1<PlayerState> onPlayerStateChanged;
     private Action1<Integer> onPlayerControlsStateChanged;
     private Action1<Boolean> onClosedCaptionButtonClicked;
     private PlayerState playerState;
-    private SimpleExoPlayer player;
-    private SimpleExoPlayerView playerView;
+    protected SimpleExoPlayer player;
+    //protected SimpleExoPlayerView playerView;
+    protected AppCMSSimpleExoPlayerView playerView;
     private int resumeWindow;
     private long resumePosition;
 
@@ -164,8 +166,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             if (ccToggleButton != null) {
                 ccToggleButton.setChecked(isClosedCaptionEnabled);
+                ccToggleButton.setVisibility(VISIBLE);
             }
         }
+
     }
 
     public boolean shouldPlayWhenReady() {
@@ -193,6 +197,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (player != null) {
             player.setPlayWhenReady(false);
         }
+
     }
 
     public void stopPlayer() {
@@ -257,7 +262,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         isClosedCaptionEnabled = closedCaptionEnabled;
     }
 
-    public SimpleExoPlayerView getPlayerView() {
+    public AppCMSSimpleExoPlayerView getPlayerView() {
         return playerView;
     }
 
@@ -290,7 +295,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void initializeView(Context context) {
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
+        playerView = (AppCMSSimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         playerJustInitialized = true;
     }
 
@@ -305,13 +310,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumePosition = C.TIME_UNSET;
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
+        //ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
+
+        ccToggleButton = createCC_ToggleButton();
+        ((RelativeLayout)playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
             }
             isClosedCaptionEnabled = isChecked;
         });
+
 
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
@@ -323,6 +332,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         trackSelector.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(getContext()));
 
+        if (player!= null ){
+            player.release();
+        }
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
         player.setVideoDebugListener(this);
@@ -463,6 +475,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
+    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+    }
+
+    @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
         if (mErrorEventListener != null) {
@@ -471,12 +488,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
-    public void onPositionDiscontinuity() {
+    public void onPositionDiscontinuity(int reason) {
+
+    }
+
+
+    @Override
+    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
 
     }
 
     @Override
-    public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+    public void onSeekProcessed() {
 
     }
 
@@ -941,5 +964,21 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             }
         }
+    }
+    protected ToggleButton createCC_ToggleButton(){
+        ToggleButton mToggleButton=new ToggleButton(getContext());
+        RelativeLayout.LayoutParams toggleLP=new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width,getContext()),BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width,getContext()));
+        toggleLP.addRule(RelativeLayout.CENTER_VERTICAL);
+        toggleLP.addRule(RelativeLayout.RIGHT_OF,R.id.exo_media_controller);
+        toggleLP.setMarginStart(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin,getContext()));
+        toggleLP.setMarginEnd(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin,getContext()));
+        mToggleButton.setLayoutParams(toggleLP);
+        mToggleButton.setChecked(false);
+        mToggleButton.setTextOff("");
+        mToggleButton.setTextOn("");
+        mToggleButton.setText("");
+        mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cc_toggle_selector,null));
+        mToggleButton.setVisibility(GONE);
+        return mToggleButton;
     }
 }

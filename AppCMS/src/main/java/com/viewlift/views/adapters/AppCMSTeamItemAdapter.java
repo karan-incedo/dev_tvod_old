@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,8 +17,8 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
-import com.viewlift.models.data.appcms.ui.android.NavigationTabBar;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.BaseView;
 
 import java.util.List;
 import java.util.Map;
@@ -33,7 +35,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
     private static final String TAG = "AppCMSTeamItemAdapter";
 
     private final Resources resources;
-    private final NavigationTabBar navigationTabBar;
+    private final NavigationPrimary navigationTabBar;
     private final AppCMSPresenter appCMSPresenter;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final int textColor;
@@ -45,7 +47,7 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
     private boolean itemSelected;
     private int numItemClickedPosition = -1;
 
-    public AppCMSTeamItemAdapter(List<NavigationTabBar> navigationTabBarList,
+    public AppCMSTeamItemAdapter(List<NavigationPrimary> navigationTabBarList,
                                  AppCMSPresenter appCMSPresenter,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  boolean userLoggedIn,
@@ -71,16 +73,22 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (navigationTabBar != null) {
-            NavigationTabBar navigationItem = (NavigationTabBar) navigationTabBar.getItems().get(position);
+            RecyclerView.LayoutParams parentParams=(RecyclerView.LayoutParams) holder.parentLayout.getLayoutParams();
+            parentParams.setMargins(0,
+                    BaseView.dpToPx(R.dimen.app_cms_team_list_view_margin_top, holder.itemView.getContext()),
+                    0, 0);
+            holder.parentLayout.setLayoutParams(parentParams);
+            NavigationPrimary navigationItem = navigationTabBar.getItems().get(position);
             holder.navItemLabel.setText(navigationItem.getTitle());
-            System.out.println(navigationItem.getIcon());
-            if (navigationItem.getIcon().contains("http://") ||navigationItem.getIcon().contains("https://")){
+
+            if (navigationItem.getIcon().contains("http://") || navigationItem.getIcon().contains("https://")) {
                 Glide.with(holder.itemView.getContext())
                         .load(navigationItem.getIcon())
-                        .override(100,100)
+                        .override(100, 100)
                         .into((ImageView) holder.navItemLogo);
                 holder.navItemLogo.setVisibility(View.VISIBLE);
-            }else {
+            } else {
+
                 int resID = resources.getIdentifier(navigationItem.getIcon().replace("-", "_"), "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
                 holder.navItemLogo.setImageDrawable(resources.getDrawable(resID));
                 holder.navItemLogo.setVisibility(View.VISIBLE);
@@ -146,12 +154,13 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
 
         @BindView(R.id.nav_item_logo)
         ImageView navItemLogo;
+        @BindView(R.id.parent_layout)
+        LinearLayout parentLayout;
 
         View itemView;
 
         public ViewHolder(View itemView) {
             super(itemView);
-
             ButterKnife.bind(this, itemView);
             this.itemView = itemView;
             navItemLogo.setVisibility(View.VISIBLE);

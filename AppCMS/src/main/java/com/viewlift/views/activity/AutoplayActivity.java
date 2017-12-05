@@ -48,19 +48,20 @@ public class AutoplayActivity
         appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
         try {
-        Intent intent = getIntent();
-        Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
-        binder = (AppCMSVideoPageBinder)
-                bundleExtra.getBinder(getString(R.string.app_cms_video_player_binder_key));
-        setContentView(R.layout.activity_autoplay);
+            Intent intent = getIntent();
+            Bundle bundleExtra = intent.getBundleExtra(getString(R.string.app_cms_video_player_bundle_binder_key));
+            binder = (AppCMSVideoPageBinder)
+                    bundleExtra.getBinder(getString(R.string.app_cms_video_player_binder_key));
+            setContentView(R.layout.activity_autoplay);
 
-        //Restore the fragment's instance
-        autoplayFragment = (AutoplayFragment) getSupportFragmentManager()
-                .findFragmentByTag(binder.getContentData().getGist().getId());
-        if (autoplayFragment == null) {
-            createFragment(binder);
+            //Restore the fragment's instance
+            autoplayFragment = (AutoplayFragment) getSupportFragmentManager()
+                    .findFragmentByTag(binder.getContentData().getGist().getId());
+            if (autoplayFragment == null) {
+                createFragment(binder);
             }
         } catch (Exception e) {
+
         }
     }
 
@@ -84,7 +85,7 @@ public class AutoplayActivity
                 binder.getCurrentPlayingVideoIndex() + 1,
                 binder.getContentData().getGist().getWatchedTime());
         binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
-//        finish();
+        finish();
     }
 
     @Override

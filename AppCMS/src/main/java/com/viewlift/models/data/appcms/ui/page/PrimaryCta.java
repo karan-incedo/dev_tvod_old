@@ -32,6 +32,14 @@ public class PrimaryCta implements Serializable {
     @Expose
     String url;
 
+    @SerializedName("bannerText")
+    @Expose
+    String bannerText;
+
+    public String getBannerText() {
+        return bannerText;
+    }
+
     public String getCtaText() {
         return ctaText;
     }

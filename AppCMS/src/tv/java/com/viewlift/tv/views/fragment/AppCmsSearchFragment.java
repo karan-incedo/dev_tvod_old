@@ -475,7 +475,7 @@ public class AppCmsSearchFragment extends Fragment {
                     String secondEncoding = URLEncoder.encode(encodedString , "UTF-8");
 
                     final String url = getUrl(secondEncoding);
-                    System.out.println("Search result == " + editText.getText().toString().trim() + "url = " + url);
+
                     lastSearchedString = editText.getText().toString().trim();
                     searchTask.execute(url);
                 }catch (Exception e){

@@ -84,6 +84,7 @@ public class RESTUnitTest {
         AppCMSAndroidUICall appCMSAndroidUICall = appCMSUIComponent.appCMSAndroidCall();
         AppCMSAndroidUI appCMSAndroidUI = appCMSAndroidUICall.call(APP_CMS_ANDROID_URL,
                 false,
+                false,
                 0);
         assertNotNull(appCMSAndroidUI);
         assertNotNull(appCMSAndroidUI.getMetaPages());
@@ -97,7 +98,7 @@ public class RESTUnitTest {
     @Test
     public void test_appCMSSplashPageCall() throws Exception {
         AppCMSPageUICall appCMSPageUICall = appCMSUIComponent.appCMSPageCall();
-        AppCMSPageUI splashAppCMSPageUI = appCMSPageUICall.call(APP_CMS_SPLASH_PAGE_URL, 0L, false);
+        AppCMSPageUI splashAppCMSPageUI = appCMSPageUICall.call(APP_CMS_SPLASH_PAGE_URL, false, false);
         assertNotNull(splashAppCMSPageUI);
     }
 
@@ -107,8 +108,10 @@ public class RESTUnitTest {
         AppCMSPageAPI appCMSPageAPI = appCMSPageAPICall.call(null,
                 null,
                 null,
+                null,
                 false,
-                0);
+                0,
+                null);
         assertNotNull(appCMSPageAPI);
     }
 }

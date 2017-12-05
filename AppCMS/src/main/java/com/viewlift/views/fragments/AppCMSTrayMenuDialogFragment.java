@@ -8,12 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 
-/**
+/*
  * Created by ram.kailash on 10/10/2017.
  */
 
@@ -21,17 +22,10 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
 
     private AppCMSPresenter appCMSPresenter;
     private ContentDatum contentDatum;
-    private boolean isAdded,isDownloaded;
-
-    public interface TrayMenuClickListener{
-
-       public void addToWatchListClick(boolean isAddedOrNot, ContentDatum contentDatum);
-       public void downloadClick(ContentDatum contentDatum);
-    }
-
+    private boolean isAdded, isDownloaded;
     private TrayMenuClickListener trayMenuClickListener;
 
-    public static AppCMSTrayMenuDialogFragment newInstance(boolean isAdded, ContentDatum contentDatum){
+    public static AppCMSTrayMenuDialogFragment newInstance(boolean isAdded, ContentDatum contentDatum) {
         AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = new AppCMSTrayMenuDialogFragment();
         appCMSTrayMenuDialogFragment.isAdded = isAdded;
         appCMSTrayMenuDialogFragment.contentDatum = contentDatum;
@@ -47,14 +41,14 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
                 .appCMSPresenter();
     }
 
-    public void setMoreClickListener(TrayMenuClickListener moreClickListener){
+    public void setMoreClickListener(TrayMenuClickListener moreClickListener) {
         this.trayMenuClickListener = moreClickListener;
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.more_dialog,container,false);
+        return inflater.inflate(R.layout.more_dialog, container, false);
     }
 
     @Override
@@ -64,35 +58,54 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
         Button addToWatchList = (Button) view.findViewById(R.id.moreDialogAddToWatchListBtn);
         Button downloadBtn = (Button) view.findViewById(R.id.moreDialogDownloadBtn);
         Button closeBtn = (Button) view.findViewById(R.id.moreDialogCloseBtn);
-        addToWatchList.setText(isAdded?"REMOVE TO WATCHLIST":"ADD TO WATCHLIST");
-        addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-        addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-        isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getId());
-        downloadBtn.setVisibility(isDownloaded?View.GONE:View.VISIBLE);
-        downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-        downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-        closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+
+        addToWatchList.setText(isAdded ? "REMOVE TO WATCHLIST" : "ADD TO WATCHLIST");
+        addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getBackgroundColor()));
+        addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getTextColor()));
+        isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId());
+        //downloadBtn.setVisibility(isDownloaded?View.GONE:View.VISIBLE);
+        if (!isDownloaded && !appCMSPresenter.isVideoDownloading(contentDatum.getGist().getId())) {
+            downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                    .getCta().getPrimary().getBackgroundColor()));
+            downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                    .getCta().getPrimary().getTextColor()));
+            downloadBtn.setOnClickListener(this);
+        }else {
+            downloadBtn.setBackgroundColor(Color.GRAY);
+            downloadBtn.setText(isDownloaded?"Downloaded":"Downloading...");
+            downloadBtn.setActivated(false);
+            downloadBtn.setOnClickListener(null);
+        }
+
+        closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                .getCta().getPrimary().getTextColor()));
+
         addToWatchList.setOnClickListener(this);
-        downloadBtn.setOnClickListener(this);
+
         closeBtn.setOnClickListener(this);
-        downloadBtn.setVisibility(appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()) ? View.GONE : View.VISIBLE);
     }
 
     @Override
     public void onClick(View v) {
-        if(v.getId() == R.id.moreDialogAddToWatchListBtn){
-
+        if (v.getId() == R.id.moreDialogAddToWatchListBtn) {
             dismiss();
-            if(trayMenuClickListener != null)
-                trayMenuClickListener.addToWatchListClick(!isAdded,contentDatum);
-        }else if(v.getId() == R.id.moreDialogDownloadBtn){
-
+            if (trayMenuClickListener != null)
+                trayMenuClickListener.addToWatchListClick(!isAdded, contentDatum);
+        } else if (v.getId() == R.id.moreDialogDownloadBtn) {
             dismiss();
-            if(trayMenuClickListener != null)
+            if (trayMenuClickListener != null)
                 trayMenuClickListener.downloadClick(contentDatum);
-        }else{
+        } else {
             dismiss();
         }
     }
 
+    public interface TrayMenuClickListener {
+
+        void addToWatchListClick(boolean isAddedOrNot, ContentDatum contentDatum);
+
+        void downloadClick(ContentDatum contentDatum);
+    }
 }

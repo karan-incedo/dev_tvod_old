@@ -85,7 +85,7 @@ public class CastServiceProvider {
     private ShowcaseView mShowCaseView;
     private boolean allowFreePlay;
     /**
-     * callBackCastHelper gets the calls related to chormecast devices selections
+     * callBackCastHelper gets the calls related to chromecast devices selections
      */
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
@@ -93,6 +93,7 @@ public class CastServiceProvider {
             if (mActivity != null && mActivity instanceof AppCMSPlayVideoActivity) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             }
+
             stopRokuDiscovery();
         }
 
@@ -478,10 +479,10 @@ public class CastServiceProvider {
             if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
                 CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
                         .getSessionManager().endCurrentSession(true);
-                if (appCMSPresenter.isUserLoggedIn()) {
+                if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                             null);
-                } else {
+                } else if (appCMSPresenter.isAppSVOD()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
