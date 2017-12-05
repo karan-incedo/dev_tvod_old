@@ -346,6 +346,8 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
                 getActivity().isFinishing()) {
             ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).releasePlayer();
+        }
+        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
             if (((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer != null)
                 ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer.cancel();
             ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer = null;

@@ -236,6 +236,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             onUpdatedContentDatum = contentDatum;
             getPermalink(contentDatum);
             setWatchedTime(contentDatum);
+            System.out.println("Runnung Timer is free "+contentDatum.getGist().getFree());
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn()) {
@@ -453,13 +454,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 public void run() {
                     appCMSPresenter.getUserData(userIdentity -> {
                         if (!entitlementCheckCancelled &&  getPlayerView().getPlayer()!=null &&  getPlayerView().getPlayer().getPlayWhenReady()) {
-                            if(!isLiveStream){
+                            if(!isLiveStream && appCMSMain.getFeatures().getFreePreview().isPer_video()){
                                 secsViewed = (int) getPlayer().getCurrentPosition() / 1000;
+                            }
+                            if(!appCMSMain.getFeatures().getFreePreview().isPer_video()){
+                                playedVideoSecs=appCMSPresenter.getPreviewTimerValue();
                             }
                             if (((maxPreviewSecs < playedVideoSecs )|| (maxPreviewSecs < secsViewed ))&& (userIdentity == null || !userIdentity.isSubscribed()) ) {
 
-                                System.out.println("maxPreviewSecs-"+maxPreviewSecs);
-                                System.out.println("playedVideoSecs-"+playedVideoSecs);
 
                                 if (onUpdatedContentDatum != null) {
                                     AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
@@ -490,8 +492,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                             } else {
                                 //Log.d(TAG, "User is subscribed - resuming video");
                             }
+                            System.out.println("Runnung Timer"+playedVideoSecs);
                             playedVideoSecs++;
-
+                            appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
                         }
                     });
 
@@ -965,7 +968,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         } else {
             shouldRequestAds = false;
         }
-
+        shouldRequestAds = true;
     }
 
     private void requestAds(String adTagUrl) {

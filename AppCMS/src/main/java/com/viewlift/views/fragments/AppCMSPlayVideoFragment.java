@@ -102,6 +102,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     Animation animSequential, animFadeIn, animFadeOut, animTranslate;
     boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
     int maxPreviewSecs = 0;
+    int playedVideoSecs = 0;
+
     private AppCMSPresenter appCMSPresenter;
     private String fontColor;
     private String title;
@@ -338,6 +340,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             };
             refreshTokenTimer.schedule(refreshTokenTimerTask, 0, 600000);
         }
+        System.out.println("Runnung Timer video details freeContent "+freeContent);
 
         if (appCMSPresenter.isAppSVOD() &&
                 !isTrailer &&
@@ -370,8 +373,13 @@ public class AppCMSPlayVideoFragment extends Fragment
                             userIdentityObj = userIdentity;
                             //Log.d(TAG, "Video player entitlement check triggered");
                             if (!entitlementCheckCancelled) {
-                                int secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
-                                if (maxPreviewSecs < secsViewed && (userIdentity == null || !userIdentity.isSubscribed())) {
+                                int secsViewed=0;
+                                if(appCMSMain.getFeatures().getFreePreview().isPer_video()){
+                                    secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
+                                }else{
+                                    playedVideoSecs=appCMSPresenter.getPreviewTimerValue();
+                                }
+                                if (((maxPreviewSecs < playedVideoSecs )|| (maxPreviewSecs < secsViewed )) && (userIdentity == null || !userIdentity.isSubscribed())) {
 
                                     if (onUpdateContentDatumEvent != null) {
                                         AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
@@ -416,6 +424,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 } else {
                                     //Log.d(TAG, "User is subscribed - resuming video");
                                 }
+                                System.out.println("Runnung Timer video details"+playedVideoSecs);
+                                playedVideoSecs++;
+                                appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
                             }
                         });
                     }
