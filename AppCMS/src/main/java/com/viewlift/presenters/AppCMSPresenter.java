@@ -5559,6 +5559,10 @@ public class AppCMSPresenter {
         }
     }
 
+    /**
+     * Get the total remaining free time of the user.
+     * @return total remaining time in milli seconds
+     */
     public long getUserFreePlayTimePreference() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_FREE_PLAY_TIME_SHARED_PREF_NAME, 0);
@@ -5567,6 +5571,10 @@ public class AppCMSPresenter {
         return 0;
     }
 
+    /**
+     * Set the total remaining free time of the user.
+     * @param userFreePlayTime in milli seconds
+     */
     public void setUserFreePlayTimePreference(long userFreePlayTime) {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_FREE_PLAY_TIME_SHARED_PREF_NAME, 0);

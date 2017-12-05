@@ -110,6 +110,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean sentBeaconPlay;
     private boolean sentBeaconFirstFrame;
     private long mTotalVideoDuration;
+    int maxPreviewSecs = 0;
 
 
     public VideoPlayerView getVideoPlayerView() {
@@ -205,6 +206,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
             freeContent = args.getBoolean(getString(R.string.free_content_key));
+            Log.d(TAG, "ANAS: free " + freeContent);
         }
 
         appCMSPresenter =
@@ -413,30 +415,84 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 );
 
 
+        startTimer();
+
+        if (!shouldRequestAds) {
+            //videoPlayerView.getPlayer().setPlayWhenReady(true);
+            preparePlayer();
+        }
+
+
+        if (!sentBeaconPlay) {
+            appCMSPresenter.sendBeaconMessage(filmId,
+                    permaLink,
+                    parentScreenName,
+                    videoPlayerView.getCurrentPosition(),
+                    false,
+                    AppCMSPresenter.BeaconEvent.PLAY,
+                    "Video",
+                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                    String.valueOf(videoPlayerView.getVideoHeight()),
+                    String.valueOf(videoPlayerView.getVideoWidth()),
+                    mStreamId,
+                    0d,
+                    0,
+                    false);
+            sentBeaconPlay = true;
+            mStartBufferMilliSec = new Date().getTime();
+        }
+
+        beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
+                appCMSPresenter,
+                filmId,
+                permaLink,
+                isTrailer,
+                parentScreenName,
+                videoPlayerView,
+                mStreamId);
+
+        beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
+                appCMSPresenter,
+                filmId,
+                permaLink,
+                parentScreenName,
+                videoPlayerView,
+                mStreamId);
+
+        return rootView;
+    }
+
+    private void startTimer() {
         if (appCMSPresenter.isAppSVOD() &&
                 !isTrailer &&
                 !freeContent &&
                 !appCMSPresenter.isUserSubscribed()) {
             int entitlementCheckMultiplier = 5;
+            boolean isPerVideo = false;
             entitlementCheckCancelled = false;
 
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             if (appCMSMain != null &&
                     appCMSMain.getFeatures() != null &&
                     appCMSMain.getFeatures().getFreePreview() != null &&
-                    appCMSMain.getFeatures().getFreePreview().isFreePreview() &&
-                    appCMSMain.getFeatures().getFreePreview().getLength() != null &&
-                    appCMSMain.getFeatures().getFreePreview().getLength().getUnit().equalsIgnoreCase("Minutes")) {
-                try {
-                    entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures().getFreePreview().getLength().getMultiplier());
-                } catch (Exception e) {
-                    Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                    appCMSMain.getFeatures().getFreePreview().isFreePreview()) {
+                if (appCMSMain.getFeatures().getFreePreview().getLength() != null &&
+                        appCMSMain.getFeatures().getFreePreview().getLength().getUnit()
+                                .equalsIgnoreCase("Minutes")) {
+                    try {
+                        entitlementCheckMultiplier = Integer.parseInt(appCMSMain.getFeatures()
+                                .getFreePreview().getLength().getMultiplier());
+                    } catch (Exception e) {
+                        //Log.e(TAG, "Error parsing free preview multiplier value: " + e.getMessage());
+                    }
                 }
+                isPerVideo = appCMSMain.getFeatures().getFreePreview().isPerVideo();
             }
 
             final int maxPreviewSecs = entitlementCheckMultiplier * 60;
             final boolean[] isSubscribe = {false};
 
+            boolean finalIsPerVideo = isPerVideo;
             appCMSPresenter.getUserData(userIdentity -> {
                         if (null != userIdentity)
                             isSubscribe[0] = userIdentity.isSubscribed();
@@ -446,7 +502,12 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                 @Override
                                 public void run() {
                                     if (!entitlementCheckCancelled) {
-                                        int secsViewed = (int) videoPlayerView.getPlayer().getCurrentPosition() / 1000;
+                                        int secsViewed;
+                                        if (finalIsPerVideo) {
+                                            secsViewed = (int) videoPlayerView.getPlayer().getCurrentPosition() / 1000;
+                                        } else {
+                                            secsViewed = (int) (appCMSPresenter.getUserFreePlayTimePreference() / 1000);
+                                        }
                                         Log.d(TAG, "secsViewed  is = " + secsViewed + " totalPreviewTime = " + maxPreviewSecs);
                                         if (maxPreviewSecs < secsViewed && !isSubscribe[0]) {
                                             getActivity().runOnUiThread(new Runnable() {
@@ -538,6 +599,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                             entitlementCheckCancelled = true;
                                         }
                                     }
+                                    if (!finalIsPerVideo && videoPlayerView.getPlayer().getPlayWhenReady()) {
+                                        /*if perVideo is false and the player is not playing*/
+                                        appCMSPresenter.setUserFreePlayTimePreference(appCMSPresenter.getUserFreePlayTimePreference() + 1000);
+                                    }
                                 }
                             };
                             entitlementCheckTimer = new Timer();
@@ -546,50 +611,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                     }
             );
         }
-
-        if (!shouldRequestAds) {
-            //videoPlayerView.getPlayer().setPlayWhenReady(true);
-            preparePlayer();
-        }
-
-
-        if (!sentBeaconPlay) {
-            appCMSPresenter.sendBeaconMessage(filmId,
-                    permaLink,
-                    parentScreenName,
-                    videoPlayerView.getCurrentPosition(),
-                    false,
-                    AppCMSPresenter.BeaconEvent.PLAY,
-                    "Video",
-                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                    String.valueOf(videoPlayerView.getVideoHeight()),
-                    String.valueOf(videoPlayerView.getVideoWidth()),
-                    mStreamId,
-                    0d,
-                    0,
-                    false);
-            sentBeaconPlay = true;
-            mStartBufferMilliSec = new Date().getTime();
-        }
-
-        beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
-                appCMSPresenter,
-                filmId,
-                permaLink,
-                isTrailer,
-                parentScreenName,
-                videoPlayerView,
-                mStreamId);
-
-        beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
-                appCMSPresenter,
-                filmId,
-                permaLink,
-                parentScreenName,
-                videoPlayerView,
-                mStreamId);
-
-        return rootView;
     }
 
     public void cancelTimer() {

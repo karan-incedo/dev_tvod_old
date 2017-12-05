@@ -517,4 +517,12 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     public void onRetry(Bundle bundle) {
 
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (appCMSPlayVideoFragment != null) {
+            appCMSPlayVideoFragment.cancelTimer();
+        }
+    }
 }
