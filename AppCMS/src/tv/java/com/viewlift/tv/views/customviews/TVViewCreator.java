@@ -546,6 +546,17 @@ public class TVViewCreator {
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
                                 false));
+
+                if(null != component.getLayout().getTv().getOrientation()){
+                    String orientation =  component.getLayout().getTv().getOrientation();
+                    if(orientation.equalsIgnoreCase("horizontal")){
+                        ((RecyclerView) componentViewResult.componentView)
+                                .setLayoutManager(new LinearLayoutManager(context,
+                                        LinearLayoutManager.HORIZONTAL,
+                                        false));
+                    }
+                }
+
                 AppCMSTVTrayAdapter appCMSTVTrayItemAdapter = new AppCMSTVTrayAdapter(context,
                         moduleAPI.getContentData(),
                         component,

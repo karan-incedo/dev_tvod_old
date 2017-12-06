@@ -540,6 +540,16 @@ public class AppCmsNavigationFragment extends Fragment {
                         subNavigationVisibilityListener.showSubNavigation(true, true);
                         appCmsPresenter.sendGaScreen("Team Navigation Page");
                         Utils.pageLoading(false, getActivity());
+
+                      /* appCmsPresenter.navigateToTeamPage(
+                               primary.getPageId(),
+                               primary.getTitle(),
+                               primary.getUrl(),
+                               primary,
+                               primary.getItems(),
+                               false
+                       );*/
+
                     }
 
                     /*Watchlist*/

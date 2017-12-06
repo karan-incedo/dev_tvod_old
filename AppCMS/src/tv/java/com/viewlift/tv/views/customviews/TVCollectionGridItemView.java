@@ -1,6 +1,7 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -230,6 +231,54 @@ public class TVCollectionGridItemView extends TVBaseView {
                     });
                     view.setBackground(Utils.getTrayBorder(context, borderColor, component));
                     view.setPadding(1, 3, 1, 3);
+                }else if(componentKey == AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY){
+                    int childViewWidth = (int) getViewWidth(getContext(),
+                            childComponent.getLayout(),
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+                    int childViewHeight = (int) getViewHeight(getContext(),
+                            childComponent.getLayout(),
+                            getViewHeight(getContext(),
+                                    component.getLayout(),
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                        String imageUrl =
+                                context.getString(R.string.app_cms_image_with_resize_query,
+                                        data.getGist().getVideoImageUrl(),
+                                        childViewWidth,
+                                        childViewHeight);
+                      /*  Log.d(TAG, "Loading image Title: " + data.getGist().getTitle());
+                        Log.d(TAG, "Loading image: " + imageUrl);*/
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .override(childViewWidth, childViewHeight)
+                                .centerCrop()
+                                .into((ImageView) view);
+
+                        bringToFront = false;
+                        view.setFocusable(true);
+
+                        view.setBackgroundResource(R.drawable.st_menu_color_selector);
+                        view.setOnClickListener(v ->
+                                {
+                           // Toast.makeText(context, "Clicked on " + data.getGist().getTitle(), Toast.LENGTH_SHORT).show();
+                            appCMSPresenter.showLoadingDialog(true);
+
+                             appCMSPresenter.navigateToTVPage(
+                                    data.getGist().getId(),
+                                     data.getGist().getTitle(),
+                                    data.getGist().getPermalink(),
+                                    false,
+                                    Uri.EMPTY,
+                                    true,
+                                   false,
+                                    false);
+
+                            new android.os.Handler().postDelayed(() -> view.setClickable(true), 3000);
+                        });
+
+                    }
+
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {

@@ -83,17 +83,19 @@ public class AppCMSTVTrayAdapter
         if (this.adapterData == null) {
             this.adapterData = new ArrayList<>();
         }
-        switch (jsonValueKeyMap.get(viewType)) {
-            case PAGE_HISTORY_MODULE_KEY:
-                this.isHistory = true;
-                break;
 
-            case PAGE_WATCHLIST_MODULE_KEY:
-                this.isWatchlist = true;
-                break;
+        if(null != jsonValueKeyMap.get(viewType)) {
+            switch (jsonValueKeyMap.get(viewType)) {
+                case PAGE_HISTORY_MODULE_KEY:
+                    this.isHistory = true;
+                    break;
 
-            default:
-                break;
+                case PAGE_WATCHLIST_MODULE_KEY:
+                    this.isWatchlist = true;
+                    break;
+                default:
+                    break;
+            }
         }
         sortData();
     }
