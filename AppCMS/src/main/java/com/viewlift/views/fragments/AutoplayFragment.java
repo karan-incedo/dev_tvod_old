@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -31,14 +32,10 @@ import com.viewlift.views.modules.AppCMSPageViewModule;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
-/**
- * This fragment is the manifestation of the autoplay screen which opens whenever a movie gets
- * completed and a new movie is to be played
- */
 public class AutoplayFragment extends Fragment {
-    //private static final String TAG = "AutoplayFragment";
-    private static final int TOTAL_COUNTDOWN_IN_MILLIS = 13000;
     private static final int COUNTDOWN_INTERVAL_IN_MILLIS = 1000;
+    private static final String TAG = "AutoplayFragment";
+    private int totalCountdownInMillis;
     private FragmentInteractionListener fragmentInteractionListener;
     private AppCMSVideoPageBinder binder;
     private AppCMSPresenter appCMSPresenter;
@@ -89,7 +86,7 @@ public class AutoplayFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (appCMSViewComponent == null && binder != null) {
             appCMSViewComponent = buildAppCMSViewComponent();
@@ -148,7 +145,7 @@ public class AutoplayFragment extends Fragment {
             Uri imageURI = null;
             boolean loadImageFromLocalSystem;
 
-            // TODO: Nov 15, '17 getVideoImageUrl & getPosterImageUrl will be replaced with imageGist.
+            // TODO: getVideoImageUrl & getPosterImageUrl to be replaced with imageGist.
 
             if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
                 if (URLUtil.isFileUrl(binder.getContentData().getGist().getVideoImageUrl())) {
@@ -200,7 +197,9 @@ public class AutoplayFragment extends Fragment {
     }
 
     private void startCountdown() {
-        countdownTimer = new CountDownTimer(TOTAL_COUNTDOWN_IN_MILLIS, COUNTDOWN_INTERVAL_IN_MILLIS) {
+        totalCountdownInMillis = Integer.valueOf(appCMSPresenter.getCurrentActivity().getResources()
+                .getString(R.string.app_cms_autoplay_countdown_timer));
+        countdownTimer = new CountDownTimer(totalCountdownInMillis, COUNTDOWN_INTERVAL_IN_MILLIS) {
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -319,6 +318,7 @@ public class AutoplayFragment extends Fragment {
 
     public interface FragmentInteractionListener {
         void onCountdownFinished();
+
         void cancelCountdown();
     }
 }

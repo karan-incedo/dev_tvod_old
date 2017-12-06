@@ -28,6 +28,9 @@
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
 
+    <!--AutoPlay Timer: add an extra 2000 millis because it takes roughly 2 seconds to load-->
+    <string name="app_cms_autoplay_countdown_timer">4000</string>
+
     <bool name="display_chromecast_overlay">false</bool>
 
     <string name="search_films">Search videos</string>
