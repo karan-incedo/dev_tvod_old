@@ -219,6 +219,7 @@ public class ViewCreator {
         if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
             videoPlayerView.setUri(Uri.parse(url), null);
         }
+
         videoPlayerView.setFilmId(filmId);
         videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
 
@@ -2259,11 +2260,10 @@ public class ViewCreator {
 
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
                         if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)
-                                && appCMSPresenter.isUserSubscribed()) {
-//                            componentViewResult.componentView.setEnabled(false);
+                                && ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed())
+                                || appCMSPresenter.isUserLoggedIn())) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                         } else {
-//                            componentViewResult.componentView.setEnabled(true);
                             componentViewResult.componentView.setVisibility(View.VISIBLE);
                             componentViewResult.componentView.setOnClickListener(v -> {
                                 if (moduleAPI != null &&
@@ -2320,7 +2320,8 @@ public class ViewCreator {
                         componentViewResult.componentView.setPadding(40, 40, 40, 40);
 
                         if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)
-                                && appCMSPresenter.isUserSubscribed()) {
+                                && ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed())
+                                || appCMSPresenter.isUserLoggedIn())) {
                             componentViewResult.componentView.setBackground(null);
                         } else {
                             componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
@@ -2331,7 +2332,8 @@ public class ViewCreator {
 
                     case PAGE_PLAY_LIVE_IMAGE_KEY:
                         if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)
-                                && appCMSPresenter.isUserSubscribed()) {
+                                && ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed())
+                                || appCMSPresenter.isUserLoggedIn())) {
                             componentViewResult.componentView.setBackground(null);
                         } else {
                             componentViewResult.componentView.setBackground(ContextCompat.getDrawable(context, R.drawable.play_icon));
@@ -3128,20 +3130,14 @@ public class ViewCreator {
 
                     case PAGE_BANNER_DETAIL_ICON:
                         componentViewResult.componentView = new ImageView(context);
-//                        int viewWidthForBannerIcon = (int) BaseView.getViewWidth(context,
-//                                component.getLayout(),
-//                                ViewGroup.LayoutParams.WRAP_CONTENT);
-//                        int viewHeightForBannerIcon = (int) BaseView.getViewHeight(context,
-//                                component.getLayout(),
-//                                ViewGroup.LayoutParams.WRAP_CONTENT);
-//
                         ImageView bannerDetailImage = (ImageView) componentViewResult.componentView;
                         bannerDetailImage.setImageResource(R.drawable.mastercard);
                         break;
 
                     case PAGE_VIDEO_IMAGE_KEY:
                         if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)
-                                && appCMSPresenter.isUserSubscribed()) {
+                                && ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed())
+                                || appCMSPresenter.isUserLoggedIn())) {
                             videoUrl = null;
 
                             if (moduleAPI != null &&
@@ -3183,14 +3179,11 @@ public class ViewCreator {
                                 }
                             }
 
-                            componentViewResult.componentView = playerView(context,
-                                    videoUrl,
+                            componentViewResult.componentView = playerView(context, videoUrl,
                                     moduleAPI.getContentData().get(0).getGist().getId());
 
                             videoPlayerView.setPageView(pageView);
-
                             appCMSPresenter.unrestrictPortraitOnly();
-
                             componentViewResult.componentView.setId(R.id.video_player_id);
                         } else {
                             if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -3205,6 +3198,7 @@ public class ViewCreator {
                                 int viewHeight = (int) BaseView.getViewHeight(context,
                                         component.getLayout(),
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
+
                                 if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                     String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                             moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
@@ -3229,48 +3223,61 @@ public class ViewCreator {
                                             .fitCenter()
                                             .into((ImageView) componentViewResult.componentView);
                                 }
+
                                 componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
                             }
                         }
                         break;
 
 //                    case PAGE_VIDEO_DETAIL_PLAYER:
-//                        videoUrl = null;
-//                        if (moduleAPI != null &&
-//                                moduleAPI.getContentData() != null &&
-//                                !moduleAPI.getContentData().isEmpty() &&
-//                                moduleAPI.getContentData().get(0) != null &&
-//                                moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
-//                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
-//                            VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
-//                            videoUrl = videoAssets.getHls();
+//                    videoUrl = null;
 //
-//                            if (TextUtils.isEmpty(videoUrl)) {
-//                                for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
-//                                    videoUrl = videoAssets.getMpeg().get(i).getUrl();
-//                                }
+//                    if (moduleAPI != null &&
+//                            moduleAPI.getContentData() != null &&
+//                            !moduleAPI.getContentData().isEmpty() &&
+//                            moduleAPI.getContentData().get(0) != null &&
+//                            moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
+//                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
+//                        VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
+//                        videoUrl = videoAssets.getHls();
+//
+//                        if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
+//                            if (videoAssets.getMpeg().get(0) != null) {
+//                                videoUrl = videoAssets.getMpeg().get(0).getUrl();
 //                            }
 //
-//                            if (moduleAPI.getContentData() != null &&
-//                                    !moduleAPI.getContentData().isEmpty() &&
-//                                    moduleAPI.getContentData().get(0) != null &&
-//                                    moduleAPI.getContentData().get(0).getContentDetails() != null) {
-//
-//                                List<String> relatedVideoIds = null;
-//                                if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
-//                                        moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
-//                                    relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
-//                                }
-//                                int currentPlayingIndex = -1;
-//                                if (relatedVideoIds == null) {
-//                                    currentPlayingIndex = 0;
+//                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+//                                if (videoAssets.getMpeg().get(i) != null &&
+//                                        videoAssets.getMpeg().get(i).getRenditionValue() != null) {
+//                                    videoUrl = videoAssets.getMpeg().get(i).getUrl();
 //                                }
 //                            }
 //                        }
 //
-//                        componentViewResult.componentView = playerView(context, videoUrl);
-//                        componentViewResult.componentView.setId(R.id.video_player_id);
-//                        break;
+//                        if (moduleAPI.getContentData() != null &&
+//                                !moduleAPI.getContentData().isEmpty() &&
+//                                moduleAPI.getContentData().get(0) != null &&
+//                                moduleAPI.getContentData().get(0).getContentDetails() != null) {
+//
+//                            List<String> relatedVideoIds = null;
+//                            if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+//                                    moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
+//                                relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
+//                            }
+//                            int currentPlayingIndex = -1;
+//                            if (relatedVideoIds == null) {
+//                                currentPlayingIndex = 0;
+//                            }
+//                        }
+//                    }
+//
+//                    componentViewResult.componentView = playerView(context, videoUrl,
+//                            moduleAPI.getContentData().get(0).getGist().getId());
+//
+//                    videoPlayerView.setPageView(pageView);
+//                    appCMSPresenter.unrestrictPortraitOnly();
+//                    componentViewResult.componentView.setId(R.id.video_player_id);
+//                    break;
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {

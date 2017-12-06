@@ -229,9 +229,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         setContentView(R.layout.activity_appcms_page);
 
-        homePageIndex = getResources().getInteger(R.integer.first_primary_page_index);
-        categoriesPageIndex = getResources().getInteger(R.integer.second_primary_page_index);
-        navMenuPageIndex = getResources().getInteger(R.integer.third_primary_page_index);
+        homePageIndex = getResources().getInteger(R.integer.home_page_index);
+        categoriesPageIndex = getResources().getInteger(R.integer.categories_page_index);
+        navMenuPageIndex = getResources().getInteger(R.integer.nav_menu_page_index);
         searchPageIndex = getResources().getInteger(R.integer.search_page_index);
         navLivePageIndex = getResources().getInteger(R.integer.nav_live_page_index);
 
@@ -778,6 +778,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+        if (!BaseView.isTablet(this)) {
+            appCMSPresenter.restrictPortraitOnly();
+        }
+
         appCMSPresenter.setEntitlementPendingVideoData(null);
         if (!handlingClose && !isPageLoading()) {
             if (appCMSPresenter.isAddOnFragmentVisible()) {
@@ -1883,6 +1887,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                        e.getMessage());
                     highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
                 }
+
                 homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
                 homeNavBarItemView.setHighlightColor(highlightColor);
                 homeNavBarItemView.setLabel(homePageNav.getTitle());
@@ -1928,14 +1933,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             navLiveItemView.setHighlightColor(highlightColor);
             navLiveItemView.setLabel(livePageNav.getTitle());
             navLiveItemView.setOnClickListener(v -> {
-                if (getSelectedNavItem() == navLiveItemView)
+                if (getSelectedNavItem() == navLiveItemView) {
                     return;
-                currentMenuTabIndex = navLivePageIndex;
+                }
 
+                currentMenuTabIndex = navLivePageIndex;
                 appCMSPresenter.showMainFragmentView(true);
-                selectNavItemAndLaunchPage(navLiveItemView,
-                        livePageNav.getPageId(),
-                        livePageNav.getTitle());
+                selectNavItemAndLaunchPage(navLiveItemView, livePageNav.getPageId(), livePageNav.getTitle());
             });
 
             navLiveItemView.setTag(livePageNav.getPageId());
@@ -1970,6 +1974,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     if (getSelectedNavItem() == moviesNavBarItemView) {
                         return;
                     }
+
                     currentMenuTabIndex = categoriesPageIndex;
 
                     appCMSPresenter.showMainFragmentView(true);
@@ -2009,8 +2014,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 searchNavBarItemView.setHighlightColor(highlightColor);
                 searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
                 searchNavBarItemView.setOnClickListener(v -> {
-                    if (getSelectedNavItem() == searchNavBarItemView)
+                    if (getSelectedNavItem() == searchNavBarItemView) {
                         return;
+                    }
+
                     currentMenuTabIndex = searchPageIndex;
                     if (!appCMSPresenter.isNetworkConnected()) {
                         if (!appCMSPresenter.isUserLoggedIn()) {
