@@ -178,6 +178,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_image_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_detail_player_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DETAIL_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_add_to_watchlist_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_add_to_watchlist_key),

@@ -17,7 +17,7 @@
     <dimen name = "card_height">205dp</dimen>
     <dimen name = "card_width">130dp</dimen>
 
-    <dimen name="caurosel_grid_item_spacing">40dp</dimen>
+    <dimen name="caurosel_grid_item_spacing">50dp</dimen>
     <dimen name="caurosel_grid_left_margin">25dp</dimen>
     <dimen name="caurosel_grid_right_margin">25dp</dimen>
 

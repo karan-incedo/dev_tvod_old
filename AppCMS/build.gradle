@@ -127,6 +127,7 @@ android {
                 // sources only in the src/tests/java/ directory.
                 setRoot 'src/androidTestMobile/java'
             }
+            assets.srcDirs = ['src/mobile/assets', 'src/mobile/assets/']
         }
         tv {
             java.srcDirs = ['src/tv/java']

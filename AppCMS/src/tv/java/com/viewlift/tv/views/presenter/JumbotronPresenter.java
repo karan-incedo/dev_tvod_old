@@ -49,7 +49,7 @@ public class JumbotronPresenter extends CardPresenter {
 
             frameLayout.setLayoutParams(layoutParams);
             frameLayout.setFocusable(true);
-            frameLayout.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.black));
+           // frameLayout.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.black));
 
             return new ViewHolder(frameLayout);
         }
