@@ -479,6 +479,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
@@ -492,6 +493,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+//    @Override
+//    public void onPositionDiscontinuity() {
+//
+//    }
+
+//    @Override
+//    public void onPositionDiscontinuity() {
+//
+//    }
+
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
@@ -502,6 +513,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onSeekProcessed() {
 
     }
+
+//    @Override
+//    public void onSeekProcessed() {
+//
+//    }
 
     public void sendPlayerPosition(long position) {
         mCurrentPlayerPosition = position;

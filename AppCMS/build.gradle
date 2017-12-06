@@ -6,7 +6,7 @@ def final customApplicationId = 'Monumental Sports Network'
 def final hostName = "www.monumentalsportsnetwork.com"
 def final hostNameSuffix = "*.monumentalsportsnetwork.com"
 
-def final appVersionName = "2.0.49"
+def final appVersionName = "2.0.50"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -28,13 +28,13 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     google()
-    /*maven {
+    maven {
         url "s3://sdkv1.kiswe.com/release"
         credentials(AwsCredentials) {
             accessKey 'AKIAIST5GLZEHZKM57SQ'
             secretKey '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'
         }
-    }*/
+    }
 
     maven {
         url "s3://sdkv1.kiswe.com/snapshot"
