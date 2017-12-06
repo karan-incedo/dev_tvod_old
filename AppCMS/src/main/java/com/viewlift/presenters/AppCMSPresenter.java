@@ -213,6 +213,7 @@ import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.temporal.ChronoUnit;
 
 import java.io.BufferedReader;
@@ -358,6 +359,9 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
     private static final String MEDIA_SUFFIX_SRT = ".srt";
+
+    private static final String SUBSCRIPTION_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+    private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC+00:00");
 
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private static int PAGE_API_LRU_CACHE_SIZE = 10;
@@ -887,7 +891,8 @@ public class AppCMSPresenter {
                             baseUrl,
                             endpoint,
                             pageId,
-                            siteId);
+                            siteId,
+                            isUserLoggedIn());
                 } else {
                     urlWithContent =
                             currentContext.getString(R.string.app_cms_page_api_url,
@@ -4536,7 +4541,8 @@ public class AppCMSPresenter {
                     ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
 
                     if (subscribedItemList != null && !subscribedItemList.isEmpty()) {
-                        boolean subscriptionExpired = true;
+                        boolean subscriptionExpired = false;
+                        boolean subscriptionAutoRenewing = false;
                         for (int i = 0; i < subscribedItemList.size(); i++) {
                             try {
                                 //Log.d(TAG, "Examining existing subscription data");
@@ -4564,6 +4570,10 @@ public class AppCMSPresenter {
                                 }
 
                                 setExistingGooglePlaySubscriptionId(inAppPurchaseData.getProductId());
+
+                                if (inAppPurchaseData.isAutoRenewing()) {
+                                    subscriptionAutoRenewing = true;
+                                }
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
                                     if (TextUtils.isEmpty(skuToPurchase) || skuToPurchase.equals(inAppPurchaseData.getProductId())) {
@@ -4668,10 +4678,6 @@ public class AppCMSPresenter {
                                     setActiveSubscriptionReceipt(null);
                                 }
 
-                                if (subscriptionExpired) {
-                                    sendSubscriptionCancellation();
-                                }
-
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error parsing Google Play subscription data: " + e.toString());
                             }
@@ -4694,34 +4700,41 @@ public class AppCMSPresenter {
             Instant nowTimeInstant = Instant.now();
             ZonedDateTime subscribedPurchaseTime = ZonedDateTime.ofInstant(subscribedPurchaseTimeInstant, ZoneId.systemDefault());
             ZonedDateTime nowTime = ZonedDateTime.ofInstant(nowTimeInstant, ZoneId.systemDefault());
-            ZonedDateTime subscribedExpirationTime = ZonedDateTime.ofInstant(subscribedPurchaseTimeInstant, ZoneId.systemDefault());
+            ZonedDateTime subscriptionPeriodTime = ZonedDateTime.ofInstant(subscribedPurchaseTimeInstant, ZoneId.systemDefault());
             String subscriptionPeriod = skuDetails.getSubscriptionPeriod();
             final String SUBS_PERIOD_REGEX = "P(([0-9]+)[yY])?(([0-9]+)[mM])?(([0-9]+)[wW])?(([0-9]+)[dD])?";
             if (subscriptionPeriod.matches(SUBS_PERIOD_REGEX)) {
                 Matcher subscriptionPeriodMatcher = Pattern.compile(SUBS_PERIOD_REGEX).matcher(subscriptionPeriod);
                 if (subscriptionPeriodMatcher.find()) {
                     if (subscriptionPeriodMatcher.group(2) != null) {
-                        subscribedExpirationTime = subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(2)),
+                        subscriptionPeriodTime = subscriptionPeriodTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(2)),
                                 ChronoUnit.YEARS);
                     }
                     if (subscriptionPeriodMatcher.group(4) != null) {
-                        subscribedExpirationTime = subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(4)),
+                        subscriptionPeriodTime = subscriptionPeriodTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(4)),
                                 ChronoUnit.MONTHS);
                     }
                     if (subscriptionPeriodMatcher.group(6) != null) {
-                        subscribedExpirationTime = subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(6)),
+                        subscriptionPeriodTime = subscriptionPeriodTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(6)),
                                 ChronoUnit.WEEKS);
                     }
                     if (subscriptionPeriodMatcher.group(8) != null) {
-                        subscribedExpirationTime = subscribedExpirationTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(8)),
+                        subscriptionPeriodTime = subscriptionPeriodTime.plus(Long.parseLong(subscriptionPeriodMatcher.group(8)),
                                 ChronoUnit.DAYS);
                     }
                 }
 
+                while (subscriptionPeriodTime.toEpochSecond() < nowTime.toEpochSecond() - subscribedPurchaseTime.toEpochSecond()) {
+                    subscribedPurchaseTime = subscribedPurchaseTime.plus(subscribedPurchaseTime.toEpochSecond(),
+                            ChronoUnit.SECONDS);
+                }
+
+                Duration betweenSubscribedTimeAndExpirationTime =
+                        Duration.between(subscribedPurchaseTime, subscriptionPeriodTime);
+
                 Duration betweenSubscribedTimeAndNowTime =
                         Duration.between(subscribedPurchaseTime, nowTime);
-                Duration betweenSubscribedTimeAndExpirationTime =
-                        Duration.between(subscribedPurchaseTime, subscribedExpirationTime);
+
                 return betweenSubscribedTimeAndExpirationTime.compareTo(betweenSubscribedTimeAndNowTime) < 0;
             }
         } catch (Exception e) {
@@ -5058,6 +5071,8 @@ public class AppCMSPresenter {
             if (launched) {
                 refreshPages(null, false, 0, 0);
             }
+
+            refreshUserSubscriptionData(() -> {}, true);
 
             loadingPage = true;
             //Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
@@ -6637,6 +6652,17 @@ public class AppCMSPresenter {
         return false;
     }
 
+    public boolean isPageAShowPage(String pageName) {
+        if (currentActivity != null && pageName != null) {
+            try {
+                return pageName.contains(currentActivity.getString(R.string.app_cms_pagename_showscreen_key));
+            } catch (Exception e) {
+
+            }
+        }
+        return false;
+    }
+
     private void initAppsFlyer(AppCMSAndroidUI appCMSAndroidUI) {
         if (currentContext != null &&
                 currentContext instanceof AppCMSApplication) {
@@ -8093,6 +8119,10 @@ public class AppCMSPresenter {
                                             try {
 
                                                 if (appCMSSubscriptionPlanResult != null) {
+                                                    if (isUserSubscribed() && checkForSubscriptionCancellation(appCMSSubscriptionPlanResult)) {
+                                                        sendSubscriptionCancellation();
+                                                        setIsUserSubscribed(false);
+                                                    }
 
                                                     UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
                                                     userSubscriptionPlan.setUserId(getLoggedInUser());
@@ -8188,6 +8218,18 @@ public class AppCMSPresenter {
                 onRefreshReadyAction.call();
             }
         }
+    }
+
+    private boolean checkForSubscriptionCancellation(AppCMSUserSubscriptionPlanResult appCMSSubscriptionPlanResult) {
+        try {
+
+            ZonedDateTime nowTime = ZonedDateTime.now(UTC_ZONE_ID);
+            ZonedDateTime subscriptionEndTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).parse(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate()));
+            return subscriptionEndTime.toEpochSecond() < nowTime.toEpochSecond();
+        } catch (Exception e) {
+
+        }
+        return false;
     }
 
     public void refreshPageAPIData(AppCMSPageUI appCMSPageUI,
