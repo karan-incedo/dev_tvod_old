@@ -33,12 +33,12 @@ repositories {
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 171
 
         versionName appVersionName
@@ -52,16 +52,15 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 23
-            targetSdkVersion 25
+            compileSdkVersion 26
+            targetSdkVersion 26
             aaptOptions {
                 cruncherEnabled = false
             }
         }
         tv {
-
             minSdkVersion 21
-            compileSdkVersion 25
+            compileSdkVersion 26
             versionCode 3010031
             versionName "1.2.1"
             dimension = "green"
