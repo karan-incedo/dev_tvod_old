@@ -100,7 +100,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
             }
 
-            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
+//            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
 
             UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
 
