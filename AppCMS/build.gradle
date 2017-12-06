@@ -6,7 +6,7 @@ def final customApplicationId = 'Monumental Sports Network'
 def final hostName = "www.monumentalsportsnetwork.com"
 def final hostNameSuffix = "*.monumentalsportsnetwork.com"
 
-def final appVersionName = "2.0.50"
+def final appVersionName = "2.0.51"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -36,13 +36,13 @@ repositories {
         }
     }
 
-    maven {
-        url "s3://sdkv1.kiswe.com/snapshot"
+   /* maven {
+        url "s3://sdkv1.kiswe.com/stable"
         credentials(AwsCredentials) {
             accessKey 'AKIAIST5GLZEHZKM57SQ'
             secretKey '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'
         }
-    }
+    }*/
 }
 
 android {
@@ -107,6 +107,8 @@ android {
     buildTypes {
         debug {
             multiDexEnabled true
+            minifyEnabled false
+            zipAlignEnabled true
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
@@ -117,7 +119,8 @@ android {
         }
         release {
             multiDexEnabled true
-            minifyEnabled true
+            minifyEnabled false
+            zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
@@ -286,7 +289,8 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-     mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
+    // mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
+    compile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

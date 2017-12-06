@@ -988,7 +988,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         } else {
             shouldRequestAds = false;
         }
-        shouldRequestAds = true;
+
     }
 
     private void requestAds(String adTagUrl) {

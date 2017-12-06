@@ -196,6 +196,7 @@ import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
+import com.viewlift.views.activity.AppCMSKisweMediaPlayerActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
@@ -1340,6 +1341,8 @@ public class AppCMSPresenter {
                     if (entitlementActive) {
                         entitlementCheckActive.setSuccess(false);
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
+                        //boolean requestAds =  actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                        //Todo logic may change later for SVOD types
                         boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                         //Send Firebase Analytics when user is subscribed and user is Logged In
@@ -10486,6 +10489,8 @@ public class AppCMSPresenter {
                                     currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
 
                             boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                            //Todo  may need to change Ads logic for hoiChoi
+                            //boolean requestAds =  actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                             Date now = new Date();
                             adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
@@ -11311,7 +11316,7 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
-        KMSDKCoreKit.initialize(currentActivity);
+       /* KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
                 .setLogLevel(KMSDKCoreKit.DEBUG);
@@ -11320,7 +11325,11 @@ public class AppCMSPresenter {
             mKit.configUser(getLoggedInUserEmail(), currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
         else
             mKit.configUser("guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);
+        mKit.startKiswePlayerActivity(currentActivity, eventId);*/
+        Intent playKisweVideoIntent = new Intent(currentActivity, AppCMSKisweMediaPlayerActivity.class);
+        playKisweVideoIntent.putExtra("kisweEventId",eventId);
+        currentActivity.startActivity(playKisweVideoIntent);
+
     }
 
     private ReportSubscriber reportSubscriber = new ReportSubscriber() {

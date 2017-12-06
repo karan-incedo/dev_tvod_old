@@ -42,6 +42,10 @@
             android:launchMode="singleTask"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:name=".views.activity.AppCMSKisweMediaPlayerActivity"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize" />
+        <activity
             android:name=".views.activity.AppCMSSearchActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan|stateHidden">
