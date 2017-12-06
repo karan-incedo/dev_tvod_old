@@ -60,8 +60,8 @@ android {
 
             minSdkVersion 21
             compileSdkVersion 25
-            versionCode 3010042
-            versionName "0.0.12"
+            versionCode 3010043
+            versionName "0.0.13"
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false

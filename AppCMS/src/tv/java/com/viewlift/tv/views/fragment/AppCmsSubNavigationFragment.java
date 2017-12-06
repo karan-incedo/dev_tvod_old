@@ -586,47 +586,39 @@ public class AppCmsSubNavigationFragment extends Fragment {
                     } else if (navigationSubItem.title.toUpperCase().contains("SUBSCRI")) {
                         if (appCMSPresenter.isUserLoggedIn()) {
                             mContext.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
-                            if (appCMSPresenter.getActiveSubscriptionPlatform() == null) {
-                                appCMSPresenter.getSubscriptionData(
+                            appCMSPresenter.getSubscriptionData(
                                         appCMSUserSubscriptionPlanResult -> {
 
                                             mContext.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                                             String platform;
+                                            String status;
                                             String varMessage = "";
                                             if (appCMSUserSubscriptionPlanResult != null
                                                     && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
                                                     && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
                                                 platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
-                                                if (platform.equalsIgnoreCase("web_browser")) {
-                                                    varMessage = mContext.getString(R.string.subscription_purchased_from_web_msg);
-                                                } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
-                                                    varMessage = mContext.getString(R.string.subscription_purchased_from_android_msg);
-                                                } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos") || platform.contains("ios_apple_tv")) {
-                                                    varMessage = mContext.getString(R.string.subscription_purchased_from_apple_msg);
+                                                status = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getSubscriptionStatus();
+
+                                                if (status.equalsIgnoreCase("COMPLETED") ||
+                                                        status.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                    if (platform.equalsIgnoreCase("web_browser")) {
+                                                        varMessage = mContext.getString(R.string.subscription_purchased_from_web_msg);
+                                                    } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
+                                                        varMessage = mContext.getString(R.string.subscription_purchased_from_android_msg);
+                                                    } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos") || platform.contains("ios_apple_tv")) {
+                                                        varMessage = mContext.getString(R.string.subscription_purchased_from_apple_msg);
+                                                    } else {
+                                                        varMessage = mContext.getString(R.string.subscription_purchased_from_unknown_msg);
+                                                    }
                                                 } else {
-                                                    varMessage = mContext.getString(R.string.subscription_purchased_from_unknown_msg);
+                                                    varMessage = mContext.getString(R.string.subscription_not_purchased);
                                                 }
-                                                appCMSPresenter.setActiveSubscriptionPlatform(platform);
                                             } else {
                                                 varMessage = mContext.getString(R.string.subscription_not_purchased);
                                             }
                                             appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription), false);
                                         }
                                 );
-                            } else {
-                                String platform = appCMSPresenter.getActiveSubscriptionPlatform();
-                                String varMessage = "";
-                                if (platform.equalsIgnoreCase("web_browser")) {
-                                    varMessage = mContext.getString(R.string.subscription_purchased_from_web_msg);
-                                } else if (platform.equalsIgnoreCase("android") || platform.contains("android")) {
-                                    varMessage = mContext.getString(R.string.subscription_purchased_from_android_msg);
-                                } else if (platform.contains("iOS") || platform.contains("ios_phone") || platform.contains("ios_ipad") || platform.contains("tvos") || platform.contains("ios_apple_tv")) {
-                                    varMessage = mContext.getString(R.string.subscription_purchased_from_apple_msg);
-                                } else {
-                                    varMessage = mContext.getString(R.string.subscription_purchased_from_unknown_msg);
-                                }
-                                appCMSPresenter.openTVErrorDialog(varMessage, mContext.getString(R.string.subscription), false);
-                            }
                         } else {
 
 
