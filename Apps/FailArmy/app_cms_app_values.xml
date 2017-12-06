@@ -15,9 +15,9 @@
     <string name="fb_login_protocol_scheme">fb129797851053271</string>
 
     <!-- AppCMS Apptentive API -->
-    <string name="app_cms_apptentive_api_key">
-        89e71da95909aa0b487c59fa8b490d5fd681263205c149b893467becadcadf77
-    </string>
+    <string name="app_cms_apptentive_api_key">ANDROID-FAILARMY-c0155ea0636e</string>
+    <string name="app_cms_apptentive_signature_key">8bac0da250c8b0d65d39687df4b1578b</string>
+    <!--<string name="app_cms_apptentive_api_key">89e71da95909aa0b487c59fa8b490d5fd681263205c149b893467becadcadf77</string>-->
 
     <!-- cast receiver -->
     <string name="chromecast_receiver_app_id">706F92EC</string>

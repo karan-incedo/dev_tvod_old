@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -467,36 +466,19 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-//        setFullScreenFocus();
+        setFullScreenFocus();
         super.onWindowFocusChanged(hasFocus);
     }
 
     private void setFullScreenFocus() {
-//        getWindow().getDecorView()
-//                .setSystemUiVisibility(
-//                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-//                                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-//                                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-
         getWindow().getDecorView()
                 .setSystemUiVisibility(
-                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-//                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-//                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-    }
-
-    private void unsetFullScreenFocus() {
-//        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        //        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
     }
 
     @Override
@@ -520,16 +502,5 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             return binder.getRelateVideoIds();
         }
         return null;
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            setFullScreenFocus();
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            unsetFullScreenFocus();
-        }
     }
 }
