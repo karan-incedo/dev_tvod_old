@@ -206,10 +206,11 @@ public class ViewCreator {
     }
 
     public static VideoPlayerView playerView(Context context,
+                                             AppCMSPresenter presenter,
                                              String url,
                                              String filmId) {
         if (videoPlayerView == null) {
-            videoPlayerView = new VideoPlayerView(context);
+            videoPlayerView = new VideoPlayerView(context, presenter);
             videoPlayerView.init(context);
         } else if (videoPlayerView.getParent() != null &&
                 videoPlayerView.getParent() instanceof ViewGroup) {
@@ -217,6 +218,10 @@ public class ViewCreator {
         }
 
         if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
+            if (!TextUtils.isEmpty(videoPlayerView.getFilmId())) {
+                videoPlayerView.releasePlayer();
+            }
+
             videoPlayerView.setUri(Uri.parse(url), null);
         }
 
@@ -1928,6 +1933,7 @@ public class ViewCreator {
                 if (!appCMSPresenter.pipPlayerVisible) {
                     appCMSPresenter.showPopupWindowPlayer(componentViewResult.componentView);
                     componentViewResult.componentView = playerView(context,
+                            appCMSPresenter,
                             videoUrl,
                             moduleAPI.getContentData().get(0).getGist().getId());
                     componentViewResult.componentView.setId(R.id.video_player_id);
@@ -3179,8 +3185,8 @@ public class ViewCreator {
                                 }
                             }
 
-                            componentViewResult.componentView = playerView(context, videoUrl,
-                                    moduleAPI.getContentData().get(0).getGist().getId());
+                            componentViewResult.componentView = playerView(context, appCMSPresenter,
+                                    videoUrl, moduleAPI.getContentData().get(0).getGist().getId());
 
                             videoPlayerView.setPageView(pageView);
                             appCMSPresenter.unrestrictPortraitOnly();

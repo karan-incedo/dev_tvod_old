@@ -11114,6 +11114,7 @@ public class AppCMSPresenter {
         pipPlayerVisible = true;
 
         videoPlayerViewPIP = ViewCreator.playerView(currentActivity,
+                this,
                 mp4VideoUri.toString(),
                 null);
 
@@ -11143,7 +11144,7 @@ public class AppCMSPresenter {
         pipPlayerVisible = true;
 
 //        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, mp4VideoUri.toString());
-        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, url, null);
+        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, url, null);
 
         //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
         relativeLayoutPIP = new RelativeLayout(currentActivity);
