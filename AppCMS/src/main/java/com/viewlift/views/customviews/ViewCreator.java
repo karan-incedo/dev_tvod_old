@@ -97,7 +97,6 @@ public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private static VideoPlayerView videoPlayerView;
     private ComponentViewResult componentViewResult;
-    private AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
     private HtmlSpanner htmlSpanner;
 
     public ViewCreator() {
@@ -472,11 +471,10 @@ public class ViewCreator {
                                                 extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
                                                 extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
 
-                                                AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                                                actionPresenter.setAction(component.getAction());
+                                                final String watchVideoTrailerAction = component.getAction();
 
                                                 if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                                        actionPresenter,
+                                                        new AppCMSActionPresenter.Builder().action(watchVideoTrailerAction).build(),
                                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                         extraData,
                                                         moduleAPI.getContentData().get(0),
@@ -504,10 +502,11 @@ public class ViewCreator {
                                                 extraData[0] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink();
                                                 extraData[1] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets().getHls();
                                                 extraData[2] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId();
-                                                actionPresenter.setAction(component.getAction());
+
+                                                final String watchTrailerVideoAction = component.getAction();
 
                                                 if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink(),
-                                                        actionPresenter,
+                                                        new AppCMSActionPresenter.Builder().action(watchTrailerVideoAction).build(),
                                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                         extraData,
                                                         moduleAPI.getContentData().get(0),
@@ -573,11 +572,10 @@ public class ViewCreator {
                                                 String[] extraData = new String[1];
                                                 extraData[0] = filmUrl.toString();
 
-                                                AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                                                actionPresenter.setAction(component.getAction());
+                                                final String shareVideoAction = component.getAction();
 
                                                 if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                                        actionPresenter,
+                                                        new AppCMSActionPresenter.Builder().action(shareVideoAction).build(),
                                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
                                                         extraData,
                                                         moduleAPI.getContentData().get(0),
@@ -2108,13 +2106,13 @@ public class ViewCreator {
                             componentViewResult.shouldHideComponent = true;
                         }
 
-                        actionPresenter.setAction(component.getAction());
+                        final String changePasswordAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
                             String[] extraData = new String[1];
                             extraData[0] = component.getKey();
                             appCMSPresenter.launchButtonSelectedAction(null,
-                                    actionPresenter,
+                                    new AppCMSActionPresenter.Builder().action(changePasswordAction).build(),
                                     null,
                                     extraData,
                                     null,
@@ -2197,16 +2195,17 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink() != null &&
                                     moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId() != null &&
                                     moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets() != null) {
+
+                                final String watchTrailerAction = component.getAction();
+
                                 componentViewResult.componentView.setOnClickListener(v -> {
                                     String[] extraData = new String[3];
                                     extraData[0] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink();
                                     extraData[1] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getVideoAssets().getHls();
                                     extraData[2] = moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getId();
 
-                                    actionPresenter.setAction(component.getAction());
-
                                     if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getContentDetails().getTrailers().get(0).getPermalink(),
-                                            actionPresenter,
+                                            new AppCMSActionPresenter.Builder().action(watchTrailerAction).build(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
                                             moduleAPI.getContentData().get(0),
@@ -2229,16 +2228,16 @@ public class ViewCreator {
                                     moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink() != null &&
                                     moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId() != null &&
                                     moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
+                                final String watchTrailerAction = component.getAction();
+
                                 componentViewResult.componentView.setOnClickListener(v -> {
                                     String[] extraData = new String[3];
                                     extraData[0] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink();
                                     extraData[1] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets().getHls();
                                     extraData[2] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId();
 
-                                    actionPresenter.setAction(component.getAction());
-
                                     if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink(),
-                                            actionPresenter,
+                                            new AppCMSActionPresenter.Builder().action(watchTrailerAction).build(),
                                             moduleAPI.getContentData().get(0).getGist().getTitle(),
                                             extraData,
                                             moduleAPI.getContentData().get(0),
@@ -2350,11 +2349,11 @@ public class ViewCreator {
                         ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                         componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
 
-                        actionPresenter.setAction(component.getAction());
+                        final String closeAction = component.getAction();
 
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if (!appCMSPresenter.launchButtonSelectedAction(null,
-                                    actionPresenter,
+                                    new AppCMSActionPresenter.Builder().action(closeAction).build(),
                                     null,
                                     null,
                                     null,
@@ -2371,6 +2370,9 @@ public class ViewCreator {
                     case PAGE_VIDEO_SHARE_KEY:
                         Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
                         componentViewResult.componentView.setBackground(shareDrawable);
+
+                        final String shareAction = component.getAction();
+
                         componentViewResult.componentView.setOnClickListener(v -> {
                             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
                             if (appCMSMain != null &&
@@ -2387,10 +2389,8 @@ public class ViewCreator {
                                 String[] extraData = new String[1];
                                 extraData[0] = filmUrl.toString();
 
-                                actionPresenter.setAction(component.getAction());
-
                                 if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
-                                        actionPresenter,
+                                        new AppCMSActionPresenter.Builder().action(shareAction).build(),
                                         moduleAPI.getContentData().get(0).getGist().getTitle(),
                                         extraData,
                                         moduleAPI.getContentData().get(0),
@@ -2504,13 +2504,12 @@ public class ViewCreator {
                         }
 
                         componentViewResult.componentView.setOnClickListener(v -> {
+                            String action = component.getAction();
                             String[] extraData = new String[1];
                             extraData[0] = component.getKey();
 
-                            actionPresenter.setAction(component.getAction());
-
                             appCMSPresenter.launchButtonSelectedAction(null,
-                                    actionPresenter,
+                                    new AppCMSActionPresenter.Builder().action(action).build(),
                                     null,
                                     extraData,
                                     null,
