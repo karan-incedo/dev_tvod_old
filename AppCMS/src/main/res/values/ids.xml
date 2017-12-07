@@ -10,5 +10,4 @@
     <item name="download_quality_continue_button" type="id">download_quality_continue_button</item>
     <item name="download_quality_cancel_button" type="id">download_quality_cancel_button</item>
     <item name="video_player_id" type="id">video_player_id</item>
-    <item name="custom_exo_controller" type="id"/>
 </resources>

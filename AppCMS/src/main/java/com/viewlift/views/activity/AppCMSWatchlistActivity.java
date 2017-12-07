@@ -57,7 +57,7 @@ public class AppCMSWatchlistActivity extends AppCompatActivity {
                         .getAppCMSMain();
 
         LinearLayout appCMSWatchListResultsContainer =
-                findViewById(R.id.app_cms_watchlist_results_container);
+                (LinearLayout) findViewById(R.id.app_cms_watchlist_results_container);
 
         handleIntent(getIntent());
     }

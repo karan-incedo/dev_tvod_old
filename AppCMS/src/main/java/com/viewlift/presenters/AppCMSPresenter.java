@@ -12,7 +12,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.StaleDataException;
 import android.graphics.Bitmap;
@@ -82,10 +81,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
-import com.viewlift.Utils;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.ccavenue.screens.EnterMobileNumberActivity;
@@ -139,7 +136,6 @@ import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
-import com.viewlift.models.data.appcms.ui.page.ModuleListClass;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
@@ -203,13 +199,11 @@ import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
-import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.PopupMenu;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
-import com.viewlift.views.customviews.exoplayerview.FullPlayerView;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSTrayMenuDialogFragment;
@@ -564,13 +558,6 @@ public class AppCMSPresenter {
     private boolean shouldLaunchLoginAction;
     private Map<String, ContentDatum> userHistoryData;
     private AppCMSWatchlistResult filmsInUserWatchList;
-
-    // For Player on Video detail page
-
-    public static CustomVideoPlayerView videoPlayerView = null;
-    public static FrameLayout.LayoutParams videoPlayerViewLP = null;
-    public static ViewGroup videoPlayerViewParent = null;
-    public static FullPlayerView relativeLayoutFull;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -1718,15 +1705,6 @@ public class AppCMSPresenter {
                                         @Override
                                         public void call(final AppCMSPageAPI appCMSPageAPI) {
                                             if (appCMSPageAPI != null) {
-
-                                                /**
-                                                 * Local json for new video detail page for FailArmy
-                                                 */
-                                                if (action.equalsIgnoreCase("lectureDetailPage")) {
-                                                    ModuleListClass moduleListNew = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(currentActivity, "video_detail_new.json"), ModuleListClass.class);
-                                                    appCMSPageUI.setModuleList(moduleListNew.getModuleList());
-                                                }
-
                                                 cancelInternalEvents();
                                                 pushActionInternalEvents(this.action
                                                         + BaseView.isLandscape(currentActivity));
@@ -5094,8 +5072,7 @@ public class AppCMSPresenter {
                 refreshPages(null, false, 0, 0);
             }
 
-            refreshUserSubscriptionData(() -> {
-            }, true);
+            refreshUserSubscriptionData(() -> {}, true);
 
             loadingPage = true;
             //Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
@@ -7566,7 +7543,7 @@ public class AppCMSPresenter {
 
     }
 
-    public String getPermalinkCompletePath(String pagePath) {
+    private String getPermalinkCompletePath(String pagePath) {
         StringBuffer permalinkCompletePath = new StringBuffer();
         permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
         permalinkCompletePath.append(appCMSMain.getDomainName());
@@ -11946,103 +11923,5 @@ public class AppCMSPresenter {
                 }
             }
         }
-    }
-
-    public String getAdsUrl(String pagePath) {
-        String videoTag = null;
-        if (appCMSAndroid != null
-                && appCMSAndroid.getAdvertising() != null
-                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
-            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
-        }
-        if (videoTag == null) {
-            return null;
-        }
-        Date now = new Date();
-        return currentActivity.getString(R.string.app_cms_ads_api_url,
-                videoTag,
-                getPermalinkCompletePath(pagePath),
-                now.getTime(),
-                appCMSMain.getSite());
-    }
-
-
-    public long setCurrentWatchProgress(long runTime, long watchedTime) {
-        long videoPlayTime;
-        if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
-            long playDifference = runTime - watchedTime;
-            long playTimePercentage = ((watchedTime * 100) / runTime);
-
-            // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
-            if (playTimePercentage >= 98 && playDifference <= 30) {
-                videoPlayTime = 0;
-            } else {
-                videoPlayTime = watchedTime;
-            }
-        } else {
-            videoPlayTime = 0;
-        }
-        return videoPlayTime;
-
-    }
-
-    public static boolean isFullScreenVisible;
-
-    public void showFullScreenPlayer() {
-        if (videoPlayerViewParent == null) {
-            videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
-        }
-        relativeLayoutFull = new FullPlayerView(currentActivity, this);
-        relativeLayoutFull.setVisibility(View.VISIBLE);
-        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
-        isFullScreenVisible = true;
-        restrictLandscapeOnly();
-        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-            ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
-        }
-
-    }
-
-    public void exitFullScreenPlayer() {
-        try {
-            if (relativeLayoutFull != null) {
-
-                relativeLayoutFull.removeAllViews();
-                if (videoPlayerViewParent != null) {
-                    relativeLayoutFull.removeView(videoPlayerView);
-                    videoPlayerView.setLayoutParams(videoPlayerViewLP);
-                    videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
-                    videoPlayerViewParent.addView(videoPlayerView);
-
-                }
-
-                relativeLayoutFull.setVisibility(View.GONE);
-
-                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
-
-                rootView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        rootView.removeView(relativeLayoutFull);
-                        relativeLayoutFull = null;
-
-                    }
-                }, 100);
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-
-
-        if (currentActivity != null && BaseView.isTablet(currentActivity)) {
-            unrestrictPortraitOnly();
-        } else {
-            restrictPortraitOnly();
-        }
-        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-            ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();
-        }
-        isFullScreenVisible = false;
     }
 }

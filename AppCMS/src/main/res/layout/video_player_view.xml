@@ -4,5 +4,5 @@
     android:layout_width="match_parent"
     android:id="@+id/videoPlayerView"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:controller_layout_id="@layout/custom_exo_playback_control_view_old"
+    app:controller_layout_id="@layout/custom_exo_playback_control_view"
     android:layout_height="match_parent" />
