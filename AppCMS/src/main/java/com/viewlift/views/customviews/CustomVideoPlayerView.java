@@ -237,7 +237,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             onUpdatedContentDatum = contentDatum;
             getPermalink(contentDatum);
             setWatchedTime(contentDatum);
-            System.out.println("Runnung Timer is free "+contentDatum.getGist().getFree());
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn() && !appCMSPresenter.getPreviewStatus()) {
@@ -372,7 +371,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     }
                 }
             }
-            isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
 
             if (playerView != null && playerView.getController() != null)  {
                 playerView.getController().setPlayingLive(isLiveStream);
@@ -980,15 +978,20 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private void getPermalink(ContentDatum contentDatum) {
        /* boolean serviceType = appCMSPresenter.getAppCMSMain().getServiceType().equals(
                 mContext.getString(R.string.app_cms_main_svod_service_type_key));*/
-        if(/*!serviceType &&*/ contentDatum != null) {
-            adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+
+        if(contentDatum != null) {
+            if(contentDatum.getStreamingInfo() != null) {
+                isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
+            }
+            if(!isLiveStream) {
+                adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+            }
         }
-        if ( adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
+        if (adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
             shouldRequestAds = true;
         } else {
             shouldRequestAds = false;
         }
-        shouldRequestAds = true;
     }
 
     private void requestAds(String adTagUrl) {
@@ -1016,7 +1019,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     @Override
     public void onAdEvent(AdEvent adEvent) {
         Log.i(TAG, "onAdEvent: " + adEvent.getType());
-
         switch (adEvent.getType()) {
             case LOADED:
                 if (adsManager != null) {

@@ -166,7 +166,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private Handler seekBarHandler;
     private boolean showCRWWarningMessage;
     private boolean mAudioFocusGranted = false;
-    private boolean isAdDisplayed;
+    private boolean isAdDisplayed,isADPlay;
     private int playIndex;
     private long watchedTime;
     private long runTime;
@@ -506,6 +506,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         setCurrentWatchProgress(runTime, watchedTime);
 
+
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (beaconMessageThread != null) {
                 beaconMessageThread.playbackState = playerState.getPlaybackState();
@@ -527,8 +528,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                     }
                     isVideoLoaded = true;
                 }
-                if (shouldRequestAds && !isAdDisplayed && adsUrl != null) {
+                if (shouldRequestAds && !isADPlay && !isAdDisplayed && adsUrl != null) {
                     requestAds(adsUrl);
+                    isADPlay = true;
                 } else {
                     if (beaconBufferingThread != null) {
                         beaconBufferingThread.sendBeaconBuffering = false;
@@ -768,6 +770,13 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         requestAudioFocus();
         resumeVideo();
+        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
+            adsManager.resume();
+        }
+        if (shouldRequestAds && !isADPlay) {
+            requestAds(adsUrl);
+            isADPlay = true;
+        }
         super.onResume();
     }
 
@@ -1069,7 +1078,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             adDisplayContainer.setAdContainer(videoPlayerView);
 
             AdsRequest request = sdkFactory.createAdsRequest();
-            request.setAdTagUrl(adTagUrl);
+            request.setAdTagUrl(adsUrl);
             request.setAdDisplayContainer(adDisplayContainer);
             request.setContentProgressProvider(() -> {
                 if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {
