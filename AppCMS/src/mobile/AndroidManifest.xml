@@ -56,6 +56,14 @@
                 <data
                     android:scheme="http"
                     android:host="@string/app_cms_app_host_name"
+                    android:pathPrefix="/videos" />
+                <data
+                    android:scheme="https"
+                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:pathPrefix="/videos" />
+                <data
+                    android:scheme="http"
+                    android:host="@string/app_cms_app_host_name"
                     android:pathPrefix="/films/title" />
                 <data
                     android:scheme="https"
