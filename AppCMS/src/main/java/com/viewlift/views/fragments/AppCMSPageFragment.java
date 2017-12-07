@@ -309,7 +309,7 @@ public class AppCMSPageFragment extends Fragment {
         super.onPause();
         updateDataLists();
 
-        if (pageView.findChildViewById(R.id.video_player_id) != null &&
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null &&
                 getActivity().isFinishing()) {
             ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).pausePlayer();
 

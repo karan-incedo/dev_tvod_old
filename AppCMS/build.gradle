@@ -6,7 +6,7 @@ def final customApplicationId = 'Monumental Sports Network'
 def final hostName = "mse.viewlift.com"
 def final hostNameSuffix = "*.mse.viewlift.com"
 
-def final appVersionName = "2.0.51"
+def final appVersionName = "2.0.52"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -51,7 +51,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 65
+        versionCode 66
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -153,7 +153,7 @@ android {
         sourceCompatibility 1.8
     }
     dexOptions {
-        incremental true
+
         javaMaxHeapSize "4g"
     }
 }

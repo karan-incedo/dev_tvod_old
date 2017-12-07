@@ -992,7 +992,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void requestAds(String adTagUrl) {
-        if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null) {
+        if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null  && !isLiveStream) {
             Log.d(TAG, "Requesting ads: " + adTagUrl);
             AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
             adDisplayContainer.setAdContainer(this);
