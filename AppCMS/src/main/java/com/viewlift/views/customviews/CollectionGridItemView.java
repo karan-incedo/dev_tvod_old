@@ -23,6 +23,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -606,6 +607,37 @@ public class CollectionGridItemView extends BaseView {
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
                 view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+                if (view instanceof ProgressBar) {
+                    ContentDatum historyData = null;
+                    if (data != null && data.getGist() != null && data.getGist().getId() != null) {
+                        historyData = appCMSPresenter.getUserHistoryContentDatum(data.getGist().getId());
+                    }
+
+                    if (historyData != null) {
+                        data.getGist().setWatchedPercentage(historyData.getGist().getWatchedPercentage());
+                        data.getGist().setWatchedTime(historyData.getGist().getWatchedTime());
+                        if (historyData.getGist().getWatchedPercentage() > 0) {
+                            view.setVisibility(View.VISIBLE);
+                            ((ProgressBar) view)
+                                    .setProgress(historyData.getGist().getWatchedPercentage());
+                        } else {
+                            long watchedTime = historyData.getGist().getWatchedPercentage();
+                            long runTime = historyData.getGist().getRuntime();
+                            if (watchedTime > 0 && runTime > 0) {
+                                long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
+                                ((ProgressBar) view)
+                                        .setProgress((int) percentageWatched);
+                                view.setVisibility(View.VISIBLE);
+                            } else {
+                                view.setVisibility(View.INVISIBLE);
+                                ((ProgressBar) view).setProgress(0);
+                            }
+                        }
+                    } else {
+                        view.setVisibility(View.INVISIBLE);
+                    }
+                }
             }
 
             if (shouldShowView(childComponent) && bringToFront) {
