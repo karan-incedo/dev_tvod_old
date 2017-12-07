@@ -1090,4 +1090,10 @@ public abstract class BaseView extends FrameLayout {
         }
         return -1.0f;
     }
+
+    public static int dpToPx(int dp, Context context) {
+        return context.getResources().getDimensionPixelSize(dp);
+
+        //return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
 }

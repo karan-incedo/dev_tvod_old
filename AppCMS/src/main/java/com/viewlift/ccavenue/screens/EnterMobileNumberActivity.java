@@ -40,9 +40,9 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
         } else {
             appCMSPresenter.restrictPortraitOnly();
         }
-        id_et_mobile_number = (EditText) findViewById(R.id.id_et_mobile_number) ;
-        id_btn_checkout = (Button) findViewById(R.id.id_btn_checkout) ;
-        elevated_button_card = (CardView) findViewById(R.id.elevated_button_card) ;
+        id_et_mobile_number = findViewById(R.id.id_et_mobile_number);
+        id_btn_checkout = findViewById(R.id.id_btn_checkout);
+        elevated_button_card = findViewById(R.id.elevated_button_card);
         try {
             String colorCode = getIntent().getStringExtra("color_theme");
             elevated_button_card.setBackgroundColor(Color.parseColor(colorCode));
@@ -78,7 +78,7 @@ public class EnterMobileNumberActivity extends AppCompatActivity {
             }
         });
 
-        app_cms_close_button = (ImageButton) findViewById(R.id.app_cms_close_button) ;
+        app_cms_close_button = findViewById(R.id.app_cms_close_button);
         app_cms_close_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
