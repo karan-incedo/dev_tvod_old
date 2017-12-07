@@ -6,7 +6,7 @@ def final customApplicationId = 'Monumental Sports Network'
 def final hostName = "www.monumentalsportsnetwork.com"
 def final hostNameSuffix = "*.monumentalsportsnetwork.com"
 
-def final appVersionName = "2.0.51"
+def final appVersionName = "2.0.52"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -50,8 +50,8 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 23
-        versionCode 65
+        targetSdkVersion 27
+        versionCode 66
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -63,8 +63,8 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 23
-            targetSdkVersion 25
+            compileSdkVersion 26
+            targetSdkVersion 26
             aaptOptions {
                 cruncherEnabled = false
             }
@@ -72,7 +72,7 @@ android {
         tv {
 
             minSdkVersion 21
-            compileSdkVersion 25
+            compileSdkVersion 26
             versionCode 3010010
             versionName "1.0.18"
             dimension = "green"
@@ -153,7 +153,7 @@ android {
         sourceCompatibility 1.8
     }
     dexOptions {
-        incremental true
+
         javaMaxHeapSize "4g"
     }
 }
