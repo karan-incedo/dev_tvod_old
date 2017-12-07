@@ -477,6 +477,7 @@
     <string name="pop_dialog_facebook">Facebook</string>
     <string name="pop_dialog_instagram">Instagram</string>
     <string name="dialog_close_button">Close</string>
+    <string name="app_template_type">sports_template</string>
 
 <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>

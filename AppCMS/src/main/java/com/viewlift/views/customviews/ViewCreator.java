@@ -4182,7 +4182,7 @@ public class ViewCreator {
             videoPlayerView = new CustomVideoPlayerView(context);
 
         }
-       // videoPlayerView = new CustomVideoPlayerView(context);
+        // videoPlayerView = new CustomVideoPlayerView(context);
         if (AppCMSPresenter.videoPlayerView != null ){
             AppCMSPresenter.videoPlayerView.releasePlayer();
             AppCMSPresenter.videoPlayerView= null;
@@ -4419,3 +4419,4 @@ public class ViewCreator {
         componentViewResult.useWidthOfScreen = false;
     }
 }
+

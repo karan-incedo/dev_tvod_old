@@ -309,12 +309,13 @@ public class AppCMSPageFragment extends Fragment {
         super.onPause();
         updateDataLists();
 
-        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                getActivity().isFinishing()) {
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
             ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).pausePlayer();
 
         }
-
+        if (AppCMSPresenter.videoPlayerView != null && AppCMSPresenter.videoPlayerView.getPlayer()!=null ) {
+            AppCMSPresenter.videoPlayerView.pausePlayer();
+        }
 
     }
 
@@ -343,8 +344,10 @@ public class AppCMSPageFragment extends Fragment {
         if (pageViewGroup != null) {
             pageViewGroup.removeAllViews();
         }
-        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                getActivity().isFinishing()) {
+        if (AppCMSPresenter.videoPlayerView != null && AppCMSPresenter.videoPlayerView.getPlayer()!=null ) {
+            AppCMSPresenter.videoPlayerView.releasePlayer();
+        }
+        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
             ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).releasePlayer();
         }
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
@@ -486,3 +489,4 @@ public class AppCMSPageFragment extends Fragment {
     }
 
 }
+
