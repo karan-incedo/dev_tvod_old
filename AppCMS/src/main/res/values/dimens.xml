@@ -60,8 +60,6 @@
     <dimen name="app_cms_planmetapage_end_margin">4dp</dimen>
     <dimen name="app_cms_continue_watching_tray_marginLeft">8dp</dimen>
     <dimen name="app_cms_episode_tray_marginStart">8dp</dimen>
-
-
     <dimen name="app_cms_download_quality_rendition_width">70dp</dimen>
     <dimen name="app_cms_logo_top_margin">16dp</dimen>
     <dimen name="app_cms_close_button_margin">24dp</dimen>
@@ -85,4 +83,6 @@
     <dimen name="tray_item_more_dialog_PanelPedding">20dp</dimen>
     <dimen name="tray_item_more_dialog_ButtonMargin">20dp</dimen>
     <dimen name="app_cms_toolbar_margin_top">8dp</dimen>
+
+    <dimen name="full_screen_item_min_width">20dp</dimen>
 </resources>

@@ -74,8 +74,8 @@ public class PaymentOptionsActivity extends AppCompatActivity {
         if (!getResources().getBoolean(R.bool.isTablet)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-        id_rl_parent_layout = (RelativeLayout) findViewById(R.id.id_rl_parent_layout) ;
-        id_rv_payment_options = (RecyclerView) findViewById(R.id.id_rv_payment_options) ;
+        id_rl_parent_layout = findViewById(R.id.id_rl_parent_layout);
+        id_rv_payment_options = findViewById(R.id.id_rv_payment_options);
         mLayoutManager = new LinearLayoutManager(this) ;
         id_rv_payment_options.setLayoutManager(mLayoutManager);
         id_rl_parent_layout.setVisibility(View.GONE);
@@ -85,7 +85,7 @@ public class PaymentOptionsActivity extends AppCompatActivity {
         SimpleDateFormat df = new SimpleDateFormat("dd/MM");
         String formattedDate = df.format(c.getTime());
 
-        id_tv_text_payment = (TextView) findViewById(R.id.id_tv_text_payment);
+        id_tv_text_payment = findViewById(R.id.id_tv_text_payment);
         id_tv_text_payment.setText("First Payment Rs. " + initialScreen.getStringExtra(AvenuesParams.AMOUNT).toString().trim() +
                 " on " + formattedDate);
         getDataAsyncTask = new GetData() ;
