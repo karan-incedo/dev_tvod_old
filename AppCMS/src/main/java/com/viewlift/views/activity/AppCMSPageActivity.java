@@ -2202,7 +2202,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             boolean usePageIdQueryParam = true;
             if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName()) ||
                     appCMSPresenter.isPageAShowPage(appCMSBinder.getScreenName())) {
-                endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
+                endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getPageName());
                 usePageIdQueryParam = false;
             }
 
