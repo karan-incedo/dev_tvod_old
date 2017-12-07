@@ -59,7 +59,7 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
         Button downloadBtn = (Button) view.findViewById(R.id.moreDialogDownloadBtn);
         Button closeBtn = (Button) view.findViewById(R.id.moreDialogCloseBtn);
 
-        addToWatchList.setText(isAdded ? "REMOVE TO WATCHLIST" : "ADD TO WATCHLIST");
+        addToWatchList.setText(isAdded ? "REMOVE FROM WATCHLIST" : "ADD TO WATCHLIST");
         addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getCta().getPrimary().getBackgroundColor()));
         addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()

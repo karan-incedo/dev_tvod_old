@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -2634,8 +2635,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     public void startFreeTrialTool() {
-        int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-        int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+        int buttonColor,textColor;
+        if (appCMSPresenter.getAppCMSMain()!=null &&
+                appCMSPresenter.getAppCMSMain().getBrand() !=null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta() !=null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral() !=null&&
+        appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()!= null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()!= null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() !=null) {
+            buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+            textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+        }else
+        {
+            buttonColor = Color.parseColor("#F81004");
+            textColor = Color.parseColor("#ffffff");
+        }
+
         appCMSNavFreeTrialTool.setTextColor(textColor);
         appCMSNavFreeTrialTool.setBackgroundColor(buttonColor);
         if (appCMSPresenter.getNavigation() != null &&
@@ -2728,5 +2743,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
 
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+
+
+      //  super.onSaveInstanceState(outState);
     }
 }
