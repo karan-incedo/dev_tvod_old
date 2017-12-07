@@ -196,6 +196,7 @@ import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
+import com.viewlift.views.activity.AppCMSKisweMediaPlayerActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
@@ -11311,7 +11312,7 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
-        KMSDKCoreKit.initialize(currentActivity);
+       /* KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
                 .setLogLevel(KMSDKCoreKit.DEBUG);
@@ -11320,7 +11321,11 @@ public class AppCMSPresenter {
             mKit.configUser(getLoggedInUserEmail(), currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
         else
             mKit.configUser("guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);
+        mKit.startKiswePlayerActivity(currentActivity, eventId);*/
+        Intent playKisweVideoIntent = new Intent(currentActivity, AppCMSKisweMediaPlayerActivity.class);
+        playKisweVideoIntent.putExtra("kisweEventId",eventId);
+        currentActivity.startActivity(playKisweVideoIntent);
+
     }
 
     private ReportSubscriber reportSubscriber = new ReportSubscriber() {
