@@ -58,6 +58,7 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -77,6 +78,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
     boolean isLoadedNext;
+    private AppCMSPresenter appCMSPresenter;
     private ToggleButton ccToggleButton;
     private boolean isClosedCaptionEnabled = false;
     private Uri uri;
@@ -111,8 +113,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private PageView pageView;
 
-    public VideoPlayerView(Context context) {
+    public VideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context);
+        this.appCMSPresenter = appCMSPresenter;
         initializeView(context);
     }
 
@@ -272,8 +275,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (BaseView.isLandscape(getContext())) {
             playerView.setResizeMode(fullscreenResizeMode);
         } else {
-            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
-//            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
+//            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         }
     }
 
@@ -321,7 +324,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
-
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
         TrackSelection.Factory videoTrackSelectionFactory =
@@ -354,6 +356,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         setFillBasedOnOrientation();
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
+//        fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
@@ -566,7 +569,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
-    public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
+    public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs,
+                                          long initializationDurationMs) {
         //
     }
 
@@ -597,6 +601,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_HEIGHT;
         }
+
         if (BaseView.isLandscape(getContext())) {
             playerView.setResizeMode(fullscreenResizeMode);
         } else {
@@ -623,6 +628,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         pausePlayer();
+
+//        appCMSPresenter.updateWatchedTime(getFilmId(), player.getCurrentPosition());
     }
 
     public String getFilmId() {
