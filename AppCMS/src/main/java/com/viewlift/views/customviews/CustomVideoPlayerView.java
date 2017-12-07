@@ -381,7 +381,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         if (null != url) {
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
-            setCurrentPosition(watchedPercentage);
+//            setCurrentPosition(watchedPercentage);
             resumePlayer();
             if (currentIndex == 0) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
@@ -983,14 +983,17 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         if(/*!serviceType &&*/ contentDatum != null) {
             adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
         }
-        if ( adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
-            shouldRequestAds = true;
-        } else {
-            shouldRequestAds = false;
-        }
+        shouldRequestAds = false;
+
+//        if ( adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
+//            shouldRequestAds = true;
+//        } else {
+//            shouldRequestAds = false;
+//        }
 
     }
 
+    private boolean isLoad=false;
     private void requestAds(String adTagUrl) {
         if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null  && !isLiveStream) {
             Log.d(TAG, "Requesting ads: " + adTagUrl);
