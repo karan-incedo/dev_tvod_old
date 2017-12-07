@@ -3,8 +3,8 @@ apply plugin: 'realm-android'
 
 def final packageName = 'com.mse.monumentalnetworks'
 def final customApplicationId = 'Monumental Sports Network'
-def final hostName = "www.monumentalsportsnetwork.com"
-def final hostNameSuffix = "*.monumentalsportsnetwork.com"
+def final hostName = "mse.viewlift.com"
+def final hostNameSuffix = "*.mse.viewlift.com"
 
 def final appVersionName = "2.0.51"
 buildscript {
@@ -50,7 +50,7 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 65
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -63,8 +63,8 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 23
-            targetSdkVersion 25
+            compileSdkVersion 26
+            targetSdkVersion 26
             aaptOptions {
                 cruncherEnabled = false
             }
@@ -72,7 +72,7 @@ android {
         tv {
 
             minSdkVersion 21
-            compileSdkVersion 25
+            compileSdkVersion 26
             versionCode 3010010
             versionName "1.0.18"
             dimension = "green"
