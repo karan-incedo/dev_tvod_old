@@ -456,6 +456,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 for (Fragment fragment : fragmentList) {
                     if (fragment instanceof AppCMSPageFragment) {
                         ((AppCMSPageFragment) fragment).updateDataLists();
+
                     }
                 }
             }
@@ -782,6 +783,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.unrestrictPortraitOnly();
         }
 
+        if(this.findViewById(R.id.video_player_id) != null &&
+                appCMSPresenter.isAutoRotate() ) {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }else if (!BaseView.isTablet(this))
+        {
+            appCMSPresenter.restrictPortraitOnly();
+        }else if (BaseView.isTablet(this))
+        {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
         resume();
 
         try {
@@ -1172,6 +1183,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         super.onConfigurationChanged(newConfig);
         if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView!=null){
             //appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
+            appCMSPresenter.restrictLandscapeOnly();
             return;
         }
         if (appCMSPresenter != null) {
@@ -1634,6 +1646,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                         boolean leavingExtraPage,
                                         boolean keepPage) {
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
+        if (!BaseView.isTablet(this)) {
+            appCMSPresenter.restrictPortraitOnly();
+        } else {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
+
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         setVisibilityForStartFreeTrial(appCMSBinder.getPageId());
         int lastBackStackEntry = getSupportFragmentManager().getBackStackEntryCount();

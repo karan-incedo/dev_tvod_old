@@ -19,7 +19,7 @@ import com.viewlift.presenters.AppCMSPresenter;
  * Created by Sandeep.Singh on 12/5/17.
  */
 
-public class AppCMSKisweMediaPlayerActivity extends AppCompatActivity implements KisweMediaPlayerFragment.KisweMediaPlayerFragmentListener {
+public class  AppCMSKisweMediaPlayerActivity extends AppCompatActivity implements KisweMediaPlayerFragment.KisweMediaPlayerFragmentListener {
 
     String eventId;
 

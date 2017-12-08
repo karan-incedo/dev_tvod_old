@@ -12007,13 +12007,15 @@ public class AppCMSPresenter {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
         }
-        relativeLayoutFull = new FullPlayerView(currentActivity, this);
-        relativeLayoutFull.setVisibility(View.VISIBLE);
-        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
-        isFullScreenVisible = true;
-        restrictLandscapeOnly();
-        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-            ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
+        if(videoPlayerView != null && videoPlayerView.getParent() !=null ) {
+            relativeLayoutFull = new FullPlayerView(currentActivity, this);
+            relativeLayoutFull.setVisibility(View.VISIBLE);
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
+            isFullScreenVisible = true;
+            restrictLandscapeOnly();
+            if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
+                ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
+            }
         }
 
     }
@@ -12048,23 +12050,23 @@ public class AppCMSPresenter {
             Log.e(TAG, e.getMessage());
         }
 
-        if (currentActivity!=null) {
-            if (!BaseView.isTablet(currentActivity)) {
-                restrictPortraitOnly();
-            } else {
-                unrestrictPortraitOnly();
-            }
-        }
-       /* restrictPortraitOnly();
+       restrictPortraitOnly();
 
 
 
             new Handler().postDelayed(() -> {
-                if (currentActivity!= null && isAutoRotate() && !BaseView.isTablet(currentActivity)) {
+                if (currentActivity!= null && isAutoRotate() &&
+                        !AppCMSPresenter.isFullScreenVisible &&
+                        currentActivity.getRequestedOrientation()==ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
+                        currentActivity.findViewById(R.id.video_player_id)!=null) {
+                    unrestrictPortraitOnly();
+                }else if (!BaseView.isTablet(currentActivity) && currentActivity.findViewById(R.id.video_player_id)==null) {
+                    restrictPortraitOnly();
+                }else if (BaseView.isTablet(currentActivity)){
                     unrestrictPortraitOnly();
                 }
             }, 5000);
-*/
+
         if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
             ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();
         }
