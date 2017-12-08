@@ -622,7 +622,7 @@ public class CollectionGridItemView extends BaseView {
                             ((ProgressBar) view)
                                     .setProgress(historyData.getGist().getWatchedPercentage());
                         } else {
-                            long watchedTime = historyData.getGist().getWatchedPercentage();
+                            long watchedTime = historyData.getGist().getWatchedTime();
                             long runTime = historyData.getGist().getRuntime();
                             if (watchedTime > 0 && runTime > 0) {
                                 long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
