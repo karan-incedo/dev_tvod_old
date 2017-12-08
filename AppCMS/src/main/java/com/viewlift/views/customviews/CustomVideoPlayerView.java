@@ -136,7 +136,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private static final long SECS_TO_MSECS = 1000L;
     private long videoPlayTime = 0l;
     private boolean isVideoLoaded = false;
-      CustomVideoPlayerView videoPlayerViewSingle;
+    CustomVideoPlayerView videoPlayerViewSingle;
 
     private boolean isVideoPlaying = false;
     private boolean isTimerRun = true;
@@ -165,10 +165,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             //Log.e(TAG, e.getMessage());
             mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
         }
-        videoPlayerViewSingle =this;
+        videoPlayerViewSingle = this;
         setFirebaseProgressHandling();
 
-        videoPlayerViewSingle =this;
+        videoPlayerViewSingle = this;
 
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
 
@@ -200,7 +200,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     public String getVideoId() {
-        return videoDataId ;
+        return videoDataId;
 
     }
 
@@ -241,13 +241,13 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     getVideoPreview();
                     appCMSPresenter.setPreviewStatus(false);
                 } else {
-                    if(appCMSPresenter.isUserSubscribed()){
+                    if (appCMSPresenter.isUserSubscribed()) {
                         playVideos(0, contentDatum);
                         appCMSPresenter.setPreviewStatus(false);
-                    }else{
-                        if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()){
+                    } else {
+                        if (shouldRequestAds && !appCMSPresenter.getPreviewStatus()) {
                             requestAds(adsUrl);
-                        }else{
+                        } else {
                             playVideos(0, contentDatum);
                         }
                         getVideoPreview();
@@ -760,7 +760,15 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         customMessageView = new TextView(mContext);
         LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         textViewParams.gravity = Gravity.CENTER;
-        customMessageView.setText(getResources().getString(R.string.app_cms_live_preview_text_message));
+        String message = null;
+        if (appCMSPresenter != null &&
+                appCMSPresenter.getSubscriptionFlowContent() != null &&
+                appCMSPresenter.getSubscriptionFlowContent().getOverlayMessage() != null) {
+            message = appCMSPresenter.getSubscriptionFlowContent().getOverlayMessage();
+        } else {
+            message = getResources().getString(R.string.app_cms_live_preview_text_message);
+        }
+        customMessageView.setText(message);
         customMessageView.setLayoutParams(textViewParams);
         customMessageView.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
         customMessageView.setTextSize(15);
@@ -866,78 +874,20 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 //todo work on maximizing the player on this event
                 if (isChecked) {
-                        /*new Handler().postDelayed(() -> {
-                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
-                                appCMSPresenter.unrestrictPortraitOnly();
-                            }
-                        }, 3000);*/
-                    //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                    if (appCMSPresenter.videoPlayerView==null) {
+
+                    if (appCMSPresenter.videoPlayerView == null) {
                         appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
                     }
                     appCMSPresenter.showFullScreenPlayer();
 
                 } else {
-                    //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
-                       /* new Handler().postDelayed(() -> {
-                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
-                                appCMSPresenter.unrestrictPortraitOnly();
-                            }
-                        }, 3000);*/
                     appCMSPresenter.exitFullScreenPlayer();
+                    if (appCMSPresenter.videoPlayerView != null) {
+                        appCMSPresenter.videoPlayerView = null;
+                    }
                 }
-                /*if (isChecked){
-                    FrameLayout.LayoutParams frameLayoutParams=new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                    setLayoutParams(frameLayoutParams);
-                }else{
-                    setLayoutParams(baseLayoutParms);
-                }*/
-                /*if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
-                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
 
-                    if (isChecked) {
-                        new Handler().postDelayed(() -> {
-                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
-                                appCMSPresenter.unrestrictPortraitOnly();
-                            }
-                        }, 3000);
-                        //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                        appCMSPresenter.showFullScreenPlayer();
-
-                    } else {
-                        //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-
-                        new Handler().postDelayed(() -> {
-                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
-                                appCMSPresenter.unrestrictPortraitOnly();
-                            }
-                        }, 3000);
-                        appCMSPresenter.exitFullScreenPlayer();
-                    }
-
-
-                } else {
-                    if (appCMSPresenter.isAppSVOD()) {
-                        if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                                    () -> {
-                                        appCMSPresenter.setAfterLoginAction(() -> {
-                                        });
-                                    });
-                        } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
-                                    () -> {
-                                        appCMSPresenter.setAfterLoginAction(() -> {
-                                        });
-                                    });
-                        }
-                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
-                                () -> {
-                                });
-                    }
-                }*/
             }
         });
 
@@ -962,11 +912,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
        /* boolean serviceType = appCMSPresenter.getAppCMSMain().getServiceType().equals(
                 mContext.getString(R.string.app_cms_main_svod_service_type_key));*/
 
-        if(contentDatum != null) {
-            if(contentDatum.getStreamingInfo() != null) {
+        if (contentDatum != null) {
+            if (contentDatum.getStreamingInfo() != null) {
                 isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
             }
-            if(!isLiveStream && !appCMSPresenter.isUserSubscribed()) {
+            if (!isLiveStream && !appCMSPresenter.isUserSubscribed()) {
                 adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
             }
         }

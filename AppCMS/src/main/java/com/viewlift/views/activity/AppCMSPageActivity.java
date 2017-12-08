@@ -973,6 +973,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(notifyUpdateListsReceiver);
         unregisterReceiver(refreshPageDataReceiver);
         unregisterReceiver(processDeeplinkReceiver);
+        unregisterReceiver(presenterCloseActionReceiver);
+
 
         if (inAppBillingServiceConn != null) {
             try {
