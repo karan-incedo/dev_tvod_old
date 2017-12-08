@@ -336,7 +336,20 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             if (contentDatum.getGist() != null) {
-                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
+                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) == 0) {
+                    StringBuilder runtimeText = new StringBuilder();
+                    if ((contentDatum.getSeason() != null)) {
+                        runtimeText.append(contentDatum.getSeason().get(0).getEpisodes().size())
+                                .append(" ")
+                                .append(holder.itemView.getContext().getString(R.string.runtime_episodes_abbreviation));
+                    } else {
+                        runtimeText.append(contentDatum.getGist().getRuntime())
+                                .append(" ")
+                                .append(holder.itemView.getContext().getString(R.string.runtime_seconds_abbreviation));
+                    }
+
+                    holder.appCMSContinueWatchingDuration.setText(runtimeText);
+                } else if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
                     StringBuilder runtimeText = new StringBuilder()
                             .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
                             .append(" ")

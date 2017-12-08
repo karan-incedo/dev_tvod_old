@@ -199,6 +199,7 @@
     <string name="runtime_minute_abbreviation">MIN</string>
     <string name="runtime_minutes_abbreviation">MINS</string>
     <string name="runtime_seconds_abbreviation">SECS</string>
+    <string name="runtime_episodes_abbreviation">EPISODES</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
