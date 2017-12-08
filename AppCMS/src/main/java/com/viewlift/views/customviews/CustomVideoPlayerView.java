@@ -7,6 +7,7 @@ package com.viewlift.views.customviews;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -135,6 +136,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private static final long SECS_TO_MSECS = 1000L;
     private long videoPlayTime = 0l;
     private boolean isVideoLoaded = false;
+      CustomVideoPlayerView videoPlayerViewSingle;
+
     private boolean isVideoPlaying = false;
     private boolean isTimerRun = true;
     public String lastUrl = "";
@@ -162,7 +165,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             //Log.e(TAG, e.getMessage());
             mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
         }
-
+        videoPlayerViewSingle =this;
         setFirebaseProgressHandling();
 
 
@@ -196,7 +199,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     public String getVideoId() {
-        return videoDataId;
+        return videoDataId ;
 
     }
 
