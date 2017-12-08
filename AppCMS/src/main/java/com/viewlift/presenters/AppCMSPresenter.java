@@ -214,6 +214,7 @@ import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
@@ -1341,9 +1342,7 @@ public class AppCMSPresenter {
                     if (entitlementActive) {
                         entitlementCheckActive.setSuccess(false);
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-                        //boolean requestAds =  actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
-                        //Todo logic may change later for SVOD types
-                        boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                        boolean requestAds = /*!svodServiceType &&*/ actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                         //Send Firebase Analytics when user is subscribed and user is Logged In
                         sendFirebaseLoginSubscribeSuccess();
@@ -5797,6 +5796,7 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(USER_EMAIL_SHARED_PREF_NAME, 0);
             sharedPrefs.edit().putString(USER_EMAIL_SHARED_PREF_NAME, userEmail).apply();
         }
+        videoPlayerView=null;
     }
 
     private long getLoggedInTime() {
@@ -6944,11 +6944,26 @@ public class AppCMSPresenter {
                 if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
                     title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
+
+                    if(currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template")){
+                        message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
+
+                    }
                     //Set Firebase User Property when user is not logged in and unsubscribed
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
+                if (dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
+                    title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
 
+                    if(currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template")){
+                        message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
+
+                    }
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
                 if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
                     String paymentProcessor = getActiveSubscriptionProcessor();
                     if ((!TextUtils.isEmpty(paymentProcessor) &&
@@ -7034,6 +7049,7 @@ public class AppCMSPresenter {
                 }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
+
                 builder.setTitle(Html.fromHtml(currentActivity.getString(R.string.text_with_color,
                         Integer.toHexString(textColor).substring(2),
                         title)))
@@ -7041,7 +7057,33 @@ public class AppCMSPresenter {
                                 Integer.toHexString(textColor).substring(2),
                                 message)));
 
-                if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
+               if ((dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) && currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template")) {
+                    builder.setPositiveButton(R.string.app_cms_login_button_text,
+                            (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    launchType = LaunchType.LOGIN_AND_SIGNUP;
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToLoginPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing login & subscription required dialog: " + e.getMessage());
+                                }
+                            });
+                    builder.setNegativeButton(R.string.app_cms_start_free_trial,
+                            (dialog, which) -> {
+                                try {
+                                    dialog.dismiss();
+                                    if (onCloseAction != null) {
+                                        onCloseAction.call();
+                                    }
+                                    navigateToSubscriptionPlansPage(false);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error closing subscribe dialog: " + e.getMessage());
+                                }
+                            });
+                }else if (dialogType == DialogType.LOGOUT_WITH_RUNNING_DOWNLOAD) {
                     builder.setPositiveButton("Yes",
                             (dialog, which) -> {
                                 try {
@@ -7160,6 +7202,7 @@ public class AppCMSPresenter {
                 }
                 currentActivity.runOnUiThread(() -> {
                     AlertDialog dialog = builder.create();
+
 
                     if (onCloseAction != null) {
                         dialog.setCanceledOnTouchOutside(false);
@@ -10488,9 +10531,7 @@ public class AppCMSPresenter {
                             boolean svodServiceType = appCMSMain.getServiceType().equals(
                                     currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
 
-                            boolean requestAds = !svodServiceType && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
-                            //Todo  may need to change Ads logic for hoiChoi
-                            //boolean requestAds =  actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                            boolean requestAds = /*!svodServiceType && */actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                             Date now = new Date();
                             adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
@@ -11872,9 +11913,9 @@ public class AppCMSPresenter {
         if (videoId != null) {
 
 
-            if (videoPlayerView == null) {
-                this.videoPlayerView = ViewCreator.playerView(currentActivity, videoId);
-            }
+//            if (videoPlayerView == null) {
+//                this.videoPlayerView = ViewCreator.playerView(currentActivity, videoId);
+//            }
 
             relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
             relativeLayoutPIP.setVisibility(View.VISIBLE);
