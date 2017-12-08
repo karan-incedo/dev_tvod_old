@@ -395,21 +395,36 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
-                            data.getGist().getImageGist().get_3x4() != null &&
-                            data.getGist().getBadgeImages().get_3x4() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
                             0 < childViewWidth &&
                             0 < childViewHeight) {
-                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getBadgeImages().get_3x4(),
-                                childViewWidth,
-                                childViewHeight);
+                        if (childViewWidth < childViewHeight &&
+                                data.getGist().getImageGist().get_3x4() != null &&
+                                data.getGist().getBadgeImages().get_3x4() != null) {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getBadgeImages().get_3x4(),
+                                    childViewWidth,
+                                    childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(childViewWidth, childViewHeight)
-                                    .into((ImageView) view);
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .into((ImageView) view);
+                            }
+                        } else if (data.getGist().getImageGist().get_16x9() != null &&
+                                data.getGist().getBadgeImages().get_16x9() != null) {
+                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getBadgeImages().get_16x9(),
+                                    childViewWidth,
+                                    childViewHeight);
+
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .override(childViewWidth, childViewHeight)
+                                        .into((ImageView) view);
+                            }
                         }
                         view.setVisibility(VISIBLE);
                         bringToFront = true;
