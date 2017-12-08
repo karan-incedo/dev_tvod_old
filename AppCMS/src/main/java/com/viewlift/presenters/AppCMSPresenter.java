@@ -573,7 +573,7 @@ public class AppCMSPresenter {
     private boolean usedCachedAPI;
     public boolean isconfig = false;
     public boolean isAppBackground = false;
-
+    private HashMap<String ,CustomVideoPlayerView> playerViewCache;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -12132,6 +12132,28 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public  void saveVideoPlayerViewCache(String key,CustomVideoPlayerView videoPlayerView){
+        if(playerViewCache==null){
+            playerViewCache=new  HashMap<String ,CustomVideoPlayerView>();
+        }
+        playerViewCache.put(key,videoPlayerView);
+    }
+
+    public void clearVideoPlayerViewCache(){
+        if(playerViewCache==null){
+            playerViewCache=new  HashMap<String ,CustomVideoPlayerView>();
+        }
+        playerViewCache.clear();
+    }
+    public  CustomVideoPlayerView getVideoPlayerViewCache(String key){
+        if(playerViewCache==null){
+            playerViewCache=new  HashMap<String ,CustomVideoPlayerView>();
+        }
+        if(playerViewCache.get(key)!=null){
+            return playerViewCache.get(key);
+        }
+        return null;
+    }
     public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 
