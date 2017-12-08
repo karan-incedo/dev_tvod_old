@@ -115,7 +115,6 @@ public class ViewCreator {
     private ComponentViewResult componentViewResult;
 
     private HtmlSpanner htmlSpanner;
-    public static HashMap<String ,CustomVideoPlayerView> playerViewCache=new  HashMap<String ,CustomVideoPlayerView>();
     CustomVideoPlayerView videoPlayerViewSingle;
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
@@ -328,8 +327,8 @@ public class ViewCreator {
                                         videoId = moduleAPI.getContentData().get(0).getGist().getId();
                                         (view).setVisibility(View.VISIBLE);
                                    }
-                                    if(playerViewCache.get(moduleAPI.getId() + component.getKey())!=null){
-                                        videoPlayerViewSingle=playerViewCache.get(moduleAPI.getId() + component.getKey());
+                                    if(appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey())!=null){
+                                        videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey());
                                     }
                                     else{
                                         videoPlayerViewSingle=null;
@@ -349,7 +348,7 @@ public class ViewCreator {
                                             ((FrameLayout) view).addView(videoPlayerViewSingle);
                                         }
                                         videoPlayerViewSingle.checkVideoStatus();
-                                        playerViewCache.put(moduleAPI.getId() + component.getKey(),videoPlayerViewSingle);
+                                        appCMSPresenter.saveVideoPlayerViewCache(moduleAPI.getId() + component.getKey(),videoPlayerViewSingle);
                                         (view).setId(R.id.video_player_id);
 
                                     }
@@ -1972,10 +1971,10 @@ public class ViewCreator {
                     videoId = moduleAPI.getContentData().get(0).getGist().getId();
                 }
                 componentViewResult.componentView=new FrameLayout(context);
-                if(playerViewCache.get(moduleId + component.getKey())!=null){
-                    videoPlayerViewSingle=playerViewCache.get(moduleId + component.getKey());
+                if(appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey())!=null){
+                    videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey());
                 } else{
-                    playerViewCache.put(moduleId + component.getKey(),AppCMSPresenter.videoPlayerView);
+                    appCMSPresenter.saveVideoPlayerViewCache(moduleId + component.getKey(),videoPlayerViewSingle);
 
                     videoPlayerViewSingle=null;
                 }
@@ -4240,11 +4239,6 @@ public class ViewCreator {
 
             CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
 
-
-        if (AppCMSPresenter.videoPlayerView != null ){
-            AppCMSPresenter.videoPlayerView.releasePlayer();
-            AppCMSPresenter.videoPlayerView= null;
-        }
         if (videoId != null) {
                  videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
 //            AppCMSPresenter.videoPlayerView=videoPlayerView;

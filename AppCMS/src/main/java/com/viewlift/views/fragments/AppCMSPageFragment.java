@@ -299,11 +299,14 @@ public class AppCMSPageFragment extends Fragment {
 
         updateDataLists();
 
-//        if (pageView != null &&
-//                pageView.findChildViewById(R.id.video_player_id) != null) {
-////            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).resumePlayer();
-//            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
-//        } else
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) nextChild;
+            if(((VideoPlayerView) group.getChildAt(0))!=null){
+                ((VideoPlayerView) group.getChildAt(0)).requestAudioFocus();
+            }
+
+        }
         if (pageView != null &&
                 appCMSPresenter.videoPlayerView != null) {
             appCMSPresenter.videoPlayerView.requestAudioFocus();

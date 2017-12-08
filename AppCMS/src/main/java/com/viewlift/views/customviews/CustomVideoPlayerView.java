@@ -168,6 +168,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         videoPlayerViewSingle =this;
         setFirebaseProgressHandling();
 
+        videoPlayerViewSingle =this;
 
         parentScreenName = getContext().getString(R.string.app_cms_beacon_video_player_parent_screen_name);
 
@@ -871,6 +872,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                             }
                         }, 3000);*/
                     //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                    if (appCMSPresenter.videoPlayerView==null) {
+                        appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
+                    }
                     appCMSPresenter.showFullScreenPlayer();
 
                 } else {
