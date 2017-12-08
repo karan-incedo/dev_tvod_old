@@ -6,6 +6,7 @@ package com.viewlift.views.customviews;
 
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -134,6 +135,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private boolean isVideoLoaded = false;
     private boolean isVideoPlaying=false;
     private boolean isTimerRun=true;
+    public String lastUrl="";
+    CustomVideoPlayerView videoPlayerViewSingle;
 
 //    public CustomVideoPlayerView(Context context, String videoId) {
 //        super(context);
@@ -172,7 +175,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             //Log.e(TAG, e.getMessage());
             mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
         }
-
+        videoPlayerViewSingle =this;
         setFirebaseProgressHandling();
 
 
@@ -378,6 +381,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
 
         if (null != url) {
+            lastUrl=url;
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
             setCurrentPosition(watchedPercentage);
             resumePlayer();
@@ -892,76 +896,31 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                             }
                         }, 3000);*/
                     //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+                    if (appCMSPresenter.videoPlayerView==null) {
+                        appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
+                    }
                     appCMSPresenter.showFullScreenPlayer();
 
                 } else {
-                    //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+
 
                        /* new Handler().postDelayed(() -> {
                             if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
                                 appCMSPresenter.unrestrictPortraitOnly();
                             }
                         }, 3000);*/
+
                     appCMSPresenter.exitFullScreenPlayer();
+
                 }
-                /*if (isChecked){
-                    FrameLayout.LayoutParams frameLayoutParams=new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-                    setLayoutParams(frameLayoutParams);
-                }else{
-                    setLayoutParams(baseLayoutParms);
-                }*/
-                /*if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
-                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
 
-                    if (isChecked) {
-                        new Handler().postDelayed(() -> {
-                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
-                                appCMSPresenter.unrestrictPortraitOnly();
-                            }
-                        }, 3000);
-                        //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-                        appCMSPresenter.showFullScreenPlayer();
-
-                    } else {
-                        //appCMSPresenter.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-
-                        new Handler().postDelayed(() -> {
-                            if (appCMSPresenter.isAutoRotate() && !BaseView.isTablet(mContext)) {
-                                appCMSPresenter.unrestrictPortraitOnly();
-                            }
-                        }, 3000);
-                        appCMSPresenter.exitFullScreenPlayer();
-                    }
-
-
-                } else {
-                    if (appCMSPresenter.isAppSVOD()) {
-                        if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                                    () -> {
-                                        appCMSPresenter.setAfterLoginAction(() -> {
-                                        });
-                                    });
-                        } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
-                                    () -> {
-                                        appCMSPresenter.setAfterLoginAction(() -> {
-                                        });
-                                    });
-                        }
-                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
-                                () -> {
-                                });
-                    }
-                }*/
             }
         });
 
         return mToggleButton;
     }
 
-    public void updateFullscreenButtonState(int screenMode) {
+    public void  updateFullscreenButtonState(int screenMode) {
         switch (screenMode) {
             case Configuration.ORIENTATION_LANDSCAPE:
                 mFullScreenButton.setChecked(true);
@@ -984,7 +943,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
             }
             if(!isLiveStream) {
-                adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+//                adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
             }
         }
         if (adsUrl != null && !TextUtils.isEmpty(adsUrl)) {

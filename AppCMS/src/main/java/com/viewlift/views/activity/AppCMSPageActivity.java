@@ -885,8 +885,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         {
             appCMSPresenter.exitFullScreenPlayer();
         }
-        if (AppCMSPresenter.videoPlayerView!=null){
-            AppCMSPresenter.videoPlayerView.pausePlayer();
+        if (appCMSPresenter.videoPlayerView!=null){
+            appCMSPresenter.videoPlayerView.pausePlayer();
         }
         try {
             unregisterReceiver(networkConnectedReceiver);
@@ -1170,7 +1170,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (AppCMSPresenter.isFullScreenVisible){
+        if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView!=null){
+            //appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
             return;
         }
         if (appCMSPresenter != null) {
@@ -1463,8 +1464,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 default:
                     break;
             }
-            if (!(appCMSPageFragment instanceof AppCMSPageFragment) && AppCMSPresenter.videoPlayerView!=null) {
-                AppCMSPresenter.videoPlayerView.pausePlayer();
+            if (!(appCMSPageFragment instanceof AppCMSPageFragment) && appCMSPresenter.videoPlayerView!=null) {
+                appCMSPresenter.videoPlayerView.pausePlayer();
             }
 
             if (appCMSPageFragment != null) {

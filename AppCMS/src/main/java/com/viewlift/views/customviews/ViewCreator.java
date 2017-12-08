@@ -98,6 +98,7 @@ import net.nightwhistler.htmlspanner.style.Style;
 import org.htmlcleaner.TagNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,6 +115,8 @@ public class ViewCreator {
     private ComponentViewResult componentViewResult;
 
     private HtmlSpanner htmlSpanner;
+    public static HashMap<String, CustomVideoPlayerView> playerViewCache = new HashMap<String, CustomVideoPlayerView>();
+    CustomVideoPlayerView videoPlayerViewSingle;
 
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
@@ -325,23 +328,35 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getId() != null) {
                                         videoId = moduleAPI.getContentData().get(0).getGist().getId();
                                         (view).setVisibility(View.VISIBLE);
-                                        AppCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) view);
-                                        if (AppCMSPresenter.videoPlayerViewLP == null &&
-                                                ((CustomVideoPlayerView) view).getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                                            AppCMSPresenter.videoPlayerViewLP = (FrameLayout.LayoutParams) ((CustomVideoPlayerView) view).getLayoutParams();
-                                        }
                                     }
-                                    if (videoId != null &&
-                                            AppCMSPresenter.videoPlayerView !=null ) {
-                                        //((CustomVideoPlayerView) view).getPlayerView().hideController();
-                                        View finalView = view;
-                                        ((CustomVideoPlayerView) view).setVideoUri(videoId, R.string.loading_video_text);
-                                        (view).setId(R.id.video_player_id);
-                                        AppCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) view);
-                                        if (AppCMSPresenter.videoPlayerViewLP == null &&
-                                                ((CustomVideoPlayerView) view).getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                                            AppCMSPresenter.videoPlayerViewLP = (FrameLayout.LayoutParams) ((CustomVideoPlayerView) view).getLayoutParams();
+                                    if (playerViewCache.get(moduleAPI.getId() + component.getKey()) != null) {
+                                        videoPlayerViewSingle = playerViewCache.get(moduleAPI.getId() + component.getKey());
+                                    } else {
+                                        videoPlayerViewSingle = null;
+                                    }
+                                    if (videoId != null) {
+                                        ((FrameLayout) view).removeAllViews();
+                                        if (videoPlayerViewSingle != null) {
+
+                                            if (videoPlayerViewSingle.getParent() != null)
+                                                ((ViewGroup) videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+                                            videoPlayerViewSingle.resumePlayer();
+
+//                                            if((appCMSPresenter.isconfig || appCMSPresenter.isAppBackground) && !TextUtils.isEmpty(appCMSPresenter.videoPlayerView.lastUrl)){
+//                                                appCMSPresenter.videoPlayerView.resumePlayer();
+//                                            }else{
+//                                                appCMSPresenter.videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
+//                                            }
+                                            ((FrameLayout) view).addView(videoPlayerViewSingle);
+                                        } else {
+                                            videoPlayerViewSingle = playerView(context, videoId);
+                                            ((FrameLayout) view).addView(videoPlayerViewSingle);
                                         }
+                                        playerViewCache.put(moduleAPI.getId() + component.getKey(), videoPlayerViewSingle);
+
+                                        appCMSPresenter.isconfig = false;
+                                        (view).setId(R.id.video_player_id);
+
 
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
@@ -1732,14 +1747,60 @@ public class ViewCreator {
                                     .build());
                         }
                     } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-                        if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
-                            ((RecyclerView) componentViewResult.componentView)
-                                    .setLayoutManager(new GridLayoutManager(context, 2,
-                                            GridLayoutManager.HORIZONTAL, false));
-                        } else {
+                        //TODO: Uncomment below code once isHorizontal key is available in JSON UI
+//                        if (BaseView.isTablet(context)) {
+//                            if (BaseView.isLandscape(context)) {
+//                                if (component != null &&
+//                                        component.getLayout() != null &&
+//                                        component.getLayout().getTabletLandscape() != null &&
+//                                        component.getLayout().getTabletLandscape().isHorizontalScroll()) {
+//                                    ((RecyclerView) componentViewResult.componentView)
+//                                            .setLayoutManager(new GridLayoutManager(context, 2,
+//                                                    GridLayoutManager.HORIZONTAL, false));
+//                                } else {
+//                                    ((RecyclerView) componentViewResult.componentView)
+//                                            .setLayoutManager(new GridLayoutManager(context, 2,
+//                                                    GridLayoutManager.VERTICAL, false));
+//                                }
+//                            } else {
+//                                if (component != null &&
+//                                        component.getLayout() != null &&
+//                                        component.getLayout().getTabletPortrait() != null &&
+//                                        component.getLayout().getTabletPortrait().isHorizontalScroll()) {
+//                                    ((RecyclerView) componentViewResult.componentView)
+//                                            .setLayoutManager(new GridLayoutManager(context, 2,
+//                                                    GridLayoutManager.HORIZONTAL, false));
+//                                } else {
+//                                    ((RecyclerView) componentViewResult.componentView)
+//                                            .setLayoutManager(new GridLayoutManager(context, 2,
+//                                                    GridLayoutManager.VERTICAL, false));
+//                                }
+//                            }
+//                        } else {
+//                            if (component != null &&
+//                                    component.getLayout() != null &&
+//                                    component.getLayout().getMobile() != null &&
+//                                    component.getLayout().getMobile().isHorizontalScroll()) {
+//                                ((RecyclerView) componentViewResult.componentView)
+//                                        .setLayoutManager(new LinearLayoutManager(context,
+//                                                LinearLayoutManager.HORIZONTAL,
+//                                                false));
+//                            } else {
+//                                ((RecyclerView) componentViewResult.componentView)
+//                                        .setLayoutManager(new LinearLayoutManager(context,
+//                                                LinearLayoutManager.VERTICAL,
+//                                                false));
+//                            }
+//                        }
+                        if (BaseView.isTablet(context)) {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
                                             LinearLayoutManager.HORIZONTAL,
+                                            false));
+                        } else {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new LinearLayoutManager(context,
+                                            LinearLayoutManager.VERTICAL,
                                             false));
                         }
 
@@ -1915,9 +1976,35 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getId() != null) {
                     videoId = moduleAPI.getContentData().get(0).getGist().getId();
-
                 }
-                componentViewResult.componentView = playerView(context, videoId);
+                componentViewResult.componentView = new FrameLayout(context);
+                if (playerViewCache.get(moduleId + component.getKey()) != null) {
+                    videoPlayerViewSingle = playerViewCache.get(moduleId + component.getKey());
+                } else {
+                    playerViewCache.put(moduleId + component.getKey(), appCMSPresenter.videoPlayerView);
+
+                    videoPlayerViewSingle = null;
+                }
+                if (videoPlayerViewSingle != null) {
+
+                    if (videoPlayerViewSingle.getParent() != null)
+                        ((ViewGroup) videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+                    videoPlayerViewSingle.resumePlayer();
+
+//                    if((appCMSPresenter.isconfig || appCMSPresenter.isAppBackground) && !TextUtils.isEmpty(appCMSPresenter.videoPlayerView.lastUrl)){
+//                        appCMSPresenter.videoPlayerView.resumePlayer();
+//                    }else{
+//                        appCMSPresenter.videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
+//                    }
+                    ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
+                } else {
+                    videoPlayerViewSingle = playerView(context, videoId);
+                    ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
+                }
+                appCMSPresenter.isconfig = false;
+                appCMSPresenter.isAppBackground = false;
+
+
                 componentViewResult.componentView.setId(R.id.video_player_id);
 
 
@@ -4163,42 +4250,18 @@ public class ViewCreator {
         }
     }
 
-    public static CustomVideoPlayerView playerView(Context context, String videoId) {
-        CustomVideoPlayerView videoPlayerView;
-        if (AppCMSPresenter.videoPlayerView!=null && videoId != null &&
-                AppCMSPresenter.videoPlayerView.getVideoId() != null &&
-                AppCMSPresenter.videoPlayerView.getVideoId().equalsIgnoreCase(videoId)){
-            if (AppCMSPresenter.videoPlayerViewLP !=null &&
-                    AppCMSPresenter.videoPlayerViewLP instanceof FrameLayout.LayoutParams){
-                AppCMSPresenter.videoPlayerView.setLayoutParams(AppCMSPresenter.videoPlayerViewLP);
-            }
-            if(AppCMSPresenter.videoPlayerView.getParent() !=null)
-            {
-                ((ViewGroup)AppCMSPresenter.videoPlayerView.getParent()).removeView(AppCMSPresenter.videoPlayerView);
-            }
+    public CustomVideoPlayerView playerView(Context context, String videoId) {
 
-            return AppCMSPresenter.videoPlayerView;
-        }else {
-            videoPlayerView = new CustomVideoPlayerView(context);
+        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
 
-        }
-        // videoPlayerView = new CustomVideoPlayerView(context);
-        if (AppCMSPresenter.videoPlayerView != null ){
-            AppCMSPresenter.videoPlayerView.releasePlayer();
-            AppCMSPresenter.videoPlayerView= null;
-        }
+
+       /* if (appCMSPresenter.videoPlayerView != null ){
+            appCMSPresenter.videoPlayerView.releasePlayer();
+            appCMSPresenter.videoPlayerView= null;
+        }*/
         if (videoId != null) {
-            /*videoPlayerView.getPlayerView().hideController();
-            videoPlayerView.getPlayerView().setControllerVisibilityListener(new CustomPlaybackControlView.VisibilityListener() {
-                @Override
-                public void onVisibilityChange(int i) {
-                    if (i == 0) {
-                        videoPlayerView.getPlayerView().hideController();
-                    }
-                }
-            });*/
             videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
-            AppCMSPresenter.videoPlayerView = videoPlayerView;
+//            appCMSPresenter.videoPlayerView=videoPlayerView;
         }
 
         return videoPlayerView;

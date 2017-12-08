@@ -69,6 +69,14 @@ public class TabletLandscape implements Serializable {
     @Expose
     float maximumWidth;
 
+    @SerializedName("isHorizontalScroll")
+    @Expose
+    boolean isHorizontalScroll;
+
+    public boolean isHorizontalScroll() {
+        return isHorizontalScroll;
+    }
+
     public float getYAxis() {
         return yAxis;
     }
