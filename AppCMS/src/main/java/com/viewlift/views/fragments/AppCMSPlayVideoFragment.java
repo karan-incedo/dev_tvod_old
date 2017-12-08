@@ -202,6 +202,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private Timer entitlementCheckTimer;
     private TimerTask entitlementCheckTimerTask;
     private boolean entitlementCheckCancelled = false;
+    private boolean allowFreePlay;
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String primaryCategory,
@@ -451,6 +452,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerInfoContainer =
                 (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
+        videoPlayerInfoContainer.setVisibility(View.GONE);
 
         mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
@@ -493,7 +495,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         boolean allowFreePlay = !appCMSPresenter.isAppSVOD() || isTrailer || freeContent;
 
-        setCasting(allowFreePlay);
+        if(!shouldRequestAds) {
+            setCasting(allowFreePlay);
+        }
 
         try {
             mStreamId = appCMSPresenter.getStreamingId(title);
@@ -834,7 +838,15 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onAdError(AdErrorEvent adErrorEvent) {
         //Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
 //        createContentRatingView();
-        videoPlayerView.resumePlayer();
+        try {
+            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+            setCasting(allowFreePlay);
+            resumeVideo();
+            videoPlayerView.resumePlayer();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+
     }
 
     @Override
@@ -844,6 +856,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         switch (adEvent.getType()) {
             case LOADED:
                 adsManager.start();
+                videoPlayerInfoContainer.setVisibility(View.GONE);
                 break;
 
             case CONTENT_PAUSE_REQUESTED:
@@ -906,8 +919,12 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case ALL_ADS_COMPLETED:
-                videoLoadingProgress.setVisibility(View.GONE);
+
                 try {
+                    videoLoadingProgress.setVisibility(View.GONE);
+                    videoPlayerInfoContainer.setVisibility(View.VISIBLE);
+                    setCasting(allowFreePlay);
+                    resumeVideo();
                     createContentRatingView();
                 } catch (Exception e) {
                     //Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
@@ -1078,7 +1095,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             adDisplayContainer.setAdContainer(videoPlayerView);
 
             AdsRequest request = sdkFactory.createAdsRequest();
-            request.setAdTagUrl(adsUrl);
+            request.setAdTagUrl("http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=");
             request.setAdDisplayContainer(adDisplayContainer);
             request.setContentProgressProvider(() -> {
                 if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {

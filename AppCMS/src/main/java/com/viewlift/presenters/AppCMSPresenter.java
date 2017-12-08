@@ -1342,7 +1342,7 @@ public class AppCMSPresenter {
                     if (entitlementActive) {
                         entitlementCheckActive.setSuccess(false);
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-                        boolean requestAds = /*!svodServiceType &&*/ actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                        boolean requestAds = /*!svodServiceType &&*/!isUserSubscribed() && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                         //Send Firebase Analytics when user is subscribed and user is Logged In
                         sendFirebaseLoginSubscribeSuccess();
@@ -10531,7 +10531,7 @@ public class AppCMSPresenter {
                             boolean svodServiceType = appCMSMain.getServiceType().equals(
                                     currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
 
-                            boolean requestAds = /*!svodServiceType && */actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                            boolean requestAds = /*!svodServiceType && */!isUserSubscribed() && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                             Date now = new Date();
                             adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
