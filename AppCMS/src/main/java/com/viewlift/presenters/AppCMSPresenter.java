@@ -573,7 +573,7 @@ public class AppCMSPresenter {
     private boolean usedCachedAPI;
     public boolean isconfig = false;
     public boolean isAppBackground = false;
-
+    private HashMap<String ,CustomVideoPlayerView> playerViewCache;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -1345,7 +1345,7 @@ public class AppCMSPresenter {
                     if (entitlementActive) {
                         entitlementCheckActive.setSuccess(false);
                         Intent playVideoIntent = new Intent(currentActivity, AppCMSPlayVideoActivity.class);
-                        boolean requestAds = /*!svodServiceType &&*/ actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                        boolean requestAds = /*!svodServiceType &&*/!isUserSubscribed() && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                         //Send Firebase Analytics when user is subscribed and user is Logged In
                         sendFirebaseLoginSubscribeSuccess();
@@ -10536,7 +10536,7 @@ public class AppCMSPresenter {
                             boolean svodServiceType = appCMSMain.getServiceType().equals(
                                     currentActivity.getString(R.string.app_cms_main_svod_service_type_key));
 
-                            boolean requestAds = /*!svodServiceType && */actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                            boolean requestAds = /*!svodServiceType && */!isUserSubscribed() && actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
 
                             Date now = new Date();
                             adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
@@ -12134,6 +12134,28 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public  void saveVideoPlayerViewCache(String key,CustomVideoPlayerView videoPlayerView){
+        if(playerViewCache==null){
+            playerViewCache=new  HashMap<String ,CustomVideoPlayerView>();
+        }
+        playerViewCache.put(key,videoPlayerView);
+    }
+
+    public void clearVideoPlayerViewCache(){
+        if(playerViewCache==null){
+            playerViewCache=new  HashMap<String ,CustomVideoPlayerView>();
+        }
+        playerViewCache.clear();
+    }
+    public  CustomVideoPlayerView getVideoPlayerViewCache(String key){
+        if(playerViewCache==null){
+            playerViewCache=new  HashMap<String ,CustomVideoPlayerView>();
+        }
+        if(playerViewCache.get(key)!=null){
+            return playerViewCache.get(key);
+        }
+        return null;
+    }
     public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
 

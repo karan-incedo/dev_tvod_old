@@ -257,7 +257,6 @@ public class AppCMSPageFragment extends Fragment {
                 //Log.e(TAG, "Could not attach fragment: " + e.toString());
             }
         }
-
     }
 
     private void sendFirebaseAnalyticsEvents(AppCMSBinder appCMSVideoPageBinder) {
@@ -300,16 +299,17 @@ public class AppCMSPageFragment extends Fragment {
 
         updateDataLists();
 
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) nextChild;
+            if(((VideoPlayerView) group.getChildAt(0))!=null){
+                ((VideoPlayerView) group.getChildAt(0)).requestAudioFocus();
+            }
 
-//        if (pageView != null &&
-//                pageView.findChildViewById(R.id.video_player_id) != null) {
-////            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).resumePlayer();
-//            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
-//        } else
+        }
         if (pageView != null &&
                 appCMSPresenter.videoPlayerView != null) {
             appCMSPresenter.videoPlayerView.requestAudioFocus();
-
 
         }
     }
@@ -337,8 +337,6 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null) {
             pageView.notifyAdaptersOfUpdate();
 
-           // setPageOriantationForVideoPage();
-
         }
     }
 
@@ -360,35 +358,21 @@ public class AppCMSPageFragment extends Fragment {
         if (pageViewGroup != null) {
             pageViewGroup.removeAllViews();
         }
-//        if (AppCMSPresenter.videoPlayerView != null && AppCMSPresenter.videoPlayerView.getPlayer()!=null ) {
-//            AppCMSPresenter.videoPlayerView.releasePlayer();
-//            AppCMSPresenter.videoPlayerView=null;
-//        }
-//        AppCMSPresenter.videoPlayerView=null;
+
         if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
-            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
-            ViewGroup group = (ViewGroup) nextChild;
+            View playerParent = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) playerParent;
             if(((VideoPlayerView) group.getChildAt(0))!=null)
             ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
 
-//            if(((VideoPlayerView) group.getChildAt(0)).getPlayer()!=null){
-//                ((VideoPlayerView) group.getChildAt(0)).getPlayer().release();
-//            }
+            if( ((CustomVideoPlayerView) group.getChildAt(0))!=null &&  ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer!=null){
+                ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer.cancel();
+                ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer=null;
 
+            }
         }
-//        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
-//            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).releasePlayer();
-//        }
-//        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
-//            if (((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer != null)
-//                ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer.cancel();
-//            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer = null;
-//        }
-        if(appCMSPresenter.videoPlayerView!=null && appCMSPresenter.videoPlayerView.entitlementCheckTimer!=null){
-            appCMSPresenter.videoPlayerView.entitlementCheckTimer.cancel();
-            appCMSPresenter.videoPlayerView.entitlementCheckTimer=null;
 
-        }
+
     }
 
     @Override
@@ -513,17 +497,14 @@ public class AppCMSPageFragment extends Fragment {
                     updateAllViews(pageViewGroup);
                     pageView.notifyAdaptersOfUpdate();
                 }
-
             } catch (Exception e) {
                 //
                 e.printStackTrace();
             }
         }
-
     }
 
     private void updateAllViews(ViewGroup pageViewGroup) {
-
         if (pageViewGroup.getVisibility() == View.VISIBLE) {
             pageViewGroup.setVisibility(View.GONE);
             pageViewGroup.setVisibility(View.VISIBLE);
