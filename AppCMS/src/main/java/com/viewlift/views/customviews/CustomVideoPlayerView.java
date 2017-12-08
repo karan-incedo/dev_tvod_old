@@ -943,7 +943,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
             }
             if(!isLiveStream) {
-//                adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+               adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
             }
         }
         if (adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
