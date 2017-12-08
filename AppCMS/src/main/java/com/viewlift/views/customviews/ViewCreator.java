@@ -2264,9 +2264,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_PLAY_BUTTON_KEY:
-                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)
-                                && ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed())
-                                || appCMSPresenter.isUserLoggedIn())) {
+                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
                             componentViewResult.componentView.setVisibility(View.GONE);
                         } else {
                             componentViewResult.componentView.setVisibility(View.VISIBLE);
@@ -3140,9 +3138,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_IMAGE_KEY:
-                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)
-                                && ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed())
-                                || appCMSPresenter.isUserLoggedIn())) {
+                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
                             videoUrl = null;
 
                             if (moduleAPI != null &&
