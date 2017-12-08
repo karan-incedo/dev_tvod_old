@@ -1732,14 +1732,60 @@ public class ViewCreator {
                                     .build());
                         }
                     } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
-                        if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
-                            ((RecyclerView) componentViewResult.componentView)
-                                    .setLayoutManager(new GridLayoutManager(context, 2,
-                                            GridLayoutManager.HORIZONTAL, false));
-                        } else {
+                        //TODO: Uncomment below code once isHorizontal key is available in JSON UI
+//                        if (BaseView.isTablet(context)) {
+//                            if (BaseView.isLandscape(context)) {
+//                                if (component != null &&
+//                                        component.getLayout() != null &&
+//                                        component.getLayout().getTabletLandscape() != null &&
+//                                        component.getLayout().getTabletLandscape().isHorizontalScroll()) {
+//                                    ((RecyclerView) componentViewResult.componentView)
+//                                            .setLayoutManager(new GridLayoutManager(context, 2,
+//                                                    GridLayoutManager.HORIZONTAL, false));
+//                                } else {
+//                                    ((RecyclerView) componentViewResult.componentView)
+//                                            .setLayoutManager(new GridLayoutManager(context, 2,
+//                                                    GridLayoutManager.VERTICAL, false));
+//                                }
+//                            } else {
+//                                if (component != null &&
+//                                        component.getLayout() != null &&
+//                                        component.getLayout().getTabletPortrait() != null &&
+//                                        component.getLayout().getTabletPortrait().isHorizontalScroll()) {
+//                                    ((RecyclerView) componentViewResult.componentView)
+//                                            .setLayoutManager(new GridLayoutManager(context, 2,
+//                                                    GridLayoutManager.HORIZONTAL, false));
+//                                } else {
+//                                    ((RecyclerView) componentViewResult.componentView)
+//                                            .setLayoutManager(new GridLayoutManager(context, 2,
+//                                                    GridLayoutManager.VERTICAL, false));
+//                                }
+//                            }
+//                        } else {
+//                            if (component != null &&
+//                                    component.getLayout() != null &&
+//                                    component.getLayout().getMobile() != null &&
+//                                    component.getLayout().getMobile().isHorizontalScroll()) {
+//                                ((RecyclerView) componentViewResult.componentView)
+//                                        .setLayoutManager(new LinearLayoutManager(context,
+//                                                LinearLayoutManager.HORIZONTAL,
+//                                                false));
+//                            } else {
+//                                ((RecyclerView) componentViewResult.componentView)
+//                                        .setLayoutManager(new LinearLayoutManager(context,
+//                                                LinearLayoutManager.VERTICAL,
+//                                                false));
+//                            }
+//                        }
+                        if (BaseView.isTablet(context)) {
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new LinearLayoutManager(context,
                                             LinearLayoutManager.HORIZONTAL,
+                                            false));
+                        } else {
+                            ((RecyclerView) componentViewResult.componentView)
+                                    .setLayoutManager(new LinearLayoutManager(context,
+                                            LinearLayoutManager.VERTICAL,
                                             false));
                         }
 

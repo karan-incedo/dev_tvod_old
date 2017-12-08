@@ -69,6 +69,14 @@ public class TabletPortrait implements Serializable {
     @Expose
     float maximumWidth;
 
+    @SerializedName("isHorizontalScroll")
+    @Expose
+    boolean isHorizontalScroll;
+
+    public boolean isHorizontalScroll() {
+        return isHorizontalScroll;
+    }
+
     public float getWidth() {
         return width;
     }
