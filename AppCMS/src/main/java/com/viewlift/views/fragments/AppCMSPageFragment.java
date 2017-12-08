@@ -294,12 +294,8 @@ public class AppCMSPageFragment extends Fragment {
         updateDataLists();
 
         if (pageView != null &&
-                pageView.findChildViewById(R.id.video_player_id) != null) {
-//            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).resumePlayer();
-            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
-        } else if (pageView != null &&
                 AppCMSPresenter.videoPlayerView != null) {
-            AppCMSPresenter.videoPlayerView.pausePlayer();
+            AppCMSPresenter.videoPlayerView.requestAudioFocus();
 
         }
     }
@@ -310,7 +306,11 @@ public class AppCMSPageFragment extends Fragment {
         updateDataLists();
 
         if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
-            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).pausePlayer();
+            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) nextChild;
+            if(((VideoPlayerView) group.getChildAt(0))!=null){
+                ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
+            }
 
         }
         if (AppCMSPresenter.videoPlayerView != null && AppCMSPresenter.videoPlayerView.getPlayer()!=null ) {
@@ -344,22 +344,21 @@ public class AppCMSPageFragment extends Fragment {
         if (pageViewGroup != null) {
             pageViewGroup.removeAllViews();
         }
-        if (AppCMSPresenter.videoPlayerView != null && AppCMSPresenter.videoPlayerView.getPlayer()!=null ) {
-            AppCMSPresenter.videoPlayerView.releasePlayer();
-        }
-        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
-            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).releasePlayer();
-        }
-        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
-            if (((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer != null)
-                ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer.cancel();
-            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer = null;
-        }
-        if(AppCMSPresenter.videoPlayerView!=null && AppCMSPresenter.videoPlayerView.entitlementCheckTimer!=null){
-            AppCMSPresenter.videoPlayerView.entitlementCheckTimer.cancel();
-            AppCMSPresenter.videoPlayerView.entitlementCheckTimer=null;
 
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            View playerParent = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) playerParent;
+            if(((CustomVideoPlayerView) group.getChildAt(0))!=null)
+            ((CustomVideoPlayerView) group.getChildAt(0)).pausePlayer();
+
+            if( ((CustomVideoPlayerView) group.getChildAt(0))!=null &&  ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer!=null){
+                ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer.cancel();
+                ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer=null;
+
+            }
         }
+
+
     }
 
     @Override
