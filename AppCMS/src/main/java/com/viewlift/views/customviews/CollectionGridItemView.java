@@ -235,6 +235,7 @@ public class CollectionGridItemView extends BaseView {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             boolean bringToFront = true;
+            AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
             AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
             if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
@@ -242,7 +243,7 @@ public class CollectionGridItemView extends BaseView {
                         componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY ||
                         componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE ) {
+                        componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_BADGE_IMAGE) {
                     int childViewWidth = (int) getViewWidth(getContext(),
                             childComponent.getLayout(),
                             ViewGroup.LayoutParams.MATCH_PARENT);
@@ -570,6 +571,26 @@ public class CollectionGridItemView extends BaseView {
                             }
 
                             stringBuilder.append(formattedRecurringPaymentAmount);
+                            if (appCMSUIcomponentViewType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_monthly))) {
+                                    stringBuilder.append(" ");
+                                    stringBuilder.append(context.getString(R.string.forward_slash));
+                                    stringBuilder.append(" ");
+                                    stringBuilder.append(context.getString(R.string.plan_type_month));
+                                }
+                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_yearly))) {
+                                    stringBuilder.append(" ");
+                                    stringBuilder.append(context.getString(R.string.forward_slash));
+                                    stringBuilder.append(" ");
+                                    stringBuilder.append(context.getString(R.string.plan_type_year));
+                                }
+                                if (data.getRenewalCycleType().contains(context.getString(R.string.app_cms_plan_renewal_cycle_type_daily))) {
+                                    stringBuilder.append(" ");
+                                    stringBuilder.append(context.getString(R.string.forward_slash));
+                                    stringBuilder.append(" ");
+                                    stringBuilder.append(context.getString(R.string.plan_type_day));
+                                }
+                            }
                             ((TextView) view).setText(stringBuilder.toString());
                             ((TextView) view).setPaintFlags(((TextView) view).getPaintFlags());
                         }
