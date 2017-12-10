@@ -52,13 +52,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         implements OnInternalEvent, AppCMSBaseAdapter {
     private static final String TAG = "AppCMSTrayAdapter";
 
-    private static final int SECONDS_PER_MINS = 60;
+    private static final int SECONDS_PER_MIN = 60;
 
     protected ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
-    RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private List<ContentDatum> adapterData;
     private String defaultAction;
     private boolean isHistory;
@@ -121,7 +121,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             if (isWatchlist || isDownload) {
                 sortByAddedDate();
             } else if (isHistory) {
-                sortByUpdateDate();
+                sortByMostRecentlyWatchedDate();
             }
         }
     }
@@ -131,7 +131,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 o2.getAddedDate()));
     }
 
-    private void sortByUpdateDate() {
+    private void sortByMostRecentlyWatchedDate() {
         Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
                 o2.getGist().getUpdateDate()));
         Collections.reverse(adapterData);
@@ -336,10 +336,19 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             if (contentDatum.getGist() != null) {
-                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) == 0) {
+                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MIN) == 0) {
                     StringBuilder runtimeText = new StringBuilder();
                     if ((contentDatum.getSeason() != null)) {
-                        runtimeText.append(contentDatum.getSeason().get(0).getEpisodes().size())
+                        int totalEpisodes = 0;
+                        int numSeasons = contentDatum.getSeason().size();
+
+                        for (int i = 0; i < numSeasons; i++) {
+                            if (contentDatum.getSeason().get(i).getEpisodes() != null) {
+                                totalEpisodes += contentDatum.getSeason().get(i).getEpisodes().size();
+                            }
+                        }
+
+                        runtimeText.append(totalEpisodes)
                                 .append(" ")
                                 .append(holder.itemView.getContext().getString(R.string.runtime_episodes_abbreviation));
                     } else {
@@ -349,16 +358,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                     }
 
                     holder.appCMSContinueWatchingDuration.setText(runtimeText);
-                } else if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
+                } else if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MIN) < 2) {
                     StringBuilder runtimeText = new StringBuilder()
-                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MIN)
                             .append(" ")
                             .append(holder.itemView.getContext().getString(R.string.min_abbreviation));
 
                     holder.appCMSContinueWatchingDuration.setText(runtimeText);
                 } else {
                     StringBuilder runtimeText = new StringBuilder()
-                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MIN)
                             .append(" ")
                             .append(holder.itemView.getContext().getString(R.string.mins_abbreviation));
 
@@ -687,10 +696,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         case PAGE_WATCHLIST_DURATION_KEY:
                             viewHolder.appCMSContinueWatchingDuration.setTextColor(textColor);
                             viewHolder.appCMSContinueWatchingSize.setTextColor(textColor);
+
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
-                                viewHolder.appCMSContinueWatchingDuration.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
-                                viewHolder.appCMSContinueWatchingSize.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
+                                viewHolder.appCMSContinueWatchingDuration
+                                        .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                                component.getBackgroundColor())));
+                                viewHolder.appCMSContinueWatchingSize
+                                        .setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(),
+                                                component.getBackgroundColor())));
                             }
+
                             if (!TextUtils.isEmpty(component.getFontFamily())) {
                                 setTypeFace(viewHolder.itemView.getContext(),
                                         jsonValueKeyMap,
@@ -713,6 +728,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                                 viewHolder.appCMSContinueWatchingTitle.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
                             }
+
                             if (!TextUtils.isEmpty(component.getFontFamily())) {
                                 setTypeFace(viewHolder.itemView.getContext(),
                                         jsonValueKeyMap,
@@ -730,6 +746,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                                 viewHolder.appCMSContinueWatchingDescription.setBackgroundColor(Color.parseColor(getColor(viewHolder.itemView.getContext(), component.getBackgroundColor())));
                             }
+
                             if (!TextUtils.isEmpty(component.getFontFamily())) {
                                 setTypeFace(viewHolder.itemView.getContext(),
                                         jsonValueKeyMap,
@@ -772,8 +789,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (isHistory) {
             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
                 if (appCMSHistoryResult != null) {
-//                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules()
-//                            .get(0).getContentData();
+                    adapterData = appCMSHistoryResult.convertToAppCMSPageAPI(null).getModules()
+                            .get(0).getContentData();
                     sortData();
                     notifyDataSetChanged();
                 }

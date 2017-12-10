@@ -109,14 +109,7 @@ public class ViewCreator {
     }
 
     static void setViewWithShowSubtitle(Context context, ContentDatum data, View view) {
-        int totalEpisodes = 0;
-        List<Season_> seasons = data.getSeason();
-        int numSeasons = seasons.size();
-        for (int i = 0; i < numSeasons; i++) {
-            if (seasons.get(i).getEpisodes() != null) {
-                totalEpisodes += seasons.get(i).getEpisodes().size();
-            }
-        }
+        int totalEpisodes = getTotalNumberOfEpisodes(data);
 
         StringBuilder subtitleSb = new StringBuilder(String.valueOf(totalEpisodes));
         subtitleSb.append(context.getString(R.string.blank_separator));
@@ -134,6 +127,19 @@ public class ViewCreator {
 
         ((TextView) view).setText(subtitleSb.toString());
         view.setAlpha(0.6f);
+    }
+
+    private static int getTotalNumberOfEpisodes(ContentDatum data) {
+        int totalEpisodes = 0;
+        List<Season_> seasons = data.getSeason();
+        int numSeasons = seasons.size();
+        for (int i = 0; i < numSeasons; i++) {
+            if (seasons.get(i).getEpisodes() != null) {
+                totalEpisodes += seasons.get(i).getEpisodes().size();
+            }
+        }
+
+        return totalEpisodes;
     }
 
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
@@ -158,7 +164,7 @@ public class ViewCreator {
             }
         }
         boolean appendFirstSep = numberOfViewsToBeSeparated > 1;
-        boolean appendSecondSep = numberOfViewsToBeSeparated == 3;
+        boolean appendSecondSep = numberOfViewsToBeSeparated > 2;
 
         StringBuilder infoText = new StringBuilder();
 
