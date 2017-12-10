@@ -73,6 +73,9 @@
     @com.facebook.common.internal.DoNotStrip *;
 }
 
+#kiswe class
+-keep class com.kiswe.kmsdkcorekit { *;}
+
 # Keep native methods
 -keepclassmembers class * {
     native <methods>;

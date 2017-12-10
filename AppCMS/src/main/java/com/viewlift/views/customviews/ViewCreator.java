@@ -2396,26 +2396,34 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
-                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setPadding(8, 0, 0, 8);
-                        int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
-                        ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.launchButtonSelectedAction(null,
-                                    component.getAction(),
-                                    null,
-                                    null,
-                                    null,
-                                    false,
-                                    0,
-                                    null)) {
-                                //Log.e(TAG, "Could not launch action: " +
+                        if(appCMSPresenter !=null &&
+                                appCMSPresenter.getTabBarUIFooterModule()!= null &&
+                                appCMSPresenter.getTabBarUIFooterModule().getSettings()!= null &&
+                                appCMSPresenter.getTabBarUIFooterModule().getSettings().isShowTabBar()){
+                            ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
+                        }else {
+
+                            ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
+                            ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            componentViewResult.componentView.setPadding(8, 0, 0, 8);
+                            int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                            ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                if (!appCMSPresenter.launchButtonSelectedAction(null,
+                                        component.getAction(),
+                                        null,
+                                        null,
+                                        null,
+                                        false,
+                                        0,
+                                        null)) {
+                                    //Log.e(TAG, "Could not launch action: " +
 //                                        " action: " +
 //                                        component.getAction());
-                            }
-                        });
+                                }
+                            });
+                        }
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:
