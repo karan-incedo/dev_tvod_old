@@ -382,7 +382,7 @@ public class CastHelper {
     }
 
 
-    private void launchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer) {
+    public void launchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer) {
 
         if (binder != null && binder.getContentData() != null && binder.getContentData().getGist() != null) {
             if (binder.getContentData().getGist().getPermalink() != null) {
@@ -610,11 +610,9 @@ public class CastHelper {
                     }
 
                     CastingUtils.castingMediaId = "";
-                    if (callBackRemoteListener != null)
-                        callBackRemoteListener.onApplicationDisconnected();
                 }
-
-
+                if (callBackRemoteListener != null)
+                    callBackRemoteListener.onApplicationDisconnected();
             }
         };
     }

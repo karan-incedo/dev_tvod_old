@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -304,6 +305,18 @@ public class AppCMSPageFragment extends Fragment {
         }
     }
 
+    private CastServiceProvider.CastCallBackListener castCallBackListener = new CastServiceProvider.CastCallBackListener() {
+        @Override
+        public void onCastStatusUpdate() {
+            if(pageView != null && pageView.findChildViewById(R.id.video_player_id) != null){
+                if(pageView.findChildViewById(R.id.video_player_id) instanceof CustomVideoPlayerView){
+
+                    ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).showOverlayWhenCastingConnected();
+                }
+            }
+        }
+    };
+
     @Override
     public void onPause() {
         super.onPause();
@@ -357,6 +370,7 @@ public class AppCMSPageFragment extends Fragment {
             AppCMSPresenter.videoPlayerView.entitlementCheckTimer=null;
 
         }
+        CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(null);
     }
 
     @Override

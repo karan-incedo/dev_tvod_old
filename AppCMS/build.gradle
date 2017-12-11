@@ -50,7 +50,6 @@ android {
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 23
         versionCode 65
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -63,8 +62,8 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 23
-            targetSdkVersion 25
+            compileSdkVersion 26
+            targetSdkVersion 26
             aaptOptions {
                 cruncherEnabled = false
             }
@@ -72,7 +71,7 @@ android {
         tv {
 
             minSdkVersion 21
-            compileSdkVersion 25
+            compileSdkVersion 26
             versionCode 3010010
             versionName "1.0.18"
             dimension = "green"
@@ -289,8 +288,8 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-    // mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
-    compile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.1'
+//     mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
+    mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

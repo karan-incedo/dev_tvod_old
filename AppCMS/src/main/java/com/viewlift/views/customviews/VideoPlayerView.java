@@ -492,7 +492,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onPositionDiscontinuity(int reason) {
 
     }
-
 //    @Override
 //    public void onPositionDiscontinuity() {
 //
