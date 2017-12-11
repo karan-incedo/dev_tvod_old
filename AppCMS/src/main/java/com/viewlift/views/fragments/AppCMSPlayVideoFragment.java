@@ -530,7 +530,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
                 if (shouldRequestAds && !isADPlay && !isAdDisplayed && adsUrl != null) {
                     requestAds(adsUrl);
-                    isADPlay = true;
                 } else {
                     if (beaconBufferingThread != null) {
                         beaconBufferingThread.sendBeaconBuffering = false;
@@ -611,7 +610,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                         beaconBufferingThread.start();
                     }
                 }
-                videoLoadingProgress.setVisibility(View.VISIBLE);
+                if(!shouldRequestAds || isADPlay) {
+                    videoLoadingProgress.setVisibility(View.VISIBLE);
+                }
             }
 
             if (!sentBeaconPlay) {
@@ -770,13 +771,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         requestAudioFocus();
         resumeVideo();
-        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
-            adsManager.resume();
-        }
-        if (shouldRequestAds && !isADPlay) {
-            requestAds(adsUrl);
-            isADPlay = true;
-        }
         super.onResume();
     }
 
@@ -844,6 +838,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         switch (adEvent.getType()) {
             case LOADED:
+                videoLoadingProgress.setVisibility(View.GONE);
                 adsManager.start();
                 break;
 
@@ -907,8 +902,8 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case ALL_ADS_COMPLETED:
-                videoLoadingProgress.setVisibility(View.GONE);
                 try {
+                    isADPlay = true;
                     videoPlayerInfoContainer.bringToFront();
                     createContentRatingView();
                 } catch (Exception e) {
@@ -1081,7 +1076,7 @@ public class AppCMSPlayVideoFragment extends Fragment
             adDisplayContainer.setAdContainer(videoPlayerView);
 
             AdsRequest request = sdkFactory.createAdsRequest();
-            request.setAdTagUrl("http://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/124319096/external/single_ad_samples&ciu_szs=300x250&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1&cust_params=deployment%3Ddevsite%26sample_ct%3Dskippablelinear&correlator=");
+            request.setAdTagUrl(adTagUrl);
             request.setAdDisplayContainer(adDisplayContainer);
             request.setContentProgressProvider(() -> {
                 if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {
