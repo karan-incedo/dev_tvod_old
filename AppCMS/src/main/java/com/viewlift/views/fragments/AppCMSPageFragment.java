@@ -319,6 +319,8 @@ public class AppCMSPageFragment extends Fragment {
         super.onPause();
         updateDataLists();
 
+        System.out.println("get pageview visibility-"+ pageView.getVisibility());
+
         if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
