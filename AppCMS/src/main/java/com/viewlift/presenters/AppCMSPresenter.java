@@ -11936,7 +11936,7 @@ public class AppCMSPresenter {
         this.videoPlayerView = customVideoPlayerView;
     }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId, final CustomVideoPlayerView videoPlayerView) {
+    public void showPopupWindowPlayer(View scrollView, String videoId) {
         if (videoId != null) {
 
 
