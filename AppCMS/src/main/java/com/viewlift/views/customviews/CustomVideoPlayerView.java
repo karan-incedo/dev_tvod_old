@@ -138,7 +138,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private boolean isVideoLoaded = false;
     CustomVideoPlayerView videoPlayerViewSingle;
 
-    private boolean isVideoPlaying = false;
+    private boolean isVideoPlaying = true;
     private boolean isTimerRun = true;
     public String lastUrl = "";
     ContentDatum onUpdatedContentDatum;
@@ -343,6 +343,18 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
         }
 
+        playerView.getController().setPlayerEvents(new IgetPlayerEvent() {
+            @Override
+            public void getIsVideoPaused(boolean isVideoPaused) {
+
+                if(isVideoPaused){
+                    isVideoPlaying=false;
+                }else{
+                    isVideoPlaying=true;
+
+                }
+            }
+        });
         if (null != url) {
             lastUrl = url;
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
@@ -547,7 +559,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 break;
             case STATE_BUFFERING:
             case STATE_IDLE:
-                isVideoPlaying = false;
                 showProgressBar("Streaming...");
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = false;
@@ -565,11 +576,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 hideProgressBar();
 
                 if (getPlayerView().getPlayer().getPlayWhenReady()) {
-                    isVideoPlaying = true;
                     ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
                 } else {
-                    isVideoPlaying = false;
                     ((Activity) mContext).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
                 }
@@ -673,8 +682,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     public void resumePlayerLastState() {
+
         if (null != getPlayer()) {
-            getPlayer().setPlayWhenReady(true);
+            if(isVideoPlaying){
+                getPlayer().setPlayWhenReady(true);
+
+            }else{
+                getPlayer().setPlayWhenReady(false);
+            }
         }
     }
 
@@ -1095,5 +1110,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
     }
 
+    public interface IgetPlayerEvent{
+
+        public void getIsVideoPaused(boolean isVideoPaused);
+    }
 }
 
