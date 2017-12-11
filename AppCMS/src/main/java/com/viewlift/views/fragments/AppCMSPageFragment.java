@@ -227,7 +227,7 @@ public class AppCMSPageFragment extends Fragment {
         super.onPause();
         updateDataLists();
 
-        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
             if (((VideoPlayerView) group.getChildAt(0)) != null) {

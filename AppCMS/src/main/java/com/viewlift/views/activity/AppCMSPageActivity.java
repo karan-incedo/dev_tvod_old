@@ -1762,6 +1762,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 try {
                     switch (appCMSBinder.getExtraScreenType()) {
                         case NAVIGATION:
+                            createFragment = true;
+                            break;
                         case TEAM:
                         case SEARCH:
                             //Log.d(TAG, "Popping stack to getList to page item");
