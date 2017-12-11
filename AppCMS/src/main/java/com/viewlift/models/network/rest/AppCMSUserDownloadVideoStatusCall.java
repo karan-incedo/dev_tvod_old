@@ -37,7 +37,9 @@ public class AppCMSUserDownloadVideoStatusCall {
                     .getDownloadByIdBelongstoUser(videoId, userId);
             if (downloadVideoRealm == null) {
 
-                Observable.just((UserVideoDownloadStatus) null).subscribe(readyAction1);
+                Observable.just((UserVideoDownloadStatus) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction1);
                 return;
             }
 
@@ -103,12 +105,16 @@ public class AppCMSUserDownloadVideoStatusCall {
                         break;
                 }
 
-                Observable.just(statusResponse).subscribe(readyAction1);
+                Observable.just(statusResponse)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction1);
             }
             else{
                 if (null != downloadVideoRealm ) { // fix of SVFA-1856
                     statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
-                    Observable.just(statusResponse).subscribe(readyAction1);
+                    Observable.just(statusResponse)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction1);
                     return;
                 }
             }
@@ -116,7 +122,9 @@ public class AppCMSUserDownloadVideoStatusCall {
         } catch (Exception e) {
 
             //Log.e(TAG, e.getMessage());
-            Observable.just((UserVideoDownloadStatus) null).subscribe(readyAction1);
+            Observable.just((UserVideoDownloadStatus) null)
+                    .onErrorResumeNext(throwable -> Observable.empty())
+                    .subscribe(readyAction1);
         }
     }
 }

@@ -2876,7 +2876,9 @@ public class AppCMSPresenter {
             appCMSAddToWatchlistCall.call(url, getAuthToken(),
                     addToWatchlistResult -> {
                         try {
-                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                            Observable.just(addToWatchlistResult)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(resultAction1);
                             if (add) {
                                 displayCustomToast("Added to Watchlist");
                             } else {
@@ -3692,7 +3694,9 @@ public class AppCMSPresenter {
             appCMSDeleteHistoryCall.call(url, getAuthToken(),
                     appCMSDeleteHistoryResult -> {
                         try {
-                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                            Observable.just(appCMSDeleteHistoryResult)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(resultAction1);
                         } catch (Exception e) {
                             //Log.e(TAG, "Error deleting history: " + e.getMessage());
                         } finally {
@@ -3746,7 +3750,9 @@ public class AppCMSPresenter {
                     addToWatchlistResult -> {
                         try {
                             populateFilmsInUserWatchlist();
-                            Observable.just(addToWatchlistResult).subscribe(resultAction1);
+                            Observable.just(addToWatchlistResult)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(resultAction1);
                         } catch (Exception e) {
                             //Log.e(TAG, "Error deleting all watchlist items: " + e.getMessage());
                         }
@@ -4018,7 +4024,10 @@ public class AppCMSPresenter {
                         })
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe((result) -> Observable.just(result).subscribe(this::setGooglePlayAppStoreVersion));
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe((result) -> Observable.just(result)
+                                .onErrorResumeNext(throwable -> Observable.empty())
+                                .subscribe(this::setGooglePlayAppStoreVersion));
             } catch (Exception e) {
                 //Log.e(TAG, "Failed to refresh app version: " + e.getMessage());
             }
@@ -4051,7 +4060,9 @@ public class AppCMSPresenter {
                     appCMSDeleteHistoryResult -> {
                         try {
                             sendUpdateHistoryAction();
-                            Observable.just(appCMSDeleteHistoryResult).subscribe(resultAction1);
+                            Observable.just(appCMSDeleteHistoryResult)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(resultAction1);
                         } catch (Exception e) {
                             //Log.e(TAG, "Error deleting all history items: " + e.getMessage());
                         }
@@ -4084,9 +4095,13 @@ public class AppCMSPresenter {
                         @Override
                         public void call(AppCMSWatchlistResult appCMSWatchlistResult) {
                             if (appCMSWatchlistResult != null) {
-                                Observable.just(appCMSWatchlistResult).subscribe(appCMSWatchlistResultAction);
+                                Observable.just(appCMSWatchlistResult)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(appCMSWatchlistResultAction);
                             } else {
-                                Observable.just((AppCMSWatchlistResult) null).subscribe(appCMSWatchlistResultAction);
+                                Observable.just((AppCMSWatchlistResult) null)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(appCMSWatchlistResultAction);
                             }
                         }
                     });
@@ -4338,9 +4353,13 @@ public class AppCMSPresenter {
                             @Override
                             public void call(AppCMSHistoryResult appCMSHistoryResult) {
                                 if (appCMSHistoryResult != null) {
-                                    Observable.just(appCMSHistoryResult).subscribe(appCMSHistoryResultAction);
+                                    Observable.just(appCMSHistoryResult)
+                                            .onErrorResumeNext(throwable -> Observable.empty())
+                                            .subscribe(appCMSHistoryResultAction);
                                 } else {
-                                    Observable.just((AppCMSHistoryResult) null).subscribe(appCMSHistoryResultAction);
+                                    Observable.just((AppCMSHistoryResult) null)
+                                            .onErrorResumeNext(throwable -> Observable.empty())
+                                            .subscribe(appCMSHistoryResultAction);
                                 }
                             }
                         });
@@ -4874,27 +4893,37 @@ public class AppCMSPresenter {
                                 getAuthToken(),
                                 userIdentity -> {
                                     try {
-                                        Observable.just(userIdentity).subscribe(userIdentityAction);
+                                        Observable.just(userIdentity)
+                                                .onErrorResumeNext(throwable -> Observable.empty())
+                                                .subscribe(userIdentityAction);
                                     } catch (Exception e) {
                                         //Log.e(TAG, "Error retrieving user identity information: " + e.getMessage());
-                                        Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                                        Observable.just((UserIdentity) null)
+                                                .onErrorResumeNext(throwable -> Observable.empty())
+                                                .subscribe(userIdentityAction);
                                     }
                                 });
                     } catch (Exception e) {
                         //Log.e(TAG, "Error refreshing identity: " + e.getMessage());
-                        Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                        Observable.just((UserIdentity) null)
+                                .onErrorResumeNext(throwable -> Observable.empty())
+                                .subscribe(userIdentityAction);
                     }
                 });
             } else {
                 try {
-                    Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                    Observable.just((UserIdentity) null)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(userIdentityAction);
                 } catch (Exception e) {
 
                 }
             }
         } else {
             try {
-                Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                Observable.just((UserIdentity) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(userIdentityAction);
             } catch (Exception e) {
 
             }
@@ -5394,7 +5423,9 @@ public class AppCMSPresenter {
             }
         } else {
             if (readyAction != null) {
-                Observable.just(appCMSPageAPI).subscribe(readyAction);
+                Observable.just(appCMSPageAPI)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction);
             }
         }
     }
@@ -7084,7 +7115,9 @@ public class AppCMSPresenter {
                     (dialog, which) -> {
                         dialog.dismiss();
                         if (oncConfirmationAction != null) {
-                            Observable.just(true).subscribe(oncConfirmationAction);
+                            Observable.just(true)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(oncConfirmationAction);
                         }
                     });
             builder.setNegativeButton(R.string.app_cms_negative_confirmation_button_text,
@@ -7092,7 +7125,9 @@ public class AppCMSPresenter {
                         try {
                             dialog.dismiss();
                             if (oncConfirmationAction != null) {
-                                Observable.just(false).subscribe(oncConfirmationAction);
+                                Observable.just(false)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(oncConfirmationAction);
                             }
                         } catch (Exception e) {
                             //Log.e(TAG, "Error closing confirm cancellation dialog: " + e.getMessage());
@@ -9274,12 +9309,16 @@ public class AppCMSPresenter {
                                     if (readyAction != null && main != null) {
                                         Log.d(TAG, "Refreshed main.json with update version: " + main.getVersion());
                                         Log.d(TAG, "Notifying listeners that main.json has been updated");
-                                        Observable.just(main).subscribe(readyAction);
+                                        Observable.just(main)
+                                                .onErrorResumeNext(throwable -> Observable.empty())
+                                                .subscribe(readyAction);
                                     }
                                 }).execute(params);
                             } catch (Exception e) {
                                 Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
-                                Observable.just((AppCMSMain) null).subscribe(readyAction);
+                                Observable.just((AppCMSMain) null)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(readyAction);
                             }
                         });
             } else {
@@ -9293,12 +9332,16 @@ public class AppCMSPresenter {
                         Log.d(TAG, "Refreshed main.json");
                         if (readyAction != null) {
                             Log.d(TAG, "Notifying listeners that main.json has been updated");
-                            Observable.just(main).subscribe(readyAction);
+                            Observable.just(main)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(readyAction);
                         }
                     }).execute(params);
                 } catch (Exception e) {
                     Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
-                    Observable.just((AppCMSMain) null).subscribe(readyAction);
+                    Observable.just((AppCMSMain) null)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction);
                 }
             }
         }
@@ -9318,15 +9361,21 @@ public class AppCMSPresenter {
                     if (readyAction != null) {
                         //Log.d(TAG, "Notifying listeners that android.json has been updated");
                         if (appCMSAndroidUI != null) {
-                            Observable.just(appCMSAndroidUI).subscribe(readyAction);
+                            Observable.just(appCMSAndroidUI)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(readyAction);
                         } else {
-                            Observable.just((AppCMSAndroidUI) null).subscribe(readyAction);
+                            Observable.just((AppCMSAndroidUI) null)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(readyAction);
                         }
                     }
                 }).execute(params);
             } catch (Exception e) {
                 //Log.e(TAG, "Error retrieving android.json: " + e.getMessage());
-                Observable.just((AppCMSAndroidUI) null).subscribe(readyAction);
+                Observable.just((AppCMSAndroidUI) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(readyAction);
             }
         }
     }
@@ -11442,7 +11491,9 @@ public class AppCMSPresenter {
                                 downloadVideoRealm.setDownloadStatus(statusResponse.getDownloadStatus());
                                 appCMSPresenter.realmController.updateDownload(downloadVideoRealm);
 
-                                Observable.just(statusResponse).subscribe(responseAction);
+                                Observable.just(statusResponse)
+                                        .onErrorResumeNext(throwable -> Observable.empty())
+                                        .subscribe(responseAction);
                                 //   removeDownloadedFile(filmIdLocal);
                             } catch (Exception e) {
                                 //Log.e(TAG, "Error rendering circular image bar");

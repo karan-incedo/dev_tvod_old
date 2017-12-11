@@ -48,7 +48,9 @@ public class AppCMSSubscriptionCall {
                         @Override
                         public void onResponse(@NonNull Call<AppCMSSubscriptionResult> call,
                                                @NonNull Response<AppCMSSubscriptionResult> response) {
-                            Observable.just(response.body()).subscribe(subscriptionResultAction1);
+                            Observable.just(response.body())
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(subscriptionResultAction1);
                         }
 
                         @Override
