@@ -57,6 +57,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Stream;
 
 import rx.functions.Action1;
 
@@ -146,6 +147,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
     private AdsManager adsManager;
+
+    private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
 
     AdsLoader.AdsLoadedListener listenerAdsLoaded = adsManagerLoadedEvent -> {
         adsManager = adsManagerLoadedEvent.getAdsManager();
@@ -262,6 +265,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         if (context instanceof OnUpdateContentDatumEvent) {
             onUpdateContentDatumEvent = (OnUpdateContentDatumEvent) context;
+        }
+        if (context instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
         }
     }
 
@@ -465,6 +471,10 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+
+        if (streamingQualitySelector != null) {
+            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        }
 
         if (!TextUtils.isEmpty(policyCookie) &&
                 !TextUtils.isEmpty(signatureCookie) &&

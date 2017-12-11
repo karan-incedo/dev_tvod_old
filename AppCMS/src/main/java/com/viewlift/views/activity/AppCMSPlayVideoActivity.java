@@ -27,13 +27,20 @@ import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Gist;
+import com.viewlift.models.data.appcms.api.Mpeg;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
+import com.viewlift.models.data.appcms.search.VideoAsset;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
+import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import rx.functions.Action1;
 
@@ -44,7 +51,8 @@ import rx.functions.Action1;
 
 public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent,
-        AppCMSPlayVideoFragment.OnUpdateContentDatumEvent {
+        AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
+        VideoPlayerView.StreamingQualitySelector {
     private static final String TAG = "VideoPlayerActivity";
 
     private BroadcastReceiver handoffReceiver;
@@ -62,6 +70,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String contentRating;
     private long videoRunTime;
     private FrameLayout appCMSPlayVideoPageContainer;
+
+    private Map<String, String> availableStreamingFormats;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -247,6 +257,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 binder.getContentData().getStreamingInfo() != null &&
                 binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
             VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
+
+            initializeStreamingQualityValues(videoAssets);
+
             if (useHls) {
                 videoUrl = videoAssets.getHls();
             }
@@ -500,6 +513,53 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     public List<String> getCurrentRelatedVideoIds() {
         if (binder != null && binder.getRelateVideoIds() != null) {
             return binder.getRelateVideoIds();
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getAvailableStreamingQualities() {
+        return new ArrayList<>(availableStreamingFormats.keySet());
+    }
+
+    @Override
+    public String getStreamingQualityUrl(String streamingQuality) {
+        if (availableStreamingFormats != null && availableStreamingFormats.containsKey(streamingQuality)) {
+            return availableStreamingFormats.get(streamingQuality);
+        }
+        return null;
+    }
+
+    private void initializeStreamingQualityValues(VideoAssets videoAssets) {
+        if (availableStreamingFormats == null) {
+            availableStreamingFormats = new HashMap<>();
+        }
+        if (videoAssets != null && videoAssets.getMpeg() != null) {
+            List<Mpeg> availableMpegs = videoAssets.getMpeg();
+            int numAvailableMpegs = availableMpegs.size();
+            for (int i = 0; i < numAvailableMpegs; i++) {
+                Mpeg availableMpeg = availableMpegs.get(i);
+                String mpegUrl = availableMpeg.getUrl();
+                if (!TextUtils.isEmpty(mpegUrl)) {
+                    String resolution = getMpegResolutionFromUrl(mpegUrl);
+                    if (!TextUtils.isEmpty(resolution)) {
+                        availableStreamingFormats.put(resolution, availableMpeg.getUrl());
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getMpegResolutionFromUrl(String mpegUrl) {
+        if (mpegUrl != null) {
+            int mpegIndex = mpegUrl.indexOf(".mp4");
+            if (0 < mpegIndex) {
+                int startIndex = mpegUrl.substring(0, mpegIndex).lastIndexOf("/");
+                if (0 <= startIndex && startIndex < mpegIndex) {
+                    return mpegUrl.substring(startIndex + 1, mpegIndex);
+                }
+            }
         }
         return null;
     }

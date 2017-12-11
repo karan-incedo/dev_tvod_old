@@ -85,4 +85,5 @@
     <dimen name="tray_item_more_dialog_PanelPedding">20dp</dimen>
     <dimen name="tray_item_more_dialog_ButtonMargin">20dp</dimen>
     <dimen name="app_cms_toolbar_margin_top">8dp</dimen>
+    <dimen name="streaming_quality_view_padding">8dp</dimen>
 </resources>

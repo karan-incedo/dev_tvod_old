@@ -8075,14 +8075,14 @@ public class AppCMSPresenter {
         }
     }
 
-    private void refreshUserSubscriptionData(Action0 onRefreshReadyAction,
+        private void refreshUserSubscriptionData(Action0 onRefreshReadyAction,
                                              boolean reloadUserSubscriptionData) {
         try {
             String baseUrl = appCMSMain.getApiBaseUrl();
             String endPoint = pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId());
             String siteId = appCMSSite.getGist().getSiteInternalName();
             boolean usePageIdQueryParam = true;
-            boolean viewPlans = isViewPlanPage(endPoint);
+            boolean viewPlans = true;
             boolean showPage = false;
             String apiUrl = getApiUrl(usePageIdQueryParam,
                     viewPlans,
