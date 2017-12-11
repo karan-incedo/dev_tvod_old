@@ -98,6 +98,7 @@ import net.nightwhistler.htmlspanner.style.Style;
 import org.htmlcleaner.TagNode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -114,7 +115,7 @@ public class ViewCreator {
     private ComponentViewResult componentViewResult;
 
     private HtmlSpanner htmlSpanner;
-
+    CustomVideoPlayerView videoPlayerViewSingle;
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
@@ -325,23 +326,30 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getId() != null) {
                                         videoId = moduleAPI.getContentData().get(0).getGist().getId();
                                         (view).setVisibility(View.VISIBLE);
-                                        AppCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) view);
-                                        if (AppCMSPresenter.videoPlayerViewLP == null &&
-                                                ((CustomVideoPlayerView) view).getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                                            AppCMSPresenter.videoPlayerViewLP = (FrameLayout.LayoutParams) ((CustomVideoPlayerView) view).getLayoutParams();
-                                        }
+                                   }
+                                    if(appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey())!=null){
+                                        videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey());
                                     }
-                                    if (videoId != null &&
-                                            AppCMSPresenter.videoPlayerView !=null ) {
-                                        //((CustomVideoPlayerView) view).getPlayerView().hideController();
-                                        View finalView = view;
-                                        ((CustomVideoPlayerView) view).setVideoUri(videoId, R.string.loading_video_text);
-                                        (view).setId(R.id.video_player_id);
-                                        AppCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) view);
-                                        if (AppCMSPresenter.videoPlayerViewLP == null &&
-                                                ((CustomVideoPlayerView) view).getLayoutParams() instanceof FrameLayout.LayoutParams) {
-                                            AppCMSPresenter.videoPlayerViewLP = (FrameLayout.LayoutParams) ((CustomVideoPlayerView) view).getLayoutParams();
+                                    else{
+                                        videoPlayerViewSingle=null;
+                                    }
+                                    if (videoId != null  ) {
+                                        ((FrameLayout) view).removeAllViews();
+                                        if( videoPlayerViewSingle!=null){
+
+                                            if(videoPlayerViewSingle.getParent()!=null)
+                                                ((ViewGroup)videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+
+                                            ((FrameLayout) view).addView(videoPlayerViewSingle);
+                                            videoPlayerViewSingle.resumePlayerLastState();
+
+                                        }else{
+                                            videoPlayerViewSingle=playerView(context,videoId);
+                                            ((FrameLayout) view).addView(videoPlayerViewSingle);
                                         }
+                                        videoPlayerViewSingle.checkVideoStatus();
+                                        appCMSPresenter.saveVideoPlayerViewCache(moduleAPI.getId() + component.getKey(),videoPlayerViewSingle);
+                                        (view).setId(R.id.video_player_id);
 
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
@@ -1961,9 +1969,27 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getGist() != null &&
                         moduleAPI.getContentData().get(0).getGist().getId() != null) {
                     videoId = moduleAPI.getContentData().get(0).getGist().getId();
-
                 }
-                componentViewResult.componentView = playerView(context, videoId);
+                componentViewResult.componentView=new FrameLayout(context);
+                if(appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey())!=null){
+                    videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey());
+                } else{
+                    appCMSPresenter.saveVideoPlayerViewCache(moduleId + component.getKey(),videoPlayerViewSingle);
+
+                    videoPlayerViewSingle=null;
+                }
+                if( videoPlayerViewSingle!=null){
+
+                    if(videoPlayerViewSingle.getParent()!=null)
+                        ((ViewGroup)videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+                    videoPlayerViewSingle.resumePlayerLastState();
+
+                    ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
+                }else{
+                    videoPlayerViewSingle=playerView(context,videoId);
+                    ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
+                }
+                videoPlayerViewSingle.checkVideoStatus();
                 componentViewResult.componentView.setId(R.id.video_player_id);
 
 
@@ -2370,26 +2396,34 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
-                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setPadding(8, 0, 0, 8);
-                        int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
-                        ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.launchButtonSelectedAction(null,
-                                    component.getAction(),
-                                    null,
-                                    null,
-                                    null,
-                                    false,
-                                    0,
-                                    null)) {
-                                //Log.e(TAG, "Could not launch action: " +
+                        if(appCMSPresenter !=null &&
+                                appCMSPresenter.getTabBarUIFooterModule()!= null &&
+                                appCMSPresenter.getTabBarUIFooterModule().getSettings()!= null &&
+                                appCMSPresenter.getTabBarUIFooterModule().getSettings().isShowTabBar()){
+                            ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
+                        }else {
+
+                            ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
+                            ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            componentViewResult.componentView.setPadding(8, 0, 0, 8);
+                            int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                            ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                if (!appCMSPresenter.launchButtonSelectedAction(null,
+                                        component.getAction(),
+                                        null,
+                                        null,
+                                        null,
+                                        false,
+                                        0,
+                                        null)) {
+                                    //Log.e(TAG, "Could not launch action: " +
 //                                        " action: " +
 //                                        component.getAction());
-                            }
-                        });
+                                }
+                            });
+                        }
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:
@@ -4209,42 +4243,13 @@ public class ViewCreator {
         }
     }
 
-    public static CustomVideoPlayerView playerView(Context context, String videoId) {
-        CustomVideoPlayerView videoPlayerView;
-        if (AppCMSPresenter.videoPlayerView!=null && videoId != null &&
-                AppCMSPresenter.videoPlayerView.getVideoId() != null &&
-                AppCMSPresenter.videoPlayerView.getVideoId().equalsIgnoreCase(videoId)){
-            if (AppCMSPresenter.videoPlayerViewLP !=null &&
-                    AppCMSPresenter.videoPlayerViewLP instanceof FrameLayout.LayoutParams){
-                AppCMSPresenter.videoPlayerView.setLayoutParams(AppCMSPresenter.videoPlayerViewLP);
-            }
-            if(AppCMSPresenter.videoPlayerView.getParent() !=null)
-            {
-                ((ViewGroup)AppCMSPresenter.videoPlayerView.getParent()).removeView(AppCMSPresenter.videoPlayerView);
-            }
+    public CustomVideoPlayerView playerView(Context context, String videoId) {
 
-            return AppCMSPresenter.videoPlayerView;
-        }else {
-            videoPlayerView = new CustomVideoPlayerView(context);
+            CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
 
-        }
-        // videoPlayerView = new CustomVideoPlayerView(context);
-        if (AppCMSPresenter.videoPlayerView != null ){
-            AppCMSPresenter.videoPlayerView.releasePlayer();
-            AppCMSPresenter.videoPlayerView= null;
-        }
         if (videoId != null) {
-            /*videoPlayerView.getPlayerView().hideController();
-            videoPlayerView.getPlayerView().setControllerVisibilityListener(new CustomPlaybackControlView.VisibilityListener() {
-                @Override
-                public void onVisibilityChange(int i) {
-                    if (i == 0) {
-                        videoPlayerView.getPlayerView().hideController();
-                    }
-                }
-            });*/
-            videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
-            AppCMSPresenter.videoPlayerView = videoPlayerView;
+                 videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
+//            AppCMSPresenter.videoPlayerView=videoPlayerView;
         }
 
         return videoPlayerView;
