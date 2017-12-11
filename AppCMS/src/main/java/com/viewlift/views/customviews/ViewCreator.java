@@ -267,7 +267,7 @@ public class ViewCreator {
         }
     }
 
-    private static String getColor(Context context, String color) {
+    public static String getColor(Context context, String color) {
         if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
             return context.getString(R.string.color_hash_prefix) + color;
         }

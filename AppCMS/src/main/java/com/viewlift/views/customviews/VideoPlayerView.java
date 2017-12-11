@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
@@ -401,10 +402,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
                 listView = new RecyclerView(getContext());
                 listViewAdapter = new StreamingQualitySelectorAdapter(getContext(),
+                        appCMSPresenter,
                         availableStreamingQualities);
 
                 listView.setAdapter(listViewAdapter);
-                listView.setBackgroundColor(ContextCompat.getColor(getContext(), android.R.color.black));
+                listView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral()
+                        .getBackgroundColor()));
                 listView.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.VERTICAL,
                         false));
@@ -419,7 +423,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                            ContextCompat.getColor(getContext(), android.R.color.black)));
+                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                                    .getGeneral()
+                                    .getBackgroundColor())));
                 }
                 currentStreamingQualitySelector.setOnClickListener(v -> {
                     dialog.show();
@@ -1043,25 +1049,34 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private static class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<String> {
         List<String> availableStreamingQualities;
         int selectedIndex;
-        public StreamingQualitySelectorAdapter(Context context, List<String> items) {
+        AppCMSPresenter appCMSPresenter;
+        public StreamingQualitySelectorAdapter(Context context,
+                                               AppCMSPresenter appCMSPresenter,
+                                               List<String> items) {
             super(context, items);
-            availableStreamingQualities = items;
+            this.appCMSPresenter = appCMSPresenter;
+            this.availableStreamingQualities = items;
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
-            viewHolder.getmText().setTextColor(ContextCompat.getColor(viewGroup.getContext(),
-                    android.R.color.white));
+            viewHolder.getmText().setTextColor(Color.parseColor(ViewCreator.getColor(viewGroup.getContext(), appCMSPresenter.getAppCMSMain()
+                    .getBrand().getCta().getPrimary().getTextColor())));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (viewHolder.getmRadio().getButtonDrawable() != null) {
-                    viewHolder.getmRadio().getButtonDrawable().setColorFilter(ContextCompat.getColor(viewGroup.getContext(),
-                            R.color.colorAccent), PorterDuff.Mode.MULTIPLY);
+                    viewHolder.getmRadio().getButtonDrawable().setColorFilter(Color.parseColor(
+                            ViewCreator.getColor(viewGroup.getContext(),
+                                    appCMSPresenter.getAppCMSMain().getBrand()
+                                            .getCta().getPrimary().getBackgroundColor())),
+                            PorterDuff.Mode.MULTIPLY);
                 }
             } else {
-                int switchOnColor = ContextCompat.getColor(viewGroup.getContext(),
-                        R.color.colorAccent);
+                int switchOnColor = Color.parseColor(
+                        ViewCreator.getColor(viewGroup.getContext(),
+                                appCMSPresenter.getAppCMSMain().getBrand()
+                                        .getCta().getPrimary().getBackgroundColor()));
                 ColorStateList colorStateList = new ColorStateList(
                         new int[][]{
                                 new int[]{android.R.attr.state_checked},
