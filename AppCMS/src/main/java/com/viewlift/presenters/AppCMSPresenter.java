@@ -136,6 +136,7 @@ import com.viewlift.models.data.appcms.ui.android.Navigation;
 import com.viewlift.models.data.appcms.ui.android.NavigationFooter;
 import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.android.NavigationUser;
+import com.viewlift.models.data.appcms.ui.android.SubscriptionFlowContent;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.authentication.UserIdentityPassword;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
@@ -492,6 +493,7 @@ public class AppCMSPresenter {
     private Activity currentActivity;
     private Context currentContext;
     private Navigation navigation;
+    private SubscriptionFlowContent subscriptionFlowContent;
     private boolean loadFromFile;
     private boolean loadingPage;
     private AppCMSMain appCMSMain;
@@ -573,7 +575,7 @@ public class AppCMSPresenter {
     private boolean usedCachedAPI;
     public boolean isconfig = false;
     public boolean isAppBackground = false;
-
+    private HashMap<String, CustomVideoPlayerView> playerViewCache;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -821,6 +823,10 @@ public class AppCMSPresenter {
 
     public Navigation getNavigation() {
         return navigation;
+    }
+
+    public SubscriptionFlowContent getSubscriptionFlowContent() {
+        return subscriptionFlowContent;
     }
 
     private LruCache<String, AppCMSPageAPI> getPageAPILruCache() {
@@ -6951,7 +6957,13 @@ public class AppCMSPresenter {
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
 
                     if (currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template")) {
+
                         message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
+                        if (subscriptionFlowContent != null &&
+                                subscriptionFlowContent.getOverlayMessage() != null &&
+                                !TextUtils.isEmpty(subscriptionFlowContent.getOverlayMessage())) {
+                            message = subscriptionFlowContent.getOverlayMessage();
+                        }
 
                     }
                     //Set Firebase User Property when user is not logged in and unsubscribed
@@ -6963,6 +6975,11 @@ public class AppCMSPresenter {
 
                     if (currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template")) {
                         message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
+                        if (subscriptionFlowContent != null &&
+                                subscriptionFlowContent.getOverlayMessage() != null &&
+                                !TextUtils.isEmpty(subscriptionFlowContent.getOverlayMessage())) {
+                            message = subscriptionFlowContent.getOverlayMessage();
+                        }
 
                     }
                     //Set Firebase User Property when user is not logged in and unsubscribed
@@ -9513,6 +9530,7 @@ public class AppCMSPresenter {
                                     initializeAppCMSAnalytics(appCMSAndroidUI);
 
                                     navigation = appCMSAndroidUI.getNavigation();
+                                    subscriptionFlowContent = appCMSAndroidUI.getSubscriptionFlowContent();
                                     new SoftReference<>(navigation, referenceQueue);
                                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                                     //Log.d(TAG, "Processing meta pages queue");
@@ -10037,6 +10055,7 @@ public class AppCMSPresenter {
                         initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
                     }
                     navigation = appCMSAndroidUI.getNavigation();
+                    subscriptionFlowContent = appCMSAndroidUI.getSubscriptionFlowContent();
 
                     //add search in navigation item.
                     NavigationPrimary myProfile = new NavigationPrimary();
@@ -12007,13 +12026,15 @@ public class AppCMSPresenter {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
         }
-        relativeLayoutFull = new FullPlayerView(currentActivity, this);
-        relativeLayoutFull.setVisibility(View.VISIBLE);
-        ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
-        isFullScreenVisible = true;
-        restrictLandscapeOnly();
-        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-            ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
+        if (videoPlayerView != null && videoPlayerView.getParent() != null) {
+            relativeLayoutFull = new FullPlayerView(currentActivity, this);
+            relativeLayoutFull.setVisibility(View.VISIBLE);
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
+            isFullScreenVisible = true;
+            restrictLandscapeOnly();
+            if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
+                ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
+            }
         }
 
     }
@@ -12037,9 +12058,13 @@ public class AppCMSPresenter {
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
 
                 rootView.postDelayed(() -> {
+                    try {
+                        rootView.removeView(relativeLayoutFull);
+                        relativeLayoutFull = null;
+                    } catch (Exception e) {
 
-                    rootView.removeView(relativeLayoutFull);
-                    relativeLayoutFull = null;
+                    }
+
 
                 }, 100);
 
@@ -12048,23 +12073,22 @@ public class AppCMSPresenter {
             Log.e(TAG, e.getMessage());
         }
 
-        if (currentActivity!=null) {
-            if (!BaseView.isTablet(currentActivity)) {
+        restrictPortraitOnly();
+
+
+        new Handler().postDelayed(() -> {
+            if (currentActivity != null && isAutoRotate() &&
+                    !AppCMSPresenter.isFullScreenVisible &&
+                    currentActivity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
+                    currentActivity.findViewById(R.id.video_player_id) != null) {
+                unrestrictPortraitOnly();
+            } else if (currentActivity != null && !BaseView.isTablet(currentActivity) && currentActivity.findViewById(R.id.video_player_id) == null) {
                 restrictPortraitOnly();
-            } else {
+            } else if (BaseView.isTablet(currentActivity)) {
                 unrestrictPortraitOnly();
             }
-        }
-       /* restrictPortraitOnly();
+        }, 5000);
 
-
-
-            new Handler().postDelayed(() -> {
-                if (currentActivity!= null && isAutoRotate() && !BaseView.isTablet(currentActivity)) {
-                    unrestrictPortraitOnly();
-                }
-            }, 5000);
-*/
         if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
             ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();
         }
@@ -12128,6 +12152,30 @@ public class AppCMSPresenter {
                 return moduleList;
 
             }
+        }
+        return null;
+    }
+
+    public void saveVideoPlayerViewCache(String key, CustomVideoPlayerView videoPlayerView) {
+        if (playerViewCache == null) {
+            playerViewCache = new HashMap<String, CustomVideoPlayerView>();
+        }
+        playerViewCache.put(key, videoPlayerView);
+    }
+
+    public void clearVideoPlayerViewCache() {
+        if (playerViewCache == null) {
+            playerViewCache = new HashMap<String, CustomVideoPlayerView>();
+        }
+        playerViewCache.clear();
+    }
+
+    public CustomVideoPlayerView getVideoPlayerViewCache(String key) {
+        if (playerViewCache == null) {
+            playerViewCache = new HashMap<String, CustomVideoPlayerView>();
+        }
+        if (playerViewCache.get(key) != null) {
+            return playerViewCache.get(key);
         }
         return null;
     }

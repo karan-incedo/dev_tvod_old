@@ -299,11 +299,14 @@ public class AppCMSPageFragment extends Fragment {
 
         updateDataLists();
 
-//        if (pageView != null &&
-//                pageView.findChildViewById(R.id.video_player_id) != null) {
-////            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).resumePlayer();
-//            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
-//        } else
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) nextChild;
+            if(((VideoPlayerView) group.getChildAt(0))!=null){
+                ((VideoPlayerView) group.getChildAt(0)).requestAudioFocus();
+            }
+
+        }
         if (pageView != null &&
                 appCMSPresenter.videoPlayerView != null) {
             appCMSPresenter.videoPlayerView.requestAudioFocus();
@@ -355,35 +358,21 @@ public class AppCMSPageFragment extends Fragment {
         if (pageViewGroup != null) {
             pageViewGroup.removeAllViews();
         }
-//        if (AppCMSPresenter.videoPlayerView != null && AppCMSPresenter.videoPlayerView.getPlayer()!=null ) {
-//            AppCMSPresenter.videoPlayerView.releasePlayer();
-//            AppCMSPresenter.videoPlayerView=null;
-//        }
-//        AppCMSPresenter.videoPlayerView=null;
+
         if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
-            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
-            ViewGroup group = (ViewGroup) nextChild;
+            View playerParent = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) playerParent;
             if(((VideoPlayerView) group.getChildAt(0))!=null)
             ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
 
-//            if(((VideoPlayerView) group.getChildAt(0)).getPlayer()!=null){
-//                ((VideoPlayerView) group.getChildAt(0)).getPlayer().release();
-//            }
+            if( ((CustomVideoPlayerView) group.getChildAt(0))!=null &&  ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer!=null){
+                ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer.cancel();
+                ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer=null;
 
+            }
         }
-//        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
-//            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).releasePlayer();
-//        }
-//        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
-//            if (((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer != null)
-//                ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer.cancel();
-//            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer = null;
-//        }
-        if(appCMSPresenter.videoPlayerView!=null && appCMSPresenter.videoPlayerView.entitlementCheckTimer!=null){
-            appCMSPresenter.videoPlayerView.entitlementCheckTimer.cancel();
-            appCMSPresenter.videoPlayerView.entitlementCheckTimer=null;
 
-        }
+
     }
 
     @Override
@@ -397,7 +386,7 @@ public class AppCMSPageFragment extends Fragment {
         super.onConfigurationChanged(newConfig);
         appCMSPresenter.isconfig=true;
 
-       /* if (appCMSPresenter.isAutoRotate())
+       if (appCMSPresenter.isAutoRotate())
         {
             if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
 
@@ -415,16 +404,13 @@ public class AppCMSPageFragment extends Fragment {
                                 break;
                         }
 
-
-
-
-
-
+                }else if(( group.getChildAt(0))==null && AppCMSPresenter.isFullScreenVisible){
+                        appCMSPresenter.restrictLandscapeOnly();;
                 }
 
             }
 
-        }*/
+        }
         handleOrientation(newConfig.orientation);
     }
 
@@ -469,6 +455,7 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public void refreshView(AppCMSBinder appCMSBinder) {
+        setPageOriantationForVideoPage();
         sendFirebaseAnalyticsEvents(appCMSBinder);
         this.appCMSBinder = appCMSBinder;
         ViewCreator viewCreator = getViewCreator();
@@ -477,6 +464,7 @@ public class AppCMSPageFragment extends Fragment {
             boolean updatePage = false;
             if (pageView != null) {
                 updatePage = pageView.getParent() != null;
+                setPageOriantationForVideoPage();
             }
 
             try {
@@ -514,15 +502,6 @@ public class AppCMSPageFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-        /*if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null && appCMSPresenter.isAutoRotate()) {
-            appCMSPresenter.unrestrictPortraitOnly();
-        }else if (!BaseView.isTablet(getActivity()))
-        {
-            appCMSPresenter.restrictPortraitOnly();
-        }else
-        {
-            appCMSPresenter.unrestrictPortraitOnly();
-        }*/
     }
 
     private void updateAllViews(ViewGroup pageViewGroup) {
@@ -549,6 +528,20 @@ public class AppCMSPageFragment extends Fragment {
         void onSuccess(AppCMSBinder appCMSBinder);
 
         void onError(AppCMSBinder appCMSBinder);
+    }
+
+    public void setPageOriantationForVideoPage(){
+
+        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
+                appCMSPresenter.isAutoRotate()) {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }else if (!BaseView.isTablet(getContext()))
+        {
+            appCMSPresenter.restrictPortraitOnly();
+        }else if (BaseView.isTablet(getContext()))
+        {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
     }
 
 }

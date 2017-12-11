@@ -115,9 +115,7 @@ public class ViewCreator {
     private ComponentViewResult componentViewResult;
 
     private HtmlSpanner htmlSpanner;
-    public static HashMap<String, CustomVideoPlayerView> playerViewCache = new HashMap<String, CustomVideoPlayerView>();
     CustomVideoPlayerView videoPlayerViewSingle;
-
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
@@ -328,35 +326,30 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getId() != null) {
                                         videoId = moduleAPI.getContentData().get(0).getGist().getId();
                                         (view).setVisibility(View.VISIBLE);
+                                   }
+                                    if(appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey())!=null){
+                                        videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey());
                                     }
-                                    if (playerViewCache.get(moduleAPI.getId() + component.getKey()) != null) {
-                                        videoPlayerViewSingle = playerViewCache.get(moduleAPI.getId() + component.getKey());
-                                    } else {
-                                        videoPlayerViewSingle = null;
+                                    else{
+                                        videoPlayerViewSingle=null;
                                     }
-                                    if (videoId != null) {
+                                    if (videoId != null  ) {
                                         ((FrameLayout) view).removeAllViews();
-                                        if (videoPlayerViewSingle != null) {
+                                        if( videoPlayerViewSingle!=null){
 
-                                            if (videoPlayerViewSingle.getParent() != null)
-                                                ((ViewGroup) videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
-                                            videoPlayerViewSingle.resumePlayer();
+                                            if(videoPlayerViewSingle.getParent()!=null)
+                                                ((ViewGroup)videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
 
-//                                            if((appCMSPresenter.isconfig || appCMSPresenter.isAppBackground) && !TextUtils.isEmpty(appCMSPresenter.videoPlayerView.lastUrl)){
-//                                                appCMSPresenter.videoPlayerView.resumePlayer();
-//                                            }else{
-//                                                appCMSPresenter.videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
-//                                            }
                                             ((FrameLayout) view).addView(videoPlayerViewSingle);
-                                        } else {
-                                            videoPlayerViewSingle = playerView(context, videoId);
+                                            videoPlayerViewSingle.resumePlayerLastState();
+
+                                        }else{
+                                            videoPlayerViewSingle=playerView(context,videoId);
                                             ((FrameLayout) view).addView(videoPlayerViewSingle);
                                         }
-                                        playerViewCache.put(moduleAPI.getId() + component.getKey(), videoPlayerViewSingle);
-
-                                        appCMSPresenter.isconfig = false;
+                                        videoPlayerViewSingle.checkVideoStatus();
+                                        appCMSPresenter.saveVideoPlayerViewCache(moduleAPI.getId() + component.getKey(),videoPlayerViewSingle);
                                         (view).setId(R.id.video_player_id);
-
 
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
@@ -1977,34 +1970,26 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getGist().getId() != null) {
                     videoId = moduleAPI.getContentData().get(0).getGist().getId();
                 }
-                componentViewResult.componentView = new FrameLayout(context);
-                if (playerViewCache.get(moduleId + component.getKey()) != null) {
-                    videoPlayerViewSingle = playerViewCache.get(moduleId + component.getKey());
-                } else {
-                    playerViewCache.put(moduleId + component.getKey(), appCMSPresenter.videoPlayerView);
+                componentViewResult.componentView=new FrameLayout(context);
+                if(appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey())!=null){
+                    videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey());
+                } else{
+                    appCMSPresenter.saveVideoPlayerViewCache(moduleId + component.getKey(),videoPlayerViewSingle);
 
-                    videoPlayerViewSingle = null;
+                    videoPlayerViewSingle=null;
                 }
-                if (videoPlayerViewSingle != null) {
+                if( videoPlayerViewSingle!=null){
 
-                    if (videoPlayerViewSingle.getParent() != null)
-                        ((ViewGroup) videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
-                    videoPlayerViewSingle.resumePlayer();
+                    if(videoPlayerViewSingle.getParent()!=null)
+                        ((ViewGroup)videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+                    videoPlayerViewSingle.resumePlayerLastState();
 
-//                    if((appCMSPresenter.isconfig || appCMSPresenter.isAppBackground) && !TextUtils.isEmpty(appCMSPresenter.videoPlayerView.lastUrl)){
-//                        appCMSPresenter.videoPlayerView.resumePlayer();
-//                    }else{
-//                        appCMSPresenter.videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
-//                    }
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
-                } else {
-                    videoPlayerViewSingle = playerView(context, videoId);
+                }else{
+                    videoPlayerViewSingle=playerView(context,videoId);
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
-                appCMSPresenter.isconfig = false;
-                appCMSPresenter.isAppBackground = false;
-
-
+                videoPlayerViewSingle.checkVideoStatus();
                 componentViewResult.componentView.setId(R.id.video_player_id);
 
 
@@ -2411,26 +2396,34 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
-                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
-                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setPadding(8, 0, 0, 8);
-                        int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
-                        ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-                        componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-                        componentViewResult.componentView.setOnClickListener(v -> {
-                            if (!appCMSPresenter.launchButtonSelectedAction(null,
-                                    component.getAction(),
-                                    null,
-                                    null,
-                                    null,
-                                    false,
-                                    0,
-                                    null)) {
-                                //Log.e(TAG, "Could not launch action: " +
+                        if(appCMSPresenter !=null &&
+                                appCMSPresenter.getTabBarUIFooterModule()!= null &&
+                                appCMSPresenter.getTabBarUIFooterModule().getSettings()!= null &&
+                                appCMSPresenter.getTabBarUIFooterModule().getSettings().isShowTabBar()){
+                            ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
+                        }else {
+
+                            ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
+                            ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                            componentViewResult.componentView.setPadding(8, 0, 0, 8);
+                            int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                            ((ImageButton) componentViewResult.componentView).getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+                            componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                            componentViewResult.componentView.setOnClickListener(v -> {
+                                if (!appCMSPresenter.launchButtonSelectedAction(null,
+                                        component.getAction(),
+                                        null,
+                                        null,
+                                        null,
+                                        false,
+                                        0,
+                                        null)) {
+                                    //Log.e(TAG, "Could not launch action: " +
 //                                        " action: " +
 //                                        component.getAction());
-                            }
-                        });
+                                }
+                            });
+                        }
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:
@@ -4252,16 +4245,11 @@ public class ViewCreator {
 
     public CustomVideoPlayerView playerView(Context context, String videoId) {
 
-        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
+            CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
 
-
-       /* if (appCMSPresenter.videoPlayerView != null ){
-            appCMSPresenter.videoPlayerView.releasePlayer();
-            appCMSPresenter.videoPlayerView= null;
-        }*/
         if (videoId != null) {
-            videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
-//            appCMSPresenter.videoPlayerView=videoPlayerView;
+                 videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
+//            AppCMSPresenter.videoPlayerView=videoPlayerView;
         }
 
         return videoPlayerView;
