@@ -8,6 +8,7 @@ import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
+import com.facebook.FacebookSdk;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -63,8 +64,18 @@ public class AppCMSApplication extends MultiDexApplication {
         };
 
         new Thread(() -> {
+            // NOTE: Replaced with Utils.getProperty()
+            //AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
+            AppsFlyerLib.getInstance().init(Utils.getProperty("AppsFlyerDevKey", getApplicationContext()), conversionDataListener);
+
             Fabric.with(AppCMSApplication.this, new Crashlytics());
-            Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+
+            // NOTE: Replaced with Utils.getProperty()
+            //Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+            Apptentive.register(this, Utils.getProperty("ApptentiveApiKey", getApplicationContext()));
+
+            FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", getApplicationContext()));
+            FacebookSdk.sdkInitialize(getApplicationContext());
         }).run();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent

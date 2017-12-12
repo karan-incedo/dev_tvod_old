@@ -100,41 +100,51 @@ public class ViewCreator {
         htmlSpanner.registerHandler("p", pHandler);
     }
 
+    /**
+     * Fix for JM-26
+     */
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        long runtime = (data.getGist().getRuntime() / 60L);
+
+        long durationInSeconds = data.getGist().getRuntime();
+
+        long minutes = durationInSeconds / 60;
+        long seconds = durationInSeconds % 60;
 
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime > 0
-                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime > 0 || !TextUtils.isEmpty(year))
-                && !TextUtils.isEmpty(primaryCategory);
+//        boolean appendFirstSep = minutes > 0
+//                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+//        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
+//                && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
-        if (runtime > 0 && runtime < 2) {
-            infoText.append(runtime).append(" ").append(context.getString(R.string.min_abbreviation));
-        } else if (runtime > 0) {
-            infoText.append(runtime).append(" ").append(context.getString(R.string.mins_abbreviation));
-        } else {
-            infoText.append("0 ").append(context.getString(R.string.mins_abbreviation)).append(context.getString(R.string.text_separator));
+
+        if (minutes == 1) {
+            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.min_abbreviation));
+        } else if (minutes > 1 && minutes < 10) {
+            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+        } else if (minutes >= 10) {
+            infoText.append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
         }
 
-        if (appendFirstSep) {
-            infoText.append(context.getString(R.string.text_separator));
+        if (seconds == 1) {
+            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
+        } else if (seconds > 1 && seconds < 10) {
+            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
+        } else if (seconds >= 10) {
+            infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
         }
 
         if (!TextUtils.isEmpty(year)) {
+            infoText.append(context.getString(R.string.text_separator));
             infoText.append(year);
         }
 
-        if (appendSecondSep) {
-            infoText.append(context.getString(R.string.text_separator));
-        }
-
         if (!TextUtils.isEmpty(primaryCategory)) {
+            infoText.append(context.getString(R.string.text_separator));
             infoText.append(primaryCategory.toUpperCase());
         }
 
@@ -1108,7 +1118,10 @@ public class ViewCreator {
                     appCMSAndroidModules);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView);
         } else {
+
+
             if (module.getComponents() != null) {
+
                 updateModuleHeight(context,
                         module.getLayout(),
                         module.getComponents(),
@@ -1147,14 +1160,14 @@ public class ViewCreator {
                             adjustOthers = AdjustOtherState.ADJUST_OTHERS;
                         }
 
-                        if (!appCMSPresenter.isAppSVOD() && component.isSvod()) {
+                        if (!appCMSPresenter.isAppSVOD() && component.isSvod() && componentViewResult.componentView != null) {
                             componentViewResult.shouldHideComponent = true;
                             componentViewResult.componentView.setVisibility(View.GONE);
                             adjustOthers = AdjustOtherState.INITIATED;
                         } else if (!appCMSPresenter.isAppSVOD() && jsonValueKeyMap.get(component.getKey()) != null &&
                                 jsonValueKeyMap.get(component.getKey()) == AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY
                                 && appCMSPresenter.getAppCMSMain().getFeatures() != null &&
-                                !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                                !appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads() && componentViewResult.componentView != null) {
                             componentViewResult.shouldHideComponent = true;
                             componentViewResult.componentView.setVisibility(View.GONE);
                             adjustOthers = AdjustOtherState.INITIATED;
@@ -1674,6 +1687,11 @@ public class ViewCreator {
                 componentViewResult.componentView = playerView(context);
                 componentViewResult.componentView.setId(R.id.video_player_id);
                 break;
+
+
+            case PAGE_VIDEO_DETAIL_PLAYER_VIEW_KEY:
+                break;
+
 
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);

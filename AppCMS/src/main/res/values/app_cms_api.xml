@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_cms_main_url">%1$s/%2$s/main.json?x=%3$d</string>
+    <string name="app_cms_main_url">%1$s%2$s/main.json?x=%3$d</string>
 
     <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
@@ -96,6 +96,7 @@
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>
     <string name="app_cms_page_segmented_view">AC SegmentedView</string>
+    <string name="app_cms_page_video_detail_player_key">videodetail_player</string>
     <string name="app_cms_page_castview_key">castView</string>
     <string name="app_cms_page_bg_key">bg</string>
     <string name="app_cms_page_logo_key">logo</string>

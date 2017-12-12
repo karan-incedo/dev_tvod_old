@@ -54,38 +54,66 @@ public abstract class TVBaseView extends FrameLayout {
     protected abstract Layout getLayout();
 
 
-    public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        long runtime = (data.getGist().getRuntime() / 60);
+    /**
+     * Fix for JM-26
+     */
+    static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+
+        long durationInSeconds = data.getGist().getRuntime();
+
+        long minutes = durationInSeconds / 60;
+        long seconds = durationInSeconds % 60;
+
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime >= 0 &&
-                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime >= 0 || !TextUtils.isEmpty(year)) &&
-                !TextUtils.isEmpty(primaryCategory);
-        StringBuffer infoText = new StringBuffer();
-        if (runtime >= 0) {
-            infoText.append(runtime + " " + context.getResources().getQuantityString(R.plurals.mins_abbreviation , (int)runtime));
+        boolean appendFirstSep = minutes > 0
+                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
+                && !TextUtils.isEmpty(primaryCategory);
+
+        StringBuilder infoText = new StringBuilder();
+
+        if (minutes == 1) {
+            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.min_abbreviation));
+        } else if (minutes > 1 && minutes < 10) {
+            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+        } else if (minutes >= 10) {
+            infoText.append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
         }
-        if (appendFirstSep) {
-            infoText.append(context.getString(R.string.text_separator));
+
+        if (seconds == 1) {
+            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
+        } else if (seconds > 1 && seconds < 10) {
+            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
+        } else if (seconds >= 10) {
+            infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
         }
+
         if (!TextUtils.isEmpty(year)) {
+
+            if (appendFirstSep) {
+                infoText.append(context.getString(R.string.text_separator));
+            }
+
             infoText.append(year);
+
         }
+
         if (appendSecondSep) {
             infoText.append(context.getString(R.string.text_separator));
         }
+
         if (!TextUtils.isEmpty(primaryCategory)) {
             infoText.append(primaryCategory.toUpperCase());
         }
-        ((TextView) view).setText(infoText.toString());
-         view.setAlpha(0.6f);
-        ((TextView) view).setLetterSpacing(LETTER_SPACING);
 
+        ((TextView) view).setText(infoText.toString());
+        view.setAlpha(0.6f);
     }
+
     public ViewGroup getChildrenContainer() {
         if (childrenContainer == null) {
             return createChildrenContainer();
@@ -98,6 +126,7 @@ public abstract class TVBaseView extends FrameLayout {
             componentHasViewList[index] = hasView;
         }
     }
+
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new FrameLayout(getContext());
         int viewWidth = (int) getViewWidth(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
@@ -108,6 +137,7 @@ public abstract class TVBaseView extends FrameLayout {
         addView(childrenContainer);
         return childrenContainer;
     }
+
     public void setViewMarginsFromComponent(Component childComponent,
                                             View view,
                                             Layout parentLayout,

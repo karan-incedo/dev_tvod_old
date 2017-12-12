@@ -192,9 +192,9 @@ public class AppCmsNavigationFragment extends Fragment {
         });
     }
 
-    private void setTypeFaceValue(AppCMSPresenter appCMSPresenter) {
+    private void setTypeFaceValue(AppCMSPresenter appCMSPresenter){
 
-        if (null == extraBoldTypeFace) {
+        if(null == extraBoldTypeFace) {
             extraBoldComp = new Component();
             extraBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
             extraBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_extrabold_key));
@@ -202,7 +202,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     , extraBoldComp);
         }
 
-        if (null == semiBoldTypeFace) {
+        if(null == semiBoldTypeFace) {
             semiBoldComp = new Component();
             semiBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
             semiBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_semibold_key));

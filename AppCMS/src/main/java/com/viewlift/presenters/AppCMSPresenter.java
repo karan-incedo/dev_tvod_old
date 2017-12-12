@@ -80,6 +80,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.analytics.AppsFlyerUtils;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.ccavenue.screens.EnterMobileNumberActivity;
@@ -6514,7 +6515,9 @@ public class AppCMSPresenter {
     public boolean isPageAVideoPage(String pageName) {
         if (currentActivity != null && pageName != null) {
             try {
-                return pageName.contains(currentActivity.getString(R.string.app_cms_video_page_page_name));
+                // NOTE: Replaced with Utils.getProperty()
+                //setAppsFlyerKey(appCMSAndroidUI.getAnalytics().getAppflyerDevKey());
+                setAppsFlyerKey(Utils.getProperty("AppsFlyerDevKey", currentContext));
             } catch (Exception e) {
                 //Log.e(TAG, "Failed to verify if input page is a video page: " + e.toString());
             }
@@ -7605,7 +7608,9 @@ public class AppCMSPresenter {
 
         SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
         subscriptionRequest.setPlatform(currentActivity.getString(R.string.app_cms_subscription_platform_key));
-        subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
+        subscriptionRequest.setSiteId(Utils.getProperty("SiteId", currentActivity));
+        // NOTE: Replaced with Utils.getProperty()
+        //subscriptionRequest.setSiteId(currentActivity.getString(R.string.app_cms_app_name));
         subscriptionRequest.setSubscription(currentActivity.getString(R.string.app_cms_subscription_key));
         subscriptionRequest.setPlanId(planToPurchase);
         subscriptionRequest.setPlanIdentifier(skuToPurchase);
@@ -9105,7 +9110,7 @@ public class AppCMSPresenter {
                             try {
                                 GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                                         .context(currentActivity)
-                                        .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                                        .siteId(Utils.getProperty("SiteId", currentActivity))
                                         .forceReloadFromNetwork(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -9124,7 +9129,7 @@ public class AppCMSPresenter {
                 try {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                             .context(currentActivity)
-                            .siteId(currentActivity.getString(R.string.app_cms_app_name))
+                            .siteId(Utils.getProperty("SiteId", currentActivity))
                             .forceReloadFromNetwork(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
@@ -9283,6 +9288,7 @@ public class AppCMSPresenter {
                                                             launchBlankPage();
                                                         }
                                                     }
+
                                                 }
                                             });
                                 });
@@ -9683,8 +9689,8 @@ public class AppCMSPresenter {
         return -1;
     }
 
-
     private String getAutoplayPageId() {
+
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -10408,29 +10414,6 @@ public class AppCMSPresenter {
             }
         }
         return result;
-    }
-
-    public String getAdsUrl(String pagePath) {
-
-        String videoTag = null;
-        if (appCMSAndroid != null
-                && appCMSAndroid.getAdvertising() != null
-                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
-            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
-        }
-       // videoTag = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/35495321/MSE_Web_Video&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1";
-       // videoTag = "https://pubads.g.doubleclick.net/gampad/ads?sz=640x480&iu=/35495321/MSE_Web_Video&impl=s&gdfp_req=1&env=vp&output=vast&unviewed_position_start=1";
-        if(videoTag == null){
-            return null;
-        }
-
-        Date now = new Date();
-
-        return currentActivity.getString(R.string.app_cms_ads_api_url,
-                videoTag,
-                getPermalinkCompletePath(pagePath),
-                now.getTime(),
-                appCMSSite.getGist().getSiteInternalName());
     }
 
     @SuppressWarnings("unused")
@@ -11623,6 +11606,27 @@ public class AppCMSPresenter {
                 }
             }
         }
+    }
+
+    public String getAdsUrl(String pagePath) {
+
+        String videoTag = null;
+        if (appCMSAndroid != null
+                && appCMSAndroid.getAdvertising() != null
+                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
+            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
+        }
+        if (videoTag == null) {
+            return null;
+        }
+
+        Date now = new Date();
+
+        return currentActivity.getString(R.string.app_cms_ads_api_url,
+                videoTag,
+                getPermalinkCompletePath(pagePath),
+                now.getTime(),
+                appCMSMain.getSite());
     }
 
     public MetaPage getPrivacyPolicyPage(){

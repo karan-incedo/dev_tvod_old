@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
 import java.io.BufferedInputStream;
@@ -64,7 +65,7 @@ public class AppCMSMainUICall {
     public AppCMSMain call(Context context, String siteId, int tryCount, boolean forceReloadFromNetwork) {
         Date now = new Date();
         final String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
-                context.getString(R.string.app_cms_baseurl),
+                Utils.getProperty("BaseUrl", context),
                 siteId,
                 now.getTime());
         AppCMSMain main = null;

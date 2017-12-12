@@ -9,6 +9,7 @@ import android.content.Context;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -94,7 +95,12 @@ public class AppCMSUIModule {
     private final Cache cache;
 
     public AppCMSUIModule(Context context) {
-        this.baseUrl = context.getString(R.string.app_cms_baseurl);
+
+        this.baseUrl = Utils.getProperty("BaseUrl", context);
+
+        // NOTE: Replaced with Utils.getProperty()
+        //this.baseUrl = context.getString(R.string.app_cms_baseurl);
+
         this.storageDirectory = context.getFilesDir();
 
         this.jsonValueKeyMap = new HashMap<>();
@@ -182,6 +188,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_image_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_detail_player_key),
+                AppCMSUIKeyType.PAGE_VIDEO_DETAIL_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_carousel_add_to_watchlist_key),
                 AppCMSUIKeyType.PAGE_CAROUSEL_ADD_TO_WATCHLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_add_to_watchlist_key),

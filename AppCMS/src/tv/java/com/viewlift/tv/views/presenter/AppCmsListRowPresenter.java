@@ -1,5 +1,6 @@
 package com.viewlift.tv.views.presenter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -123,6 +124,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
                 //set the spacing between Carousal item.
                 //horizontalGridView.setItemSpacing(horizontalSpacing);
+                horizontalGridView.setItemSpacing(horizontalSpacing);
 
                 //set the HorizontalGrid Layout Params..
                 horizontalGrLayoutParams.setMargins(listRowLeftmargin, 0 , listRowRightmargin,0);

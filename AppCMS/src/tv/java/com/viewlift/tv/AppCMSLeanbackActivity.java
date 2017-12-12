@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
@@ -53,7 +54,7 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
 
         if(appCMSPresenterComponent.appCMSPresenter().isNetworkConnected()){
         appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                getString(R.string.app_cms_app_name),
+                Utils.getProperty("SiteId", getApplicationContext()),
                 Uri.parse(""),
                 AppCMSPresenter.PlatformType.TV,
                 false);
