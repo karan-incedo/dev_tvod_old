@@ -72,14 +72,14 @@ public class MiniPlayerView extends RelativeLayout {
         setLayoutParams(lpPipView);
 
         relativeLayoutEvent.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-        if (appCMSPresenter.videoPlayerViewParent == null) {
-            appCMSPresenter.videoPlayerViewParent=(ViewGroup)appCMSPresenter.videoPlayerView.getParent();
+
+        if (appCMSPresenter.videoPlayerView.getParent() != null) {
+            appCMSPresenter.videoPlayerViewParent = (ViewGroup) appCMSPresenter.videoPlayerView.getParent();
+            ((ViewGroup) appCMSPresenter.videoPlayerView.getParent()).removeView(appCMSPresenter.videoPlayerView);
         }
-        appCMSPresenter.videoPlayerViewParent.removeView(appCMSPresenter.videoPlayerView);
         appCMSPresenter.videoPlayerView.getPlayerView().getController().hide();
         addView(appCMSPresenter.videoPlayerView);
         addView(relativeLayoutEvent);
-
 
 
     }

@@ -469,7 +469,8 @@
     <string name="deeplink_uri_extra_key">deeplink_uri</string>
 
     <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
-    <string name="app_cms_video_ended_text_message">Live programming ended, [prees/swipe] down for more content</string>
+    <string name="app_cms_video_ended_text_message">Live programming ended, scroll down for more content</string>
+    <string name="app_cms_autoplay_off_msg">ON Autoplay from Setting to play next video</string>
     <string name="app_cms_live_preview_text_message">Did you enjoy your free preview?  Want more access to your DC sports teams?  Become a member now so you don’t miss another play!</string>
     <string name="app_cms_start_free_trial">Start Free Trial</string>
 

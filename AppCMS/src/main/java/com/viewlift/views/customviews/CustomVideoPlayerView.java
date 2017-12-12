@@ -40,6 +40,7 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -138,7 +139,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private boolean isVideoLoaded = false;
     CustomVideoPlayerView videoPlayerViewSingle;
 
-    private boolean isVideoPlaying = false;
+    private boolean isVideoPlaying = true;
     private boolean isTimerRun = true;
     public String lastUrl = "";
     ContentDatum onUpdatedContentDatum;
@@ -150,14 +151,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         //createPlaybackFullScreen();
-        createCustomMessageView();
-
-
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
         setupAds();
         createPreviewMessageView();
-
 
         try {
             mStreamId = appCMSPresenter.getStreamingId(videoDataId);
@@ -221,6 +218,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
 
     public void setVideoUri(String videoId, int resIdMessage) {
+        hideRestrictedMessage();
         showProgressBar(getResources().getString(resIdMessage));
         releasePlayer();
         init(mContext);
@@ -343,6 +341,18 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
         }
 
+        playerView.getController().setPlayerEvents(new IgetPlayerEvent() {
+            @Override
+            public void getIsVideoPaused(boolean isVideoPaused) {
+
+                if(isVideoPaused){
+                    isVideoPlaying=false;
+                }else{
+                    isVideoPlaying=true;
+
+                }
+            }
+        });
         if (null != url) {
             lastUrl = url;
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
@@ -512,12 +522,17 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         switch (playbackState) {
             case STATE_ENDED:
                 pausePlayer();
+                createCustomMessageView();
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     //showProgressBar("Loading Next Video...");
                     if (entitlementCheckTimer != null) {
                         entitlementCheckTimer.cancel();
                     }
-                    setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
+                    if(appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
+                        setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
+                    }else{
+                        showRestrictMessage(getResources().getString(R.string.app_cms_autoplay_off_msg));
+                    }
 
                     /*appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
                         @Override
@@ -547,7 +562,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 break;
             case STATE_BUFFERING:
             case STATE_IDLE:
-                isVideoPlaying = false;
                 showProgressBar("Streaming...");
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = false;
@@ -565,11 +579,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 hideProgressBar();
 
                 if (getPlayerView().getPlayer().getPlayWhenReady()) {
-                    isVideoPlaying = true;
                     ((Activity) mContext).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
                 } else {
-                    isVideoPlaying = false;
                     ((Activity) mContext).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
                 }
@@ -672,9 +684,16 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
     }
 
+
     public void resumePlayerLastState() {
+
         if (null != getPlayer()) {
-            getPlayer().setPlayWhenReady(true);
+            if(isVideoPlaying){
+                getPlayer().setPlayWhenReady(true);
+
+            }else{
+                getPlayer().setPlayWhenReady(false);
+            }
         }
     }
 
@@ -1095,5 +1114,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
     }
 
+    public interface IgetPlayerEvent{
+
+        public void getIsVideoPaused(boolean isVideoPaused);
+    }
 }
 

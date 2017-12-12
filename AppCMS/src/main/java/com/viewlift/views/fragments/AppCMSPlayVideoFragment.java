@@ -202,7 +202,6 @@ public class AppCMSPlayVideoFragment extends Fragment
     private Timer entitlementCheckTimer;
     private TimerTask entitlementCheckTimerTask;
     private boolean entitlementCheckCancelled = false;
-    private boolean allowFreePlay;
 
     public static AppCMSPlayVideoFragment newInstance(Context context,
                                                       String primaryCategory,
@@ -452,7 +451,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerInfoContainer =
                 (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
-        videoPlayerInfoContainer.setVisibility(View.GONE);
 
         mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
@@ -475,7 +473,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         });
 
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
-        videoPlayerInfoContainer.bringToFront();
+
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
 
         if (!TextUtils.isEmpty(policyCookie) &&
@@ -495,9 +493,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         boolean allowFreePlay = !appCMSPresenter.isAppSVOD() || isTrailer || freeContent;
 
-        if(!shouldRequestAds) {
-            setCasting(allowFreePlay);
-        }
+        setCasting(allowFreePlay);
 
         try {
             mStreamId = appCMSPresenter.getStreamingId(title);
@@ -534,7 +530,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
                 if (shouldRequestAds && !isADPlay && !isAdDisplayed && adsUrl != null) {
                     requestAds(adsUrl);
-                    isADPlay = true;
                 } else {
                     if (beaconBufferingThread != null) {
                         beaconBufferingThread.sendBeaconBuffering = false;
@@ -615,7 +610,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                         beaconBufferingThread.start();
                     }
                 }
-                videoLoadingProgress.setVisibility(View.VISIBLE);
+                if(!shouldRequestAds || isADPlay) {
+                    videoLoadingProgress.setVisibility(View.VISIBLE);
+                }
             }
 
             if (!sentBeaconPlay) {
@@ -774,13 +771,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         requestAudioFocus();
         resumeVideo();
-        if (shouldRequestAds && adsManager != null && isAdDisplayed) {
-            adsManager.resume();
-        }
-        if (shouldRequestAds && !isADPlay) {
-            requestAds(adsUrl);
-            isADPlay = true;
-        }
         super.onResume();
     }
 
@@ -838,15 +828,8 @@ public class AppCMSPlayVideoFragment extends Fragment
     public void onAdError(AdErrorEvent adErrorEvent) {
         //Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
 //        createContentRatingView();
-        try {
-            videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-            setCasting(allowFreePlay);
-            resumeVideo();
-            videoPlayerView.resumePlayer();
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-
+        videoPlayerInfoContainer.bringToFront();
+        videoPlayerView.resumePlayer();
     }
 
     @Override
@@ -855,8 +838,8 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         switch (adEvent.getType()) {
             case LOADED:
+                videoLoadingProgress.setVisibility(View.GONE);
                 adsManager.start();
-                videoPlayerInfoContainer.setVisibility(View.GONE);
                 break;
 
             case CONTENT_PAUSE_REQUESTED:
@@ -919,12 +902,9 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case ALL_ADS_COMPLETED:
-
                 try {
-                    videoLoadingProgress.setVisibility(View.GONE);
-                    videoPlayerInfoContainer.setVisibility(View.VISIBLE);
-                    setCasting(allowFreePlay);
-                    resumeVideo();
+                    isADPlay = true;
+                    videoPlayerInfoContainer.bringToFront();
                     createContentRatingView();
                 } catch (Exception e) {
                     //Log.e(TAG, "Error ContentRatingView: " + e.getMessage());
@@ -1091,11 +1071,12 @@ public class AppCMSPlayVideoFragment extends Fragment
     private void requestAds(String adTagUrl) {
         if (!TextUtils.isEmpty(adTagUrl) && adsLoader != null) {
             //Log.d(TAG, "Requesting ads: " + adTagUrl);
+            videoPlayerInfoContainer.setVisibility(View.GONE);
             AdDisplayContainer adDisplayContainer = sdkFactory.createAdDisplayContainer();
             adDisplayContainer.setAdContainer(videoPlayerView);
 
             AdsRequest request = sdkFactory.createAdsRequest();
-            request.setAdTagUrl(adsUrl);
+            request.setAdTagUrl(adTagUrl);
             request.setAdDisplayContainer(adDisplayContainer);
             request.setContentProgressProvider(() -> {
                 if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {
