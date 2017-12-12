@@ -414,7 +414,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 if (onUpdatedContentDatum != null) {
                                     AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
                                             = new AppCMSPresenter.EntitlementPendingVideoData.Builder()
-                                            .action(getContext().getString(R.string.app_cms_page_play_key))
+                                            //.action(getContext().getString(R.string.app_cms_page_play_key))
                                             .closerLauncher(false)
                                             .contentDatum(onUpdatedContentDatum)
                                             .currentlyPlayingIndex(0)
@@ -456,6 +456,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void showPreviewFrame() {
+        disableController();
         isPreviewShown = true;
         appCMSPresenter.setPreviewStatus(true);
         customPreviewContainer.post(new Runnable() {
@@ -473,8 +474,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void hidePreviewFrame() {
+        enableController();
         isPreviewShown = false;
-        appCMSPresenter.setPreviewStatus(false);
+//        appCMSPresenter.setPreviewStatus(false);
         customPreviewContainer.post(new Runnable() {
             @Override
             public void run() {
@@ -500,7 +502,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     }
                     if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
                         setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
-                    } else {
+
+                    }else{
+                        disableController();
                         showRestrictMessage(getResources().getString(R.string.app_cms_autoplay_off_msg));
                     }
 
