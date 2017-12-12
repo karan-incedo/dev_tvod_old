@@ -40,6 +40,7 @@ import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -150,14 +151,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         //createPlaybackFullScreen();
-        createCustomMessageView();
-
-
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
         setupAds();
         createPreviewMessageView();
-
 
         try {
             mStreamId = appCMSPresenter.getStreamingId(videoDataId);
@@ -221,6 +218,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
 
     public void setVideoUri(String videoId, int resIdMessage) {
+        hideRestrictedMessage();
         showProgressBar(getResources().getString(resIdMessage));
         releasePlayer();
         init(mContext);
@@ -524,12 +522,17 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         switch (playbackState) {
             case STATE_ENDED:
                 pausePlayer();
+                createCustomMessageView();
                 if (null != relatedVideoId && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     //showProgressBar("Loading Next Video...");
                     if (entitlementCheckTimer != null) {
                         entitlementCheckTimer.cancel();
                     }
-                    setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
+                    if(appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
+                        setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
+                    }else{
+                        showRestrictMessage(getResources().getString(R.string.app_cms_autoplay_off_msg));
+                    }
 
                     /*appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
                         @Override
@@ -680,6 +683,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             getPlayer().setPlayWhenReady(true);
         }
     }
+
 
     public void resumePlayerLastState() {
 
