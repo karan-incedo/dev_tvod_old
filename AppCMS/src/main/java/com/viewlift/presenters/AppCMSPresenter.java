@@ -221,6 +221,7 @@ import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSTrayMenuDialogFragment;
+import com.viewlift.views.utilities.CustomWebView;
 
 import org.jsoup.Jsoup;
 import org.threeten.bp.Duration;
@@ -575,6 +576,8 @@ public class AppCMSPresenter {
     public boolean isconfig = false;
     public boolean isAppBackground = false;
     private HashMap<String, CustomVideoPlayerView> playerViewCache;
+    private HashMap<String, CustomWebView> webViewCache;
+
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -4808,6 +4811,8 @@ public class AppCMSPresenter {
     public void navigateToLoginPage(boolean loginFromNavPage) {
         this.loginFromNavPage = loginFromNavPage;
         if (loginPage != null) {
+            setLoginPageUserName(null);
+            setLoginPagePassword(null);
             boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                     loginPage.getPageName(),
                     loginPage.getPageUI(),
@@ -8603,6 +8608,9 @@ public class AppCMSPresenter {
             setIsUserSubscribed(isUserSubscribed);
         }
 
+        setLoginPageUserName(null);
+        setLoginPagePassword(null);
+
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
@@ -12121,7 +12129,7 @@ public class AppCMSPresenter {
         return null;
     }
 
-    public void saveVideoPlayerViewCache(String key, CustomVideoPlayerView videoPlayerView) {
+    public void setVideoPlayerViewCache(String key, CustomVideoPlayerView videoPlayerView) {
         if (playerViewCache == null) {
             playerViewCache = new HashMap<String, CustomVideoPlayerView>();
         }
@@ -12129,10 +12137,9 @@ public class AppCMSPresenter {
     }
 
     public void clearVideoPlayerViewCache() {
-        if (playerViewCache == null) {
-            playerViewCache = new HashMap<String, CustomVideoPlayerView>();
+        if (playerViewCache != null) {
+            playerViewCache.clear();
         }
-        playerViewCache.clear();
     }
 
     public CustomVideoPlayerView getVideoPlayerViewCache(String key) {
@@ -12144,10 +12151,32 @@ public class AppCMSPresenter {
         }
         return null;
     }
+    public void setWebViewCache(String key, CustomWebView webView) {
+        if (webViewCache == null) {
+            webViewCache = new HashMap<String, CustomWebView>();
+        }
+        webViewCache.put(key, webView);
+    }
+
+    public void clearWebViewCache() {
+        if (webViewCache != null) {
+            webViewCache.clear();
+        }
+    }
+
+    public CustomWebView getWebViewCache(String key) {
+        if (webViewCache == null) {
+            webViewCache = new HashMap<String, CustomWebView>();
+        }
+        if (webViewCache.get(key) != null) {
+            return webViewCache.get(key);
+        }
+        return null;
+    }
+
 
     public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
         SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
-
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeMilliSeconds);
@@ -12221,5 +12250,23 @@ public class AppCMSPresenter {
             return context.getString(R.string.color_hash_prefix) + color;
         }
         return color;
+    }
+
+    String loginPageUserName, loginPagePassword;
+
+    public String getLoginPageUserName() {
+        return loginPageUserName;
+    }
+
+    public void setLoginPageUserName(String loginPageUserName) {
+        this.loginPageUserName = loginPageUserName;
+    }
+
+    public String getLoginPagePassword() {
+        return loginPagePassword;
+    }
+
+    public void setLoginPagePassword(String loginPagePassword) {
+        this.loginPagePassword = loginPagePassword;
     }
 }
