@@ -4808,6 +4808,8 @@ public class AppCMSPresenter {
     public void navigateToLoginPage(boolean loginFromNavPage) {
         this.loginFromNavPage = loginFromNavPage;
         if (loginPage != null) {
+            setLoginPageUserName(null);
+            setLoginPagePassword(null);
             boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                     loginPage.getPageName(),
                     loginPage.getPageUI(),
@@ -8603,6 +8605,9 @@ public class AppCMSPresenter {
             setIsUserSubscribed(isUserSubscribed);
         }
 
+        setLoginPageUserName(null);
+        setLoginPagePassword(null);
+
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
@@ -12257,5 +12262,23 @@ public class AppCMSPresenter {
             return context.getString(R.string.color_hash_prefix) + color;
         }
         return color;
+    }
+
+    String loginPageUserName, loginPagePassword;
+
+    public String getLoginPageUserName() {
+        return loginPageUserName;
+    }
+
+    public void setLoginPageUserName(String loginPageUserName) {
+        this.loginPageUserName = loginPageUserName;
+    }
+
+    public String getLoginPagePassword() {
+        return loginPagePassword;
+    }
+
+    public void setLoginPagePassword(String loginPagePassword) {
+        this.loginPagePassword = loginPagePassword;
     }
 }
