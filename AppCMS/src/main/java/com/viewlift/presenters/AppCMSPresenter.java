@@ -11929,13 +11929,8 @@ public class AppCMSPresenter {
         this.videoPlayerView = customVideoPlayerView;
     }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId) {
-        if (videoId != null) {
+    public void showPopupWindowPlayer(View scrollView) {
 
-
-//            if (videoPlayerView == null) {
-//                this.videoPlayerView = ViewCreator.playerView(currentActivity, videoId);
-//            }
             if (relativeLayoutPIP==null) {
                 relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
             }else {
@@ -11949,45 +11944,18 @@ public class AppCMSPresenter {
                 ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
             }
             pipPlayerVisible = true;
-        }
+
     }
 
-    public void pausePIP() {
-        try {
-            if (videoPlayerView != null) {
-                videoPlayerView.pausePlayer();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
-
-    public void resumePIP() {
-        try {
-            if (videoPlayerView != null) {
-                videoPlayerView.startPlayer();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-    }
 
     public void dismissPopupWindowPlayer(boolean releasePlayer) {
-        try {
-            if (releasePlayer && videoPlayerView != null) {
 
-               /* videoPlayerView.releasePlayer();
-                videoPlayerView = null;*/
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
         try {
             if (relativeLayoutPIP != null) {
 
                 relativeLayoutPIP.removeAllViews();
                 if (videoPlayerViewParent != null) {
-                    videoPlayerView.getPlayerView().getController().show();
+                    videoPlayerView.enableController();
                     relativeLayoutPIP.removeView(videoPlayerView);
                     videoPlayerViewParent.addView(videoPlayerView);
                     pipPlayerVisible = false;
@@ -12015,10 +11983,6 @@ public class AppCMSPresenter {
         }
 
         pipPlayerVisible = false;
-    }
-
-    public CustomVideoPlayerView getMiniPlayrView() {
-        return videoPlayerView;
     }
 
     public static boolean isFullScreenVisible;
