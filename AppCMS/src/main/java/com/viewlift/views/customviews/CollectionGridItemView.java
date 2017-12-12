@@ -477,7 +477,7 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
                         if (data.getSeason() != null && 0 < data.getSeason().size()) {
-                            ViewCreator.setViewWithShowSubtitle(getContext(), data, view);
+                            ViewCreator.setViewWithShowSubtitle(getContext(), data, view, true);
                         } else {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }

@@ -448,6 +448,16 @@
         <item quantity="other">EPISODES</item>
     </plurals>
 
+    <plurals name="minute_subtitle_text">
+        <item quantity="one">MIN</item>
+        <item quantity="other">MINS</item>
+    </plurals>
+
+    <plurals name="seconds_subtitle_text">
+        <item quantity="one">SEC</item>
+        <item quantity="other">SECS</item>
+    </plurals>
+
 </resources>
 
 
