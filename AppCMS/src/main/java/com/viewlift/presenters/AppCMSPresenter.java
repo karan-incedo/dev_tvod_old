@@ -198,7 +198,6 @@ import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
-import com.viewlift.views.activity.AppCMSKisweMediaPlayerActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
