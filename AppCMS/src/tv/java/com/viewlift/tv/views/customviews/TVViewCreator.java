@@ -625,7 +625,7 @@ public class TVViewCreator {
                 } else {
                     componentViewResult.componentView.setBackground(
                             Utils.setButtonBackgroundSelector(context,
-                                    Color.parseColor(Utils.getTitleColor(context, appCMSPresenter)),
+                                    Color.parseColor(Utils.getFocusColor(context, appCMSPresenter)),
                                     component));
                 }
 
@@ -1972,10 +1972,10 @@ public class TVViewCreator {
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = minutes > 0
-                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
-                && !TextUtils.isEmpty(primaryCategory);
+//        boolean appendFirstSep = minutes > 0
+//                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+//        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
+//                && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
 
@@ -1996,20 +1996,12 @@ public class TVViewCreator {
         }
 
         if (!TextUtils.isEmpty(year)) {
-
-            if (appendFirstSep) {
-                infoText.append(context.getString(R.string.text_separator));
-            }
-
-            infoText.append(year);
-
-        }
-
-        if (appendSecondSep) {
             infoText.append(context.getString(R.string.text_separator));
+            infoText.append(year);
         }
 
         if (!TextUtils.isEmpty(primaryCategory)) {
+            infoText.append(context.getString(R.string.text_separator));
             infoText.append(primaryCategory.toUpperCase());
         }
 
