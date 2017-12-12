@@ -401,10 +401,7 @@ public class CollectionGridItemView extends BaseView {
                         if (childViewWidth < childViewHeight &&
                                 data.getGist().getImageGist().get_3x4() != null &&
                                 data.getGist().getBadgeImages().get_3x4() != null) {
-                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    data.getGist().getBadgeImages().get_3x4(),
-                                    childViewWidth,
-                                    childViewHeight);
+                            String imageUrl = data.getGist().getBadgeImages().get_3x4();
 
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                                 Glide.with(context)
@@ -414,10 +411,7 @@ public class CollectionGridItemView extends BaseView {
                             }
                         } else if (data.getGist().getImageGist().get_16x9() != null &&
                                 data.getGist().getBadgeImages().get_16x9() != null) {
-                            String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                    data.getGist().getBadgeImages().get_16x9(),
-                                    childViewWidth,
-                                    childViewHeight);
+                            String imageUrl = data.getGist().getBadgeImages().get_16x9();
 
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                                 Glide.with(context)

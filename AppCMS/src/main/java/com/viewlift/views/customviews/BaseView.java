@@ -770,6 +770,11 @@ public abstract class BaseView extends FrameLayout {
             }
         }
 
+        AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
+        if (componentKey == null) {
+            componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
@@ -779,11 +784,6 @@ public abstract class BaseView extends FrameLayout {
 
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER);
-            }
-
-            AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
-            if (componentKey == null) {
-                componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
             }
 
             if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
@@ -927,6 +927,11 @@ public abstract class BaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
+        } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
+            if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
+                viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
         }
 
         if (useWidthOfScreen) {
