@@ -7,10 +7,10 @@
   "type": "AC Tray 01",
   "layout": {
     "ftv": {
-      "height": 450,
-      "rightMargin": 0,
+      "padding": 0,
       "leftMargin": 0,
-      "padding":0
+      "rightMargin": 0,
+      "height": 260
     }
   },
   "components": [
@@ -23,15 +23,15 @@
       "key": "trayTitle",
       "layout": {
         "ftv": {
-          "fontSize": 18
+          "fontSize": 14
         }
       }
     },
     {
       "layout": {
         "ftv": {
-          "width": 260,
-          "height": 430
+          "width": 350,
+          "height": 250
         }
       },
       "trayClickAction": "lectureDetailPage",
@@ -39,10 +39,10 @@
         {
           "layout": {
             "ftv": {
-              "height": 380,
+              "height": 197,
               "topMargin": 0,
               "padding": 6,
-              "width": 260
+              "width": 350
             }
           },
           "type": "image",
@@ -54,7 +54,7 @@
           "textAlignment": "left",
           "layout": {
             "ftv": {
-              "topMargin": 385,
+              "topMargin": 202,
               "height": 40,
               "rightMargin": 0,
               "fontSize": 11,

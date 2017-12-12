@@ -101,9 +101,9 @@ else
     postBuildStatus ${28} $POST_URL "FOUND_APP" ""
 fi
 
-emulator -avd Android_TV_API_24 & adb wait-for-device
+#emulator -avd Android_TV_API_24 & adb wait-for-device
 
-sleep 5s # Waits 5 seconds.
+#sleep 5s # Waits 5 seconds.
 
 #Generate TV Release singed APK
 echo "Generating TV Release APK"

@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/appcms_tv_navigation_height"
         android:background="@color/appcms_nav_background"
-        android:visibility="gone"></FrameLayout>
+        android:visibility="gone" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -22,7 +22,7 @@
             android:id="@+id/home_placeholder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/home_screen_background"></FrameLayout>
+            android:background="@drawable/home_screen_background" />
 
         <FrameLayout
             android:id="@+id/shadow_view"
@@ -30,19 +30,21 @@
             android:layout_height="match_parent"
             android:alpha="0.7"
             android:background="@color/appcms_shadow_color"
-            android:visibility="gone"></FrameLayout>
+            android:visibility="gone" />
 
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/footer_gradient_image"></FrameLayout>
+            android:background="@drawable/footer_gradient_image" />
 
 
     </RelativeLayout>
 
+    <!--FOR FAILARMY & PEOPLE ARE AWESOME-->
     <ImageView
+        android:id="@+id/imagevw_applogo"
         android:layout_width="@dimen/footer_logo_width"
         android:layout_height="@dimen/footer_logo_height"
         android:layout_alignParentBottom="true"
@@ -52,9 +54,21 @@
         android:layout_marginRight="@dimen/footer_logo_margin_right"
         android:background="@drawable/tv_logo" />
 
+    <!--FOR JUKIN VIDEO-->
     <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_width="70dp"-->
+        <!--android:layout_height="39dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_gravity="right"-->
+        <!--android:layout_marginBottom="@dimen/footer_logo_margin_bottom"-->
+        <!--android:layout_marginRight="@dimen/footer_logo_margin_right"-->
+        <!--android:background="@drawable/tv_logo" />-->
+
+    <!--FOR PET COLLECTIVE-->
+    <!--<ImageView-->
+        <!--android:layout_width="60dp"-->
+        <!--android:layout_height="60dp"-->
         <!--android:layout_alignParentBottom="true"-->
         <!--android:layout_alignParentRight="true"-->
         <!--android:layout_gravity="right"-->
