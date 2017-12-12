@@ -482,7 +482,11 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setMaxLines(1);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_INFO_KEY) {
-                        ViewCreator.setViewWithSubtitle(getContext(), data, view);
+                        if (data.getSeason() != null && 0 < data.getSeason().size()) {
+                            ViewCreator.setViewWithShowSubtitle(getContext(), data, view);
+                        } else {
+                            ViewCreator.setViewWithSubtitle(getContext(), data, view);
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
