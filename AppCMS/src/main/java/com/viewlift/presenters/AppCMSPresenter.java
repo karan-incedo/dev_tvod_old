@@ -558,6 +558,7 @@ public class AppCMSPresenter {
     private boolean shouldLaunchLoginAction;
     private Map<String, ContentDatum> userHistoryData;
     private AppCMSWatchlistResult filmsInUserWatchList;
+    private List<String> temporaryWatchlist;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -747,6 +748,8 @@ public class AppCMSPresenter {
         this.userHistoryData = new HashMap<>();
 
         this.updateDownloadImageIconActionMap = new HashMap<>();
+
+        this.temporaryWatchlist = new ArrayList<>();
 
         clearMaps();
     }
@@ -1819,9 +1822,12 @@ public class AppCMSPresenter {
                     }
                 }
             }
+
+            return temporaryWatchlist.contains(filmId);
         } catch (Exception e) {
 
         }
+
         return false;
     }
 
@@ -2869,8 +2875,17 @@ public class AppCMSPresenter {
             request.setPosition(1L);
             if (add) {
                 request.setContentId(filmId);
+
+                if (!temporaryWatchlist.contains(filmId)) {
+                    temporaryWatchlist.add(filmId);
+                }
+
             } else {
                 request.setContentIds(filmId);
+
+                if (temporaryWatchlist.contains(filmId)) {
+                    temporaryWatchlist.remove(filmId);
+                }
             }
 
             appCMSAddToWatchlistCall.call(url, getAuthToken(),
