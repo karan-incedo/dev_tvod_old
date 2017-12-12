@@ -2,6 +2,7 @@ package com.viewlift.tv.views.activity;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -83,6 +84,7 @@ public class AppCmsMyProfileFragment extends Fragment implements AppCmsSubNaviga
 
         FrameLayout pageHolder = (FrameLayout) view.findViewById(R.id.profile_placeholder);
         pageHolder.addView(tvPageView);
+        tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         return view;
     }
 

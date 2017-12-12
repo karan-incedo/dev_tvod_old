@@ -96,7 +96,7 @@ public class AppCmsTVPageFragment extends Fragment {
             container.removeAllViews();
         }
 
-        if ((tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null) {
+        if (null != tvPageView && (tvPageView.getChildrenContainer()).findViewById(R.id.appcms_browsefragment) != null) {
             if (getChildFragmentManager().findFragmentByTag(mAppCMSBinder.getScreenName()) == null) {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(getActivity());
                 browseFragment.setPageView(tvPageView);
@@ -133,30 +133,32 @@ public class AppCmsTVPageFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                ViewGroup ChildContaineer = (ViewGroup) (tvPageView.getChildrenContainer());
-                int childcount = 0;
-                if (null != ChildContaineer) {
-                    childcount = ChildContaineer.getChildCount();
-                }
-                for (int i = 0; i < childcount; i++) {
-                    if (ChildContaineer.getChildAt(0) instanceof TVModuleView) {
-                        TVModuleView tvModuleView = (TVModuleView) ChildContaineer.getChildAt(0);
-                        ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
-                        int moduleChild = moduleChildContaineer.getChildCount();
+                if (null != tvPageView) {
+                    ViewGroup ChildContaineer = (ViewGroup) (tvPageView.getChildrenContainer());
+                    int childcount = 0;
+                    if (null != ChildContaineer) {
+                        childcount = ChildContaineer.getChildCount();
+                    }
+                    for (int i = 0; i < childcount; i++) {
+                        if (ChildContaineer.getChildAt(0) instanceof TVModuleView) {
+                            TVModuleView tvModuleView = (TVModuleView) ChildContaineer.getChildAt(0);
+                            ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
+                            int moduleChild = moduleChildContaineer.getChildCount();
 
-                        for (int j = 0; j < moduleChild; j++) {
-                            View view = moduleChildContaineer.getChildAt(j);
-                            if (null != view) {
-                                System.out.println("View isFocusable == " + view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
-                                if (null != view.getTag() &&
-                                        view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))) {
-                                    ((FrameLayout) view).getChildAt(0).requestFocus();
-                                    break;
-                                } else if (view.isFocusable()) {
-                                    view.requestFocus();
-                                    break;
-                                } else {
-                                    view.clearFocus();
+                            for (int j = 0; j < moduleChild; j++) {
+                                View view = moduleChildContaineer.getChildAt(j);
+                                if (null != view) {
+                                    System.out.println("View isFocusable == " + view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
+                                    if (null != view.getTag() &&
+                                            view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))) {
+                                        ((FrameLayout) view).getChildAt(0).requestFocus();
+                                        break;
+                                    } else if (view.isFocusable()) {
+                                        view.requestFocus();
+                                        break;
+                                    } else {
+                                        view.clearFocus();
+                                    }
                                 }
                             }
                         }
@@ -164,7 +166,7 @@ public class AppCmsTVPageFragment extends Fragment {
                 }
             }
         }, 10);
-    }
+        }
 
 
     public void refreshBrowseFragment(){

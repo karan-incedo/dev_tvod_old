@@ -46,7 +46,6 @@ public abstract class TVBaseView extends FrameLayout {
     }
 
 
-
     public abstract void init();
 
     protected abstract Component getChildComponent(int index);
@@ -111,7 +110,9 @@ public abstract class TVBaseView extends FrameLayout {
         }
 
         ((TextView) view).setText(infoText.toString());
-        view.setAlpha(0.6f);
+         view.setAlpha(0.6f);
+        ((TextView) view).setLetterSpacing(LETTER_SPACING);
+
     }
 
     public ViewGroup getChildrenContainer() {
@@ -151,7 +152,7 @@ public abstract class TVBaseView extends FrameLayout {
         view.setPadding(0, 0, 0, 0);
 
         int lm = 0, tm = 0, rm = 0, bm = 0;
-        int deviceHeight =    getContext().getResources().getDisplayMetrics().heightPixels;
+        int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         int viewWidth = (int) getViewWidth(getContext(), layout, FrameLayout.LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, FrameLayout.LayoutParams.WRAP_CONTENT);
 

@@ -17,6 +17,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 
@@ -137,6 +138,7 @@ public class AppCMSTVTrayAdapter
 
             for (int i = 0; i < component.getComponents().size(); i++) {
                 Component childComponent = component.getComponents().get(i);
+                if(null != childComponent){
                 tvViewCreator.createComponentView(context,
                         childComponent,
                         this.parentLayout,
@@ -173,6 +175,7 @@ public class AppCMSTVTrayAdapter
                 } else {
                     collectionGridItemView.setComponentHasView(i, false);
                 }
+             }
             }
             return new ViewHolder(collectionGridItemView);
         } else {
@@ -287,14 +290,18 @@ public class AppCMSTVTrayAdapter
                         appCMSPresenter.editWatchlist(data.getGist().getId(),
                                 addToWatchlistResult -> {
                                     adapterData.remove(data);
-                                    View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    View view = null;
+                                    try {
+                                        view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        if (context instanceof AppCmsHomeActivity) {
+                                            view = ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall);
+                                        }
+                                    }
                                     if (view != null) {
                                         view.setFocusable(adapterData.size() != 0);
-                                        if (adapterData.size() > 0) {
-                                            view.setVisibility(View.VISIBLE);
-                                        } else {
-                                            view.setVisibility(View.INVISIBLE);
-                                        }
+                                        view.setVisibility(adapterData.size() != 0 ? View.VISIBLE : View.INVISIBLE);
                                     }
                                     notifyDataSetChanged();
                                 }, false);
@@ -303,14 +310,18 @@ public class AppCMSTVTrayAdapter
                                 true,
                                 appCMSAddToWatchlistResult -> {
                                     adapterData.remove(data);
-                                    View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    View view = null;
+                                    try {
+                                        view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        if (context instanceof AppCmsHomeActivity) {
+                                            view = ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall);
+                                        }
+                                    }
                                     if (view != null) {
                                         view.setFocusable(adapterData.size() != 0);
-                                        if (adapterData.size() > 0) {
-                                            view.setVisibility(View.VISIBLE);
-                                        } else {
-                                            view.setVisibility(View.INVISIBLE);
-                                        }
+                                        view.setVisibility(adapterData.size() != 0 ? View.VISIBLE : View.INVISIBLE);
                                     }
                                     notifyDataSetChanged();
                                 });

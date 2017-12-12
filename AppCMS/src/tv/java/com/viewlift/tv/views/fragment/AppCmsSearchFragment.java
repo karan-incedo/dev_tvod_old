@@ -606,6 +606,7 @@ public class AppCmsSearchFragment extends Fragment {
                     rowData.contentData = searchResult.getContent();
                     rowData.uiComponentList = component.getComponents();
                     rowData.action = component.getTrayClickAction();
+                    rowData.blockName = moduleUI.getBlockName();
                     traylistRowAdapter.add(rowData);
                     //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                 }

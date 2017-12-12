@@ -65,12 +65,6 @@ public class PlayerPresenter extends Presenter {
         FrameLayout cardView = (FrameLayout) viewHolder.view;
 
         if(shouldStartPlayer){
-            boolean requestAds = true;
-            String adsUrl = appCmsPresenter.getAdsUrl(appCmsPresenter.getPermalinkCompletePath(contentData.getGist().getPermalink()));
-            if(adsUrl == null) {
-                requestAds = false;
-            }
-            mCustomVideoPlayerView.setupAds(requestAds ? adsUrl : null);
             mCustomVideoPlayerView.setVideoUri(contentData.getGist().getId());
         }
 

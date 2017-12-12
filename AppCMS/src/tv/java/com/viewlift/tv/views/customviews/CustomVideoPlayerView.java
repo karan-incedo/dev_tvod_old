@@ -107,8 +107,19 @@ public class CustomVideoPlayerView
         imageView = (ImageView) findViewById(R.id.videoPlayerThumbnailImage);
         setListener(this);
         parentScreenName = mContext.getString(R.string.app_cms_beacon_video_player_parent_screen_name);
+        setupAds();
     }
 
+
+    private String getAdsUrl(ContentDatum contentDatum){
+        shouldRequestAds = false;
+        String adsUrl = appCMSPresenter.getAdsUrl(appCMSPresenter.getPermalinkCompletePath(contentDatum.getGist().getPermalink()));
+        if(adsUrl != null && !contentDatum.getStreamingInfo().getIsLiveStream()
+                && (!appCMSPresenter.isUserSubscribed() )) {
+            shouldRequestAds = true;
+        }
+        return adsUrl;
+    }
 
     public void requestFocusOnLogin(){
         if(customMessageContaineer.getVisibility() == View.VISIBLE){
@@ -116,11 +127,7 @@ public class CustomVideoPlayerView
         }
     }
 
-    public void setupAds(String adsUrl) {
-        this.adsUrl = adsUrl;
-        if (adsUrl != null && !TextUtils.isEmpty(adsUrl)) {
-            shouldRequestAds = true;
-        }
+    public void setupAds() {
         sdkFactory = ImaSdkFactory.getInstance();
         adsLoader = sdkFactory.createAdsLoader(getContext());
         adsLoader.addAdErrorListener(this);
@@ -136,6 +143,7 @@ public class CustomVideoPlayerView
         showProgressBar("Loading...");
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             this.contentDatum = contentDatum;
+            adsUrl = getAdsUrl(contentDatum);
             Log.d(TAG, "CVP Free : " + contentDatum.getGist().getFree());
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
@@ -146,9 +154,15 @@ public class CustomVideoPlayerView
                         toggleLoginButtonVisibility(true);
                     } else {
                         videoData = contentDatum;
-                       // if (shouldRequestAds) requestAds(adsUrl);
-                        playVideos(0, contentDatum);
-                        startFreePlayTimer();
+                        if (shouldRequestAds)
+                        {
+                            requestAds(adsUrl);
+                        }
+                        else{
+                            playVideos(0, contentDatum);
+                            startFreePlayTimer();
+                        }
+
                     }
                 } else {
                     //check subscription data
@@ -164,9 +178,14 @@ public class CustomVideoPlayerView
                                     // start free play time timer
                                 } else if (!userFreePlayTimeExceeded()){
                                     videoData = contentDatum;
-                                  //  if (shouldRequestAds) requestAds(adsUrl);
-                                    playVideos(0, contentDatum);
-                                    startFreePlayTimer();
+                                    if (shouldRequestAds){
+                                        requestAds(adsUrl);
+                                    }
+                                    else {
+                                        playVideos(0, contentDatum);
+                                        startFreePlayTimer();
+                                    }
+
                                 } else {
                                     setBackgroundImage();
                                     showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
@@ -185,9 +204,15 @@ public class CustomVideoPlayerView
                     });
                 }
             } else {
-                videoData = contentDatum;
+              /*  videoData = contentDatum;
               //  if (shouldRequestAds) requestAds(adsUrl);
-                playVideos(0, contentDatum);
+                playVideos(0, contentDatum);*/
+                videoData = contentDatum;
+                if (shouldRequestAds){
+                    requestAds(adsUrl);
+                }else{
+                    playVideos(0, contentDatum);
+                }
             }
         });
     }
@@ -226,7 +251,17 @@ public class CustomVideoPlayerView
                 if (appCMSPresenter.getUserFreePlayTimePreference() >= totalFreePreviewTimeInMillis) {
                     stopTimer();
                     appCMSPresenter.getCurrentActivity().runOnUiThread(() -> {
+                        String message = null;
+                        if (appCMSPresenter.getAppCMSAndroid() != null
+                                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+                            message = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+                        }
+                        if (message == null) {
+                            message = getResources().getString(R.string.unsubscribe_text);
+                        }
                         if (appCMSPresenter.isUserLoggedIn()) {
+                            String finalMessage = message;
                             appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
                                 try {
                                     if (appCMSUserSubscriptionPlanResult != null) {
@@ -235,25 +270,25 @@ public class CustomVideoPlayerView
                                                 subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION"))) {
                                             pausePlayer();
                                             setBackgroundImage();
-                                            showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                            showRestrictMessage(finalMessage);
                                             toggleLoginButtonVisibility(false);
                                         }
                                     } else /*Unsubscribed*/{
                                         pausePlayer();
                                         setBackgroundImage();
-                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                        showRestrictMessage(finalMessage);
                                         toggleLoginButtonVisibility(false);
                                     }
                                 } catch (Exception e) {
                                     pausePlayer();
                                     setBackgroundImage();
-                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                    showRestrictMessage(finalMessage);
                                     toggleLoginButtonVisibility(false);
                                 }
                             });
                         } else {
                             pausePlayer();
-                            showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                            showRestrictMessage(message);
                             setBackgroundImage();
                             toggleLoginButtonVisibility(true);
                         }
@@ -309,8 +344,11 @@ public class CustomVideoPlayerView
         startBeaconsThread();
         hideRestrictedMessage();
         String url = null;
-        if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
-            url = getVideoUrl(contentDatum.getStreamingInfo().getVideoAssets());
+        if (null != contentDatum && null != contentDatum.getStreamingInfo()) {
+            shouldRequestAds = !contentDatum.getStreamingInfo().getIsLiveStream();
+            if (null != contentDatum.getStreamingInfo().getVideoAssets()){
+                url = getVideoUrl(contentDatum.getStreamingInfo().getVideoAssets());
+            }
         }
 
 
@@ -320,11 +358,11 @@ public class CustomVideoPlayerView
             if (null != appCMSPresenter.getCurrentActivity() &&
                     appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
                 if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
-                    if(shouldRequestAds){
+                  /*  if(shouldRequestAds){
                         requestAds(adsUrl);
-                    }else {
+                    }else {*/
                         getPlayerView().getPlayer().setPlayWhenReady(true);
-                    }
+                  //  }
                 } else {
                     getPlayerView().getPlayer().setPlayWhenReady(false);
                 }
@@ -370,7 +408,9 @@ public class CustomVideoPlayerView
                 if (null != relatedVideoId
                         && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
-
+                        showProgressBar("Loading Next Video...");
+                        setVideoUri(relatedVideoId.get(currentPlayingIndex));
+/*
                         showProgressBar("Loading Next Video...");
                         appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
                             @Override
@@ -381,7 +421,7 @@ public class CustomVideoPlayerView
                                     if (!appCMSPresenter.isUserLoggedIn()) {
                                         showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                         setBackgroundImage();
-                                    } else /*User not logged in */ {
+                                    } else *//*User not logged in *//* {
                                         //check subscription data
                                         appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
                                             try {
@@ -391,11 +431,11 @@ public class CustomVideoPlayerView
                                                             subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
                                                        // if (shouldRequestAds) requestAds(adsUrl);
                                                         playVideos(currentPlayingIndex, contentDatum);
-                                                    } else /*user not subscribed*/ {
+                                                    } else *//*user not subscribed*//* {
                                                         setBackgroundImage();
                                                         showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                                     }
-                                                } else /*received null result from API in appCMSUserSubscriptionPlanResult*/ {
+                                                } else *//*received null result from API in appCMSUserSubscriptionPlanResult*//* {
                                                     setBackgroundImage();
                                                     showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                                 }
@@ -405,13 +445,13 @@ public class CustomVideoPlayerView
                                             }
                                         });
                                     }
-                                } else /*Video is free*/ {
+                                } else *//*Video is free*//* {
                                    // if (shouldRequestAds) requestAds(adsUrl);
                                     playVideos(currentPlayingIndex, contentDatum);
                                     imageViewContainer.setVisibility(GONE);
                                 }
                             }
-                        });
+                        });*/
                     } else /*Autoplay is turned-off*/ {
                         setBackgroundImage();
                         showRestrictMessage(getResources().getString(R.string.autoplay_off_msg));
@@ -551,7 +591,7 @@ public class CustomVideoPlayerView
         customMessageView.setGravity(Gravity.CENTER);
         customMessageView.setTextSize(20);
         customMessageView.setTypeface(null, Typeface.BOLD);
-        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(1200, ViewGroup.LayoutParams.WRAP_CONTENT);
         textViewParams.setMargins(0, 0,0, 50);
         customMessageView.setLayoutParams(textViewParams);
         customMessageView.setPadding(20, 20, 20, 20);
@@ -563,7 +603,17 @@ public class CustomVideoPlayerView
 
 
         loginButton = new Button(mContext);
-        loginButton.setText(mContext.getString(R.string.app_cms_login));
+        String loginButtonText;
+
+        if (appCMSPresenter.getAppCMSAndroid() != null
+                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
+                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getLoginButtonText() != null) {
+            loginButtonText = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getLoginButtonText();
+        } else {
+            loginButtonText = mContext.getString(R.string.app_cms_login);
+        }
+
+        loginButton.setText(loginButtonText);
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(300, 75);
         loginButton.setLayoutParams(buttonParams);
         loginButton.setPadding(50,0,50,0);
@@ -693,7 +743,9 @@ public class CustomVideoPlayerView
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
-        startPlayer();
+        playVideos(0,contentDatum);
+        startFreePlayTimer();
+       // startPlayer();
     }
 
     @Override
@@ -702,8 +754,10 @@ public class CustomVideoPlayerView
 
         switch (adEvent.getType()) {
             case LOADED:
-                adsManager.start();
-                isAdsDisplaying = true;
+                if(null != adsManager) {
+                    adsManager.start();
+                    isAdsDisplaying = true;
+                }
                 break;
             case CONTENT_PAUSE_REQUESTED:
                 isAdDisplayed = true;
@@ -765,7 +819,8 @@ public class CustomVideoPlayerView
                     adsManager = null;
                 }
                 isAdsDisplaying = false;
-                startPlayer();
+                playVideos(0,contentDatum);
+                startFreePlayTimer();
                 /*if (isVisible() && isAdded()) {
                     preparePlayer();
                 }

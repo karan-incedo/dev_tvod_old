@@ -597,7 +597,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                                     && appCMSUserSubscriptionPlanResult.getSubscriptionInfo() != null
                                                     && appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform() != null) {
                                                 platform = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform();
-                                                status = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getSubscriptionStatus();
+                                                status = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
 
                                                 if (status.equalsIgnoreCase("COMPLETED") ||
                                                         status.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
@@ -712,6 +712,17 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                         true);
                             });
                         }
+                    } else if (navigationSubItem.title.toUpperCase().contains("CONTACT")) {
+                        navigationVisibilityListener.showSubNavigation(false, false);
+                        appCMSPresenter.navigateToTVPage(
+                                navigationSubItem.pageId,
+                                navigationSubItem.title,
+                                navigationSubItem.url,
+                                false,
+                                Uri.EMPTY,
+                                true,
+                                true,
+                                false);
                     } else {
                         if (navigationSubItem.pageId != null
                                 && navigationSubItem.pageId.length() > 0) {
@@ -804,11 +815,11 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
                     selectedPosition = (int) navItemView.getTag(R.string.item_position);
 
-                    if (hasFocus) {
+                    /*if (hasFocus) {
                         ((ViewGroup) navImageView.getParent()).setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     } else {
                         ((ViewGroup) navImageView.getParent()).setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                    }*/
                 });
 
                 navItemLayout.setOnKeyListener((view, i, keyEvent) -> {

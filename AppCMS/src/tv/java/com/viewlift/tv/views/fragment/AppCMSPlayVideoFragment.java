@@ -281,10 +281,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         Log.d(TAG, "Video STATE_READY");
                         text += "";
                         playBackStateLayout.setVisibility(View.GONE);
-                        if (shouldRequestAds && !isADPlay) {
-                            requestAds(adsUrl);
-                            isADPlay = true;
-                        }
 
                         if (beaconBufferingThread != null) {
                             beaconBufferingThread.sendBeaconBuffering = false;
@@ -414,12 +410,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         PorterDuff.Mode.MULTIPLY
                 );
 
-
-        startTimer();
-
         if (!shouldRequestAds) {
             //videoPlayerView.getPlayer().setPlayWhenReady(true);
             preparePlayer();
+            startTimer();
         }
 
 
@@ -463,6 +457,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private void startTimer() {
+        if (entitlementCheckTimer != null || entitlementCheckTimerTask != null) {
+            /*That means timer is already running and no need to create a new timer*/
+            return;
+        }
         if (appCMSPresenter.isAppSVOD() &&
                 !isTrailer &&
                 !freeContent &&
@@ -510,96 +508,118 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                                         }
                                         Log.d(TAG, "secsViewed  is = " + secsViewed + " totalPreviewTime = " + maxPreviewSecs);
                                         if (maxPreviewSecs < secsViewed && !isSubscribe[0]) {
-                                            getActivity().runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    pauseVideo();
-                                                    if (videoPlayerView != null) {
-                                                        videoPlayerView.disableController();
+
+                                            if (getActivity() != null) {
+                                                getActivity().runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        pauseVideo();
+                                                        if (videoPlayerView != null) {
+                                                            videoPlayerView.disableController();
+                                                        }
+                                                        videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
+                                                        if (!appCMSPresenter.isUserLoggedIn()) {
+
+                                                            String dialogMessage = getString(R.string.unsubscribe_text);
+                                                            String positiveButtonText = getString(R.string.app_cms_login);
+                                                            if (appCMSPresenter.getAppCMSAndroid() != null
+                                                                    && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null) {
+                                                                if (appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+                                                                    dialogMessage = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+                                                                }
+                                                                if (appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getLoginButtonText() != null) {
+                                                                    positiveButtonText = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getLoginButtonText();
+                                                                }
+                                                            }
+                                                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                                                    getActivity(),
+                                                                    appCMSPresenter,
+                                                                    getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                                    getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                                                    getString(R.string.app_cms_login_required_title),
+                                                                    dialogMessage,
+                                                                    positiveButtonText,
+                                                                    getString(android.R.string.cancel),
+                                                                    14
+                                                            );
+
+                                                            newFragment.setOnPositiveButtonClicked(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    Utils.pageLoading(true, getActivity());
+                                                                    NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                                                                    appCMSPresenter.navigateToTVPage(
+                                                                            navigationUser.getPageId(),
+                                                                            navigationUser.getTitle(),
+                                                                            navigationUser.getUrl(),
+                                                                            false,
+                                                                            Uri.EMPTY,
+                                                                            false,
+                                                                            false,
+                                                                            true);
+                                                                }
+                                                            });
+
+                                                            newFragment.setOnNegativeButtonClicked(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    cancelTimer();
+                                                                    getActivity().finish();
+                                                                }
+                                                            });
+
+                                                            newFragment.setOnBackKeyListener(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    cancelTimer();
+                                                                    getActivity().finish();
+                                                                }
+                                                            });
+
+                                                        } else if (!isSubscribe[0]) {
+                                                            Log.d(TAG, "User is not Subscribe");
+                                                            String dialogMessage = getString(R.string.unsubscribe_text);
+                                                            if (appCMSPresenter.getAppCMSAndroid() != null
+                                                                    && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
+                                                                    && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+                                                                dialogMessage = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+                                                            }
+                                                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                                                    getActivity(),
+                                                                    appCMSPresenter,
+                                                                    getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                                                    getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                                                                    getString(R.string.subscription_required),
+                                                                    dialogMessage,
+                                                                    getString(android.R.string.cancel),
+                                                                    getString(R.string.blank_string),
+                                                                    14
+                                                            );
+
+                                                            newFragment.setOnPositiveButtonClicked(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    getActivity().finish();
+                                                                }
+                                                            });
+
+                                                            newFragment.setOnBackKeyListener(new Action1<String>() {
+                                                                @Override
+                                                                public void call(String s) {
+                                                                    cancelTimer();
+                                                                    getActivity().finish();
+                                                                }
+                                                            });
+
+                                                        }
                                                     }
-                                                    videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
-                                                    if (!appCMSPresenter.isUserLoggedIn()) {
-                                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                                                getActivity(),
-                                                                appCMSPresenter,
-                                                                getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                                getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                                                getString(R.string.app_cms_login_required_title),
-                                                                getString(R.string.app_cms_login_required_message),
-                                                                getString(R.string.app_cms_login),
-                                                                getString(android.R.string.cancel),
-                                                                14
-                                                        );
-
-                                                        newFragment.setOnPositiveButtonClicked(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                Utils.pageLoading(true, getActivity());
-                                                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                                                                appCMSPresenter.navigateToTVPage(
-                                                                        navigationUser.getPageId(),
-                                                                        navigationUser.getTitle(),
-                                                                        navigationUser.getUrl(),
-                                                                        false,
-                                                                        Uri.EMPTY,
-                                                                        false,
-                                                                        false,
-                                                                        true);
-                                                            }
-                                                        });
-
-                                                        newFragment.setOnNegativeButtonClicked(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                cancelTimer();
-                                                                getActivity().finish();
-                                                            }
-                                                        });
-
-                                                        newFragment.setOnBackKeyListener(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                cancelTimer();
-                                                                getActivity().finish();
-                                                            }
-                                                        });
-
-                                                    } else if (!isSubscribe[0]) {
-                                                        Log.d(TAG, "User is not Subscribe");
-                                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                                                getActivity(),
-                                                                appCMSPresenter,
-                                                                getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                                getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                                                getString(R.string.subscription_required),
-                                                                getString(R.string.subscription_not_purchased),
-                                                                getString(android.R.string.cancel),
-                                                                getString(R.string.blank_string),
-                                                                14
-                                                        );
-
-                                                        newFragment.setOnPositiveButtonClicked(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                getActivity().finish();
-                                                            }
-                                                        });
-
-                                                        newFragment.setOnBackKeyListener(new Action1<String>() {
-                                                            @Override
-                                                            public void call(String s) {
-                                                                cancelTimer();
-                                                                getActivity().finish();
-                                                            }
-                                                        });
-
-                                                    }
-                                                }
-                                            });
+                                                });
+                                            }
                                             entitlementCheckCancelled = true;
                                         }
                                     }
-                                    if (!finalIsPerVideo && videoPlayerView.getPlayer().getPlayWhenReady()) {
+                                    if (!finalIsPerVideo && null != videoPlayerView && null != videoPlayerView.getPlayer() &&
+                                            videoPlayerView.getPlayer().getPlayWhenReady()) {
                                         /*if perVideo is false and the player is not playing*/
                                         appCMSPresenter.setUserFreePlayTimePreference(appCMSPresenter.getUserFreePlayTimePreference() + 1000);
                                     }
@@ -616,9 +636,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     public void cancelTimer() {
         if (null != entitlementCheckTimerTask) {
             entitlementCheckTimerTask.cancel();
+            entitlementCheckTimerTask = null;
         }
         if (null != entitlementCheckTimer) {
             entitlementCheckTimer.cancel();
+            entitlementCheckTimer = null;
         }
     }
 
@@ -706,6 +728,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerView.pausePlayer();
         }
         getActivity().unregisterReceiver(networkReciever);
+        videoPlayerView.setListener(null);
         super.onPause();
     }
 
@@ -715,12 +738,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if(videoPlayerView.getPlayer() != null){
             videoPlayerView.getPlayer().setPlayWhenReady(true);
         }
-        if (isAdded() && isVisible()) {
-            preparePlayer();
-        }
         isAdsDisplaying = false;
-        // videoPlayerView.getPlayer().setPlayWhenReady(true);
-        // videoPlayerView.resumePlayer();
     }
 
     @Override
@@ -760,7 +778,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 break;
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-                videoPlayerView.startPlayer();
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = true;
                 }
@@ -798,6 +815,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 isAdsDisplaying = false;
                 if (isVisible() && isAdded()) {
                     preparePlayer();
+                    startTimer();
                 }
                 videoPlayerInfoContainer.setVisibility(View.VISIBLE); //show player controlls.
                 break;
@@ -1020,35 +1038,36 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 try {
                     Thread.sleep(beaconMsgTimeoutMsec);
                     if (sendBeaconPing) {
+                        if (null != videoPlayerView && null != videoPlayerView.getPlayer()) {
+                            long currentTime = videoPlayerView.getCurrentPosition() / 1000;
+                            playbackState = videoPlayerView.getPlayer().getPlaybackState();
+                            boolean pingCondition = appCMSPresenter != null && videoPlayerView != null
+                                    && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
+                                    && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0;
+                            if (pingCondition) { // For not to sent PIN in PAUSE mode
+                                appCMSPresenter.sendBeaconMessage(filmId,
+                                        permaLink,
+                                        parentScreenName,
+                                        videoPlayerView.getCurrentPosition(),
+                                        false,
+                                        AppCMSPresenter.BeaconEvent.PING,
+                                        "Video",
+                                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                                        String.valueOf(videoPlayerView.getVideoHeight()),
+                                        String.valueOf(videoPlayerView.getVideoWidth()),
+                                        mStreamId,
+                                        0d,
+                                        0,
+                                        false);
 
-                        long currentTime = videoPlayerView.getCurrentPosition() / 1000;
-                        playbackState = videoPlayerView.getPlayer().getPlaybackState();
-                        boolean pingCondition = appCMSPresenter != null && videoPlayerView != null
-                                && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
-                                && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0;
-                        if (pingCondition) { // For not to sent PIN in PAUSE mode
-                            appCMSPresenter.sendBeaconMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    videoPlayerView.getCurrentPosition(),
-                                    false,
-                                    AppCMSPresenter.BeaconEvent.PING,
-                                    "Video",
-                                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                                    String.valueOf(videoPlayerView.getVideoHeight()),
-                                    String.valueOf(videoPlayerView.getVideoWidth()),
-                                    mStreamId,
-                                    0d,
-                                    0,
-                                    false);
-
-                            if (!isTrailer && videoPlayerView != null) {
-                                appCMSPresenter.updateWatchedTime(filmId,
-                                        videoPlayerView.getCurrentPosition() / 1000);
+                                if (!isTrailer && videoPlayerView != null) {
+                                    appCMSPresenter.updateWatchedTime(filmId,
+                                            videoPlayerView.getCurrentPosition() / 1000);
+                                }
                             }
                         }
                     }
-                } catch (InterruptedException e) {
+                }catch (InterruptedException e) {
                     Log.e(TAG, "BeaconPingThread sleep interrupted");
                 }
             }

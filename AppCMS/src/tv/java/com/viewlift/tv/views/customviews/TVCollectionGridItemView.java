@@ -19,16 +19,19 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.main.Metadata;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -328,6 +331,32 @@ public class TVCollectionGridItemView extends TVBaseView {
                         String fmt = getResources().getText(R.string.item_shop).toString();
                         ((TextView) view).setText(MessageFormat.format(fmt, days));
                     }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_SUBTITLE_LABEL) {
+
+                    Metadata metadata = appCMSPresenter.getAppCMSMain().getBrand().getMetadata();
+                    metadata = new Metadata();
+                    metadata.setDisplayPublishedDate(true);
+                    metadata.setDisplayAuthor(true);
+                    metadata.setDisplayDuration(true);
+                    StringBuilder stringBuilder = new StringBuilder();
+
+
+                    if (metadata.isDisplayDuration()){
+                        stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
+                    }
+                    if (metadata.isDisplayAuthor()){
+                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                        stringBuilder.append("by John Smith");
+                    }
+                    if (metadata.isDisplayPublishedDate()){
+                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                        Date publishedDate = new Date(data.getGist().getPublishDate());
+                        SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                        String date = spf.format(publishedDate);
+                        stringBuilder.append("Published on ");
+                        stringBuilder.append(date);
+                    }
+                    ((TextView) view).setText(stringBuilder);
                 }
             } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 int gridImagePadding = Integer.valueOf(
@@ -346,6 +375,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                 ((ProgressBar) view).setProgress(0);
                 ((ProgressBar) view).setProgress(progress);
                 view.setFocusable(false);
+            } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY) {
+
             }
             view.forceLayout();
         }

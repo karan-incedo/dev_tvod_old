@@ -459,4 +459,6 @@
 
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
     <string name="icon_image_key">iconImage</string>
+
+    <string name="app_cms_subtitle_label">subtitleLabel</string>
 </resources>

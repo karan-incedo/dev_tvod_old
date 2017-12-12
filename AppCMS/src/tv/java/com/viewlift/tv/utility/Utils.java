@@ -238,8 +238,8 @@ public class Utils {
 
     public static float getItemViewWidth(FireTV fireTV) {
         if (fireTV != null) {
-            if (fireTV.getItemWidth() != null) {
-                return Float.valueOf(fireTV.getItemWidth());
+            if (fireTV.getWidth() != null) {
+                return Float.valueOf(fireTV.getItemHeight());
             }
         }
         return -1.0f;

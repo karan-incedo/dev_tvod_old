@@ -96,9 +96,6 @@ public class CardPresenter extends Presenter {
             }
         });
 
-        if(mAppCmsPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
-            frameLayout.setBackground(Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)));
-        }
         return new ViewHolder(frameLayout);
     }
 
@@ -108,8 +105,12 @@ public class CardPresenter extends Presenter {
         BrowseFragmentRowData rowData = (BrowseFragmentRowData)item;
         ContentDatum contentData = rowData.contentData;
         List<Component> componentList = rowData.uiComponentList;
+        String blockName = rowData.blockName;
         FrameLayout cardView = (FrameLayout) viewHolder.view;
-        createComponent(componentList, cardView, contentData);
+        if(null != blockName && ( blockName.equalsIgnoreCase("tray03"))){
+            cardView.setBackground(Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)));
+        }
+        createComponent(componentList, cardView, contentData,blockName);
     }
 
     @Override
@@ -123,7 +124,7 @@ public class CardPresenter extends Presenter {
         }
     }
 
-    public void createComponent(List<Component> componentList , ViewGroup parentLayout , ContentDatum contentData ){
+    public void createComponent(List<Component> componentList , ViewGroup parentLayout , ContentDatum contentData , String blockName){
         if(null != componentList && componentList.size() > 0) {
             for (Component component : componentList) {
                 AppCMSUIKeyType componentType = mAppCmsPresenter.getJsonValueKeyMap().get(component.getType());
@@ -161,8 +162,10 @@ public class CardPresenter extends Presenter {
                                 parms.setMargins(leftMargin, topMargin, 0, 0);
 
                                 imageView.setLayoutParams(parms);
-                               // parentLayout.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
-
+                                if(null != blockName && (blockName.equalsIgnoreCase("tray01")
+                                        || blockName.equalsIgnoreCase("tray02"))){
+                                    imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
+                                }
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
 
@@ -241,7 +244,7 @@ public class CardPresenter extends Presenter {
                                 tvTitle.setVisibility(View.INVISIBLE);
                             }
                             tvTitle.setText(stringBuilder);
-
+                            tvTitle.setTextSize(component.getFontSize());
                         } else {
                             layoutParams = new FrameLayout.LayoutParams(
                                     FrameLayout.LayoutParams.MATCH_PARENT,
@@ -259,7 +262,7 @@ public class CardPresenter extends Presenter {
                         if (fontType != null) {
                             tvTitle.setTypeface(fontType);
                         }
-                        tvTitle.setTextSize(component.getFontSize());
+                       // tvTitle.setTextSize(component.getFontSize());
                         parentLayout.addView(tvTitle);
                         break;
 

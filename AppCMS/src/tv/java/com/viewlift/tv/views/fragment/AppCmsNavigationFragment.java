@@ -192,9 +192,9 @@ public class AppCmsNavigationFragment extends Fragment {
         });
     }
 
-    private void setTypeFaceValue(AppCMSPresenter appCMSPresenter){
+    private void setTypeFaceValue(AppCMSPresenter appCMSPresenter) {
 
-        if(null == extraBoldTypeFace) {
+        if (null == extraBoldTypeFace) {
             extraBoldComp = new Component();
             extraBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
             extraBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_extrabold_key));
@@ -202,7 +202,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     , extraBoldComp);
         }
 
-        if(null == semiBoldTypeFace) {
+        if (null == semiBoldTypeFace) {
             semiBoldComp = new Component();
             semiBoldComp.setFontFamily(getResources().getString(R.string.app_cms_page_font_family_key));
             semiBoldComp.setFontWeight(getResources().getString(R.string.app_cms_page_font_semibold_key));
@@ -662,6 +662,8 @@ public class AppCmsNavigationFragment extends Fragment {
                 iconResId = R.drawable.st_menu_icon_gear;
             } else if (icon.equalsIgnoreCase(getString(R.string.st_search_icon_key))) {
                 iconResId = R.drawable.st_menu_icon_search;
+            } else if (icon.equalsIgnoreCase(getString(R.string.st_live_icon_key))) {
+                iconResId = R.drawable.st_menu_icon_live;
             }
             return iconResId;
         }
@@ -705,11 +707,11 @@ public class AppCmsNavigationFragment extends Fragment {
 
                     selectedPosition = (int) navItemView.getTag(R.string.item_position);
 
-                    if (hasFocus) {
+                   /* if (hasFocus) {
                         navImageView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
                     } else {
                         navImageView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
-                    }
+                    }*/
                 });
 
                 navItemLayout.setOnKeyListener((view, i, keyEvent) -> {

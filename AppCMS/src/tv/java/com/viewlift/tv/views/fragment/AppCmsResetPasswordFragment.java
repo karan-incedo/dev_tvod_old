@@ -109,12 +109,7 @@ public class AppCmsResetPasswordFragment extends DialogFragment {
             }
 
         }
-
-        if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
-            tvPageView.setBackgroundResource(R.drawable.home_screen_background);
-        } else {
-            tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
-        }
+        tvPageView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         return tvPageView;
     }
 

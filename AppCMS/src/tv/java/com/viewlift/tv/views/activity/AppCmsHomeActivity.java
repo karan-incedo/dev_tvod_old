@@ -773,7 +773,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
             if(isNavigationVisible()){
                 showNavigation(false);
-                if(null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView()) {
+                if(null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView() && !isSubNavigationVisible()) {
                     browseFragment.getCustomVideoVideoPlayerView().resumePlayer();
                 }
             }else{
@@ -960,12 +960,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                                             int finalI = i;
                                                             appCMSPresenter.getHistoryData(appCMSHistoryResult -> {
                                                                 if (appCMSHistoryResult != null) {
-                                                                    if (appCMSHistoryResult != null) {
-                                                                        AppCMSPageAPI historyAPI = appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
-                                                                        historyAPI.getModules().get(0).setId(module.getId());
-                                                                        historyAPI.getModules().get(0).setTitle(module.getTitle());
-                                                                         modules.set(finalI, historyAPI.getModules().get(0));
-                                                                    }
+                                                                    AppCMSPageAPI historyAPI = appCMSHistoryResult.convertToAppCMSPageAPI(appCMSPageAPI.getId());
+                                                                    historyAPI.getModules().get(0).setId(module.getId());
+                                                                    historyAPI.getModules().get(0).setTitle(module.getTitle());
+                                                                    modules.set(finalI, historyAPI.getModules().get(0));
                                                                     appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                                                                 }
                                                             });

@@ -588,6 +588,14 @@ public class AppCMSPresenter {
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
 
+    public AppCMSAndroidUI getAppCMSAndroid() {
+        return appCMSAndroid;
+    }
+
+    public void setAppCMSAndroid(AppCMSAndroidUI appCMSAndroid) {
+        this.appCMSAndroid = appCMSAndroid;
+    }
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -5413,7 +5421,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    private String getSubscriptionStatus() {
+    public String getSubscriptionStatus() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(SUBSCRIPTION_STATUS, 0);
             return sharedPrefs.getString(SUBSCRIPTION_STATUS, null);
@@ -9288,7 +9296,6 @@ public class AppCMSPresenter {
                                                             launchBlankPage();
                                                         }
                                                     }
-
                                                 }
                                             });
                                 });
@@ -9689,6 +9696,7 @@ public class AppCMSPresenter {
         return -1;
     }
 
+
     private String getAutoplayPageId() {
 
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
@@ -9746,23 +9754,23 @@ public class AppCMSPresenter {
                     }
                     navigation = appCMSAndroidUI.getNavigation();
 
-                    //add search in navigation item.
-                    /*NavigationPrimary myProfile = new NavigationPrimary();
-                    myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
-                            currentActivity.getString(R.string.profile_label)));
-                    myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
-                            appCMSAndroidUI.getShortAppName() != null ?
-                                    appCMSAndroidUI.getShortAppName() :
-                                    currentActivity.getString(R.string.profile_label)));
-                    navigation.getNavigationPrimary().add(myProfile);*/
+                    if(getTemplateType() == TemplateType.ENTERTAINMENT) {
+                        //add search in navigation item.
+                        NavigationPrimary myProfile = new NavigationPrimary();
+                        myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
+                                currentActivity.getString(R.string.profile_label)));
+                        myProfile.setTitle(currentActivity.getString(R.string.app_cms_my_profile_label,
+                                appCMSAndroidUI.getShortAppName() != null ?
+                                        appCMSAndroidUI.getShortAppName() :
+                                        currentActivity.getString(R.string.profile_label)));
+                        navigation.getNavigationPrimary().add(myProfile);
 
-                    //add search in navigation item.
-                    /*NavigationPrimary searchNav = new NavigationPrimary();
-                    searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
-                    searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
-                    navigation.getNavigationPrimary().add(searchNav);*/
-
-
+                        //add search in navigation item.
+                        NavigationPrimary searchNav = new NavigationPrimary();
+                        searchNav.setPageId(currentActivity.getString(R.string.app_cms_search_label));
+                        searchNav.setTitle(currentActivity.getString(R.string.app_cms_search_label));
+                        navigation.getNavigationPrimary().add(searchNav);
+                    }
                     queueMetaPages(appCMSAndroidUI.getMetaPages());
                     final MetaPage firstPage = pagesToProcess.peek();
                     //Log.d(TAG, "Processing meta pages queue");
@@ -10243,7 +10251,8 @@ public class AppCMSPresenter {
                             }
                             String adsUrl = null;
 
-                            boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE;
+                            boolean requestAds = actionType == AppCMSActionType.PLAY_VIDEO_PAGE && !isUserSubscribed()
+                                    && !contentDatum.getStreamingInfo().getIsLiveStream();
 
                             adsUrl = getAdsUrl(pagePath);
                             if(adsUrl == null) {
@@ -10415,6 +10424,7 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
 
     @SuppressWarnings("unused")
     private void LaunchTVVideoPlayerActivity(String pagePath, String filmTitle, String[] extraData,
@@ -11608,6 +11618,24 @@ public class AppCMSPresenter {
         }
     }
 
+    public MetaPage getPrivacyPolicyPage(){
+        return privacyPolicyPage;
+    }
+
+    public MetaPage getTosPage(){
+        return tosPage;
+    }
+
+    private LruCache<String , Object> tvPlayerViewCache;
+    public LruCache<String, Object> getPlayerLruCache() {
+        if (tvPlayerViewCache == null) {
+            int Player_lru_cache_size = 5;
+            tvPlayerViewCache = new LruCache<>(Player_lru_cache_size);
+        }
+        return tvPlayerViewCache;
+    }
+
+
     public String getAdsUrl(String pagePath) {
 
         String videoTag = null;
@@ -11627,23 +11655,6 @@ public class AppCMSPresenter {
                 getPermalinkCompletePath(pagePath),
                 now.getTime(),
                 appCMSMain.getSite());
-    }
-
-    public MetaPage getPrivacyPolicyPage(){
-        return privacyPolicyPage;
-    }
-
-    public MetaPage getTosPage(){
-        return tosPage;
-    }
-
-    private LruCache<String , Object> tvPlayerViewCache;
-    public LruCache<String, Object> getPlayerLruCache() {
-        if (tvPlayerViewCache == null) {
-            int Player_lru_cache_size = 5;
-            tvPlayerViewCache = new LruCache<>(Player_lru_cache_size);
-        }
-        return tvPlayerViewCache;
     }
 
 }
