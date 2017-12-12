@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -313,15 +314,18 @@ public class AppCMSPageFragment extends Fragment {
             appCMSPresenter.videoPlayerView.requestAudioFocus();
 
         }
+        CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(castCallBackListener);
     }
 
     private CastServiceProvider.CastCallBackListener castCallBackListener = new CastServiceProvider.CastCallBackListener() {
         @Override
         public void onCastStatusUpdate() {
             if(pageView != null && pageView.findChildViewById(R.id.video_player_id) != null){
-                if(pageView.findChildViewById(R.id.video_player_id) instanceof CustomVideoPlayerView){
+                if(pageView.findChildViewById(R.id.video_player_id) instanceof FrameLayout){
 
-                    ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).showOverlayWhenCastingConnected();
+                    FrameLayout rootView = (FrameLayout) pageView.findChildViewById(R.id.video_player_id);
+                    if(rootView.getChildAt(0) instanceof CustomVideoPlayerView)
+                    ((CustomVideoPlayerView)rootView.getChildAt(0)).showOverlayWhenCastingConnected();
                 }
             }
         }
