@@ -807,7 +807,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     && onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
                 videoUrl = onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
             }
-            CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(null,videoUrl,onUpdatedContentDatum.getGist().getId(), 0,false);
+            CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(),permaLink,onUpdatedContentDatum.getGist().getVideoImageUrl(),videoUrl,onUpdatedContentDatum.getGist().getId(), 0,false);
         });
         addView(parentView);
         pausePlayer();
