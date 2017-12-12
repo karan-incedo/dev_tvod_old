@@ -48,18 +48,15 @@ public class FullPlayerView extends RelativeLayout {
         setLayoutParams(lpView);
         setBackgroundColor(Color.BLACK);
 
+        appCMSPresenter.videoPlayerView.setLayoutParams(lpView);
 
-
-
-        AppCMSPresenter.videoPlayerView.setLayoutParams(lpView);
-
-        if(AppCMSPresenter.videoPlayerView.getParent()!=null){
-            AppCMSPresenter.videoPlayerViewParent=(ViewGroup)AppCMSPresenter.videoPlayerView.getParent();
-            ((ViewGroup) AppCMSPresenter.videoPlayerView.getParent()).removeView(AppCMSPresenter.videoPlayerView);
+        if(appCMSPresenter.videoPlayerView.getParent()!=null){
+            appCMSPresenter.videoPlayerViewParent=(ViewGroup)appCMSPresenter.videoPlayerView.getParent();
+            ((ViewGroup) appCMSPresenter.videoPlayerView.getParent()).removeView(appCMSPresenter.videoPlayerView);
         }
-        //AppCMSPresenter.videoPlayerView.updateFullscreenButtonState(appCMSPresenter.getCurrentActivity().getRequestedOrientation());
-        AppCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
-        addView(AppCMSPresenter.videoPlayerView);
+        //appCMSPresenter.videoPlayerView.updateFullscreenButtonState(appCMSPresenter.getCurrentActivity().getRequestedOrientation());
+        appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
+        addView(appCMSPresenter.videoPlayerView);
 
 
 

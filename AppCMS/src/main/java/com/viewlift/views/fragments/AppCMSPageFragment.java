@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -24,7 +25,9 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
+import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -33,7 +36,7 @@ import com.viewlift.views.modules.AppCMSPageViewModule;
 import java.lang.ref.SoftReference;
 import java.util.List;
 
-import static com.viewlift.presenters.AppCMSPresenter.videoPlayerView;
+
 
 /**
  * Created by viewlift on 5/3/17.
@@ -125,9 +128,9 @@ public class AppCMSPageFragment extends Fragment {
             if (videoPlayerView != null) {
                 parent = (ViewGroup) videoPlayerView.getParent();
             }*/
-            if (appCMSPresenter.videoPlayerView != null) {
+            /*if (appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerViewParent = (ViewGroup) appCMSPresenter.videoPlayerView.getParent();
-            }
+            }*/
 
 
         } else {
@@ -238,6 +241,9 @@ public class AppCMSPageFragment extends Fragment {
             }
         }*/
 
+
+
+
         return pageView;
     }
 
@@ -294,13 +300,17 @@ public class AppCMSPageFragment extends Fragment {
 
         updateDataLists();
 
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) nextChild;
+            if(((VideoPlayerView) group.getChildAt(0))!=null){
+                ((VideoPlayerView) group.getChildAt(0)).requestAudioFocus();
+            }
+
+        }
         if (pageView != null &&
-                pageView.findChildViewById(R.id.video_player_id) != null) {
-//            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).resumePlayer();
-            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).requestAudioFocus();
-        } else if (pageView != null &&
-                AppCMSPresenter.videoPlayerView != null) {
-            AppCMSPresenter.videoPlayerView.pausePlayer();
+                appCMSPresenter.videoPlayerView != null) {
+            appCMSPresenter.videoPlayerView.requestAudioFocus();
 
         }
     }
@@ -322,12 +332,17 @@ public class AppCMSPageFragment extends Fragment {
         super.onPause();
         updateDataLists();
 
-        if (pageView.findChildViewById(R.id.video_player_id) != null &&
-                getActivity().isFinishing()) {
-            ((VideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).pausePlayer();
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) nextChild;
+            if(((VideoPlayerView) group.getChildAt(0))!=null){
+                ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
+            }
 
         }
-
+        if (appCMSPresenter.videoPlayerView != null && appCMSPresenter.videoPlayerView.getPlayer()!=null ) {
+            appCMSPresenter.videoPlayerView.pausePlayer();
+        }
 
     }
 
@@ -356,20 +371,21 @@ public class AppCMSPageFragment extends Fragment {
         if (pageViewGroup != null) {
             pageViewGroup.removeAllViews();
         }
-        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                getActivity().isFinishing()) {
-            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).releasePlayer();
-        }
-        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null ) {
-            if (((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer != null)
-                ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer.cancel();
-            ((CustomVideoPlayerView) pageView.findChildViewById(R.id.video_player_id)).entitlementCheckTimer = null;
-        }
-        if(AppCMSPresenter.videoPlayerView!=null && AppCMSPresenter.videoPlayerView.entitlementCheckTimer!=null){
-            AppCMSPresenter.videoPlayerView.entitlementCheckTimer.cancel();
-            AppCMSPresenter.videoPlayerView.entitlementCheckTimer=null;
 
+        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            View playerParent = (pageView.findChildViewById(R.id.video_player_id));
+            ViewGroup group = (ViewGroup) playerParent;
+            if(((VideoPlayerView) group.getChildAt(0))!=null)
+            ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
+
+            if( ((CustomVideoPlayerView) group.getChildAt(0))!=null &&  ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer!=null){
+                ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer.cancel();
+                ((CustomVideoPlayerView) group.getChildAt(0)).entitlementCheckTimer=null;
+
+            }
         }
+
+
         CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(null);
     }
 
@@ -382,6 +398,33 @@ public class AppCMSPageFragment extends Fragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        appCMSPresenter.isconfig=true;
+
+       if (appCMSPresenter.isAutoRotate())
+        {
+            if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+
+                View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+                ViewGroup group = (ViewGroup) nextChild;
+                if(( group.getChildAt(0))!=null && !(group instanceof FullPlayerView) &&
+                        !BaseView.isTablet(getActivity()) ){
+                    appCMSPresenter.videoPlayerView= ((CustomVideoPlayerView) group.getChildAt(0));
+                        switch(newConfig.orientation) {
+                            case Configuration.ORIENTATION_LANDSCAPE:
+                                appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
+                                break;
+                            case Configuration.ORIENTATION_PORTRAIT:
+                                appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
+                                break;
+                        }
+
+                }else if(( group.getChildAt(0))==null && AppCMSPresenter.isFullScreenVisible){
+                        appCMSPresenter.restrictLandscapeOnly();;
+                }
+
+            }
+
+        }
         handleOrientation(newConfig.orientation);
     }
 
@@ -426,6 +469,7 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public void refreshView(AppCMSBinder appCMSBinder) {
+        setPageOriantationForVideoPage();
         sendFirebaseAnalyticsEvents(appCMSBinder);
         this.appCMSBinder = appCMSBinder;
         ViewCreator viewCreator = getViewCreator();
@@ -434,6 +478,7 @@ public class AppCMSPageFragment extends Fragment {
             boolean updatePage = false;
             if (pageView != null) {
                 updatePage = pageView.getParent() != null;
+                setPageOriantationForVideoPage();
             }
 
             try {
@@ -499,4 +544,19 @@ public class AppCMSPageFragment extends Fragment {
         void onError(AppCMSBinder appCMSBinder);
     }
 
+    public void setPageOriantationForVideoPage(){
+
+        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
+                appCMSPresenter.isAutoRotate()) {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }else if (!BaseView.isTablet(getContext()))
+        {
+            appCMSPresenter.restrictPortraitOnly();
+        }else if (BaseView.isTablet(getContext()))
+        {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
+    }
+
 }
+

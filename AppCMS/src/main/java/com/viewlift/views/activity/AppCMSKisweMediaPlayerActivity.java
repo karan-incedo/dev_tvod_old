@@ -5,12 +5,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.FrameLayout;
 
 import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
 import com.kiswe.kmsdkcorekit.KisweMediaPlayer;
 import com.kiswe.kmsdkcorekit.fragment.KisweMediaPlayerFragment;
-import com.kiswe.kmsdkcorekit.mediaplayer.KisweVideoPlayer;
+
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -19,7 +18,7 @@ import com.viewlift.presenters.AppCMSPresenter;
  * Created by Sandeep.Singh on 12/5/17.
  */
 
-public class AppCMSKisweMediaPlayerActivity extends AppCompatActivity implements KisweMediaPlayerFragment.KisweMediaPlayerFragmentListener {
+public class  AppCMSKisweMediaPlayerActivity extends AppCompatActivity implements KisweMediaPlayerFragment.KisweMediaPlayerFragmentListener {
 
     String eventId;
 
