@@ -356,7 +356,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
-        createStreamingQualitySelector();
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
+            createStreamingQualitySelector();
+        }
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
