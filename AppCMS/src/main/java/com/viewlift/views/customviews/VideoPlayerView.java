@@ -20,6 +20,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -358,8 +359,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
+        currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
         if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
             createStreamingQualitySelector();
+        } else {
+            currentStreamingQualitySelector.setVisibility(View.GONE);
         }
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
@@ -398,7 +402,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private void createStreamingQualitySelector() {
-        currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
         if (streamingQualitySelector != null) {
             currentStreamingQualitySelector.setVisibility(VISIBLE);
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
