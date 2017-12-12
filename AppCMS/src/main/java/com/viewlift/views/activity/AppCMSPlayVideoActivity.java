@@ -229,7 +229,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         String videoUrl = "";
         String closedCaptionUrl = null;
         title = gist.getTitle();
-        gist.setKisweEventId("9369"); //Todo remove it forever once Kiswe player work Done.
+        //gist.setKisweEventId("9369"); //Todo remove it forever once Kiswe player work Done.
         if (gist != null && gist.getKisweEventId() != null &&
                 gist.getKisweEventId().trim().length() > 0) {
             appCMSPresenter.launchKiswePlayer(gist.getKisweEventId());
