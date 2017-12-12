@@ -213,6 +213,17 @@ public class AppCMSPageFragment extends Fragment {
             if (((VideoPlayerView) group.getChildAt(0)) != null) {
                 ((VideoPlayerView) group.getChildAt(0)).requestAudioFocus();
             }
+          /*  if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView)
+            {
+                RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
+                int chhildCount= nestedScrollView.getLayoutManager().getChildCount();
+                int firstVisibleIndex=((LinearLayoutManager)nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition();
+                System.out.println(" chield count == "+chhildCount);
+                System.out.println(" chield count == "+((LinearLayoutManager)nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition());
+                if (firstVisibleIndex>=1){
+                    appCMSPresenter.showPopupWindowPlayer(nestedScrollView,"ssssw21");
+                }
+            }*/
 
         }
         if (pageView != null &&
@@ -492,7 +503,7 @@ public class AppCMSPageFragment extends Fragment {
                                 if (visibleIndex != 0 &&
                                         !appCMSPresenter.pipPlayerVisible) {
 
-                                    // appCMSPresenter.showPopupWindowPlayer(nestedScrollView , videoId);
+                                     appCMSPresenter.showPopupWindowPlayer(nestedScrollView , videoId);
                                 } else if (visibleIndex <= 0 && appCMSPresenter.pipPlayerVisible) {
                                     appCMSPresenter.dismissPopupWindowPlayer(false);
                                 }
