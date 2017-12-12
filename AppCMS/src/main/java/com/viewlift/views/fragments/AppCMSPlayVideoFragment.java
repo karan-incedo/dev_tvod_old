@@ -763,6 +763,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onResume() {
         videoPlayerMainContainer.requestLayout();
+        videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         videoPlayerView.init(getContext());
         videoPlayerView.enableController();
         if (!TextUtils.isEmpty(hlsUrl)) {

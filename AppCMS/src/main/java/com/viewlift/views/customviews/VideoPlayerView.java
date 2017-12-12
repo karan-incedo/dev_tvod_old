@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -429,6 +428,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
                 currentStreamingQualitySelector.setOnClickListener(v -> {
                     dialog.show();
+                    listViewAdapter.notifyDataSetChanged();
                 });
                 listViewAdapter.setItemClickListener(v -> {
                     try {
@@ -442,6 +442,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
                     }
                 });
+            } else {
+                currentStreamingQualitySelector.setVisibility(GONE);
             }
         } else {
             currentStreamingQualitySelector.setVisibility(GONE);
@@ -449,13 +451,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private void setSelectedStreamingQualityIndex() {
-        try {
-            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
-            if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
-                listViewAdapter.setSelectedIndex(availableStreamingQualities.indexOf(streamingQualitySelector.getMpegResolutionFromUrl(uri.toString())));
+        if (streamingQualitySelector != null && listViewAdapter != null) {
+            try {
+                List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+                if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
+                    listViewAdapter.setSelectedIndex(availableStreamingQualities.indexOf(streamingQualitySelector.getMpegResolutionFromUrl(uri.toString())));
+                }
+            } catch (Exception e) {
+                listViewAdapter.setSelectedIndex(0);
             }
-        } catch (Exception e) {
-            listViewAdapter.setSelectedIndex(0);
+            listViewAdapter.notifyDataSetChanged();
         }
     }
 
@@ -813,6 +818,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         String keyPairIdCookie;
     }
 
+    public AppCMSPresenter getAppCMSPresenter() {
+        return appCMSPresenter;
+    }
+
+    public void setAppCMSPresenter(AppCMSPresenter appCMSPresenter) {
+        this.appCMSPresenter = appCMSPresenter;
+    }
+
     private static class UpdatedUriDataSourceFactory implements Factory {
         private final Context context;
         private final TransferListener<? super DataSource> listener;
@@ -1096,8 +1109,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             super.onBindViewHolder(viewHolder, i);
             viewHolder.getmText().setText(availableStreamingQualities.get(i));
             if (selectedIndex == i) {
-                viewHolder.getmRadio().setSelected(true);
+                viewHolder.getmRadio().setChecked(true);
+            } else {
+                viewHolder.getmRadio().setChecked(false);
             }
+            viewHolder.getmRadio().invalidate();
         }
 
         public void setSelectedIndex(int selectedIndex) {
