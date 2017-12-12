@@ -19,7 +19,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +75,9 @@ public class AppCMSAndroidModuleCall {
                     addMissingModulesFromAssets(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setLoadedFromNetwork(moduleDataMap.loadedFromNetwork);
-                    Observable.just(appCMSAndroidModules).subscribe(readyAction);
+                    Observable.just(appCMSAndroidModules)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction);
                 });
     }
 
@@ -221,7 +222,10 @@ public class AppCMSAndroidModuleCall {
         })
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe((result) -> Observable.just(result).subscribe(readyAction));
+        .onErrorResumeNext(throwable -> Observable.empty())
+        .subscribe((result) -> Observable.just(result)
+                .onErrorResumeNext(throwable -> Observable.empty())
+                .subscribe(readyAction));
     }
 
     private String getResourceFilenameWithJsonOnly(String url) {
