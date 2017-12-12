@@ -192,7 +192,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
 
-        if (streamingQualitySelector != null) {
+        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) &&
+                currentStreamingQualitySelector != null &&
+                streamingQualitySelector != null) {
             currentStreamingQualitySelector.setText(streamingQualitySelector.getMpegResolutionFromUrl(uri.toString()));
             setSelectedStreamingQualityIndex();
         }
