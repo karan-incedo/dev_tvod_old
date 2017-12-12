@@ -295,8 +295,8 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-    // mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
-    compile 'com.kiswe.kmsdkcorekit:kmplayer:2.0.020013'
+    mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -11392,10 +11392,6 @@ public class AppCMSPresenter {
 
         mKit.configUser(isUserLoggedIn()?getLoggedInUserEmail():"guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
         mKit.startKiswePlayerActivity(currentActivity, eventId);
-       /* Intent playKisweVideoIntent = new Intent(currentActivity, AppCMSKisweMediaPlayerActivity.class);
-        playKisweVideoIntent.putExtra("kisweEventId", eventId);
-        currentActivity.startActivity(playKisweVideoIntent);
-*/
     }
 
     private ReportSubscriber reportSubscriber = new ReportSubscriber() {
