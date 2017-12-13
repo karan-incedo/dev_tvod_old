@@ -35,6 +35,7 @@ import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -8637,6 +8638,8 @@ public class AppCMSPresenter {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
+                        }else{
+                            sendCloseOthersAction(null, true, false);
                         }
                         launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                 entitlementPendingVideoData.action,
@@ -11384,9 +11387,10 @@ public class AppCMSPresenter {
         return linksToOpen;
     }
 
-    public void openWebView(String browseURL) {
-        Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(browseURL));
-        currentContext.startActivity(browserIntent);
+    public void openChromeTab(String browseURL) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(getCurrentActivity(), Uri.parse(browseURL));
     }
 
     public void launchKiswePlayer(String eventId) {
