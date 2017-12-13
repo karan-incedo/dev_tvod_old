@@ -1284,6 +1284,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (updatedAppCMSBinder != null) {
+             /*
+         * casting button will show only on home page, movie page and player page so check which
+         * page will be open
+         */
+            if (!castDisabled) {
+                setMediaRouterButtonVisibility(updatedAppCMSBinder.getPageId());
+            }
             handleToolbar(updatedAppCMSBinder.isAppbarPresent(),
                     updatedAppCMSBinder.getAppCMSMain(),
                     updatedAppCMSBinder.getPageId());
@@ -1368,6 +1375,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         pageLoading(false);
 
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
+         /*
+         * casting button will show only on home page, movie page and player page so check which
+         * page will be open
+         */
+        if (!castDisabled) {
+            setMediaRouterButtonVisibility(appCMSBinder.getPageId());
+        }
         createFragment(appCMSBinder);
     }
 
@@ -1493,13 +1507,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             //Log.e(TAG, "Failed to add Fragment to back stack");
         }
 
-        /*
-         * casting button will show only on home page, movie page and player page so check which
-         * page will be open
-         */
-        if (!castDisabled) {
-            setMediaRouterButtonVisibility(appCMSBinder.getPageId());
-        }
+//        /*
+//         * casting button will show only on home page, movie page and player page so check which
+//         * page will be open
+//         */
+//        if (!castDisabled) {
+//            setMediaRouterButtonVisibility(appCMSBinder.getPageId());
+//        }
     }
 
     private void sendFireBaseMenuScreenEvent(String eventName) {
@@ -1638,7 +1652,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             } else {
                 mSearchTopButton.setVisibility(View.VISIBLE);
             }
-            setMediaRouterButtonVisibility(pageId);
+//            setMediaRouterButtonVisibility(pageId);
         }
     }
 
@@ -2503,10 +2517,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         (appCMSPresenter.findMoviesPageNavItem() != null &&
                                 !TextUtils.isEmpty(appCMSPresenter.findMoviesPageNavItem().getPageId()) &&
                                 appCMSPresenter.findMoviesPageNavItem().getPageId().equalsIgnoreCase(pageId))) {
-                    ll_media_route_button.setVisibility(View.VISIBLE);
+                    setCastingVisibility(true);
                     CastServiceProvider.getInstance(this).isHomeScreen(true);
                 } else {
-                    ll_media_route_button.setVisibility(View.GONE);
+                    setCastingVisibility(false);
                     CastServiceProvider.getInstance(this).isHomeScreen(false);
                 }
 
@@ -2518,7 +2532,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
     }
+    public void setCastingVisibility(boolean isVisible){
+        if(isVisible){
+            ll_media_route_button.setVisibility(View.VISIBLE);
+        }else{
+            ll_media_route_button.setVisibility(View.GONE);
 
+        }
+
+    }
     private void setCastingInstance() {
         try {
             CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);

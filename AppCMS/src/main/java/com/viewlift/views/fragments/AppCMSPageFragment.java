@@ -256,6 +256,9 @@ public class AppCMSPageFragment extends Fragment {
                         ((CustomVideoPlayerView) rootView.getChildAt(0)).showOverlayWhenCastingConnected();
                 }
             }
+            if(appCMSPresenter.videoPlayerView!=null){
+                appCMSPresenter.videoPlayerView.showOverlayWhenCastingConnected();
+            }
         }
     };
 
