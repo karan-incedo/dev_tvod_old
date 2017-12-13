@@ -3158,7 +3158,9 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_IMAGE_KEY:
-                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
+                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                component.getKey() != null &&
+                                !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key))) {
                             videoUrl = null;
 
                             if (moduleAPI != null &&
@@ -3200,15 +3202,13 @@ public class ViewCreator {
                                 }
                             }
 
-                            if (component.getKey() != null &&
-                                    !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key))) {
-                                componentViewResult.componentView = playerView(context, appCMSPresenter,
-                                        videoUrl, moduleAPI.getContentData().get(0).getGist().getId(),
-                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
-                                videoPlayerView.setPageView(pageView);
-                                appCMSPresenter.unrestrictPortraitOnly();
-                                componentViewResult.componentView.setId(R.id.video_player_id);
-                            }
+                            componentViewResult.componentView = playerView(context, appCMSPresenter,
+                                    videoUrl, moduleAPI.getContentData().get(0).getGist().getId(),
+                                    moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                            videoPlayerView.setPageView(pageView);
+                            appCMSPresenter.unrestrictPortraitOnly();
+                            componentViewResult.componentView.setId(R.id.video_player_id);
+
                         } else {
                             if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
