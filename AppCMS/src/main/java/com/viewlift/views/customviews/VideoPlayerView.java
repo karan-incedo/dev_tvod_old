@@ -26,6 +26,7 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
+import com.google.android.exoplayer2.source.BehindLiveWindowException;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
@@ -304,7 +305,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         playerState = new PlayerState();
         failedMediaSourceLoads = new HashMap<>();
     }
-
+    DefaultTrackSelector trackSelector;
     private void initializePlayer(Context context) {
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
@@ -327,7 +328,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
-        DefaultTrackSelector trackSelector =
+        trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
 
         trackSelector.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(getContext()));
@@ -483,6 +484,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
+
         if (mErrorEventListener != null) {
             mErrorEventListener.onRefreshTokenCallback();
         }

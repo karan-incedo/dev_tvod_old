@@ -21,6 +21,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -212,18 +213,24 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
-            if (((VideoPlayerView) group.getChildAt(0)) != null) {
-                ((VideoPlayerView) group.getChildAt(0)).requestAudioFocus();
+            if (( group.getChildAt(0)) != null) {
+                ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
+               appCMSPresenter.videoPlayerView= ((CustomVideoPlayerView) group.getChildAt(0));
             }
-          /*  if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView)
+           /* if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView)
             {
                 RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
+                nestedScrollView.addOnScrollListener(scrollListenerForMiniPlayer);
                 int chhildCount= nestedScrollView.getLayoutManager().getChildCount();
                 int firstVisibleIndex=((LinearLayoutManager)nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition();
                 System.out.println(" chield count == "+chhildCount);
                 System.out.println(" chield count == "+((LinearLayoutManager)nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition());
-                if (firstVisibleIndex>=1){
-                    appCMSPresenter.showPopupWindowPlayer(nestedScrollView,"ssssw21");
+                ModuleList singleVideoUI = appCMSPresenter.getModuleListByName(pageView.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key));
+
+                if (firstVisibleIndex>=1 && singleVideoUI.getSettings().isShowPIP()){
+                     appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                }else{
+                    appCMSPresenter.dismissPopupWindowPlayer(false);
                 }
             }*/
 
@@ -342,7 +349,6 @@ public class AppCMSPageFragment extends Fragment {
 
                 } else if ((group.getChildAt(0)) == null && AppCMSPresenter.isFullScreenVisible) {
                     appCMSPresenter.restrictLandscapeOnly();
-                    ;
                 }
 
             }
@@ -435,93 +441,43 @@ public class AppCMSPageFragment extends Fragment {
                     pageView.notifyAdaptersOfUpdate();
                 }
 
-                /*if (pageView != null) {
-                    //if ((pageView.findViewById(R.id.home_nested_scroll_view) instanceof NestedScrollView  ||
+               /* if (pageView != null) {
                     if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView &&
-                            appCMSBinder != null &&
-                            appCMSBinder.getAppCMSPageUI() != null &&
-                            appCMSBinder.getAppCMSPageUI().getModuleList() != null &&
-                            appCMSBinder.getAppCMSPageUI().getModuleList().size() >= 2 &&
+                            pageView.getAppCMSPageUI() != null &&
+                            pageView.getAppCMSPageUI().getModuleList() != null &&
+                            pageView.getAppCMSPageUI().getModuleList().size() >= 2 &&
                             appCMSBinder.getAppCMSPageAPI() != null &&
                             appCMSBinder.getAppCMSPageAPI().getModules() != null &&
-                            appCMSPresenter.getModuleListByName(appCMSBinder.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key)) != null) {
+                            appCMSPresenter.getModuleListByName(pageView.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key)) != null) {
 
                         RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
                         nestedScrollView.getRecycledViewPool().setMaxRecycledViews(0, 1);
 
 
-                        ModuleList singleVideoUI = appCMSPresenter.getModuleListByName(appCMSBinder.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key));
-                        Module singleVideoAPI = appCMSPresenter.getModuleById(appCMSBinder.getAppCMSPageAPI().getModules(), singleVideoUI.getId());
+                        ModuleList singleVideoUI = appCMSPresenter.getModuleListByName(pageView.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key));
 
-                        if (singleVideoUI.getSettings().isShowPIP() && singleVideoAPI != null) {
+                        if (singleVideoUI.getSettings().isShowPIP() ) {
 
-                            final String videoId;
-                            if (singleVideoAPI != null &&
-                                    singleVideoAPI.getContentData() != null &&
-                                    singleVideoAPI.getContentData().size() > 0 &&
-                                    singleVideoAPI.getContentData().get(0) != null &&
-                                    singleVideoAPI.getContentData().get(0).getGist() != null &&
-                                    singleVideoAPI.getContentData().get(0).getGist().getId() != null) {
-                                videoId = singleVideoAPI.getContentData().get(0).getGist().getId();
-                            } else {
-                                videoId = null;
-                            }
-                            nestedScrollView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-                                @Override
-                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                    super.onScrolled(recyclerView, dx, dy);
-                                }
 
-                                @Override
-                                public void onScrollStateChanged(RecyclerView v, int newState) {
-                                    super.onScrollStateChanged(v, newState);
-                                    switch (newState) {
-                                        case RecyclerView.SCROLL_STATE_IDLE:
-                                            synchronized (nestedScrollView) {
-
-                                                if (v.getLayoutManager() != null &&
-                                                        (v.getLayoutManager()) instanceof LinearLayoutManager) {
-                                                    int visibleIndex = ((LinearLayoutManager) v.getLayoutManager()).findFirstVisibleItemPosition();
-                                                    System.out.println(" mini player visible index " + visibleIndex + " total item " + v.getAdapter().getItemCount());
-                                                    if (visibleIndex != 0 &&
-                                                            !appCMSPresenter.pipPlayerVisible) {
-                                                        System.out.println(" mini player show " + visibleIndex);
-                                                        if(pageView!=null) {
-                                                            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
-                                                            ViewGroup group = (ViewGroup) nextChild;
-                                                            if ((group.getChildAt(0)) != null) {
-                                                                appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
-                                                                appCMSPresenter.showPopupWindowPlayer(v, videoId);
-                                                            }
-                                                        }
-
-                                                    } else if (visibleIndex == 0 && appCMSPresenter.pipPlayerVisible) {
-                                                        //} else if (visibleIndex == 0 && !appCMSPresenter.pipPlayerVisible) {
-                                                        appCMSPresenter.dismissPopupWindowPlayer(false);
-                                                        System.out.println(" mini player hide " + visibleIndex);
-                                                    }
-                                                }
-                                            }
-                                            break;
-                                        case RecyclerView.SCROLL_STATE_DRAGGING:
-
-                                            break;
-                                        default:
-                                            break;
-                                    }
-                                }
-                            });
+                            nestedScrollView.addOnScrollListener(scrollListenerForMiniPlayer);
 
 
                             if (nestedScrollView != null &&
                                     nestedScrollView.getLayoutManager() != null &&
                                     (nestedScrollView.getLayoutManager()) instanceof LinearLayoutManager) {
                                 int visibleIndex = ((LinearLayoutManager) nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition();
-
-                                if (visibleIndex != 0 &&
+                                System.out.println("Mini player visibil index without scroll "+visibleIndex);
+                                if (visibleIndex > 0 &&
                                         !appCMSPresenter.pipPlayerVisible) {
 
-                                     appCMSPresenter.showPopupWindowPlayer(nestedScrollView , videoId);
+                                    if(pageView!=null) {
+                                        View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+                                        ViewGroup group = (ViewGroup) nextChild;
+                                        if ((group.getChildAt(0)) != null) {
+                                            appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
+                                            appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                                        }
+                                    }
                                 } else if (visibleIndex <= 0 && appCMSPresenter.pipPlayerVisible) {
                                     appCMSPresenter.dismissPopupWindowPlayer(false);
                                 }
@@ -579,6 +535,53 @@ public class AppCMSPageFragment extends Fragment {
             appCMSPresenter.unrestrictPortraitOnly();
         }
     }
+
+    RecyclerView.OnScrollListener scrollListenerForMiniPlayer = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+        }
+
+        @Override
+        public void onScrollStateChanged(RecyclerView v, int newState) {
+            super.onScrollStateChanged(v, newState);
+            switch (newState) {
+                case RecyclerView.SCROLL_STATE_IDLE:
+                    synchronized (v) {
+
+                        if (v.getLayoutManager() != null &&
+                                (v.getLayoutManager()) instanceof LinearLayoutManager) {
+                            int visibleIndex = ((LinearLayoutManager) v.getLayoutManager()).findFirstVisibleItemPosition();
+                            System.out.println(" mini player visible index " + visibleIndex + " total item " + v.getAdapter().getItemCount());
+                            if (visibleIndex != 0 &&
+                                    !appCMSPresenter.pipPlayerVisible) {
+                                System.out.println(" mini player show " + visibleIndex);
+                                if(pageView!=null) {
+                                    View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+                                    ViewGroup group = (ViewGroup) nextChild;
+                                    if ((group.getChildAt(0)) != null) {
+                                        appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
+                                        appCMSPresenter.showPopupWindowPlayer(v);
+                                    }
+                                }
+
+                            } else if (visibleIndex == 0 && appCMSPresenter.pipPlayerVisible) {
+                                //} else if (visibleIndex == 0 && !appCMSPresenter.pipPlayerVisible) {
+                                appCMSPresenter.dismissPopupWindowPlayer(false);
+                                System.out.println(" mini player hide " + visibleIndex);
+                            }
+                        }
+                    }
+                    break;
+                case RecyclerView.SCROLL_STATE_DRAGGING:
+
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
 
 }
 
