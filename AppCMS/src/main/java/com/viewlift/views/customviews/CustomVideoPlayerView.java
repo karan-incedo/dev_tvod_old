@@ -871,6 +871,9 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             @Override
             public void onClick(View view) {
                 appCMSPresenter.exitFullScreenPlayer();
+                if (appCMSPresenter.videoPlayerView != null) {
+                    appCMSPresenter.videoPlayerView = null;
+                }
             }
         });
         layout.setLayoutParams(llParams);

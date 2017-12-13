@@ -1122,7 +1122,8 @@ public class AppCMSPresenter {
             updateHistoryRequest.setWatchedTime(watchedTime);
             updateHistoryRequest.setVideoId(filmId);
             updateHistoryRequest.setSiteOwner(appCMSSite.getGist().getSiteInternalName());
-
+            if (currentActivity == null)
+                return;
             String url = currentActivity.getString(R.string.app_cms_update_watch_history_api_url,
                     appCMSMain.getApiBaseUrl());
 
@@ -8612,7 +8613,7 @@ public class AppCMSPresenter {
         setLoginPageUserName(null);
         setLoginPagePassword(null);
         if (loginFromNavPage) {
-            entitlementPendingVideoData=null;
+            entitlementPendingVideoData = null;
         }
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
