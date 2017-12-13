@@ -84,7 +84,7 @@ public class NavBarItemView extends LinearLayout {
         int color = ContextCompat.getColor(getContext(), R.color.colorNavBarText);
         if (hasFocus) {
             color = highlightColor;
-            if (navigationTabBar.getNavigationModuleItem().getIsBackgroundSelectable()) {
+            if (navigationTabBar.getNavigationModuleItem().isBackgroundSelectable()) {
                 setTabBg();
             }
         } else {
@@ -95,7 +95,9 @@ public class NavBarItemView extends LinearLayout {
             String type = navigationTabBar.getNavigationModuleItem().getComponents().get(i).getType();
             if (navLabel != null && type.equalsIgnoreCase("label") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
                 navLabel.setTextColor(color);
-            } else if (navImage != null && type.equalsIgnoreCase("image") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
+           // } else if (navImage != null && type.equalsIgnoreCase("image") &&   // Commented due to somehow  isSelectable returning false all the time
+                // navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
+            } else if (navImage != null && type.equalsIgnoreCase("image") ){
                 applyTintToDrawable(navImage.getDrawable(), color);
             }
 

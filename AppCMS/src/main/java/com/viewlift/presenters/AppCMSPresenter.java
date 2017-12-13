@@ -8638,7 +8638,7 @@ public class AppCMSPresenter {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
-                        }else{
+                        } else {
                             sendCloseOthersAction(null, true, false);
                         }
                         launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
@@ -8722,7 +8722,7 @@ public class AppCMSPresenter {
                             entitlementPendingVideoData.currentlyPlayingIndex,
                             entitlementPendingVideoData.relateVideoIds);
 
-                    if(entitlementPendingVideoData != null) {
+                    if (entitlementPendingVideoData != null) {
                         entitlementPendingVideoData.pagePath = null;
                         entitlementPendingVideoData.action = null;
                         entitlementPendingVideoData.filmTitle = null;
@@ -11401,7 +11401,7 @@ public class AppCMSPresenter {
                 .setLogLevel(KMSDKCoreKit.DEBUG);
         mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
 
-        mKit.configUser(isUserLoggedIn()?getLoggedInUserEmail():"guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
+        mKit.configUser(isUserLoggedIn() ? getLoggedInUserEmail() : "guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
         mKit.startKiswePlayerActivity(currentActivity, eventId);
     }
 
@@ -11943,19 +11943,19 @@ public class AppCMSPresenter {
 
     public void showPopupWindowPlayer(View scrollView) {
 
-            if (relativeLayoutPIP==null) {
-                relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
-            }else {
-                relativeLayoutPIP.init();
-            }
-            relativeLayoutPIP.setVisibility(View.VISIBLE);
-            relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(v -> {
-                ((RecyclerView) scrollView).smoothScrollToPosition(0);
-            });
-            if (relativeLayoutPIP.getParent()==null) {
-                ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
-            }
-            pipPlayerVisible = true;
+        if (relativeLayoutPIP == null) {
+            relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
+        } else {
+            relativeLayoutPIP.init();
+        }
+        relativeLayoutPIP.setVisibility(View.VISIBLE);
+        relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(v -> {
+            ((RecyclerView) scrollView).smoothScrollToPosition(0);
+        });
+        if (relativeLayoutPIP.getParent() == null) {
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+        }
+        pipPlayerVisible = true;
 
     }
 
@@ -12009,6 +12009,9 @@ public class AppCMSPresenter {
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
             isFullScreenVisible = true;
             restrictLandscapeOnly();
+            new Handler().postDelayed(() -> {
+                unrestrictPortraitOnly();
+            }, 3000);
             if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
                 ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
             }
@@ -12041,8 +12044,6 @@ public class AppCMSPresenter {
                     } catch (Exception e) {
 
                     }
-
-
                 }, 100);
 
             }
@@ -12064,7 +12065,7 @@ public class AppCMSPresenter {
             } else if (BaseView.isTablet(currentActivity)) {
                 unrestrictPortraitOnly();
             }
-        }, 5000);
+        }, 3000);
 
         if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
             ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();
@@ -12155,6 +12156,7 @@ public class AppCMSPresenter {
         }
         return null;
     }
+
     public void setWebViewCache(String key, CustomWebView webView) {
         if (webViewCache == null) {
             webViewCache = new HashMap<String, CustomWebView>();
