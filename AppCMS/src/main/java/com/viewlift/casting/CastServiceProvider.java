@@ -545,9 +545,9 @@ public class CastServiceProvider {
 
     }
 
-    public void launchSingeRemoteMedia(AppCMSVideoPageBinder binder, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer){
+    public void launchSingeRemoteMedia(String title,String paramLink ,String imageUrl, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer){
        if(mCastHelper != null)
-        mCastHelper.launchSingeRemoteMedia(binder,videoPlayUrl,filmId,currentPosition,false);
+        mCastHelper.launchSingeRemoteMedia(title,paramLink,imageUrl,videoPlayUrl,filmId,currentPosition,false);
     }
 }
 
