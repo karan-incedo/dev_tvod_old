@@ -246,6 +246,7 @@ dependencies {
     tvCompile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
     tvCompile 'com.github.bumptech.glide:glide:3.8.0'
     compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
+    compile "com.android.support:customtabs:$rootProject.ext.androidsupportVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
     compile "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
     compile "com.squareup.okhttp3:okhttp:$rootProject.ext.okHttp3Version"
