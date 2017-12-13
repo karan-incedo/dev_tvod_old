@@ -12072,7 +12072,9 @@ public class AppCMSPresenter {
         } catch (Exception e) {
             Log.e(TAG, e.getMessage());
         }
-
+        if (relativeLayoutFull != null) {
+            relativeLayoutFull.setVisibility(View.GONE);
+        }
         restrictPortraitOnly();
 
 

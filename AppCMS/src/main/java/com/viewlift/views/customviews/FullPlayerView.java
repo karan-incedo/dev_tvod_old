@@ -56,7 +56,9 @@ public class FullPlayerView extends RelativeLayout {
         }
         //appCMSPresenter.videoPlayerView.updateFullscreenButtonState(appCMSPresenter.getCurrentActivity().getRequestedOrientation());
         appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
+        setVisibility(VISIBLE);
         addView(appCMSPresenter.videoPlayerView);
+
 
 
 
