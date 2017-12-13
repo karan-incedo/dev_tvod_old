@@ -12,12 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
@@ -238,7 +240,22 @@ public class AppCMSPageFragment extends Fragment {
             appCMSPresenter.videoPlayerView.requestAudioFocus();
 
         }
+        CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(castCallBackListener);
     }
+
+    private CastServiceProvider.CastCallBackListener castCallBackListener = new CastServiceProvider.CastCallBackListener() {
+        @Override
+        public void onCastStatusUpdate() {
+            if(pageView != null && pageView.findChildViewById(R.id.video_player_id) != null){
+                if(pageView.findChildViewById(R.id.video_player_id) instanceof FrameLayout){
+
+                    FrameLayout rootView = (FrameLayout) pageView.findChildViewById(R.id.video_player_id);
+                    if(rootView.getChildAt(0) instanceof CustomVideoPlayerView)
+                    ((CustomVideoPlayerView)rootView.getChildAt(0)).showOverlayWhenCastingConnected();
+                }
+            }
+        }
+    };
 
     @Override
     public void onPause() {
@@ -299,6 +316,7 @@ public class AppCMSPageFragment extends Fragment {
         }
 
 
+        CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(null);
     }
 
     @Override

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,6 +49,8 @@ import com.google.android.exoplayer2.trackselection.MappingTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.thread.BeaconBufferingThread;
@@ -76,6 +79,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private TextView loaderMessageView;
     private LinearLayout customMessageContainer;
     private LinearLayout customPreviewContainer;
+    private RelativeLayout parentView;
 
     private TextView customMessageView;
     private LinearLayout customPlayBack;
@@ -213,6 +217,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     public void setVideoUri(String videoId, int resIdMessage) {
+        showOverlayWhenCastingConnected();
         hideRestrictedMessage();
         showProgressBar(getResources().getString(resIdMessage));
         releasePlayer();
@@ -602,7 +607,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     }
                 }
 
-
+               showOverlayWhenCastingConnected();
                 break;
 
 
@@ -694,6 +699,62 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         customMessageContainer.setVisibility(View.INVISIBLE);
         this.addView(customMessageContainer);
     }
+
+    public void showOverlayWhenCastingConnected(){
+        if(CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()) {
+            if (parentView == null)
+                touchToCastOverlay();
+            else
+                parentView.setVisibility(VISIBLE);
+            pausePlayer();
+        }else {
+            if (parentView != null) {
+                parentView.setVisibility(GONE);
+                startPlayer();
+            }
+        }
+    }
+
+    private void touchToCastOverlay(){
+
+        parentView = new RelativeLayout(mContext);
+        parentView.setClickable(true);
+        parentView.setBackgroundColor(Color.BLUE);
+        RelativeLayout.LayoutParams imageViewParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        parentView.setLayoutParams(imageViewParams);
+        ImageView  defaultIcon = new ImageView(mContext);
+        defaultIcon.setLayoutParams(imageViewParams);
+        defaultIcon.setImageResource(R.drawable.logo_icon);
+        parentView.addView(defaultIcon);
+
+        customMessageView = new TextView(mContext);
+        RelativeLayout.LayoutParams textViewParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        textViewParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);// = Gravity.CENTER;
+        customMessageView.setText(getResources().getString(R.string.app_cms_touch_to_cast_msg));
+        customMessageView.setLayoutParams(textViewParams);
+        customMessageView.setBackgroundColor(Color.parseColor("#000000"));
+        customMessageView.setTextColor(Color.parseColor("#ffffff"));
+        customMessageView.setTextSize(20);
+        customMessageView.setAlpha(0.7f);
+        customMessageView.setTypeface(customMessageView.getTypeface(), Typeface.BOLD);
+        customMessageView.setPadding(30, 20, 30, 20);
+        parentView.addView(customMessageView);
+
+        customMessageView.setOnClickListener((v) -> {
+
+            String videoUrl = "";
+            if (null != onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getHls()) {
+                videoUrl = onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
+            } else if (null != onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg()
+                    && onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
+                videoUrl = onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+            }
+            CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(),permaLink,onUpdatedContentDatum.getGist().getVideoImageUrl(),videoUrl,onUpdatedContentDatum.getGist().getId(), 0,false);
+        });
+        addView(parentView);
+        pausePlayer();
+    }
+
 
     private void createPreviewMessageView() {
         customPreviewContainer = new LinearLayout(mContext);

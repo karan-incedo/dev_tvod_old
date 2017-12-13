@@ -18,6 +18,7 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -35,8 +36,10 @@ import com.viewlift.casting.roku.dialog.CastChooserDialog;
 import com.viewlift.casting.roku.dialog.CastDisconnectDialog;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
+import com.viewlift.views.binders.AppCMSVideoPageBinder;
 
 import java.util.List;
+import java.util.Observer;
 
 /**
  * A singleton to manage the different casting options such as chromecast and roku , on different activities.
@@ -57,6 +60,7 @@ public class CastServiceProvider {
     private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
     private AnimationDrawable castAnimDrawable;
+    public static final String CAST_STATUS = "com.viewlift.casting.CASTING_STATUS";
 
     /**
      * callBackRokuMediaSelection gets the calls related to selected roku devices
@@ -84,14 +88,29 @@ public class CastServiceProvider {
     private AppCMSPresenter appCMSPresenter;
     private ShowcaseView mShowCaseView;
     private boolean allowFreePlay;
+    private CastCallBackListener castCallBackListener;
     /**
      * callBackCastHelper gets the calls related to chromecast devices selections
      */
+
+    public static interface CastCallBackListener{
+        void onCastStatusUpdate();
+    }
+
+    public void setCastCallBackListener(CastCallBackListener  castCallBackListener){
+        this.castCallBackListener = castCallBackListener;
+    }
+
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
         public void onApplicationConnected() {
             if (mActivity != null && mActivity instanceof AppCMSPlayVideoActivity) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
+            }else{
+
+                if(castCallBackListener != null){
+                    castCallBackListener.onCastStatusUpdate();
+                }
             }
 
             stopRokuDiscovery();
@@ -99,6 +118,10 @@ public class CastServiceProvider {
 
         @Override
         public void onApplicationDisconnected() {
+
+            if(castCallBackListener != null){
+                castCallBackListener.onCastStatusUpdate();
+            }
         }
 
         @Override
@@ -352,7 +375,7 @@ public class CastServiceProvider {
         stopRokuDiscovery();
     }
 
-    private void launchChromecastRemotePlayback(int castingModeChromecast) {
+    public void launchChromecastRemotePlayback(int castingModeChromecast) {
         if (callRemoteMediaPlayback != null) {
             callRemoteMediaPlayback.setRemotePlayBack(castingModeChromecast);
         }
@@ -487,6 +510,8 @@ public class CastServiceProvider {
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();
+                                }else{
+                                    Toast.makeText(mActivity,"Not Player Page",Toast.LENGTH_LONG).show();
                                 }
                             });
                 }
@@ -518,6 +543,11 @@ public class CastServiceProvider {
 
         void setRemotePlayBack(int castingModeChromecast);
 
+    }
+
+    public void launchSingeRemoteMedia(String title,String paramLink ,String imageUrl, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer){
+       if(mCastHelper != null)
+        mCastHelper.launchSingeRemoteMedia(title,paramLink,imageUrl,videoPlayUrl,filmId,currentPosition,false);
     }
 }
 
