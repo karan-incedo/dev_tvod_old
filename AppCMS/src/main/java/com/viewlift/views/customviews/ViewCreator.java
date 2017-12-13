@@ -2578,7 +2578,8 @@ public class ViewCreator {
                 }
 
                 if (showTrayLabel) {
-                    int numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
+                    List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
+                    int numSeasons = seasons.size();
                     componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
 
                     try {
@@ -2596,11 +2597,16 @@ public class ViewCreator {
                             component,
                             jsonValueKeyMap);
 
+
                     for (int i = 0; i < numSeasons; i++) {
-                        StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
-                        seasonTitleSb.append(context.getString(R.string.blank_separator));
-                        seasonTitleSb.append(i + 1);
-                        seasonTrayAdapter.add(seasonTitleSb.toString());
+                        if (!TextUtils.isEmpty(seasons.get(i).getTitle())) {
+                            seasonTrayAdapter.add(seasons.get(i).getTitle());
+                        } else {
+                            StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
+                            seasonTitleSb.append(context.getString(R.string.blank_separator));
+                            seasonTitleSb.append(i + 1);
+                            seasonTrayAdapter.add(seasonTitleSb.toString());
+                        }
                     }
 
                     componentViewResult.onInternalEvent =
@@ -2776,10 +2782,20 @@ public class ViewCreator {
                                 } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                                 } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                                    StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
-                                    seasonTitleSb.append(context.getString(R.string.blank_separator));
-                                    seasonTitleSb.append(1);
-                                    ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
+                                    if (moduleAPI != null &&
+                                            moduleAPI.getContentData() != null &&
+                                            moduleAPI.getContentData().get(0) != null &&
+                                            moduleAPI.getContentData().get(0).getSeason() != null &&
+                                            !moduleAPI.getContentData().get(0).getSeason().isEmpty() &&
+                                            moduleAPI.getContentData().get(0).getSeason().get(0) != null &&
+                                            !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle())) {
+                                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getSeason().get(0).getTitle());
+                                    } else {
+                                        StringBuilder seasonTitleSb = new StringBuilder(context.getString(R.string.app_cms_episodic_season_prefix));
+                                        seasonTitleSb.append(context.getString(R.string.blank_separator));
+                                        seasonTitleSb.append(1);
+                                        ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
+                                    }
                                 }
                                 break;
 
