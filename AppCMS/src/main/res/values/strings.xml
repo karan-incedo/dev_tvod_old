@@ -24,7 +24,7 @@
     <string name="min_abbreviation">MIN</string>
     <string name="sec_abbreviation">SEC</string>
     <string name="secs_abbreviation">SECS</string>
-    <string name="mins_abbreviation"> MINS</string>
+    <string name="mins_abbreviation">&#160;MINS</string>
 
     <plurals name="mins_plural">
         <item quantity="one">%d MIN</item>

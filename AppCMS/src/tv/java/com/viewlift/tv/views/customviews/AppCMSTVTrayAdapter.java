@@ -294,7 +294,6 @@ public class AppCMSTVTrayAdapter
                                     try {
                                         view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
                                     } catch (Exception e) {
-                                        e.printStackTrace();
                                         if (context instanceof AppCmsHomeActivity) {
                                             view = ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall);
                                         }
@@ -314,7 +313,6 @@ public class AppCMSTVTrayAdapter
                                     try {
                                         view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
                                     } catch (Exception e) {
-                                        e.printStackTrace();
                                         if (context instanceof AppCmsHomeActivity) {
                                             view = ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall);
                                         }
