@@ -19,14 +19,14 @@
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 350
+      "height": 260
     }
   },
   "components": [
     {
       "layout": {
         "ftv": {
-          "fontSize": 18
+          "fontSize": 14
         }
       },
       "fontFamily": "Lato",
@@ -39,8 +39,8 @@
     {
       "layout": {
         "ftv": {
-          "width": 396,
-          "height": 320
+          "width": 350,
+          "height": 250
         }
       },
       "textAlignment": "center",
@@ -49,11 +49,10 @@
         {
           "layout": {
             "ftv": {
-              "padding": 0,
-              "topMargin": 9,
-              "leftMargin": 8,
-              "width": 380,
-              "height": 214
+              "height": 197,
+              "topMargin": 0,
+              "padding": 6,
+              "width": 350
             }
           },
           "type": "image",
@@ -99,8 +98,8 @@
         {
           "layout": {
             "ftv": {
-              "leftMargin": 8,
-              "topMargin": 230,
+              "topMargin": 202,
+              "height": 40,
               "rightMargin": 0,
               "height": 70
             }

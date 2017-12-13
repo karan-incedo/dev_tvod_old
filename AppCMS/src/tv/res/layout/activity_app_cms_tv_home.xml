@@ -27,7 +27,6 @@
             android:visibility="gone" />
     </RelativeLayout>
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -138,6 +137,49 @@
 
     </RelativeLayout>
 
+    <!--FOR FAILARMY & PEOPLE ARE AWESOME-->
+    <ImageView
+        android:id="@+id/imagevw_applogo"
+        android:layout_width="@dimen/footer_logo_width"
+        android:layout_height="@dimen/footer_logo_height"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="right"
+        android:layout_marginBottom="@dimen/footer_logo_margin_bottom"
+        android:layout_marginRight="@dimen/footer_logo_margin_right"
+        android:background="@drawable/tv_logo" />
+
+    <!--FOR JUKIN VIDEO-->
+    <!--<ImageView-->
+        <!--android:layout_width="70dp"-->
+        <!--android:layout_height="39dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_gravity="right"-->
+        <!--android:layout_marginBottom="@dimen/footer_logo_margin_bottom"-->
+        <!--android:layout_marginRight="@dimen/footer_logo_margin_right"-->
+        <!--android:background="@drawable/tv_logo" />-->
+
+    <!--FOR PET COLLECTIVE-->
+    <!--<ImageView-->
+        <!--android:layout_width="60dp"-->
+        <!--android:layout_height="60dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_gravity="right"-->
+        <!--android:layout_marginBottom="@dimen/footer_logo_margin_bottom"-->
+        <!--android:layout_marginRight="@dimen/footer_logo_margin_right"-->
+        <!--android:background="@drawable/tv_logo" />-->
+
+    <ImageView
+        android:id="@+id/info_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="@dimen/footer_info_icon_margin_bottom"
+        android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
+        android:background="@drawable/info_icon" />
 
 
 </RelativeLayout>

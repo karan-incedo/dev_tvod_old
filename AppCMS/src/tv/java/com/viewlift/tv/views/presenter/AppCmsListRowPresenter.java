@@ -61,15 +61,15 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             headerTitle.setLetterSpacing(headerTileLetterSpacing);
 
             //ListRowView and its layout Params.
-            ListRowView listRowView = (ListRowView)holder.view;
-            LinearLayout.LayoutParams listRowParam = ( LinearLayout.LayoutParams)listRowView.getLayoutParams();
+            ListRowView listRowView = (ListRowView) holder.view;
+            LinearLayout.LayoutParams listRowParam = (LinearLayout.LayoutParams) listRowView.getLayoutParams();
 
             //Horizontal GridView and its layout Params.
             HorizontalGridView horizontalGridView = listRowView.getGridView();
-            LinearLayout.LayoutParams horizontalGrLayoutParams = ( LinearLayout.LayoutParams)horizontalGridView.getLayoutParams();
+            LinearLayout.LayoutParams horizontalGrLayoutParams = (LinearLayout.LayoutParams) horizontalGridView.getLayoutParams();
 
             //HeaderTitle layout Params.
-            LinearLayout.LayoutParams headerTitleContainerLayoutParams = ( LinearLayout.LayoutParams)headerTitleContainer.getLayoutParams();
+            LinearLayout.LayoutParams headerTitleContainerLayoutParams = (LinearLayout.LayoutParams) headerTitleContainer.getLayoutParams();
 
 
             horizontalGridView.setOnKeyListener(new View.OnKeyListener() {
@@ -81,19 +81,18 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
 
             ListRow rowItem = (ListRow) item;
-            CustomHeaderItem customHeaderItem = ((CustomHeaderItem)rowItem.getHeaderItem());
-            int listRowHeight =  Utils.getViewYAxisAsPerScreen(mContext,customHeaderItem.getmListRowHeight());
-            int listRowLeftmargin = Utils.getViewXAxisAsPerScreen(mContext,customHeaderItem.getmListRowLeftMargin());
-            int listRowRightmargin = Utils.getViewXAxisAsPerScreen(mContext,customHeaderItem.getmListRowRightMargin());
-
+            CustomHeaderItem customHeaderItem = ((CustomHeaderItem) rowItem.getHeaderItem());
+            int listRowLeftmargin = Utils.getViewXAxisAsPerScreen(mContext, customHeaderItem.getmListRowLeftMargin());
+            int listRowRightmargin = Utils.getViewXAxisAsPerScreen(mContext, customHeaderItem.getmListRowRightMargin());
+            int listRowHeight = Utils.getViewYAxisAsPerScreen(mContext, customHeaderItem.getmListRowHeight());
 
             headerTitle.setTextSize(customHeaderItem.getFontSize());
 
-            if(typeface == null) {
+            if (typeface == null) {
                 typeface = Utils.getTypeFace(mContext, mAppCMSPresenter.getJsonValueKeyMap(),
                         customHeaderItem.getComponent());
             }
-            if(null != typeface){
+            if (null != typeface) {
                 headerTitle.setTypeface(typeface);
             }
 
@@ -119,43 +118,44 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             else if(isCarousal){
                 headerTitleContainer.setVisibility(View.GONE);
                 headerTitle.setVisibility(View.GONE);
-                int horizontalSpacing = (int)mContext.getResources().getDimension(R.dimen.caurosel_grid_item_spacing);
+                int horizontalSpacing = (int) mContext.getResources().getDimension(R.dimen.caurosel_grid_item_spacing);
 
                 //set the spacing between Carousal item.
                 //horizontalGridView.setItemSpacing(horizontalSpacing);
                 horizontalGridView.setItemSpacing(horizontalSpacing);
+                horizontalGridView.setSelectedPosition(2);
 
                 //set the HorizontalGrid Layout Params..
-                horizontalGrLayoutParams.setMargins(listRowLeftmargin, 0 , listRowRightmargin,0);
+                horizontalGrLayoutParams.setMargins(listRowLeftmargin, 0, listRowRightmargin, 0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
 
                 //set the background color
-                if(null != listRowBackgroundColor)
-                //listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
-                    listRowView.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.transparent));
+                if (null != listRowBackgroundColor)
+                    //listRowView.setBackgroundColor(Color.parseColor(listRowBackgroundColor)/*ContextCompat.getColor(mContext,R.color.jumbotron_background_color)*/);
+                    listRowView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
                 //set the ListRow height and width.
                 listRowParam.height = listRowHeight/*listRowHeight*/;
-                listRowParam.width =  LinearLayout.LayoutParams.MATCH_PARENT;
+                listRowParam.width = LinearLayout.LayoutParams.MATCH_PARENT;
                 listRowView.setLayoutParams(listRowParam);
 
-            }else{
+            } else {
                 headerTitleContainer.setVisibility(View.VISIBLE);
                 headerTitle.setVisibility(View.VISIBLE);
-                int paddingTop = (int)mContext.getResources().getDimension(R.dimen.tray_list_row_padding_top);
-                int paddingLeft =(int)mContext.getResources().getDimension(R.dimen.tray_list_row_padding_left);
-                int horizontalSpacing = (int)mContext.getResources().getDimension(R.dimen.tray_grid_item_spacing);
+                int paddingTop = (int) mContext.getResources().getDimension(R.dimen.tray_list_row_padding_top);
+                int paddingLeft = (int) mContext.getResources().getDimension(R.dimen.tray_list_row_padding_left);
+                int horizontalSpacing = (int) mContext.getResources().getDimension(R.dimen.tray_grid_item_spacing);
 
-                horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop , 0,0);
+                horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop, 0, 0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
                 //horizontalGridView.setItemSpacing(horizontalSpacing);
 
-                headerTitleContainerLayoutParams.setMargins(paddingLeft , 0 , 0 , 0);
+                headerTitleContainerLayoutParams.setMargins(paddingLeft, 0, 0, 0);
                 headerTitleContainer.setLayoutParams(headerTitleContainerLayoutParams);
 
                 //set the ListRow height and width.
                 listRowParam.height = listRowHeight;
-                listRowParam.width =  LinearLayout.LayoutParams.MATCH_PARENT;
-                listRowView.setBackgroundColor(ContextCompat.getColor(mContext , android.R.color.transparent));
+                listRowParam.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                listRowView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
             }
         }
     }
