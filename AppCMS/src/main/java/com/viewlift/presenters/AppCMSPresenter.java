@@ -1468,26 +1468,7 @@ public class AppCMSPresenter {
                         }
 
                         AppCMSVideoPageBinder appCMSVideoPageBinder =
-                                getAppCMSVideoPageBinder(currentActivity,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        false,
-                                        false,
-                                        false,
-                                        false,
-                                        false,
-                                        requestAds,
-                                        appCMSMain.getBrand().getGeneral().getTextColor(),
-                                        backgroundColor,
-                                        adsUrl,
-                                        contentDatum,
-                                        isTrailer,
-                                        relateVideoIds,
-                                        currentlyPlayingIndex,
-                                        isVideoOffline);
+                                getDefaultAppCMSVideoPageBinder(contentDatum, currentlyPlayingIndex, relateVideoIds, isVideoOffline, isTrailer, requestAds, adsUrl, backgroundColor);
                         if (closeLauncher) {
                             sendCloseOthersAction(null, true, false);
                         }
@@ -1755,6 +1736,36 @@ public class AppCMSPresenter {
             }
         }
         return result;
+    }
+
+    public AppCMSVideoPageBinder getDefaultAppCMSVideoPageBinder(ContentDatum contentDatum,
+                                                                 int currentlyPlayingIndex,
+                                                                 List<String> relateVideoIds,
+                                                                 boolean isVideoOffline,
+                                                                 boolean isTrailer,
+                                                                 boolean requestAds,
+                                                                 String adsUrl,
+                                                                 String backgroundColor) {
+        return getAppCMSVideoPageBinder(currentActivity,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false,
+                false,
+                false,
+                false,
+                requestAds,
+                appCMSMain.getBrand().getGeneral().getTextColor(),
+                backgroundColor,
+                adsUrl,
+                contentDatum,
+                isTrailer,
+                relateVideoIds,
+                currentlyPlayingIndex,
+                isVideoOffline);
     }
 
     public void setVideoPlayerHasStarted() {
@@ -4248,52 +4259,7 @@ public class AppCMSPresenter {
             final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             if (!binder.isOffline()) {
-                GetAppCMSVideoDetailAsyncTask.Params params =
-                        new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
-                                .authToken(getAuthToken()).build();
-                new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
-                        appCMSVideoDetail -> {
-                            try {
-                                if (appCMSVideoDetail != null) {
-                                    binder.setContentData(appCMSVideoDetail.getRecords().get(0));
-                                    AppCMSPageAPI pageAPI = null;
-                                    for (ModuleList moduleList :
-                                            appCMSPageUI.getModuleList()) {
-                                        if (moduleList.getType().equals(currentActivity
-                                                .getString(R.string.app_cms_page_autoplay_module_key))) {
-                                            pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
-                                                    moduleList.getType());
-                                            break;
-                                        }
-                                    }
-                                    if (pageAPI != null) {
-                                        launchAutoplayActivity(currentActivity,
-                                                appCMSPageUI,
-                                                pageAPI,
-                                                pageId,
-                                                pageTitle,
-                                                pageIdToPageNameMap.get(pageId),
-                                                loadFromFile,
-                                                false,
-                                                true,
-                                                false,
-                                                false,
-                                                binder,
-                                                action1);
-                                    }
-                                } else {
-                                    //Log.e(TAG, "API issue in VideoDetail call");
-                                    if (platformType == PlatformType.TV) {
-                                        action1.call(null);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
-                                if (platformType == PlatformType.TV) {
-                                    action1.call(null);
-                                }
-                            }
-                        }).execute(params);
+                launchMobileAutoplayActivity(pageId, pageTitle, url, binder, action1, appCMSPageUI);
             } else {
                 AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
                         currentActivity.getString(R.string.app_cms_page_autoplay_module_key));
@@ -4314,6 +4280,55 @@ public class AppCMSPresenter {
                 }
             }
         }
+    }
+
+    public void launchMobileAutoplayActivity(String pageId, String pageTitle, String url, AppCMSVideoPageBinder binder, Action1<Object> action1, AppCMSPageUI appCMSPageUI) {
+        GetAppCMSVideoDetailAsyncTask.Params params =
+                new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
+                        .authToken(getAuthToken()).build();
+        new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
+                appCMSVideoDetail -> {
+                    try {
+                        if (appCMSVideoDetail != null) {
+                            binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                            AppCMSPageAPI pageAPI = null;
+                            for (ModuleList moduleList :
+                                    appCMSPageUI.getModuleList()) {
+                                if (moduleList.getType().equals(currentActivity
+                                        .getString(R.string.app_cms_page_autoplay_module_key))) {
+                                    pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                            moduleList.getType());
+                                    break;
+                                }
+                            }
+                            if (pageAPI != null) {
+                                launchAutoplayActivity(currentActivity,
+                                        appCMSPageUI,
+                                        pageAPI,
+                                        pageId,
+                                        pageTitle,
+                                        pageIdToPageNameMap.get(pageId),
+                                        loadFromFile,
+                                        false,
+                                        true,
+                                        false,
+                                        false,
+                                        binder,
+                                        action1);
+                            }
+                        } else {
+                            //Log.e(TAG, "API issue in VideoDetail call");
+                            if (platformType == PlatformType.TV) {
+                                action1.call(null);
+                            }
+                        }
+                    } catch (Exception e) {
+                        //Log.e(TAG, "Error retrieving video details: " + e.getMessage());
+                        if (platformType == PlatformType.TV) {
+                            action1.call(null);
+                        }
+                    }
+                }).execute(params);
     }
 
     private void getWatchlistPageContent(final String apiBaseUrl, String endPoint,
@@ -10474,26 +10489,7 @@ public class AppCMSPresenter {
                                     .getGeneral()
                                     .getBackgroundColor();
                             AppCMSVideoPageBinder appCMSVideoPageBinder =
-                                    getAppCMSVideoPageBinder(currentActivity,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            null,
-                                            false,
-                                            false,
-                                            false,
-                                            false,
-                                            false,
-                                            requestAds,
-                                            appCMSMain.getBrand().getGeneral().getTextColor(),
-                                            backgroundColor,
-                                            adsUrl,
-                                            contentDatum,
-                                            isTrailer,
-                                            relateVideoIds,
-                                            currentlyPlayingIndex,
-                                            false);
+                                    getDefaultAppCMSVideoPageBinder(contentDatum, currentlyPlayingIndex, relateVideoIds, false, isTrailer, requestAds, adsUrl, backgroundColor);
                             if (closeLauncher) {
                                 sendCloseOthersAction(null, true, false);
                             }
