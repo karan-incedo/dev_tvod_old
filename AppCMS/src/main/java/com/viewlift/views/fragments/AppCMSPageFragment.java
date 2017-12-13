@@ -215,7 +215,8 @@ public class AppCMSPageFragment extends Fragment {
                 ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
                appCMSPresenter.videoPlayerView= ((CustomVideoPlayerView) group.getChildAt(0));
             }
-           /* if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView)
+           /*  Disable mini Player
+            if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView)
             {
                 RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
                 nestedScrollView.addOnScrollListener(scrollListenerForMiniPlayer);
@@ -230,7 +231,8 @@ public class AppCMSPageFragment extends Fragment {
                 }else{
                     appCMSPresenter.dismissPopupWindowPlayer(false);
                 }
-            }*/
+            }
+            //*/
 
         }
         if (pageView != null &&
@@ -423,7 +425,8 @@ public class AppCMSPageFragment extends Fragment {
                     pageView.notifyAdaptersOfUpdate();
                 }
 
-               /* if (pageView != null) {
+               /* disable mini player
+               if (pageView != null) {
                     if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView &&
                             pageView.getAppCMSPageUI() != null &&
                             pageView.getAppCMSPageUI().getModuleList() != null &&
@@ -471,7 +474,8 @@ public class AppCMSPageFragment extends Fragment {
                     } else if (appCMSPresenter.pipPlayerVisible) {
                         appCMSPresenter.dismissPopupWindowPlayer(true);
                     }
-                }*/
+                }
+                //*/
 
             } catch (Exception e) {
                 //
