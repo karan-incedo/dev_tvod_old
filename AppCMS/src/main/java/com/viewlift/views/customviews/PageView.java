@@ -42,6 +42,8 @@ public class PageView extends BaseView {
 
     private ViewDimensions fullScreenViewOriginalDimensions;
 
+    private boolean shouldRefresh;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -52,10 +54,12 @@ public class PageView extends BaseView {
         this.moduleViewMap = new HashMap<>();
         this.appCMSPresenter = appCMSPresenter;
         this.appCMSPageViewAdapter = new AppCMSPageViewAdapter();
+        this.shouldRefresh = true;
         init();
     }
 
     public void openViewInFullScreen(View view, ViewGroup viewParent) {
+        shouldRefresh = false;
         if (fullScreenViewOriginalDimensions == null) {
             fullScreenViewOriginalDimensions = new ViewDimensions();
         }
@@ -75,6 +79,7 @@ public class PageView extends BaseView {
     }
 
     public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
+        shouldRefresh = true;
         if (fullScreenViewOriginalDimensions != null) {
             removeView(view);
 
@@ -201,10 +206,12 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
-            appCMSPresenter.clearPageAPIData(() -> {
-                        mainView.setRefreshing(false);
-                    },
-                    true);
+            if (shouldRefresh) {
+                appCMSPresenter.clearPageAPIData(() -> {
+                            mainView.setRefreshing(false);
+                        },
+                        true);
+            }
         });
         addView(mainView);
         return childrenContainer;
