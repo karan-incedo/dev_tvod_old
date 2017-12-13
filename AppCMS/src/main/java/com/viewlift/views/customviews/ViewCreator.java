@@ -45,6 +45,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.exoplayer2.Player;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -71,6 +72,7 @@ import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
@@ -97,6 +99,7 @@ import rx.functions.Action1;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private static VideoPlayerView videoPlayerView;
+    private static AppCMSVideoPageBinder videoPlayerViewBinder;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
 
@@ -251,7 +254,57 @@ public class ViewCreator {
             videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
         }
 
+        videoPlayerView.setOnPlayerStateChanged(playerState -> {
+            if (videoPlayerViewBinder != null) {
+                if (playerState.getPlaybackState() == Player.STATE_ENDED &&
+                        videoPlayerViewBinder.getPlayerState() != Player.STATE_ENDED) {
+                    if (!videoPlayerViewBinder.isAutoplayCancelled() &&
+                            videoPlayerViewBinder.getCurrentPlayingVideoIndex() <
+                            videoPlayerViewBinder.getRelateVideoIds().size() - 1) {
+                        if (presenter.getAutoplayEnabledUserPref(presenter.getCurrentActivity()) &&
+                                videoPlayerViewBinder != null) {
+                            presenter.openAutoPlayScreen(videoPlayerViewBinder, o -> {
+                                //
+                            });
+                        }
+                    }
+                }
+                videoPlayerViewBinder.setPlayerState(playerState.getPlaybackState());
+                videoPlayerViewBinder.setAutoplayCancelled(false);
+            }
+        });
+
         return videoPlayerView;
+    }
+
+    private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
+                                         ContentDatum contentDatum) {
+        if (videoPlayerViewBinder == null) {
+            videoPlayerViewBinder =
+                    appCMSPresenter.getDefaultAppCMSVideoPageBinder(contentDatum,
+                            -1,
+                            contentDatum.getContentDetails().getRelatedVideoIds(),
+                            false,
+                            false,  /** TODO: Replace with a value that is true if the video is a trailer */
+                            !appCMSPresenter.isAppSVOD(),
+                            appCMSPresenter.getAppAdsURL(contentDatum.getGist().getPermalink()),
+                            appCMSPresenter.getAppBackgroundColor());
+        } else {
+            int currentlyPlayingIndex = -1;
+            if (videoPlayerViewBinder.getRelateVideoIds().contains(contentDatum.getGist().getId())) {
+                currentlyPlayingIndex = videoPlayerViewBinder.getRelateVideoIds().indexOf(contentDatum.getGist().getId());
+            } else {
+                videoPlayerViewBinder.setPlayerState(Player.STATE_IDLE);
+                videoPlayerViewBinder.setRelateVideoIds(contentDatum.getContentDetails().getRelatedVideoIds());
+                if (videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId())) {
+                    currentlyPlayingIndex = videoPlayerViewBinder.getCurrentPlayingVideoIndex();
+                    videoPlayerViewBinder.setAutoplayCancelled(true);
+                }
+            }
+            videoPlayerViewBinder.setContentData(contentDatum);
+            videoPlayerViewBinder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+
+        }
     }
 
     public static void openFullScreenVideoPlayer(AppCMSPresenter appCMSPresenter) {
@@ -1940,6 +1993,10 @@ public class ViewCreator {
                 if (!appCMSPresenter.pipPlayerVisible) {
                     appCMSPresenter.showPopupWindowPlayer(componentViewResult.componentView,
                             moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+
+
+                    updateVideoPlayerBinder(appCMSPresenter, moduleAPI.getContentData().get(0));
+
                     componentViewResult.componentView = playerView(context,
                             appCMSPresenter,
                             videoUrl,
@@ -2622,9 +2679,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setEnabled(true);
                         try {
                             ((Spinner) componentViewResult.componentView).setPopupBackgroundDrawable(new ColorDrawable(Color.parseColor(
-                                    getColor(context, appCMSPresenter.getAppCMSMain().getBrand()
-                                            .getGeneral()
-                                            .getBackgroundColor()))));
+                                    getColor(context, appCMSPresenter.getAppBackgroundColor()))));
                         } catch (Exception e) {
                             //
                         }
@@ -3217,6 +3272,8 @@ public class ViewCreator {
                                     }
                                 }
                             }
+
+                            updateVideoPlayerBinder(appCMSPresenter, moduleAPI.getContentData().get(0));
 
                             componentViewResult.componentView = playerView(context, appCMSPresenter,
                                     videoUrl, moduleAPI.getContentData().get(0).getGist().getId(),
@@ -3872,9 +3929,7 @@ public class ViewCreator {
 
                 try {
                     result.setBackgroundColor(Color.parseColor(
-                            getColor(parent.getContext(), appCMSPresenter.getAppCMSMain().getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor())));
+                            getColor(parent.getContext(), appCMSPresenter.getAppBackgroundColor())));
                 } catch (Exception e) {
                     //
                 }
@@ -3925,9 +3980,7 @@ public class ViewCreator {
 
                 try {
                     result.setBackgroundColor(Color.parseColor(
-                            getColor(parent.getContext(), appCMSPresenter.getAppCMSMain().getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor())));
+                            getColor(parent.getContext(), appCMSPresenter.getAppBackgroundColor())));
                 } catch (Exception e) {
                     //
                 }

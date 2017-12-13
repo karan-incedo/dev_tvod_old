@@ -101,7 +101,7 @@ public class LoginModule extends ModuleView {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             underlineColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor());
             transparentColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
-            bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());
+            bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
             childContainer.setBackgroundColor(bgColor);

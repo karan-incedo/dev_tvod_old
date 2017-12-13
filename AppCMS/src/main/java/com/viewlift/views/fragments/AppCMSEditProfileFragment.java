@@ -83,8 +83,7 @@ public class AppCMSEditProfileFragment extends DialogFragment {
 
         appCMSPresenter.scrollUpWhenSoftKeyboardIsVisible();
 
-        int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                .getBackgroundColor());
+        int bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
         int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 .getBlockTitleColor());
         int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()

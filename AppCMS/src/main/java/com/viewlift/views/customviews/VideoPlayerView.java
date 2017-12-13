@@ -412,9 +412,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                         availableStreamingQualities);
 
                 listView.setAdapter(listViewAdapter);
-                listView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getGeneral()
-                        .getBackgroundColor()));
+                listView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
                 listView.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.VERTICAL,
                         false));
@@ -429,9 +427,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 final Dialog dialog = builder.create();
                 if (dialog.getWindow() != null) {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor())));
+                            Color.parseColor(appCMSPresenter.getAppBackgroundColor())));
                 }
                 currentStreamingQualitySelector.setOnClickListener(v -> {
                     dialog.show();

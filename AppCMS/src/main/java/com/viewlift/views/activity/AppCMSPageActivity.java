@@ -578,10 +578,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (updatedAppCMSBinder != null) {
             try {
-                appCMSParentView.setBackgroundColor(Color.parseColor(updatedAppCMSBinder.getAppCMSMain()
-                        .getBrand()
-                        .getGeneral()
-                        .getBackgroundColor()));
+                appCMSParentView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
             } catch (Exception e) {
 //                //Log.w(TAG, "Could not set background color of app based upon AppCMS branding - defaulting to primaryDark: " +
 //                        e.getMessage());
@@ -1424,7 +1421,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPageFragment = AppCMSCCAvenueFragment.newInstance(this,
                                 appCMSBinder,
                                 Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                Color.parseColor(appCMSPresenter.getAppBackgroundColor()),
                                 Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
                                 Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
                         sendFireBaseMenuScreenEvent();
@@ -1438,7 +1435,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPageFragment = AppCMSNavItemsFragment.newInstance(this,
                                 appCMSBinder,
                                 Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getTextColor()),
-                                Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()),
+                                Color.parseColor(appCMSPresenter.getAppBackgroundColor()),
                                 Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()),
                                 Color.parseColor(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
                         sendFireBaseMenuScreenEvent();
@@ -1454,7 +1451,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 case SEARCH:
                     try {
                         appCMSPageFragment = AppCMSSearchFragment.newInstance(this,
-                                Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()
+                                Long.parseLong(appCMSPresenter.getAppBackgroundColor()
                                         .replace("#", ""), 16),
                                 Long.parseLong(appCMSBinder.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()
                                         .replace("#", ""), 16),

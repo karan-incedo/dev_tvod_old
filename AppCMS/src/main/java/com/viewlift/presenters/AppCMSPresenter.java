@@ -1239,6 +1239,28 @@ public class AppCMSPresenter {
         }
     }
 
+    public String getAppBackgroundColor() {
+        if (appCMSMain != null) {
+            return appCMSMain.getBrand()
+                    .getGeneral()
+                    .getBackgroundColor();
+        }
+
+        return null;
+    }
+
+    public String getAppAdsURL(String pagePath) {
+        if (currentActivity != null && appCMSAndroid != null) {
+            Date now = new Date();
+            return currentActivity.getString(R.string.app_cms_ads_api_url,
+                    appCMSAndroid.getAdvertising().getVideoTag(),
+                    getPermalinkCompletePath(pagePath),
+                    now.getTime(),
+                    appCMSMain.getSite());
+        }
+        return null;
+    }
+
     public void forceLoad() {
         this.forceLoad = true;
     }
@@ -1446,21 +1468,13 @@ public class AppCMSPresenter {
                         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_hls_url_key),
                                 extraData);
 
-                        Date now = new Date();
-
                         try {
-                            adsUrl = currentActivity.getString(R.string.app_cms_ads_api_url,
-                                    appCMSAndroid.getAdvertising().getVideoTag(),
-                                    getPermalinkCompletePath(pagePath),
-                                    now.getTime(),
-                                    appCMSMain.getSite());
+                            adsUrl = getAppAdsURL(pagePath);
                         } catch (Exception e) {
                             //
                         }
 
-                        String backgroundColor = appCMSMain.getBrand()
-                                .getGeneral()
-                                .getBackgroundColor();
+                        String backgroundColor = getAppBackgroundColor();
 
                         if (!getAutoplayEnabledUserPref(currentActivity)) {
                             relateVideoIds = null;
@@ -7110,9 +7124,7 @@ public class AppCMSPresenter {
 
                     if (dialog.getWindow() != null) {
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                                Color.parseColor(appCMSMain.getBrand()
-                                        .getGeneral()
-                                        .getBackgroundColor())));
+                                Color.parseColor(getAppBackgroundColor())));
                         if (currentActivity.getWindow().isActive()) {
                             try {
                                 dialog.show();
@@ -7167,9 +7179,7 @@ public class AppCMSPresenter {
             AlertDialog dialog = builder.create();
             if (dialog.getWindow() != null) {
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                        Color.parseColor(appCMSMain.getBrand()
-                                .getGeneral()
-                                .getBackgroundColor())));
+                        Color.parseColor(getAppBackgroundColor())));
                 if (currentActivity.getWindow().isActive()) {
                     try {
                         dialog.show();
@@ -7384,9 +7394,7 @@ public class AppCMSPresenter {
             if (dialog.getWindow() != null) {
                 try {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                            Color.parseColor(appCMSMain.getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor())));
+                            Color.parseColor(getAppBackgroundColor())));
                 } catch (Exception e) {
                     //Log.w(TAG, "Failed to set background color from AppCMS branding - defaulting to colorPrimaryDark: " +
 //                            e.getMessage());
@@ -10320,11 +10328,19 @@ public class AppCMSPresenter {
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
+                String action = null;
+                if ((currentActivity != null &&
+                        currentActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video)) ||
+                        (binder.getPageID() != null &&
+                        !isShowPage(binder.getPageID()))) {
+                    action = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
+                }
+
                 launchVideoPlayer(binder.getContentData(),
                         currentlyPlayingIndex,
                         binder.getRelateVideoIds(),
                         watchedTime / 1000L,
-                        null);
+                        action);
             } else {
                 launchTVVideoPlayer(binder.getContentData(),
                         currentlyPlayingIndex,
@@ -10485,9 +10501,7 @@ public class AppCMSPresenter {
                                     now.getTime(),
                                     appCMSMain.getSite());
 
-                            String backgroundColor = appCMSMain.getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor();
+                            String backgroundColor = getAppBackgroundColor();
                             AppCMSVideoPageBinder appCMSVideoPageBinder =
                                     getDefaultAppCMSVideoPageBinder(contentDatum, currentlyPlayingIndex, relateVideoIds, false, isTrailer, requestAds, adsUrl, backgroundColor);
                             if (closeLauncher) {
@@ -10679,9 +10693,7 @@ public class AppCMSPresenter {
                         now.getTime(),
                         appCMSSite.getGist().getSiteInternalName()));
         playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_bg_color_key),
-                appCMSMain.getBrand()
-                        .getGeneral()
-                        .getBackgroundColor());
+                getAppBackgroundColor());
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_closed_caption_key), extraData[3]);
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_watched_time_key), contentDatum.getGist().getWatchedTime());
         playVideoIntent.putExtra(currentActivity.getString(R.string.video_player_run_time_key), contentDatum.getGist().getRuntime());

@@ -137,8 +137,8 @@ public class AutoplayFragment extends Fragment {
             if (pageView.getChildAt(0) != null) {
                 pageView.getChildAt(0)
                         .setBackgroundColor(Color.parseColor(
-                                appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                                        .getBackgroundColor().replace("#", "#DD")));
+                                appCMSPresenter.getAppBackgroundColor()
+                                        .replace("#", "#DD")));
             }
 
             String imageUrl = null;
