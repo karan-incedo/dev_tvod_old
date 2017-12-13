@@ -63,7 +63,7 @@ public class MoreMenuDialogAdapter extends BaseAdapter {
         viewHolder.buttonDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                appCMSPresenter.openWebView(links.get(position).getDisplayedPath());
+                appCMSPresenter.openChromeTab(links.get(position).getDisplayedPath());
             }
         });
         return convertView;

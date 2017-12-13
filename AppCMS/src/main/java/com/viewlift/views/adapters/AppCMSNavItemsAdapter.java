@@ -280,7 +280,7 @@ public class AppCMSNavItemsAdapter extends RecyclerView.Adapter<AppCMSNavItemsAd
                             itemSelected = true;
                             if (navigationFooter.getTitle().equalsIgnoreCase(viewHolder.itemView.getContext().getString(R.string.app_cms_page_shop_title)) &&
                                     !TextUtils.isEmpty(navigationFooter.getTitle())){
-                               appCMSPresenter.openWebView(navigationFooter.getUrl());
+                               appCMSPresenter.openChromeTab(navigationFooter.getUrl());
                             }else if (!appCMSPresenter.navigateToPage(navigationFooter.getPageId(),
                                     navigationFooter.getTitle(),
                                     navigationFooter.getUrl(),
