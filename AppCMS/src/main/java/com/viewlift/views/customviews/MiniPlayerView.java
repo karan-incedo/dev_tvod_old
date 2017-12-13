@@ -14,6 +14,7 @@ import com.viewlift.models.data.appcms.ui.page.Mobile;
 import com.viewlift.models.data.appcms.ui.page.TabletLandscape;
 import com.viewlift.models.data.appcms.ui.page.TabletPortrait;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.exoplayerview.CustomPlaybackControlView;
 
 /**
  * Created by sandeep.singh on 11/16/2017.
@@ -77,7 +78,9 @@ public class MiniPlayerView extends RelativeLayout {
             appCMSPresenter.videoPlayerViewParent = (ViewGroup) appCMSPresenter.videoPlayerView.getParent();
             ((ViewGroup) appCMSPresenter.videoPlayerView.getParent()).removeView(appCMSPresenter.videoPlayerView);
         }
-        appCMSPresenter.videoPlayerView.getPlayerView().getController().hide();
+
+        appCMSPresenter.videoPlayerView.disableController();
+
         addView(appCMSPresenter.videoPlayerView);
         addView(relativeLayoutEvent);
 

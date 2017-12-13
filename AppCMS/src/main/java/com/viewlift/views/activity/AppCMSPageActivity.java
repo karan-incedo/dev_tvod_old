@@ -997,6 +997,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.resetLaunched();
         appCMSPresenter.clearVideoPlayerViewCache();
+        appCMSPresenter.clearWebViewCache();
 
         //Log.d(TAG, "onDestroy()");
     }
