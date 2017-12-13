@@ -4,11 +4,11 @@
     <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
     <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
 
-    <string name="app_cms_app_name">51deba7d-8476-409b-aa24-e4c5ca13e903</string>
+    <string name="app_cms_app_name">7fa0ea9a-9799-4417-99f5-cbb5343c551d</string>
     <!--<string name="app_cms_app_name">57e4b76f-6168-41af-bdd8-c76a2e5bf798</string>-->
 
     <!-- x-api-key -->
-    <string name="x_api_key">FbKV4K5DB24UTvAGpR7VlaGaHbIUH3rR14kWeSEI</string>
+    <string name="x_api_key">vdTAMerEdh8t5t7xtUAa199qBKQuFLXb5cuG93ZF</string>
 
     <!-- AppCMS Facebook Login values -->
     <string name="facebook_app_id">1324523080924996</string>
@@ -23,7 +23,7 @@
     <string name="chromecast_receiver_app_id">0974224E</string>
 
     <!-- flag to use HLS or not -->
-    <bool name="use_hls">true</bool>
+    <bool name="use_hls">false</bool>
 
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
@@ -46,9 +46,9 @@
     <integer name="search_page_index">2</integer>
     <integer name="nav_menu_page_index">3</integer>
 
-    <bool name="use_cached_api">false</bool>
+    <bool name="use_cached_api">true</bool>
     <bool name="menu_icon_dismisses_menu_page">false</bool>
-    <bool name="video_detail_page_plays_video">true</bool>
+    <bool name="video_detail_page_plays_video">false</bool>
     <bool name="use_draggable_panel">false</bool>
 
     <bool name="enable_stream_quality_selection">false</bool>
