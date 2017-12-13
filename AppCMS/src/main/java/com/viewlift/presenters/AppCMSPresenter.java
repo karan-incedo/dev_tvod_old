@@ -198,7 +198,6 @@ import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
-import com.viewlift.views.activity.AppCMSKisweMediaPlayerActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
@@ -8711,14 +8710,17 @@ public class AppCMSPresenter {
                             entitlementPendingVideoData.closeLauncher,
                             entitlementPendingVideoData.currentlyPlayingIndex,
                             entitlementPendingVideoData.relateVideoIds);
-                    entitlementPendingVideoData.pagePath = null;
-                    entitlementPendingVideoData.action = null;
-                    entitlementPendingVideoData.filmTitle = null;
-                    entitlementPendingVideoData.extraData = null;
-                    entitlementPendingVideoData.contentDatum = null;
-                    entitlementPendingVideoData.closeLauncher = false;
-                    entitlementPendingVideoData.currentlyPlayingIndex = -1;
-                    entitlementPendingVideoData.relateVideoIds = null;
+
+                    if(entitlementPendingVideoData != null) {
+                        entitlementPendingVideoData.pagePath = null;
+                        entitlementPendingVideoData.action = null;
+                        entitlementPendingVideoData.filmTitle = null;
+                        entitlementPendingVideoData.extraData = null;
+                        entitlementPendingVideoData.contentDatum = null;
+                        entitlementPendingVideoData.closeLauncher = false;
+                        entitlementPendingVideoData.currentlyPlayingIndex = -1;
+                        entitlementPendingVideoData.relateVideoIds = null;
+                    }
                 } else {
                     if (!loginFromNavPage) {
                         sendCloseOthersAction(null, true, !loginFromNavPage);
@@ -11381,20 +11383,14 @@ public class AppCMSPresenter {
 
     public void launchKiswePlayer(String eventId) {
 
-       /* KMSDKCoreKit.initialize(currentActivity);
+        KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
                 .setLogLevel(KMSDKCoreKit.DEBUG);
         mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        if (isUserLoggedIn())
-            mKit.configUser(getLoggedInUserEmail(), currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        else
-            mKit.configUser("guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);*/
-        Intent playKisweVideoIntent = new Intent(currentActivity, AppCMSKisweMediaPlayerActivity.class);
-        playKisweVideoIntent.putExtra("kisweEventId", eventId);
-        currentActivity.startActivity(playKisweVideoIntent);
 
+        mKit.configUser(isUserLoggedIn()?getLoggedInUserEmail():"guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
+        mKit.startKiswePlayerActivity(currentActivity, eventId);
     }
 
     private ReportSubscriber reportSubscriber = new ReportSubscriber() {
@@ -11933,20 +11929,25 @@ public class AppCMSPresenter {
         this.videoPlayerView = customVideoPlayerView;
     }
 
-    public void showPopupWindowPlayer(View scrollView, String videoId, final CustomVideoPlayerView videoPlayerView) {
+    public void showPopupWindowPlayer(View scrollView, String videoId) {
         if (videoId != null) {
 
 
 //            if (videoPlayerView == null) {
 //                this.videoPlayerView = ViewCreator.playerView(currentActivity, videoId);
 //            }
-
-            relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
+            if (relativeLayoutPIP==null) {
+                relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
+            }else {
+                relativeLayoutPIP.init();
+            }
             relativeLayoutPIP.setVisibility(View.VISIBLE);
             relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(v -> {
                 ((RecyclerView) scrollView).smoothScrollToPosition(0);
             });
-            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+            if (relativeLayoutPIP.getParent()==null) {
+                ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+            }
             pipPlayerVisible = true;
         }
     }

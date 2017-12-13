@@ -783,14 +783,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.unrestrictPortraitOnly();
         }
 
-        if(this.findViewById(R.id.video_player_id) != null &&
-                appCMSPresenter.isAutoRotate() ) {
+        if (this.findViewById(R.id.video_player_id) != null &&
+                appCMSPresenter.isAutoRotate()) {
             appCMSPresenter.unrestrictPortraitOnly();
-        }else if (!BaseView.isTablet(this))
-        {
+        } else if (!BaseView.isTablet(this)) {
             appCMSPresenter.restrictPortraitOnly();
-        }else if (BaseView.isTablet(this))
-        {
+        } else if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
         resume();
@@ -994,7 +992,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.setCancelAllLoads(true);
 
-        //appCMSPresenter.dismissPopupWindowPlayer(true);
+        appCMSPresenter.dismissPopupWindowPlayer(false);
         appCMSPresenter.setCancelAllLoads(true);
 
         appCMSPresenter.resetLaunched();
@@ -1480,6 +1478,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (!(appCMSPageFragment instanceof AppCMSPageFragment) && appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
+                appCMSPresenter.dismissPopupWindowPlayer(false);
             }
 
             if (appCMSPageFragment != null) {
@@ -1763,6 +1762,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 try {
                     switch (appCMSBinder.getExtraScreenType()) {
                         case NAVIGATION:
+                            createFragment = true;
+                            break;
                         case TEAM:
                         case SEARCH:
                             //Log.d(TAG, "Popping stack to getList to page item");

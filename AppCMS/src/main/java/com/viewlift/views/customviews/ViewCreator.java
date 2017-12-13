@@ -115,7 +115,7 @@ public class ViewCreator {
     private ComponentViewResult componentViewResult;
 
     private HtmlSpanner htmlSpanner;
-    CustomVideoPlayerView videoPlayerViewSingle;
+    ;
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
@@ -327,6 +327,7 @@ public class ViewCreator {
                                         videoId = moduleAPI.getContentData().get(0).getGist().getId();
                                         (view).setVisibility(View.VISIBLE);
                                    }
+                                    CustomVideoPlayerView videoPlayerViewSingle=null;
                                     if(appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey())!=null){
                                         videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey());
                                     }
@@ -344,7 +345,7 @@ public class ViewCreator {
                                             videoPlayerViewSingle.resumePlayerLastState();
 
                                         }else{
-                                            videoPlayerViewSingle=playerView(context,videoId);
+                                            videoPlayerViewSingle=playerView(context,videoId,moduleAPI.getId() + component.getKey(),appCMSPresenter);
                                             ((FrameLayout) view).addView(videoPlayerViewSingle);
                                         }
                                         videoPlayerViewSingle.checkVideoStatus();
@@ -1970,23 +1971,26 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getGist().getId() != null) {
                     videoId = moduleAPI.getContentData().get(0).getGist().getId();
                 }
+                CustomVideoPlayerView videoPlayerViewSingle=null;
                 componentViewResult.componentView=new FrameLayout(context);
                 if(appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey())!=null){
                     videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey());
+                    videoPlayerViewSingle.pausePlayer();
                 } else{
-                    appCMSPresenter.saveVideoPlayerViewCache(moduleId + component.getKey(),videoPlayerViewSingle);
-
-                    videoPlayerViewSingle=null;
+//                    videoPlayerViewSingle.releasePlayer();
+//                    videoPlayerViewSingle=null;
                 }
                 if( videoPlayerViewSingle!=null){
 
                     if(videoPlayerViewSingle.getParent()!=null)
                         ((ViewGroup)videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+
                     videoPlayerViewSingle.resumePlayerLastState();
 
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
-                }else{
-                    videoPlayerViewSingle=playerView(context,videoId);
+                }else
+                    {
+                    videoPlayerViewSingle=playerView(context,videoId,moduleId + component.getKey(),appCMSPresenter);
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
                 videoPlayerViewSingle.checkVideoStatus();
@@ -4243,13 +4247,16 @@ public class ViewCreator {
         }
     }
 
-    public CustomVideoPlayerView playerView(Context context, String videoId) {
+    public CustomVideoPlayerView playerView(Context context, String videoId,String key,AppCMSPresenter appCmsPresenter) {
 
-            CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
+      CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
 
         if (videoId != null) {
-                 videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
+
+            videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
 //            AppCMSPresenter.videoPlayerView=videoPlayerView;
+            appCmsPresenter.saveVideoPlayerViewCache(key,videoPlayerView);
+
         }
 
         return videoPlayerView;

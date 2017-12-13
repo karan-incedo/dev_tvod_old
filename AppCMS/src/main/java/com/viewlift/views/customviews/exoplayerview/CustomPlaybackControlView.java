@@ -31,6 +31,7 @@ import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.RepeatModeUtil;
 import com.google.android.exoplayer2.util.Util;
 import com.viewlift.R;
+import com.viewlift.views.customviews.CustomVideoPlayerView;
 
 import java.util.Arrays;
 import java.util.Formatter;
@@ -72,7 +73,7 @@ public class CustomPlaybackControlView extends FrameLayout {
         /**
          * Dispatches a {@link Player#setPlayWhenReady(boolean)} operation.
          *
-         * @param player The {@link Player} to which the operation should be dispatched.
+         * @param player        The {@link Player} to which the operation should be dispatched.
          * @param playWhenReady Whether playback should proceed when ready.
          * @return True if the operation was dispatched. False if suppressed.
          */
@@ -81,10 +82,10 @@ public class CustomPlaybackControlView extends FrameLayout {
         /**
          * Dispatches a {@link Player#seekTo(int, long)} operation.
          *
-         * @param player The {@link Player} to which the operation should be dispatched.
+         * @param player      The {@link Player} to which the operation should be dispatched.
          * @param windowIndex The index of the window.
-         * @param positionMs The seek position in the specified window, or {@link C#TIME_UNSET} to seek
-         *     to the window's default position.
+         * @param positionMs  The seek position in the specified window, or {@link C#TIME_UNSET} to seek
+         *                    to the window's default position.
          * @return True if the operation was dispatched. False if suppressed.
          */
         boolean dispatchSeekTo(Player player, int windowIndex, long positionMs);
@@ -92,7 +93,7 @@ public class CustomPlaybackControlView extends FrameLayout {
         /**
          * Dispatches a {@link Player#setRepeatMode(int)} operation.
          *
-         * @param player The {@link Player} to which the operation should be dispatched.
+         * @param player     The {@link Player} to which the operation should be dispatched.
          * @param repeatMode The repeat mode.
          * @return True if the operation was dispatched. False if suppressed.
          */
@@ -140,7 +141,8 @@ public class CustomPlaybackControlView extends FrameLayout {
     /**
      * The default repeat toggle modes.
      */
-    public static final @RepeatModeUtil.RepeatToggleModes int DEFAULT_REPEAT_TOGGLE_MODES =
+    public static final @RepeatModeUtil.RepeatToggleModes
+    int DEFAULT_REPEAT_TOGGLE_MODES =
             RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE;
 
     /**
@@ -187,7 +189,8 @@ public class CustomPlaybackControlView extends FrameLayout {
     private int rewindMs;
     private int fastForwardMs;
     private int showTimeoutMs;
-    private @RepeatModeUtil.RepeatToggleModes int repeatToggleModes;
+    private @RepeatModeUtil.RepeatToggleModes
+    int repeatToggleModes;
     private long hideAtMs;
     private long[] adGroupTimesMs;
     private boolean[] playedAdGroups;
@@ -209,15 +212,15 @@ public class CustomPlaybackControlView extends FrameLayout {
     };
 
     public CustomPlaybackControlView(Context context) {
-        this(context,null);
+        this(context, null);
     }
 
     public CustomPlaybackControlView(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
+        this(context, attrs, 0);
     }
 
     public CustomPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr) {
-        this(context, attrs, defStyleAttr,attrs);
+        this(context, attrs, defStyleAttr, attrs);
     }
 
     public CustomPlaybackControlView(Context context, AttributeSet attrs, int defStyleAttr, AttributeSet playbackAttrs) {
@@ -290,7 +293,7 @@ public class CustomPlaybackControlView extends FrameLayout {
         if (repeatToggleButton != null) {
             repeatToggleButton.setOnClickListener(componentListener);
         }
-        progressController = (LinearLayout)findViewById(R.id.exo_position_progress);
+        progressController = (LinearLayout) findViewById(R.id.exo_position_progress);
 
         Resources resources = context.getResources();
         repeatOffButtonDrawable = resources.getDrawable(com.google.android.exoplayer2.ui.R.drawable.exo_controls_repeat_off);
@@ -305,8 +308,9 @@ public class CustomPlaybackControlView extends FrameLayout {
     }
 
     @SuppressWarnings("ResourceType")
-    private static @RepeatModeUtil.RepeatToggleModes int getRepeatToggleModes(TypedArray a,
-                                                                              @RepeatModeUtil.RepeatToggleModes int repeatToggleModes) {
+    private static @RepeatModeUtil.RepeatToggleModes
+    int getRepeatToggleModes(TypedArray a,
+                             @RepeatModeUtil.RepeatToggleModes int repeatToggleModes) {
         return a.getInt(com.google.android.exoplayer2.ui.R.styleable.PlaybackControlView_repeat_toggle_modes, repeatToggleModes);
     }
 
@@ -356,9 +360,9 @@ public class CustomPlaybackControlView extends FrameLayout {
      * markers are shown in addition to any ad markers for ads in the player's timeline.
      *
      * @param extraAdGroupTimesMs The millisecond timestamps of the extra ad markers to show, or
-     *     {@code null} to show no extra ad markers.
+     *                            {@code null} to show no extra ad markers.
      * @param extraPlayedAdGroups Whether each ad has been played, or {@code null} to show no extra ad
-     *     markers.
+     *                            markers.
      */
     public void setExtraAdGroupMarkers(@Nullable long[] extraAdGroupTimesMs,
                                        @Nullable boolean[] extraPlayedAdGroups) {
@@ -386,7 +390,7 @@ public class CustomPlaybackControlView extends FrameLayout {
      * Sets the {@link ControlDispatcher}.
      *
      * @param controlDispatcher The {@link ControlDispatcher}, or null to use
-     *     {@link #DEFAULT_CONTROL_DISPATCHER}.
+     *                          {@link #DEFAULT_CONTROL_DISPATCHER}.
      */
     public void setControlDispatcher(ControlDispatcher controlDispatcher) {
         this.controlDispatcher = controlDispatcher == null ? DEFAULT_CONTROL_DISPATCHER
@@ -397,7 +401,7 @@ public class CustomPlaybackControlView extends FrameLayout {
      * Sets the rewind increment in milliseconds.
      *
      * @param rewindMs The rewind increment in milliseconds. A non-positive value will cause the
-     *     rewind button to be disabled.
+     *                 rewind button to be disabled.
      */
     public void setRewindIncrementMs(int rewindMs) {
         this.rewindMs = rewindMs;
@@ -408,7 +412,7 @@ public class CustomPlaybackControlView extends FrameLayout {
      * Sets the fast forward increment in milliseconds.
      *
      * @param fastForwardMs The fast forward increment in milliseconds. A non-positive value will
-     *     cause the fast forward button to be disabled.
+     *                      cause the fast forward button to be disabled.
      */
     public void setFastForwardIncrementMs(int fastForwardMs) {
         this.fastForwardMs = fastForwardMs;
@@ -420,7 +424,7 @@ public class CustomPlaybackControlView extends FrameLayout {
      * this duration of time has elapsed without user input.
      *
      * @return The duration in milliseconds. A non-positive value indicates that the controls will
-     *     remain visible indefinitely.
+     * remain visible indefinitely.
      */
     public int getShowTimeoutMs() {
         return showTimeoutMs;
@@ -431,7 +435,7 @@ public class CustomPlaybackControlView extends FrameLayout {
      * duration of time has elapsed without user input.
      *
      * @param showTimeoutMs The duration in milliseconds. A non-positive value will cause the controls
-     *     to remain visible indefinitely.
+     *                      to remain visible indefinitely.
      */
     public void setShowTimeoutMs(int showTimeoutMs) {
         this.showTimeoutMs = showTimeoutMs;
@@ -442,7 +446,8 @@ public class CustomPlaybackControlView extends FrameLayout {
      *
      * @return The currently enabled {@link RepeatModeUtil.RepeatToggleModes}.
      */
-    public @RepeatModeUtil.RepeatToggleModes int getRepeatToggleModes() {
+    public @RepeatModeUtil.RepeatToggleModes
+    int getRepeatToggleModes() {
         return repeatToggleModes;
     }
 
@@ -568,11 +573,9 @@ public class CustomPlaybackControlView extends FrameLayout {
         setButtonEnabled(rewindMs > 0 && isSeekable, rewindButton);
 
 
-
-
-        setViewVisibility(isPlayingLive,fastForwardButton);
-        setViewVisibility(isPlayingLive,rewindButton);
-        setViewVisibility(isPlayingLive,progressController);
+        setViewVisibility(isPlayingLive, fastForwardButton);
+        setViewVisibility(isPlayingLive, rewindButton);
+        setViewVisibility(isPlayingLive, progressController);
 
         if (timeBar != null) {
             timeBar.setEnabled(isSeekable);
@@ -744,8 +747,9 @@ public class CustomPlaybackControlView extends FrameLayout {
             view.setVisibility(enabled ? VISIBLE : INVISIBLE);
         }
     }
-    private void setViewVisibility(boolean visibility, View view){
-        view.setVisibility(visibility ? GONE:VISIBLE);
+
+    private void setViewVisibility(boolean visibility, View view) {
+        view.setVisibility(visibility ? GONE : VISIBLE);
     }
 
     @TargetApi(11)
@@ -925,7 +929,7 @@ public class CustomPlaybackControlView extends FrameLayout {
      * Returns whether the specified {@code timeline} can be shown on a multi-window time bar.
      *
      * @param timeline The {@link Timeline} to check.
-     * @param window A scratch {@link Timeline.Window} instance.
+     * @param window   A scratch {@link Timeline.Window} instance.
      * @return Whether the specified timeline can be shown on a multi-window time bar.
      */
     private static boolean canShowMultiWindowTimeBar(Timeline timeline, Timeline.Window window) {
@@ -1034,8 +1038,14 @@ public class CustomPlaybackControlView extends FrameLayout {
                     rewind();
                 } else if (playButton == view) {
                     controlDispatcher.dispatchSetPlayWhenReady(player, true);
+                    if (listenerEvents != null) {
+                        listenerEvents.getIsVideoPaused(false);
+                    }
                 } else if (pauseButton == view) {
                     controlDispatcher.dispatchSetPlayWhenReady(player, false);
+                    if (listenerEvents != null) {
+                        listenerEvents.getIsVideoPaused(true);
+                    }
                 } else if (repeatToggleButton == view) {
                     controlDispatcher.dispatchSetRepeatMode(player, RepeatModeUtil.getNextRepeatMode(
                             player.getRepeatMode(), repeatToggleModes));
@@ -1046,6 +1056,12 @@ public class CustomPlaybackControlView extends FrameLayout {
 
     }
 
+    CustomVideoPlayerView.IgetPlayerEvent listenerEvents;
+
+    public void setPlayerEvents(CustomVideoPlayerView.IgetPlayerEvent listenerEvents) {
+        this.listenerEvents = listenerEvents;
+    }
+
     public boolean isPlayingLive() {
         return isPlayingLive;
     }
@@ -1053,4 +1069,6 @@ public class CustomPlaybackControlView extends FrameLayout {
     public void setPlayingLive(boolean playingLive) {
         isPlayingLive = playingLive;
     }
+
+
 }
