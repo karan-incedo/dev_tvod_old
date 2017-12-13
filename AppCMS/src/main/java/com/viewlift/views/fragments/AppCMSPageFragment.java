@@ -211,6 +211,7 @@ public class AppCMSPageFragment extends Fragment {
         updateDataLists();
 
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            appCMSPresenter.unrestrictPortraitOnly();
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
             if ((group.getChildAt(0)) != null) {
@@ -235,6 +236,9 @@ public class AppCMSPageFragment extends Fragment {
                 }
             }
             //*/
+
+        }else if(!BaseView.isTablet(getContext())){
+            appCMSPresenter.restrictPortraitOnly();
 
         }
         if (pageView != null &&

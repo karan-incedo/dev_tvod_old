@@ -52,6 +52,7 @@ public class CastServiceProvider {
     private static CastServiceProvider objMain;
 
     private String TAG = "CastServiceProvider";
+    public String currentCastingUrl = "";
     private FragmentActivity mActivity;
     private ImageButton mMediaRouteButton,mPlayerMediaRouteButton;
     private CastHelper mCastHelper;
@@ -119,6 +120,7 @@ public class CastServiceProvider {
         @Override
         public void onApplicationDisconnected() {
 
+            currentCastingUrl = "";
             if(castCallBackListener != null){
                 castCallBackListener.onCastStatusUpdate();
             }
@@ -517,7 +519,7 @@ public class CastServiceProvider {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();
                                 }else{
-                                    Toast.makeText(mActivity,"Not Player Page",Toast.LENGTH_LONG).show();
+//                                    Toast.makeText(mActivity,"Not Player Page",Toast.LENGTH_LONG).show();
                                 }
                             });
                 }
@@ -543,7 +545,7 @@ public class CastServiceProvider {
         if (mPlayerMediaRouteButton == null)
             return;
 
-        mPlayerMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.INVISIBLE);
+        mPlayerMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.GONE);
 
         //Setting the Casting Overlay for Casting
         if (mCastHelper.isCastDeviceAvailable)
@@ -587,7 +589,7 @@ public class CastServiceProvider {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();
                                 }else{
-                                    Toast.makeText(mActivity,"Not Player Page",Toast.LENGTH_LONG).show();
+//                                    Toast.makeText(mActivity,"Not Player Page",Toast.LENGTH_LONG).show();
                                 }
                             });
                 }
