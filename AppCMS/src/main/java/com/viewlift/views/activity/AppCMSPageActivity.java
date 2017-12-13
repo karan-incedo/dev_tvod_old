@@ -2076,7 +2076,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSTabNavContainer.removeAllViews();
 
             //add separator view
-            if (tabBarModule.getIsTabSeparator()) {
+            if (tabBarModule.isTabSeparator()) {
                 View sepratorView = new View(this);
                 sepratorView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, (int) BaseView.convertDpToPixel(getResources().getDimension(R.dimen.nav_item_separator_height), this)));
                 sepratorView.setBackgroundColor(Color.parseColor(tabBarModule.getTabSeparator_color()));
@@ -2769,10 +2769,4 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-
-
-        //  super.onSaveInstanceState(outState);
-    }
 }

@@ -44,29 +44,6 @@ public class ModuleList implements ModuleWithComponents, Serializable {
     @Expose
     String blockName;
 
-    public boolean getIsTabSeparator() {
-        return isTabSeparator;
-    }
-
-    public void setIsTabSeparator(boolean isTabSeparator) {
-        this.isTabSeparator = isTabSeparator;
-    }
-
-    public String getTabSeparator_color() {
-        return tabSeparator_color;
-    }
-
-    public void setTabSeparator_color(String tabSeparator_color) {
-        this.tabSeparator_color = tabSeparator_color;
-    }
-
-    public boolean getIsBackgroundSelectable() {
-        return isBackgroundSelectable;
-    }
-
-    public void setIsBackgroundSelectable(boolean isBackgroundSelectable) {
-        this.isBackgroundSelectable = isBackgroundSelectable;
-    }
 
     @SerializedName("isTabSeparator")
     @Expose
@@ -80,6 +57,10 @@ public class ModuleList implements ModuleWithComponents, Serializable {
     @Expose
     boolean isBackgroundSelectable;
 
+
+    @SerializedName("isSelectable")
+    @Expose
+    boolean isSelectable;
 
 
     public String getId() {
@@ -145,5 +126,37 @@ public class ModuleList implements ModuleWithComponents, Serializable {
 
     public void setBlockName(String blockName) {
         this.blockName = blockName;
+    }
+
+    public boolean isTabSeparator() {
+        return isTabSeparator;
+    }
+
+    public void setTabSeparator(boolean tabSeparator) {
+        isTabSeparator = tabSeparator;
+    }
+
+    public String getTabSeparator_color() {
+        return tabSeparator_color;
+    }
+
+    public void setTabSeparator_color(String tabSeparator_color) {
+        this.tabSeparator_color = tabSeparator_color;
+    }
+
+    public boolean isBackgroundSelectable() {
+        return isBackgroundSelectable;
+    }
+
+    public void setBackgroundSelectable(boolean backgroundSelectable) {
+        isBackgroundSelectable = backgroundSelectable;
+    }
+
+    public boolean isSelectable() {
+        return isSelectable;
+    }
+
+    public void setSelectable(boolean selectable) {
+        isSelectable = selectable;
     }
 }
