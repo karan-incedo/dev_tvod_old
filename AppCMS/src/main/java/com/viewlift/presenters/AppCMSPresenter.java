@@ -229,6 +229,7 @@ import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
+import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.temporal.ChronoUnit;
 
 import java.io.BufferedReader;
@@ -377,6 +378,9 @@ public class AppCMSPresenter {
     private static final String MEDIA_SURFIX_PNG = ".png";
     private static final String MEDIA_SURFIX_JPG = ".jpg";
     private static final String MEDIA_SUFFIX_SRT = ".srt";
+
+    private static final String SUBSCRIPTION_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+    private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC+00:00");
 
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private static int PAGE_API_LRU_CACHE_SIZE = 10;
@@ -4600,7 +4604,8 @@ public class AppCMSPresenter {
                     ArrayList<String> subscribedItemList = activeSubs.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
 
                     if (subscribedItemList != null && !subscribedItemList.isEmpty()) {
-                        boolean subscriptionExpired = true;
+                        boolean subscriptionExpired = false;
+                        boolean subscriptionAutoRenewing = false;
                         for (int i = 0; i < subscribedItemList.size(); i++) {
                             try {
                                 //Log.d(TAG, "Examining existing subscription data");
@@ -4628,6 +4633,10 @@ public class AppCMSPresenter {
                                 }
 
                                 setExistingGooglePlaySubscriptionId(inAppPurchaseData.getProductId());
+
+                                if (inAppPurchaseData.isAutoRenewing()) {
+                                    subscriptionAutoRenewing = true;
+                                }
 
                                 if (inAppPurchaseData.isAutoRenewing() || !subscriptionExpired) {
                                     if (TextUtils.isEmpty(skuToPurchase) || skuToPurchase.equals(inAppPurchaseData.getProductId())) {
@@ -4730,10 +4739,6 @@ public class AppCMSPresenter {
                                     }
                                 } else {
                                     setActiveSubscriptionReceipt(null);
-                                }
-
-                                if (subscriptionExpired) {
-                                    sendSubscriptionCancellation();
                                 }
 
                             } catch (Exception e) {
@@ -8243,7 +8248,7 @@ public class AppCMSPresenter {
             String endPoint = pageIdToPageAPIUrlMap.get(subscriptionPage.getPageId());
             String siteId = appCMSSite.getGist().getSiteInternalName();
             boolean usePageIdQueryParam = true;
-            boolean viewPlans = isViewPlanPage(endPoint);
+            boolean viewPlans = true;
             boolean showPage = false;
             String apiUrl = getApiUrl(usePageIdQueryParam,
                     viewPlans,
@@ -8315,6 +8320,10 @@ public class AppCMSPresenter {
                                             try {
 
                                                 if (appCMSSubscriptionPlanResult != null) {
+                                                    if (isUserSubscribed() && checkForSubscriptionCancellation(appCMSSubscriptionPlanResult)) {
+                                                        sendSubscriptionCancellation();
+                                                        setIsUserSubscribed(false);
+                                                    }
 
                                                     UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
                                                     userSubscriptionPlan.setUserId(getLoggedInUser());
@@ -8410,6 +8419,18 @@ public class AppCMSPresenter {
                 onRefreshReadyAction.call();
             }
         }
+    }
+
+    private boolean checkForSubscriptionCancellation(AppCMSUserSubscriptionPlanResult appCMSSubscriptionPlanResult) {
+        try {
+
+            ZonedDateTime nowTime = ZonedDateTime.now(UTC_ZONE_ID);
+            ZonedDateTime subscriptionEndTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).parse(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate()));
+            return subscriptionEndTime.toEpochSecond() < nowTime.toEpochSecond();
+        } catch (Exception e) {
+
+        }
+        return false;
     }
 
     public void refreshPageAPIData(AppCMSPageUI appCMSPageUI,
