@@ -342,6 +342,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         playerView.setPlayer(player);
         playerView.setControllerVisibilityListener(visibility -> {
             if (onPlayerControlsStateChanged != null) {
+
                 onPlayerControlsStateChanged.call(visibility);
             }
         });

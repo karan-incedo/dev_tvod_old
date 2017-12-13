@@ -451,7 +451,9 @@ public class AppCMSPlayVideoFragment extends Fragment
 
         videoPlayerInfoContainer =
                 (LinearLayout) rootView.findViewById(R.id.app_cms_video_player_info_container);
-
+        if(!shouldRequestAds) {
+            videoPlayerInfoContainer.bringToFront();
+        }
         mMediaRouteButton = (ImageButton) rootView.findViewById(R.id.media_route_button);
 
         videoPlayerTitleView = (TextView) rootView.findViewById(R.id.app_cms_video_player_title_view);

@@ -53,7 +53,7 @@ public class CastServiceProvider {
 
     private String TAG = "CastServiceProvider";
     private FragmentActivity mActivity;
-    private ImageButton mMediaRouteButton;
+    private ImageButton mMediaRouteButton,mPlayerMediaRouteButton;
     private CastHelper mCastHelper;
     private RokuWrapper rokuWrapper;
     private boolean isHomeScreen = false;
@@ -280,9 +280,14 @@ public class CastServiceProvider {
         mCastHelper.setInstance(mActivity);
         mMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.anim_cast, null));
         castAnimDrawable = (AnimationDrawable) mMediaRouteButton.getDrawable();
-
     }
 
+    public void setVideoPlayerMediaButton( ImageButton mediaRouterView) {
+        this.mPlayerMediaRouteButton = mediaRouterView;
+        mPlayerMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.anim_cast, null));
+        castAnimDrawable = (AnimationDrawable) mPlayerMediaRouteButton.getDrawable();
+
+    }
     public void onActivityResume() {
 
         refreshCastMediaIcon();
@@ -464,6 +469,7 @@ public class CastServiceProvider {
      * refreshCastMediaIcon invalidate the media icon view on the basis of casting status i.e disconnected/Connected
      */
     private void refreshCastMediaIcon() {
+        refreshLivePlayerCastMediaIcon();
         if (mMediaRouteButton == null)
             return;
 
@@ -533,7 +539,76 @@ public class CastServiceProvider {
             }
         });
     }
+    private void refreshLivePlayerCastMediaIcon() {
+        if (mPlayerMediaRouteButton == null)
+            return;
 
+        mPlayerMediaRouteButton.setVisibility(mCastHelper.isCastDeviceAvailable ? View.VISIBLE : View.INVISIBLE);
+
+        //Setting the Casting Overlay for Casting
+        if (mCastHelper.isCastDeviceAvailable)
+            if (!appCMSPresenter.isCastOverLayShown()
+                    && mContext.getResources().getBoolean(R.bool.display_chromecast_overlay)) {
+                appCMSPresenter.setCastOverLay();
+                showIntroOverLay();
+            }
+
+        if (!mCastHelper.isCastDeviceAvailable && castChooserDialog != null && castChooserDialog.isShowing()) {
+            castChooserDialog.dismiss();
+        }
+
+        if (mCastHelper.isCastDeviceAvailable) {
+            if (rokuWrapper.isRokuConnected() || mCastHelper.isRemoteDeviceConnected()) {
+                castAnimDrawable.stop();
+                Drawable selectedImageDrawable = mActivity.getResources()
+                        .getDrawable(R.drawable.toolbar_cast_connected, null);
+                int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral().getBlockTitleColor());
+                selectedImageDrawable.setColorFilter(new PorterDuffColorFilter(fillColor,
+                        PorterDuff.Mode.MULTIPLY));
+                mPlayerMediaRouteButton.setImageDrawable(selectedImageDrawable);
+            } else {
+                castAnimDrawable.stop();
+                mPlayerMediaRouteButton.setImageDrawable(mActivity.getResources()
+                        .getDrawable(R.drawable.toolbar_cast_disconnected, null));
+            }
+        }
+
+        mPlayerMediaRouteButton.setOnClickListener(v -> {
+            if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
+                CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
+                        .getSessionManager().endCurrentSession(true);
+                if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                            null);
+                } else if (appCMSPresenter.isAppSVOD()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                            () -> {
+                                if (mActivity instanceof AppCMSPlayVideoActivity) {
+                                    mActivity.finish();
+                                }else{
+                                    Toast.makeText(mActivity,"Not Player Page",Toast.LENGTH_LONG).show();
+                                }
+                            });
+                }
+            } else {
+                try {
+                    castDisconnectDialog = new CastDisconnectDialog(mActivity);
+
+                    if (mCastHelper.mSelectedDevice == null && mActivity != null) {
+                        castChooserDialog.setRoutes(mCastHelper.routes);
+                        castChooserDialog.show();
+                    } else if (mCastHelper.mSelectedDevice != null && mCastHelper.mMediaRouter != null
+                            && mActivity != null) {
+                        castDisconnectDialog.setToBeDisconnectDevice(mCastHelper.mMediaRouter);
+                        castDisconnectDialog.show();
+                    }
+                } catch (Exception e) {
+                    //
+                }
+            }
+        });
+    }
 
     public void setRemotePlaybackCallback(ILaunchRemoteMedia onLaunchRemotePLayback) {
         this.callRemoteMediaPlayback = onLaunchRemotePLayback;

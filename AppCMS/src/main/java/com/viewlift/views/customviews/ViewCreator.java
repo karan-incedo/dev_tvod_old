@@ -32,6 +32,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
@@ -103,6 +106,7 @@ public class ViewCreator {
 
     private HtmlSpanner htmlSpanner;
     ;
+
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
         htmlSpanner.unregisterHandler("p");
@@ -313,30 +317,29 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getId() != null) {
                                         videoId = moduleAPI.getContentData().get(0).getGist().getId();
                                         (view).setVisibility(View.VISIBLE);
-                                   }
-                                    CustomVideoPlayerView videoPlayerViewSingle=null;
-                                    if(appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey())!=null){
-                                        videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey());
                                     }
-                                    else{
-                                        videoPlayerViewSingle=null;
+                                    CustomVideoPlayerView videoPlayerViewSingle = null;
+                                    if (appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey()) != null) {
+                                        videoPlayerViewSingle = appCMSPresenter.getVideoPlayerViewCache(moduleAPI.getId() + component.getKey());
+                                    } else {
+                                        videoPlayerViewSingle = null;
                                     }
-                                    if (videoId != null  ) {
+                                    if (videoId != null) {
                                         ((FrameLayout) view).removeAllViews();
-                                        if( videoPlayerViewSingle!=null){
+                                        if (videoPlayerViewSingle != null) {
 
-                                            if(videoPlayerViewSingle.getParent()!=null)
-                                                ((ViewGroup)videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+                                            if (videoPlayerViewSingle.getParent() != null)
+                                                ((ViewGroup) videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
 
                                             ((FrameLayout) view).addView(videoPlayerViewSingle);
                                             videoPlayerViewSingle.resumePlayerLastState();
 
-                                        }else{
-                                            videoPlayerViewSingle=playerView(context,videoId,moduleAPI.getId() + component.getKey(),appCMSPresenter);
+                                        } else {
+                                            videoPlayerViewSingle = playerView(context, videoId, moduleAPI.getId() + component.getKey(), appCMSPresenter);
                                             ((FrameLayout) view).addView(videoPlayerViewSingle);
                                         }
                                         videoPlayerViewSingle.checkVideoStatus();
-                                        appCMSPresenter.setVideoPlayerViewCache(moduleAPI.getId() + component.getKey(),videoPlayerViewSingle);
+                                        appCMSPresenter.setVideoPlayerViewCache(moduleAPI.getId() + component.getKey(), videoPlayerViewSingle);
                                         (view).setId(R.id.video_player_id);
 
                                     }
@@ -381,18 +384,20 @@ public class ViewCreator {
                                     } else {
                                         view.setVisibility(View.INVISIBLE);
                                     }
-                                    CustomWebView webView=null ;
-                                    if(appCMSPresenter.getWebViewCache(moduleAPI.getId() + component.getKey())!=null){
-                                        webView=appCMSPresenter.getWebViewCache(moduleAPI.getId() + component.getKey());
+                                    CustomWebView webView = null;
+                                    ((FrameLayout) view).removeAllViews();
+                                    if (appCMSPresenter.getWebViewCache(moduleAPI.getId() + component.getKey()) != null) {
+                                        webView = appCMSPresenter.getWebViewCache(moduleAPI.getId() + component.getKey());
                                     }
-                                    if(webView!=null){
+                                    if (webView != null) {
 
-                                        if(webView.getParent()!=null)
-                                            ((ViewGroup)webView.getParent()).removeView(webView);
+                                        if (webView.getParent() != null)
+                                            ((ViewGroup) webView.getParent()).removeView(webView);
+
+//                                        webView.reload();
                                         ((FrameLayout) view).addView(webView);
-                                    }else
-                                    {
-                                        webView=getWebViewComponent(context, moduleAPI, component,moduleAPI.getId() + component.getKey(), appCMSPresenter);
+                                    } else {
+                                        webView = getWebViewComponent(context, moduleAPI, component, moduleAPI.getId() + component.getKey(), appCMSPresenter);
                                         ((FrameLayout) view).addView(webView);
                                     }
 //
@@ -1975,23 +1980,22 @@ public class ViewCreator {
                         moduleAPI.getContentData().get(0).getGist().getId() != null) {
                     videoId = moduleAPI.getContentData().get(0).getGist().getId();
                 }
-                CustomVideoPlayerView videoPlayerViewSingle=null;
-                componentViewResult.componentView=new FrameLayout(context);
-                if(appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey())!=null){
-                    videoPlayerViewSingle=appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey());
+                CustomVideoPlayerView videoPlayerViewSingle = null;
+                componentViewResult.componentView = new FrameLayout(context);
+                if (appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey()) != null) {
+                    videoPlayerViewSingle = appCMSPresenter.getVideoPlayerViewCache(moduleId + component.getKey());
                     videoPlayerViewSingle.pausePlayer();
                 }
-                if( videoPlayerViewSingle!=null){
+                if (videoPlayerViewSingle != null) {
 
-                    if(videoPlayerViewSingle.getParent()!=null)
-                        ((ViewGroup)videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
+                    if (videoPlayerViewSingle.getParent() != null)
+                        ((ViewGroup) videoPlayerViewSingle.getParent()).removeView(videoPlayerViewSingle);
 
                     videoPlayerViewSingle.resumePlayerLastState();
 
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
-                }else
-                    {
-                    videoPlayerViewSingle=playerView(context,videoId,moduleId + component.getKey(),appCMSPresenter);
+                } else {
+                    videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
                 videoPlayerViewSingle.checkVideoStatus();
@@ -1999,19 +2003,19 @@ public class ViewCreator {
                 break;
 
             case PAGE_WEB_VIEW_KEY:
-                CustomWebView webView=null ;
-                componentViewResult.componentView=new FrameLayout(context);
-                if(appCMSPresenter.getWebViewCache(moduleId + component.getKey())!=null){
-                    webView=appCMSPresenter.getWebViewCache(moduleId + component.getKey());
+                CustomWebView webView = null;
+                componentViewResult.componentView = new FrameLayout(context);
+                if (appCMSPresenter.getWebViewCache(moduleId + component.getKey()) != null) {
+                    webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey());
                 }
-                if(webView!=null){
+                if (webView != null) {
 
-                    if(webView.getParent()!=null)
-                        ((ViewGroup)webView.getParent()).removeView(webView);
+                    if (webView.getParent() != null)
+                        ((ViewGroup) webView.getParent()).removeView(webView);
+//                    webView.reload();
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
-                }else
-                {
-                    webView=getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(),appCMSPresenter);
+                } else {
+                    webView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter);
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
                 }
                 break;
@@ -2414,12 +2418,12 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
-                        if(appCMSPresenter !=null &&
-                                appCMSPresenter.getTabBarUIFooterModule()!= null &&
-                                appCMSPresenter.getTabBarUIFooterModule().getSettings()!= null &&
-                                appCMSPresenter.getTabBarUIFooterModule().getSettings().isShowTabBar()){
+                        if (appCMSPresenter != null &&
+                                appCMSPresenter.getTabBarUIFooterModule() != null &&
+                                appCMSPresenter.getTabBarUIFooterModule().getSettings() != null &&
+                                appCMSPresenter.getTabBarUIFooterModule().getSettings().isShowTabBar()) {
                             ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
-                        }else {
+                        } else {
 
                             ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
                             ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -4261,15 +4265,15 @@ public class ViewCreator {
         }
     }
 
-    public CustomVideoPlayerView playerView(Context context, String videoId,String key,AppCMSPresenter appCmsPresenter) {
+    public CustomVideoPlayerView playerView(Context context, String videoId, String key, AppCMSPresenter appCmsPresenter) {
 
-      CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
+        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
 
         if (videoId != null) {
 
             videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
 //            AppCMSPresenter.videoPlayerView=videoPlayerView;
-            appCmsPresenter.setVideoPlayerViewCache(key,videoPlayerView);
+            appCmsPresenter.setVideoPlayerViewCache(key, videoPlayerView);
 
         }
 
@@ -4284,36 +4288,45 @@ public class ViewCreator {
         webView.getSettings().setDisplayZoomControls(false);
         webView.setBackgroundColor(Color.TRANSPARENT);
         webView.getSettings().setAppCacheEnabled(true);
-//        webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
         int width = BaseView.getDeviceWidth();
         String webViewUrl = "";
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
             webViewUrl = moduleAPI.getRawText();
+
+
+            String html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
+                    context.startActivity(browserIntent);
+                    return true;
+                }
+
+                @Override
+                public void onPageFinished(WebView view, String url) {
+                    super.onPageFinished(view, url);
+                    ((CustomWebView) view).isPageLoaded = true;
+                    appCMSPresenter.setWebViewCache(key, (CustomWebView) view);
+                    System.out.println("Web view page Load");
+                }
+
+                @Override
+                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                    super.onReceivedError(view, request, error);
+                    System.out.println("Web view page - error");
+//                    webView.loadData(html, "text/html", "UTF-8");
+
+                    appCMSPresenter.clearWebViewCache();
+                }
+            });
+
+            webView.loadData(html, "text/html", "UTF-8");
         }
-
-        String html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-                context.startActivity(browserIntent);
-                return true;
-            }
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                ((CustomWebView) view).isPageLoaded = true;
-                appCMSPresenter.setWebViewCache(key, (CustomWebView) view);
-            }
-        });
-
-
-        webView.loadData(html, "text/html", "UTF-8");
-
         return webView;
     }
 
