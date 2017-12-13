@@ -213,9 +213,9 @@ public class AppCMSPageFragment extends Fragment {
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
-            if (( group.getChildAt(0)) != null) {
+            if ((group.getChildAt(0)) != null) {
                 ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
-               appCMSPresenter.videoPlayerView= ((CustomVideoPlayerView) group.getChildAt(0));
+                appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
             }
            /*  Disable mini Player
             if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView)
@@ -248,12 +248,12 @@ public class AppCMSPageFragment extends Fragment {
     private CastServiceProvider.CastCallBackListener castCallBackListener = new CastServiceProvider.CastCallBackListener() {
         @Override
         public void onCastStatusUpdate() {
-            if(pageView != null && pageView.findChildViewById(R.id.video_player_id) != null){
-                if(pageView.findChildViewById(R.id.video_player_id) instanceof FrameLayout){
+            if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
+                if (pageView.findChildViewById(R.id.video_player_id) instanceof FrameLayout) {
 
                     FrameLayout rootView = (FrameLayout) pageView.findChildViewById(R.id.video_player_id);
-                    if(rootView.getChildAt(0) instanceof CustomVideoPlayerView)
-                    ((CustomVideoPlayerView)rootView.getChildAt(0)).showOverlayWhenCastingConnected();
+                    if (rootView.getChildAt(0) instanceof CustomVideoPlayerView)
+                        ((CustomVideoPlayerView) rootView.getChildAt(0)).showOverlayWhenCastingConnected();
                 }
             }
         }
@@ -264,7 +264,7 @@ public class AppCMSPageFragment extends Fragment {
         super.onPause();
         updateDataLists();
 
-        if (pageView!= null && pageView.findChildViewById(R.id.video_player_id) != null) {
+        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
             if (((VideoPlayerView) group.getChildAt(0)) != null) {
@@ -340,17 +340,14 @@ public class AppCMSPageFragment extends Fragment {
                 if ((group.getChildAt(0)) != null && !(group instanceof FullPlayerView) &&
                         !BaseView.isTablet(getActivity())) {
                     appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
-                    switch (newConfig.orientation) {
-                        case Configuration.ORIENTATION_LANDSCAPE:
-                            appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
-                            break;
-                        case Configuration.ORIENTATION_PORTRAIT:
-                            appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
-                            break;
-                    }
+                    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
 
+                    }
                 } else if ((group.getChildAt(0)) == null && AppCMSPresenter.isFullScreenVisible) {
-                    appCMSPresenter.restrictLandscapeOnly();
+                    if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                        appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
+                    }
                 }
 
             }
@@ -560,7 +557,7 @@ public class AppCMSPageFragment extends Fragment {
                             if (visibleIndex != 0 &&
                                     !appCMSPresenter.pipPlayerVisible) {
                                 System.out.println(" mini player show " + visibleIndex);
-                                if(pageView!=null) {
+                                if (pageView != null) {
                                     View nextChild = (pageView.findChildViewById(R.id.video_player_id));
                                     ViewGroup group = (ViewGroup) nextChild;
                                     if ((group.getChildAt(0)) != null) {
