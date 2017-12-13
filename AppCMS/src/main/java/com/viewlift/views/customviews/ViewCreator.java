@@ -236,15 +236,20 @@ public class ViewCreator {
             ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
         }
 
+        boolean resetWatchTime = false;
         if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
             videoPlayerView.setUri(Uri.parse(url), null);
+            resetWatchTime = true;
         }
 
         videoPlayerView.setFilmId(filmId);
         videoPlayerView.getPlayerView().setControllerAutoShow(true);
         videoPlayerView.getPlayerView().setControllerHideOnTouch(true);
         videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
-        videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
+
+        if (resetWatchTime) {
+            videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
+        }
 
         return videoPlayerView;
     }
@@ -3195,17 +3200,15 @@ public class ViewCreator {
                                 }
                             }
 
-//                            if (moduleAPI.getContentData().get(0).getGist().getWatchedTime()) {
-//                                //
-//                            }
-
-                            componentViewResult.componentView = playerView(context, appCMSPresenter,
-                                    videoUrl, moduleAPI.getContentData().get(0).getGist().getId(),
-                                    moduleAPI.getContentData().get(0).getGist().getWatchedTime());
-
-                            videoPlayerView.setPageView(pageView);
-                            appCMSPresenter.unrestrictPortraitOnly();
-                            componentViewResult.componentView.setId(R.id.video_player_id);
+                            if (component.getKey() != null &&
+                                    !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key))) {
+                                componentViewResult.componentView = playerView(context, appCMSPresenter,
+                                        videoUrl, moduleAPI.getContentData().get(0).getGist().getId(),
+                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                                videoPlayerView.setPageView(pageView);
+                                appCMSPresenter.unrestrictPortraitOnly();
+                                componentViewResult.componentView.setId(R.id.video_player_id);
+                            }
                         } else {
                             if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
