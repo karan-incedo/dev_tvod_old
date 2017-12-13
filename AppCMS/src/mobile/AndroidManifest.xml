@@ -18,7 +18,9 @@
         android:roundIcon="@mipmap/app_logo"
         tools:replace="android:theme,android:label"
         android:theme="@style/AppTheme">
-
+        <meta-data
+            android:name="com.urbanairship.autopilot"
+            android:value="com.viewlift.mobile.pushnotif.AppCMSAutoPilot" />
         <receiver
             android:name="com.appsflyer.MultipleInstallBroadcastReceiver"
             android:exported="true">

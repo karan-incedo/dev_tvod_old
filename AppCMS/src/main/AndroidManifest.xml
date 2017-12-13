@@ -11,9 +11,7 @@
         android:theme="@style/AppTheme"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:node="merge">
-        <meta-data
-            android:name="com.urbanairship.autopilot"
-            android:value="com.urbanairship.Autopilot" />
+
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />

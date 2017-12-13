@@ -1585,7 +1585,8 @@ public class ViewCreator {
         }
 
         int tintColor = Color.parseColor(getColor(context,
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                //appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
         switch (componentType) {
 
@@ -2979,7 +2980,9 @@ public class ViewCreator {
                             case PAGE_VIDEO_PUBLISHDATE_KEY:
                                 if (moduleAPI.getContentData() != null &&
                                         !moduleAPI.getContentData().isEmpty() &&
-                                        moduleAPI.getContentData().get(0) != null) {
+                                        moduleAPI.getContentData().get(0) != null &&
+                                        moduleAPI.getContentData().get(0).getGist() != null &&
+                                        moduleAPI.getContentData().get(0).getGist().getPublishDate() != 0) {
                                     long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
                                     String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");
                                     ((TextView) componentViewResult.componentView).setText(publishDate);

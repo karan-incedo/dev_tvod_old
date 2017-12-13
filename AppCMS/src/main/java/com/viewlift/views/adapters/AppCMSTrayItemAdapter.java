@@ -106,7 +106,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         this.receivers = new ArrayList<>();
         this.tintColor = Color.parseColor(getColor(context,
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+               // appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
         this.userId = appCMSPresenter.getLoggedInUser();
 
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
