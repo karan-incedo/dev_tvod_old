@@ -333,25 +333,25 @@ public class AppCMSPageFragment extends Fragment {
         appCMSPresenter.isconfig = true;
 
         if (appCMSPresenter.isAutoRotate()) {
-            if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
+            if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
+                    !BaseView.isTablet(getActivity())) {
 
                 View nextChild = (pageView.findChildViewById(R.id.video_player_id));
                 ViewGroup group = (ViewGroup) nextChild;
-                if ((group.getChildAt(0)) != null && !(group instanceof FullPlayerView) &&
-                        !BaseView.isTablet(getActivity())) {
+                if ((group.getChildAt(0)) == null &&
+                        newConfig.orientation == Configuration.ORIENTATION_PORTRAIT &&
+                        AppCMSPresenter.isFullScreenVisible) {
+
+                    appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
+
+                } else if ((group.getChildAt(0)) != null &&
+                        !(group instanceof FullPlayerView) &&
+                        newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+
                     appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
-                    if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
-
-                    }
-                } else if ((group.getChildAt(0)) == null && AppCMSPresenter.isFullScreenVisible) {
-                    if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-                        appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
-                    }
+                    appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
                 }
-
             }
-
         }
         handleOrientation(newConfig.orientation);
     }
