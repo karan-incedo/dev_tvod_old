@@ -8611,7 +8611,9 @@ public class AppCMSPresenter {
 
         setLoginPageUserName(null);
         setLoginPagePassword(null);
-
+        if (loginFromNavPage) {
+            entitlementPendingVideoData=null;
+        }
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
@@ -8638,8 +8640,6 @@ public class AppCMSPresenter {
                         sendRefreshPageAction();
                         if (!loginFromNavPage) {
                             sendCloseOthersAction(null, true, !loginFromNavPage);
-                        } else {
-                            sendCloseOthersAction(null, true, false);
                         }
                         launchButtonSelectedAction(entitlementPendingVideoData.pagePath,
                                 entitlementPendingVideoData.action,
