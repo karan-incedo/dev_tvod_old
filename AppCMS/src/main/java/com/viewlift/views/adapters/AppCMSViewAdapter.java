@@ -449,7 +449,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     actionPresenter.setAction(action);
 
                                     if (appCMSPresenter.getCurrentActivity().getResources()
-                                            .getBoolean(R.bool.video_detail_page_plays_video)) {
+                                            .getBoolean(R.bool.video_detail_page_plays_video) &&
+                                            !showAction.equals(action)) {
                                         if (!appCMSPresenter.launchVideoPlayer(data,
                                                 currentPlayingIndex,
                                                 relatedVideoIds,
@@ -622,7 +623,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             actionPresenter.setExtraScreenType(AppCMSPresenter.ExtraScreenType.DRAGGABLE_PANEL);
                         }
 
-                        if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
+                        if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                !showAction.equals(action)) {
                             if (!appCMSPresenter.launchVideoPlayer(data,
                                     currentPlayingIndex,
                                     relatedVideoIds,
