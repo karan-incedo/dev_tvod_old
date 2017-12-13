@@ -191,12 +191,15 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
-    private void selectViewPlan(CollectionGridItemView collectionGridItemView) {
+    private void selectViewPlan(CollectionGridItemView collectionGridItemView, String selectedText) {
         collectionGridItemView.setSelectable(true);
         for (View collectionGridChild : collectionGridItemView.getViewsToUpdateOnClickEvent()) {
             if (collectionGridChild instanceof Button) {
                 Component childComponent = collectionGridItemView.matchComponentToView(collectionGridChild);
-                ((TextView) collectionGridChild).setText(childComponent.getSelectedText());
+                if (selectedText == null) {
+                    selectedText = childComponent.getSelectedText();
+                }
+                ((TextView) collectionGridChild).setText(selectedText);
                 ((TextView) collectionGridChild).setTextColor(Color.parseColor(appCMSPresenter.getColor(mContext,
                         childComponent.getTextColor())));
                 collectionGridChild.setBackgroundColor(selectedColor);
@@ -250,7 +253,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 if (planItemView[i] != null) {
                     if (selectedPosition == i) {
                         setBorder(planItemView[i], selectedColor);
-                        selectViewPlan(planItemView[i]);
+                        String selectedText = null;
+                        if (adapterData.get(i) != null &&
+                                adapterData.get(i).getPlanDetails() != null &&
+                                adapterData.get(i).getPlanDetails().get(0) != null &&
+                                adapterData.get(i).getPlanDetails().get(0).getCallToAction() != null) {
+                            selectedText = adapterData.get(i).getPlanDetails().get(0).getCallToAction();
+                        }
+                        selectViewPlan(planItemView[i], selectedText);
                     } else {
                         setBorder(planItemView[i], ContextCompat.getColor(mContext, android.R.color.white));
                         deselectViewPlan01(planItemView[i]);
@@ -328,7 +338,14 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             if (planItemView[i] != null) {
                                 if (selectedPosition == i) {
                                     setBorder(planItemView[i], selectedColor);
-                                    selectViewPlan(planItemView[i]);
+                                    String selectedText = null;
+                                    if (adapterData.get(i) != null &&
+                                            adapterData.get(i).getPlanDetails() != null &&
+                                            adapterData.get(i).getPlanDetails().get(0) != null &&
+                                            adapterData.get(i).getPlanDetails().get(0).getCallToAction() != null) {
+                                        selectedText = adapterData.get(i).getPlanDetails().get(0).getCallToAction();
+                                    }
+                                    selectViewPlan(planItemView[i], selectedText);
                                 } else {
                                     setBorder(planItemView[i], ContextCompat.getColor(mContext, android.R.color.white));
                                     deselectViewPlan01(planItemView[i]);
