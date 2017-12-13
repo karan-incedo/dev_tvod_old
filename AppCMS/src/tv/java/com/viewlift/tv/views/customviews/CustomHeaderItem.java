@@ -16,6 +16,16 @@ public class CustomHeaderItem extends HeaderItem {
     private String fontFamily;
 
     private boolean mIsCarousal;
+
+    public boolean ismIsLivePlayer() {
+        return mIsLivePlayer;
+    }
+
+    public void setmIsLivePlayer(boolean mIsLivePlayer) {
+        this.mIsLivePlayer = mIsLivePlayer;
+    }
+
+    private boolean mIsLivePlayer;
     private int mListRowLeftMargin;
     private int mListRowRightMargin;
 

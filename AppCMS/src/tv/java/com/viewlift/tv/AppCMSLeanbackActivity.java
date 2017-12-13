@@ -38,6 +38,10 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
             return;
         }
         setContentView(R.layout.activity_launch_tv);
+
+        ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
+        imageView.setBackgroundResource(R.drawable.splash_screen_msn);
+
         //Log.d(TAG, "Launching application from main.json");
 
         //Log.d(TAG, "onCreate()");

@@ -74,6 +74,7 @@
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
         <item>AC RawHtml 01</item>
+        <item>AC WebFrame 01</item>
     </string-array>
 
     <string-array name="app_cms_download_quality_array">
@@ -104,9 +105,12 @@
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
+    <string name="app_cms_page_thumbnail_date_and_image_key">trayTimeAndDataKey</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
     <string name="app_cms_page_text_alignment_center_key">center</string>
+    <string name="app_cms_page_text_alignment_center_horizontal_key">center_horizontal</string>
+    <string name="app_cms_page_text_alignment_center_vertical_key">center_vertical</string>
     <string name="app_cms_page_text_alignment_key">textAlignment</string>
     <string name="app_cms_page_text_alignment_left_key">left</string>
     <string name="app_cms_page_text_alignment_right_key">right</string>
@@ -120,6 +124,7 @@
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
     <string name="app_cms_page_font_family_key">OpenSans</string>
+    <string name="app_cms_page_lato_font_key">Lato</string>
     <string name="app_cms_page_textview_key">textView</string>
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>
@@ -184,9 +189,12 @@
     <string name="app_cms_page_watchlist_title_key">title</string>
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
+    <string name="app_cms_page_bedge_image_key">bedgeImage</string>
     <string name="app_cms_page_video_image_key">videoImage</string>
     <string name="app_cms_page_show_image_video_key">showImage</string>
+    <string name="app_cms_page_thumbnail_image_video_key">videoThumbnailImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
+    <string name="app_cms_page_start_watching_button_key">startWatching</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
     <string name="app_cms_page_show_video_description_key">showDescriptionText</string>
     <string name="app_cms_page_video_title_key">videoTitle</string>
@@ -198,6 +206,7 @@
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
+    <string name="app_cms_start_watching_key">startWatching</string>
     <string name="app_cms_page_share_key">shareButton</string>
     <string name="app_cms_page_video_starrating_key">starRating</string>
     <string name="app_cms_page_video_credits_director_key">Director</string>
@@ -257,6 +266,9 @@
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
+    <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>
+    <string name="app_cms_page_detail_app_logo_key">appLogo</string>
+    <string name="app_cms_pagename_terms_of_services_key">Terms of Service</string>
 
     <!-- AppCMS Action names -->
     <string name="app_cms_action_initialize_key">Initalize</string>
@@ -357,6 +369,7 @@
     <string name="app_cms_movies_label">Movies</string>
     <string name="app_cms_search_icon_name">search_</string>
     <string name="app_cms_search_label">Search</string>
+    <string name="app_cms_teams_label">Teams</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
     <string name="profile_label">Profile</string>
 
@@ -445,4 +458,7 @@
     <string name="app_cms_banner_detail_title_key">bannerTitle</string>
 
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
+    <string name="icon_image_key">iconImage</string>
+
+    <string name="app_cms_subtitle_label">subtitleLabel</string>
 </resources>

@@ -95,11 +95,11 @@
           "layout": {
             "ftv": {
               "width": 270,
-              "height": 400,
+              "height": 170,
 //              "rightMargin": 53.2,
               "leftMargin": 1029,
               "fontSize": 18,
-              "topMargin" : 376,
+              "topMargin" : 390,
               "padding" : 6
 //              "yAxis": 305
             }

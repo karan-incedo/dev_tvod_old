@@ -102,7 +102,9 @@ public abstract class TVBaseView extends FrameLayout {
         }
 
         ((TextView) view).setText(infoText.toString());
-        view.setAlpha(0.6f);
+         view.setAlpha(0.6f);
+        ((TextView) view).setLetterSpacing(LETTER_SPACING);
+
     }
 
     public ViewGroup getChildrenContainer() {
@@ -152,78 +154,82 @@ public abstract class TVBaseView extends FrameLayout {
         int parentViewHeight = (int) getViewHeight(getContext(),
                 parentLayout,
                 parentView.getMeasuredHeight());
-        //  int maxViewWidth = (int) getViewMaximumWidth(getContext(), layout, -1);
+      //  int maxViewWidth = (int) getViewMaximumWidth(getContext(), layout, -1);
         int measuredHeight = parentViewHeight != 0 ? parentViewHeight : deviceHeight;
         int gravity = Gravity.NO_GRAVITY;
 
-        FireTV mobile = layout.getTv();
-        if (mobile != null) {
-            if (getViewWidth(mobile) != -1) {
-                if (mobile.getXAxis() != null) {
-                    float scaledX = DEVICE_WIDTH * (Float.valueOf(mobile.getXAxis()) / STANDARD_MOBILE_WIDTH_PX);
-                    lm = Math.round(scaledX);
+            FireTV mobile = layout.getTv();
+            if (mobile != null) {
+                if (getViewWidth(mobile) != -1) {
+                    if (mobile.getXAxis() != null) {
+                        float scaledX = DEVICE_WIDTH * (Float.valueOf(mobile.getXAxis()) / STANDARD_MOBILE_WIDTH_PX);
+                        lm = Math.round(scaledX);
+                    }
                 }
-            }
 
-            if (getViewHeight(mobile) != -1) {
-                if (mobile.getYAxis() != null) {
-                    float scaledY = DEVICE_HEIGHT * ((Float.valueOf(mobile.getYAxis()) / STANDARD_MOBILE_HEIGHT_PX));
-                    tm = Math.round(scaledY);
+                if (getViewHeight(mobile) != -1) {
+                    if (mobile.getYAxis() != null) {
+                        float scaledY = DEVICE_HEIGHT * ((Float.valueOf(mobile.getYAxis()) / STANDARD_MOBILE_HEIGHT_PX));
+                        tm = Math.round(scaledY);
+                    }
                 }
-            }
 
-            if (mobile.getLeftMargin() != null && (Float.valueOf(mobile.getLeftMargin()) != 0)) {
-                float scaledLm = DEVICE_WIDTH * ((Float.valueOf(mobile.getLeftMargin()) / STANDARD_MOBILE_WIDTH_PX));
-                lm = Math.round(scaledLm);
-            }
+                if (mobile.getLeftMargin() != null && (Float.valueOf(mobile.getLeftMargin()) != 0)) {
+                    float scaledLm = DEVICE_WIDTH * ((Float.valueOf(mobile.getLeftMargin()) / STANDARD_MOBILE_WIDTH_PX));
+                    lm = Math.round(scaledLm);
+                }
 
-            if (mobile.getTopMargin() != null && (Float.valueOf(mobile.getTopMargin())) != 0) {
-                float scaledLm = DEVICE_HEIGHT * ((Float.valueOf(mobile.getTopMargin()) / STANDARD_MOBILE_HEIGHT_PX));
-                tm = Math.round(scaledLm);
-            }
+                if(mobile.getTopMargin() != null && (Float.valueOf(mobile.getTopMargin())) != 0){
+                    float scaledLm = DEVICE_HEIGHT * ((Float.valueOf(mobile.getTopMargin()) / STANDARD_MOBILE_HEIGHT_PX));
+                    tm = Math.round(scaledLm);
+                }
 
-            if (mobile.getRightMargin() != null && (Float.valueOf(mobile.getRightMargin())) != 0) {
-                float scaledLm = DEVICE_WIDTH * ((Float.valueOf(mobile.getRightMargin()) / STANDARD_MOBILE_WIDTH_PX));
-                rm = Math.round(scaledLm);
-            }
+                if(mobile.getRightMargin() != null && (Float.valueOf(mobile.getRightMargin())) != 0){
+                    float scaledLm = DEVICE_WIDTH * ((Float.valueOf(mobile.getRightMargin()) / STANDARD_MOBILE_WIDTH_PX));
+                    rm = Math.round(scaledLm);
+                }
 
-        }
+            }
 
 
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
         AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
 
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
-                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+                componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ) {
             if (viewWidth < 0) {
                 viewWidth = FrameLayout.LayoutParams.MATCH_PARENT;
             }
 
-            if (childComponent.getTextAlignment() != null) {
+            if(childComponent.getTextAlignment() != null){
                 AppCMSUIKeyType textAlignment = jsonValueKeyMap.get(childComponent.getTextAlignment());
-                if (textAlignment != null) {
-                    switch (textAlignment) {
-                        case PAGE_TEXTALIGNMENT_LEFT_KEY:
-                            gravity = Gravity.LEFT;
-                            if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY) {
-                                gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
-                            }
-                            break;
-                        case PAGE_TEXTALIGNMENT_RIGHT_KEY:
-                            gravity = Gravity.RIGHT;
-                            if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY) {
-                                gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
-                            }
-                            break;
-                        case PAGE_TEXTALIGNMENT_CENTER_KEY:
-                            gravity = Gravity.CENTER;
-                            if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_USER_EMAIL_LABEL_KEY) {
-                                gravity = Gravity.CENTER_HORIZONTAL;
-                            }
-                            break;
-                    }
-                    ((TextView) view).setGravity(gravity);
+                switch(textAlignment){
+                    case PAGE_TEXTALIGNMENT_LEFT_KEY:
+                        gravity = Gravity.LEFT ;
+                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_TITLE_KEY){
+                            gravity = Gravity.LEFT | Gravity.CENTER_VERTICAL;
+                        }
+                        break;
+                    case PAGE_TEXTALIGNMENT_RIGHT_KEY:
+                        gravity = Gravity.RIGHT ;
+                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY){
+                            gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
+                        }
+                        break;
+                    case PAGE_TEXTALIGNMENT_CENTER_KEY:
+                        gravity = Gravity.CENTER;
+                        if(componentKey == AppCMSUIKeyType.PAGE_SETTINGS_USER_EMAIL_LABEL_KEY){
+                            gravity = Gravity.CENTER_HORIZONTAL;
+                        }
+                        break;
+                    case PAGE_TEXTALIGNMENT_CENTER_HORIZONTAL_KEY:
+                        gravity = Gravity.CENTER_HORIZONTAL;
+                        break;
+                    case PAGE_TEXTALIGNMENT_CENTER_VERTICAL_KEY:
+                        gravity = Gravity.CENTER_VERTICAL;
+                        break;
                 }
+                ((TextView) view).setGravity(gravity);
             }
 
 
@@ -242,11 +248,12 @@ public abstract class TVBaseView extends FrameLayout {
                         lm = 0;
                     }
                     break;
-                case PAGE_THUMBNAIL_TITLE_KEY: {
-                    tm -= viewHeight / 2;
-                    viewHeight *= 1.5;
-                }
-                break;
+                case PAGE_THUMBNAIL_TITLE_KEY:
+                 {
+                        tm -= viewHeight / 2;
+                        viewHeight *= 1.5;
+                    }
+                    break;
                 case PAGE_WATCH_VIDEO_KEY:
                     gravity = Gravity.CENTER_HORIZONTAL;
                     break;
@@ -258,19 +265,21 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                 case PAGE_VIDEO_WATCH_TRAILER_KEY:
                     //viewWidth = FrameLayout.LayoutParams.WRAP_CONTENT;
-                    int padding = Utils.getViewXAxisAsPerScreen(getContext(), childComponent.getPadding());
-                    view.setPadding(padding, padding, padding, padding);
+                    int padding = Utils.getViewXAxisAsPerScreen(getContext(),childComponent.getPadding());
+                    view.setPadding(padding,padding,padding,padding);
                     break;
-                case PAGE_VIDEO_TITLE_KEY:
-                    viewWidth = DEVICE_WIDTH / 2 - Utils.getViewXAxisAsPerScreen(getContext(), 150);
-                    break;
+                /*case PAGE_VIDEO_TITLE_KEY:
+                    if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
+                    }
+                    break;*/
                 case PAGE_VIDEO_SUBTITLE_KEY:
-                    viewWidth = DEVICE_WIDTH / 2;
+                    viewWidth = DEVICE_WIDTH/2;
                     break;
                 case PAGE_AUTOPLAY_FINISHED_UP_TITLE_KEY:
                 case PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY:
                     gravity = Gravity.NO_GRAVITY;
-                    break;
+                break;
             }
 
             int fontsize = getFontsize(getContext(), childComponent);
@@ -282,12 +291,15 @@ public abstract class TVBaseView extends FrameLayout {
         } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
             viewHeight = (int) (viewHeight / 1.15);
         } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY
-                && componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_IMAGE_KEY) {
-            int imagePadding = Integer.valueOf(
-                    childComponent.getLayout().getTv().getPadding() != null
-                            ? childComponent.getLayout().getTv().getPadding()
-                            : "0");
-            view.setPadding(imagePadding, imagePadding, imagePadding, imagePadding);
+            && componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_IMAGE_KEY) {
+                int imagePadding = Integer.valueOf(
+                        childComponent.getLayout().getTv().getPadding() != null
+                                ? childComponent.getLayout().getTv().getPadding()
+                                : "0");
+                view.setPadding(imagePadding, imagePadding, imagePadding, imagePadding);
+        }else if(componentType == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY){
+            viewHeight = DEVICE_HEIGHT;
+            viewWidth = FrameLayout.LayoutParams.MATCH_PARENT;
         }
 
         if (useWidthOfScreen) {
@@ -313,7 +325,7 @@ public abstract class TVBaseView extends FrameLayout {
             return component.getFontSize();
         }
         if (component.getLayout().getTv().getFontSize() > 0) {
-            return component.getLayout().getTv().getFontSize();
+                return component.getLayout().getTv().getFontSize();
         }
 
         return 0;
@@ -324,9 +336,9 @@ public abstract class TVBaseView extends FrameLayout {
     }
 
     protected void setTypeFace(Context context,
-                               Map<String, AppCMSUIKeyType> jsonValueKeyMap,
-                               Component component,
-                               TextView textView) {
+                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                             Component component,
+                             TextView textView) {
         if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
             if (fontWeight == null) {
@@ -348,5 +360,40 @@ public abstract class TVBaseView extends FrameLayout {
             }
             textView.setTypeface(face);
         }
+
+
+        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            Typeface face = null;
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_bold));
+                    //Log.d("" , "setTypeFace===Opensans_Bold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_MEDIUM_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_medium));
+                    //Log.d("" , "setTypeFace===Opensans_SemiBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_LIGHT_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_light));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_REGULAR_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_regular));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                default:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
+                    //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+            }
+
+            textView.setTypeface(face);
+        }
+
+
+
     }
 }

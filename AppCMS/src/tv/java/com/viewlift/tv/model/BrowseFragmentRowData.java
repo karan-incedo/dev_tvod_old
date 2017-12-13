@@ -10,8 +10,11 @@ import java.util.List;
  */
 
 public class BrowseFragmentRowData {
-
          public ContentDatum contentData;
          public List<Component> uiComponentList;
          public String action;
+         public String blockName;
+
+         //thisproperty will be use in case component is a player component.
+         public boolean isPlayerComponent;
 }

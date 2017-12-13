@@ -98,4 +98,15 @@ public class TVPageView extends FrameLayout {
         }
         return childrenContainer;
     }
+
+
+    private boolean isStandAlonePlayerEnabled = false;
+    public void setIsStandAlonePlayerEnabled(boolean isPlayerEnabled){
+        isStandAlonePlayerEnabled = isPlayerEnabled;
+    }
+    public boolean isStandAlonePlayerEnabled(){
+        return isStandAlonePlayerEnabled;
+    }
+
+
 }

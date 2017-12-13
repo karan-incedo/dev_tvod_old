@@ -62,6 +62,10 @@ public class AppCMSAndroidUI implements Serializable {
     @Expose
     String blocksBaseUrl;
 
+    @SerializedName("subscription_flow_content")
+    @Expose
+    SubscriptionFlowContent subscriptionFlowContent;
+
     public Advertising getAdvertising() {
         return advertising;
     }
@@ -164,5 +168,13 @@ public class AppCMSAndroidUI implements Serializable {
 
     public void setBlocksBaseUrl(String blocksBaseUrl) {
         this.blocksBaseUrl = blocksBaseUrl;
+    }
+
+    public SubscriptionFlowContent getSubscriptionFlowContent() {
+        return subscriptionFlowContent;
+    }
+
+    public void setSubscriptionFlowContent(SubscriptionFlowContent subscriptionFlowContent) {
+        this.subscriptionFlowContent = subscriptionFlowContent;
     }
 }

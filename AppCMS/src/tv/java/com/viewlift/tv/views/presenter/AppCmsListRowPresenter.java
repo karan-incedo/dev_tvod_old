@@ -1,6 +1,5 @@
 package com.viewlift.tv.views.presenter;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -28,7 +27,6 @@ import com.viewlift.R;
 /**
  * Created by nitin.tyagi on 7/2/2017.
  */
-
 public class AppCmsListRowPresenter extends ListRowPresenter {
 
     private Context mContext;
@@ -37,24 +35,24 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     Typeface typeface = null;
     float headerTileLetterSpacing = 0.11f;
 
-    public AppCmsListRowPresenter(Context context, AppCMSPresenter appCMSPresenter) {
-        super(FocusHighlight.ZOOM_FACTOR_XSMALL);
+    public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter){
+        super(FocusHighlight.ZOOM_FACTOR_NONE);
         mContext = context;
         setShadowEnabled(false);
         setSelectEffectEnabled(false);
-        mAppCMSPresenter = appCMSPresenter;
-        textColor = mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+        mAppCMSPresenter  = appCMSPresenter;
+        textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter);
     }
 
     @Override
     protected void onBindRowViewHolder(RowPresenter.ViewHolder holder, Object item) {
         super.onBindRowViewHolder(holder, item);
 
-        if (null != holder.getRow()) {
-            LinearLayout headerTitleContainer = ((LinearLayout) holder.getHeaderViewHolder().view);
-            final RowHeaderView headerTitle = (RowHeaderView) headerTitleContainer.findViewById(R.id.row_header);
-            if (null == textColor) {
-                textColor = mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor();
+        if(null != holder.getRow()){
+            LinearLayout headerTitleContainer =  ((LinearLayout)holder.getHeaderViewHolder().view);
+            final RowHeaderView headerTitle = (RowHeaderView)headerTitleContainer.findViewById(R.id.row_header);
+            if(null == textColor){
+                textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter); /*mAppCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor();*/
             }
             headerTitle.setTextColor(Color.parseColor(textColor));
             //set Alpha for removing any shadow.
@@ -102,8 +100,22 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
 
             boolean isCarousal = customHeaderItem.ismIsCarousal();
 
-            //Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString());
-            if (isCarousal) {
+            Log.d("AppCmsListRowPresenter" , "isCarousal = "+isCarousal + " Title = "+headerTitle.getText().toString()
+            +" isLivePlayer = "+customHeaderItem.ismIsLivePlayer());
+            if(customHeaderItem.ismIsLivePlayer()){
+                headerTitleContainer.setVisibility(View.GONE);
+                headerTitle.setVisibility(View.GONE);
+
+                listRowParam.height = mContext.getResources().getDisplayMetrics().heightPixels + 100;
+                listRowParam.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                listRowView.setLayoutParams(listRowParam);
+
+                horizontalGrLayoutParams.setMargins(-70, 0 , 0,0);
+                horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
+
+                return;
+            }
+            else if(isCarousal){
                 headerTitleContainer.setVisibility(View.GONE);
                 headerTitle.setVisibility(View.GONE);
                 int horizontalSpacing = (int) mContext.getResources().getDimension(R.dimen.caurosel_grid_item_spacing);

@@ -15,7 +15,6 @@ import android.support.v17.leanback.widget.ListRow;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,7 +27,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -598,6 +596,7 @@ public class AppCmsSearchFragment extends Fragment {
                 CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
                         Integer.valueOf(component.getLayout().getTv().getHeight()),
                         Integer.valueOf(component.getLayout().getTv().getWidth()),
+                        component.getTrayBackground(),
                         jsonValueKeyMap
                 );
                 ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
@@ -607,6 +606,7 @@ public class AppCmsSearchFragment extends Fragment {
                     rowData.contentData = searchResult.getContent();
                     rowData.uiComponentList = component.getComponents();
                     rowData.action = component.getTrayClickAction();
+                    rowData.blockName = moduleUI.getBlockName();
                     traylistRowAdapter.add(rowData);
                     //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                 }
