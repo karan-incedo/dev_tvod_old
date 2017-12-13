@@ -11208,7 +11208,7 @@ public class AppCMSPresenter {
         this.extraBoldTypeFace = extraBoldTypeFace;
     }
 
-    public void showPopupWindowPlayer(View v) {
+    public void showPopupWindowPlayer(View v, long watchedTime) {
         //  dismissPopupWindowPlayer();
         // FIXME: this should not be using a hardcoded url.
 //        Uri mp4VideoUri = Uri.parse("https://vtgcmp4-snagfilms.akamaized.net/video_assets/2015/mp4/1960_Masters/1960_01DL/1960_01DL_1280kbps.mp4");
@@ -11218,7 +11218,8 @@ public class AppCMSPresenter {
         videoPlayerViewPIP = ViewCreator.playerView(currentActivity,
                 this,
                 mp4VideoUri.toString(),
-                null);
+                null,
+                watchedTime);
 
         //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
         relativeLayoutPIP = new RelativeLayout(currentActivity);
@@ -11246,7 +11247,7 @@ public class AppCMSPresenter {
         pipPlayerVisible = true;
 
 //        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, mp4VideoUri.toString());
-        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, url, null);
+        videoPlayerViewPIP = ViewCreator.playerView(currentActivity, this, url, null, 0L);
 
         //videoPlayerViewPIP.setCurrentPosition(videoPlayerViewPage.getCurrentPosition());
         relativeLayoutPIP = new RelativeLayout(currentActivity);

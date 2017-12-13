@@ -156,7 +156,8 @@ public class AppCMSPageFragment extends Fragment {
                                     }
 
                                 } else if (!appCMSPresenter.pipPlayerVisible) {
-                                    appCMSPresenter.showPopupWindowPlayer(v);
+                                    appCMSPresenter.showPopupWindowPlayer(v,
+                                            0);
                                     if (videoPlayerView != null) {
                                         videoPlayerView.pausePlayer();
                                     }
@@ -165,7 +166,7 @@ public class AppCMSPageFragment extends Fragment {
 
                     if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) > 0 &&
                             !appCMSPresenter.pipPlayerVisible) {
-                        appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                        appCMSPresenter.showPopupWindowPlayer(nestedScrollView, 0);
                     } else if (appCMSPresenter.getFirstVisibleChildPosition(nestedScrollView) == 0) {
                         appCMSPresenter.dismissPopupWindowPlayer();
                     }

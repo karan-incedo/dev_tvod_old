@@ -1933,7 +1933,8 @@ public class ViewCreator {
                 }
 
                 if (!appCMSPresenter.pipPlayerVisible) {
-                    appCMSPresenter.showPopupWindowPlayer(componentViewResult.componentView);
+                    appCMSPresenter.showPopupWindowPlayer(componentViewResult.componentView,
+                            moduleAPI.getContentData().get(0).getGist().getWatchedTime());
                     componentViewResult.componentView = playerView(context,
                             appCMSPresenter,
                             videoUrl,
