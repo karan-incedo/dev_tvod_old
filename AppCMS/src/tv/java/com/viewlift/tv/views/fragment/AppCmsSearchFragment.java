@@ -46,7 +46,6 @@ import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 
 import java.io.IOException;
-
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -589,31 +588,78 @@ public class AppCmsSearchFragment extends Fragment {
                 }
                 break;
             case PAGE_COLLECTIONGRID_KEY:
-                if (null == mRowsAdapter) {
-                    AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
-                    mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+                if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                    createRowsForEntertainment(context, component, appCMSSearchResults, moduleUI, jsonValueKeyMap, appCMSPresenter);
+                } else {
+                    createRowsForST(context, component, appCMSSearchResults, moduleUI, jsonValueKeyMap, appCMSPresenter);
                 }
-                CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
-                        Integer.valueOf(component.getLayout().getTv().getHeight()),
-                        Integer.valueOf(component.getLayout().getTv().getWidth()),
-                        component.getTrayBackground(),
-                        jsonValueKeyMap
-                );
-                ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
-
-                for (AppCMSSearchResult searchResult : appCMSSearchResults) {
-                    BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                    rowData.contentData = searchResult.getContent();
-                    rowData.uiComponentList = component.getComponents();
-                    rowData.action = component.getTrayClickAction();
-                    rowData.blockName = moduleUI.getBlockName();
-                    traylistRowAdapter.add(rowData);
-                    //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
-                }
-                mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                 break;
         }
     }
+
+    private void createRowsForEntertainment(Context context,
+                                            Component component,
+                                            List<AppCMSSearchResult> appCMSSearchResults,
+                                            ModuleList moduleUI,
+                                            Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                            AppCMSPresenter appCMSPresenter) {
+        if (null == mRowsAdapter) {
+            AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+            mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+        }
+        CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
+                Integer.valueOf(component.getLayout().getTv().getHeight()),
+                Integer.valueOf(component.getLayout().getTv().getWidth()),
+                component.getTrayBackground(),
+                jsonValueKeyMap
+        );
+        ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+
+        for (AppCMSSearchResult searchResult : appCMSSearchResults) {
+            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+            rowData.contentData = searchResult.getContent();
+            rowData.uiComponentList = component.getComponents();
+            rowData.action = component.getTrayClickAction();
+            rowData.blockName = moduleUI.getBlockName();
+            trayListRowAdapter.add(rowData);
+            //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
+        }
+        mRowsAdapter.add(new ListRow(customHeaderItem, trayListRowAdapter));
+    }
+
+    private void createRowsForST(Context context,
+                                 Component component,
+                                 List<AppCMSSearchResult> appCMSSearchResults,
+                                 ModuleList moduleUI,
+                                 Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                 AppCMSPresenter appCMSPresenter) {
+        if (null == mRowsAdapter) {
+            AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+            mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+        }
+        CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
+                Integer.valueOf(component.getLayout().getTv().getHeight()),
+                Integer.valueOf(component.getLayout().getTv().getWidth()),
+                component.getTrayBackground(),
+                jsonValueKeyMap
+        );
+        ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+
+        for (int i = 0; i < appCMSSearchResults.size(); i++) {
+            AppCMSSearchResult searchResult = appCMSSearchResults.get(i);
+            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+            rowData.contentData = searchResult.getContent();
+            rowData.uiComponentList = component.getComponents();
+            rowData.action = component.getTrayClickAction();
+            rowData.blockName = moduleUI.getBlockName();
+            trayListRowAdapter.add(rowData);
+            if ((trayListRowAdapter.size()  % 4 == 0) || i == appCMSSearchResults.size() - 1) {
+                mRowsAdapter.add(new ListRow(customHeaderItem, trayListRowAdapter));
+                trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+            }
+        }
+    }
+
 
     public void searchResult(String searchQuery){
         try {
