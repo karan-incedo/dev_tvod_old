@@ -273,8 +273,8 @@ public class ViewCreator {
                         }
                     }
                 }
+                videoPlayerViewBinder.setAutoplayCancelled(videoPlayerViewBinder.getPlayerState() == playerState.getPlaybackState());
                 videoPlayerViewBinder.setPlayerState(playerState.getPlaybackState());
-                videoPlayerViewBinder.setAutoplayCancelled(false);
             }
         });
 
