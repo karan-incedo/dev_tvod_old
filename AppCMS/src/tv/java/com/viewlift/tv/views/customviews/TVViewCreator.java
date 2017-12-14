@@ -47,7 +47,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -242,6 +241,13 @@ public class TVViewCreator {
             }
             return null;
         } else {
+            if (context.getResources().getString(R.string.appcms_watchlist_module).equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
+            }
+
+            if (context.getResources().getString(R.string.app_cms_page_history_module_key).equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
+            }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 

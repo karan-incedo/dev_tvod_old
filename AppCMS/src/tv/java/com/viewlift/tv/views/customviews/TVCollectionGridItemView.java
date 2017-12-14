@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -334,29 +333,35 @@ public class TVCollectionGridItemView extends TVBaseView {
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_SUBTITLE_LABEL) {
 
                     Metadata metadata = appCMSPresenter.getAppCMSMain().getBrand().getMetadata();
-                    metadata = new Metadata();
-                    metadata.setDisplayPublishedDate(true);
-                    metadata.setDisplayAuthor(true);
-                    metadata.setDisplayDuration(true);
-                    StringBuilder stringBuilder = new StringBuilder();
+                    if (metadata != null && data != null) {
+                        StringBuilder stringBuilder = new StringBuilder();
 
+                        if (metadata.isDisplayDuration()){
+                            if (data.getGist() != null) {
+                                stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
+                            }
+                        }
 
-                    if (metadata.isDisplayDuration()){
-                        stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
+                        if (metadata.isDisplayAuthor()){
+                            if (data.getContentDetails() != null
+                                    && data.getContentDetails().getAuthor() != null) {
+                                if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                                stringBuilder.append(data.getContentDetails().getAuthor());
+                            }
+                        }
+
+                        if (metadata.isDisplayPublishedDate()){
+                            if (data.getGist() != null) {
+                                if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                                Date publishedDate = new Date(data.getGist().getPublishDate());
+                                SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                                String date = spf.format(publishedDate);
+                                stringBuilder.append("Published on ");
+                                stringBuilder.append(date);
+                            }
+                        }
+                        ((TextView) view).setText(stringBuilder);
                     }
-                    if (metadata.isDisplayAuthor()){
-                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                        stringBuilder.append("by John Smith");
-                    }
-                    if (metadata.isDisplayPublishedDate()){
-                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                        Date publishedDate = new Date(data.getGist().getPublishDate());
-                        SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                        String date = spf.format(publishedDate);
-                        stringBuilder.append("Published on ");
-                        stringBuilder.append(date);
-                    }
-                    ((TextView) view).setText(stringBuilder);
                 }
             } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 int gridImagePadding = Integer.valueOf(
@@ -375,8 +380,6 @@ public class TVCollectionGridItemView extends TVBaseView {
                 ((ProgressBar) view).setProgress(0);
                 ((ProgressBar) view).setProgress(progress);
                 view.setFocusable(false);
-            } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY) {
-
             }
             view.forceLayout();
         }

@@ -27,6 +27,7 @@
             android:visibility="gone" />
     </RelativeLayout>
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -68,10 +69,9 @@
                     android:layout_height="@dimen/footer_logo_height"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
-                    android:layout_gravity="right"
-                    android:layout_marginBottom="@dimen/footer_logo_margin_bottom"
+                    android:background="@drawable/logo"
                     android:layout_marginRight="@dimen/footer_logo_margin_right"
-                    android:background="@drawable/tv_logo" />
+                    android:layout_gravity="right"/>
 
 
                 <ImageView
@@ -80,18 +80,18 @@
                     android:layout_height="20dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentLeft="true"
-                    android:layout_marginBottom="@dimen/footer_info_icon_margin_bottom"
+                    android:background="@drawable/info_icon"
                     android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
-                    android:background="@drawable/info_icon" />
+                    />
 
-            <ImageView
-                android:id="@+id/press_down_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:background="@drawable/press_down"
-                android:layout_centerHorizontal="true"
-                 />
+                <ImageView
+                    android:id="@+id/press_down_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/press_down"
+                    android:layout_centerHorizontal="true"
+                    />
 
             </RelativeLayout>
 
@@ -111,75 +111,32 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentLeft="true"
-                android:background="@drawable/app_logo"
+                android:background="@drawable/mse_top_logo"
                 android:layout_marginTop="@dimen/footer_info_icon_margin_bottom"
                 android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
                 />
 
-        <FrameLayout
-            android:id="@+id/shadow_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:alpha="0.7"
-            android:background="@color/appcms_shadow_color"
-            android:visibility="gone"/>
+            <FrameLayout
+                android:id="@+id/shadow_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha="0.7"
+                android:background="@color/appcms_shadow_color"
+                android:visibility="gone"/>
 
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/footer_gradient_image"
-            android:visibility="gone"/>
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/footer_gradient_image"
+                android:visibility="gone"/>
 
         </RelativeLayout>
 
 
     </RelativeLayout>
 
-    <!--FOR FAILARMY & PEOPLE ARE AWESOME-->
-    <ImageView
-        android:id="@+id/imagevw_applogo"
-        android:layout_width="@dimen/footer_logo_width"
-        android:layout_height="@dimen/footer_logo_height"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_gravity="right"
-        android:layout_marginBottom="@dimen/footer_logo_margin_bottom"
-        android:layout_marginRight="@dimen/footer_logo_margin_right"
-        android:background="@drawable/tv_logo" />
-
-    <!--FOR JUKIN VIDEO-->
-    <!--<ImageView-->
-        <!--android:layout_width="70dp"-->
-        <!--android:layout_height="39dp"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_gravity="right"-->
-        <!--android:layout_marginBottom="@dimen/footer_logo_margin_bottom"-->
-        <!--android:layout_marginRight="@dimen/footer_logo_margin_right"-->
-        <!--android:background="@drawable/tv_logo" />-->
-
-    <!--FOR PET COLLECTIVE-->
-    <!--<ImageView-->
-        <!--android:layout_width="60dp"-->
-        <!--android:layout_height="60dp"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignParentRight="true"-->
-        <!--android:layout_gravity="right"-->
-        <!--android:layout_marginBottom="@dimen/footer_logo_margin_bottom"-->
-        <!--android:layout_marginRight="@dimen/footer_logo_margin_right"-->
-        <!--android:background="@drawable/tv_logo" />-->
-
-    <ImageView
-        android:id="@+id/info_icon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="@dimen/footer_info_icon_margin_bottom"
-        android:layout_marginLeft="@dimen/footer_info_icon_margin_right"
-        android:background="@drawable/info_icon" />
 
 
 </RelativeLayout>
