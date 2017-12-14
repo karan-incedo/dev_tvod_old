@@ -1252,8 +1252,18 @@ public class AppCMSPresenter {
     public String getAppAdsURL(String pagePath) {
         if (currentActivity != null && appCMSAndroid != null) {
             Date now = new Date();
+
+            String videoTag;
+
+            if (appCMSAndroid.getAdvertising() != null &&
+                    (TextUtils.isEmpty(appCMSAndroid.getAdvertising().getVideoTag()))) {
+                videoTag = appCMSAndroid.getAdvertising().getVideoTag();
+            } else {
+                videoTag = "";
+            }
+
             return currentActivity.getString(R.string.app_cms_ads_api_url,
-                    appCMSAndroid.getAdvertising().getVideoTag(),
+                    videoTag,
                     getPermalinkCompletePath(pagePath),
                     now.getTime(),
                     appCMSMain.getSite());
@@ -5145,7 +5155,8 @@ public class AppCMSPresenter {
                 refreshPages(null, false, 0, 0);
             }
 
-            refreshUserSubscriptionData(() -> {}, true);
+            refreshUserSubscriptionData(() -> {
+            }, true);
 
             loadingPage = true;
             //Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
@@ -8113,7 +8124,7 @@ public class AppCMSPresenter {
         }
     }
 
-        private void refreshUserSubscriptionData(Action0 onRefreshReadyAction,
+    private void refreshUserSubscriptionData(Action0 onRefreshReadyAction,
                                              boolean reloadUserSubscriptionData) {
         try {
             String baseUrl = appCMSMain.getApiBaseUrl();
@@ -10332,7 +10343,7 @@ public class AppCMSPresenter {
                 if ((currentActivity != null &&
                         currentActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video)) ||
                         (binder.getPageID() != null &&
-                        !isShowPage(binder.getPageID()))) {
+                                !isShowPage(binder.getPageID()))) {
                     action = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
                 }
 
