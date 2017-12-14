@@ -247,10 +247,14 @@ public class ViewCreator {
         }
 
         boolean resetWatchTime = false;
+        long currentWatchedTime = 0L;
         if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
-            videoPlayerView.setUri(Uri.parse(url), null);
             resetWatchTime = true;
+        } else {
+            currentWatchedTime = videoPlayerView.getCurrentPosition();
         }
+
+        videoPlayerView.setUri(Uri.parse(url), null);
 
         if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
             videoPlayerView.startPlayer();
@@ -263,6 +267,8 @@ public class ViewCreator {
 
         if (resetWatchTime) {
             videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
+        } else if (0L < currentWatchedTime) {
+            videoPlayerView.getPlayerView().getPlayer().seekTo(currentWatchedTime);
         }
 
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
