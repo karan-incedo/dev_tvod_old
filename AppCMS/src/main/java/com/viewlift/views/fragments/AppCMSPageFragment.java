@@ -324,6 +324,7 @@ public class AppCMSPageFragment extends Fragment {
         sendFirebaseAnalyticsEvents(appCMSBinder);
         this.appCMSBinder = appCMSBinder;
         ViewCreator viewCreator = getViewCreator();
+        viewCreator.setIgnoreBinderUpdate(true);
         List<String> modulesToIgnore = getModulesToIgnore();
 
         if (viewCreator != null && modulesToIgnore != null) {

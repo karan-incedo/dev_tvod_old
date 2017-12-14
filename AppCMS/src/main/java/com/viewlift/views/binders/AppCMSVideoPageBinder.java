@@ -38,7 +38,7 @@ public class AppCMSVideoPageBinder extends Binder {
     private String fontColor;
     private boolean isLoggedIn;
     private boolean isSubscribed;
-    private int currentPlayingVideoIndex;
+    private volatile int currentPlayingVideoIndex;
     private String currentMovieName;
     private int playerState;
     private boolean autoplayCancelled;

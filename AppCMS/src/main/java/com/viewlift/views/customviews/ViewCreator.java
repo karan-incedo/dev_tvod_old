@@ -85,6 +85,7 @@ import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
 
 import org.htmlcleaner.TagNode;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,6 +101,7 @@ public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private static VideoPlayerView videoPlayerView;
     private static AppCMSVideoPageBinder videoPlayerViewBinder;
+    private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
 
@@ -257,10 +259,12 @@ public class ViewCreator {
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
             if (videoPlayerViewBinder != null) {
                 if (playerState.getPlaybackState() == Player.STATE_ENDED &&
-                        videoPlayerViewBinder.getPlayerState() != Player.STATE_ENDED) {
+                        videoPlayerViewBinder.getPlayerState() != Player.STATE_ENDED &&
+                        0 < videoPlayerView.getDuration() &&
+                        videoPlayerView.getDuration() <= videoPlayerView.getCurrentPosition()) {
                     if (!videoPlayerViewBinder.isAutoplayCancelled() &&
                             videoPlayerViewBinder.getCurrentPlayingVideoIndex() <
-                            videoPlayerViewBinder.getRelateVideoIds().size() - 1) {
+                            videoPlayerViewBinder.getRelateVideoIds().size()) {
                         if (presenter.getAutoplayEnabledUserPref(presenter.getCurrentActivity()) &&
                                 videoPlayerViewBinder != null) {
                             presenter.openAutoPlayScreen(videoPlayerViewBinder, o -> {
@@ -279,32 +283,38 @@ public class ViewCreator {
 
     private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
                                          ContentDatum contentDatum) {
-        if (videoPlayerViewBinder == null) {
-            videoPlayerViewBinder =
-                    appCMSPresenter.getDefaultAppCMSVideoPageBinder(contentDatum,
-                            -1,
-                            contentDatum.getContentDetails().getRelatedVideoIds(),
-                            false,
-                            false,  /** TODO: Replace with a value that is true if the video is a trailer */
-                            !appCMSPresenter.isAppSVOD(),
-                            appCMSPresenter.getAppAdsURL(contentDatum.getGist().getPermalink()),
-                            appCMSPresenter.getAppBackgroundColor());
-        } else {
-            int currentlyPlayingIndex = -1;
-            if (videoPlayerViewBinder.getRelateVideoIds().contains(contentDatum.getGist().getId())) {
-                currentlyPlayingIndex = videoPlayerViewBinder.getRelateVideoIds().indexOf(contentDatum.getGist().getId());
+        if (!ignoreBinderUpdate) {
+            if (videoPlayerViewBinder == null) {
+                videoPlayerViewBinder =
+                        appCMSPresenter.getDefaultAppCMSVideoPageBinder(contentDatum,
+                                -1,
+                                contentDatum.getContentDetails().getRelatedVideoIds(),
+                                false,
+                                false,  /** TODO: Replace with a value that is true if the video is a trailer */
+                                !appCMSPresenter.isAppSVOD(),
+                                appCMSPresenter.getAppAdsURL(contentDatum.getGist().getPermalink()),
+                                appCMSPresenter.getAppBackgroundColor());
             } else {
-                videoPlayerViewBinder.setPlayerState(Player.STATE_IDLE);
-                videoPlayerViewBinder.setRelateVideoIds(contentDatum.getContentDetails().getRelatedVideoIds());
+                int currentlyPlayingIndex = -1;
+                if (videoPlayerViewBinder.getRelateVideoIds().contains(contentDatum.getGist().getId())) {
+                    currentlyPlayingIndex = videoPlayerViewBinder.getRelateVideoIds().indexOf(contentDatum.getGist().getId());
+                } else {
+                    videoPlayerViewBinder.setPlayerState(Player.STATE_IDLE);
+                    videoPlayerViewBinder.setRelateVideoIds(contentDatum.getContentDetails().getRelatedVideoIds());
+                }
                 if (videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId())) {
                     currentlyPlayingIndex = videoPlayerViewBinder.getCurrentPlayingVideoIndex();
                     videoPlayerViewBinder.setAutoplayCancelled(true);
                 }
+                videoPlayerViewBinder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                videoPlayerViewBinder.setContentData(contentDatum);
             }
-            videoPlayerViewBinder.setContentData(contentDatum);
-            videoPlayerViewBinder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-
         }
+        ignoreBinderUpdate = false;
+    }
+
+    public void setIgnoreBinderUpdate(boolean ignoreBinderUpdate) {
+        this.ignoreBinderUpdate = ignoreBinderUpdate;
     }
 
     public static void openFullScreenVideoPlayer(AppCMSPresenter appCMSPresenter) {
