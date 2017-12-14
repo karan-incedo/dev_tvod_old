@@ -57,6 +57,7 @@ public class CastServiceProvider {
     private CastChooserDialog castChooserDialog;
     private CastSession mCastSession;
     private AnimationDrawable castAnimDrawable;
+    private String pageName;
 
     /**
      * callBackRokuMediaSelection gets the calls related to selected roku devices
@@ -90,7 +91,9 @@ public class CastServiceProvider {
     private CastHelper.Callback callBackCastHelper = new CastHelper.Callback() {
         @Override
         public void onApplicationConnected() {
-            if (mActivity != null && mActivity instanceof AppCMSPlayVideoActivity) {
+            if (mActivity != null && (mActivity instanceof AppCMSPlayVideoActivity ||
+                    (mActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                            appCMSPresenter.isPageAVideoPage(pageName)))) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
             }
             stopRokuDiscovery();
@@ -475,7 +478,9 @@ public class CastServiceProvider {
         }
 
         mMediaRouteButton.setOnClickListener(v -> {
-            if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
+            if (!allowFreePlay &&
+                    ((!appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) ||
+                    (appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserSubscribed()))) {
                 CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
                         .getSessionManager().endCurrentSession(true);
                 if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
@@ -483,6 +488,13 @@ public class CastServiceProvider {
                             null);
                 } else if (appCMSPresenter.isAppSVOD()) {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                            () -> {
+                                if (mActivity instanceof AppCMSPlayVideoActivity) {
+                                    mActivity.finish();
+                                }
+                            });
+                } else if (!appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();
@@ -517,6 +529,14 @@ public class CastServiceProvider {
 
         void setRemotePlayBack(int castingModeChromecast);
 
+    }
+
+    public void setPageName(String pageName) {
+        this.pageName = pageName;
+    }
+
+    public boolean castDeviceConnected() {
+        return mCastHelper.isCastDeviceConnected;
     }
 }
 

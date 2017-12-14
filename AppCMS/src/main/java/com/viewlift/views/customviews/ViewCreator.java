@@ -7,7 +7,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -15,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,6 +37,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -47,6 +48,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
 import com.viewlift.R;
+import com.viewlift.casting.CastHelper;
+import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
@@ -85,7 +88,6 @@ import net.nightwhistler.htmlspanner.handlers.attributes.StyleAttributeHandler;
 import net.nightwhistler.htmlspanner.style.Style;
 
 import org.htmlcleaner.TagNode;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +106,9 @@ public class ViewCreator {
     private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
+
+    private CastServiceProvider castProvider;
+    private boolean isCastConnected;
 
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
@@ -247,10 +252,14 @@ public class ViewCreator {
             resetWatchTime = true;
         }
 
+        if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
+            videoPlayerView.startPlayer();
+        }
+
         videoPlayerView.setFilmId(filmId);
         videoPlayerView.getPlayerView().setControllerAutoShow(true);
         videoPlayerView.getPlayerView().setControllerHideOnTouch(true);
-        videoPlayerView.getPlayerView().getPlayer().setPlayWhenReady(true);
+        videoPlayerView.getPlayerView().setVisibility(View.VISIBLE);
 
         if (resetWatchTime) {
             videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
@@ -317,13 +326,17 @@ public class ViewCreator {
         this.ignoreBinderUpdate = ignoreBinderUpdate;
     }
 
-    public static void openFullScreenVideoPlayer(AppCMSPresenter appCMSPresenter) {
+    public static void openFullScreenVideoPlayer(FragmentActivity activity) {
         if (videoPlayerView != null && videoPlayerView.getParent() != null
                 && videoPlayerView.getParent() instanceof ViewGroup) {
             PageView pageViewAncestor = videoPlayerView.getPageView();
             if (pageViewAncestor != null) {
                 pageViewAncestor.openViewInFullScreen(videoPlayerView,
                         (ViewGroup) videoPlayerView.getParent());
+                videoPlayerView.showChromecastLiveVideoPlayer(true);
+                CastServiceProvider.getInstance(activity)
+                        .setActivityInstance(activity, videoPlayerView.getChromecastLiveVideoPlayer());
+                CastServiceProvider.getInstance(activity).onActivityResume();
             }
         }
     }
@@ -334,6 +347,7 @@ public class ViewCreator {
             if (pageViewAncestor != null) {
                 pageViewAncestor.closeViewFromFullScreen(videoPlayerView,
                         (ViewGroup) videoPlayerView.getParent());
+                videoPlayerView.showChromecastLiveVideoPlayer(false);
             }
         }
     }
@@ -1255,6 +1269,9 @@ public class ViewCreator {
                 jsonValueKeyMap,
                 appCMSPresenter,
                 modulesToIgnore);
+        if (appCMSPageAPI != null) {
+            CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).setPageName(appCMSPageAPI.getTitle());
+        }
         pageView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         return pageView;
     }
@@ -1363,6 +1380,19 @@ public class ViewCreator {
                     if (moduleAPI != null) {
                         updateUserHistory(appCMSPresenter,
                                 moduleAPI.getContentData());
+
+                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                moduleAPI != null &&
+                                moduleAPI.getContentData() != null &&
+                                !moduleAPI.getContentData().isEmpty()) {
+                            AppCMSUIKeyType moduleType = jsonValueKeyMap.get(moduleAPI.getModuleType());
+                            if (moduleType == null) {
+                                moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                            }
+                            if (moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                                updateVideoPlayerBinder(appCMSPresenter, moduleAPI.getContentData().get(0));
+                            }
+                        }
                     }
 
                     int size = module.getComponents().size();
@@ -1993,10 +2023,6 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
                             relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
                         }
-                        int currentPlayingIndex = -1;
-                        if (relatedVideoIds == null) {
-                            currentPlayingIndex = 0;
-                        }
                     }
                 }
 
@@ -2004,8 +2030,6 @@ public class ViewCreator {
                     appCMSPresenter.showPopupWindowPlayer(componentViewResult.componentView,
                             moduleAPI.getContentData().get(0).getGist().getWatchedTime());
 
-
-                    updateVideoPlayerBinder(appCMSPresenter, moduleAPI.getContentData().get(0));
 
                     componentViewResult.componentView = playerView(context,
                             appCMSPresenter,
@@ -2246,8 +2270,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_ADD_TO_WATCHLIST_KEY:
-                        ((ImageButton) componentViewResult.componentView)
-                                .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
 
                         if (moduleAPI != null &&
@@ -2262,6 +2285,53 @@ public class ViewCreator {
                             updateImageIconAction.updateWatchlistResponse(appCMSPresenter.isFilmAddedToWatchlist(moduleAPI.getContentData().get(0).getGist().getId()));
                         }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
+
+                        // NOTE: The following is a hack to add the Chromecast button to the live Video Player page until it can
+                        // be added to an AppCMS UI JSON file
+                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                component.getKey() != null &&
+                                !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key)) &&
+                                BaseView.isTablet(context)) {
+
+                            if (!component.isWidthModified()) {
+                                component.getLayout().getTabletLandscape().setWidth(BaseView.convertDpToPixel(48, context));
+                                component.getLayout().getTabletLandscape().setHeight(BaseView.convertDpToPixel(24, context));
+                                component.getLayout().getTabletPortrait().setWidth(BaseView.convertDpToPixel(56, context));
+                                component.getLayout().getTabletPortrait().setHeight(BaseView.convertDpToPixel(24, context));
+                                component.setWidthModified(true);
+                            }
+
+                            ImageButton addToWatchListButton = (ImageButton) componentViewResult.componentView;
+                            LinearLayout.LayoutParams addToWatchListButtonLayoutParams =
+                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
+                                            (int) BaseView.convertDpToPixel(28, context));
+                            addToWatchListButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+                            addToWatchListButton.setLayoutParams(addToWatchListButtonLayoutParams);
+
+                            componentViewResult.componentView = new LinearLayout(context);
+                            ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+
+                            ImageButton mMediaRouteButton = new ImageButton(context);
+                            mMediaRouteButton.setImageResource(R.drawable.anim_cast);
+                            LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
+                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
+                                            (int) BaseView.convertDpToPixel(28, context));
+                            mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+                            mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
+                            addToWatchListButton.setPadding(6, 6, 6, 6);
+                            addToWatchListButton.setScaleType(ImageView.ScaleType.FIT_XY);
+
+                            setCasting(false, /** TODO: Replace with actual value from API response */
+                                    appCMSPresenter,
+                                    mMediaRouteButton,
+                                    moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+
+                            ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
+                            ((LinearLayout) componentViewResult.componentView).addView(addToWatchListButton);
+                        } else {
+                            ((ImageButton) componentViewResult.componentView)
+                                    .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        }
 
                         break;
 
@@ -2460,8 +2530,7 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:
-                        Drawable shareDrawable = ContextCompat.getDrawable(context, R.drawable.share);
-                        componentViewResult.componentView.setBackground(shareDrawable);
+                        componentViewResult.componentView.setBackgroundResource(R.drawable.share);
 
                         final String shareAction = component.getAction();
 
@@ -2499,6 +2568,48 @@ public class ViewCreator {
                                 }
                             }
                         });
+
+                        // NOTE: The following is a hack to add the Chromecast button to the live Video Player page until it can
+                        // be added to an AppCMS UI JSON file
+                        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                component.getKey() != null &&
+                                !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key)) &&
+                                !BaseView.isTablet(context)) {
+
+                            if (!component.isWidthModified()) {
+                                component.getLayout().getMobile().setWidth(BaseView.convertDpToPixel(56, context));
+                                component.getLayout().getMobile().setHeight(BaseView.convertDpToPixel(24, context));
+                                component.setWidthModified(true);
+                            }
+
+                            Button shareButton = (Button) componentViewResult.componentView;
+                            LinearLayout.LayoutParams shareButtonLayoutParams =
+                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
+                                            (int) BaseView.convertDpToPixel(28, context));
+                            shareButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+                            shareButton.setLayoutParams(shareButtonLayoutParams);
+
+                            componentViewResult.componentView = new LinearLayout(context);
+                            ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
+
+                            ImageButton mMediaRouteButton = new ImageButton(context);
+                            LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
+                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
+                                            (int) BaseView.convertDpToPixel(28, context));
+                            mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+                            mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
+                            shareButton.setPadding(6, 6, 6, 6);
+                            mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
+
+                            setCasting(false, /** TODO: Replace with actual value from API response */
+                                    appCMSPresenter,
+                                    mMediaRouteButton,
+                                    moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+
+                            ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
+                            ((LinearLayout) componentViewResult.componentView).addView(shareButton);
+                        }
+
                         break;
 
                     case PAGE_FORGOTPASSWORD_KEY:
@@ -3265,25 +3376,7 @@ public class ViewCreator {
                                         }
                                     }
                                 }
-
-                                if (moduleAPI.getContentData() != null &&
-                                        !moduleAPI.getContentData().isEmpty() &&
-                                        moduleAPI.getContentData().get(0) != null &&
-                                        moduleAPI.getContentData().get(0).getContentDetails() != null) {
-
-                                    List<String> relatedVideoIds = null;
-                                    if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                            moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
-                                        relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
-                                    }
-                                    int currentPlayingIndex = -1;
-                                    if (relatedVideoIds == null) {
-                                        currentPlayingIndex = 0;
-                                    }
-                                }
                             }
-
-                            updateVideoPlayerBinder(appCMSPresenter, moduleAPI.getContentData().get(0));
 
                             componentViewResult.componentView = playerView(context, appCMSPresenter,
                                     videoUrl, moduleAPI.getContentData().get(0).getGist().getId(),
@@ -4017,6 +4110,48 @@ public class ViewCreator {
             }
 
             return result;
+        }
+    }
+
+    private void setCasting(boolean allowFreePlay,
+                            AppCMSPresenter appCMSPresenter,
+                            ImageButton mMediaRouteButton,
+                            long watchedTime) {
+        try {
+            castProvider = CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity());
+            castProvider.setAllowFreePlay(allowFreePlay);
+
+            CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
+                videoPlayerView.pausePlayer();
+                long castPlayPosition = watchedTime * 1000;
+                if (!isCastConnected) {
+                    castPlayPosition = videoPlayerView.getCurrentPosition();
+                }
+
+                CastHelper.getInstance(appCMSPresenter.getCurrentActivity()).launchRemoteMedia(appCMSPresenter,
+                        videoPlayerViewBinder.getRelateVideoIds(),
+                        videoPlayerViewBinder.getContentData().getGist().getId(),
+                        castPlayPosition,
+                        videoPlayerViewBinder,
+                        true,
+                        null);
+            };
+
+            castProvider.setActivityInstance((FragmentActivity) appCMSPresenter.getCurrentActivity(),
+                    mMediaRouteButton);
+            castProvider.onActivityResume();
+
+            castProvider.setRemotePlaybackCallback(callBackRemotePlayback);
+            isCastConnected = castProvider.isCastingConnected();
+            castProvider.playChromeCastPlaybackIfCastConnected();
+            if (isCastConnected) {
+
+            } else {
+                castProvider.setActivityInstance((FragmentActivity) appCMSPresenter.getCurrentActivity(),
+                        mMediaRouteButton);
+            }
+        } catch (Exception e) {
+            //Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
         }
     }
 

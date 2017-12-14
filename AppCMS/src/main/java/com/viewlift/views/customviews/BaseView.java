@@ -885,6 +885,8 @@ public abstract class BaseView extends FrameLayout {
                         lm -= viewWidth / 2;
                         tm -= (int) (viewWidth * 0.25);
                         viewHeight = (int) (viewWidth * 1.25);
+                    } else {
+                        lm -= viewWidth / 3;
                     }
                     break;
 
@@ -894,8 +896,9 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                     if (isTablet(getContext())) {
-                        lm -= viewWidth * 0.7;
+                        lm -= viewWidth * 0.5;
                     }
+                    gravity = Gravity.TOP;
                     break;
 
                 case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:

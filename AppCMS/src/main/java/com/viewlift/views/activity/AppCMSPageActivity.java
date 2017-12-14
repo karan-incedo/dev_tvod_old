@@ -1232,7 +1232,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 if (!BaseView.isTablet(this)) {
                     if (BaseView.isLandscape(this)) {
-                        ViewCreator.openFullScreenVideoPlayer(appCMSPresenter);
+                        ViewCreator.openFullScreenVideoPlayer(this);
                     } else {
                         ViewCreator.closeFullScreenVideoPlayer(appCMSPresenter);
                     }

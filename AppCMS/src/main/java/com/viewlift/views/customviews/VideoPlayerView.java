@@ -23,6 +23,8 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -94,6 +96,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     boolean isLoadedNext;
     private AppCMSPresenter appCMSPresenter;
     private ToggleButton ccToggleButton;
+    private RelativeLayout chromecastButtonParent;
+    private ImageButton chromecastButton;
     private TextView currentStreamingQualitySelector;
     private boolean isClosedCaptionEnabled = false;
     private Uri uri;
@@ -358,6 +362,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
             isClosedCaptionEnabled = isChecked;
         });
+
+        chromecastButtonParent = playerView.findViewById(R.id.chromecast_live_player_parent);
+
+        chromecastButton = playerView.findViewById(R.id.chromecast_live_player);
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
         if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
@@ -1126,5 +1134,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         public int getDownloadQualityPosition() {
             return downloadQualityPosition;
         }
+    }
+
+    public void showChromecastLiveVideoPlayer(boolean show) {
+        if (show) {
+            chromecastButtonParent.setVisibility(VISIBLE);
+        } else {
+            chromecastButtonParent.setVisibility(INVISIBLE);
+        }
+    }
+
+    public ImageButton getChromecastLiveVideoPlayer() {
+        return chromecastButton;
     }
 }
