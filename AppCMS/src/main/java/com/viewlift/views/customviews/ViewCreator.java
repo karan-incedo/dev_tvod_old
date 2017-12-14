@@ -2321,10 +2321,12 @@ public class ViewCreator {
                             addToWatchListButton.setPadding(6, 6, 6, 6);
                             addToWatchListButton.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                            setCasting(false, /** TODO: Replace with actual value from API response */
-                                    appCMSPresenter,
-                                    mMediaRouteButton,
-                                    moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                            if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
+                                setCasting(false, /** TODO: Replace with actual value from API response */
+                                        appCMSPresenter,
+                                        mMediaRouteButton,
+                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                            }
 
                             ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
                             ((LinearLayout) componentViewResult.componentView).addView(addToWatchListButton);
@@ -2601,10 +2603,12 @@ public class ViewCreator {
                             shareButton.setPadding(6, 6, 6, 6);
                             mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
 
-                            setCasting(false, /** TODO: Replace with actual value from API response */
-                                    appCMSPresenter,
-                                    mMediaRouteButton,
-                                    moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                            if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
+                                setCasting(false, /** TODO: Replace with actual value from API response */
+                                        appCMSPresenter,
+                                        mMediaRouteButton,
+                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                            }
 
                             ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
                             ((LinearLayout) componentViewResult.componentView).addView(shareButton);
@@ -3382,7 +3386,9 @@ public class ViewCreator {
                                     videoUrl, moduleAPI.getContentData().get(0).getGist().getId(),
                                     moduleAPI.getContentData().get(0).getGist().getWatchedTime());
                             videoPlayerView.setPageView(pageView);
-                            appCMSPresenter.unrestrictPortraitOnly();
+                            if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
+                                appCMSPresenter.unrestrictPortraitOnly();
+                            }
                             componentViewResult.componentView.setId(R.id.video_player_id);
 
                         } else {
