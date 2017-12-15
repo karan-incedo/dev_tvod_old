@@ -38,12 +38,16 @@ public class AppCMSUpdateWatchHistoryCall {
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        Observable.just(response.toString()).subscribe(readyAction);
+                        Observable.just(response.toString())
+                                .onErrorResumeNext(throwable -> Observable.empty())
+                                .subscribe(readyAction);
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-                        Observable.just((String) null).subscribe(readyAction);
+                        Observable.just((String) null)
+                                .onErrorResumeNext(throwable -> Observable.empty())
+                                .subscribe(readyAction);
                     }
                 });
     }

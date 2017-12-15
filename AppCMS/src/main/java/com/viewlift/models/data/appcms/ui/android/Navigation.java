@@ -25,7 +25,7 @@ public class Navigation implements Serializable {
 
     @SerializedName("left")
     @Expose
-    List<NavigationPrimary> navigationLeft = null;
+    List<NavigationPrimary> left = null;
 
     @SerializedName("tabBar")
     @Expose
@@ -34,7 +34,7 @@ public class Navigation implements Serializable {
 	
 	@SerializedName("right")
     @Expose
-    List<NavigationPrimary> navigationRight = null;
+    List<NavigationPrimary> right = null;
 
     @SerializedName("settings")
     @Expose
@@ -44,20 +44,20 @@ public class Navigation implements Serializable {
 
 
 
-    public List<NavigationPrimary> getNavigationLeft() {
-        return navigationLeft;
+    public List<NavigationPrimary> getLeft() {
+        return left;
     }
 
-    public void setNavigationLeft(List<NavigationPrimary> navigationLeft) {
-        this.navigationLeft = navigationLeft;
+    public void setLeft(List<NavigationPrimary> navigationLeft) {
+        this.left = navigationLeft;
     }
 
-    public List<NavigationPrimary> getNavigationRight() {
-        return navigationRight;
+    public List<NavigationPrimary> getRight() {
+        return right;
     }
 
-    public void setNavigationRight(List<NavigationPrimary> navigationRight) {
-        this.navigationRight = navigationRight;
+    public void setRight(List<NavigationPrimary> navigationRight) {
+        this.right = navigationRight;
     }
 
     public List<NavigationPrimary> getNavigationPrimary() {

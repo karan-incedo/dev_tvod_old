@@ -20,6 +20,7 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
 
     public AppCMSPageViewAdapter() {
         childViews = new ArrayList<>();
+        setHasStableIds(false);
     }
 
     public void addView(ModuleView view) {

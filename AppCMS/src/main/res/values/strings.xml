@@ -190,6 +190,11 @@
         <item quantity="other">%d seconds</item>
     </plurals>
 
+    <plurals name="min_duration_unit">
+        <item quantity="one">MIN</item>
+        <item quantity="other">MINS</item>
+    </plurals>
+
     <!-- AppCMS Login values -->
     <string name="app_cms_log_in_pager_title">LOG IN</string>
     <string name="app_cms_subscribe_now">SUBSCRIBE NOW</string>
@@ -219,6 +224,7 @@
     <string name="runtime_minute_abbreviation">MIN</string>
     <string name="runtime_minutes_abbreviation">MINS</string>
     <string name="runtime_seconds_abbreviation">SECS</string>
+    <string name="runtime_episodes_abbreviation">EPISODES</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
@@ -517,6 +523,15 @@
         <item quantity="other">EPISODES</item>
     </plurals>
 
+    <plurals name="minute_subtitle_text">
+        <item quantity="one">MIN</item>
+        <item quantity="other">MINS</item>
+    </plurals>
+
+    <plurals name="seconds_subtitle_text">
+        <item quantity="one">SEC</item>
+        <item quantity="other">SECS</item>
+    </plurals>
 
 </resources>
 

@@ -27,6 +27,7 @@ import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -51,13 +52,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         implements OnInternalEvent, AppCMSBaseAdapter {
     private static final String TAG = "AppCMSTrayAdapter";
 
-    private static final int SECONDS_PER_MINS = 60;
+    private static final int SECONDS_PER_MIN = 60;
 
     protected  ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
-    RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     private List<ContentDatum> adapterData;
     private String defaultAction;
     private boolean isHistory;
@@ -121,7 +122,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             if (isWatchlist || isDownload) {
                 sortByAddedDate();
             } else if (isHistory) {
-                sortByUpdateDate();
+                sortByMostRecentlyWatchedDate();
             }
         }
     }
@@ -131,7 +132,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 o2.getAddedDate()));
     }
 
-    private void sortByUpdateDate() {
+    private void sortByMostRecentlyWatchedDate() {
         Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
                 o2.getGist().getUpdateDate()));
         Collections.reverse(adapterData);
@@ -345,16 +346,38 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             if (contentDatum.getGist() != null) {
-                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
+                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MIN) == 0) {
+                    StringBuilder runtimeText = new StringBuilder();
+                    if ((contentDatum.getSeason() != null)) {
+                        int totalEpisodes = 0;
+                        int numSeasons = contentDatum.getSeason().size();
+
+                        for (int i = 0; i < numSeasons; i++) {
+                            if (contentDatum.getSeason().get(i).getEpisodes() != null) {
+                                totalEpisodes += contentDatum.getSeason().get(i).getEpisodes().size();
+                            }
+                        }
+
+                        runtimeText.append(totalEpisodes)
+                                .append(" ")
+                                .append(holder.itemView.getContext().getString(R.string.runtime_episodes_abbreviation));
+                    } else {
+                        runtimeText.append(contentDatum.getGist().getRuntime())
+                                .append(" ")
+                                .append(holder.itemView.getContext().getString(R.string.runtime_seconds_abbreviation));
+                    }
+
+                    holder.appCMSContinueWatchingDuration.setText(runtimeText);
+                } else if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MIN) < 2) {
                     StringBuilder runtimeText = new StringBuilder()
-                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MIN)
                             .append(" ")
                             .append(holder.itemView.getContext().getString(R.string.min_abbreviation));
 
                     holder.appCMSContinueWatchingDuration.setText(runtimeText);
                 } else {
                     StringBuilder runtimeText = new StringBuilder()
-                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
+                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MIN)
                             .append(" ")
                             .append(holder.itemView.getContext().getString(R.string.mins_abbreviation));
 
@@ -541,12 +564,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (Boolean.parseBoolean(extraData[3])) {
             relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_COMPLETED);
         }
+
+        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+        actionPresenter.setAction(action);
+
         if (permalink == null ||
                 hlsUrl == null ||
                 extraData[2] == null ||
                 !appCMSPresenter.launchButtonSelectedAction(
                         permalink,
-                        action,
+                        actionPresenter,
                         title,
                         extraData,
                         data,
@@ -798,6 +825,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
     }
 
+    @Override
+    public void setClickable(boolean clickable) {
+
+    }
+
     private void click(ContentDatum data) {
         //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
         String permalink = data.getGist().getPermalink();
@@ -818,8 +850,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         //Log.d(TAG, "Launching " + permalink + ": " + action);
 
+        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+        actionPresenter.setAction(action);
+
         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                action,
+                actionPresenter,
                 title,
                 extraData,
                 data,

@@ -60,7 +60,7 @@
 
     <!-- AppCMS Shows Status API-->
     <!--<string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>-->
-    <string name="app_cms_shows_status_api_url">%1$s%2$s?path=%3$s&amp;site=%4$s&amp;includeContent=true</string>
+    <string name="app_cms_shows_status_api_url">%1$s%2$s?path=%3$s&amp;site=%4$s&amp;includeContent=true&amp;includeWatchHistory=%5$s</string>
 
     <string name="app_cms_pages_api_url">%1$s/pages?site=%2$s&amp;modules=%3$s</string>
 
@@ -202,6 +202,7 @@
     <string name="app_cms_page_shop_title">shop</string>
 
     <string name="app_cms_page_watchlist_duration_key">duration</string>
+    <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>
     <string name="app_cms_page_watchlist_description_key">description</string>
     <string name="app_cms_page_watchlist_title_key">title</string>
 
@@ -296,6 +297,7 @@
     <string name="app_cms_action_movies_nav">Movies</string>
     <string name="app_cms_action_videopage_key">play</string>
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
+    <string name="app_cms_action_draggablevideopage_key">draggableDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
@@ -393,6 +395,8 @@
     <string name="app_cms_movies_label">Movies</string>
     <string name="app_cms_search_icon_name">search_</string>
     <string name="app_cms_search_label">Search</string>
+
+    <string name="app_cms_shows_label">Shows</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
     <string name="profile_label">Profile</string>
 
@@ -499,6 +503,8 @@
     <string name="app_cms_content_type_episode">EPISODE</string>
 
     <string name="app_cms_table_background_view">tableBackground</string>
+    
+    <string name="app_cms_text_alignment_right">right</string>
 
     <string name="navigation_settings_primaryCta_placement">Banner</string>
 

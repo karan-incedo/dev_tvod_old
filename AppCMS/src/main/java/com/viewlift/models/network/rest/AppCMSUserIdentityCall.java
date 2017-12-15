@@ -37,12 +37,16 @@ public class AppCMSUserIdentityCall {
             @Override
             public void onResponse(@NonNull Call<UserIdentity> call,
                                    @NonNull Response<UserIdentity> response) {
-                Observable.just(response.body()).subscribe(userIdentityAction);
+                Observable.just(response.body())
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(userIdentityAction);
             }
 
             @Override
             public void onFailure(@NonNull Call<UserIdentity> call, @NonNull Throwable t) {
-                Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                Observable.just((UserIdentity) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(userIdentityAction);
             }
         });
     }
@@ -58,7 +62,9 @@ public class AppCMSUserIdentityCall {
             public void onResponse(@NonNull Call<UserIdentity> call,
                                    @NonNull Response<UserIdentity> response) {
                 if (response.body() != null) {
-                    Observable.just(response.body()).subscribe(userIdentityAction);
+                    Observable.just(response.body())
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(userIdentityAction);
                 } else {
                     Observable.just(response.errorBody()).subscribe(userErrorAction);
                 }
@@ -66,7 +72,9 @@ public class AppCMSUserIdentityCall {
 
             @Override
             public void onFailure(@NonNull Call<UserIdentity> call, @NonNull Throwable t) {
-                Observable.just((UserIdentity) null).subscribe(userIdentityAction);
+                Observable.just((UserIdentity) null)
+                        .onErrorResumeNext(throwable -> Observable.empty())
+                        .subscribe(userIdentityAction);
             }
         });
     }
@@ -83,9 +91,13 @@ public class AppCMSUserIdentityCall {
             public void onResponse(@NonNull Call<UserIdentityPassword> call,
                                    @NonNull Response<UserIdentityPassword> response) {
                 if (response.body() != null) {
-                    Observable.just(response.body()).subscribe(userIdentityPasswordAction1);
+                    Observable.just(response.body())
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(userIdentityPasswordAction1);
                 } else {
-                    Observable.just(response.errorBody()).subscribe(userPasswordErrorAction);
+                    Observable.just(response.errorBody())
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(userPasswordErrorAction);
                 }
             }
 

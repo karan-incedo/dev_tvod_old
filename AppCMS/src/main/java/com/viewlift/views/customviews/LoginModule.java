@@ -30,6 +30,7 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
@@ -102,7 +103,7 @@ public class LoginModule extends ModuleView {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             underlineColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor());
             transparentColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
-            bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());
+            bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
             childContainer.setBackgroundColor(bgColor);
@@ -360,8 +361,12 @@ public class LoginModule extends ModuleView {
                                     String[] authData = new String[2];
                                     authData[0] = visibleEmailInputView.getText().toString();
                                     authData[1] = visiblePasswordInputView.getText().toString();
+
+                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                    actionPresenter.setAction(component.getAction());
+
                                     appCMSPresenter.launchButtonSelectedAction(null,
-                                            component.getAction(),
+                                            actionPresenter,
                                             null,
                                             authData,
                                             null,
@@ -441,8 +446,12 @@ public class LoginModule extends ModuleView {
                                                 String[] authData = new String[2];
                                                 authData[0] = visibleEmailInputView.getText().toString();
                                                 authData[1] = visiblePasswordInputView.getText().toString();
+
+                                                AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                                actionPresenter.setAction(loginInSignUpAction);
+
                                                 appCMSPresenter.launchButtonSelectedAction(null,
-                                                        loginInSignUpAction,
+                                                        actionPresenter,
                                                         null,
                                                         authData,
                                                         null,
