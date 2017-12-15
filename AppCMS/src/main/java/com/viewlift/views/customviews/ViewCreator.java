@@ -76,7 +76,6 @@ import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
-import com.viewlift.views.utilities.CustomWebView;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
@@ -390,41 +389,13 @@ public class ViewCreator {
                                         webView = appCMSPresenter.getWebViewCache(moduleAPI.getId() + component.getKey());
                                     }
                                     if (webView != null) {
-
                                         if (webView.getParent() != null)
                                             ((ViewGroup) webView.getParent()).removeView(webView);
-
-//                                        webView.reload();
                                         ((FrameLayout) view).addView(webView);
                                     } else {
                                         webView = getWebViewComponent(context, moduleAPI, component, moduleAPI.getId() + component.getKey(), appCMSPresenter);
                                         ((FrameLayout) view).addView(webView);
                                     }
-//
-//                                    int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
-//                                    int width = BaseView.getDeviceWidth();
-//                                    String html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
-//
-//                                    ((CustomWebView) view).setWebViewClient(new WebViewClient() {
-//                                        @Override
-//                                        public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                                            Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-//                                            context.startActivity(browserIntent);
-//                                            return true;
-//                                        }
-//
-//                                        @Override
-//                                        public void onPageFinished(WebView view, String url) {
-//                                            super.onPageFinished(view, url);
-//                                            ((CustomWebView) view).isPageLoaded = true;
-//                                        }
-//                                    });
-//                                    if(((CustomWebView) view).isPageLoaded()){
-//
-//                                    }else{
-//                                        ((CustomWebView) view).loadData(html, "text/html", "UTF-8");
-//
-//                                    }
                                     (view).setVisibility(View.VISIBLE);
                                 } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                                     if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY) {
@@ -1586,7 +1557,7 @@ public class ViewCreator {
 
         int tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-                //appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+        //appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
         switch (componentType) {
 
@@ -2010,10 +1981,8 @@ public class ViewCreator {
                     webView = appCMSPresenter.getWebViewCache(moduleId + component.getKey());
                 }
                 if (webView != null) {
-
                     if (webView.getParent() != null)
                         ((ViewGroup) webView.getParent()).removeView(webView);
-//                    webView.reload();
                     ((FrameLayout) componentViewResult.componentView).addView(webView);
                 } else {
                     webView = getWebViewComponent(context, moduleAPI, component, moduleId + component.getKey(), appCMSPresenter);
@@ -4269,66 +4238,22 @@ public class ViewCreator {
     }
 
     public CustomVideoPlayerView playerView(Context context, String videoId, String key, AppCMSPresenter appCmsPresenter) {
-
         CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
-
         if (videoId != null) {
-
             videoPlayerView.setVideoUri(videoId, R.string.loading_video_text);
-//            AppCMSPresenter.videoPlayerView=videoPlayerView;
             appCmsPresenter.setVideoPlayerViewCache(key, videoPlayerView);
-
         }
-
         return videoPlayerView;
     }
 
     public static CustomWebView getWebViewComponent(Context context, Module moduleAPI, Component component, String key, AppCMSPresenter appCMSPresenter) {
-
         CustomWebView webView = new CustomWebView(context);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setBuiltInZoomControls(false);
-        webView.getSettings().setDisplayZoomControls(false);
-        webView.setBackgroundColor(Color.TRANSPARENT);
-        webView.getSettings().setAppCacheEnabled(true);
-        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-
         int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
-        int width = BaseView.getDeviceWidth();
         String webViewUrl = "";
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
             webViewUrl = moduleAPI.getRawText();
-
-
             String html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
-
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(url));
-                    context.startActivity(browserIntent);
-                    return true;
-                }
-
-                @Override
-                public void onPageFinished(WebView view, String url) {
-                    super.onPageFinished(view, url);
-                    ((CustomWebView) view).isPageLoaded = true;
-                    appCMSPresenter.setWebViewCache(key, (CustomWebView) view);
-                    System.out.println("Web view page Load");
-                }
-
-                @Override
-                public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                    super.onReceivedError(view, request, error);
-                    System.out.println("Web view page - error");
-//                    webView.loadData(html, "text/html", "UTF-8");
-
-                    appCMSPresenter.clearWebViewCache();
-                }
-            });
-
-            webView.loadData(html, "text/html", "UTF-8");
+            webView.loadURLData(context,appCMSPresenter,html,key);
         }
         return webView;
     }
