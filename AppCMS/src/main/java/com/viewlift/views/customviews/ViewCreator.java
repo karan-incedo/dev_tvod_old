@@ -316,7 +316,8 @@ public class ViewCreator {
                                 appCMSPresenter.getAppBackgroundColor());
             } else {
                 int currentlyPlayingIndex = -1;
-                if (videoPlayerViewBinder.getRelateVideoIds().contains(contentDatum.getGist().getId())) {
+                if (videoPlayerViewBinder.getRelateVideoIds() != null &&
+                        videoPlayerViewBinder.getRelateVideoIds().contains(contentDatum.getGist().getId())) {
                     currentlyPlayingIndex = videoPlayerViewBinder.getRelateVideoIds().indexOf(contentDatum.getGist().getId());
                 } else {
                     videoPlayerViewBinder.setPlayerState(Player.STATE_IDLE);
