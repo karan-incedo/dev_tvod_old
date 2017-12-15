@@ -45,7 +45,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.text.InputFilter;
@@ -85,12 +84,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
 import com.kiswe.kmsdkcorekit.reports.Report;
 import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
 import com.kiswe.kmsdkcorekit.reports.Reports;
-import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -217,17 +214,16 @@ import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CustomVideoPlayerView;
+import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
-import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSTrayMenuDialogFragment;
-import com.viewlift.views.utilities.CustomWebView;
 
 import org.jsoup.Jsoup;
 import org.threeten.bp.Duration;
@@ -288,7 +284,6 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
-import static com.viewlift.models.network.utility.MainUtils.loadJsonFromAssets;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -7894,10 +7889,12 @@ public class AppCMSPresenter {
 
     public String getPermalinkCompletePath(String pagePath) {
         StringBuffer permalinkCompletePath = new StringBuffer();
-        permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
-        permalinkCompletePath.append(appCMSMain.getDomainName());
-        //  permalinkCompletePath.append(File.separatorChar); //Commented due to Page path is already having '/' with it
-        permalinkCompletePath.append(pagePath);
+        if(currentActivity!=null) {
+            permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
+            permalinkCompletePath.append(appCMSMain.getDomainName());
+            //  permalinkCompletePath.append(File.separatorChar); //Commented due to Page path is already having '/' with it
+            permalinkCompletePath.append(pagePath);
+        }
         return permalinkCompletePath.toString();
     }
 
@@ -12337,6 +12334,8 @@ public class AppCMSPresenter {
             relativeLayoutFull = new FullPlayerView(currentActivity, this);
             relativeLayoutFull.setVisibility(View.VISIBLE);
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
+
             isFullScreenVisible = true;
             restrictLandscapeOnly();
             new Handler().postDelayed(() -> {
@@ -12351,22 +12350,19 @@ public class AppCMSPresenter {
 
     public void exitFullScreenPlayer() {
         try {
-
             if (relativeLayoutFull != null) {
-
-                relativeLayoutFull.removeAllViews();
+//                relativeLayoutFull.removeAllViews();
                 if (videoPlayerViewParent != null) {
                     relativeLayoutFull.removeView(videoPlayerView);
                     videoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
                     videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
                     videoPlayerViewParent.addView(videoPlayerView);
-
                 }
 
-                relativeLayoutFull.setVisibility(View.GONE);
+//                relativeLayoutFull.setVisibility(View.GONE);
+//                relativeLayoutFull.removeAllViews();
 
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
-
                 rootView.postDelayed(() -> {
                     try {
                         rootView.removeView(relativeLayoutFull);
@@ -12374,7 +12370,7 @@ public class AppCMSPresenter {
                     } catch (Exception e) {
 
                     }
-                }, 100);
+                }, 50);
 
             }
         } catch (Exception e) {
@@ -12397,7 +12393,7 @@ public class AppCMSPresenter {
             } else if (BaseView.isTablet(currentActivity)) {
                 unrestrictPortraitOnly();
             }
-        }, 3000);
+        }, 100);
 
         if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
             ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();

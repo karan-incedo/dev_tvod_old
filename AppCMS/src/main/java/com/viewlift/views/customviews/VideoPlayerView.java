@@ -762,8 +762,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        pausePlayer();
-
+        //commented due to custom video player implementation
+//        pausePlayer();
+//
 //        appCMSPresenter.updateWatchedTime(getFilmId(), player.getCurrentPosition());
     }
 
