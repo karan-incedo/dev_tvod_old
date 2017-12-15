@@ -78,7 +78,6 @@ import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
-import com.viewlift.views.utilities.CustomWebView;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
@@ -4374,7 +4373,7 @@ public class ViewCreator {
     }
 
     public CustomVideoPlayerView playerView(Context context, String videoId, String key, AppCMSPresenter appCmsPresenter) {
-        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
+        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context,appCmsPresenter);
 
 
         if (videoId != null) {
