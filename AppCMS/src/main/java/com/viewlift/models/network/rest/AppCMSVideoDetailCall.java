@@ -3,7 +3,6 @@ package com.viewlift.models.network.rest;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.viewlift.models.data.appcms.api.AppCMSVideoDetail;
 
@@ -36,7 +35,6 @@ public class AppCMSVideoDetailCall {
             //Log.d(TAG, "Attempting to read Video Detail JSON: " + url);
             authHeaders.clear();
             authHeaders.put("Authorization", authToken);
-            System.out.println(url+" ==="+new Gson().toJson(authHeaders));
             return appCMSVideoDetailRest.get(url, authHeaders).execute().body();
         } catch (JsonSyntaxException e) {
             //Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());

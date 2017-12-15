@@ -39,18 +39,26 @@ public class AppCMSResetPasswordCall {
                                    @NonNull Response<ForgotPasswordResponse> response) {
                 if (readyAction != null) {
                     if (response.body() != null) {
-                        Observable.just(response.body()).subscribe(readyAction);
+                        Observable.just(response.body())
+                                .onErrorResumeNext(throwable -> Observable.empty())
+                                .subscribe(readyAction);
                     } else if (response.errorBody() != null) {
                         try {
                             ForgotPasswordResponse forgotPasswordResponse =
                                     gson.fromJson(response.errorBody().string(),
                                             ForgotPasswordResponse.class);
-                            Observable.just(forgotPasswordResponse).subscribe(readyAction);
+                            Observable.just(forgotPasswordResponse)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(readyAction);
                         } catch (Exception e) {
-                            Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
+                            Observable.just((ForgotPasswordResponse) null)
+                                    .onErrorResumeNext(throwable -> Observable.empty())
+                                    .subscribe(readyAction);
                         }
                     } else {
-                        Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
+                        Observable.just((ForgotPasswordResponse) null)
+                                .onErrorResumeNext(throwable -> Observable.empty())
+                                .subscribe(readyAction);
                     }
                 }
             }
@@ -58,7 +66,9 @@ public class AppCMSResetPasswordCall {
             @Override
             public void onFailure(@NonNull Call<ForgotPasswordResponse> call, @NonNull Throwable t) {
                 if (readyAction != null) {
-                    Observable.just((ForgotPasswordResponse) null).subscribe(readyAction);
+                    Observable.just((ForgotPasswordResponse) null)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction);
                 }
             }
         });

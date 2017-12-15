@@ -103,7 +103,8 @@ public class GetAppCMSPageUIAsyncTask {
                         return null;
                     })
                     .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread());
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorResumeNext(throwable -> Observable.empty());
         }
         return null;
     }
@@ -121,6 +122,7 @@ public class GetAppCMSPageUIAsyncTask {
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorResumeNext(throwable -> Observable.empty())
                     .subscribe((result) -> Observable.just(result).subscribe(readyAction));
         }
     }

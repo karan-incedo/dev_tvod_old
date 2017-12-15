@@ -24,6 +24,7 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -77,6 +78,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private String watchTrailerQuailifier;
     CollectionGridItemView planItemView[];
     int selectedPosition = -1;
+
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
                              AppCMSPresenter appCMSPresenter,
@@ -235,7 +237,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         if (0 <= position && position < adapterData.size()) {
             for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
                 if (holder.componentView.getChild(i) instanceof TextView) {
@@ -423,12 +425,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
                                     contentType = data.getGist().getContentType();
                                 }
-                                if (!childComponent.getAction().contains(openOptionsAction)) {
-                                    if (contentType.equals(episodicContentType)) {
-                                        action = showAction;
-                                    } else if (contentType.equals(fullLengthFeatureType)) {
-                                        action = videoAction;
-                                    }
+
+//                                if (!appCMSPresenter.isAppSVOD()) { // FIXME: Change to use T-Builder.
+//                                    action = draggableVideoAction;
+//                                } else if (contentType.equals(episodicContentType)) {
+//                                    action = showAction;
+//                                } else if (contentType.equals(fullLengthFeatureType)) {
+//                                    action = videoAction;
+//                                }
+
+                                if (contentType.equals(episodicContentType)) {
+                                    action = showAction;
+                                } else if (contentType.equals(fullLengthFeatureType)) {
+                                    action = videoAction;
                                 }
 
                                 if (data.getGist() == null ||
@@ -445,20 +454,38 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                                action);
                                     }
                                 } else {
-                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            action,
-                                            title,
-                                            null,
-                                            // TODO merge Need to pass this for getting data for opening Option Dialog.
-                                            data,
-                                            false,
-                                            currentPlayingIndex,
-                                            relatedVideoIds)) {
-                                        //Log.e(TAG, "Could not launch action: " +
+                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                    actionPresenter.setAction(action);
+
+                                    if (appCMSPresenter.getCurrentActivity().getResources()
+                                            .getBoolean(R.bool.video_detail_page_plays_video) &&
+                                            !showAction.equals(action)) {
+                                        if (!appCMSPresenter.launchVideoPlayer(data,
+                                                currentPlayingIndex,
+                                                relatedVideoIds,
+                                                -1,
+                                                action)) {
+                                            //Log.e(TAG, "Could not launch action: " +
 //                                                " permalink: " +
 //                                                permalink +
 //                                                " action: " +
 //                                                action);
+                                        }
+                                    } else {
+                                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                                actionPresenter,
+                                                title,
+                                                null,
+                                                null,
+                                                false,
+                                                currentPlayingIndex,
+                                                relatedVideoIds)) {
+                                            //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
+                                        }
                                     }
                                 }
                             }
@@ -520,7 +547,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 return false;
             });
             itemView.setOnClickListener(v -> {
-                if (isClickable) {
+                if (isClickable && data != null && data.getGist() != null) {
                     if (v instanceof CollectionGridItemView) {
                         try {
                             int eventX = (int) lastTouchDownEvent.getX();
@@ -545,8 +572,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 }
                             }
                         } catch (Exception e) {
-                            Log.e(TAG, e.getMessage());
-
+                            //
                         }
                     }
 
@@ -591,23 +617,47 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                    action);
                         }
                     } else {
-                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                action,
-                                title,
-                                null,
-                                null,
-                                false,
-                                currentPlayingIndex,
-                                relatedVideoIds)) {
-                            //Log.e(TAG, "Could not launch action: " +
+                        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                        actionPresenter.setAction(action);
+
+                        if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.use_draggable_panel)) {
+                            actionPresenter.setExtraScreenType(AppCMSPresenter.ExtraScreenType.DRAGGABLE_PANEL);
+                        }
+
+                        if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                !showAction.equals(action)) {
+                            if (!appCMSPresenter.launchVideoPlayer(data,
+                                    currentPlayingIndex,
+                                    relatedVideoIds,
+                                    -1,
+                                    action)) {
+                                //Log.e(TAG, "Could not launch action: " +
 //                                    " permalink: " +
 //                                    permalink +
 //                                    " action: " +
 //                                    action);
+                            }
+                        } else {
+                            if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                    actionPresenter,
+                                    title,
+                                    null,
+                                    null,
+                                    false,
+                                    currentPlayingIndex,
+                                    relatedVideoIds)) {
+                                //Log.e(TAG, "Could not launch action: " +
+//                                    " permalink: " +
+//                                    permalink +
+//                                    " action: " +
+//                                    action);
+                            }
                         }
                     }
                 }
+
             });
+
         }
 
         for (int i = 0; i < itemView.getNumberOfChildren(); i++) {

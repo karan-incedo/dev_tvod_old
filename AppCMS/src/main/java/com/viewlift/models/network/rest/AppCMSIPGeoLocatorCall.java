@@ -47,18 +47,24 @@ public class AppCMSIPGeoLocatorCall {
             appCMSIPGeoLocatorRest.get(url, authHeaders).enqueue(new Callback<IPGeoLocatorResponse>() {
                 @Override
                 public void onResponse(Call<IPGeoLocatorResponse> call, Response<IPGeoLocatorResponse> response) {
-                    Observable.just(response.body()).subscribe(readyAction);
+                    Observable.just(response.body())
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction);
                 }
 
                 @Override
                 public void onFailure(Call<IPGeoLocatorResponse> call, Throwable t) {
                     //Log.e(TAG, "Failed to retrieve IP based Geolocation: " + t.getMessage());
-                    Observable.just((IPGeoLocatorResponse) null).subscribe(readyAction);
+                    Observable.just((IPGeoLocatorResponse) null)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction);
                 }
             });
         } catch (Exception e) {
             //Log.e(TAG, "Failed to retrieve IP based Geolocation: " + e.toString());
-            Observable.just((IPGeoLocatorResponse) null).subscribe(readyAction);
+            Observable.just((IPGeoLocatorResponse) null)
+                    .onErrorResumeNext(throwable -> Observable.empty())
+                    .subscribe(readyAction);
         }
     }
 }

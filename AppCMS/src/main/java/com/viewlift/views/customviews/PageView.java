@@ -46,6 +46,10 @@ public class PageView extends BaseView {
     private SwipeRefreshLayout mainView;
     private AppCMSPageViewAdapter appCMSPageViewAdapter;
 
+    private ViewDimensions fullScreenViewOriginalDimensions;
+
+    private boolean shouldRefresh;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -56,7 +60,41 @@ public class PageView extends BaseView {
         this.moduleViewMap = new HashMap<>();
         this.appCMSPresenter = appCMSPresenter;
         this.appCMSPageViewAdapter = new AppCMSPageViewAdapter();
+        this.shouldRefresh = true;
         init();
+    }
+
+    public void openViewInFullScreen(View view, ViewGroup viewParent) {
+        shouldRefresh = false;
+        if (fullScreenViewOriginalDimensions == null) {
+            fullScreenViewOriginalDimensions = new ViewDimensions();
+        }
+        try {
+            fullScreenViewOriginalDimensions.width = view.getLayoutParams().width;
+            fullScreenViewOriginalDimensions.height = view.getLayoutParams().height;
+        } catch (Exception e) {
+            //
+        }
+
+        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+        view.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        childrenContainer.setVisibility(GONE);
+        viewParent.removeView(view);
+        addView(view);
+    }
+
+    public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
+        shouldRefresh = true;
+        if (fullScreenViewOriginalDimensions != null) {
+            removeView(view);
+
+            view.getLayoutParams().width = fullScreenViewOriginalDimensions.width;
+            view.getLayoutParams().height = fullScreenViewOriginalDimensions.height;
+
+            viewParent.addView(view);
+            childrenContainer.setVisibility(VISIBLE);
+        }
     }
 
     @Override
@@ -151,10 +189,12 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
-            appCMSPresenter.refreshAPIData(() -> {
-                        mainView.setRefreshing(false);
-            },
-                    true);
+            if (shouldRefresh) {
+                appCMSPresenter.clearPageAPIData(() -> {
+                            mainView.setRefreshing(false);
+                        },
+                        true);
+            }
         });
         addView(mainView);
         return childrenContainer;
@@ -227,5 +267,10 @@ public class PageView extends BaseView {
             return appCMSPageViewAdapter.findChildViewById(id);
         }
         return null;
+    }
+
+    private static class ViewDimensions {
+        int width;
+        int height;
     }
 }

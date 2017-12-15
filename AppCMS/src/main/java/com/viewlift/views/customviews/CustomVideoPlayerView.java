@@ -158,10 +158,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     private ToggleButton mToggleButton;
 
-    public CustomVideoPlayerView(Context context) {
-        super(context);
+    public CustomVideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
+        super(context,appCMSPresenter);
         mContext = context;
-        appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
+        this.appCMSPresenter = appCMSPresenter;
+        //appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
