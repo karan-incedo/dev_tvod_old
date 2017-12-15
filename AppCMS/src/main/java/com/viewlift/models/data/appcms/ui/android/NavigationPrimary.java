@@ -2,6 +2,8 @@ package com.viewlift.models.data.appcms.ui.android;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -16,7 +18,7 @@ public class NavigationPrimary implements Serializable {
 
     @SerializedName("items")
     @Expose
-    List<Object> items = null;
+    List<NavigationPrimary> items = null;
 
     @SerializedName("pageId")
     @Expose
@@ -58,11 +60,11 @@ public class NavigationPrimary implements Serializable {
         this.title = title;
     }
 
-    public List<Object> getItems() {
+    public List<NavigationPrimary> getItems() {
         return items;
     }
 
-    public void setItems(List<Object> items) {
+    public void setItems(List<NavigationPrimary> items) {
         this.items = items;
     }
 
@@ -128,5 +130,16 @@ public class NavigationPrimary implements Serializable {
 
     public void setPlatforms(Platforms platforms) {
         this.platforms = platforms;
+    }
+
+    public ContentDatum convertToContentDatum(NavigationPrimary navigationPrimary){
+        ContentDatum contentDatum = new ContentDatum();
+        Gist gist = new Gist();
+        gist.setId(navigationPrimary.getPageId());
+        gist.setVideoImageUrl(navigationPrimary.getIcon());
+        gist.setTitle(navigationPrimary.getTitle());
+        gist.setPermalink(navigationPrimary.getUrl());
+        contentDatum.setGist(gist);
+       return contentDatum;
     }
 }

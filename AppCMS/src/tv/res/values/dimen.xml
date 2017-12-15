@@ -7,8 +7,9 @@
     <dimen name="appcms_tv_sub_navigation_item_padding">15dp</dimen>
     <dimen name="appcms_tv_sub_navigation_top_margin">36dp</dimen>
 
-    <dimen name="browse_fragment_margin_left">0dp</dimen>
+    <dimen name="browse_fragment_margin_left">-10dp</dimen>
     <dimen name="browse_fragment_margin_top">-130dp</dimen>
+    <dimen name="browse_fragment_margin_top_for_player">-170dp</dimen>
 
     <dimen name = "jumbotron_weidth">770dp</dimen>
     <dimen name = "jumbotron_height">274dp</dimen>
@@ -17,7 +18,7 @@
     <dimen name = "card_height">205dp</dimen>
     <dimen name = "card_width">130dp</dimen>
 
-    <dimen name="caurosel_grid_item_spacing">50dp</dimen>
+    <dimen name="caurosel_grid_item_spacing">40dp</dimen>
     <dimen name="caurosel_grid_left_margin">25dp</dimen>
     <dimen name="caurosel_grid_right_margin">25dp</dimen>
 

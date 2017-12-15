@@ -305,12 +305,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
         ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
-        ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (onClosedCaptionButtonClicked != null) {
-                onClosedCaptionButtonClicked.call(isChecked);
-            }
-            isClosedCaptionEnabled = isChecked;
-        });
+        if (ccToggleButton != null) {
+            ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (onClosedCaptionButtonClicked != null) {
+                    onClosedCaptionButtonClicked.call(isChecked);
+                }
+                isClosedCaptionEnabled = isChecked;
+            });
+        }
 
 
         mediaDataSourceFactory = buildDataSourceFactory(true);

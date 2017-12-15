@@ -218,6 +218,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     String blockName;
 
+    @SerializedName("trayBackground")
+    @Expose
+    String trayBackground;
+
     boolean yAxisSetManually;
 
     public String getText() {
@@ -549,5 +553,13 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setSvod(boolean svod) {
         this.svod = svod;
+    }
+
+    public String getTrayBackground() {
+        return trayBackground;
+    }
+
+    public void setTrayBackground(String trayBackground) {
+        this.trayBackground = trayBackground;
     }
 }

@@ -24,7 +24,12 @@
     <string name="min_abbreviation">MIN</string>
     <string name="sec_abbreviation">SEC</string>
     <string name="secs_abbreviation">SECS</string>
-    <string name="mins_abbreviation">MINS</string>
+    <string name="mins_abbreviation">&#160;MINS</string>
+
+    <plurals name="mins_plural">
+        <item quantity="one">%d MIN</item>
+        <item quantity="other">%d MINS</item>
+    </plurals>
     <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
     <string name="color_hash_prefix">#</string>
@@ -91,6 +96,10 @@
     <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
     <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
     <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
+    <string name="lato_regular">fonts/Lato-Regular.ttf</string>
+    <string name="lato_medium">fonts/Lato-Medium.ttf</string>
+    <string name="lato_light">fonts/Lato-Light.ttf</string>
+    <string name="lato_bold">fonts/Lato-Bold.ttf</string>
     <string name="search_button_text">GO</string>
     <string name="bg_color_key">bg_color</string>
     <string name="button_color_key">button_color</string>
@@ -400,6 +409,9 @@
     <string name="remove_from_watchlist">REMOVE FROM WATCHLIST</string>
     <string name="add_to_watchlist">ADD TO WATCHLIST</string>
     <string name="add_to_watchlist_dialog_text">You have to be signed in to add this to your watchlist.</string>
+    <string name="open_account_dialog_text">You have to be signed in to view account.</string>
+    <string name="open_watchlist_dialog_text">You have to be signed in to view your Watchlist.</string>
+    <string name="open_history_dialog_text">You have to be signed in to view your History.</string>
     <string name="sign_up_tos_and_pp_text">By creating an account, you agree to our terms of use and privacy policy.</string>
     <string name="close">Close</string>
     <string name="yes">YES</string>
@@ -432,9 +444,30 @@
     <string name="app_cms_close_text">CLOSE</string>
     <string name="close_one_page_key">close_one_page</string>
     <string name="logged_in_as">Logged in as %s</string>
+    <string name="st_home_icon_key">icon-home</string>
+    <string name="st_show_icon_key">icon-grid</string>
+    <string name="st_teams_icon_key">icon-bracket</string>
+    <string name="st_watchlist_icon_key">icon-watchlist</string>
+    <string name="st_history_icon_key" >icon-clock</string>
+    <string name="st_settings_icon_key">icon-gear</string>
+    <string name="st_search_icon_key">icon-search</string>
+    <string name="st_autoplay_icon_key">icon-autoplay</string>
+    <string name="st_closed_caption_icon_key">icon-cc</string>
+    <string name="st_manage_subscription_icon_key">icon-manage-subscription</string>
+    <string name="st_account_icon_key">icon-account</string>
+    <string name="st_faq_icon_key">icon-faq</string>
+    <string name="st_signin_icon_key">icon-signin</string>
+    <string name="st_signout_icon_key">icon-signout</string>
+    <string name="st_contact_icon_key">icon-contact</string>
+    <string name="st_live_icon_key">icon-live</string>
     <string name="search_blank_toast_msg">Please enter a value to search.</string>
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
+    <string name="visit_website_msg">Please visit our website to start your subscription.</string>
+    <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
+    <string name="no_more_videos_in_queue">No more videos in queue.</string>
+    <string name="shouldNavigateToLogin">shouldNavigateToLogin</string>
+    <string name="resume_watching">Resume Watching</string>
 
 </resources>
 
