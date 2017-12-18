@@ -36,7 +36,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     float headerTileLetterSpacing = 0.11f;
 
     public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter){
-        super(FocusHighlight.ZOOM_FACTOR_NONE);
+        super(FocusHighlight.ZOOM_FACTOR_XSMALL);
         mContext = context;
         setShadowEnabled(false);
         setSelectEffectEnabled(false);

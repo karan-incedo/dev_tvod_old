@@ -116,7 +116,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
         int textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
-        int bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
+        int bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());//Color.parseColor("#660066");
 
         navigationFragment = AppCmsNavigationFragment.newInstance(
                 this,

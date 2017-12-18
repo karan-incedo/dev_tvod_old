@@ -232,7 +232,7 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
 
 
     private void focusSignupView(TextView signupView , TextView loginView) {
-        signupView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true));
+        signupView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true , Color.parseColor("#000000")));
         signupView.setTypeface(extraBoldTypeFace);
         loginView.setBackground(null);
         loginView.setTypeface(semiBoldTypeFace);
@@ -240,7 +240,7 @@ public class AppCmsLoginDialogFragment extends DialogFragment {
     }
 
     private void focusLoginView(TextView signupView , TextView loginView) {
-        loginView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true));
+        loginView.setBackground(Utils.getNavigationSelectedState(mContext, appCMSPresenter, true , Color.parseColor("#000000")) );
         loginView.setTypeface(extraBoldTypeFace);
         signupView.setBackground(null);
         signupView.setTypeface(semiBoldTypeFace);

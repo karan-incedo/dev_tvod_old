@@ -215,7 +215,6 @@ public class TVViewCreator {
     }
 
 
-
     public View createModuleView(final Context context,
                                  ModuleList module,
                                  final Module moduleAPI,
@@ -508,9 +507,9 @@ public class TVViewCreator {
                                 LinearLayoutManager.VERTICAL,
                                 false));
 
-                if(null != component.getLayout().getTv().getOrientation()){
-                    String orientation =  component.getLayout().getTv().getOrientation();
-                    if(orientation.equalsIgnoreCase("horizontal")){
+                if (null != component.getLayout().getTv().getOrientation()) {
+                    String orientation = component.getLayout().getTv().getOrientation();
+                    if (orientation.equalsIgnoreCase("horizontal")) {
                         ((RecyclerView) componentViewResult.componentView)
                                 .setLayoutManager(new LinearLayoutManager(context,
                                         LinearLayoutManager.HORIZONTAL,
@@ -688,15 +687,20 @@ public class TVViewCreator {
                                             newFragment.setOnPositiveButtonClicked(s -> {
                                                 appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.LOGIN_AND_SIGNUP);
                                                 NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                                                appCMSPresenter.navigateToTVPage(
-                                                        navigationUser.getPageId(),
-                                                        navigationUser.getTitle(),
-                                                        navigationUser.getUrl(),
-                                                        false,
-                                                        Uri.EMPTY,
-                                                        false,
-                                                        false,
-                                                        true);
+
+                                                if (navigationUser != null) {
+                                                    appCMSPresenter.navigateToTVPage(
+                                                            navigationUser.getPageId(),
+                                                            navigationUser.getTitle(),
+                                                            navigationUser.getUrl(),
+                                                            false,
+                                                            Uri.EMPTY,
+                                                            false,
+                                                            false,
+                                                            true);
+                                                } else {
+                                                    Toast.makeText(context, context.getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                                                }
                                             });
                                         }
                                     } else {
@@ -722,15 +726,15 @@ public class TVViewCreator {
                         break;
 
                     case PAGE_START_WATCHING_BUTTON_KEY:
-                        Button startWatchingButton = (Button)componentViewResult.componentView;
+                        Button startWatchingButton = (Button) componentViewResult.componentView;
                         if (appCMSPresenter.isUserLoggedIn()) {
                             appCMSPresenter.getUserVideoStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(),
                                     userVideoStatusResponse -> {
                                         if (null != userVideoStatusResponse) {
-                                            Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
+                                            Log.d(TAG, "time = " + userVideoStatusResponse.getWatchedTime()
                                             );
-                                            if(userVideoStatusResponse.getWatchedTime() > 0){
+                                            if (userVideoStatusResponse.getWatchedTime() > 0) {
                                                 startWatchingButton.setText(context.getString(R.string.resume_watching));
                                             }
                                         }

@@ -98,7 +98,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
         View navTopLine = view.findViewById(R.id.nav_top_line);
         AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
         textColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getTextColor());/*Color.parseColor("#F6546A");*/
-        bgColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());//Color.parseColor("#660066");
+        bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());//Color.parseColor("#660066");
 
         mNavigation = appCMSPresenter.getNavigation();
 
@@ -403,7 +403,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
             if (selectedPosition >= 0 && selectedPosition == position) {
                 holder.navItemlayout.setBackground(
-                        Utils.getNavigationSelectedState(mContext, appCmsPresenter, true));
+                        Utils.getNavigationSelectedState(mContext, appCmsPresenter, true , bgColor));
                 holder.navItemView.setTypeface(extraBoldTypeFace);
             } else {
                 holder.navItemlayout.setBackground(null);
