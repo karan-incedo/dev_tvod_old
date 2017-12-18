@@ -49,7 +49,6 @@ public class BeaconPing extends Thread {
                             && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0) {
 
                         //Log.d(TAG, "Beacon Message Request position: " + currentTime);
-
                         appCMSPresenter.sendBeaconMessage(filmId,
                                 permaLink,
                                 parentScreenName,
@@ -76,5 +75,11 @@ public class BeaconPing extends Thread {
                 //Log.e(TAG, "BeaconPingThread sleep interrupted");
             }
         }
+    }
+
+    public void setBeaconData(String videoId,String permaLink,String streamId) {
+        this.filmId = videoId;
+        this.permaLink = permaLink;
+        this.streamId = streamId;
     }
 }

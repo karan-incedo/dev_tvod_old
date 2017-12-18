@@ -55,8 +55,8 @@ import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.beacon.thread.BeaconBufferingThread;
-import com.viewlift.models.data.appcms.beacon.thread.BeaconPingThread;
+import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
+import com.viewlift.models.data.appcms.beacon.BeaconPing;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -128,11 +128,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
     boolean lastPlayState = false;
 
-    private BeaconBufferingThread beaconBufferingThread;
+    private BeaconBuffer beaconBufferingThread;
     private long beaconBufferingTimeoutMsec;
     private boolean sentBeaconPlay;
     private boolean sentBeaconFirstFrame;
-    private BeaconPingThread beaconMessageThread;
+    private BeaconPing beaconMessageThread;
     private long beaconMsgTimeoutMsec;
     private String mStreamId;
     private String permaLink;
@@ -187,7 +187,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         beaconMsgTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
         beaconBufferingTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
 
-        beaconMessageThread = new BeaconPingThread(beaconMsgTimeoutMsec,
+        beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
                 appCMSPresenter,
                 videoDataId,
                 permaLink,
@@ -196,7 +196,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 this,
                 mStreamId);
 
-        beaconBufferingThread = new BeaconBufferingThread(beaconBufferingTimeoutMsec,
+        beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
                 videoDataId,
                 permaLink,
@@ -231,7 +231,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         showProgressBar(getResources().getString(resIdMessage));
         releasePlayer();
         init(mContext);
-        getPlayerView().hideController();
+        //getPlayerView().hideController();
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(videoDataId);
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             onUpdatedContentDatum = contentDatum;
@@ -273,6 +273,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         sentBeaconPlay = false;
         sentBeaconFirstFrame = false;
     }
+
     private void setTopBarStatus(){
         setOnPlayerControlsStateChanged(visibility -> {
             if (visibility == View.GONE) {
@@ -340,6 +341,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             customPlayBack.setVisibility(View.VISIBLE);
         String url = null;
         String closedCaptionUrl = null;
+        permaLink = contentDatum.getGist().getPermalink();
         if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
             if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
                 url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
@@ -376,6 +378,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         if (null != url) {
             lastUrl = url;
             closedCaptionUri = closedCaptionUrl;
+            setBeaconData();
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
             setCurrentPosition(watchedPercentage);
             resumePlayer();
@@ -390,7 +393,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     contentDatum.getGist().getWatchedTime() != 0) {
                 watchedTime = contentDatum.getGist().getWatchedTime();
             }
-            permaLink = contentDatum.getGist().getPermalink();
             long duration = contentDatum.getGist().getRuntime();
             if (duration <= watchedTime) {
                 watchedTime = 0L;
@@ -1247,6 +1249,16 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             cause = cause.getCause();
         }
         return false;
+    }
+
+    private void setBeaconData() {
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(videoDataId);
+        } catch (Exception e) {
+            mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
+        }
+        beaconBufferingThread.setBeaconData(videoDataId,permaLink,mStreamId);
+        beaconMessageThread.setBeaconData(videoDataId,permaLink,mStreamId);
     }
 
     public interface IgetPlayerEvent {
