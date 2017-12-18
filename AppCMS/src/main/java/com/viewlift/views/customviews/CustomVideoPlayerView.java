@@ -519,11 +519,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                         setVideoUri(relatedVideoId.get(currentPlayingIndex), R.string.loading_next_video_text);
 
                     } else {
-                        disableController();
+                        //disableController();
                         showRestrictMessage(getResources().getString(R.string.app_cms_autoplay_off_msg));
                     }
 
                 } else {
+                    //disableController();
                     showRestrictMessage(getResources().getString(R.string.app_cms_video_ended_text_message));
                 }
                 if (shouldRequestAds && adsLoader != null) {
@@ -903,6 +904,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     private void showRestrictMessage(String message) {
         if (null != customMessageContainer && null != customMessageView) {
+            disableController();
             hideProgressBar();
             loaderMessageView.setTextColor(getResources().getColor(android.R.color.white));
             customMessageView.setText(message);
@@ -912,6 +914,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     private void hideRestrictedMessage() {
         if (null != customMessageContainer) {
+            enableController();
             customMessageContainer.setVisibility(View.INVISIBLE);
         }
     }
