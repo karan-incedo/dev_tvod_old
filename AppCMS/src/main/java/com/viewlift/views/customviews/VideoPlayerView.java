@@ -1164,6 +1164,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void showChromecastLiveVideoPlayer(boolean show) {
         if (show) {
             chromecastLivePlayerParent.setVisibility(VISIBLE);
+            if (appCMSPresenter.getCurrentMediaRouteButton() != null) {
+                chromecastButtonPlaceholder.setVisibility(VISIBLE);
+            } else {
+                chromecastButtonPlaceholder.setVisibility(GONE);
+            }
         } else {
             chromecastLivePlayerParent.setVisibility(INVISIBLE);
         }

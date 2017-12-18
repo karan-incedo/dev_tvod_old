@@ -298,12 +298,6 @@ public class ViewCreator {
         }
     }
 
-    public static void resetChromecastButtonFromFullScreenPlayer(ImageButton chromecastButton) {
-        if (videoPlayerView != null) {
-            videoPlayerView.resetChromecastButton(chromecastButton);
-        }
-    }
-
     public static boolean playerViewFullScreenEnabled() {
         if (videoPlayerView != null) {
             return videoPlayerView.fullScreenModeEnabled();
@@ -434,9 +428,6 @@ public class ViewCreator {
                 } else {
                     videoPlayerView.resumePlayer();
                 }
-//                CastServiceProvider.getInstance(activity)
-//                        .setActivityInstance(activity, );
-//                CastServiceProvider.getInstance(activity).onActivityResume();
             }
         }
     }
@@ -2523,6 +2514,7 @@ public class ViewCreator {
                                                 (int) BaseView.convertDpToPixel(28, context));
                                 mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                                 mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
+                                mMediaRouteButton.setPadding(6, 6, 6, 6);
                                 mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
 
                                 if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
@@ -2542,6 +2534,8 @@ public class ViewCreator {
                                 ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
                             }
                             ((LinearLayout) componentViewResult.componentView).addView(addToWatchListButton);
+
+                            componentViewResult.componentView.requestLayout();
                         } else {
                             ((ImageButton) componentViewResult.componentView)
                                     .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
@@ -2792,29 +2786,31 @@ public class ViewCreator {
                                 !BaseView.isTablet(context)) {
 
                             if (!component.isWidthModified()) {
-                                component.getLayout().getMobile().setWidth(BaseView.convertDpToPixel(56, context));
+                                component.getLayout().getMobile().setRightMargin(component.getLayout().getMobile().getRightMargin() * 1.7f);
+                                component.getLayout().getMobile().setWidth(BaseView.convertDpToPixel(44, context));
                                 component.getLayout().getMobile().setHeight(BaseView.convertDpToPixel(24, context));
                                 component.setWidthModified(true);
                             }
 
                             Button shareButton = (Button) componentViewResult.componentView;
                             LinearLayout.LayoutParams shareButtonLayoutParams =
-                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
-                                            (int) BaseView.convertDpToPixel(28, context));
+                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(24, context),
+                                            (int) BaseView.convertDpToPixel(24, context));
                             shareButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
-                            shareButton.setPadding(6, 6, 6, 6);
                             shareButton.setLayoutParams(shareButtonLayoutParams);
+                            shareButton.setPadding(6, 6, 6, 6);
 
                             componentViewResult.componentView = new LinearLayout(context);
                             ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
 
                             ImageButton mMediaRouteButton = appCMSPresenter.getCurrentMediaRouteButton();
                             if (mMediaRouteButton != null) {
-                            LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
-                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
-                                            (int) BaseView.convertDpToPixel(28, context));
-                            mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
-                            mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
+                                LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
+                                        new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
+                                                (int) BaseView.convertDpToPixel(28, context));
+                                mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+                                mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
+                                mMediaRouteButton.setPadding(8, 8, 8, 8);
                                 mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
 
                                 if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
@@ -2824,17 +2820,19 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getWatchedTime());
                                 }
 
+                                pageView.setReparentChromecastButton(false);
+
                                 if (mMediaRouteButton.getParent() != null &&
                                         mMediaRouteButton.getParent() instanceof ViewGroup) {
                                     ((ViewGroup) mMediaRouteButton.getParent()).removeView(mMediaRouteButton);
                                 }
 
-                                pageView.setReparentChromecastButton(false);
-
                                 ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
                             }
 
                             ((LinearLayout) componentViewResult.componentView).addView(shareButton);
+
+                            componentViewResult.componentView.requestLayout();
                         }
 
                         break;
@@ -3628,10 +3626,12 @@ public class ViewCreator {
                             if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
                                 appCMSPresenter.unrestrictPortraitOnly();
                             }
-                            if (ViewCreator.playerViewFullScreenEnabled()) {
-                                appCMSPresenter.sendEnterFullScreenAction();
-                            } else {
-                                ViewCreator.enableFullScreenMode();
+                            if (BaseView.isTablet(context)) {
+                                if (ViewCreator.playerViewFullScreenEnabled()) {
+                                    appCMSPresenter.sendEnterFullScreenAction();
+                                } else {
+                                    ViewCreator.enableFullScreenMode();
+                                }
                             }
                             componentViewResult.componentView.setId(R.id.video_player_id);
 

@@ -280,6 +280,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     false,
                                     false,
                                     false);
+
+                            if (!BaseView.isTablet(AppCMSPageActivity.this)) {
+                                if (BaseView.isLandscape(AppCMSPageActivity.this) ||
+                                        ViewCreator.playerViewFullScreenEnabled()) {
+                                    enterFullScreenVideoPlayer();
+                                } else {
+                                    exitFullScreenVideoPlayer();
+                                }
+                            } else {
+                                if (ViewCreator.playerViewFullScreenEnabled()) {
+                                    enterFullScreenVideoPlayer();
+                                } else {
+                                    ViewCreator.enableFullScreenMode();
+                                }
+                            }
                         } else if (updatedAppCMSBinder != null) {
                             Intent appCMSIntent = new Intent(AppCMSPageActivity.this,
                                     AppCMSPageActivity.class);
@@ -1262,7 +1277,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
 
                 if (!BaseView.isTablet(this)) {
-                    if (BaseView.isLandscape(this)) {
+                    if (BaseView.isLandscape(this) ||
+                            ViewCreator.playerViewFullScreenEnabled()) {
                         enterFullScreenVideoPlayer();
                     } else {
                         exitFullScreenVideoPlayer();
@@ -1297,10 +1313,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-        if (!castDisabled && mMediaRouteButton != null) {
-            ViewCreator.resetChromecastButtonFromFullScreenPlayer(mMediaRouteButton);
-        }
         ViewCreator.closeFullScreenVideoPlayer(appCMSPresenter);
+        handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
     }
 
     public void pageLoading(boolean pageLoading) {
