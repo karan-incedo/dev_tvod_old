@@ -665,11 +665,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void setVideoPlayerStatus() {
-//        if (CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()) {
-//            pausePlayer();
-//        }else{
-//            parentView.setVisibility(View.GONE);
-//        }
         showOverlayWhenCastingConnected();
         if (mToggleButton != null && mToggleButton.isChecked()) {
             llTopBar.setVisibility(View.VISIBLE);
