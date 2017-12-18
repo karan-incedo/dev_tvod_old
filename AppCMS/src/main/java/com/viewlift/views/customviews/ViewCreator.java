@@ -51,6 +51,7 @@ import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
@@ -107,8 +108,18 @@ public class ViewCreator {
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
 
+    private static class VideoPlayerContent {
+        long videoPlayTime = 0;
+        String videoUrl;
+        String ccUrl;
+    }
+
+    private static VideoPlayerContent videoPlayerContent = new VideoPlayerContent();
+    private static final long SECS_TO_MSECS = 1000L;
+
     private CastServiceProvider castProvider;
     private boolean isCastConnected;
+
 
     public ViewCreator() {
         htmlSpanner = new HtmlSpanner();
@@ -233,11 +244,41 @@ public class ViewCreator {
         return color1;
     }
 
+    public static void pausePlayer() {
+        if (videoPlayerView != null && videoPlayerContent != null) {
+            videoPlayerView.pausePlayer();
+            videoPlayerView.releasePlayer();
+            videoPlayerContent.videoPlayTime = videoPlayerView.getCurrentPosition() / SECS_TO_MSECS;
+        }
+    }
+
+    private static void resumePlayer(AppCMSPresenter appCMSPresenter, Context context) {
+        videoPlayerView.setAppCMSPresenter(appCMSPresenter);
+        videoPlayerView.init(context);
+        videoPlayerView.enableController();
+        if (videoPlayerViewBinder != null &&
+                !TextUtils.isEmpty(videoPlayerContent.ccUrl)) {
+            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
+            videoPlayerView.getPlayerView().getSubtitleView()
+                    .setVisibility(appCMSPresenter.getClosedCaptionPreference()
+                            ? View.VISIBLE
+                            : View.GONE);
+            videoPlayerView.setUri(Uri.parse(videoPlayerContent.videoUrl),
+                    !TextUtils.isEmpty(videoPlayerContent.ccUrl) ? Uri.parse(videoPlayerContent.ccUrl) : null);
+            //Log.i(TAG, "Playing video: " + title);
+        }
+        videoPlayerView.setCurrentPosition(videoPlayerContent.videoPlayTime * SECS_TO_MSECS);
+    }
+
     public static VideoPlayerView playerView(Context context,
                                              AppCMSPresenter presenter,
-                                             String url,
+                                             String videoUrl,
+                                             String ccUrl,
                                              String filmId,
                                              long watchedTime) {
+        videoPlayerContent.videoUrl = videoUrl;
+        videoPlayerContent.ccUrl = ccUrl;
+
         if (videoPlayerView == null) {
             videoPlayerView = new VideoPlayerView(context, presenter);
             videoPlayerView.init(context);
@@ -258,7 +299,7 @@ public class ViewCreator {
                 0 < currentWatchedTime) {
             videoPlayerViewBinder.setAutoplayCancelled(true);
         } else {
-            videoPlayerView.setUri(Uri.parse(url), null);
+            videoPlayerView.setUri(Uri.parse(videoUrl), null);
         }
 
         if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
@@ -287,9 +328,10 @@ public class ViewCreator {
                             videoPlayerViewBinder.getRelateVideoIds().size()) {
                         if (presenter.getAutoplayEnabledUserPref(presenter.getCurrentActivity()) &&
                                 videoPlayerViewBinder != null) {
-                            presenter.openAutoPlayScreen(videoPlayerViewBinder, o -> {
-                                //
-                            });
+                            videoPlayerViewBinder.setCurrentPlayingVideoIndex(videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1);
+                            presenter.playNextVideo(videoPlayerViewBinder,
+                                    videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1,
+                                    videoPlayerViewBinder.getContentData().getGist().getWatchedTime());
                         }
                     }
                 }
@@ -2024,28 +2066,31 @@ public class ViewCreator {
                             videoUrl = videoAssets.getMpeg().get(i).getUrl();
                         }
                     }
-
-                    if (moduleAPI.getContentData() != null &&
-                            !moduleAPI.getContentData().isEmpty() &&
-                            moduleAPI.getContentData().get(0) != null &&
-                            moduleAPI.getContentData().get(0).getContentDetails() != null) {
-
-                        List<String> relatedVideoIds = null;
-                        if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
-                                moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
-                            relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
-                        }
-                    }
                 }
 
                 if (!appCMSPresenter.pipPlayerVisible) {
                     appCMSPresenter.showPopupWindowPlayer(componentViewResult.componentView,
                             moduleAPI.getContentData().get(0).getGist().getWatchedTime());
 
+                    String closedCaptionUrl = null;
+                    if (moduleAPI.getContentData().get(0) != null
+                            && moduleAPI.getContentData().get(0).getContentDetails() != null
+                            && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null
+                            && !moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().isEmpty()) {
+                        for (ClosedCaptions cc : moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions()) {
+                            if (cc.getUrl() != null &&
+                                    !cc.getUrl().equalsIgnoreCase(context.getString(R.string.download_file_prefix)) &&
+                                    cc.getFormat() != null &&
+                                    cc.getFormat().equalsIgnoreCase("SRT")) {
+                                closedCaptionUrl = cc.getUrl();
+                            }
+                        }
+                    }
 
                     componentViewResult.componentView = playerView(context,
                             appCMSPresenter,
                             videoUrl,
+                            closedCaptionUrl,
                             moduleAPI.getContentData().get(0).getGist().getId(),
                             moduleAPI.getContentData().get(0).getGist().getWatchedTime());
                     componentViewResult.componentView.setId(R.id.video_player_id);
@@ -2330,6 +2375,8 @@ public class ViewCreator {
                                             (int) BaseView.convertDpToPixel(28, context));
                             mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                             mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
+                            mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
+
                             addToWatchListButton.setPadding(6, 6, 6, 6);
                             addToWatchListButton.setScaleType(ImageView.ScaleType.FIT_XY);
 
@@ -2601,6 +2648,7 @@ public class ViewCreator {
                                     new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
                                             (int) BaseView.convertDpToPixel(28, context));
                             shareButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+                            shareButton.setPadding(6, 6, 6, 6);
                             shareButton.setLayoutParams(shareButtonLayoutParams);
 
                             componentViewResult.componentView = new LinearLayout(context);
@@ -2612,7 +2660,6 @@ public class ViewCreator {
                                             (int) BaseView.convertDpToPixel(28, context));
                             mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                             mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
-                            shareButton.setPadding(6, 6, 6, 6);
                             mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
 
                             if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
@@ -3394,8 +3441,23 @@ public class ViewCreator {
                                 }
                             }
 
+                            String closedCaptionUrl = null;
+                            if (moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getContentDetails() != null
+                                    && moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions() != null
+                                    && !moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions().isEmpty()) {
+                                for (ClosedCaptions cc : moduleAPI.getContentData().get(0).getContentDetails().getClosedCaptions()) {
+                                    if (cc.getUrl() != null &&
+                                            !cc.getUrl().equalsIgnoreCase(context.getString(R.string.download_file_prefix)) &&
+                                            cc.getFormat() != null &&
+                                            cc.getFormat().equalsIgnoreCase("SRT")) {
+                                        closedCaptionUrl = cc.getUrl();
+                                    }
+                                }
+                            }
+
                             componentViewResult.componentView = playerView(context, appCMSPresenter,
-                                    videoUrl, moduleAPI.getContentData().get(0).getGist().getId(),
+                                    videoUrl, closedCaptionUrl, moduleAPI.getContentData().get(0).getGist().getId(),
                                     moduleAPI.getContentData().get(0).getGist().getWatchedTime());
                             videoPlayerView.setPageView(pageView);
                             if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
