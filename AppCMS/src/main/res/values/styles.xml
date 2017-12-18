@@ -69,6 +69,7 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
+
     <style name="NavbarItemView">
         <item name="android:layout_gravity">bottom|center_horizontal</item>
         <item name="android:clickable">true</item>

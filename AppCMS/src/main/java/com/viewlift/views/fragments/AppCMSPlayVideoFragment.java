@@ -428,7 +428,6 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 } else {
                                     //Log.d(TAG, "User is subscribed - resuming video");
                                 }
-                                System.out.println("Runnung Timer video details"+playedVideoSecs);
                                 playedVideoSecs++;
                                 appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
                             }

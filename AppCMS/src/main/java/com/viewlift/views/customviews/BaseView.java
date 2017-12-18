@@ -587,18 +587,14 @@ public abstract class BaseView extends FrameLayout {
             if (isLandscape(getContext())) {
                 TabletLandscape tabletLandscape = layout.getTabletLandscape();
                 if (tabletLandscape != null) {
-                    if (getViewWidth(tabletLandscape) != -1) {
-                        if (tabletLandscape.getXAxis() != 0f) {
-                            float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
-                            lm = Math.round(scaledX);
-                        }
+                    if (tabletLandscape.getXAxis() != 0f) {
+                        float scaledX = DEVICE_WIDTH * (tabletLandscape.getXAxis() / STANDARD_TABLET_HEIGHT_PX);
+                        lm = Math.round(scaledX);
                     }
 
-                    if (getViewHeight(tabletLandscape) != -1) {
-                        if (tabletLandscape.getYAxis() != 0f) {
-                            float scaledY = DEVICE_HEIGHT * (tabletLandscape.getYAxis() / STANDARD_TABLET_WIDTH_PX);
-                            tm = Math.round(scaledY);
-                        }
+                    if (tabletLandscape.getYAxis() != 0f) {
+                        float scaledY = DEVICE_HEIGHT * (tabletLandscape.getYAxis() / STANDARD_TABLET_WIDTH_PX);
+                        tm = Math.round(scaledY);
                     }
 
                     if (getViewWidth(tabletLandscape) == -1f && tabletLandscape.getXAxis() != 0f) {
@@ -654,18 +650,14 @@ public abstract class BaseView extends FrameLayout {
             } else {
                 TabletPortrait tabletPortrait = layout.getTabletPortrait();
                 if (tabletPortrait != null) {
-                    if (getViewWidth(tabletPortrait) != -1) {
-                        if (tabletPortrait.getXAxis() != 0f) {
-                            float scaledX = DEVICE_WIDTH * (tabletPortrait.getXAxis() / STANDARD_TABLET_WIDTH_PX);
-                            lm = Math.round(scaledX);
-                        }
+                    if (tabletPortrait.getXAxis() != 0f) {
+                        float scaledX = DEVICE_WIDTH * (tabletPortrait.getXAxis() / STANDARD_TABLET_WIDTH_PX);
+                        lm = Math.round(scaledX);
                     }
 
-                    if (getViewHeight(tabletPortrait) != -1) {
-                        if (tabletPortrait.getYAxis() != 0f) {
-                            float scaledY = DEVICE_HEIGHT * (tabletPortrait.getYAxis() / STANDARD_TABLET_HEIGHT_PX);
-                            tm = Math.round(scaledY);
-                        }
+                    if (tabletPortrait.getYAxis() != 0f) {
+                        float scaledY = DEVICE_HEIGHT * (tabletPortrait.getYAxis() / STANDARD_TABLET_HEIGHT_PX);
+                        tm = Math.round(scaledY);
                     }
 
                     if (getViewWidth(tabletPortrait) == -1 && tabletPortrait.getXAxis() != 0f) {
@@ -722,18 +714,14 @@ public abstract class BaseView extends FrameLayout {
         } else {
             Mobile mobile = layout.getMobile();
             if (mobile != null) {
-                if (getViewWidth(mobile) != -1) {
-                    if (mobile.getXAxis() != 0f) {
-                        float scaledX = DEVICE_WIDTH * (mobile.getXAxis() / STANDARD_MOBILE_WIDTH_PX);
-                        lm = Math.round(scaledX);
-                    }
+                if (mobile.getXAxis() != 0f) {
+                    float scaledX = DEVICE_WIDTH * (mobile.getXAxis() / STANDARD_MOBILE_WIDTH_PX);
+                    lm = Math.round(scaledX);
                 }
 
-                if (getViewHeight(mobile) != -1) {
-                    if (mobile.getYAxis() != 0f) {
-                        float scaledY = DEVICE_HEIGHT * (mobile.getYAxis() / STANDARD_MOBILE_HEIGHT_PX);
-                        tm = Math.round(scaledY);
-                    }
+                if (mobile.getYAxis() != 0f) {
+                    float scaledY = DEVICE_HEIGHT * (mobile.getYAxis() / STANDARD_MOBILE_HEIGHT_PX);
+                    tm = Math.round(scaledY);
                 }
 
                 if (getViewWidth(mobile) == -1 && mobile.getXAxis() != 0f) {
@@ -903,6 +891,8 @@ public abstract class BaseView extends FrameLayout {
                         lm -= viewWidth / 2;
                         tm -= (int) (viewWidth * 0.25);
                         viewHeight = (int) (viewWidth * 1.25);
+                    } else {
+                        lm -= viewWidth / 3;
                     }
                     break;
 
@@ -912,8 +902,9 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_ADD_TO_WATCHLIST_KEY:
                     if (isTablet(getContext())) {
-                        lm -= viewWidth * 0.7;
+                        lm -= viewWidth * 0.5;
                     }
+                    gravity = Gravity.TOP;
                     break;
 
                 case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
@@ -939,11 +930,6 @@ public abstract class BaseView extends FrameLayout {
                 default:
                     break;
             }
-
-//            int fontsize = getFontsize(getContext(), childComponent);
-//            if (fontsize > 0) {
-//                ((TextView) view).setTextSize((float) fontsize);
-//            }
 
             if (maxViewWidth != -1) {
                 ((TextView) view).setMaxWidth(maxViewWidth);
@@ -971,18 +957,6 @@ public abstract class BaseView extends FrameLayout {
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
             layoutParams.gravity = gravity;
-        }
-
-        if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-            float scaledY = convertVerticalValue(getContext(),
-                    getYAxis(getContext(), parentLayout, 0.0f));
-            if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-                tm = (int) (convertVerticalValue(getContext(),
-                        getYAxis(getContext(), layout, 0.0f)));
-            }
-            tm += Math.round(scaledY);
-            layoutParams.setMargins(lm, tm, rm, bm);
-            layoutParams.height = LayoutParams.WRAP_CONTENT;
         }
 
         if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {

@@ -103,7 +103,7 @@
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"/>
 
-       <meta-data
+        <meta-data
             android:name="com.kiswe.apiKey"
             android:value="@string/KISWE_PLAYER_API_KEY" />
     </application>

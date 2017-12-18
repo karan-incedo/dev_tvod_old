@@ -218,72 +218,69 @@ public class AppCMSPageFragment extends Fragment {
                 ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
                 appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
             }
-           /*  Disable mini Player
-            if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView)
-            {
+            /*  Disable mini Player
+            if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView) {
                 RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
                 nestedScrollView.addOnScrollListener(scrollListenerForMiniPlayer);
-                int chhildCount= nestedScrollView.getLayoutManager().getChildCount();
-                int firstVisibleIndex=((LinearLayoutManager)nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition();
-                System.out.println(" chield count == "+chhildCount);
-                System.out.println(" chield count == "+((LinearLayoutManager)nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition());
+                int firstVisibleIndex = ((LinearLayoutManager) nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition();
                 ModuleList singleVideoUI = appCMSPresenter.getModuleListByName(pageView.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key));
+                    if (firstVisibleIndex >= 1 && singleVideoUI != null && singleVideoUI.getSettings().isShowPIP()) {
+                        appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                    } else {
+                        appCMSPresenter.dismissPopupWindowPlayer(false);
+                    }
 
-                if (firstVisibleIndex>=1 && singleVideoUI.getSettings().isShowPIP()){
-                     appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
-                }else{
-                    appCMSPresenter.dismissPopupWindowPlayer(false);
+                }
+                //*/
+
+            } else if (!BaseView.isTablet(getContext())) {
+                appCMSPresenter.restrictPortraitOnly();
+                appCMSPresenter.dismissPopupWindowPlayer(false);
+
+            }
+            if (pageView != null &&
+                    appCMSPresenter.videoPlayerView != null) {
+                appCMSPresenter.videoPlayerView.requestAudioFocus();
+
+            }
+            CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(castCallBackListener);
+        }
+
+        private CastServiceProvider.CastCallBackListener castCallBackListener = new CastServiceProvider.CastCallBackListener() {
+            @Override
+            public void onCastStatusUpdate() {
+                if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
+                    if (pageView.findChildViewById(R.id.video_player_id) instanceof FrameLayout) {
+
+                        FrameLayout rootView = (FrameLayout) pageView.findChildViewById(R.id.video_player_id);
+                        if (rootView.getChildAt(0) instanceof CustomVideoPlayerView)
+                            ((CustomVideoPlayerView) rootView.getChildAt(0)).showOverlayWhenCastingConnected();
+                    }
+                }
+                if (appCMSPresenter.videoPlayerView != null) {
+                    appCMSPresenter.videoPlayerView.showOverlayWhenCastingConnected();
                 }
             }
-            //*/
+        };
 
-        }else if(!BaseView.isTablet(getContext())){
-            appCMSPresenter.restrictPortraitOnly();
-
-        }
-        if (pageView != null &&
-                appCMSPresenter.videoPlayerView != null) {
-            appCMSPresenter.videoPlayerView.requestAudioFocus();
-
-        }
-        CastServiceProvider.getInstance(getActivity()).setCastCallBackListener(castCallBackListener);
-    }
-
-    private CastServiceProvider.CastCallBackListener castCallBackListener = new CastServiceProvider.CastCallBackListener() {
         @Override
-        public void onCastStatusUpdate() {
+        public void onPause () {
+            super.onPause();
+            updateDataLists();
+
             if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
-                if (pageView.findChildViewById(R.id.video_player_id) instanceof FrameLayout) {
-
-                    FrameLayout rootView = (FrameLayout) pageView.findChildViewById(R.id.video_player_id);
-                    if (rootView.getChildAt(0) instanceof CustomVideoPlayerView)
-                        ((CustomVideoPlayerView) rootView.getChildAt(0)).showOverlayWhenCastingConnected();
+                View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+                ViewGroup group = (ViewGroup) nextChild;
+                if (((VideoPlayerView) group.getChildAt(0)) != null) {
+                    ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
                 }
-            }
-            if(appCMSPresenter.videoPlayerView!=null){
-                appCMSPresenter.videoPlayerView.showOverlayWhenCastingConnected();
-            }
-        }
-    };
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        updateDataLists();
-
-        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null) {
-            View nextChild = (pageView.findChildViewById(R.id.video_player_id));
-            ViewGroup group = (ViewGroup) nextChild;
-            if (((VideoPlayerView) group.getChildAt(0)) != null) {
-                ((VideoPlayerView) group.getChildAt(0)).pausePlayer();
+            }
+            if (appCMSPresenter.videoPlayerView != null && appCMSPresenter.videoPlayerView.getPlayer() != null) {
+                appCMSPresenter.videoPlayerView.pausePlayer();
             }
 
         }
-        if (appCMSPresenter.videoPlayerView != null && appCMSPresenter.videoPlayerView.getPlayer() != null) {
-            appCMSPresenter.videoPlayerView.pausePlayer();
-        }
-
-    }
 
     public void updateDataLists() {
         if (pageView != null) {
@@ -447,58 +444,6 @@ public class AppCMSPageFragment extends Fragment {
                     updateAllViews(pageViewGroup);
                     pageView.notifyAdaptersOfUpdate();
                 }
-
-               /* disable mini player
-               if (pageView != null) {
-                    if (pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView &&
-                            pageView.getAppCMSPageUI() != null &&
-                            pageView.getAppCMSPageUI().getModuleList() != null &&
-                            pageView.getAppCMSPageUI().getModuleList().size() >= 2 &&
-                            appCMSBinder.getAppCMSPageAPI() != null &&
-                            appCMSBinder.getAppCMSPageAPI().getModules() != null &&
-                            appCMSPresenter.getModuleListByName(pageView.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key)) != null) {
-
-                        RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
-                        nestedScrollView.getRecycledViewPool().setMaxRecycledViews(0, 1);
-
-
-                        ModuleList singleVideoUI = appCMSPresenter.getModuleListByName(pageView.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key));
-
-                        if (singleVideoUI.getSettings().isShowPIP() ) {
-
-
-                            nestedScrollView.addOnScrollListener(scrollListenerForMiniPlayer);
-
-
-                            if (nestedScrollView != null &&
-                                    nestedScrollView.getLayoutManager() != null &&
-                                    (nestedScrollView.getLayoutManager()) instanceof LinearLayoutManager) {
-                                int visibleIndex = ((LinearLayoutManager) nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition();
-                                System.out.println("Mini player visibil index without scroll "+visibleIndex);
-                                if (visibleIndex > 0 &&
-                                        !appCMSPresenter.pipPlayerVisible) {
-
-                                    if(pageView!=null) {
-                                        View nextChild = (pageView.findChildViewById(R.id.video_player_id));
-                                        ViewGroup group = (ViewGroup) nextChild;
-                                        if ((group.getChildAt(0)) != null) {
-                                            appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
-                                            appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
-                                        }
-                                    }
-                                } else if (visibleIndex <= 0 && appCMSPresenter.pipPlayerVisible) {
-                                    appCMSPresenter.dismissPopupWindowPlayer(false);
-                                }
-                            }
-                        } else {
-                            appCMSPresenter.dismissPopupWindowPlayer(true);
-                        }
-
-                    } else if (appCMSPresenter.pipPlayerVisible) {
-                        appCMSPresenter.dismissPopupWindowPlayer(true);
-                    }
-                }
-                //*/
 
             } catch (Exception e) {
                 //

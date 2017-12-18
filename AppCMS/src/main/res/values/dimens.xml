@@ -14,7 +14,7 @@
     <dimen name="appbar_elevation">4dp</dimen>
 
     <dimen name="menu_item_height">36dp</dimen>
-    <dimen name="bottom_navbar_height">58dp</dimen>
+    <dimen name="bottom_navbar_height">55dp</dimen>
     <dimen name="nav_item_text_size">12sp</dimen>
     <dimen name="nav_item_margin">5dp</dimen>
     <dimen name="nav_image_height">24dp</dimen>
@@ -106,6 +106,8 @@
     <dimen name="app_cms_dialog__margin">20dp</dimen>
     <dimen name="app_cms_dialog_list_divider_height">5dp</dimen>
     <dimen name="streaming_quality_view_padding">8dp</dimen>
-
-
+    <dimen name="chromecast_default_width">28dp</dimen>
+    <dimen name="chromecast_default_height">28dp</dimen>
+    <dimen name="chromecast_default_padding_end">4dp</dimen>
+    <dimen name="chromecast_default_padding_top">4dp</dimen>
 </resources>

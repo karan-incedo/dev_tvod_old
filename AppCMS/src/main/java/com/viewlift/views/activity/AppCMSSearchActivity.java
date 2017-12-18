@@ -169,10 +169,8 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         if (appCMSMain != null &&
                 appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&
-                !TextUtils.isEmpty(appCMSMain.getBrand().getGeneral().getBackgroundColor())) {
-            appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSMain.getBrand()
-                    .getGeneral()
-                    .getBackgroundColor()));
+                !TextUtils.isEmpty(appCMSPresenter.getAppBackgroundColor())) {
+            appCMSSearchResultsContainer.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
         }
 
         appCMSCloseButton.setOnClickListener(v -> finish());

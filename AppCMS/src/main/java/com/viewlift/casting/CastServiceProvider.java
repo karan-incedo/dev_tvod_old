@@ -54,7 +54,7 @@ public class CastServiceProvider {
     private String TAG = "CastServiceProvider";
     public String currentCastingUrl = "";
     private FragmentActivity mActivity;
-    private ImageButton mMediaRouteButton,mPlayerMediaRouteButton;
+    private ImageButton mMediaRouteButton, mPlayerMediaRouteButton;
     private CastHelper mCastHelper;
     private RokuWrapper rokuWrapper;
     private boolean isHomeScreen = false;
@@ -62,6 +62,7 @@ public class CastServiceProvider {
     private CastSession mCastSession;
     private AnimationDrawable castAnimDrawable;
     public static final String CAST_STATUS = "com.viewlift.casting.CASTING_STATUS";
+    private String pageName;
 
     /**
      * callBackRokuMediaSelection gets the calls related to selected roku devices
@@ -90,15 +91,16 @@ public class CastServiceProvider {
     private ShowcaseView mShowCaseView;
     private boolean allowFreePlay;
     private CastCallBackListener castCallBackListener;
+
     /**
      * callBackCastHelper gets the calls related to chromecast devices selections
      */
 
-    public static interface CastCallBackListener{
+    public static interface CastCallBackListener {
         void onCastStatusUpdate();
     }
 
-    public void setCastCallBackListener(CastCallBackListener  castCallBackListener){
+    public void setCastCallBackListener(CastCallBackListener castCallBackListener) {
         this.castCallBackListener = castCallBackListener;
     }
 
@@ -107,9 +109,9 @@ public class CastServiceProvider {
         public void onApplicationConnected() {
             if (mActivity != null && mActivity instanceof AppCMSPlayVideoActivity) {
                 launchChromecastRemotePlayback(CastingUtils.CASTING_MODE_CHROMECAST);
-            }else{
+            } else {
 
-                if(castCallBackListener != null){
+                if (castCallBackListener != null) {
                     castCallBackListener.onCastStatusUpdate();
                 }
             }
@@ -121,7 +123,7 @@ public class CastServiceProvider {
         public void onApplicationDisconnected() {
 
             currentCastingUrl = "";
-            if(castCallBackListener != null){
+            if (castCallBackListener != null) {
                 castCallBackListener.onCastStatusUpdate();
             }
         }
@@ -284,12 +286,13 @@ public class CastServiceProvider {
         castAnimDrawable = (AnimationDrawable) mMediaRouteButton.getDrawable();
     }
 
-    public void setVideoPlayerMediaButton( ImageButton mediaRouterView) {
+    public void setVideoPlayerMediaButton(ImageButton mediaRouterView) {
         this.mPlayerMediaRouteButton = mediaRouterView;
         mPlayerMediaRouteButton.setImageDrawable(mActivity.getResources().getDrawable(R.drawable.anim_cast, null));
         castAnimDrawable = (AnimationDrawable) mPlayerMediaRouteButton.getDrawable();
 
     }
+
     public void onActivityResume() {
 
         refreshCastMediaIcon();
@@ -507,7 +510,9 @@ public class CastServiceProvider {
         }
 
         mMediaRouteButton.setOnClickListener(v -> {
-            if (!allowFreePlay && !appCMSPresenter.isUserSubscribed()) {
+            if (!allowFreePlay &&
+                    ((!appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) ||
+                            (appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserSubscribed()))) {
                 CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
                         .getSessionManager().endCurrentSession(true);
                 if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
@@ -518,8 +523,6 @@ public class CastServiceProvider {
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();
-                                }else{
-//                                    Toast.makeText(mActivity,"Not Player Page",Toast.LENGTH_LONG).show();
                                 }
                             });
                 }
@@ -541,6 +544,7 @@ public class CastServiceProvider {
             }
         });
     }
+
     private void refreshLivePlayerCastMediaIcon() {
         if (mPlayerMediaRouteButton == null)
             return;
@@ -588,8 +592,6 @@ public class CastServiceProvider {
                             () -> {
                                 if (mActivity instanceof AppCMSPlayVideoActivity) {
                                     mActivity.finish();
-                                }else{
-//                                    Toast.makeText(mActivity,"Not Player Page",Toast.LENGTH_LONG).show();
                                 }
                             });
                 }
@@ -622,9 +624,28 @@ public class CastServiceProvider {
 
     }
 
-    public void launchSingeRemoteMedia(String title,String paramLink ,String imageUrl, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer){
-       if(mCastHelper != null)
-        mCastHelper.launchSingeRemoteMedia(title,paramLink,imageUrl,videoPlayUrl,filmId,currentPosition,false);
+    public void launchSingeRemoteMedia(String title, String paramLink, String imageUrl, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer) {
+        if (mCastHelper != null)
+            mCastHelper.launchSingeRemoteMedia(title, paramLink, imageUrl, videoPlayUrl, filmId, currentPosition, false);
+    }
+
+    public void setPageName(String pageName) {
+        this.pageName = pageName;
+    }
+
+    public boolean castDeviceConnected() {
+        return mCastHelper.isCastDeviceConnected;
+    }
+
+    public String getConnectedDeviceName() {
+        try {
+            if (mCastSession == null)
+                return "";
+            return mCastSession.getCastDevice().getFriendlyName();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "";
+        }
     }
 }
 

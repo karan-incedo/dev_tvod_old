@@ -404,6 +404,7 @@ public class CastHelper {
         }
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
+            customData.put(CastingUtils.VIDEO_TITLE, title);
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
@@ -434,6 +435,7 @@ public class CastHelper {
         }
         try {
             customData.put(CastingUtils.PARAM_KEY, paramLink);
+            customData.put(CastingUtils.VIDEO_TITLE, title);
         } catch (JSONException e) {
             //Log.e(TAG, "Error parsing JSON data: " + e.getMessage());
         }
@@ -818,7 +820,7 @@ public class CastHelper {
         }
     }
 
-    private RemoteMediaClient getRemoteMediaClient() {
+    protected RemoteMediaClient getRemoteMediaClient() {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
         if (castSession == null || !castSession.isConnected()) {

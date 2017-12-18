@@ -116,8 +116,7 @@ public class SubscriptionMetaDataView extends LinearLayout {
              */
             if (getChildAt(0)!=null &&
                     getChildAt(0)instanceof  GridLayout) {
-                //System.out.println("Plans views " + ((GridLayout) getChildAt(0)).getChildCount());
-                removeAllViews();
+               removeAllViews();
             }
             for (int i = 0; i < featureDetails.size(); i++) {
                 if (!TextUtils.isEmpty(featureDetails.get(i).getValueType()) &&

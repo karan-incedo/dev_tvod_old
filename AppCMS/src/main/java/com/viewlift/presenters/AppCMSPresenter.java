@@ -63,7 +63,6 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -205,9 +204,8 @@ import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AppCMSUpgradeActivity;
 import com.viewlift.views.activity.AutoplayActivity;
-import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.adapters.AppCMSBaseAdapter;
-import com.viewlift.views.adapters.AppCMSViewAdapter;
+import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
@@ -4385,7 +4383,15 @@ public class AppCMSPresenter {
                 launchMobileAutoplayActivity(pageId, pageTitle, url, binder, action1, appCMSPageUI);
             } else {
                 AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
-                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key));
+                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key_01));
+                if (pageAPI==null){
+                    pageAPI = binder.getContentData().convertToAppCMSPageAPI(
+                            currentActivity.getString(R.string.app_cms_page_autoplay_module_key_02));
+                }
+                if (pageAPI==null){
+                    pageAPI = binder.getContentData().convertToAppCMSPageAPI(
+                            currentActivity.getString(R.string.app_cms_page_autoplay_module_key_03));
+                }
 
                 if (pageAPI != null) {
                     launchAutoplayActivity(currentActivity,
@@ -4418,7 +4424,12 @@ public class AppCMSPresenter {
                             for (ModuleList moduleList :
                                     appCMSPageUI.getModuleList()) {
                                 if (moduleList.getType().equals(currentActivity
-                                        .getString(R.string.app_cms_page_autoplay_module_key))) {
+                                        .getString(R.string.app_cms_page_autoplay_module_key_01)) ||
+                                        moduleList.getType().equals(currentActivity
+                                                .getString(R.string.app_cms_page_autoplay_module_key_02)) ||
+                                        moduleList.getType().equals(currentActivity
+                                                .getString(R.string.app_cms_page_autoplay_module_key_03))
+                                        ) {
                                     pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
                                             moduleList.getType());
                                     break;
@@ -7648,9 +7659,7 @@ public class AppCMSPresenter {
             if (dialog.getWindow() != null) {
                 try {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                            Color.parseColor(appCMSMain.getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor())));
+                            Color.parseColor(getAppBackgroundColor())));
                 } catch (Exception e) {
                     //Log.w(TAG, "Failed to set background color from AppCMS branding - defaulting to colorPrimaryDark: " +
 //                            e.getMessage());
@@ -12271,14 +12280,14 @@ public class AppCMSPresenter {
     public void showPopupWindowPlayer(View scrollView) {
 
         if (relativeLayoutPIP == null) {
-            relativeLayoutPIP = new MiniPlayerView(currentActivity, this);
+            relativeLayoutPIP = new MiniPlayerView(currentActivity, this,scrollView);
         } else {
             relativeLayoutPIP.init();
         }
         relativeLayoutPIP.setVisibility(View.VISIBLE);
-        relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(v -> {
+        /*relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(v -> {
             ((RecyclerView) scrollView).smoothScrollToPosition(0);
-        });
+        });*/
         if (relativeLayoutPIP.getParent() == null) {
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
         }

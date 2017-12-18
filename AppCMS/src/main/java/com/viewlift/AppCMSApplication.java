@@ -20,7 +20,7 @@ import io.fabric.sdk.android.Fabric;
 
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
-/**
+/*
  * Created by viewlift on 5/4/17.
  */
 
@@ -44,24 +44,25 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 @Override
                 public void onInstallConversionDataLoaded(Map<String, String> map) {
-
+                    //
                 }
 
                 @Override
                 public void onInstallConversionFailure(String s) {
-
+                    //
                 }
 
                 @Override
                 public void onAppOpenAttribution(Map<String, String> map) {
-
+                    //
                 }
 
                 @Override
                 public void onAttributionFailure(String s) {
-
+                    //
                 }
             };
+
             Fabric.with(AppCMSApplication.this, new Crashlytics());
             Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key),
                     getString(R.string.app_cms_apptentive_signature_key));
@@ -104,6 +105,7 @@ public class AppCMSApplication extends MultiDexApplication {
                     if (openActivities == 1) {
                         appCMSPresenterComponent.appCMSPresenter().setCancelAllLoads(true);
                     }
+
                     openActivities--;
                 }
 
@@ -120,9 +122,7 @@ public class AppCMSApplication extends MultiDexApplication {
                 }
             });
 
-
         }).run();
-
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

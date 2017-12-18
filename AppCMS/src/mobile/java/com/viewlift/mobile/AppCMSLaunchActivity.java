@@ -14,11 +14,9 @@ import android.util.Log;
 import android.view.View;
 
 import com.appsflyer.AppsFlyerLib;
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
-import com.viewlift.mobile.imageutils.FrescoImageLoader;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -27,7 +25,6 @@ import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
-import com.viewlift.views.utilities.ImageUtils;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
@@ -100,15 +97,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
             }
 
-            Fresco.initialize(getApplicationContext());
-
-            ImageUtils.registerImageLoader(new FrescoImageLoader());
-
             UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
 
             AppsFlyerLib.getInstance().startTracking(getApplication());
-        });
-        Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
+        }).run();
+        //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
     @Override

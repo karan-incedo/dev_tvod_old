@@ -293,7 +293,7 @@ public class CustomPlaybackControlView extends FrameLayout {
         if (repeatToggleButton != null) {
             repeatToggleButton.setOnClickListener(componentListener);
         }
-        progressController = (LinearLayout) findViewById(R.id.exo_position_progress);
+        progressController = (LinearLayout) findViewById(R.id.seek_bar_parent);
 
         Resources resources = context.getResources();
         repeatOffButtonDrawable = resources.getDrawable(com.google.android.exoplayer2.ui.R.drawable.exo_controls_repeat_off);

@@ -189,13 +189,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @BindView(R.id.app_cms_start_free_trial_tool)
     TextView appCMSNavFreeTrialTool;
 
-    private int navMenuPageIndex;
-    private int homePageIndex;
-    private int categoriesPageIndex;
-    private int searchPageIndex;
-    private int navLivePageIndex;
+
     private int currentMenuTabIndex = NO_NAV_MENU_PAGE_INDEX;
-    private int defa;
+
 
     private AppCMSPresenter appCMSPresenter;
     private Stack<String> appCMSBinderStack;
@@ -241,12 +237,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         setContentView(R.layout.activity_appcms_page);
-
-        homePageIndex = getResources().getInteger(R.integer.first_primary_page_index);
-        categoriesPageIndex = getResources().getInteger(R.integer.second_primary_page_index);
-        navMenuPageIndex = getResources().getInteger(R.integer.third_primary_page_index);
-        searchPageIndex = getResources().getInteger(R.integer.search_page_index);
-        navLivePageIndex = getResources().getInteger(R.integer.nav_live_page_index);
 
         ButterKnife.bind(this);
         appCMSPresenter = ((AppCMSApplication) getApplication())
@@ -1609,18 +1599,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
         if (appCMSBinder != null) {
-            /* final Navigation navigation = appCMSBinder.getNavigation();
-           if (navigation != null && navigation.getNavigationPrimary() != null &&
-                    navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {
-                appCMSTabNavContainer.setVisibility(View.GONE);
-            }*/
+            final Navigation navigation = appCMSBinder.getNavigation();
             //final ModuleList moduleFooter = appCMSBinder.getAppCMSPageUI() != null ? appCMSBinder.getAppCMSPageUI().getModuleList().get(appCMSBinder.getAppCMSPageUI().getModuleList().size() - 1) : null;
             final ModuleList moduleFooter = appCMSPresenter.getTabBarUIFooterModule();
             if (moduleFooter != null &&
                     moduleFooter.getSettings() != null &&
-                    !moduleFooter.getSettings().isShowTabBar()) {
+                    !moduleFooter.getSettings().isShowTabBar()) {   // Setting must have value for Footer for proper implementation.
                 appCMSTabNavContainer.setVisibility(View.GONE);
-            } else {
+            } else if (navigation != null && navigation.getNavigationPrimary() != null &&
+                    navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {  // for the pages like Hoichoi it is Used here where we dont getting value in settings
+                appCMSTabNavContainer.setVisibility(View.GONE);
+            }else {
                 appCMSTabNavContainer.setVisibility(View.VISIBLE);
                 selectNavItem(appCMSBinder.getPageId());
             }
@@ -1907,189 +1896,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     private void showSystemUI(View decorView) {
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-    }
-
-    /*  public void addNavigationItem() {
-          final NavBarItemView navBarItemView =
-                  new NavBarItemView(new ContextThemeWrapper(this, R.style.NavbarItemView));
-          LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0,
-                  ViewGroup.LayoutParams.MATCH_PARENT);
-          layoutParams.weight = 1;
-          navBarItemView.setLayoutParams(layoutParams);
-          appCMSTabNavContainer.addView(navBarItemView);
-      }*/
-    private void createHomeNavItem(int tabCount, final NavigationPrimary homePageNav) {
-        if (homePageNav != null) {
-            if (tabCount <= homePageIndex) {
-                homePageIndex = DEFAULT_HOME_PAGE_INDEX;
-            }
-            if (homePageIndex < tabCount) {
-                final NavBarItemView homeNavBarItemView =
-                        (NavBarItemView) appCMSTabNavContainer.getChildAt(homePageIndex);
-                int highlightColor;
-                try {
-                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                            .getGeneral().getBlockTitleColor());
-                } catch (Exception e) {
-                    //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
-//                        e.getMessage());
-                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-                }
-                homeNavBarItemView.setImage(getString(R.string.app_cms_home_icon_name));
-                homeNavBarItemView.setHighlightColor(highlightColor);
-                homeNavBarItemView.setLabel(homePageNav.getTitle());
-                homeNavBarItemView.setOnClickListener(v -> {
-
-                    if (getSelectedNavItem() == homeNavBarItemView) {
-                        return;
-                    }
-
-                    currentMenuTabIndex = homePageIndex;
-                    appCMSPresenter.showMainFragmentView(true);
-                    selectNavItemAndLaunchPage(homeNavBarItemView,
-                            homePageNav.getPageId(),
-                            homePageNav.getTitle());
-                });
-
-                homeNavBarItemView.setTag(homePageNav.getPageId());
-                if (getSelectedNavItem() == null) {
-                    selectNavItem(homeNavBarItemView);
-                }
-            }
-        }
-    }
-
-    private void createLiveNavItem(int tabCount, NavigationPrimary livePageNav) {
-        if (tabCount <= navLivePageIndex) {
-            navLivePageIndex = DEFAULT_NAV_LIVE_PAGE_INDEX;
-        }
-
-        if (navLivePageIndex < tabCount) {
-            final NavBarItemView navLiveItemView =
-                    (NavBarItemView) appCMSTabNavContainer.getChildAt(navLivePageIndex);
-            int highlightColor;
-            try {
-                highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getGeneral().getBlockTitleColor());
-            } catch (Exception e) {
-                //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
-//                        e.getMessage());
-                highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-            }
-
-            navLiveItemView.setHighlightColor(highlightColor);
-            navLiveItemView.setLabel(livePageNav.getTitle());
-            navLiveItemView.setOnClickListener(v -> {
-                if (getSelectedNavItem() == navLiveItemView)
-                    return;
-                currentMenuTabIndex = navLivePageIndex;
-
-                appCMSPresenter.showMainFragmentView(true);
-                selectNavItemAndLaunchPage(navLiveItemView,
-                        livePageNav.getPageId(),
-                        livePageNav.getTitle());
-            });
-
-            navLiveItemView.setTag(livePageNav.getPageId());
-            if (navLiveItemView.getParent() == null) {
-                appCMSTabNavContainer.addView(navLiveItemView);
-            }
-        }
-    }
-
-    private void createMoviesNavItem(int tabCount, final NavigationPrimary moviePageNav) {
-        if (moviePageNav != null) {
-            if (tabCount <= categoriesPageIndex) {
-                categoriesPageIndex = DEFAULT_CATEGORIES_PAGE_INDEX;
-            }
-
-            if (categoriesPageIndex < tabCount) {
-                final NavBarItemView moviesNavBarItemView =
-                        (NavBarItemView) appCMSTabNavContainer.getChildAt(categoriesPageIndex);
-                int highlightColor;
-                try {
-                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                            .getGeneral().getBlockTitleColor());
-                } catch (Exception e) {
-                    //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
-//                            e.getMessage());
-                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-                }
-                moviesNavBarItemView.setImage(getString(R.string.app_cms_movies_icon_name));
-                moviesNavBarItemView.setHighlightColor(highlightColor);
-                moviesNavBarItemView.setLabel(moviePageNav.getTitle());
-                moviesNavBarItemView.setOnClickListener(v -> {
-                    if (getSelectedNavItem() == moviesNavBarItemView) {
-                        return;
-                    }
-                    currentMenuTabIndex = categoriesPageIndex;
-
-                    appCMSPresenter.showMainFragmentView(true);
-                    selectNavItemAndLaunchPage(moviesNavBarItemView,
-                            moviePageNav.getPageId(),
-                            moviePageNav.getTitle());
-                });
-                moviesNavBarItemView.setTag(moviePageNav.getPageId());
-                if (moviesNavBarItemView.getParent() == null) {
-                    appCMSTabNavContainer.addView(moviesNavBarItemView);
-                }
-            }
-        }
-    }
-
-    private void createSearchNavItem(int tabCount, String pageId) {
-        if (appCMSPresenter.getAppCMSMain() != null) {
-            if (tabCount <= searchPageIndex) {
-                searchPageIndex = DEFAULT_SEARCH_INDEX;
-            }
-
-            if (searchPageIndex < tabCount) {
-                final NavBarItemView searchNavBarItemView =
-                        (NavBarItemView) appCMSTabNavContainer.getChildAt(searchPageIndex);
-                int highlightColor;
-                try {
-                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                            .getGeneral().getBlockTitleColor());
-                } catch (Exception e) {
-//                    //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
-//                            e.getMessage());
-                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
-                }
-
-                searchNavBarItemView.setImage(getString(R.string.app_cms_search_icon_name));
-                searchNavBarItemView.setHighlightColor(highlightColor);
-                searchNavBarItemView.setLabel(getString(R.string.app_cms_search_label));
-                searchNavBarItemView.setOnClickListener(v -> {
-                    if (getSelectedNavItem() == searchNavBarItemView)
-                        return;
-                    currentMenuTabIndex = searchPageIndex;
-                    if (!appCMSPresenter.isNetworkConnected()) {
-                        if (!appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-                                    () -> appCMSPresenter.launchBlankPage(),
-                                    null);
-                            return;
-                        }
-
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-                                appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
-                                true,
-                                () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-                                        null, null, false),
-                                null);
-                        return;
-                    }
-
-                    selectNavItem(searchNavBarItemView);
-                    appCMSPresenter.launchSearchPage();
-                });
-
-                searchNavBarItemView.setTag(pageId);
-                if (searchNavBarItemView.getParent() == null) {
-                    appCMSTabNavContainer.addView(searchNavBarItemView);
-                }
-            }
-        }
     }
 
     private void manageTopBar() {

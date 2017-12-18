@@ -71,4 +71,10 @@ public class BeaconBuffer extends Thread {
             }
         }
     }
+
+    public void setBeaconData(String videoId,String permaLink,String streamId) {
+        this.filmId = videoId;
+        this.permaLink = permaLink;
+        this.streamId = streamId;
+    }
 }

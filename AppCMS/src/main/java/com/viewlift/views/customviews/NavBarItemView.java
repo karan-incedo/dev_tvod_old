@@ -129,14 +129,6 @@ public class NavBarItemView extends LinearLayout {
                     int navImageHeight =
                             (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_image_height), getContext());
 
-                   /* if (BaseView.isTablet(getContext())) {
-                        navImageWidth =
-                                (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_width), getContext());
-                        navImageHeight =
-                                (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_large_height), getContext());
-                    }*/
-
-
                     LinearLayout.LayoutParams navImageLayoutParams =
                             new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.nav_image_width, getContext()), BaseView.dpToPx(R.dimen.nav_image_height, getContext()));
                     navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
@@ -176,15 +168,8 @@ public class NavBarItemView extends LinearLayout {
         }
         setLayoutParams(parentLayoutParams);
 
-
-        int navItemTopPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_top_padding), getContext());
-        int navItemBottomPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_bottom_padding), getContext());
-
-        int navItemLeftRightPadding = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_left_right_padding), getContext());
-
         int navItemWidth = (int) BaseView.convertDpToPixel(getContext().getResources().getDimension(R.dimen.nav_item_min_width), getContext());
 
-        // setPadding(navItemLeftRightPadding, navItemTopPadding, navItemLeftRightPadding, navItemBottomPadding);
         setPadding(BaseView.dpToPx(R.dimen.nav_item_left_right_padding, getContext()),
                 BaseView.dpToPx(R.dimen.nav_item_top_padding, getContext()),
                 BaseView.dpToPx(R.dimen.nav_item_left_right_padding, getContext()),
@@ -208,7 +193,7 @@ public class NavBarItemView extends LinearLayout {
             drawableId = resources.getIdentifier(tabDisplayPath.replace("-", "_"), "drawable", appCMSPresenter.getCurrentActivity().getPackageName());
 
         }
-        if (navImage != null) {
+        if (navImage != null && drawableId!=0) {
             navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
         }
     }

@@ -25,7 +25,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AppCMSDraggableFragment extends Fragment {
-
     @BindView(R.id.draggable_main_layout)
     ConstraintLayout appCMSDraggableMainLayout;
 
@@ -72,9 +71,9 @@ public class AppCMSDraggableFragment extends Fragment {
         initializeDraggablePanel(topFragment, bottomFragment);
 
         Bundle args = getArguments();
+        //
 
-        int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
-                .getBackgroundColor());
+        int bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
         int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
                 .getTextColor());
         int transparentColor = getResources().getColor(R.color.transparentColor);

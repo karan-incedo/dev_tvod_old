@@ -226,6 +226,8 @@ public class Component implements ModuleWithComponents, Serializable {
 
     boolean yAxisSetManually;
 
+    boolean widthModified;
+
     public String getText() {
         return text;
     }
@@ -561,5 +563,13 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setSvod(boolean svod) {
         this.svod = svod;
+    }
+
+    public boolean isWidthModified() {
+        return widthModified;
+    }
+
+    public void setWidthModified(boolean widthModified) {
+        this.widthModified = widthModified;
     }
 }
