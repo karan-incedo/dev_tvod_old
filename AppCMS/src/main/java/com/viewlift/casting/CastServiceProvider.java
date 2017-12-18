@@ -649,15 +649,6 @@ public class CastServiceProvider {
         }
     }
 
-    public String getConnectedDeviceName(){
-        try {
-            if (mCastSession == null)
-                return "";
-            return mCastSession.getCastDevice().getFriendlyName();
-        }catch (Exception ex){
-            ex.printStackTrace();
-            return "";
-        }
-    }
+
 }
 
