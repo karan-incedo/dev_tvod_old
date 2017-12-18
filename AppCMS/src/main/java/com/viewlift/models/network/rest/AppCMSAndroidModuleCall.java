@@ -1,5 +1,6 @@
 package com.viewlift.models.network.rest;
 
+import android.content.res.AssetManager;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -9,10 +10,12 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -35,14 +38,21 @@ import rx.schedulers.Schedulers;
 public class AppCMSAndroidModuleCall {
     private static final String TAG = "AndroidModuleCall";
 
+    private final AssetManager assetManager;
     private final Gson gson;
     private final AppCMSAndroidModuleRest appCMSAndroidModuleRest;
     private final File storageDirectory;
 
+    private static final String[][] jsonFromAssets = {
+            {"trayXX", "trayXX.json"}
+    };
+
     @Inject
-    public AppCMSAndroidModuleCall(Gson gson,
+    public AppCMSAndroidModuleCall(AssetManager assetManager,
+                                   Gson gson,
                                    AppCMSAndroidModuleRest appCMSAndroidModuleRest,
                                    File storageDirectory) {
+        this.assetManager = assetManager;
         this.gson = gson;
         this.appCMSAndroidModuleRest = appCMSAndroidModuleRest;
         this.storageDirectory = storageDirectory;
@@ -62,10 +72,36 @@ public class AppCMSAndroidModuleCall {
                 bustCache,
                 forceLoadFromNetwork,
                 (moduleDataMap) -> {
+                    addMissingModulesFromAssets(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setLoadedFromNetwork(moduleDataMap.loadedFromNetwork);
-                    Observable.just(appCMSAndroidModules).subscribe(readyAction);
+                    Observable.just(appCMSAndroidModules)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(readyAction);
                 });
+    }
+
+    private void addMissingModulesFromAssets(Map<String, ModuleList> moduleListMap) {
+        if (assetManager != null) {
+            for (String[] jsonFromAssetsVal : jsonFromAssets) {
+                if (jsonFromAssetsVal != null && jsonFromAssetsVal.length == 2) {
+                    if (!moduleListMap.containsKey(jsonFromAssetsVal[0])) {
+                        try {
+                            InputStream inputStream = assetManager.open(jsonFromAssetsVal[1]);
+                            BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream));
+                            ModuleList moduleList = gson.fromJson(inputReader,
+                                    ModuleList.class);
+                            moduleListMap.put(jsonFromAssetsVal[0], moduleList);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Failed to read target " +
+                                    jsonFromAssetsVal[1] +
+                                    ": " +
+                                    e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void writeModuleToFile(String outputFilename, Map<String, ModuleList> moduleListMap) {
@@ -186,7 +222,10 @@ public class AppCMSAndroidModuleCall {
         })
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe((result) -> Observable.just(result).subscribe(readyAction));
+        .onErrorResumeNext(throwable -> Observable.empty())
+        .subscribe((result) -> Observable.just(result)
+                .onErrorResumeNext(throwable -> Observable.empty())
+                .subscribe(readyAction));
     }
 
     private String getResourceFilenameWithJsonOnly(String url) {

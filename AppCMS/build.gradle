@@ -297,6 +297,7 @@ dependencies {
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
     mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
+compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'
