@@ -290,6 +290,7 @@
 
     <string name="app_cms_action_change_download_quality_key">changeDownloadQuality</string>
     <string name="app_cms_action_change_download_storage_location_key">changeStorageLocation</string>
+    <string name="app_cms_action_change_download_via_cellular_key">changeCellularData</string>
     <!--<string name="app_cms_action_change_download_quality_key">Manage Download</string>-->
 
     <string name="app_cms_action_logingoogle_key">logingoogle</string>

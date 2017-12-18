@@ -1117,7 +1117,7 @@ public class ViewCreator {
                                             }
                                         }
                                     } else if (componentType == AppCMSUIKeyType.PAGE_TOGGLE_BUTTON_KEY) {
-                                        switch (componentType) {
+                                        switch (componentKey) {
                                             case PAGE_AUTOPLAY_TOGGLE_BUTTON_KEY:
                                                 ((Switch) view).setChecked(appCMSPresenter
                                                         .getAutoplayEnabledUserPref(context));
@@ -1133,6 +1133,19 @@ public class ViewCreator {
                                                     componentViewResult.componentView.setEnabled(false);
                                                     ((Switch) componentViewResult.componentView).setChecked(false);
                                                     appCMSPresenter.setUserDownloadLocationPref(false);
+                                                }
+                                                break;
+
+                                            case PAGE_DOWNLOAD_VIA_CELLULAR_NETWORK_KEY:
+                                                ((Switch) view).setChecked(appCMSPresenter
+                                                        .getDownloadOverCellularEnabled());
+                                                if (appCMSPresenter.isExternalStorageAvailable()) {
+                                                    componentViewResult.componentView.setEnabled(true);
+                                                    appCMSPresenter.setDownloadOverCellularEnabled(true);
+                                                } else {
+                                                    componentViewResult.componentView.setEnabled(false);
+                                                    ((Switch) componentViewResult.componentView).setChecked(false);
+                                                    appCMSPresenter.setDownloadOverCellularEnabled(false);
                                                 }
                                                 break;
 

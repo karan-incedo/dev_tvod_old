@@ -348,6 +348,8 @@ public class AppCMSPresenter {
     private static final String APPS_FLYER_KEY_PREF_NAME = "apps_flyer_pref_name_key";
     private static final String INSTANCE_ID_PREF_NAME = "instance_id_pref_name";
     private static final String SUBSCRIPTION_STATUS = "subscription_status_pref_name";
+    private static final String DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME = "download_over_cellular_enabled_pref_name";
+    private static final String ACTIVE_NETWORK_TYPE_PREF_NAME = "active_network_type_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -3177,6 +3179,15 @@ public class AppCMSPresenter {
 
     public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
+        if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
+            showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED, 
+                    currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
+                    false,
+                    null,
+                    null);
+            return;
+        }
+
         downloadContentDatumAfterPermissionGranted = null;
         downloadResultActionAfterPermissionGranted = null;
 
@@ -5656,6 +5667,38 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public boolean setDownloadOverCellularEnabled(boolean downloadOverCellularEnabled) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME, downloadOverCellularEnabled).commit();
+        }
+        return false;
+    }
+
+    public boolean getDownloadOverCellularEnabled() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME, false);
+        }
+        return false;
+    }
+
+    public boolean setActiveNetworkType(int activeNetworkType) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_NETWORK_TYPE_PREF_NAME, 0);
+            return sharedPrefs.edit().putInt(ACTIVE_NETWORK_TYPE_PREF_NAME, activeNetworkType).commit();
+        }
+        return false;
+    }
+
+    public int getActiveNetworkType() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_NETWORK_TYPE_PREF_NAME, 0);
+            return sharedPrefs.getInt(ACTIVE_NETWORK_TYPE_PREF_NAME, ConnectivityManager.TYPE_MOBILE);
+        }
+        return ConnectivityManager.TYPE_MOBILE;
+    }
+
     public boolean setCastOverLay() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(CASTING_OVERLAY_PREF_NAME, 0);
@@ -7336,6 +7379,10 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_download_failed_error_title);
                     message = optionalMessage;
                     break;
+
+                case DOWNLOAD_VIA_MOBILE_DISABLED:
+                    title = currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_title);
+                    message = optionalMessage;
 
                 default:
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
@@ -11422,7 +11469,8 @@ public class AppCMSPresenter {
         SD_CARD_NOT_AVAILABLE,
         UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
         UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
-        SIGN_OUT
+        SIGN_OUT,
+        DOWNLOAD_VIA_MOBILE_DISABLED
     }
 
     public enum RETRY_TYPE {
