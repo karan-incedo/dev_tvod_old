@@ -26,6 +26,7 @@ public class CastingUtils {
 
     public static String MEDIA_KEY = "media_key";
     public static String PARAM_KEY = "param_key";
+    public static String VIDEO_TITLE = "video_title";
 
     public static boolean isRemoteMediaControllerOpen = false;
     public static boolean isMediaQueueLoaded = true;
@@ -190,22 +191,29 @@ public class CastingUtils {
         return remoteMediaId;
     }
 
-    public static String getRemoteParamKey(Context mContext) {
+    public static String getCurrentPlayingVideoName(Context mContext){
         JSONObject getRemoteObject = null;
         String remoteParamKey = "";
         try {
-            getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
-            remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
+            getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getMediaInfo().getCustomData();
+            remoteParamKey = getRemoteObject.getString(CastingUtils.VIDEO_TITLE);
         } catch (Exception e) {
+            remoteParamKey = mContext.getResources().getString(R.string.app_cms_touch_to_cast_msg);
             //Log.e(TAG, "Error retrieving remote media object: " + e.getMessage());
         }
+        return remoteParamKey;
+    }
 
+    public static String getRemoteParamKey(Context mContext) {
+        JSONObject getRemoteObject = null;
+        String remoteParamKey = "";
         try {
             getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getMediaInfo().getCustomData();
             remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
         } catch (Exception e) {
             //Log.e(TAG, "Error retrieving remote media object: " + e.getMessage());
         }
+
         return remoteParamKey;
     }
 

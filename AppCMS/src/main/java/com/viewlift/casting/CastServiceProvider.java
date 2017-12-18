@@ -26,6 +26,7 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.cast.CastDevice;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.roku.RokuCastingOverlay;
@@ -625,6 +626,17 @@ public class CastServiceProvider {
     public void launchSingeRemoteMedia(String title,String paramLink ,String imageUrl, String videoPlayUrl, String filmId, long currentPosition, boolean isTrailer){
        if(mCastHelper != null)
         mCastHelper.launchSingeRemoteMedia(title,paramLink,imageUrl,videoPlayUrl,filmId,currentPosition,false);
+    }
+
+    public String getConnectedDeviceName(){
+        try {
+            if (mCastSession == null)
+                return "";
+            return mCastSession.getCastDevice().getFriendlyName();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return "";
+        }
     }
 }
 
