@@ -231,7 +231,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         showProgressBar(getResources().getString(resIdMessage));
         releasePlayer();
         init(mContext);
-        getPlayerView().hideController();
+        //getPlayerView().hideController();
         isVideoDownloaded = appCMSPresenter.isVideoDownloaded(videoDataId);
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             onUpdatedContentDatum = contentDatum;
@@ -341,6 +341,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             customPlayBack.setVisibility(View.VISIBLE);
         String url = null;
         String closedCaptionUrl = null;
+        permaLink = contentDatum.getGist().getPermalink();
         if (null != contentDatum && null != contentDatum.getStreamingInfo() && null != contentDatum.getStreamingInfo().getVideoAssets()) {
             if (null != contentDatum.getStreamingInfo().getVideoAssets().getHls()) {
                 url = contentDatum.getStreamingInfo().getVideoAssets().getHls();
@@ -377,7 +378,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         if (null != url) {
             lastUrl = url;
             closedCaptionUri = closedCaptionUrl;
-            permaLink = contentDatum.getGist().getPermalink();
             setBeaconData();
             setUri(Uri.parse(url), closedCaptionUrl == null ? null : Uri.parse(closedCaptionUrl));
             setCurrentPosition(watchedPercentage);
@@ -760,6 +760,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
         } else {
             if (parentView != null) {
+
+                customMessageView.setText(getResources().getString(R.string.app_cms_touch_to_cast_msg));
                 parentView.setVisibility(GONE);
             }
         }
@@ -795,20 +797,23 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         customMessageView.setOnClickListener((v) -> {
 
-            if (CastingUtils.getRemoteMediaId(mContext) != null && onUpdatedContentDatum != null) {
+            if(CastingUtils.getRemoteMediaId(mContext) != null && onUpdatedContentDatum != null) {
                 String filmId = CastingUtils.getRemoteMediaId(mContext);
-                if (filmId.equalsIgnoreCase("") && (!filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId()))) {
+                if(filmId.equalsIgnoreCase("") && (!filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId()))) {
                     CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(), permaLink, onUpdatedContentDatum.getGist().getVideoImageUrl(), lastUrl, onUpdatedContentDatum.getGist().getId(), 0, false);
                 }
             }
         });
-        if (CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()) {
+
+
+        if(CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()){
             String filmId = CastingUtils.getRemoteMediaId(mContext);
-            if (filmId.equalsIgnoreCase(""))
-                customMessageView.setText(CastingUtils.getCurrentPlayingVideoName(mContext));
+            if(filmId.equalsIgnoreCase(""))
+            customMessageView.setText(CastingUtils.getCurrentPlayingVideoName(mContext));
             else
-                customMessageView.setText("Casting the " + CastingUtils.getCurrentPlayingVideoName(mContext) + " to " + CastServiceProvider.getInstance((Activity) mContext).getConnectedDeviceName());
+            customMessageView.setText("Casting the "+CastingUtils.getCurrentPlayingVideoName(mContext)+" to "+CastServiceProvider.getInstance((Activity) mContext).getConnectedDeviceName());
         }
+
         parentView.setVisibility(View.GONE);
         this.addView(parentView);
 
@@ -1267,8 +1272,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         } catch (Exception e) {
             mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
         }
-        beaconBufferingThread.setBeaconData(videoDataId, permaLink, mStreamId);
-        beaconMessageThread.setBeaconData(videoDataId, permaLink, mStreamId);
+        beaconBufferingThread.setBeaconData(videoDataId,permaLink,mStreamId);
+        beaconMessageThread.setBeaconData(videoDataId,permaLink,mStreamId);
     }
 
     public interface IgetPlayerEvent {

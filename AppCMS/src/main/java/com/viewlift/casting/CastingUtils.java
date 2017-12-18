@@ -204,16 +204,10 @@ public class CastingUtils {
         return remoteParamKey;
     }
 
+
     public static String getRemoteParamKey(Context mContext) {
         JSONObject getRemoteObject = null;
         String remoteParamKey = "";
-        try {
-            getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getCurrentItem().getCustomData();
-            remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
-        } catch (Exception e) {
-            //Log.e(TAG, "Error retrieving remote media object: " + e.getMessage());
-        }
-
         try {
             getRemoteObject = CastContext.getSharedInstance(mContext).getSessionManager().getCurrentCastSession().getRemoteMediaClient().getMediaInfo().getCustomData();
             remoteParamKey = getRemoteObject.getString(CastingUtils.PARAM_KEY);
