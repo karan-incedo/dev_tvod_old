@@ -752,9 +752,24 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 parentView.setVisibility(VISIBLE);
             }
             pausePlayer();
+
+            if(CastingUtils.getRemoteMediaId(mContext) != null && onUpdatedContentDatum != null){
+                String filmId = CastingUtils.getRemoteMediaId(mContext);
+                if(filmId.equalsIgnoreCase(""))
+                customMessageView.setText(CastingUtils.getCurrentPlayingVideoName(mContext));
+                else
+                customMessageView.setText("Casting the "+CastingUtils.getCurrentPlayingVideoName(mContext)+" to "+CastServiceProvider.getInstance((Activity) mContext).getConnectedDeviceName());
+                /*if(filmId != null && filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId())){
+                }else {
+                    customMessageView.setText(getResources().getString(R.string.app_cms_touch_to_cast_msg));
+                }*/
+            }
         } else {
             if (parentView != null) {
+
+                customMessageView.setText(getResources().getString(R.string.app_cms_touch_to_cast_msg));
                 parentView.setVisibility(GONE);
+//                startPlayer();
             }
         }
     }
@@ -789,16 +804,23 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         customMessageView.setOnClickListener((v) -> {
 
-            String videoUrl = "";
-            if (null != onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getHls()) {
-                videoUrl = onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
-            } else if (null != onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg()
-                    && onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
-                videoUrl = onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
+            if(CastingUtils.getRemoteMediaId(mContext) != null && onUpdatedContentDatum != null) {
+                String filmId = CastingUtils.getRemoteMediaId(mContext);
+                if(filmId.equalsIgnoreCase("") && (!filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId()))) {
+                    CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(), permaLink, onUpdatedContentDatum.getGist().getVideoImageUrl(), lastUrl, onUpdatedContentDatum.getGist().getId(), 0, false);
+                }
             }
-
-            CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(), permaLink, onUpdatedContentDatum.getGist().getVideoImageUrl(), videoUrl, onUpdatedContentDatum.getGist().getId(), 0, false);
         });
+
+
+        if(CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()){
+            String filmId = CastingUtils.getRemoteMediaId(mContext);
+            if(filmId.equalsIgnoreCase(""))
+            customMessageView.setText(CastingUtils.getCurrentPlayingVideoName(mContext));
+            else
+            customMessageView.setText("Casting the "+CastingUtils.getCurrentPlayingVideoName(mContext)+" to "+CastServiceProvider.getInstance((Activity) mContext).getConnectedDeviceName());
+        }
+
         parentView.setVisibility(View.GONE);
         this.addView(parentView);
 
