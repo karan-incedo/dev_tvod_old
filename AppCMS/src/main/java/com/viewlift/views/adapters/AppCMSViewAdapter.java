@@ -434,6 +434,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() == null ||
                                         data.getGist().getContentType() == null) {
                                     if (!appCMSPresenter.launchVideoPlayer(data,
+                                            data.getGist().getId(),
                                             currentPlayingIndex,
                                             relatedVideoIds,
                                             -1,
@@ -452,6 +453,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             .getBoolean(R.bool.video_detail_page_plays_video) &&
                                             !showAction.equals(action)) {
                                         if (!appCMSPresenter.launchVideoPlayer(data,
+                                                data.getGist().getId(),
                                                 currentPlayingIndex,
                                                 relatedVideoIds,
                                                 -1,
@@ -501,6 +503,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     currentPlayingIndex = 0;
                                 }
                                 if (!appCMSPresenter.launchVideoPlayer(data,
+                                        data.getGist().getId(),
                                         currentPlayingIndex,
                                         relatedVideoIds,
                                         -1,
@@ -605,6 +608,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     if (data.getGist() == null ||
                             data.getGist().getContentType() == null) {
                         if (!appCMSPresenter.launchVideoPlayer(data,
+                                data.getGist().getId(),
                                 currentPlayingIndex,
                                 relatedVideoIds,
                                 -1,
@@ -626,6 +630,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                         if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                                 !showAction.equals(action)) {
                             if (!appCMSPresenter.launchVideoPlayer(data,
+                                    data.getGist().getId(),
                                     currentPlayingIndex,
                                     relatedVideoIds,
                                     -1,

@@ -221,6 +221,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                             if (data.getGist() == null ||
                                     data.getGist().getContentType() == null) {
                                 if (!appCMSPresenter.launchVideoPlayer(data,
+                                        data.getGist().getId(),
                                         currentPlayingIndex,
                                         relatedVideoIds,
                                         -1,
@@ -271,6 +272,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                 currentPlayingIndex = 0;
                             }
                             if (!appCMSPresenter.launchVideoPlayer(data,
+                                    data.getGist().getId(),
                                     currentPlayingIndex,
                                     relatedVideoIds,
                                     -1,
@@ -346,6 +348,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                 if (data.getGist() == null ||
                         data.getGist().getContentType() == null) {
                     if (!appCMSPresenter.launchVideoPlayer(data,
+                            data.getGist().getId(),
                             currentPlayingIndex,
                             relatedVideoIds,
                             -1,

@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -115,7 +116,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         FragmentManager.OnBackStackChangedListener,
         GoogleApiClient.OnConnectionFailedListener,
         AppCMSSearchFragment.OnSaveSearchQuery,
-        TabCreator.OnClickHandler {
+        TabCreator.OnClickHandler,
+        AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "AppCMSPageActivity";
 
     private static final int DEFAULT_NAV_MENU_PAGE_INDEX = 0;
@@ -198,6 +200,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver notifyUpdateListsReceiver;
     private BroadcastReceiver refreshPageDataReceiver;
     private BroadcastReceiver processDeeplinkReceiver;
+    private BroadcastReceiver enterFullScreenReceiver;
+    private BroadcastReceiver exitFullScreenReceiver;
 
     private boolean resumeInternalEvents;
     private boolean isActive;
@@ -218,6 +222,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private boolean loaderWaitingFor3rdPartyLogin = false;
     private Uri pendingDeeplinkUri;
     private TabCreator tabCreator;
+    private boolean mAudioFocusGranted;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -334,6 +339,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         processDeepLink(Uri.parse(deeplinkUrl));
                     }
                 }
+            }
+        };
+
+        enterFullScreenReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                enterFullScreenVideoPlayer();
+            }
+        };
+
+        exitFullScreenReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                exitFullScreenVideoPlayer();
             }
         };
 
@@ -836,6 +855,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
             registerReceiver(presenterCloseActionReceiver,
                     new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+            registerReceiver(enterFullScreenReceiver,
+                    new IntentFilter(AppCMSPresenter.PRESENTER_ENTER_FULLSCREEN_ACTION));
+            registerReceiver(exitFullScreenReceiver,
+                    new IntentFilter(AppCMSPresenter.PRESENTER_EXIT_FULLSCREEN_ACTION));
         } catch (Exception e) {
             //
         }
@@ -889,6 +912,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             processDeepLink(pendingDeeplinkUri);
             pendingDeeplinkUri = null;
         }
+
+        ViewCreator.resumePlayer(appCMSPresenter, this);
     }
 
     private void refreshPageData() {
@@ -933,10 +958,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             unregisterReceiver(networkConnectedReceiver);
             unregisterReceiver(presenterCloseActionReceiver);
+            unregisterReceiver(enterFullScreenReceiver);
+            unregisterReceiver(exitFullScreenReceiver);
         } catch (Exception e) {
             //
         }
         appCMSPresenter.pausePIP();
+
+        ViewCreator.pausePlayer();
     }
 
     @Override
@@ -1234,13 +1263,44 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 if (!BaseView.isTablet(this)) {
                     if (BaseView.isLandscape(this)) {
-                        ViewCreator.openFullScreenVideoPlayer(this);
+                        enterFullScreenVideoPlayer();
                     } else {
-                        ViewCreator.closeFullScreenVideoPlayer(appCMSPresenter);
+                        exitFullScreenVideoPlayer();
+                    }
+                } else {
+                    if (ViewCreator.playerViewFullScreenEnabled()) {
+                        enterFullScreenVideoPlayer();
+                    } else {
+                        ViewCreator.enableFullScreenMode();
                     }
                 }
             }
         }
+    }
+
+    public void enterFullScreenVideoPlayer() {
+        hideSystemUI(getWindow().getDecorView());
+        if (!BaseView.isLandscape(this)) {
+            appCMSPresenter.rotateToLandscape();
+        }
+        if (BaseView.isTablet(this)) {
+            appCMSPresenter.restrictLandscapeOnly();
+        }
+        if (!castDisabled && mMediaRouteButton != null) {
+            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
+        }
+        ViewCreator.openFullScreenVideoPlayer(this);
+    }
+
+    public void exitFullScreenVideoPlayer() {
+        showSystemUI(getWindow().getDecorView());
+        if (BaseView.isTablet(this)) {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
+        if (!castDisabled && mMediaRouteButton != null) {
+            ViewCreator.resetChromecastButtonFromFullScreenPlayer(mMediaRouteButton);
+        }
+        ViewCreator.closeFullScreenVideoPlayer(appCMSPresenter);
     }
 
     public void pageLoading(boolean pageLoading) {
@@ -2401,6 +2461,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);
             CastServiceProvider.getInstance(this).onActivityResume();
+            appCMSPresenter.setCurrentMediaRouteButton(mMediaRouteButton);
+            if (mMediaRouteButton.getParent() != null && mMediaRouteButton.getParent() instanceof  ViewGroup) {
+                appCMSPresenter.setCurrentMediaRouteButtonParent((ViewGroup) mMediaRouteButton.getParent());
+            }
         } catch (Exception e) {
             //Log.e(TAG, "Failed to initialize cast provider: " + e.getMessage());
         }
@@ -2522,6 +2586,52 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         return result;
+    }
+
+    protected void abandonAudioFocus() {
+        AudioManager am = (AudioManager) getApplicationContext()
+                .getSystemService(Context.AUDIO_SERVICE);
+        int result = am.abandonAudioFocus(this);
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mAudioFocusGranted = false;
+        }
+    }
+
+    protected boolean requestAudioFocus() {
+        AudioManager am = (AudioManager) getApplicationContext()
+                .getSystemService(Context.AUDIO_SERVICE);
+        int result = am.requestAudioFocus(this,
+                AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            mAudioFocusGranted = true;
+        }
+        return mAudioFocusGranted;
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                ViewCreator.pausePlayer();
+                break;
+
+            case AudioManager.AUDIOFOCUS_GAIN:
+                if (ViewCreator.shouldPlayVideoWhenReady()) {
+                    ViewCreator.startPlayer();
+                } else {
+                    ViewCreator.pausePlayer();
+                }
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS:
+                ViewCreator.pausePlayer();
+                abandonAudioFocus();
+                break;
+
+            default:
+                break;
+        }
     }
 
     private static class RefreshAppCMSBinderAction implements Action1<AppCMSPageAPI> {

@@ -871,6 +871,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     private void play(ContentDatum data, String action) {
         if (!appCMSPresenter.launchVideoPlayer(data,
+                data.getGist().getId(),
                 -1,
                 null,
                 data.getGist().getWatchedTime(),

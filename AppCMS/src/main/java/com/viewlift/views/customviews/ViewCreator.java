@@ -244,6 +244,19 @@ public class ViewCreator {
         return color1;
     }
 
+    public static void enableFullScreenMode() {
+        if (videoPlayerView != null) {
+            videoPlayerView.enableFullScreenMode();
+        }
+    }
+
+    public static boolean shouldPlayVideoWhenReady() {
+        if (videoPlayerView != null) {
+            return videoPlayerView.shouldPlayWhenReady();
+        }
+        return false;
+    }
+
     public static void pausePlayer() {
         if (videoPlayerView != null && videoPlayerContent != null) {
             videoPlayerView.pausePlayer();
@@ -252,22 +265,50 @@ public class ViewCreator {
         }
     }
 
-    private static void resumePlayer(AppCMSPresenter appCMSPresenter, Context context) {
-        videoPlayerView.setAppCMSPresenter(appCMSPresenter);
-        videoPlayerView.init(context);
-        videoPlayerView.enableController();
-        if (videoPlayerViewBinder != null &&
-                !TextUtils.isEmpty(videoPlayerContent.ccUrl)) {
-            videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
-            videoPlayerView.getPlayerView().getSubtitleView()
-                    .setVisibility(appCMSPresenter.getClosedCaptionPreference()
-                            ? View.VISIBLE
-                            : View.GONE);
-            videoPlayerView.setUri(Uri.parse(videoPlayerContent.videoUrl),
-                    !TextUtils.isEmpty(videoPlayerContent.ccUrl) ? Uri.parse(videoPlayerContent.ccUrl) : null);
-            //Log.i(TAG, "Playing video: " + title);
+    public static void startPlayer() {
+        if (videoPlayerView != null) {
+            videoPlayerView.startPlayer();
         }
-        videoPlayerView.setCurrentPosition(videoPlayerContent.videoPlayTime * SECS_TO_MSECS);
+    }
+
+    public static void resumePlayer(AppCMSPresenter appCMSPresenter, Context context) {
+        if (videoPlayerView != null && videoPlayerContent != null) {
+            videoPlayerView.setAppCMSPresenter(appCMSPresenter);
+            videoPlayerView.init(context);
+            videoPlayerView.enableController();
+            if (videoPlayerViewBinder != null) {
+                if (!TextUtils.isEmpty(videoPlayerContent.ccUrl)) {
+                    videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
+                    videoPlayerView.getPlayerView().getSubtitleView()
+                            .setVisibility(appCMSPresenter.getClosedCaptionPreference()
+                                    ? View.VISIBLE
+                                    : View.GONE);
+                }
+                videoPlayerView.setUri(Uri.parse(videoPlayerContent.videoUrl),
+                        !TextUtils.isEmpty(videoPlayerContent.ccUrl) ? Uri.parse(videoPlayerContent.ccUrl) : null);
+                //Log.i(TAG, "Playing video: " + title);
+            }
+            videoPlayerView.setCurrentPosition(videoPlayerContent.videoPlayTime * SECS_TO_MSECS);
+        }
+    }
+
+    public static void applyChromecastButtonToFullScreenPlayer(ImageButton chromecastButton) {
+        if (videoPlayerView != null) {
+            videoPlayerView.setChromecastButton(chromecastButton);
+        }
+    }
+
+    public static void resetChromecastButtonFromFullScreenPlayer(ImageButton chromecastButton) {
+        if (videoPlayerView != null) {
+            videoPlayerView.resetChromecastButton(chromecastButton);
+        }
+    }
+
+    public static boolean playerViewFullScreenEnabled() {
+        if (videoPlayerView != null) {
+            return videoPlayerView.fullScreenModeEnabled();
+        }
+        return false;
     }
 
     public static VideoPlayerView playerView(Context context,
@@ -388,9 +429,14 @@ public class ViewCreator {
                 pageViewAncestor.openViewInFullScreen(videoPlayerView,
                         (ViewGroup) videoPlayerView.getParent());
                 videoPlayerView.showChromecastLiveVideoPlayer(true);
-                CastServiceProvider.getInstance(activity)
-                        .setActivityInstance(activity, videoPlayerView.getChromecastLiveVideoPlayer());
-                CastServiceProvider.getInstance(activity).onActivityResume();
+                if (videoPlayerView.shouldPlayOnReattach()) {
+                    videoPlayerView.startPlayer();
+                } else {
+                    videoPlayerView.resumePlayer();
+                }
+//                CastServiceProvider.getInstance(activity)
+//                        .setActivityInstance(activity, );
+//                CastServiceProvider.getInstance(activity).onActivityResume();
             }
         }
     }
@@ -402,6 +448,11 @@ public class ViewCreator {
                 pageViewAncestor.closeViewFromFullScreen(videoPlayerView,
                         (ViewGroup) videoPlayerView.getParent());
                 videoPlayerView.showChromecastLiveVideoPlayer(false);
+                if (videoPlayerView.shouldPlayOnReattach()) {
+                    videoPlayerView.startPlayer();
+                } else {
+                    videoPlayerView.resumePlayer();
+                }
             }
         }
     }
@@ -696,6 +747,7 @@ public class ViewCreator {
                                                     }
 
                                                     appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
+                                                            moduleAPI.getContentData().get(0).getGist().getId(),
                                                             currentPlayingIndex, relatedVideoIds,
                                                             moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
                                                             component.getAction());
@@ -1355,6 +1407,7 @@ public class ViewCreator {
             appCMSPresenter.getPageViewLruCache().put(screenName
                     + BaseView.isLandscape(context), pageView);
         }
+        pageView.setReparentChromecastButton(true);
 
         pageView.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
         pageView.removeAllAddOnViews();
@@ -1372,6 +1425,19 @@ public class ViewCreator {
             CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).setPageName(appCMSPageAPI.getTitle());
         }
         pageView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+
+        if (pageView.shouldReparentChromecastButton()) {
+            if (appCMSPresenter.getCurrentMediaRouteButton() != null &&
+                    appCMSPresenter.getCurrentMediaRouteButton().getParent() != null &&
+                    appCMSPresenter.getCurrentMediaRouteButton().getParent() instanceof ViewGroup &&
+                    appCMSPresenter.getCurrentMediaRouteButton().getParent() != appCMSPresenter.getCurrentMediaRouteButtonParent()) {
+                if (appCMSPresenter.getCurrentMediaRouteButton().getParent() != null) {
+                    ((ViewGroup) appCMSPresenter.getCurrentMediaRouteButton().getParent()).removeView(appCMSPresenter.getCurrentMediaRouteButton());
+                }
+                appCMSPresenter.getCurrentMediaRouteButtonParent().addView(appCMSPresenter.getCurrentMediaRouteButton());
+            }
+        }
+
         return pageView;
     }
 
@@ -2446,26 +2512,35 @@ public class ViewCreator {
                             componentViewResult.componentView = new LinearLayout(context);
                             ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
 
-                            ImageButton mMediaRouteButton = new ImageButton(context);
-                            mMediaRouteButton.setImageResource(R.drawable.anim_cast);
-                            LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
-                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
-                                            (int) BaseView.convertDpToPixel(28, context));
-                            mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
-                            mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
-                            mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
-
                             addToWatchListButton.setPadding(6, 6, 6, 6);
                             addToWatchListButton.setScaleType(ImageView.ScaleType.FIT_XY);
 
-                            if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
-                                setCasting(false, /** TODO: Replace with actual value from API response */
-                                        appCMSPresenter,
-                                        mMediaRouteButton,
-                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
-                            }
+                            ImageButton mMediaRouteButton = appCMSPresenter.getCurrentMediaRouteButton();
+                            if (mMediaRouteButton != null) {
+                                mMediaRouteButton.setImageResource(R.drawable.anim_cast);
+                                LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
+                                        new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
+                                                (int) BaseView.convertDpToPixel(28, context));
+                                mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+                                mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
+                                mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
 
-                            ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
+                                if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
+                                    setCasting(false, /** TODO: Replace with actual value from API response */
+                                            appCMSPresenter,
+                                            mMediaRouteButton,
+                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                                }
+
+                                pageView.setReparentChromecastButton(false);
+
+                                if (mMediaRouteButton.getParent() != null &&
+                                        mMediaRouteButton.getParent() instanceof ViewGroup) {
+                                    ((ViewGroup) mMediaRouteButton.getParent()).removeView(mMediaRouteButton);
+                                }
+
+                                ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
+                            }
                             ((LinearLayout) componentViewResult.componentView).addView(addToWatchListButton);
                         } else {
                             ((ImageButton) componentViewResult.componentView)
@@ -2583,6 +2658,7 @@ public class ViewCreator {
                                         }
 
                                         appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
+                                                moduleAPI.getContentData().get(0).getGist().getId(),
                                                 currentPlayingIndex, relatedVideoIds,
                                                 moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
                                                 component.getAction());
@@ -2732,22 +2808,32 @@ public class ViewCreator {
                             componentViewResult.componentView = new LinearLayout(context);
                             ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
 
-                            ImageButton mMediaRouteButton = new ImageButton(context);
+                            ImageButton mMediaRouteButton = appCMSPresenter.getCurrentMediaRouteButton();
+                            if (mMediaRouteButton != null) {
                             LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
                                     new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
                                             (int) BaseView.convertDpToPixel(28, context));
                             mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                             mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
-                            mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
+                                mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
 
-                            if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
-                                setCasting(false, /** TODO: Replace with actual value from API response */
-                                        appCMSPresenter,
-                                        mMediaRouteButton,
-                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                                if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
+                                    setCasting(false, /** TODO: Replace with actual value from API response */
+                                            appCMSPresenter,
+                                            mMediaRouteButton,
+                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+                                }
+
+                                if (mMediaRouteButton.getParent() != null &&
+                                        mMediaRouteButton.getParent() instanceof ViewGroup) {
+                                    ((ViewGroup) mMediaRouteButton.getParent()).removeView(mMediaRouteButton);
+                                }
+
+                                pageView.setReparentChromecastButton(false);
+
+                                ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
                             }
 
-                            ((LinearLayout) componentViewResult.componentView).addView(mMediaRouteButton);
                             ((LinearLayout) componentViewResult.componentView).addView(shareButton);
                         }
 
@@ -3541,6 +3627,11 @@ public class ViewCreator {
                             videoPlayerView.setPageView(pageView);
                             if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
                                 appCMSPresenter.unrestrictPortraitOnly();
+                            }
+                            if (ViewCreator.playerViewFullScreenEnabled()) {
+                                appCMSPresenter.sendEnterFullScreenAction();
+                            } else {
+                                ViewCreator.enableFullScreenMode();
                             }
                             componentViewResult.componentView.setId(R.id.video_player_id);
 

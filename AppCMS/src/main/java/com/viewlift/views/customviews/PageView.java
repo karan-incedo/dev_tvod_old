@@ -44,6 +44,8 @@ public class PageView extends BaseView {
 
     private boolean shouldRefresh;
 
+    private boolean reparentChromecastButton;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -290,6 +292,14 @@ public class PageView extends BaseView {
         }
 
         return null;
+    }
+
+    public boolean shouldReparentChromecastButton() {
+        return reparentChromecastButton;
+    }
+
+    public void setReparentChromecastButton(boolean reparentChromecastButton) {
+        this.reparentChromecastButton = reparentChromecastButton;
     }
 
     private static class ViewDimensions {

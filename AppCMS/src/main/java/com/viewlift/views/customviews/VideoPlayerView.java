@@ -96,8 +96,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     boolean isLoadedNext;
     private AppCMSPresenter appCMSPresenter;
     private ToggleButton ccToggleButton;
-    private RelativeLayout chromecastButtonParent;
-    private ImageButton chromecastButton;
+    private RelativeLayout chromecastLivePlayerParent;
+    private FrameLayout chromecastButtonPlaceholder;
+    private ViewGroup chromecastButtonPreviousParent;
+    private ImageButton enterFullscreenButton;
+    private ImageButton exitFullscreenButton;
     private TextView currentStreamingQualitySelector;
     private boolean isClosedCaptionEnabled = false;
     private Uri uri;
@@ -130,12 +133,16 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private boolean playerJustInitialized;
 
+    private boolean playOnReattach;
+
     private String filmId;
 
     private PageView pageView;
 
     private RecyclerView listView;
     private StreamingQualitySelectorAdapter listViewAdapter;
+
+    private boolean fullScreenMode;
 
     public VideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context);
@@ -334,6 +341,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
         playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         playerJustInitialized = true;
+        fullScreenMode = false;
     }
 
     public void init(Context context) {
@@ -350,6 +358,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.streamingQualitySelector = streamingQualitySelector;
     }
 
+    public boolean shouldPlayOnReattach() {
+        return playOnReattach;
+    }
+
     private void initializePlayer(Context context) {
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
@@ -363,9 +375,21 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
-        chromecastButtonParent = playerView.findViewById(R.id.chromecast_live_player_parent);
+        chromecastLivePlayerParent = playerView.findViewById(R.id.chromecast_live_player_parent);
 
-        chromecastButton = playerView.findViewById(R.id.chromecast_live_player);
+        chromecastButtonPlaceholder = playerView.findViewById(R.id.chromecast_live_player_placeholder);
+
+        enterFullscreenButton = playerView.findViewById(R.id.full_screen_button);
+
+        enterFullscreenButton.setOnClickListener(v -> {
+            enterFullScreenMode();
+        });
+
+        exitFullscreenButton = playerView.findViewById(R.id.full_screen_back_button);
+
+        exitFullscreenButton.setOnClickListener(v -> {
+            exitFullscreenMode();
+        });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
         if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
@@ -753,6 +777,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        playOnReattach = player.getPlayWhenReady();
         pausePlayer();
 
 //        appCMSPresenter.updateWatchedTime(getFilmId(), player.getCurrentPosition());
@@ -1138,13 +1163,58 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void showChromecastLiveVideoPlayer(boolean show) {
         if (show) {
-            chromecastButtonParent.setVisibility(VISIBLE);
+            chromecastLivePlayerParent.setVisibility(VISIBLE);
         } else {
-            chromecastButtonParent.setVisibility(INVISIBLE);
+            chromecastLivePlayerParent.setVisibility(INVISIBLE);
         }
     }
 
-    public ImageButton getChromecastLiveVideoPlayer() {
-        return chromecastButton;
+    public void enterFullScreenMode() {
+        disableFullScreenMode();
+        fullScreenMode = true;
+        appCMSPresenter.sendEnterFullScreenAction();
+    }
+
+    public void disableFullScreenMode() {
+        if (enterFullscreenButton != null && exitFullscreenButton != null) {
+            enterFullscreenButton.setVisibility(GONE);
+            exitFullscreenButton.setVisibility(VISIBLE);
+        }
+    }
+
+    public void exitFullscreenMode() {
+        enableFullScreenMode();
+        fullScreenMode = false;
+        appCMSPresenter.sendExitFullScreenAction();
+    }
+
+    public void enableFullScreenMode() {
+        if (enterFullscreenButton != null && exitFullscreenButton != null) {
+            exitFullscreenButton.setVisibility(GONE);
+            enterFullscreenButton.setVisibility(VISIBLE);
+        }
+    }
+
+    public void setChromecastButton(ImageButton chromecastButton) {
+        if (chromecastButton.getParent() != null && chromecastButton.getParent() instanceof ViewGroup) {
+            chromecastButtonPreviousParent = (ViewGroup) chromecastButton.getParent();
+            chromecastButtonPreviousParent.removeView(chromecastButton);
+        }
+        chromecastButtonPlaceholder.addView(chromecastButton);
+    }
+
+    public void resetChromecastButton(ImageButton chromecastButton) {
+        if (chromecastButton != null &&
+                chromecastButton.getParent() != null &&
+                chromecastButton.getParent() instanceof ViewGroup) {
+            ((ViewGroup) chromecastButton.getParent()).removeView(chromecastButton);
+        }
+        if (chromecastButtonPreviousParent != null) {
+            chromecastButtonPreviousParent.addView(chromecastButton);
+        }
+    }
+
+    public boolean fullScreenModeEnabled() {
+        return fullScreenMode;
     }
 }

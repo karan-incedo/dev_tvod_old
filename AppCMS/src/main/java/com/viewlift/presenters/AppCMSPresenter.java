@@ -291,6 +291,8 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
     public static final String PRESENTER_UPDATE_LISTS_ACTION = "appcms_presenter_update_lists_action";
     public static final String PRESENTER_REFRESH_PAGE_DATA_ACTION = "appcms_presenter_refresh_page_data_action";
+    public static final String PRESENTER_ENTER_FULLSCREEN_ACTION = "apppresenter_enter_fullscreen_action";
+    public static final String PRESENTER_EXIT_FULLSCREEN_ACTION = "appcms_presenter_exit_fullscreen_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -561,6 +563,8 @@ public class AppCMSPresenter {
     private Map<String, ContentDatum> userHistoryData;
     private AppCMSWatchlistResult filmsInUserWatchList;
     private List<String> temporaryWatchlist;
+    private ImageButton currentMediaRouteButton;
+    private ViewGroup currentMediaRouteButtonParent;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -954,6 +958,7 @@ public class AppCMSPresenter {
     }
 
     public boolean launchVideoPlayer(final ContentDatum contentDatum,
+                                     String filmId,
                                      final int currentlyPlayingIndex,
                                      List<String> relateVideoIds,
                                      long watchedTime,
@@ -972,7 +977,7 @@ public class AppCMSPresenter {
 
             String url = currentActivity.getString(R.string.app_cms_video_detail_api_url,
                     appCMSMain.getApiBaseUrl(),
-                    contentDatum.getGist().getId(),
+                    filmId,
                     appCMSSite.getGist().getSiteInternalName());
             GetAppCMSVideoDetailAsyncTask.Params params =
                     new GetAppCMSVideoDetailAsyncTask.Params.Builder().url(url)
@@ -1037,6 +1042,7 @@ public class AppCMSPresenter {
                                     // Fix of SVFA-1435
                                     openDownloadScreenForNetworkError(false,
                                             () -> launchVideoPlayer(contentDatum,
+                                                    contentDatum.getGist().getId(),
                                                     currentlyPlayingIndex,
                                                     relateVideoIds,
                                                     watchedTime,
@@ -2102,6 +2108,22 @@ public class AppCMSPresenter {
         }
     }
 
+    public ImageButton getCurrentMediaRouteButton() {
+        return currentMediaRouteButton;
+    }
+
+    public void setCurrentMediaRouteButton(ImageButton currentMediaRouteButton) {
+        this.currentMediaRouteButton = currentMediaRouteButton;
+    }
+
+    public ViewGroup getCurrentMediaRouteButtonParent() {
+        return currentMediaRouteButtonParent;
+    }
+
+    public void setCurrentMediaRouteButtonParent(ViewGroup currentMediaRouteButtonParent) {
+        this.currentMediaRouteButtonParent = currentMediaRouteButtonParent;
+    }
+
     public void launchSearchPage() {
         if (currentActivity != null) {
             cancelInternalEvents();
@@ -2785,6 +2807,12 @@ public class AppCMSPresenter {
     public void restrictPortraitOnly() {
         if (currentActivity != null) {
             currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+
+    public void rotateToLandscape() {
+        if (currentActivity != null) {
+            currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
 
@@ -5326,6 +5354,20 @@ public class AppCMSPresenter {
             result = true;
         }
         return result;
+    }
+
+    public void sendEnterFullScreenAction() {
+        if (currentActivity != null) {
+            Intent enterFullScreenAction = new Intent(AppCMSPresenter.PRESENTER_ENTER_FULLSCREEN_ACTION);
+            currentActivity.sendBroadcast(enterFullScreenAction);
+        }
+    }
+
+    public void sendExitFullScreenAction() {
+        if (currentActivity != null) {
+            Intent exitFullScreenAction = new Intent(AppCMSPresenter.PRESENTER_EXIT_FULLSCREEN_ACTION);
+            currentActivity.sendBroadcast(exitFullScreenAction);
+        }
     }
 
     public boolean sendDeepLinkAction(Uri deeplinkUri) {
@@ -10395,6 +10437,10 @@ public class AppCMSPresenter {
                 }
 
                 launchVideoPlayer(binder.getContentData(),
+                        binder.getRelateVideoIds() != null &&
+                                currentlyPlayingIndex < binder.getRelateVideoIds().size() ?
+                                binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex()) :
+                                binder.getContentData().getGist().getId(),
                         currentlyPlayingIndex,
                         binder.getRelateVideoIds(),
                         watchedTime / 1000L,
