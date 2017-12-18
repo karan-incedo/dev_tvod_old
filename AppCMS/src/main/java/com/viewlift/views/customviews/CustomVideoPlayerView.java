@@ -774,15 +774,26 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         customMessageView.setOnClickListener((v) -> {
 
-            String videoUrl = "";
-            if (null != onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getHls()) {
+            customMessageView.setClickable(false);
+           /* if (null != onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getHls()) {
                 videoUrl = onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getHls();
             } else if (null != onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg()
                     && onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
                 videoUrl = onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
-            }
-            CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(), permaLink, onUpdatedContentDatum.getGist().getVideoImageUrl(), videoUrl, onUpdatedContentDatum.getGist().getId(), 0, false);
+            }*/
+
+            CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(), permaLink, onUpdatedContentDatum.getGist().getVideoImageUrl(), lastUrl, onUpdatedContentDatum.getGist().getId(), 0, false);
         });
+
+        if(CastingUtils.getRemoteMediaId(mContext) != null && onUpdatedContentDatum != null){
+            String filmId = CastingUtils.getRemoteMediaId(mContext);
+            if(filmId != null && filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId())){
+                customMessageView.setText("Device Connected");
+                customMessageView.setClickable(false);
+            }else
+                customMessageView.setClickable(true);
+        }
+
         parentView.setVisibility(View.GONE);
         this.addView(parentView);
     }
