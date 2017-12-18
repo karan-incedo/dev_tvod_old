@@ -759,16 +759,48 @@ public class ViewCreator {
                                         }
                                     } else if (componentKey == AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY
                                             && view != null) {
-                                        if (moduleAPI.getContentData() != null &&
+                                        AppCMSUIKeyType moduleType = jsonValueKeyMap.get(moduleAPI.getModuleType());
+                                        if (moduleType == null) {
+                                            moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                                        }
+
+                                        List<String> filmIds = new ArrayList<>();
+                                        if (moduleType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                                                moduleAPI.getContentData() != null &&
+                                                !moduleAPI.getContentData().isEmpty() &&
+                                                moduleAPI.getContentData().get(0) != null &&
+                                                moduleAPI.getContentData().get(0).getSeason() != null &&
+                                                !moduleAPI.getContentData().get(0).getSeason().isEmpty()) {
+                                            List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
+                                            int numSeasons = seasons.size();
+                                            for (int i = 0; i < numSeasons; i++) {
+                                                if (seasons.get(i).getEpisodes() != null &&
+                                                        !seasons.get(i).getEpisodes().isEmpty()) {
+                                                    List<ContentDatum> episodes = seasons.get(i).getEpisodes();
+                                                    int numEpisodes = episodes.size();
+                                                    for (int j = 0; j < numEpisodes; j++) {
+                                                        if (episodes.get(j).getGist() != null &&
+                                                                episodes.get(j).getGist().getId() != null) {
+                                                            filmIds.add(episodes.get(j).getGist().getId());
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        } else if (moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getId() != null) {
-                                            UpdateImageIconAction updateImageIconAction =
-                                                    new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
-                                                            appCMSPresenter,
-                                                            moduleAPI.getContentData().get(0).getGist().getId());
-                                            updateImageIconAction.updateWatchlistResponse(appCMSPresenter.isFilmAddedToWatchlist(moduleAPI.getContentData().get(0).getGist().getId()));
+                                            filmIds.add(moduleAPI.getContentData().get(0).getGist().getId());
                                         }
+                                        UpdateImageIconAction updateImageIconAction =
+                                                new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
+                                                        appCMSPresenter,
+                                                        filmIds);
+                                        boolean filmsAdded = true;
+                                        for (String filmId : filmIds) {
+                                            filmsAdded &= appCMSPresenter.isFilmAddedToWatchlist(filmId);
+                                        }
+                                        updateImageIconAction.updateWatchlistResponse(filmsAdded);
                                         view.setVisibility(View.VISIBLE);
                                     }
                                 } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY) {
@@ -1886,6 +1918,7 @@ public class ViewCreator {
                 } else {
                     componentViewResult.componentView = new RecyclerView(context);
                     AppCMSViewAdapter appCMSViewAdapter;
+
                     if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
                         if (BaseView.isTablet(context) && BaseView.isLandscape(context)) {
                             ((RecyclerView) componentViewResult.componentView)
@@ -2343,17 +2376,49 @@ public class ViewCreator {
 
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
 
-                        if (moduleAPI != null &&
+                        List<String> filmIds = new ArrayList<>();
+
+                        if (moduleType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                                moduleAPI.getContentData() != null &&
+                                !moduleAPI.getContentData().isEmpty() &&
+                                moduleAPI.getContentData().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getSeason() != null &&
+                                !moduleAPI.getContentData().get(0).getSeason().isEmpty()) {
+                            List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
+                            int numSeasons = seasons.size();
+                            for (int i = 0; i < numSeasons; i++) {
+                                if (seasons.get(i).getEpisodes() != null &&
+                                        !seasons.get(i).getEpisodes().isEmpty()) {
+                                    List<ContentDatum> episodes = seasons.get(i).getEpisodes();
+                                    int numEpisodes = episodes.size();
+                                    for (int j = 0; j < numEpisodes; j++) {
+                                        if (episodes.get(j).getGist() != null &&
+                                                episodes.get(j).getGist().getId() != null) {
+                                            filmIds.add(episodes.get(j).getGist().getId());
+                                        }
+                                    }
+                                }
+                            }
+                        } else if (moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null) {
-                            UpdateImageIconAction updateImageIconAction =
-                                    new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
-                                            appCMSPresenter,
-                                            moduleAPI.getContentData().get(0).getGist().getId());
-                            updateImageIconAction.updateWatchlistResponse(appCMSPresenter.isFilmAddedToWatchlist(moduleAPI.getContentData().get(0).getGist().getId()));
+
+                            filmIds.add(moduleAPI.getContentData().get(0).getGist().getId());
                         }
+
+                        boolean filmsAdded = true;
+                        for (String filmId : filmIds) {
+                            filmsAdded &= appCMSPresenter.isFilmAddedToWatchlist(filmId);
+                        }
+
+                        UpdateImageIconAction updateImageIconAction =
+                                new UpdateImageIconAction((ImageButton) componentViewResult.componentView,
+                                        appCMSPresenter,
+                                        filmIds);
+                        updateImageIconAction.updateWatchlistResponse(filmsAdded);
+
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
                         // NOTE: The following is a hack to add the Chromecast button to the live Video Player page until it can
@@ -2749,7 +2814,8 @@ public class ViewCreator {
                         break;
 
                     case PAGE_DOWNLOAD_QUALITY_CANCEL_BUTTON_KEY:
-                        if (moduleAPI != null && jsonValueKeyMap.get(moduleAPI.getModuleType())
+                        if (moduleAPI != null && moduleAPI.getModuleType() != null &&
+                                jsonValueKeyMap.get(moduleAPI.getModuleType())
                                 == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                             componentViewResult.componentView.setId(R.id.autoplay_cancel_button);
                         } else {
@@ -3773,6 +3839,7 @@ public class ViewCreator {
                         BaseView.getFontSizeValue(context, component.getLayout()));
 
                 if (moduleAPI != null && !BaseView.isTablet(context)
+                        && moduleAPI.getModuleType() != null
                         && jsonValueKeyMap.get(moduleAPI.getModuleType())
                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY) {
                     componentViewResult.componentView.setVisibility(View.GONE);
@@ -4251,26 +4318,28 @@ public class ViewCreator {
     public static class UpdateImageIconAction implements Action1<UserVideoStatusResponse> {
         private final ImageButton imageButton;
         private final AppCMSPresenter appCMSPresenter;
-        private final String filmId;
+        private final List<String> filmIds;
 
         private View.OnClickListener addClickListener;
         private View.OnClickListener removeClickListener;
 
         UpdateImageIconAction(ImageButton imageButton,
                               AppCMSPresenter presenter,
-                              String filmId) {
+                              List<String> filmIds) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
-            this.filmId = filmId;
+            this.filmIds = filmIds;
 
             addClickListener = v -> {
                 if (appCMSPresenter.isUserLoggedIn()) {
-                    appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
-                            addToWatchlistResult -> {
-                                UpdateImageIconAction.this.imageButton.setImageResource(
-                                        R.drawable.remove_from_watchlist);
-                                UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
-                            }, true);
+                    for (String filmId : UpdateImageIconAction.this.filmIds) {
+                        appCMSPresenter.editWatchlist(filmId,
+                                addToWatchlistResult -> {
+                                    UpdateImageIconAction.this.imageButton.setImageResource(
+                                            R.drawable.remove_from_watchlist);
+                                    UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
+                                }, true);
+                    }
                 } else {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
                             () -> {
@@ -4280,12 +4349,16 @@ public class ViewCreator {
                             });
                 }
             };
-            removeClickListener = v -> appCMSPresenter.editWatchlist(UpdateImageIconAction.this.filmId,
-                    addToWatchlistResult -> {
-                        UpdateImageIconAction.this.imageButton.setImageResource(
-                                R.drawable.add_to_watchlist);
-                        UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
-                    }, false);
+            removeClickListener = v -> {
+                for (String filmId : UpdateImageIconAction.this.filmIds) {
+                    appCMSPresenter.editWatchlist(filmId,
+                            addToWatchlistResult -> {
+                                UpdateImageIconAction.this.imageButton.setImageResource(
+                                        R.drawable.add_to_watchlist);
+                                UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
+                            }, false);
+                }
+            };
         }
 
         public void updateWatchlistResponse(boolean filmQueued) {

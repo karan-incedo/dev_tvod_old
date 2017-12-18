@@ -272,6 +272,7 @@
     <string name="app_cms_action_detailvideopage_key">lectureDetailPage</string>
     <string name="app_cms_action_draggablevideopage_key">draggableDetailPage</string>
     <string name="app_cms_action_showvideopage_key">showDetailPage</string>
+    <string name="app_cms_module_showdetail_key">ShowDetailModule</string>
     <string name="app_cms_action_historypage_key">My History</string>
     <string name="app_cms_action_watchlistpage_key">My Watchlist</string>
     <string name="app_cms_action_watchvideo_key">watchVideo</string>
