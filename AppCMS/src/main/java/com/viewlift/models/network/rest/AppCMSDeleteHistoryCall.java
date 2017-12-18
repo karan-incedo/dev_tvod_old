@@ -55,7 +55,9 @@ public class AppCMSDeleteHistoryCall {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSDeleteHistoryResult> call,
                                        @NonNull Response<AppCMSDeleteHistoryResult> response) {
-                    Observable.just(response.body()).subscribe(appCMSDeleteHistoryResultAction1);
+                    Observable.just(response.body())
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(appCMSDeleteHistoryResultAction1);
                 }
 
                 @Override

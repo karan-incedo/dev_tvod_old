@@ -8,8 +8,6 @@ import com.google.gson.Gson;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -20,7 +18,6 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URL;
-import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;

@@ -18,6 +18,7 @@ import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
+import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
@@ -32,25 +33,21 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         implements OnInternalEvent, AppCMSBaseAdapter {
 
     private static final String TAG = "TraySeasonItemAdapter";
-
+    private final String episodicContentType;
+    private final String fullLengthFeatureType;
     protected List<ContentDatum> adapterData;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     protected String defaultAction;
+    String componentViewType;
     private List<OnInternalEvent> receivers;
     private List<String> allEpisodeIds;
     private String moduleId;
     private ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     private CollectionGridItemView.OnClickHandler onClickHandler;
     private boolean isClickable;
-
-    private final String episodicContentType;
-    private final String fullLengthFeatureType;
-
     private MotionEvent lastTouchDownEvent;
-
-    String componentViewType;
 
     public AppCMSTraySeasonItemAdapter(Context context,
                                        ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
@@ -129,13 +126,13 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     }
 
     @Override
-    public void setModuleId(String moduleId) {
-        this.moduleId = moduleId;
+    public String getModuleId() {
+        return moduleId;
     }
 
     @Override
-    public String getModuleId() {
-        return moduleId;
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
@@ -174,12 +171,17 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
 
     @Override
     public void resetData(RecyclerView listView) {
-        //
+        notifyDataSetChanged();
     }
 
     @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
-        //
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void setClickable(boolean clickable) {
+        this.isClickable = clickable;
     }
 
     private void bindView(CollectionGridItemView itemView,
@@ -202,90 +204,93 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                                 String title = data.getGist().getTitle();
                                 String hlsUrl = getHlsUrl(data);
 
-                                @SuppressWarnings("MismatchedReadAndWriteOfArray")
-                                String[] extraData = new String[3];
-                                extraData[0] = permalink;
-                                extraData[1] = hlsUrl;
-                                extraData[2] = data.getGist().getId();
-                                //Log.d(TAG, "Launching " + permalink + ": " + action);
-                                List<String> relatedVideoIds = allEpisodeIds;
-                                int currentPlayingIndex = -1;
-                                if (allEpisodeIds != null) {
-                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
-                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
-                                        currentPlayingIndex = currentEpisodeIndex;
-                                    }
-                                }
-                                if (relatedVideoIds == null) {
-                                    currentPlayingIndex = 0;
-                                }
-
-                                if (data.getGist() == null ||
-                                        data.getGist().getContentType() == null) {
-                                    if (!appCMSPresenter.launchVideoPlayer(data,
-                                            currentPlayingIndex,
-                                            relatedVideoIds,
-                                            -1,
-                                            action)) {
-                                        //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
-                                    }
-                                } else {
-                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            action,
-                                            title,
-                                            null,
-                                            data,
-                                            false,
-                                            currentPlayingIndex,
-                                            relatedVideoIds)) {
-                                        //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
-                                    }
+                            @SuppressWarnings("MismatchedReadAndWriteOfArray")
+                            String[] extraData = new String[3];
+                            extraData[0] = permalink;
+                            extraData[1] = hlsUrl;
+                            extraData[2] = data.getGist().getId();
+                            //Log.d(TAG, "Launching " + permalink + ": " + action);
+                            List<String> relatedVideoIds = allEpisodeIds;
+                            int currentPlayingIndex = -1;
+                            if (allEpisodeIds != null) {
+                                int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                                if (currentEpisodeIndex < allEpisodeIds.size()) {
+                                    currentPlayingIndex = currentEpisodeIndex;
                                 }
                             }
-                        }
-                    }
+                            if (relatedVideoIds == null) {
+                                currentPlayingIndex = 0;
+                            }
 
-                    @Override
-                    public void play(Component childComponent, ContentDatum data) {
-                        if (isClickable) {
-                            if (data.getGist() != null) {
-                                //Log.d(TAG, "Playing item: " + data.getGist().getTitle());
-                                List<String> relatedVideoIds = allEpisodeIds;
-                                int currentPlayingIndex = -1;
-                                if (allEpisodeIds != null) {
-                                    int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
-                                    if (currentEpisodeIndex < allEpisodeIds.size()) {
-                                        currentPlayingIndex = currentEpisodeIndex;
-                                    }
-                                }
-                                if (relatedVideoIds == null) {
-                                    currentPlayingIndex = 0;
-                                }
+                            if (data.getGist() == null ||
+                                    data.getGist().getContentType() == null) {
                                 if (!appCMSPresenter.launchVideoPlayer(data,
                                         currentPlayingIndex,
                                         relatedVideoIds,
                                         -1,
-                                        null)) {
-                                    //Log.e(TAG, "Could not launch play action: " +
+                                        action)) {
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
+                                }
+                            } else {
+                                AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                actionPresenter.setAction(action);
+
+                                if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                        actionPresenter,
+                                        title,
+                                        null,
+                                        data,
+                                        false,
+                                        currentPlayingIndex,
+                                        relatedVideoIds)) {
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                permalink +
+//                                                " action: " +
+//                                                action);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void play(Component childComponent, ContentDatum data) {
+                    if (isClickable) {
+                        if (data.getGist() != null) {
+                            //Log.d(TAG, "Playing item: " + data.getGist().getTitle());
+                            List<String> relatedVideoIds = allEpisodeIds;
+                            int currentPlayingIndex = -1;
+                            if (allEpisodeIds != null) {
+                                int currentEpisodeIndex = allEpisodeIds.indexOf(data.getGist().getId());
+                                if (currentEpisodeIndex < allEpisodeIds.size()) {
+                                    currentPlayingIndex = currentEpisodeIndex;
+                                }
+                            }
+                            if (relatedVideoIds == null) {
+                                currentPlayingIndex = 0;
+                            }
+                            if (!appCMSPresenter.launchVideoPlayer(data,
+                                    currentPlayingIndex,
+                                    relatedVideoIds,
+                                    -1,
+                                    null)) {
+                                //Log.e(TAG, "Could not launch play action: " +
 //                                            " filmId: " +
 //                                            filmId +
 //                                            " permaLink: " +
 //                                            permaLink +
 //                                            " title: " +
 //                                            title);
-                                }
                             }
                         }
                     }
-                };
+                }
+            };
         }
 
         itemView.setOnTouchListener((View v, MotionEvent event) -> {
@@ -351,8 +356,11 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                             action)) {
                     }
                 } else {
+                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                    actionPresenter.setAction(action);
+
                     if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            action,
+                            actionPresenter,
                             title,
                             null,
                             data,

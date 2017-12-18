@@ -84,6 +84,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private LinearLayout customPreviewContainer;
     private RelativeLayout parentView;
     private LinearLayout llTopBar;
+    private TextView app_cms_video_player_title_view;
 
     private TextView customMessageView;
     private LinearLayout customPlayBack;
@@ -158,10 +159,11 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     private ToggleButton mToggleButton;
 
-    public CustomVideoPlayerView(Context context) {
-        super(context);
+    public CustomVideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
+        super(context,appCMSPresenter);
         mContext = context;
-        appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
+        this.appCMSPresenter = appCMSPresenter;
+        //appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         mFullScreenButton = createFullScreenToggleButton();
         ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
@@ -265,13 +267,29 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     playVideos(0, contentDatum);
                 }
             }
+            setTopBarStatus();
         });
         videoDataId = videoId;
         sentBeaconPlay = false;
         sentBeaconFirstFrame = false;
     }
+    private void setTopBarStatus(){
+        setOnPlayerControlsStateChanged(visibility -> {
+            if (visibility == View.GONE) {
+                llTopBar.setVisibility(View.GONE);
+            } else if (visibility == View.VISIBLE && mToggleButton != null && mToggleButton.isChecked()) {
+                llTopBar.setVisibility(View.VISIBLE);
+            }
+        });
+        if(onUpdatedContentDatum!=null && onUpdatedContentDatum.getGist()!=null && onUpdatedContentDatum.getGist().getTitle()!=null){
+            app_cms_video_player_title_view.setText(onUpdatedContentDatum.getGist().getTitle());
+        }
+
+    }
 
     public void checkVideoStatus() {
+        setTopBarStatus();
+
         setVideoPlayerStatus();
         CastServiceProvider.getInstance((Activity) mContext).setVideoPlayerMediaButton(mediaButton);
 
@@ -648,11 +666,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void setVideoPlayerStatus() {
-//        if (CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()) {
-//            pausePlayer();
-//        }else{
-//            parentView.setVisibility(View.GONE);
-//        }
         showOverlayWhenCastingConnected();
         if (mToggleButton != null && mToggleButton.isChecked()) {
             llTopBar.setVisibility(View.VISIBLE);
@@ -740,7 +753,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         } else {
             if (parentView != null) {
                 parentView.setVisibility(GONE);
-//                startPlayer();
             }
         }
     }
@@ -782,10 +794,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     && onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().size() > 0) {
                 videoUrl = onUpdatedContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getUrl();
             }
+
             CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(), permaLink, onUpdatedContentDatum.getGist().getVideoImageUrl(), videoUrl, onUpdatedContentDatum.getGist().getId(), 0, false);
         });
         parentView.setVisibility(View.GONE);
         this.addView(parentView);
+
     }
 
 
@@ -867,14 +881,16 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         View layout = li.inflate(R.layout.custom_video_player_top_bar, null, false);
         mediaButton = (ImageButton) layout.findViewById(R.id.media_route_button);
         app_cms_video_player_done_button = (ImageButton) layout.findViewById(R.id.app_cms_video_player_done_button);
-
+        app_cms_video_player_title_view = (TextView) layout.findViewById(R.id.app_cms_video_player_title_view);
         app_cms_video_player_done_button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+                appCMSPresenter.restrictPortraitOnly();
                 appCMSPresenter.exitFullScreenPlayer();
                 if (appCMSPresenter.videoPlayerView != null) {
                     appCMSPresenter.videoPlayerView = null;
                 }
+                mToggleButton.setChecked(false);
             }
         });
         layout.setLayoutParams(llParams);
@@ -940,11 +956,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (appCMSPresenter.videoPlayerView == null) {
                         appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
                     }
+                    appCMSPresenter.restrictLandscapeOnly();
                     appCMSPresenter.showFullScreenPlayer();
                     llTopBar.setVisibility(View.VISIBLE);
 
                 } else {
                     llTopBar.setVisibility(View.GONE);
+                    appCMSPresenter.restrictPortraitOnly();
+
                     appCMSPresenter.exitFullScreenPlayer();
                     if (appCMSPresenter.videoPlayerView != null) {
                         appCMSPresenter.videoPlayerView = null;

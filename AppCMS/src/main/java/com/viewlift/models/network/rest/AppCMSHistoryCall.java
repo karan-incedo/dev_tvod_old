@@ -47,19 +47,25 @@ public class AppCMSHistoryCall {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSHistoryResult> call,
                                        @NonNull Response<AppCMSHistoryResult> response) {
-                    Observable.just(response.body()).subscribe(historyResultAction1);
+                    Observable.just(response.body())
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(historyResultAction1);
                 }
 
                 @Override
                 public void onFailure(@NonNull Call<AppCMSHistoryResult> call,
                                       @NonNull Throwable t) {
                     //Log.e(TAG, "onFailure: " + t.getMessage());
-                    Observable.just((AppCMSHistoryResult) null).subscribe(historyResultAction1);
+                    Observable.just((AppCMSHistoryResult) null)
+                            .onErrorResumeNext(throwable -> Observable.empty())
+                            .subscribe(historyResultAction1);
                 }
             });
         } catch (Exception e) {
             //Log.e(TAG, "Failed to execute history " + url + ": " + e.toString());
-            Observable.just((AppCMSHistoryResult) null).subscribe(historyResultAction1);
+            Observable.just((AppCMSHistoryResult) null)
+                    .onErrorResumeNext(throwable -> Observable.empty())
+                    .subscribe(historyResultAction1);
         }
     }
 }

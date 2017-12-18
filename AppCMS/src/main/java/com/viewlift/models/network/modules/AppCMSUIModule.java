@@ -5,6 +5,7 @@ package com.viewlift.models.network.modules;
  */
 
 import android.content.Context;
+import android.content.res.AssetManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -92,6 +93,7 @@ public class AppCMSUIModule {
     private final long defaultReadConnectionTimeout;
     private final long unknownHostExceptionTimeout;
     private final Cache cache;
+    private final AssetManager assetManager;
 
     public AppCMSUIModule(Context context) {
         this.baseUrl = context.getString(R.string.app_cms_baseurl);
@@ -125,6 +127,8 @@ public class AppCMSUIModule {
                 context.getResources().getInteger(R.integer.app_cms_unknown_host_exception_connection_timeout_msec);
         int cacheSize = 10 * 1024 * 1024; // 10 MB
         cache = new Cache(context.getCacheDir(), cacheSize);
+
+        this.assetManager = context.getAssets();
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -401,6 +405,8 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_unit_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_UNIT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_description_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_title_key),
@@ -708,6 +714,9 @@ public class AppCMSUIModule {
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_detailvideopage_key),
                 AppCMSActionType.VIDEO_PAGE);
 
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_draggablevideopage_key),
+                AppCMSActionType.DRAGGABLE_VIDEO_PAGE);
+
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_showvideopage_key),
                 AppCMSActionType.SHOW_PAGE);
 
@@ -800,6 +809,11 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY);
     }
 
+    @Provides
+    @Singleton
+    public AssetManager providesAssetManager() {
+        return assetManager;
+    }
     @Provides
     @Singleton
     public Gson providesGson() {
@@ -1132,9 +1146,13 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(Gson gson,
+    public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(AssetManager assetManager,
+                                                                   Gson gson,
                                                                    AppCMSAndroidModuleRest appCMSAndroidModuleRest) {
-        return new AppCMSAndroidModuleCall(gson, appCMSAndroidModuleRest, storageDirectory);
+        return new AppCMSAndroidModuleCall(assetManager,
+                gson,
+                appCMSAndroidModuleRest,
+                storageDirectory);
     }
 
     @Provides
