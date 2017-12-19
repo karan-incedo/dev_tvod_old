@@ -253,6 +253,10 @@ public class TVViewCreator {
             if (context.getResources().getString(R.string.app_cms_ancillary_pages_module).equalsIgnoreCase(module.getView())) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
             }
+
+            if ("AC ContactUs 01".equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
+            }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
