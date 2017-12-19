@@ -43,8 +43,6 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import rx.functions.Action1;
-
 import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
 import static com.google.android.exoplayer2.Player.STATE_READY;
@@ -516,6 +514,11 @@ public class CustomVideoPlayerView
     }
 
     private void setBackgroundImage() {
+        if (mContext instanceof AppCmsHomeActivity) {
+            if (((AppCmsHomeActivity) mContext).isFinishing()) {
+                return;
+            }
+        }
         String videoImageUrl = null;
         if (contentDatum != null
                 && contentDatum.getGist() != null
