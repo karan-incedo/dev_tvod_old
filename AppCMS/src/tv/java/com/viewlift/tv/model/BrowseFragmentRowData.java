@@ -18,4 +18,5 @@ public class BrowseFragmentRowData {
          //thisproperty will be use in case component is a player component.
          public boolean isPlayerComponent;
          public boolean isSearchPage;
+         public int rowNumber;
 }

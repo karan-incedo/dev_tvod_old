@@ -249,10 +249,15 @@ public class TVViewCreator {
             if (context.getResources().getString(R.string.app_cms_page_history_module_key).equalsIgnoreCase(module.getView())) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
             }
+
+            if (context.getResources().getString(R.string.app_cms_ancillary_pages_module).equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
+            }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
-            if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
+            if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
+                    && "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
                     TextView textView = new TextView(context);
@@ -266,23 +271,25 @@ public class TVViewCreator {
                     return moduleView;
                 }
 
-                final TVPageView finalPageView = pageView;
-                if (null != moduleAPI.getContentData()
-                        && null != moduleAPI.getContentData().get(0)
-                        && null != moduleAPI.getContentData().get(0).getGist()
-                        && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
-                    Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                            .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
-                            TVBaseView.DEVICE_HEIGHT) {
-                        @Override
-                        public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
-                            Drawable drawable = new BitmapDrawable(context.getResources(), resource);
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                                finalPageView.setBackground(drawable);
-                                finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
+                if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
+                    final TVPageView finalPageView = pageView;
+                    if (null != moduleAPI.getContentData()
+                            && null != moduleAPI.getContentData().get(0)
+                            && null != moduleAPI.getContentData().get(0).getGist()
+                            && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
+                        Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
+                                TVBaseView.DEVICE_HEIGHT) {
+                            @Override
+                            public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                                Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                    finalPageView.setBackground(drawable);
+                                    finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
 
@@ -398,6 +405,7 @@ public class TVViewCreator {
                         rowData.uiComponentList = components;
                         rowData.action = component.getTrayClickAction();
                         rowData.blockName = moduleUI.getBlockName();
+                        rowData.rowNumber = trayIndex;
                         listRowAdapter.add(rowData);
                         //Log.d(TAG, "NITS header Items ===== " + rowData.contentData.getGist().getTitle());
                     }
@@ -438,6 +446,7 @@ public class TVViewCreator {
                             rowData.uiComponentList = components;
                             rowData.action = component.getTrayClickAction();
                             rowData.blockName = moduleUI.getBlockName();
+                            rowData.rowNumber = trayIndex;
                             traylistRowAdapter.add(rowData);
                         }
                         mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
@@ -466,6 +475,7 @@ public class TVViewCreator {
                     BrowseFragmentRowData browseFragmentRowData = new BrowseFragmentRowData();
                     browseFragmentRowData.isPlayerComponent = true;
                     browseFragmentRowData.contentData = moduleData.getContentData().get(0);
+                    browseFragmentRowData.rowNumber = trayIndex;
                     listRowAdapter.add(browseFragmentRowData);
                     pageView.setIsStandAlonePlayerEnabled(true);
                     mRowsAdapter.add(new ListRow(customHeaderItem, listRowAdapter));
@@ -509,11 +519,14 @@ public class TVViewCreator {
                 break;
             case PAGE_TABLE_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
-                componentViewResult.componentView.setFocusable(false);
+                componentViewResult.componentView.setFocusable(true);
                 ((RecyclerView) componentViewResult.componentView)
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
                                 false));
+                componentViewResult.componentView.setId(R.id.tv_recycler_view);
+
+                componentViewResult.componentView.setNextFocusDownId(R.id.tv_recycler_view);
 
                 if(null != component.getLayout().getTv().getOrientation()){
                     String orientation =  component.getLayout().getTv().getOrientation();
@@ -1109,7 +1122,7 @@ public class TVViewCreator {
                     switch (componentKey) {
                         case PAGE_API_TITLE:
                             if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
-                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle()/*.toUpperCase()*/);
                                 if (component.getNumberOfLines() != 0) {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
@@ -1117,7 +1130,7 @@ public class TVViewCreator {
                             } else if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
                             }
-                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context, appCMSPresenter)));
+                            ((TextView) componentViewResult.componentView).setTextColor(textColor);
                             componentViewResult.componentView.setFocusable(false);
                             componentViewResult.componentView.setTag("TITLE");
                             break;
@@ -1192,10 +1205,22 @@ public class TVViewCreator {
                             break;
 
                         case PAGE_VIDEO_DESCRIPTION_KEY:
-                            String videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
-
+                            String videoDescription = null;
+                            if (moduleAPI.getContentData() != null
+                                    && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null
+                                    && moduleAPI.getContentData().get(0).getGist().getDescription() != null) {
+                                videoDescription = moduleAPI.getContentData().get(0).getGist().getDescription();
+                            }
+                            String title = "";
+                            if (moduleAPI.getContentData() != null
+                                    && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null
+                                    && moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
+                                title = moduleAPI.getContentData().get(0).getGist().getTitle();
+                            }
                             if (null == videoDescription) {
-                                videoDescription = moduleAPI.getContentData().get(0).getGist().getTitle();
+                                videoDescription = title;
                             }
                             if (!TextUtils.isEmpty(videoDescription)) {
                                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
@@ -1205,9 +1230,10 @@ public class TVViewCreator {
                                 }
                             }
                             ViewTreeObserver textVto = componentViewResult.componentView.getViewTreeObserver();
+
                             final ViewCreatorMultiLineLayoutListener viewCreatorLayoutListener =
                                     new ViewCreatorMultiLineLayoutListener(((TextView) componentViewResult.componentView),
-                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            title,
                                             videoDescription,
                                             appCMSPresenter,
                                             false,
@@ -1258,8 +1284,13 @@ public class TVViewCreator {
                             Vto.addOnGlobalLayoutListener(layoutListener);
                             break;
                         case PAGE_VIDEO_TITLE_KEY:
-                            if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
-                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                            if (moduleAPI.getContentData() != null
+                                    && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null
+                                    && moduleAPI.getContentData().get(0).getGist().getTitle() != null) {
+                                if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
+                                    ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
+                                }
                             }
                             ((TextView) componentViewResult.componentView).setMaxLines(2);
                             ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
@@ -1284,9 +1315,12 @@ public class TVViewCreator {
                             break;
 
                         case PAGE_VIDEO_SUBTITLE_KEY:
-                            setViewWithSubtitle(context,
-                                    moduleAPI.getContentData().get(0),
-                                    componentViewResult.componentView);
+                            if (moduleAPI.getContentData() != null
+                                    && moduleAPI.getContentData().get(0) != null) {
+                                setViewWithSubtitle(context,
+                                        moduleAPI.getContentData().get(0),
+                                        componentViewResult.componentView);
+                            }
                             componentViewResult.componentView.setFocusable(false);
                             componentViewResult.componentView.setTag("SUBTITLE");
                             break;
@@ -1666,21 +1700,43 @@ public class TVViewCreator {
                         ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_XY);
 
                         if (imageHeight > 0 && imageWidth > 0 && imageHeight > imageWidth) {
+                            String imageUrl = "";
+                            if (moduleAPI.getContentData() != null
+                                    && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null
+                                    && moduleAPI.getContentData().get(0).getGist().getPosterImageUrl() != null) {
+
+                                imageUrl = moduleAPI.getContentData().get(0).getGist().getPosterImageUrl();
+                            }
                             Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .load(imageUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     .error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
                                     .placeholder(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
                                     .into((ImageView) componentViewResult.componentView);
                         } else if (imageWidth > 0) {
+                            String videoImageUrl = "";
+                            if (moduleAPI.getContentData() != null
+                                    && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null
+                                    && moduleAPI.getContentData().get(0).getGist().getVideoImageUrl() != null) {
+                                videoImageUrl = moduleAPI.getContentData().get(0).getGist().getVideoImageUrl();
+                            }
                             Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                    .load(videoImageUrl)
                                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                                     .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                                     .into((ImageView) componentViewResult.componentView);
                         } else {
+                            String videoImageUrl = "";
+                            if (moduleAPI.getContentData() != null
+                                    && moduleAPI.getContentData().get(0) != null
+                                    && moduleAPI.getContentData().get(0).getGist() != null
+                                    && moduleAPI.getContentData().get(0).getGist().getVideoImageUrl() != null) {
+                                videoImageUrl = moduleAPI.getContentData().get(0).getGist().getVideoImageUrl();
+                            }
                             Glide.with(context)
-                                    .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .load(videoImageUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                     .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                                     .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                                     .into((ImageView) componentViewResult.componentView);

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.viewlift">
 
     <uses-feature
@@ -25,9 +24,9 @@
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
 
     <application
-        android:banner="@drawable/app_logo"
+        android:banner="@drawable/mse_top_logo"
         android:label="@string/default_app_name"
-        android:icon="@drawable/app_icon_small_front">
+        android:icon="@drawable/app_icon">
         <activity
             android:name="com.viewlift.tv.AppCMSLeanbackActivity"
             android:theme="@style/AppTheme">

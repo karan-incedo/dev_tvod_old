@@ -23,6 +23,7 @@
     <item name="edittext_password" type="id"/>
 
     <item name="submit_login_btn" type="id"/>
+    <item name="tv_recycler_view" type="id">tv_recycler_view</item>
 
 
 </resources>

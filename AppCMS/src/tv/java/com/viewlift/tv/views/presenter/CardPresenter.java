@@ -44,6 +44,7 @@ public class CardPresenter extends Presenter {
     private Map<String , AppCMSUIKeyType> mJsonKeyValuemap;
     String borderColor = null;
     private Typeface fontType;
+    private boolean consumeUpKeyEvent = false;
 
     public CardPresenter(Context context,
                          AppCMSPresenter appCMSPresenter,
@@ -85,7 +86,7 @@ public class CardPresenter extends Presenter {
         frameLayout.setLayoutParams(layoutParams);
         frameLayout.setFocusable(true);
 
-        frameLayout.setOnKeyListener(new View.OnKeyListener() {
+        /*frameLayout.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
                 if(keyCode == KeyEvent.KEYCODE_DPAD_UP
@@ -94,7 +95,7 @@ public class CardPresenter extends Presenter {
                 }
                 return false;
             }
-        });
+        });*/
 
         return new ViewHolder(frameLayout);
     }
@@ -111,6 +112,33 @@ public class CardPresenter extends Presenter {
             cardView.setBackground(Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)));
         }
         createComponent(componentList, cardView, contentData,blockName);
+
+        cardView.setOnKeyListener((v, keyCode, event) -> {
+            if(keyCode == KeyEvent.KEYCODE_DPAD_UP
+                    && event.getAction() == KeyEvent.ACTION_UP){
+                if (rowData.rowNumber == 0) {
+                    if (consumeUpKeyEvent) {
+                        cardView.clearFocus();
+                        consumeUpKeyEvent = false;
+                    }
+                    consumeUpKeyEvent = true;
+                } else {
+                    consumeUpKeyEvent = false;
+                }
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                    && event.getAction() == KeyEvent.ACTION_DOWN) {
+                consumeUpKeyEvent = false;
+            }
+            return false;
+        });
+
+        /*cardView.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus && rowData.rowNumber == 0) {
+                consumeUpKeyEvent = true;
+            } else {
+                consumeUpKeyEvent = false;
+            }
+        });*/
     }
 
     @Override

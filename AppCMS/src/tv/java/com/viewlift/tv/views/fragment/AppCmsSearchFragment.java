@@ -679,6 +679,7 @@ public class AppCmsSearchFragment extends Fragment {
             rowData.uiComponentList = component.getComponents();
             rowData.action = component.getTrayClickAction();
             rowData.blockName = moduleUI.getBlockName();
+            rowData.rowNumber = trayIndex;
             trayListRowAdapter.add(rowData);
             position++;
 

@@ -23,6 +23,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -228,6 +229,12 @@ public class TVCollectionGridItemView extends TVBaseView {
                             clickable[0] = false;
                             new android.os.Handler().postDelayed(() -> clickable[0] = true, 3000);
                             return true;
+                        } else if(event.getAction() == KeyEvent.ACTION_DOWN
+                                && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                            ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall).setFocusable(false);
+                        }else if(event.getAction() == KeyEvent.ACTION_DOWN
+                                && keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                            ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall).setFocusable(true);
                         }
                         return false;
                     });
