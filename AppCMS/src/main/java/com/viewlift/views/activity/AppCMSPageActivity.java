@@ -438,7 +438,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSPresenter.setShowNetworkConnectivity(false);
                     }
                 }
-                appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+                if (activeNetwork != null) {
+                    appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+                }
                 appCMSPresenter.setNetworkConnected(isConnected, pageId);
             }
         };
@@ -2638,8 +2640,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restartInternalEvents();
         }
 
-        ViewCreator.pausePlayer();
-        ViewCreator.clearPlayerView();
+        if (updatedAppCMSBinder != null &&
+                updatedAppCMSBinder.getPageName() != null &&
+                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+
+        } else {
+            ViewCreator.pausePlayer();
+            ViewCreator.clearPlayerView();
+        }
         ViewCreator.resetFullPlayerMode(this, appCMSPresenter);
     }
 

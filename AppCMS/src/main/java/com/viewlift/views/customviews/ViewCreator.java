@@ -369,8 +369,10 @@ public class ViewCreator {
 
         if (resetWatchTime) {
             videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
+            videoPlayerContent.videoPlayTime = watchedTime;
         } else if (0L < currentWatchedTime) {
             videoPlayerView.getPlayerView().getPlayer().seekTo(currentWatchedTime);
+            videoPlayerContent.videoPlayTime = currentWatchedTime;
         }
 
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
