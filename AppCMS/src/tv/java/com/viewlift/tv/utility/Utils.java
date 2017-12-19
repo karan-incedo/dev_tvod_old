@@ -264,11 +264,11 @@ public class Utils {
         return -1.0f;
     }
 
-    public static StateListDrawable getNavigationSelector(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation){
+    public static StateListDrawable getNavigationSelector(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation , int selectedColor){
         StateListDrawable res = new StateListDrawable();
-        res.addState(new int[]{android.R.attr.state_focused}, getNavigationSelectedState(context ,appCMSPresenter , isSubNavigation));
-        res.addState(new int[]{android.R.attr.state_pressed}, getNavigationSelectedState(context , appCMSPresenter , isSubNavigation));
-        res.addState(new int[]{android.R.attr.state_selected},getNavigationSelectedState(context , appCMSPresenter , isSubNavigation));
+        res.addState(new int[]{android.R.attr.state_focused}, getNavigationSelectedState(context ,appCMSPresenter , isSubNavigation , selectedColor));
+        res.addState(new int[]{android.R.attr.state_pressed}, getNavigationSelectedState(context , appCMSPresenter , isSubNavigation , selectedColor));
+        res.addState(new int[]{android.R.attr.state_selected},getNavigationSelectedState(context , appCMSPresenter , isSubNavigation , selectedColor));
         res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent)));
         return res;
     }
@@ -289,7 +289,8 @@ public class Utils {
     }
 
 
-    public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation){
+    public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter ,
+                                                           boolean isSubNavigation , int selectorColor){
         GradientDrawable focusedLayer = new GradientDrawable();
         focusedLayer.setShape(GradientDrawable.RECTANGLE);
         focusedLayer.setColor(Color.parseColor(getFocusColor(context,appCMSPresenter)));
@@ -299,7 +300,8 @@ public class Utils {
         if(isSubNavigation){
             transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_sub_nav_background));
         }else{
-            transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_nav_background)/*Color.parseColor(getFocusColor(appCMSPresenter))*/);
+            //transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_nav_background)/*Color.parseColor(getFocusColor(appCMSPresenter))*/);
+            transparentLayer.setColor(selectorColor);
         }
 
         LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{

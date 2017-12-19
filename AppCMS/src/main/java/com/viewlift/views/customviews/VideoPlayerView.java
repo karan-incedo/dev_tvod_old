@@ -481,6 +481,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
 
@@ -575,7 +576,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     @Override
     public void onVideoInputFormatChanged(Format format) {
-        setBitrate(format.bitrate/1000);
+        setBitrate(format.bitrate / 1000);
         setVideoHeight(format.height);
         setVideoWidth(format.width);
     }
