@@ -281,18 +281,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     false,
                                     false);
 
-                            if (!BaseView.isTablet(AppCMSPageActivity.this)) {
-                                if (BaseView.isLandscape(AppCMSPageActivity.this) ||
-                                        ViewCreator.playerViewFullScreenEnabled()) {
-                                    enterFullScreenVideoPlayer();
+                            if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                    updatedAppCMSBinder != null &&
+                                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageId())) {
+                                if (!BaseView.isTablet(AppCMSPageActivity.this)) {
+                                    if (BaseView.isLandscape(AppCMSPageActivity.this) ||
+                                            ViewCreator.playerViewFullScreenEnabled()) {
+                                        enterFullScreenVideoPlayer();
+                                    } else {
+                                        exitFullScreenVideoPlayer();
+                                    }
                                 } else {
-                                    exitFullScreenVideoPlayer();
-                                }
-                            } else {
-                                if (ViewCreator.playerViewFullScreenEnabled()) {
-                                    enterFullScreenVideoPlayer();
-                                } else {
-                                    ViewCreator.enableFullScreenMode();
+                                    if (ViewCreator.playerViewFullScreenEnabled()) {
+                                        enterFullScreenVideoPlayer();
+                                    } else {
+                                        ViewCreator.enableFullScreenMode();
+                                    }
                                 }
                             }
                         } else if (updatedAppCMSBinder != null) {
@@ -928,7 +932,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             pendingDeeplinkUri = null;
         }
 
-        ViewCreator.resumePlayer(appCMSPresenter, this);
+        if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                updatedAppCMSBinder != null &&
+                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageId())) {
+            ViewCreator.resumePlayer(appCMSPresenter, this);
+        }
     }
 
     private void refreshPageData() {
@@ -1276,18 +1284,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false);
                 }
 
-                if (!BaseView.isTablet(this)) {
-                    if (BaseView.isLandscape(this) ||
-                            ViewCreator.playerViewFullScreenEnabled()) {
-                        enterFullScreenVideoPlayer();
+                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                        updatedAppCMSBinder != null &&
+                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageId())) {
+                    if (!BaseView.isTablet(this)) {
+                        if (BaseView.isLandscape(this) ||
+                                ViewCreator.playerViewFullScreenEnabled()) {
+                            enterFullScreenVideoPlayer();
+                        } else {
+                            exitFullScreenVideoPlayer();
+                        }
                     } else {
-                        exitFullScreenVideoPlayer();
-                    }
-                } else {
-                    if (ViewCreator.playerViewFullScreenEnabled()) {
-                        enterFullScreenVideoPlayer();
-                    } else {
-                        ViewCreator.enableFullScreenMode();
+                        if (ViewCreator.playerViewFullScreenEnabled()) {
+                            enterFullScreenVideoPlayer();
+                        } else {
+                            ViewCreator.enableFullScreenMode();
+                        }
                     }
                 }
             }

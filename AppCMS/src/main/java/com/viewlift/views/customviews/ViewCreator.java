@@ -2786,7 +2786,6 @@ public class ViewCreator {
                                 !BaseView.isTablet(context)) {
 
                             if (!component.isWidthModified()) {
-                                component.getLayout().getMobile().setRightMargin(component.getLayout().getMobile().getRightMargin() * 1.7f);
                                 component.getLayout().getMobile().setWidth(BaseView.convertDpToPixel(44, context));
                                 component.getLayout().getMobile().setHeight(BaseView.convertDpToPixel(24, context));
                                 component.setWidthModified(true);
