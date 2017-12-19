@@ -934,7 +934,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                 updatedAppCMSBinder != null &&
-                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageId())) {
+                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) &&
+                !CastServiceProvider.getInstance(this).isCastingConnected()) {
             ViewCreator.resumePlayer(appCMSPresenter, this);
         }
     }
@@ -1286,7 +1287,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                         updatedAppCMSBinder != null &&
-                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageId())) {
+                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
                     if (!BaseView.isTablet(this)) {
                         if (BaseView.isLandscape(this) ||
                                 ViewCreator.playerViewFullScreenEnabled()) {
