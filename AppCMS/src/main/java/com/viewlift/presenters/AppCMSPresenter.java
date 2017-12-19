@@ -4588,21 +4588,25 @@ public class AppCMSPresenter {
             });
         } else {
 
-            String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
-                    appCMSMain.getApiBaseUrl(),
-                    getRefreshToken());
+            try {
+                String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        getRefreshToken());
 
-            appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
-                try {
-                    appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
-                            apiBaseUrl, getLoggedInUser(), siteiD,
-                            getLoggedInUser()),
-                            getAuthToken(),
-                            history);
-                } catch (IOException | NullPointerException e) {
-                    //Log.e(TAG, "getHistoryPageContent: " + e.toString());
-                }
-            });
+                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                    try {
+                        appCMSHistoryCall.call(currentActivity.getString(R.string.app_cms_history_api_url,
+                                apiBaseUrl, getLoggedInUser(), siteiD,
+                                getLoggedInUser()),
+                                getAuthToken(),
+                                history);
+                    } catch (Exception e) {
+                        //Log.e(TAG, "getHistoryPageContent: " + e.toString());
+                    }
+                });
+            } catch (Exception e) {
+
+            }
         }
     }
 
