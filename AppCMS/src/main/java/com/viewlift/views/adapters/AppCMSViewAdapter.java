@@ -433,7 +433,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                } else if (contentType.equals(fullLengthFeatureType)) {
 //                                    action = videoAction;
 //                                }
-
+                                if (action.contains(mContext.getString(R.string.app_cms_action_open_option_dialog))) {
+                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
+                                    actionPresenter.setAction(action);
+                                    appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            actionPresenter,
+                                            title,
+                                            null,
+                                            data,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds);
+                                    return;
+                                }
                                 if (contentType.equals(episodicContentType)) {
                                     action = showAction;
                                 } else if (contentType.equals(fullLengthFeatureType)) {
