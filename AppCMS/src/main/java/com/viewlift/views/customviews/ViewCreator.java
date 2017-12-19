@@ -3667,13 +3667,7 @@ public class ViewCreator {
                             if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
                                 appCMSPresenter.unrestrictPortraitOnly();
                             }
-                            if (BaseView.isTablet(context)) {
-                                if (ViewCreator.playerViewFullScreenEnabled()) {
-                                    appCMSPresenter.sendEnterFullScreenAction();
-                                } else {
-                                    ViewCreator.enableFullScreenMode();
-                                }
-                            }
+
                             componentViewResult.componentView.setId(R.id.video_player_id);
 
                         } else {
@@ -3837,6 +3831,18 @@ public class ViewCreator {
                 } else {
                     componentViewResult.componentView.setVisibility(View.GONE);
                 }
+
+                if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                        component.getKey() != null &&
+                        !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key))) {
+                    if (moduleType == null) {
+                        moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                    }
+                    if (moduleType == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                        componentViewResult.componentView.setVisibility(View.GONE);
+                    }
+                }
+
                 break;
 
             case PAGE_BANNER_DETAIL_BACKGROUND:

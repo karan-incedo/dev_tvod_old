@@ -1203,7 +1203,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     public void disableFullScreenMode() {
-        if (enterFullscreenButton != null && exitFullscreenButton != null) {
+        if (enterFullscreenButton != null &&
+                exitFullscreenButton != null &&
+                BaseView.isTablet(getContext())) {
             enterFullscreenButton.setVisibility(GONE);
             exitFullscreenButton.setVisibility(VISIBLE);
         }
@@ -1216,7 +1218,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     public void enableFullScreenMode() {
-        if (enterFullscreenButton != null && exitFullscreenButton != null) {
+        if (enterFullscreenButton != null &&
+                exitFullscreenButton != null &&
+                BaseView.isTablet(getContext())) {
             exitFullscreenButton.setVisibility(INVISIBLE);
             enterFullscreenButton.setVisibility(VISIBLE);
         }
