@@ -1,6 +1,5 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -217,6 +216,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
                         isPlayerComponentSelected = true;
                         showMoreContentIcon();
+                    } else if(rowData.isSearchPage){
+                       new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
+                               (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
+                               (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
                     }else{
                         Utils.setBrowseFragmentViewParameters(view,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),

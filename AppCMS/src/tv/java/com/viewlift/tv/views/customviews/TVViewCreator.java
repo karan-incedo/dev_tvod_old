@@ -173,6 +173,7 @@ public class TVViewCreator {
         appCMSPresenter.clearOnInternalEvents();
         List<ModuleList> modulesList = appCMSPageUI.getModuleList();
         ViewGroup childrenContainer = pageView.getChildrenContainer();
+        trayIndex = -1;
         for (int i = 0; i < modulesList.size(); i++) {
             ModuleList module = modulesList.get(i);
             if (!modulesToIgnore.contains(module.getView())) {

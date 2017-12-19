@@ -8,6 +8,8 @@
     <dimen name="appcms_tv_sub_navigation_top_margin">36dp</dimen>
 
     <dimen name="browse_fragment_margin_left">-10dp</dimen>
+    <dimen name="grid_browse_fragment_margin_left">30dp</dimen>
+    <dimen name="grid_browse_fragment_margin_top">-150dp</dimen>
     <dimen name="browse_fragment_margin_top">-130dp</dimen>
     <dimen name="browse_fragment_margin_top_for_player">-190dp</dimen>
 

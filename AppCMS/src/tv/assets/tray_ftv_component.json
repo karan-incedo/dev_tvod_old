@@ -1,15 +1,14 @@
 {
-  "id": "1fc378ca-51db-4c21-be1b-fd2f7e9a6062",
+  "id": "86d97d09-6e80-4460-9477-b4487be8ed64",
   "settings": {
-    "loop": false,
+    "loop": true,
     "columns": {
       "tablet": 4,
       "desktop": 5,
-      "mobile": 2,
-      "ott": 6
+      "mobile": 3,
+      "ott": 5
     },
-    "thumbnailType": "landscape",
-    "infoHover": false
+    "thumbnailType": "landscape"
   },
   "view": "AC Tray 02",
   "type": "AC Tray 03",
@@ -19,103 +18,76 @@
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 260
+      "height": 350
     }
   },
-  "components": [
-    {
+  "components": [{
+    "layout": {
+      "ftv": {
+        "fontSize": 18
+      }
+    },
+    "fontFamily": "Lato",
+    "textAlignment": "left",
+    "textCase": "sentence",
+    "type": "label",
+    "textColor": "#008EE0",
+    "fontWeight": "Bold",
+    "key": "trayTitle"
+  }, {
+    "layout": {
+      "ftv": {
+        "width": 396,
+        "height": 320
+      }
+    },
+    "trayClickAction": "lectureDetailPage",
+    "components": [{
       "layout": {
         "ftv": {
-          "fontSize": 14
+          "padding": 0,
+          "leftMargin": 8,
+          "topMargin": 9,
+          "width": 380,
+          "height": 214
+        }
+      },
+      "type": "image",
+      "key": "thumbnailImage"
+    }, {
+      "layout": {
+        "ftv": {
+          "padding": 0,
+          "leftMargin": 8,
+          "topMargin": 9,
+          "width": 380,
+          "height": 214
+        }
+      },
+      "type": "image",
+      "key": "bedgeImage"
+    }, {
+      "layout": {
+        "ftv": {
+          "leftMargin": 8,
+          "topMargin": 230,
+          "rightMargin": 0,
+          "height": 70
         }
       },
       "fontFamily": "Lato",
+      "numberOfLines": 2,
       "textAlignment": "left",
+      "fontSize": 12,
       "type": "label",
-      "textColor": "#008EE0",
-      "fontWeight": "Bold",
-      "key": "trayTitle"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "width": 350,
-          "height": 250
-        }
-      },
-      "textAlignment": "center",
-      "trayClickAction": "lectureDetailPage",
-      "components": [
-        {
-          "layout": {
-            "ftv": {
-              "height": 197,
-              "topMargin": 0,
-              "padding": 6,
-              "width": 350
-            }
-          },
-          "type": "image",
-          "key": "thumbnailImage"
-
-        },
-
-        {
-          "layout": {
-            "ftv": {
-              "padding": 0,
-              "topMargin": 9,
-              "leftMargin": 8,
-              "width": 380,
-              "height": 214
-            }
-          },
-          "type": "image",
-          "key": "bedgeImage"
-        },
-
-        {
-          "layout": {
-            "ftv": {
-              "padding": 1,
-              "topMargin": 185,
-              "leftMargin": 8,
-              "width": 160,
-              "height": 30
-            }
-          },
-          "type": "label",
-          "key": "trayTimeAndDataKey",
-          "fontFamily": "Lato",
-          "textAlignment": "left",
-          "textColor": "#FFFFFF",
-          "fontWeight": "Bold",
-          "backgroundColor": "#90000000",
-          "text":"1:52:29 | June 22",
-          "fontSize": 12,
-          "numberOfLines": 1
-        },
-        {
-          "layout": {
-            "ftv": {
-              "topMargin": 202,
-              "height": 40,
-              "rightMargin": 0,
-              "height": 70
-            }
-          },
-          "fontFamily": "Lato",
-          "fontWeight": "Regular",
-          "textAlignment": "left",
-          "type": "label",
-          "textColor": "#ffffff",
-          "key": "thumbnailTitle",
-          "fontSize": 12,
-          "numberOfLines": 2
-        }
-      ],
-      "type": "collectionGrid",
-      "key": "collectionGrid"
+      "textColor": "#ffffff",
+      "fontWeight": "Regular",
+      "key": "thumbnailTitle"
     }
+    ],
+    "textAlignment": "center",
+    "type": "collectionGrid",
+    "key": "collectionGrid"
+  }
   ]
 }

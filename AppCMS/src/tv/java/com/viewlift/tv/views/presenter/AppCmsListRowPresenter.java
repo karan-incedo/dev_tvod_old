@@ -14,15 +14,12 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.customviews.CustomHeaderItem;
-
-import com.viewlift.R;
 
 /**
  * Created by nitin.tyagi on 7/2/2017.
@@ -34,6 +31,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     String textColor = null;
     Typeface typeface = null;
     float headerTileLetterSpacing = 0.11f;
+    private boolean isFocusOnFirstRow;
 
     public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter){
         super(FocusHighlight.ZOOM_FACTOR_NONE);
@@ -48,6 +46,18 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     protected void onBindRowViewHolder(RowPresenter.ViewHolder holder, Object item) {
         super.onBindRowViewHolder(holder, item);
 
+        try {
+            holder.view.setOnKeyListener((v, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                    if (isFocusOnFirstRow) {
+                        holder.view.clearFocus();
+                    }
+                }
+                return true;
+            });
+        } catch (Exception e) {
+            Log.d("ANAS OBVH", "Exception: " + e.getLocalizedMessage());
+        }
         if(null != holder.getRow()){
             LinearLayout headerTitleContainer =  ((LinearLayout)holder.getHeaderViewHolder().view);
             final RowHeaderView headerTitle = (RowHeaderView)headerTitleContainer.findViewById(R.id.row_header);
@@ -64,10 +74,26 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             ListRowView listRowView = (ListRowView) holder.view;
             LinearLayout.LayoutParams listRowParam = (LinearLayout.LayoutParams) listRowView.getLayoutParams();
 
+            listRowView.setOnKeyListener((v, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                    if (isFocusOnFirstRow) {
+                        holder.getSelectedItemViewHolder().view.clearFocus();
+                    }
+                }
+                return true;
+            });
+
             //Horizontal GridView and its layout Params.
             HorizontalGridView horizontalGridView = listRowView.getGridView();
             LinearLayout.LayoutParams horizontalGrLayoutParams = (LinearLayout.LayoutParams) horizontalGridView.getLayoutParams();
-
+            horizontalGridView.setOnKeyListener((v, keyCode, event) -> {
+                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                    if (isFocusOnFirstRow) {
+                        horizontalGridView.clearFocus();
+                    }
+                }
+                return true;
+            });
             //HeaderTitle layout Params.
             LinearLayout.LayoutParams headerTitleContainerLayoutParams = (LinearLayout.LayoutParams) headerTitleContainer.getLayoutParams();
 
@@ -163,5 +189,27 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     @Override
     protected void onUnbindRowViewHolder(RowPresenter.ViewHolder holder) {
         super.onUnbindRowViewHolder(holder);
+    }
+
+    @Override
+    protected void onRowViewSelected(RowPresenter.ViewHolder holder, boolean selected) {
+        super.onRowViewSelected(holder, selected);
+        if (selected) {
+            try {
+                long id = holder.getRow().getId();
+                Log.d("ANAS", "id: " + id);
+                /*View view = holder.getSelectedItemViewHolder().view;
+                 view.setOnKeyListener((v, keyCode, event) -> {
+                     if (keyCode == KeyEvent.KEYCODE_DPAD_UP
+                             && event.getAction() == KeyEvent.ACTION_UP) {
+                         holder.view.clearFocus();
+                     }
+                     return false;
+                 });*/
+                isFocusOnFirstRow = id == -1;
+            } catch (Exception e) {
+                Log.d("ANAS", "Exception." + e.getLocalizedMessage());
+            }
+        }
     }
 }

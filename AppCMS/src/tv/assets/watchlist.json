@@ -16,7 +16,7 @@
       "layout": {
         "ftv": {
           "yAxis": 35,
-          "xAxis": 40,
+          "xAxis": 1585,
           "width": 270,
           "fontSize": 13,
           "height": 70
@@ -117,6 +117,7 @@
               "width" : 850
             }
           },
+          "numberOfLines": 1,
           "fontFamily": "Lato",
           "textAlignment": "left",
           "type": "label",
@@ -169,7 +170,7 @@
           },
           "type": "image",
           "key": "teamIcon"
-        },
+        }/*,
         {
           "layout": {
             "ftv": {
@@ -183,7 +184,7 @@
           "fillColor" : "cb0022",
           "type": "starRating",
           "key": "starRating"
-        }
+        }*/
         /*,
         {
           "layout": {

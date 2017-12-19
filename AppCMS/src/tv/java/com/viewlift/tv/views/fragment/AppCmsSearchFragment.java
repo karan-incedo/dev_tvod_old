@@ -274,14 +274,18 @@ public class AppCmsSearchFragment extends Fragment {
         super.onResume();
         List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
 
-        if (resultForTv != null && resultForTv.size() > 0) {
-            llView.setVisibility(View.VISIBLE);
-            if(resultForTv.size() > 3) {
-                resultForTv.remove(resultForTv.iterator().next());
+        if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+            if (resultForTv != null && resultForTv.size() > 0) {
+                llView.setVisibility(View.VISIBLE);
+                if(resultForTv.size() > 3) {
+                    resultForTv.remove(resultForTv.iterator().next());
+                }
+                setSearchValueOnView(resultForTv, resultForTv.size());
+            } else {
+                llView.setVisibility(View.INVISIBLE);
             }
-            setSearchValueOnView(resultForTv, resultForTv.size());
         } else {
-            llView.setVisibility(View.INVISIBLE);
+            llView.setVisibility(View.GONE);
         }
         setFocusSequence();
         if(mRowsAdapter == null || (mRowsAdapter != null && mRowsAdapter.size() == 0))
@@ -366,14 +370,18 @@ public class AppCmsSearchFragment extends Fragment {
                     addSearchValueInSharePref(previousString);
                 }
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
-                if (resultForTv != null && resultForTv.size() > 0) {
-                    if(resultForTv.size() > 0){
-                        llView.setVisibility(View.VISIBLE);
-                        setSearchValueOnView(resultForTv, resultForTv.size());
+                if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                    if (resultForTv != null && resultForTv.size() > 0) {
+                        if (resultForTv.size() > 0) {
+                            llView.setVisibility(View.VISIBLE);
+                            setSearchValueOnView(resultForTv, resultForTv.size());
 
-                    } else {
-                        llView.setVisibility(View.INVISIBLE);
+                        } else {
+                            llView.setVisibility(View.INVISIBLE);
+                        }
                     }
+                } else {
+                    llView.setVisibility(View.GONE);
                 }
                 setAdapter(appCMSSearchResults);
             }else{
@@ -386,12 +394,16 @@ public class AppCmsSearchFragment extends Fragment {
                 }
 
                 List<String> resultForTv = appCMSPresenter.getSearchResultsFromSharePreference();
-                if (resultForTv != null && resultForTv.size() > 0) {
-                    llView.setVisibility(View.VISIBLE);
-                    if(resultForTv.size() > 3) {
-                        resultForTv.remove(resultForTv.iterator().next());
+                if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                    if (resultForTv != null && resultForTv.size() > 0) {
+                        llView.setVisibility(View.VISIBLE);
+                        if (resultForTv.size() > 3) {
+                            resultForTv.remove(resultForTv.iterator().next());
+                        }
+                        setSearchValueOnView(resultForTv, resultForTv.size());
                     }
-                    setSearchValueOnView(resultForTv, resultForTv.size());
+                } else {
+                    llView.setVisibility(View.GONE);
                 }
             }
 
@@ -419,16 +431,16 @@ public class AppCmsSearchFragment extends Fragment {
     private void setSearchValueOnView(List<String> resultForTv, int size){
         for (int i = 0; i < size; i++) {
             if(i == 0){
-                searchOne.setText(resultForTv.get(i).trim().toString().toUpperCase());
+                searchOne.setText(resultForTv.get(i).trim().toUpperCase());
                 searchTwo.setVisibility(View.INVISIBLE);
                 searchThree.setVisibility(View.INVISIBLE);
             } else if(i == 1){
                 searchTwo.setVisibility(View.VISIBLE);
                 searchThree.setVisibility(View.INVISIBLE);
-                searchTwo.setText(resultForTv.get(i).trim().toString().toUpperCase());
+                searchTwo.setText(resultForTv.get(i).trim().toUpperCase());
             } else if(i == 2){
                 searchThree.setVisibility(View.VISIBLE);
-                searchThree.setText(resultForTv.get(i).trim().toString().toUpperCase());
+                searchThree.setText(resultForTv.get(i).trim().toUpperCase());
             }
         }
     }
@@ -524,6 +536,7 @@ public class AppCmsSearchFragment extends Fragment {
 
     private void setAdapter(List<AppCMSSearchResult> appCMSSearchResults){
         if(null != moduleList){
+            trayIndex = -1;
             for(Component component : moduleList.getComponents()){
                 createTrayModule(getActivity() ,
                                 component ,
@@ -538,7 +551,7 @@ public class AppCmsSearchFragment extends Fragment {
         if(null != mRowsAdapter && mRowsAdapter.size() > 0){
             {
                 AppCmsBrowseFragment browseFragment = AppCmsBrowseFragment.newInstance(mContext);
-                browseFragment.setAdapter(mRowsAdapter);
+                browseFragment.setmRowsAdapter(mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_search_results_container ,browseFragment ,"frag").commitAllowingStateLoss();
             }
         }
@@ -570,20 +583,7 @@ public class AppCmsSearchFragment extends Fragment {
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
-                        customHeaderItem = null;
-                        customHeaderItem = new CustomHeaderItem(context, trayIndex++,
-                                getResources().getQuantityString(R.plurals.app_cms_search_result_header ,
-                                        appCMSSearchResults.size(),
-                                        lastSearchedString.toUpperCase())
-                                );
-                        customHeaderItem.setmIsCarousal(isCarousel);
-                        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                        customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                        customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-                        customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                        customHeaderItem.setFontFamily(component.getFontFamily());
-                        customHeaderItem.setFontWeight(component.getFontWeight());
-                        customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
+                        createCustomHeaderItem(context, component, appCMSSearchResults, moduleUI, appCMSPresenter, isCarousel);
                         break;
                 }
                 break;
@@ -595,6 +595,27 @@ public class AppCmsSearchFragment extends Fragment {
                 }
                 break;
         }
+    }
+
+    private void createCustomHeaderItem(Context context, Component component, List<AppCMSSearchResult> appCMSSearchResults, ModuleList moduleUI, AppCMSPresenter appCMSPresenter, boolean isCarousel) {
+        customHeaderItem = null;
+        customHeaderItem = new CustomHeaderItem(
+                context,
+                trayIndex++,
+                appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)
+                        ? getResources().getQuantityString(R.plurals.app_cms_search_result_header,
+                        appCMSSearchResults.size(),
+                        lastSearchedString.toUpperCase())
+                        : ""
+        );
+        customHeaderItem.setmIsCarousal(isCarousel);
+        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+        customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+        customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
+        customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+        customHeaderItem.setFontFamily(component.getFontFamily());
+        customHeaderItem.setFontWeight(component.getFontWeight());
+        customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
     }
 
     private void createRowsForEntertainment(Context context,
@@ -611,12 +632,12 @@ public class AppCmsSearchFragment extends Fragment {
                 Integer.valueOf(component.getLayout().getTv().getHeight()),
                 Integer.valueOf(component.getLayout().getTv().getWidth()),
                 component.getTrayBackground(),
-                jsonValueKeyMap
-        );
+                jsonValueKeyMap);
         ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
 
         for (AppCMSSearchResult searchResult : appCMSSearchResults) {
             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+            rowData.isSearchPage = true;
             rowData.contentData = searchResult.getContent();
             rowData.uiComponentList = component.getComponents();
             rowData.action = component.getTrayClickAction();
@@ -637,26 +658,36 @@ public class AppCmsSearchFragment extends Fragment {
             AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
             mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
         }
-        CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
-                Integer.valueOf(component.getLayout().getTv().getHeight()),
-                Integer.valueOf(component.getLayout().getTv().getWidth()),
-                component.getTrayBackground(),
-                jsonValueKeyMap
-        );
-        ArrayObjectAdapter trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
 
-        for (int i = 0; i < appCMSSearchResults.size(); i++) {
+        ArrayObjectAdapter trayListRowAdapter = null;
+        int position = -1;
+         for (int i = 0; i < appCMSSearchResults.size(); i++) {
+            if(position == -1){
+                 CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
+                         Integer.valueOf(component.getLayout().getTv().getHeight()),
+                         Integer.valueOf(component.getLayout().getTv().getWidth()),
+                         component.getTrayBackground(),
+                         jsonValueKeyMap
+                 );
+
+                 trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+             }
             AppCMSSearchResult searchResult = appCMSSearchResults.get(i);
             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+            rowData.isSearchPage = true;
             rowData.contentData = searchResult.getContent();
             rowData.uiComponentList = component.getComponents();
             rowData.action = component.getTrayClickAction();
             rowData.blockName = moduleUI.getBlockName();
             trayListRowAdapter.add(rowData);
-            if ((trayListRowAdapter.size()  % 4 == 0) || i == appCMSSearchResults.size() - 1) {
+            position++;
+
+            if ((trayListRowAdapter.size()  % 4 == 0) /*already four items in the adapter*/
+                    || i == appCMSSearchResults.size() - 1 /*Reached the last item*/) {
                 mRowsAdapter.add(new ListRow(customHeaderItem, trayListRowAdapter));
-                trayListRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
-            }
+                createCustomHeaderItem(context, component, appCMSSearchResults, moduleUI, appCMSPresenter, false);
+                position = -1;
+             }
         }
     }
 
