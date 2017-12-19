@@ -248,9 +248,14 @@ public class PageView extends BaseView {
         appCMSPageViewAdapter.removeAllViews();
     }
 
-    public void addModuleViewWithModuleId(String moduleId, ModuleView moduleView) {
+    public void addModuleViewWithModuleId(String moduleId,
+                                          ModuleView moduleView,
+                                          boolean userModuleViewAsHeader) {
         moduleViewMap.put(moduleId, moduleView);
         appCMSPageViewAdapter.addView(moduleView);
+        if (userModuleViewAsHeader) {
+            addView(moduleView);
+        }
     }
 
     public ModuleView getModuleViewWithModuleId(String moduleId) {

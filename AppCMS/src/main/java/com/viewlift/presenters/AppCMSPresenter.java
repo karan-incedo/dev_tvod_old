@@ -293,6 +293,8 @@ public class AppCMSPresenter {
     public static final String PRESENTER_REFRESH_PAGE_DATA_ACTION = "appcms_presenter_refresh_page_data_action";
     public static final String PRESENTER_ENTER_FULLSCREEN_ACTION = "apppresenter_enter_fullscreen_action";
     public static final String PRESENTER_EXIT_FULLSCREEN_ACTION = "appcms_presenter_exit_fullscreen_action";
+    public static final String PRESENTER_KEEP_SCREEN_ON_ACTION = "appcms_presenter_keep_screen_on_action";
+    public static final String PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION = "appcms_presenter_dont_keep_screen_on_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -1245,6 +1247,17 @@ public class AppCMSPresenter {
                 }
             });
         }
+    }
+
+    public String getAppTextColor() {
+        if (appCMSMain != null) {
+            return getAppCMSMain()
+                    .getBrand()
+                    .getGeneral()
+                    .getTextColor();
+        }
+
+        return null;
     }
 
     public String getAppBackgroundColor() {
@@ -5371,6 +5384,20 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Intent exitFullScreenAction = new Intent(AppCMSPresenter.PRESENTER_EXIT_FULLSCREEN_ACTION);
             currentActivity.sendBroadcast(exitFullScreenAction);
+        }
+    }
+
+    public void sendKeepScreenOnAction() {
+        if (currentActivity != null) {
+            Intent keepScreenOnAction = new Intent(AppCMSPresenter.PRESENTER_KEEP_SCREEN_ON_ACTION);
+            currentActivity.sendBroadcast(keepScreenOnAction);
+        }
+    }
+
+    public void sendClearKeepScreenOnAction() {
+        if (currentActivity != null) {
+            Intent clearKeepScreenOnAction = new Intent(AppCMSPresenter.PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION);
+            currentActivity.sendBroadcast(clearKeepScreenOnAction);
         }
     }
 

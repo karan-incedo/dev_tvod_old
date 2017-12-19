@@ -112,6 +112,7 @@ public class ViewCreator {
         long videoPlayTime = 0;
         String videoUrl;
         String ccUrl;
+        boolean fullScreenEnabled;
     }
 
     private static VideoPlayerContent videoPlayerContent = new VideoPlayerContent();
@@ -274,7 +275,6 @@ public class ViewCreator {
     public static void resumePlayer(AppCMSPresenter appCMSPresenter, Context context) {
         if (videoPlayerView != null && videoPlayerContent != null) {
             videoPlayerView.setAppCMSPresenter(appCMSPresenter);
-            videoPlayerView.init(context);
             videoPlayerView.enableController();
             if (videoPlayerViewBinder != null) {
                 if (!TextUtils.isEmpty(videoPlayerContent.ccUrl)) {
@@ -299,10 +299,27 @@ public class ViewCreator {
     }
 
     public static boolean playerViewFullScreenEnabled() {
+        if (videoPlayerContent != null) {
+            return videoPlayerContent.fullScreenEnabled;
+        }
         if (videoPlayerView != null) {
             return videoPlayerView.fullScreenModeEnabled();
         }
         return false;
+    }
+
+    public static void clearPlayerView() {
+        videoPlayerView = null;
+    }
+
+    public static void resetFullPlayerMode(Context context,
+                                           AppCMSPresenter appCMSPresenter) {
+        if (videoPlayerContent != null) {
+            videoPlayerContent.fullScreenEnabled = false;
+        }
+        if (BaseView.isTablet(context)) {
+            appCMSPresenter.unrestrictPortraitOnly();
+        }
     }
 
     public static VideoPlayerView playerView(Context context,
@@ -311,6 +328,10 @@ public class ViewCreator {
                                              String ccUrl,
                                              String filmId,
                                              long watchedTime) {
+        if (videoPlayerContent == null) {
+            videoPlayerContent = new VideoPlayerContent();
+        }
+
         videoPlayerContent.videoUrl = videoUrl;
         videoPlayerContent.ccUrl = ccUrl;
 
@@ -323,7 +344,7 @@ public class ViewCreator {
         }
 
         boolean resetWatchTime = false;
-        long currentWatchedTime = 0L;
+        long currentWatchedTime = videoPlayerContent.videoPlayTime;
         if (filmId != null && !filmId.equals(videoPlayerView.getFilmId())) {
             resetWatchTime = true;
         } else {
@@ -333,9 +354,9 @@ public class ViewCreator {
         if (videoPlayerView.getDuration() <= currentWatchedTime &&
                 0 < currentWatchedTime) {
             videoPlayerViewBinder.setAutoplayCancelled(true);
-        } else {
-            videoPlayerView.setUri(Uri.parse(videoUrl), null);
         }
+
+        videoPlayerView.setUri(Uri.parse(videoUrl), null);
 
         if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
             videoPlayerView.startPlayer();
@@ -429,10 +450,15 @@ public class ViewCreator {
                     videoPlayerView.resumePlayer();
                 }
             }
+            videoPlayerView.disableFullScreenMode();
+        }
+
+        if (videoPlayerContent != null) {
+            videoPlayerContent.fullScreenEnabled = true;
         }
     }
 
-    public static void closeFullScreenVideoPlayer(AppCMSPresenter appCMSPresenter) {
+    public static void closeFullScreenVideoPlayer() {
         if (videoPlayerView != null) {
             PageView pageViewAncestor = videoPlayerView.getPageView();
             if (pageViewAncestor != null) {
@@ -445,6 +471,12 @@ public class ViewCreator {
                     videoPlayerView.resumePlayer();
                 }
             }
+
+            videoPlayerView.enableFullScreenMode();
+        }
+
+        if (videoPlayerContent != null) {
+            videoPlayerContent.fullScreenEnabled = false;
         }
     }
 
@@ -1522,7 +1554,7 @@ public class ViewCreator {
                     appCMSPresenter,
                     this,
                     appCMSAndroidModules);
-            pageView.addModuleViewWithModuleId(module.getId(), moduleView);
+            pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
         } else {
             if (module.getComponents() != null) {
                 moduleView = new ModuleView<>(context, module, true);
@@ -1531,7 +1563,7 @@ public class ViewCreator {
                 boolean modulesHasHiddenComponent = false;
 
                 AdjustOtherState adjustOthers = AdjustOtherState.IGNORE;
-                pageView.addModuleViewWithModuleId(module.getId(), moduleView);
+                pageView.addModuleViewWithModuleId(module.getId(), moduleView, false);
                 if (module.getComponents() != null) {
                     if (moduleAPI != null) {
                         updateUserHistory(appCMSPresenter,
@@ -2486,17 +2518,19 @@ public class ViewCreator {
                                 BaseView.isTablet(context)) {
 
                             if (!component.isWidthModified()) {
-                                component.getLayout().getTabletLandscape().setWidth(BaseView.convertDpToPixel(48, context));
-                                component.getLayout().getTabletLandscape().setHeight(BaseView.convertDpToPixel(24, context));
-                                component.getLayout().getTabletPortrait().setWidth(BaseView.convertDpToPixel(56, context));
-                                component.getLayout().getTabletPortrait().setHeight(BaseView.convertDpToPixel(24, context));
+                                component.getLayout().getTabletLandscape().setXAxis(component.getLayout().getTabletLandscape().getXAxis() - 40.0f);
+                                component.getLayout().getTabletLandscape().setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+                                component.getLayout().getTabletLandscape().setHeight(32.0f);
+                                component.getLayout().getTabletPortrait().setXAxis(component.getLayout().getTabletPortrait().getXAxis() - 44.0f);
+                                component.getLayout().getTabletPortrait().setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+                                component.getLayout().getTabletPortrait().setHeight(32.0f);
                                 component.setWidthModified(true);
                             }
 
                             ImageButton addToWatchListButton = (ImageButton) componentViewResult.componentView;
                             LinearLayout.LayoutParams addToWatchListButtonLayoutParams =
-                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
-                                            (int) BaseView.convertDpToPixel(28, context));
+                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(36, context),
+                                            (int) BaseView.convertDpToPixel(36, context));
                             addToWatchListButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                             addToWatchListButton.setLayoutParams(addToWatchListButtonLayoutParams);
 
@@ -2510,19 +2544,17 @@ public class ViewCreator {
                             if (mMediaRouteButton != null) {
                                 mMediaRouteButton.setImageResource(R.drawable.anim_cast);
                                 LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
-                                        new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(28, context),
-                                                (int) BaseView.convertDpToPixel(28, context));
+                                        new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(36, context),
+                                                (int) BaseView.convertDpToPixel(36, context));
                                 mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                                 mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
                                 mMediaRouteButton.setPadding(6, 6, 6, 6);
                                 mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
 
-                                if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
-                                    setCasting(false, /** TODO: Replace with actual value from API response */
-                                            appCMSPresenter,
-                                            mMediaRouteButton,
-                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime());
-                                }
+                                setCasting(false, /** TODO: Replace with actual value from API response */
+                                        appCMSPresenter,
+                                        mMediaRouteButton,
+                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
 
                                 pageView.setReparentChromecastButton(false);
 
@@ -2812,12 +2844,10 @@ public class ViewCreator {
                                 mMediaRouteButton.setPadding(8, 8, 8, 8);
                                 mMediaRouteButton.setBackgroundResource(android.R.color.transparent);
 
-                                if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
-                                    setCasting(false, /** TODO: Replace with actual value from API response */
-                                            appCMSPresenter,
-                                            mMediaRouteButton,
-                                            moduleAPI.getContentData().get(0).getGist().getWatchedTime());
-                                }
+                                setCasting(false, /** TODO: Replace with actual value from API response */
+                                        appCMSPresenter,
+                                        mMediaRouteButton,
+                                        moduleAPI.getContentData().get(0).getGist().getWatchedTime());
 
                                 pageView.setReparentChromecastButton(false);
 
@@ -3306,6 +3336,13 @@ public class ViewCreator {
                                 titleTextVto = componentViewResult.componentView.getViewTreeObserver();
                                 viewCreatorTitleLayoutListener =
                                         new ViewCreatorTitleLayoutListener((TextView) componentViewResult.componentView);
+
+                                if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                                        component.getKey() != null &&
+                                        !component.getKey().equals(context.getString(R.string.app_cms_page_show_image_video_key)) &&
+                                        !BaseView.isTablet(context)) {
+                                    viewCreatorTitleLayoutListener.setSpecifiedMaxWidthRatio(0.7f);
+                                }
                                 titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                                 ((TextView) componentViewResult.componentView).setSingleLine(true);
 
@@ -3622,6 +3659,11 @@ public class ViewCreator {
                                     videoUrl, closedCaptionUrl, moduleAPI.getContentData().get(0).getGist().getId(),
                                     moduleAPI.getContentData().get(0).getGist().getWatchedTime());
                             videoPlayerView.setPageView(pageView);
+                            String videoTitleTextColor = appCMSPresenter.getAppTextColor();
+                            if (videoTitleTextColor != null) {
+                                videoPlayerView.setVideoTitle(moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                        Color.parseColor(getColor(context, videoTitleTextColor)));
+                            }
                             if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
                                 appCMSPresenter.unrestrictPortraitOnly();
                             }

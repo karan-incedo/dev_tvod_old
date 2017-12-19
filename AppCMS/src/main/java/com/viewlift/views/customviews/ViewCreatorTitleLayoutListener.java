@@ -14,14 +14,16 @@ import com.viewlift.R;
 public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
     private static final float MAX_WIDTH_RATIO = 0.8f;
     private final TextView textView;
+    private float specifiedMaxWidthRatio;
 
     public ViewCreatorTitleLayoutListener(TextView textView) {
         this.textView = textView;
+        this.specifiedMaxWidthRatio = MAX_WIDTH_RATIO;
     }
 
     @Override
     public void onGlobalLayout() {
-        float maxAllowedWidth = textView.getRootView().getWidth() * MAX_WIDTH_RATIO;
+        float maxAllowedWidth = textView.getRootView().getWidth() * specifiedMaxWidthRatio;
         Rect bounds = new Rect();
         Paint textPaint = textView.getPaint();
         textPaint.getTextBounds(textView.getText().toString(),
@@ -39,5 +41,9 @@ public class ViewCreatorTitleLayoutListener implements ViewTreeObserver.OnGlobal
         }
 
         textView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+    }
+
+    public void setSpecifiedMaxWidthRatio(float specifiedMaxWidthRatio) {
+        this.specifiedMaxWidthRatio = specifiedMaxWidthRatio;
     }
 }

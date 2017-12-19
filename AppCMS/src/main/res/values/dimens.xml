@@ -86,8 +86,9 @@
     <dimen name="tray_item_more_dialog_ButtonMargin">20dp</dimen>
     <dimen name="app_cms_toolbar_margin_top">8dp</dimen>
     <dimen name="streaming_quality_view_padding">8dp</dimen>
-    <dimen name="chromecast_default_width">28dp</dimen>
-    <dimen name="chromecast_default_height">28dp</dimen>
+    <dimen name="chromecast_default_width">36dp</dimen>
+    <dimen name="chromecast_default_height">36dp</dimen>
+    <dimen name="chromecast_default_margin_end">0dp</dimen>
     <dimen name="chromecast_default_padding_end">4dp</dimen>
     <dimen name="chromecast_default_padding_top">4dp</dimen>
     <dimen name="chromecast_toolbar_padding">8dp</dimen>

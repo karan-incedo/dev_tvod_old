@@ -202,6 +202,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver processDeeplinkReceiver;
     private BroadcastReceiver enterFullScreenReceiver;
     private BroadcastReceiver exitFullScreenReceiver;
+    private BroadcastReceiver keepScreenOnReceiver;
+    private BroadcastReceiver clearKeepScreenOnReceiver;
 
     private boolean resumeInternalEvents;
     private boolean isActive;
@@ -498,6 +500,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        keepScreenOnReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                keepScreenOn();
+            }
+        };
+
+        clearKeepScreenOnReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                clearKeepScreenOn();
+            }
+        };
+
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
         registerReceiver(presenterActionReceiver,
@@ -581,6 +597,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.sendCloseOthersAction(null, false, false);
 //        Log.d(TAG, "onCreate()");
+    }
+
+    private void keepScreenOn() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    private void clearKeepScreenOn() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void initPageActivity() {
@@ -878,6 +902,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     new IntentFilter(AppCMSPresenter.PRESENTER_ENTER_FULLSCREEN_ACTION));
             registerReceiver(exitFullScreenReceiver,
                     new IntentFilter(AppCMSPresenter.PRESENTER_EXIT_FULLSCREEN_ACTION));
+            registerReceiver(keepScreenOnReceiver,
+                    new IntentFilter(AppCMSPresenter.PRESENTER_KEEP_SCREEN_ON_ACTION));
+            registerReceiver(clearKeepScreenOnReceiver,
+                    new IntentFilter(AppCMSPresenter.PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION));
         } catch (Exception e) {
             //
         }
@@ -936,6 +964,21 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 updatedAppCMSBinder != null &&
                 appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) &&
                 !CastServiceProvider.getInstance(this).isCastingConnected()) {
+            if (!BaseView.isTablet(this)) {
+                if (BaseView.isLandscape(this) ||
+                        ViewCreator.playerViewFullScreenEnabled()) {
+                    enterFullScreenVideoPlayer();
+                } else {
+                    exitFullScreenVideoPlayer();
+                }
+            } else {
+                if (ViewCreator.playerViewFullScreenEnabled()) {
+                    enterFullScreenVideoPlayer();
+                } else {
+                    ViewCreator.enableFullScreenMode();
+                }
+            }
+
             ViewCreator.resumePlayer(appCMSPresenter, this);
         }
     }
@@ -984,12 +1027,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(presenterCloseActionReceiver);
             unregisterReceiver(enterFullScreenReceiver);
             unregisterReceiver(exitFullScreenReceiver);
+            unregisterReceiver(keepScreenOnReceiver);
+            unregisterReceiver(clearKeepScreenOnReceiver);
         } catch (Exception e) {
             //
         }
         appCMSPresenter.pausePIP();
 
         ViewCreator.pausePlayer();
+        clearKeepScreenOn();
+        ViewCreator.clearPlayerView();
     }
 
     @Override
@@ -1326,7 +1373,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-        ViewCreator.closeFullScreenVideoPlayer(appCMSPresenter);
+        ViewCreator.closeFullScreenVideoPlayer();
         handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
     }
 
@@ -2574,6 +2621,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter != null) {
             appCMSPresenter.restartInternalEvents();
         }
+
+        ViewCreator.clearPlayerView();
+        ViewCreator.resetFullPlayerMode(this, appCMSPresenter);
     }
 
     @Override
