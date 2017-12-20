@@ -1372,6 +1372,8 @@ public class AppCMSPresenter {
                         contentDatum != null &&
                         !isVideoPlayerStarted) {
 
+                    ViewCreator.clearPlayerView();
+
                     isVideoPlayerStarted = true;
                     boolean entitlementActive = true;
                     boolean svodServiceType =
@@ -1557,46 +1559,58 @@ public class AppCMSPresenter {
                     if (!BaseView.isTablet(currentContext)) {
                         restrictPortraitOnly();
                     }
+                    ViewCreator.clearPlayerView();
                     sendCloseOthersAction(null, true, false);
                 } else if (actionType == AppCMSActionType.LOGIN) {
                     //Log.d(TAG, "Login action selected: " + extraData[0]);
+                    ViewCreator.clearPlayerView();
                     closeSoftKeyboard();
                     login(extraData[0], extraData[1]);
 //                    sendSignInEmailFirebase();
                 } else if (actionType == AppCMSActionType.FORGOT_PASSWORD) {
                     //Log.d(TAG, "Forgot password selected: " + extraData[0]);
+                    ViewCreator.clearPlayerView();
                     closeSoftKeyboard();
                     launchResetPasswordPage(extraData[0]);
                 } else if (actionType == AppCMSActionType.LOGIN_FACEBOOK) {
                     //Log.d(TAG, "Facebook Login selected");
+                    ViewCreator.clearPlayerView();
                     loginFacebook();
                     sendSignInFacebookFirebase();
                 } else if (actionType == AppCMSActionType.SIGNUP_FACEBOOK) {
                     //Log.d(TAG, "Facebook Signup selected");
+                    ViewCreator.clearPlayerView();
                     loginFacebook();
                     sendSignUpFacebookFirebase();
                 } else if (actionType == AppCMSActionType.LOGIN_GOOGLE) {
                     //Log.d(TAG, "Google Login selected");
+                    ViewCreator.clearPlayerView();
                     loginGoogle();
                     sendSignInGoogleFirebase();
                 } else if (actionType == AppCMSActionType.SIGNUP_GOOGLE) {
                     //Log.d(TAG, "Google signup selected");
+                    ViewCreator.clearPlayerView();
                     loginGoogle();
                     sendSignUpGoogleFirebase();
                 } else {
                     if (actionType == AppCMSActionType.SIGNUP) {
                         //Log.d(TAG, "Sign-Up selected: " + extraData[0]);
+                        ViewCreator.clearPlayerView();
                         closeSoftKeyboard();
                         signup(extraData[0], extraData[1]);
                         sendSignUpEmailFirebase();
                     } else if (actionType == AppCMSActionType.START_TRIAL) {
                         //Log.d(TAG, "Start Trial selected");
+                        ViewCreator.clearPlayerView();
                         navigateToSubscriptionPlansPage(false);
                     } else if (actionType == AppCMSActionType.EDIT_PROFILE) {
+                        ViewCreator.clearPlayerView();
                         launchEditProfilePage();
                     } else if (actionType == AppCMSActionType.CHANGE_PASSWORD) {
+                        ViewCreator.clearPlayerView();
                         launchChangePasswordPage();
                     } else if (actionType == AppCMSActionType.MANAGE_SUBSCRIPTION) {
+                        ViewCreator.clearPlayerView();
                         if (extraData != null && extraData.length > 0) {
                             String key = extraData[0];
                             if (jsonValueKeyMap.get(key) == AppCMSUIKeyType.PAGE_SETTINGS_UPGRADE_PLAN_PROFILE_KEY) {
@@ -1634,14 +1648,18 @@ public class AppCMSPresenter {
                             }
                         }
                     } else if (actionType == AppCMSActionType.HOME_PAGE) {
+                        ViewCreator.clearPlayerView();
                         navigateToHomePage();
                     } else if (actionType == AppCMSActionType.SIGNIN) {
+                        ViewCreator.clearPlayerView();
                         navigateToLoginPage(false);
                     } else if (actionType == AppCMSActionType.CHANGE_DOWNLOAD_QUALITY) {
+                        ViewCreator.clearPlayerView();
                         showDownloadQualityScreen(contentDatum, userVideoDownloadStatus -> {
                             //
                         });
                     } else {
+                        ViewCreator.clearPlayerView();
                         boolean appbarPresent = true;
                         boolean fullscreenEnabled = false;
                         boolean navbarPresent = true;
@@ -5204,6 +5222,8 @@ public class AppCMSPresenter {
                                   boolean navbarPresent,
                                   boolean sendCloseAction,
                                   final Uri searchQuery) {
+        ViewCreator.clearPlayerView();
+
         boolean result = false;
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId) && !cancelAllLoads) {
@@ -6543,6 +6563,8 @@ public class AppCMSPresenter {
     }
 
     public void logout() {
+        ViewCreator.clearPlayerView();
+
         if (currentActivity != null) {
             showLoadingDialog(true);
             GraphRequest revokePermissions = new GraphRequest(AccessToken.getCurrentAccessToken(),
@@ -8782,36 +8804,38 @@ public class AppCMSPresenter {
                         setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
                     }
 
-                    NavigationPrimary homePageNavItem = findHomePageNavItem();
-                    if (homePageNavItem != null) {
-                        cancelInternalEvents();
+                    if (loginFromNavPage) {
+                        NavigationPrimary homePageNavItem = findHomePageNavItem();
+                        if (homePageNavItem != null) {
+                            cancelInternalEvents();
 
-                        if (platformType == PlatformType.TV) {
-                            if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
-                                Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
-                                currentActivity.sendBroadcast(myProfileIntent);
-                            } else if (getLaunchType() == LaunchType.HOME) {
-                                navigateToTVPage(
-                                        homePageNavItem.getPageId(),
+                            if (platformType == PlatformType.TV) {
+                                if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
+                                    Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                    currentActivity.sendBroadcast(myProfileIntent);
+                                } else if (getLaunchType() == LaunchType.HOME) {
+                                    navigateToTVPage(
+                                            homePageNavItem.getPageId(),
+                                            homePageNavItem.getTitle(),
+                                            homePageNavItem.getUrl(),
+                                            false,
+                                            deeplinkSearchQuery,
+                                            true,
+                                            false,
+                                            false
+                                    );
+                                }
+                            } else {
+                                navigateToPage(homePageNavItem.getPageId(),
                                         homePageNavItem.getTitle(),
                                         homePageNavItem.getUrl(),
                                         false,
-                                        deeplinkSearchQuery,
                                         true,
                                         false,
-                                        false
-                                );
+                                        true,
+                                        true,
+                                        deeplinkSearchQuery);
                             }
-                        } else {
-                            navigateToPage(homePageNavItem.getPageId(),
-                                    homePageNavItem.getTitle(),
-                                    homePageNavItem.getUrl(),
-                                    false,
-                                    true,
-                                    false,
-                                    true,
-                                    true,
-                                    deeplinkSearchQuery);
                         }
                     }
                 }
