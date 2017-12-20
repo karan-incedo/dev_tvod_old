@@ -286,8 +286,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                             if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                                     updatedAppCMSBinder != null &&
-                                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageId())) {
+                                    appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
                                 if (!BaseView.isTablet(AppCMSPageActivity.this)) {
+                                    appCMSPresenter.unrestrictPortraitOnly();
                                     if (BaseView.isLandscape(AppCMSPageActivity.this) ||
                                             ViewCreator.playerViewFullScreenEnabled()) {
                                         enterFullScreenVideoPlayer();
@@ -982,6 +983,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
             if (!CastServiceProvider.getInstance(this).isCastingConnected()) {
                 if (!BaseView.isTablet(this)) {
+                    appCMSPresenter.unrestrictPortraitOnly();
                     if (BaseView.isLandscape(this) ||
                             ViewCreator.playerViewFullScreenEnabled()) {
                         enterFullScreenVideoPlayer();
@@ -998,6 +1000,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 ViewCreator.resumePlayer(appCMSPresenter, this);
             } else {
+                if (BaseView.isTablet(this)) {
+                    appCMSPresenter.restrictPortraitOnly();
+                }
                 ViewCreator.pausePlayer();
             }
         }
@@ -1357,6 +1362,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         updatedAppCMSBinder != null &&
                         appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
                     if (!BaseView.isTablet(this)) {
+                        appCMSPresenter.unrestrictPortraitOnly();
                         if (BaseView.isLandscape(this) ||
                                 ViewCreator.playerViewFullScreenEnabled()) {
                             enterFullScreenVideoPlayer();
@@ -1391,9 +1397,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     public void exitFullScreenVideoPlayer(boolean launchPage) {
         showSystemUI(getWindow().getDecorView());
-        if (BaseView.isTablet(this)) {
-            appCMSPresenter.unrestrictPortraitOnly();
-        }
+        appCMSPresenter.unrestrictPortraitOnly();
         ViewCreator.closeFullScreenVideoPlayer(this);
         if (launchPage) {
             handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
@@ -2001,17 +2005,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             mSearchTopButton.setVisibility(View.VISIBLE);
         }
 
-        if (!BaseView.isTablet(this)) {
-            if (BaseView.isLandscape(this)) {
-                enterFullScreenVideoPlayer();
+        if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                updatedAppCMSBinder != null &&
+                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+            if (!BaseView.isTablet(this)) {
+                appCMSPresenter.unrestrictPortraitOnly();
+                if (BaseView.isLandscape(this)) {
+                    enterFullScreenVideoPlayer();
+                } else {
+                    exitFullScreenVideoPlayer(false);
+                }
             } else {
-                exitFullScreenVideoPlayer(false);
-            }
-        } else {
-            if (ViewCreator.playerViewFullScreenEnabled()) {
-                appCMSPresenter.sendEnterFullScreenAction();
-            } else {
-                ViewCreator.enableFullScreenMode();
+                if (ViewCreator.playerViewFullScreenEnabled()) {
+                    appCMSPresenter.sendEnterFullScreenAction();
+                } else {
+                    ViewCreator.enableFullScreenMode();
+                }
             }
         }
     }

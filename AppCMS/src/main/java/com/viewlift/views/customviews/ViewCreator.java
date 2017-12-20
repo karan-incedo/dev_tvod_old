@@ -4458,6 +4458,11 @@ public class ViewCreator {
                                 videoPlayerViewBinder,
                                 true,
                                 null);
+
+                        if (!BaseView.isTablet(appCMSPresenter.getCurrentActivity())) {
+                            appCMSPresenter.restrictPortraitOnly();
+                        }
+
                         appCMSPresenter.sendExitFullScreenAction(false);
                     }
                 }
