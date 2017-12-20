@@ -42,6 +42,7 @@ public abstract class BaseView extends FrameLayout {
         DEVICE_WIDTH = getContext().getResources().getDisplayMetrics().widthPixels;
         DEVICE_HEIGHT = getContext().getResources().getDisplayMetrics().heightPixels;
         setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+        this.setFocusableInTouchMode(true);
     }
 
     public static float convertDpToPixel(float dp, Context context) {
@@ -791,7 +792,9 @@ public abstract class BaseView extends FrameLayout {
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER);
             }
-
+            if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_RIGHT_KEY) {
+                ((TextView) view).setGravity(Gravity.RIGHT);
+            }
             if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
                     view instanceof Spinner) {
                 viewHeight = LayoutParams.WRAP_CONTENT;

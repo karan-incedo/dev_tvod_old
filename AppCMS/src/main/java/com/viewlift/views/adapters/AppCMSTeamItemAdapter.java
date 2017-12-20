@@ -96,15 +96,14 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
 
 
             holder.itemView.setOnClickListener(v -> {
-                //Todo need to remove toast and call the respective team pages.
                 appCMSPresenter.cancelInternalEvents();
                 if (!appCMSPresenter.navigateToPage(navigationItem.getPageId(),
                         navigationItem.getTitle(),
                         navigationItem.getUrl(),
                         false,
+                        true,
                         false,
-                        false,
-                        false,
+                        true,
                         false,
                         null)) {
                     //Log.e(TAG, "Could not navigate to page with Title: " +

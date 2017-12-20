@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.viewlift.R;
 import com.viewlift.views.customviews.ModuleView;
 
 import java.util.ArrayList;
@@ -17,6 +18,9 @@ import java.util.List;
 
 public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAdapter.PageViewHolder> {
     private List<ModuleView> childViews;
+    private static int TYPE_PLAYER = 0;
+    private static int TYPE_STANZA = 1;
+
 
     public AppCMSPageViewAdapter() {
         childViews = new ArrayList<>();
@@ -49,23 +53,46 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     }
 
     @Override
+    public int getItemViewType(int position) {
+
+        if(isPlayerView(position))
+            return TYPE_PLAYER;
+        else if(isStanzaView(position))
+            return TYPE_STANZA;
+        else
+            return position;
+    }
+
+    private boolean isPlayerView(int position){
+        return position == TYPE_PLAYER;
+    }
+
+    private boolean isStanzaView(int position){
+        return position == TYPE_STANZA;
+    }
+
+    @Override
     public PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        FrameLayout viewGroup = new FrameLayout(parent.getContext());
+       /* FrameLayout viewGroup = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams viewGroupLayoutParams =
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.WRAP_CONTENT);
         viewGroup.setLayoutParams(viewGroupLayoutParams);
-        return new PageViewHolder(viewGroup);
+        return new PageViewHolder(viewGroup);*/
+        return new PageViewHolder(childViews.get(viewType));
     }
 
     @Override
     public void onBindViewHolder(PageViewHolder holder, int position) {
-        try {
+       /* try {
             holder.parent.removeAllViews();
             holder.parent.addView(childViews.get(position));
         } catch (Exception e) {
 
-        }
+        }*/
+       if (childViews.get(position).findViewById(R.id.video_player_id) !=null){
+           TYPE_PLAYER=position;
+       }
     }
 
     @Override

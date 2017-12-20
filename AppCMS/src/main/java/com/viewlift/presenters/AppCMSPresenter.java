@@ -264,6 +264,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1716,6 +1717,11 @@ public class AppCMSPresenter {
                                 screenName.append(currentActivity.getString(
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
+                                //Todo need to manage it depend on PP
+                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar)){
+                                    appbarPresent = true;
+                                    navbarPresent = true;
+                                }
                                 break;
 
                             case DRAGGABLE_VIDEO_PAGE:
@@ -6943,6 +6949,17 @@ public class AppCMSPresenter {
                     pageId.contains(navigationPrimary.getPageId()) &&
                     !isViewPlanPage(pageId)) {
                 return true;
+            }else if (navigationPrimary.getItems() !=null) {
+                for (NavigationPrimary item : navigationPrimary.getItems()) {
+                    if (pageId != null &&
+                            item != null &&
+                            !TextUtils.isEmpty(item.getPageId()) &&
+                            !TextUtils.isEmpty(pageId) &&
+                            pageId.contains(item.getPageId()) &&
+                            !isViewPlanPage(pageId)) {
+                        return true;
+                    }
+                }
             }
         }
 
@@ -7108,7 +7125,7 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
 
-                    if (currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template")) {
+                    if (isSportsTemplate()) {
 
                         message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
                         if (subscriptionFlowContent != null &&
@@ -7125,7 +7142,7 @@ public class AppCMSPresenter {
                 if (dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
                     title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
 
-                    if (currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template")) {
+                    if (isSportsTemplate()) {
                         message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
                         if (subscriptionFlowContent != null &&
                                 subscriptionFlowContent.getOverlayMessage() != null &&
@@ -7231,7 +7248,7 @@ public class AppCMSPresenter {
                                 Integer.toHexString(textColor).substring(2),
                                 message)));
 
-                if ((dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) && currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template")) {
+                if ((dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) && isSportsTemplate()) {
                     builder.setPositiveButton(R.string.app_cms_login_button_text,
                             (dialog, which) -> {
                                 try {
@@ -9107,9 +9124,9 @@ public class AppCMSPresenter {
                                          ExtraScreenType extraScreenType) {
         if (activity != null) {
             /*FIX for MSEAN-1324*/
-            if (getTabBarUIFooterModule() != null && getTabBarUIFooterModule().getSettings() != null) {
+            /*if (getTabBarUIFooterModule() != null && getTabBarUIFooterModule().getSettings() != null) {
                 appbarPresent = appbarPresent == false ? getTabBarUIFooterModule().getSettings().isShowTabBar() : true;
-            }
+            }*/
             Bundle args = new Bundle();
             AppCMSBinder appCMSBinder = getAppCMSBinder(activity,
                     appCMSPageUI,
@@ -11817,7 +11834,7 @@ public class AppCMSPresenter {
                     canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
                 }
 
-                int tintColor = Color.parseColor((appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                int tintColor = Color.parseColor((appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
                 paint.setColor(tintColor);
                 paint.setStrokeWidth(iv2.getWidth() / 10);
                 paint.setStyle(Paint.Style.FILL);
@@ -12285,9 +12302,7 @@ public class AppCMSPresenter {
             relativeLayoutPIP.init();
         }
         relativeLayoutPIP.setVisibility(View.VISIBLE);
-        /*relativeLayoutPIP.getRelativeLayoutEvent().setOnClickListener(v -> {
-            ((RecyclerView) scrollView).smoothScrollToPosition(0);
-        });*/
+
         if (relativeLayoutPIP.getParent() == null) {
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
         }
@@ -12611,5 +12626,75 @@ public class AppCMSPresenter {
 
     public void setLoginPagePassword(String loginPagePassword) {
         this.loginPagePassword = loginPagePassword;
+    }
+
+    public String getLastWatchedTime(ContentDatum contentDatum) {
+        long currentTime = System.currentTimeMillis();
+        long lastWatched = contentDatum.getGist().getUpdateDate();
+
+        if (currentTime == 0) {
+            lastWatched = 0;
+        }
+
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(currentTime - lastWatched);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);
+        long hours = TimeUnit.MILLISECONDS.toHours(currentTime - lastWatched);
+        long days = TimeUnit.MILLISECONDS.toDays(currentTime - lastWatched);
+
+        int weeks = (int) ((currentTime - lastWatched) / (1000 * 60 * 60 * 24 * 7));
+        int months = (weeks / 4);
+        int years = months / 12;
+
+        String lastWatchedMessage = "";
+
+        if (years > 0) {
+            if (years > 1) {
+                lastWatchedMessage = years + " years ago";
+            } else {
+                lastWatchedMessage = years + " year ago";
+            }
+        } else if (months > 0 && months < 12) {
+            if (months > 1) {
+                lastWatchedMessage = months + " months ago";
+            } else {
+                lastWatchedMessage = months + " month ago";
+            }
+        } else if (weeks > 0 && weeks < 4) {
+            if (weeks > 1) {
+                lastWatchedMessage = weeks + " weeks ago";
+            } else {
+                lastWatchedMessage = weeks + " week ago";
+            }
+        } else if (days > 0 && days < 6) {
+            if (days > 1) {
+                lastWatchedMessage = days + " days ago";
+            } else {
+                lastWatchedMessage = days + " day ago";
+            }
+        } else if (hours > 0 && hours < 24) {
+            if (hours > 1) {
+                lastWatchedMessage = hours + " hours ago";
+            } else {
+                lastWatchedMessage = hours + " hour ago";
+            }
+        } else if (minutes > 0 && minutes < 60) {
+            if (minutes > 1) {
+                lastWatchedMessage = minutes + " mins ago";
+            } else {
+                lastWatchedMessage = minutes + " min ago";
+            }
+        } else if (seconds < 60) {
+            if (seconds > 3) {
+                lastWatchedMessage = seconds + " secs ago";
+            } else {
+                lastWatchedMessage = "Just now";
+            }
+        }
+
+        return lastWatchedMessage;
+    }
+
+    public Boolean isSportsTemplate() {
+        return currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template");
     }
 }

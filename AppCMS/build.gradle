@@ -1,13 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.viewlift.hoichoi'
-def final customApplicationId = 'Hoichoi'
-def final hostName = "www.hoichoi.tv"
-def final hostNameSuffix = "*.hoichoi.tv"
+def final packageName = 'com.mse.monumentalnetworks'
+def final customApplicationId = 'Monumental Sports Network'
+def final hostName = "mse.viewlift.com"
+def final hostNameSuffix = "*.mse.viewlift.com"
 
-
-def final appVersionName = "2.1.42"
+def final appVersionName = "2.0.59"
 
 buildscript {
     repositories {

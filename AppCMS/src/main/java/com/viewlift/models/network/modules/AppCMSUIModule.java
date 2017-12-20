@@ -652,6 +652,21 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_DELETE_HISTORY_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_table_background_view),
                 AppCMSUIKeyType.PAGE_GRID_BACKGROUND);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_duration_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_description_key),
+                AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_description_key),
+                AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_duration_key),
+                AppCMSUIKeyType.PAGE_HISTORY_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_watched_time_key),
+                AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_delete_download_key),
+                AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_size_key),
+                AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
@@ -811,6 +826,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_publishdate_key),
                 AppCMSUIKeyType.PAGE_VIDEO_PUBLISHDATE_KEY);
+
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_delete_single_download_action),
+                AppCMSActionType.DELETE_SINGLE_DOWNLOAD_ITEM);
     }
 
     @Provides

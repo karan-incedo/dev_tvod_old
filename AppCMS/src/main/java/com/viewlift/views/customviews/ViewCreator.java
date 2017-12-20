@@ -81,6 +81,7 @@ import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
+import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.utilities.ImageUtils;
@@ -1709,23 +1710,48 @@ public class ViewCreator {
                                     false,
                                     false);
 
-                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-                            collectionGridItemViewCreator,
-                            moduleAPI != null ? moduleAPI.getContentData() : null,
-                            component.getComponents(),
+//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
+//                            collectionGridItemViewCreator,
+//                            moduleAPI != null ? moduleAPI.getContentData() : null,
+//                            component.getComponents(),
+//                            appCMSPresenter,
+//                            jsonValueKeyMap,
+//                            viewType,
+//                            (RecyclerView) componentViewResult.componentView);
+//
+//                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
+//                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
+//
+//                    if (pageView != null) {
+//                        pageView.addListWithAdapter(new ListWithAdapter.Builder()
+//                                .adapter(appCMSTrayItemAdapter)
+//                                .listview((RecyclerView) componentViewResult.componentView)
+//                                .id(moduleId + component.getKey())
+//                                .build());
+//                    }
+//                }
+                    AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
+                            this,
                             appCMSPresenter,
+                            settings,
+                            component.getLayout(),
+                            false,
+                            component,
                             jsonValueKeyMap,
+                            moduleAPI,
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
-                            (RecyclerView) componentViewResult.componentView);
+                            appCMSAndroidModules);
 
 
-                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
-                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
+                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSUserWatHisDowAdapter);
+                    componentViewResult.onInternalEvent = appCMSUserWatHisDowAdapter;
                     componentViewResult.onInternalEvent.setModuleId(moduleId);
-
                     if (pageView != null) {
                         pageView.addListWithAdapter(new ListWithAdapter.Builder()
-                                .adapter(appCMSTrayItemAdapter)
+                                .adapter(appCMSUserWatHisDowAdapter)
                                 .listview((RecyclerView) componentViewResult.componentView)
                                 .id(moduleId + component.getKey())
                                 .build());
@@ -2126,7 +2152,8 @@ public class ViewCreator {
                         componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
                     componentViewResult.componentView = new ResponsiveButton(context);
                 } else if (componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
-                        componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) {
+                        componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY&&
+                        componentKey != AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY) {
                     componentViewResult.componentView = new Button(context);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {
                     componentViewResult.componentView = new Switch(context);
@@ -2258,9 +2285,12 @@ public class ViewCreator {
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         break;
+                    case PAGE_DELETE_DOWNLOAD_KEY:
                     case PAGE_DELETE_WATCHLIST_KEY:
                     case PAGE_DELETE_HISTORY_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.ic_deleteicon));
+                        componentViewResult.componentView.getBackground().setTint(tintColor);
+                        componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         break;
 
                     case PAGE_GRID_OPTION_KEY:
@@ -2483,12 +2513,6 @@ public class ViewCreator {
                         break;
 
                     case PAGE_VIDEO_CLOSE_KEY:
-                        if (appCMSPresenter != null &&
-                                appCMSPresenter.getTabBarUIFooterModule() != null &&
-                                appCMSPresenter.getTabBarUIFooterModule().getSettings() != null &&
-                                appCMSPresenter.getTabBarUIFooterModule().getSettings().isShowTabBar()) {
-                            ((ImageButton) componentViewResult.componentView).setVisibility(View.GONE);
-                        } else {
 
                             ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.cancel);
                             ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -2524,12 +2548,10 @@ public class ViewCreator {
                                         false,
                                         0,
                                         null)) {
-                                    //Log.e(TAG, "Could not launch action: " +
-//                                        " action: " +
-//                                        component.getAction());
+
                                 }
                             });
-                        }
+
                         break;
 
                     case PAGE_VIDEO_SHARE_KEY:

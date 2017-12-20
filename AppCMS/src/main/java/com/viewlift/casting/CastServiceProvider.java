@@ -138,7 +138,8 @@ public class CastServiceProvider {
             mCastHelper.onFilterRoutes(mCastHelper.routes);
             mCastHelper.isCastDeviceAvailable = mCastHelper.routes.size() > 0;
             refreshCastMediaIcon();
-            castChooserDialog.setRoutes(mCastHelper.routes);
+            if (castChooserDialog != null && mCastHelper != null && mCastHelper.routes != null){
+                castChooserDialog.setRoutes(mCastHelper.routes);}
         }
 
         @Override

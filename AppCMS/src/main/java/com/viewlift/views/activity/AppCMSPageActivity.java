@@ -976,13 +976,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.removeLruCacheItem(this, updatedAppCMSBinder.getPageId());
         }
 
-        unregisterReceiver(presenterActionReceiver);
-        unregisterReceiver(wifiConnectedReceiver);
-        unregisterReceiver(downloadReceiver);
-        unregisterReceiver(notifyUpdateListsReceiver);
-        unregisterReceiver(refreshPageDataReceiver);
-        unregisterReceiver(processDeeplinkReceiver);
-        unregisterReceiver(presenterCloseActionReceiver);
+        try {
+            unregisterReceiver(presenterActionReceiver);
+            unregisterReceiver(wifiConnectedReceiver);
+            unregisterReceiver(downloadReceiver);
+            unregisterReceiver(notifyUpdateListsReceiver);
+            unregisterReceiver(refreshPageDataReceiver);
+            unregisterReceiver(processDeeplinkReceiver);
+            unregisterReceiver(presenterCloseActionReceiver);
+        } catch (IllegalArgumentException e) {
+//            Log.e(TAG, "receiver not regiestered " + e.getMessage());
+//            e.printStackTrace();
+        }
 
 
         if (inAppBillingServiceConn != null) {
@@ -1506,7 +1511,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.videoPlayerView.pausePlayer();
                 appCMSPresenter.dismissPopupWindowPlayer(false);
             }
-
             if (appCMSPageFragment != null) {
                 fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));
@@ -1602,11 +1606,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             final Navigation navigation = appCMSBinder.getNavigation();
             //final ModuleList moduleFooter = appCMSBinder.getAppCMSPageUI() != null ? appCMSBinder.getAppCMSPageUI().getModuleList().get(appCMSBinder.getAppCMSPageUI().getModuleList().size() - 1) : null;
             final ModuleList moduleFooter = appCMSPresenter.getTabBarUIFooterModule();
-            if (moduleFooter != null &&
-                    moduleFooter.getSettings() != null &&
-                    !moduleFooter.getSettings().isShowTabBar()) {   // Setting must have value for Footer for proper implementation.
-                appCMSTabNavContainer.setVisibility(View.GONE);
-            } else if (navigation != null && navigation.getNavigationPrimary() != null &&
+            if (navigation != null && navigation.getNavigationPrimary() != null &&
                     navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {  // for the pages like Hoichoi it is Used here where we dont getting value in settings
                 appCMSTabNavContainer.setVisibility(View.GONE);
             }else {

@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
@@ -25,6 +26,7 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
     private AppCMSPresenter appCMSPresenter;
     private Context context;
     private RelativeLayout relativeLayoutEvent;
+    private int relativeLayoutEventViewId;
     private RelativeLayout.LayoutParams lpPipView;
     private RecyclerView mRecyclerView;
     private Animation animMoveRight,animMoveLeft,animMoveUp;
@@ -50,10 +52,20 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
 
     public MiniPlayerView(Context context,
                           AppCMSPresenter appCMSPresenter, final View recyclerView) {
-        this(context, appCMSPresenter);
+        super(context);
+        mRecyclerView = (RecyclerView) recyclerView;
+        miniPlayerView= this;
+        this.context = context;
+        this.appCMSPresenter = appCMSPresenter;
+        relativeLayoutEvent = new RelativeLayout(context);
+        init();
+    }
+    public void init(AppCMSPresenter appCMSPresenter,final View recyclerView) {
+        this.appCMSPresenter=appCMSPresenter;
         mRecyclerView = (RecyclerView) recyclerView;
         miniPlayerView= this;
     }
+
 
     public void init() {
 
@@ -75,12 +87,12 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
                 BaseView.dpToPx(R.dimen.app_cms_mini_player_height, context));
         lpPipView.rightMargin = BaseView.dpToPx(R.dimen.app_cms_mini_player_margin, context);
         lpPipView.bottomMargin = BaseView.dpToPx(R.dimen.app_cms_mini_player_margin, context);
-
-
+        relativeLayoutEventViewId = View.generateViewId();
+        relativeLayoutEvent.setId(relativeLayoutEventViewId);
         lpPipView.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         lpPipView.addRule(RelativeLayout.ABOVE, R.id.app_cms_tab_nav_container);
-
-
+        relativeLayoutEventViewId = View.generateViewId();
+        relativeLayoutEvent.setId(relativeLayoutEventViewId);
         GradientDrawable border = new GradientDrawable();
         border.setColor(0xFF000000); //black background
         border.setStroke(1, 0xFFFFFFFF); //white border with full opacity
@@ -104,17 +116,20 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
             appCMSPresenter.videoPlayerView.disableController();
         }
 
+
         relativeLayoutEvent.setOnTouchListener(new OnSwipeTouchListener(context) {
             public void onSwipeTop() {
                 //Toast.makeText(context, "top", Toast.LENGTH_SHORT).show();
                 mRecyclerView.smoothScrollToPosition(0);
                 relativeLayoutEvent.startAnimation(animMoveUp);
+
             }
 
             public void onSwipeRight() {
                 //Toast.makeText(context, "right", Toast.LENGTH_SHORT).show();
 
                 miniPlayerView.startAnimation(animMoveRight);
+
             }
 
             public void onSwipeLeft() {
@@ -128,12 +143,19 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
             }
 
         });
+
+        relativeLayoutEvent.setOnClickListener(v -> {
+            mRecyclerView.smoothScrollToPosition(0);
+            relativeLayoutEvent.startAnimation(animMoveUp);
+        });
         if (appCMSPresenter.videoPlayerView==null){
             setVisibility(GONE);
             return;
         }
         addView(appCMSPresenter.videoPlayerView);
-        addView(relativeLayoutEvent);
+        if (findViewById(relativeLayoutEventViewId) == null) {
+            addView(relativeLayoutEvent);
+        }
 
 
 
@@ -155,6 +177,11 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         this.relativeLayoutEvent.setVisibility(GONE);
         this.relativeLayoutEvent.setOnClickListener(null);
         this.relativeLayoutEvent = null;
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
     }
 
     @Override
