@@ -364,6 +364,7 @@ public class AppCMSPageFragment extends Fragment {
                     updateAllViews(pageViewGroup);
                     pageView.notifyAdaptersOfUpdate();
                 }
+                pageViewGroup.requestLayout();
             } catch (Exception e) {
                 //
             }
