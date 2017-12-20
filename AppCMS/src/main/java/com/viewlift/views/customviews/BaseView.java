@@ -287,6 +287,42 @@ public abstract class BaseView extends FrameLayout {
         }
     }
 
+    public static float getSavedViewWidth(Context context, Layout layout, float defaultWidth) {
+        if (context != null && layout != null) {
+            if (isTablet(context)) {
+                if (isLandscape(context)) {
+                    TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                    float width = 0.0f;
+                    if (tabletLandscape != null) {
+                        width = tabletLandscape.getSavedWidth();
+                    }
+                    if (width != -1.0f) {
+                        return DEVICE_WIDTH * (width / STANDARD_TABLET_HEIGHT_PX);
+                    }
+                } else {
+                    TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                    float width = 0.0f;
+                    if (tabletPortrait != null) {
+                        width = tabletPortrait.getSavedWidth();
+                    }
+                    if (width != -1.0f) {
+                        return DEVICE_WIDTH * (width / STANDARD_TABLET_WIDTH_PX);
+                    }
+                }
+            } else {
+                Mobile mobile = layout.getMobile();
+                float width = 0.0f;
+                if (mobile != null) {
+                    width = mobile.getSavedWidth();
+                }
+                if (width != -1.0f) {
+                    return DEVICE_WIDTH * (width / STANDARD_MOBILE_WIDTH_PX);
+                }
+            }
+        }
+        return defaultWidth;
+    }
+
     public static float getViewWidth(Context context, Layout layout, float defaultWidth) {
         if (context != null && layout != null) {
             if (isTablet(context)) {

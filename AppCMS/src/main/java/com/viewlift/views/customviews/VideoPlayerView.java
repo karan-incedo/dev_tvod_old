@@ -1214,7 +1214,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void exitFullscreenMode() {
         enableFullScreenMode();
         fullScreenMode = false;
-        appCMSPresenter.sendExitFullScreenAction();
+        appCMSPresenter.sendExitFullScreenAction(true);
     }
 
     public void enableFullScreenMode() {

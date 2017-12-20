@@ -151,6 +151,8 @@ public class CastServiceProvider {
             if (!rokuWrapper.isRokuDiscoveryTimerRunning()) {
                 //
             }
+
+            appCMSPresenter.sendChromecastDisconnectedAction();
         }
     };
     /**
@@ -479,7 +481,7 @@ public class CastServiceProvider {
 
         mMediaRouteButton.setOnClickListener(v -> {
             if (!allowFreePlay &&
-                    ((!appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) ||
+                    ((!appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserLoggedIn()) ||
                     (appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserSubscribed()))) {
                 CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
                         .getSessionManager().endCurrentSession(true);

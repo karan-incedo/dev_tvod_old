@@ -295,6 +295,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_EXIT_FULLSCREEN_ACTION = "appcms_presenter_exit_fullscreen_action";
     public static final String PRESENTER_KEEP_SCREEN_ON_ACTION = "appcms_presenter_keep_screen_on_action";
     public static final String PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION = "appcms_presenter_dont_keep_screen_on_action";
+    public static final String PRESENTER_CHROMECAST_DISCONNECTED_ACTION = "appcms_presenter_chromecast_disconnected_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -5380,9 +5381,10 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendExitFullScreenAction() {
+    public void sendExitFullScreenAction(boolean relaunchPage) {
         if (currentActivity != null) {
             Intent exitFullScreenAction = new Intent(AppCMSPresenter.PRESENTER_EXIT_FULLSCREEN_ACTION);
+            exitFullScreenAction.putExtra(currentActivity.getString(R.string.exit_fullscreen_relaunch_page_extra_key), relaunchPage);
             currentActivity.sendBroadcast(exitFullScreenAction);
         }
     }
@@ -5398,6 +5400,13 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Intent clearKeepScreenOnAction = new Intent(AppCMSPresenter.PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION);
             currentActivity.sendBroadcast(clearKeepScreenOnAction);
+        }
+    }
+
+    public void sendChromecastDisconnectedAction() {
+        if (currentActivity != null) {
+            Intent chromecastDisconnected = new Intent(AppCMSPresenter.PRESENTER_CHROMECAST_DISCONNECTED_ACTION);
+            currentActivity.sendBroadcast(chromecastDisconnected);
         }
     }
 

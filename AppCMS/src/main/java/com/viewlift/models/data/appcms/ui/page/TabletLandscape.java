@@ -69,6 +69,8 @@ public class TabletLandscape implements Serializable {
     @Expose
     float maximumWidth;
 
+    private float savedWidth;
+
     public float getYAxis() {
         return yAxis;
     }
@@ -203,5 +205,13 @@ public class TabletLandscape implements Serializable {
 
     public void setMaximumWidth(float maximumWidth) {
         this.maximumWidth = maximumWidth;
+    }
+
+    public float getSavedWidth() {
+        return savedWidth;
+    }
+
+    public void setSavedWidth(float savedWidth) {
+        this.savedWidth = savedWidth;
     }
 }

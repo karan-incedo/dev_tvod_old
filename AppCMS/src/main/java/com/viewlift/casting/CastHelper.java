@@ -789,7 +789,7 @@ public class CastHelper {
         }
     }
 
-    private RemoteMediaClient getRemoteMediaClient() {
+    public RemoteMediaClient getRemoteMediaClient() {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
         if (castSession == null || !castSession.isConnected()) {
@@ -992,6 +992,8 @@ public class CastHelper {
         }
     }
 
-
+    public String getStartingFilmId() {
+        return startingFilmId;
+    }
 }
 

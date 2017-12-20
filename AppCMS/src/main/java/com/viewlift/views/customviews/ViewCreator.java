@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -266,8 +267,9 @@ public class ViewCreator {
         }
     }
 
-    public static void startPlayer() {
-        if (videoPlayerView != null) {
+    public static void startPlayer(AppCMSPresenter presenter) {
+        if (videoPlayerView != null &&
+                !CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
             videoPlayerView.startPlayer();
         }
     }
@@ -309,6 +311,10 @@ public class ViewCreator {
     }
 
     public static void clearPlayerView() {
+        if (videoPlayerView != null) {
+            videoPlayerView.stopPlayer();
+            videoPlayerView.releasePlayer();
+        }
         videoPlayerView = null;
     }
 
@@ -369,10 +375,8 @@ public class ViewCreator {
 
         if (resetWatchTime) {
             videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
-            videoPlayerContent.videoPlayTime = watchedTime;
         } else if (0L < currentWatchedTime) {
             videoPlayerView.getPlayerView().getPlayer().seekTo(currentWatchedTime);
-            videoPlayerContent.videoPlayTime = currentWatchedTime;
         }
 
         videoPlayerView.setOnPlayerStateChanged(playerState -> {
@@ -446,7 +450,8 @@ public class ViewCreator {
                 pageViewAncestor.openViewInFullScreen(videoPlayerView,
                         (ViewGroup) videoPlayerView.getParent());
                 videoPlayerView.showChromecastLiveVideoPlayer(true);
-                if (videoPlayerView.shouldPlayOnReattach()) {
+                if (videoPlayerView.shouldPlayOnReattach() &&
+                        !CastServiceProvider.getInstance(activity).isCastingConnected()) {
                     videoPlayerView.startPlayer();
                 } else {
                     videoPlayerView.resumePlayer();
@@ -460,14 +465,15 @@ public class ViewCreator {
         }
     }
 
-    public static void closeFullScreenVideoPlayer() {
+    public static void closeFullScreenVideoPlayer(Activity activity) {
         if (videoPlayerView != null) {
             PageView pageViewAncestor = videoPlayerView.getPageView();
             if (pageViewAncestor != null) {
                 pageViewAncestor.closeViewFromFullScreen(videoPlayerView,
                         (ViewGroup) videoPlayerView.getParent());
                 videoPlayerView.showChromecastLiveVideoPlayer(false);
-                if (videoPlayerView.shouldPlayOnReattach()) {
+                if (videoPlayerView.shouldPlayOnReattach() &&
+                        !CastServiceProvider.getInstance(activity).isCastingConnected()) {
                     videoPlayerView.startPlayer();
                 } else {
                     videoPlayerView.resumePlayer();
@@ -2520,34 +2526,35 @@ public class ViewCreator {
                                 BaseView.isTablet(context)) {
 
                             if (!component.isWidthModified()) {
-                                component.getLayout().getTabletLandscape().setXAxis(component.getLayout().getTabletLandscape().getXAxis() - 40.0f);
+                                component.getLayout().getTabletLandscape().setSavedWidth(component.getLayout().getTabletLandscape().getWidth());
+                                component.getLayout().getTabletLandscape().setXAxis(component.getLayout().getTabletLandscape().getXAxis() -
+                                        (component.getLayout().getTabletLandscape().getWidth() + 12));
                                 component.getLayout().getTabletLandscape().setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-                                component.getLayout().getTabletLandscape().setHeight(32.0f);
-                                component.getLayout().getTabletPortrait().setXAxis(component.getLayout().getTabletPortrait().getXAxis() - 44.0f);
+                                component.getLayout().getTabletPortrait().setSavedWidth(component.getLayout().getTabletPortrait().getWidth());
+                                component.getLayout().getTabletPortrait().setXAxis(component.getLayout().getTabletPortrait().getXAxis() -
+                                        (component.getLayout().getTabletPortrait().getWidth() + 12));
                                 component.getLayout().getTabletPortrait().setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-                                component.getLayout().getTabletPortrait().setHeight(32.0f);
                                 component.setWidthModified(true);
                             }
 
                             ImageButton addToWatchListButton = (ImageButton) componentViewResult.componentView;
                             LinearLayout.LayoutParams addToWatchListButtonLayoutParams =
-                                    new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(36, context),
-                                            (int) BaseView.convertDpToPixel(36, context));
+                                    new LinearLayout.LayoutParams((int) BaseView.getSavedViewWidth(context, component.getLayout(), 36),
+                                            ViewGroup.LayoutParams.MATCH_PARENT);
                             addToWatchListButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                             addToWatchListButton.setLayoutParams(addToWatchListButtonLayoutParams);
+                            addToWatchListButton.setPadding(6, 6, 6, 6);
+                            addToWatchListButton.setScaleType(ImageView.ScaleType.FIT_XY);
 
                             componentViewResult.componentView = new LinearLayout(context);
                             ((LinearLayout) componentViewResult.componentView).setOrientation(LinearLayout.HORIZONTAL);
-
-                            addToWatchListButton.setPadding(6, 6, 6, 6);
-                            addToWatchListButton.setScaleType(ImageView.ScaleType.FIT_XY);
 
                             ImageButton mMediaRouteButton = appCMSPresenter.getCurrentMediaRouteButton();
                             if (mMediaRouteButton != null) {
                                 mMediaRouteButton.setImageResource(R.drawable.anim_cast);
                                 LinearLayout.LayoutParams mMediaRouteButtonLayoutParams =
-                                        new LinearLayout.LayoutParams((int) BaseView.convertDpToPixel(36, context),
-                                                (int) BaseView.convertDpToPixel(36, context));
+                                        new LinearLayout.LayoutParams((int) BaseView.getSavedViewWidth(context, component.getLayout(), 36),
+                                                ViewGroup.LayoutParams.MATCH_PARENT);
                                 mMediaRouteButtonLayoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
                                 mMediaRouteButton.setLayoutParams(mMediaRouteButtonLayoutParams);
                                 mMediaRouteButton.setPadding(6, 6, 6, 6);
@@ -4422,19 +4429,30 @@ public class ViewCreator {
             castProvider.setAllowFreePlay(allowFreePlay);
 
             CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
-                videoPlayerView.pausePlayer();
-                long castPlayPosition = watchedTime * 1000;
-                if (!isCastConnected) {
-                    castPlayPosition = videoPlayerView.getCurrentPosition();
-                }
+                CastHelper castHelper = CastHelper.getInstance(appCMSPresenter.getCurrentActivity());
+                if ((castHelper.getRemoteMediaClient() != null &&
+                        !castHelper.getRemoteMediaClient().isPlaying()) ||
+                        (castHelper.getStartingFilmId() != null &&
+                        !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId())) ||
+                        castHelper.getStartingFilmId() == null) {
 
-                CastHelper.getInstance(appCMSPresenter.getCurrentActivity()).launchRemoteMedia(appCMSPresenter,
-                        videoPlayerViewBinder.getRelateVideoIds(),
-                        videoPlayerViewBinder.getContentData().getGist().getId(),
-                        castPlayPosition,
-                        videoPlayerViewBinder,
-                        true,
-                        null);
+                    if (videoPlayerView != null && videoPlayerViewBinder != null) {
+                        videoPlayerView.pausePlayer();
+                        long castPlayPosition = watchedTime * 1000;
+                        if (!isCastConnected) {
+                            castPlayPosition = videoPlayerView.getCurrentPosition();
+                        }
+
+                        castHelper.launchRemoteMedia(appCMSPresenter,
+                                videoPlayerViewBinder.getRelateVideoIds(),
+                                videoPlayerViewBinder.getContentData().getGist().getId(),
+                                castPlayPosition,
+                                videoPlayerViewBinder,
+                                true,
+                                null);
+                        appCMSPresenter.sendExitFullScreenAction(false);
+                    }
+                }
             };
 
             castProvider.setActivityInstance((FragmentActivity) appCMSPresenter.getCurrentActivity(),

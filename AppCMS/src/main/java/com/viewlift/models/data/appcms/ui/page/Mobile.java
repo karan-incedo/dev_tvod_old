@@ -85,6 +85,8 @@ public class Mobile implements Serializable {
     @Expose
     float maximumWidth;
 
+    private float savedWidth;
+
     public float getWidth() {
         return width;
     }
@@ -263,5 +265,13 @@ public class Mobile implements Serializable {
 
     public void setMaximumWidth(float maximumWidth) {
         this.maximumWidth = maximumWidth;
+    }
+
+    public float getSavedWidth() {
+        return savedWidth;
+    }
+
+    public void setSavedWidth(float savedWidth) {
+        this.savedWidth = savedWidth;
     }
 }

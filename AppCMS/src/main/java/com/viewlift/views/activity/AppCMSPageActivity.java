@@ -204,6 +204,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver exitFullScreenReceiver;
     private BroadcastReceiver keepScreenOnReceiver;
     private BroadcastReceiver clearKeepScreenOnReceiver;
+    private BroadcastReceiver chromecastDisconnectedReceiver;
 
     private boolean resumeInternalEvents;
     private boolean isActive;
@@ -373,7 +374,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         exitFullScreenReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                exitFullScreenVideoPlayer(true);
+                boolean relaunchPage = intent.getBooleanExtra(getString(R.string.exit_fullscreen_relaunch_page_extra_key), true);
+                exitFullScreenVideoPlayer(relaunchPage);
             }
         };
 
@@ -513,6 +515,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             @Override
             public void onReceive(Context context, Intent intent) {
                 clearKeepScreenOn();
+            }
+        };
+
+        chromecastDisconnectedReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                ViewCreator.clearPlayerView();
+                handleLaunchPageAction(updatedAppCMSBinder,
+                        false,
+                        false,
+                        false);
             }
         };
 
@@ -908,6 +921,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     new IntentFilter(AppCMSPresenter.PRESENTER_KEEP_SCREEN_ON_ACTION));
             registerReceiver(clearKeepScreenOnReceiver,
                     new IntentFilter(AppCMSPresenter.PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION));
+            registerReceiver(chromecastDisconnectedReceiver,
+                    new IntentFilter(AppCMSPresenter.PRESENTER_CHROMECAST_DISCONNECTED_ACTION));
         } catch (Exception e) {
             //
         }
@@ -964,24 +979,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                 updatedAppCMSBinder != null &&
-                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) &&
-                !CastServiceProvider.getInstance(this).isCastingConnected()) {
-            if (!BaseView.isTablet(this)) {
-                if (BaseView.isLandscape(this) ||
-                        ViewCreator.playerViewFullScreenEnabled()) {
-                    enterFullScreenVideoPlayer();
+                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+            if (!CastServiceProvider.getInstance(this).isCastingConnected()) {
+                if (!BaseView.isTablet(this)) {
+                    if (BaseView.isLandscape(this) ||
+                            ViewCreator.playerViewFullScreenEnabled()) {
+                        enterFullScreenVideoPlayer();
+                    } else {
+                        exitFullScreenVideoPlayer(true);
+                    }
                 } else {
-                    exitFullScreenVideoPlayer(true);
+                    if (ViewCreator.playerViewFullScreenEnabled()) {
+                        enterFullScreenVideoPlayer();
+                    } else {
+                        ViewCreator.enableFullScreenMode();
+                    }
                 }
-            } else {
-                if (ViewCreator.playerViewFullScreenEnabled()) {
-                    enterFullScreenVideoPlayer();
-                } else {
-                    ViewCreator.enableFullScreenMode();
-                }
-            }
 
-            ViewCreator.resumePlayer(appCMSPresenter, this);
+                ViewCreator.resumePlayer(appCMSPresenter, this);
+            } else {
+                ViewCreator.pausePlayer();
+            }
         }
     }
 
@@ -1031,6 +1049,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(exitFullScreenReceiver);
             unregisterReceiver(keepScreenOnReceiver);
             unregisterReceiver(clearKeepScreenOnReceiver);
+            unregisterReceiver(chromecastDisconnectedReceiver);
         } catch (Exception e) {
             //
         }
@@ -1375,7 +1394,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (BaseView.isTablet(this)) {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-        ViewCreator.closeFullScreenVideoPlayer();
+        ViewCreator.closeFullScreenVideoPlayer(this);
         if (launchPage) {
             handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
         }
@@ -2720,7 +2739,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             case AudioManager.AUDIOFOCUS_GAIN:
                 if (ViewCreator.shouldPlayVideoWhenReady()) {
-                    ViewCreator.startPlayer();
+                    ViewCreator.startPlayer(appCMSPresenter);
                 } else {
                     ViewCreator.pausePlayer();
                 }
