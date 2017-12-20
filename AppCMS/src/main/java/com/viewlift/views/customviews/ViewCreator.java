@@ -407,7 +407,14 @@ public class ViewCreator {
 
     private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
                                          ContentDatum contentDatum) {
-        if (!ignoreBinderUpdate) {
+        if (!ignoreBinderUpdate ||
+                (videoPlayerViewBinder != null &&
+                        videoPlayerViewBinder.getContentData() != null &&
+                        videoPlayerViewBinder.getContentData().getGist() != null &&
+                        videoPlayerViewBinder.getContentData().getGist().getId() != null &&
+                        contentDatum != null &&
+                        contentDatum.getGist() != null &&
+                        !videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId()))) {
             if (videoPlayerViewBinder == null) {
                 videoPlayerViewBinder =
                         appCMSPresenter.getDefaultAppCMSVideoPageBinder(contentDatum,
@@ -4433,11 +4440,12 @@ public class ViewCreator {
                 if ((castHelper.getRemoteMediaClient() != null &&
                         !castHelper.getRemoteMediaClient().isPlaying()) ||
                         (castHelper.getStartingFilmId() != null &&
-                        !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId())) ||
-                        castHelper.getStartingFilmId() == null) {
+                        !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId()))) {
 
-                    if (videoPlayerView != null && videoPlayerViewBinder != null) {
-                        videoPlayerView.pausePlayer();
+                    if (videoPlayerViewBinder != null) {
+                        if (videoPlayerView != null) {
+                            videoPlayerView.pausePlayer();
+                        }
                         long castPlayPosition = watchedTime * 1000;
                         if (!isCastConnected) {
                             castPlayPosition = videoPlayerView.getCurrentPosition();
