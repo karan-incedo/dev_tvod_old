@@ -7,7 +7,7 @@ def final hostName = "failarmy.viewlift.com"
 def final hostNameSuffix = "*.failarmy.viewlift.com"
 
 
-def final appVersionName = "0.0.21"
+def final appVersionName = "0.0.23"
 
 buildscript {
     repositories {
@@ -39,7 +39,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 21
+        versionCode 23
 
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
