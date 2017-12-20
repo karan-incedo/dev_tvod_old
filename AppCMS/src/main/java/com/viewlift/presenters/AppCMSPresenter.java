@@ -574,10 +574,14 @@ public class AppCMSPresenter {
                 @Override
                 public void addToWatchListClick(boolean isAddedOrNot, ContentDatum contentDatum) {
                     // ADD WATCHLIST API CALLING
-                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                    Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                    pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                    currentActivity.sendBroadcast(pageLoadingActionIntent);
                     if (isUserLoggedIn()) {
                         editWatchlist(contentDatum.getId(), appCMSAddToWatchlistResult -> {
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                             Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
                         }, isAddedOrNot);
                     } else {
@@ -586,7 +590,9 @@ public class AppCMSPresenter {
                         } else {
                             showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED, null);
                         }
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                     }
                 }
 
@@ -1181,6 +1187,7 @@ public class AppCMSPresenter {
 
     private void sendUpdateHistoryAction() {
         Intent updateHistoryIntent = new Intent(PRESENTER_UPDATE_HISTORY_ACTION);
+        updateHistoryIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
         currentActivity.sendBroadcast(updateHistoryIntent);
     }
 
@@ -1316,11 +1323,14 @@ public class AppCMSPresenter {
         final AppCMSActionType actionType = actionToActionTypeMap.get(actionPresenter.getAction());
         if ((actionType == AppCMSActionType.OPEN_OPTION_DIALOG)) {
 
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(pageLoadingActionIntent);
 
             getUserVideoStatus(contentDatum.getGist().getId(), userVideoStatusResponse -> {
-
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                 AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(), contentDatum);
                 appCMSTrayMenuDialogFragment.show(currentActivity.getFragmentManager(), "AppCMSTrayMenuDialogFragment");
                 appCMSTrayMenuDialogFragment.setMoreClickListener(trayMenuClickListener);
@@ -1526,7 +1536,9 @@ public class AppCMSPresenter {
                                 appCMSVideoPageBinder);
                         playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
                         playVideoIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                         currentActivity.startActivity(playVideoIntent);
                     } else {
                         entitlementPendingVideoData = new EntitlementPendingVideoData();
@@ -1539,8 +1551,9 @@ public class AppCMSPresenter {
                         entitlementPendingVideoData.extraData = extraData;
                         entitlementPendingVideoData.relateVideoIds = relateVideoIds;
                         isVideoPlayerStarted = false;
-
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                     }
                 } else if (actionType == AppCMSActionType.SHARE) {
                     if (extraData.length > 0) {
@@ -1552,8 +1565,9 @@ public class AppCMSPresenter {
                                 currentActivity.getResources().getText(R.string.send_to));
                         chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         currentActivity.startActivity(chooserIntent);
-
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                     }
                 } else if (actionType == AppCMSActionType.CLOSE) {
                     if (!BaseView.isTablet(currentContext)) {
@@ -1727,8 +1741,9 @@ public class AppCMSPresenter {
                                 siteId,
                                 pagePath);
 
-                        currentActivity.sendBroadcast(new Intent(
-                                AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                        Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                        pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(pageLoadingActionIntent);
                         AppCMSPageUI appCMSPageUI = actionToPageMap.get(actionPresenter.getAction());
                         if (appCMSPageUI != null) {
                             int finalCurrentlyPlayingIndex1 = currentlyPlayingIndex;
@@ -1776,8 +1791,12 @@ public class AppCMSPresenter {
                                                     updatePageIntent.putExtra(
                                                             currentActivity.getString(R.string.app_cms_bundle_key),
                                                             args);
+                                                    updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                                     currentActivity.sendBroadcast(updatePageIntent);
-                                                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+
+                                                    Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                                    stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                                    currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                                                 }
                                                 launched = true;
                                             } else {
@@ -1863,6 +1882,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
 
@@ -1932,6 +1952,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
 
@@ -2180,6 +2201,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
         }
@@ -2219,6 +2241,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
         }
@@ -2250,6 +2273,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
         }
@@ -2279,6 +2303,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
         }
@@ -2308,6 +2333,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
             }
         }
@@ -2320,6 +2346,7 @@ public class AppCMSPresenter {
             LoginManager.getInstance().logOut();
             Intent pageLoadingIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
             pageLoadingIntent.putExtra(currentActivity.getString(R.string.thrid_party_login_intent_extra_key), true);
+            pageLoadingIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(pageLoadingIntent);
             LoginManager.getInstance().logInWithReadPermissions(currentActivity,
                     Arrays.asList("public_profile", "email", "user_friends"));
@@ -2334,6 +2361,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Intent pageLoadingIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
             pageLoadingIntent.putExtra(currentActivity.getString(R.string.thrid_party_login_intent_extra_key), true);
+            pageLoadingIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(pageLoadingIntent);
 
             isSignupFromGoogle = true;
@@ -2622,7 +2650,9 @@ public class AppCMSPresenter {
         try {
             SubscriptionRequest subscriptionRequest = new SubscriptionRequest();
             subscriptionRequest.setReferenceNo(referenceNo);
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(pageLoadingActionIntent);
             appCMSSubscriptionPlanCall.call(
                     currentActivity.getString(R.string.app_cms_ccavenue_is_plan_upgradable_url,
                             appCMSMain.getApiBaseUrl(),
@@ -2667,7 +2697,9 @@ public class AppCMSPresenter {
         subscriptionRequest.setPlanId(planToPurchase);
         subscriptionRequest.setUserId(getLoggedInUser());
         subscriptionRequest.setReceipt(getActiveSubscriptionReceipt());
-        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+        Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+        pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+        currentActivity.sendBroadcast(pageLoadingActionIntent);
         try {
             appCMSSubscriptionPlanCall.call(
                     currentActivity.getString(R.string.app_cms_register_subscription_api_url,
@@ -2928,7 +2960,9 @@ public class AppCMSPresenter {
 
                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall, null).deleteAll(() -> {
                     if (currentActivity != null && sendRefreshPageDataAction) {
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+                        Intent refreshPageDataActionIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION);
+                        refreshPageDataActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(refreshPageDataActionIntent);
                     }
                     if (onRefreshFinished != null) {
                         onRefreshFinished.call();
@@ -3065,8 +3099,9 @@ public class AppCMSPresenter {
     }
 
     private void removeDownloadAndLogout() {
-        getCurrentActivity()
-                .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+        Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+        pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+        getCurrentActivity().sendBroadcast(pageLoadingActionIntent);
         for (DownloadVideoRealm downloadVideoRealm :
                 realmController.getAllUnfinishedDownloades(getLoggedInUser())) {
             removeDownloadedFile(downloadVideoRealm.getVideoId());
@@ -3715,6 +3750,7 @@ public class AppCMSPresenter {
     public void notifyDownloadHasCompleted() {
         if (currentActivity != null) {
             Intent notifiyDownloadHasCompleted = new Intent(PRESENTER_UPDATE_LISTS_ACTION);
+            notifiyDownloadHasCompleted.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(notifiyDownloadHasCompleted);
         }
     }
@@ -3989,13 +4025,16 @@ public class AppCMSPresenter {
                                         new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                                 updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                         args);
+                                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                 currentActivity.sendBroadcast(updatePageIntent);
                                 dismissOpenDialogs(null);
                             }
                         }
 
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                                .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter
+                                .PRESENTER_STOP_PAGE_LOADING_ACTION);
+                        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                     }
                 }
             }
@@ -4037,6 +4076,7 @@ public class AppCMSPresenter {
                                 new Intent(AppCMSPresenter
                                         .PRESENTER_NAVIGATE_ACTION);
                         downloadPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
+                        downloadPageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                         currentActivity.sendBroadcast(downloadPageIntent);
                     }
                 }
@@ -4246,6 +4286,7 @@ public class AppCMSPresenter {
                 bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                 Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                 args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(args);
                 return;
             }
@@ -4324,12 +4365,15 @@ public class AppCMSPresenter {
                                                     .PRESENTER_NAVIGATE_ACTION);
                                     watchlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                             args);
+                                    watchlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                     currentActivity.sendBroadcast(watchlistPageIntent);
                                 }
                             }
 
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                                    .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter
+                                    .PRESENTER_STOP_PAGE_LOADING_ACTION);
+                            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
 
                         }
                     });
@@ -4511,6 +4555,7 @@ public class AppCMSPresenter {
                 bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                 Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                 args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(args);
                 return;
             }
@@ -4591,12 +4636,15 @@ public class AppCMSPresenter {
                                                     .PRESENTER_NAVIGATE_ACTION);
                                     historyPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                             args);
+                                    historyPageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                     currentActivity.sendBroadcast(historyPageIntent);
                                 }
                             }
 
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                                    .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter
+                                    .PRESENTER_STOP_PAGE_LOADING_ACTION);
+                            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                         }
                     });
         }
@@ -4941,6 +4989,7 @@ public class AppCMSPresenter {
                 bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                 Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                 args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(args);
                 return;
             }
@@ -5004,6 +5053,7 @@ public class AppCMSPresenter {
 
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(args);
         } catch (Exception e) {
             //Log.e(TAG, "DialogType launching TV DialogType Activity");
@@ -5075,14 +5125,17 @@ public class AppCMSPresenter {
                     userIdentity.setEmail(email);
                     userIdentity.setId(getLoggedInUser());
                     userIdentity.setPassword(password);
-                    currentActivity
-                            .sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                    Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                    pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                    currentActivity.sendBroadcast(pageLoadingActionIntent);
                     appCMSUserIdentityCall.callPost(url,
                             getAuthToken(),
                             userIdentity,
                             userIdentityResult -> {
                                 sendCloseOthersAction(null, true, false);
-                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                                 try {
                                     if (userIdentityResult != null) {
                                         setLoggedInUserName(userIdentityResult.getName());
@@ -5096,7 +5149,9 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error get user identity data: " + e.getMessage());
                                 }
                             }, errorBody -> {
-                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                                 try {
                                     UserIdentity userIdentityError = gson.fromJson(errorBody.string(),
                                             UserIdentity.class);
@@ -5126,11 +5181,15 @@ public class AppCMSPresenter {
             userIdentityPassword.setResetToken(getAuthToken());
             userIdentityPassword.setOldPassword(oldPassword);
             userIdentityPassword.setNewPassword(newPassword);
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(pageLoadingActionIntent);
             appCMSUserIdentityCall.passwordPost(url,
                     getAuthToken(), userIdentityPassword,
                     userIdentityPasswordResult -> {
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                         try {
                             if (userIdentityPasswordResult != null) {
                                 showToast("Password Changed Successfully", Toast.LENGTH_LONG);
@@ -5140,7 +5199,9 @@ public class AppCMSPresenter {
                             //Log.e(TAG, "Error retrieving user password reset result: " + e.getMessage());
                         }
                     }, errorBody -> {
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                         try {
                             UserIdentityPassword userIdentityError = gson.fromJson(errorBody.string(),
                                     UserIdentityPassword.class);
@@ -5241,7 +5302,9 @@ public class AppCMSPresenter {
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             if (appCMSPageUI != null) {
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(pageLoadingActionIntent);
 
                 AppCMSPageAPI appCMSPageAPI = null;
                 if (platformType == PlatformType.ANDROID) {
@@ -5292,6 +5355,7 @@ public class AppCMSPresenter {
                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                         updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                 args);
+                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                         currentActivity.sendBroadcast(updatePageIntent);
                         dismissOpenDialogs(null);
                     }
@@ -5311,7 +5375,9 @@ public class AppCMSPresenter {
                         cancelInternalEvents();
                         restartInternalEvents();
                         navigationPageData.put(pageId, appCMSPageAPI1);
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+                        Intent refreshPageDataActionIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION);
+                        refreshPageDataActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(refreshPageDataActionIntent);
                     });
                 } else {
                     loadingPage = false;
@@ -5371,6 +5437,7 @@ public class AppCMSPresenter {
     public void sendRefreshPageAction() {
         if (currentActivity != null) {
             Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
+            refreshPageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(refreshPageIntent);
         }
     }
@@ -5388,6 +5455,7 @@ public class AppCMSPresenter {
                     closeOnePage);
             closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_closing_page_name),
                     pageName);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(closeOthersIntent);
             result = true;
         }
@@ -5397,6 +5465,7 @@ public class AppCMSPresenter {
     public void sendEnterFullScreenAction() {
         if (currentActivity != null) {
             Intent enterFullScreenAction = new Intent(AppCMSPresenter.PRESENTER_ENTER_FULLSCREEN_ACTION);
+            enterFullScreenAction.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(enterFullScreenAction);
         }
     }
@@ -5405,6 +5474,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Intent exitFullScreenAction = new Intent(AppCMSPresenter.PRESENTER_EXIT_FULLSCREEN_ACTION);
             exitFullScreenAction.putExtra(currentActivity.getString(R.string.exit_fullscreen_relaunch_page_extra_key), relaunchPage);
+            exitFullScreenAction.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(exitFullScreenAction);
         }
     }
@@ -5412,6 +5482,7 @@ public class AppCMSPresenter {
     public void sendKeepScreenOnAction() {
         if (currentActivity != null) {
             Intent keepScreenOnAction = new Intent(AppCMSPresenter.PRESENTER_KEEP_SCREEN_ON_ACTION);
+            keepScreenOnAction.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(keepScreenOnAction);
         }
     }
@@ -5419,6 +5490,7 @@ public class AppCMSPresenter {
     public void sendClearKeepScreenOnAction() {
         if (currentActivity != null) {
             Intent clearKeepScreenOnAction = new Intent(AppCMSPresenter.PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION);
+            clearKeepScreenOnAction.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(clearKeepScreenOnAction);
         }
     }
@@ -5426,6 +5498,7 @@ public class AppCMSPresenter {
     public void sendChromecastDisconnectedAction() {
         if (currentActivity != null) {
             Intent chromecastDisconnected = new Intent(AppCMSPresenter.PRESENTER_CHROMECAST_DISCONNECTED_ACTION);
+            chromecastDisconnected.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(chromecastDisconnected);
         }
     }
@@ -5436,6 +5509,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Intent deeplinkIntent = new Intent(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION);
             deeplinkIntent.putExtra(currentActivity.getString(R.string.deeplink_uri_extra_key), deeplinkUri.toString());
+            deeplinkIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(deeplinkIntent);
             result = true;
         }
@@ -5447,6 +5521,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             Intent stopLoadingPageIntent =
                     new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+            stopLoadingPageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(stopLoadingPageIntent);
             if (!isNetworkConnected() && showNetworkErrorDialog) { // Fix of SVFA-1918
                 openDownloadScreenForNetworkError(false, retryAction);
@@ -5471,6 +5546,7 @@ public class AppCMSPresenter {
                 bundle.putBoolean(currentActivity.getString(R.string.retry_key), false);
                 Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                 args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(args);
             } catch (Exception e) {
                 //Log.e(TAG, "DialogType launching TV DialogType Activity");
@@ -6174,7 +6250,9 @@ public class AppCMSPresenter {
                         if (facebookLoginResponse != null) {
                             if (!TextUtils.isEmpty(facebookLoginResponse.getError())) {
                                 showDialog(DialogType.SIGNIN, facebookLoginResponse.getError(), false, null, null);
-                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                             } else {
                                 setAuthToken(facebookLoginResponse.getAuthorizationToken());
                                 setRefreshToken(facebookLoginResponse.getRefreshToken());
@@ -6229,10 +6307,14 @@ public class AppCMSPresenter {
                         if (googleLoginResponse != null) {
                             if (!TextUtils.isEmpty(googleLoginResponse.getMessage())) {
                                 showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
-                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                             } else if (!TextUtils.isEmpty(googleLoginResponse.getError())) {
                                 showDialog(DialogType.SIGNIN, googleLoginResponse.getError(), false, null, null);
-                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                             } else {
                                 setAuthToken(googleLoginResponse.getAuthorizationToken());
                                 setRefreshToken(googleLoginResponse.getRefreshToken());
@@ -6660,6 +6742,7 @@ public class AppCMSPresenter {
             bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(args);
             return;
         }
@@ -6994,6 +7077,7 @@ public class AppCMSPresenter {
             bundle.putString(currentActivity.getString(R.string.dialog_item_description_key), fullText);
 
             args.putExtra(currentActivity.getString(R.string.dialog_item_key), bundle);
+            args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(args);
         }
     }
@@ -7005,6 +7089,7 @@ public class AppCMSPresenter {
         bundle.putString(currentActivity.getString(R.string.dialog_item_title_key), title);
         bundle.putString(currentActivity.getString(R.string.dialog_item_description_key), fullText);
         args.putExtra(currentActivity.getString(R.string.dialog_item_key), bundle);
+        args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
         currentActivity.sendBroadcast(args);
     }
 
@@ -8023,7 +8108,9 @@ public class AppCMSPresenter {
         }
 
         try {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(pageLoadingActionIntent);
             appCMSSubscriptionPlanCall.call(
                     currentActivity.getString(R.string.app_cms_register_subscription_api_url,
                             appCMSMain.getApiBaseUrl(),
@@ -8190,7 +8277,9 @@ public class AppCMSPresenter {
                     });
         } catch (IOException e) {
             //Log.e(TAG, "Failed to update user subscription status");
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+            Intent stopLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+            stopLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(stopLoadingActionIntent);
         }
     }
 
@@ -8495,7 +8584,9 @@ public class AppCMSPresenter {
 
     private void login(String email, String password) {
         if (currentActivity != null) {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(pageLoadingActionIntent);
             if (launchType != LaunchType.INIT_SIGNUP) {
                 String url = currentActivity.getString(R.string.app_cms_signin_api_url,
                         appCMSMain.getApiBaseUrl(),
@@ -8597,10 +8688,14 @@ public class AppCMSPresenter {
                                 }
 
                             }
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                         } else if (!TextUtils.isEmpty(signInResponse.getMessage()) || signInResponse.isErrorResponseSet()) {
                             if (platformType == PlatformType.TV) {
-                                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                                 try {
                                     openTVErrorDialog(signInResponse.getErrorResponse().getError(),
                                             signup ? currentActivity.getString(R.string.app_cms_signup).toUpperCase() :
@@ -8611,8 +8706,9 @@ public class AppCMSPresenter {
                             } else {
                                 showDialog(DialogType.SIGNIN, signInResponse.getErrorResponse().getError(), false, null, null);
                             }
-
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                         } else {
 //                            String signResponseValue = gson.toJson(signInResponse, SignInResponse.class);
                             //Log.d(TAG, "Sign in response value: " + signResponseValue);
@@ -8650,7 +8746,9 @@ public class AppCMSPresenter {
                         }
                     } catch (Exception e) {
                         //Log.e(TAG, "Error retrieving sign in response: " + e.getMessage());
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                        stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                        currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                     }
                 }).execute(params);
     }
@@ -8679,7 +8777,9 @@ public class AppCMSPresenter {
         if (followWithSubscription) {
             sendCloseOthersAction(null, true, false);
             initiateItemPurchase();
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
         } else {
             shouldLaunchLoginAction = true;
 
@@ -8743,6 +8843,7 @@ public class AppCMSPresenter {
                                     } else if (platformType == PlatformType.TV) {
                                         if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                            myProfileIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                             currentActivity.sendBroadcast(myProfileIntent);
                                         } else if (getLaunchType() == LaunchType.HOME) {
                                             navigateToTVPage(
@@ -8812,6 +8913,7 @@ public class AppCMSPresenter {
                             if (platformType == PlatformType.TV) {
                                 if (getLaunchType() == LaunchType.LOGIN_AND_SIGNUP) {
                                     Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
+                                    myProfileIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                     currentActivity.sendBroadcast(myProfileIntent);
                                 } else if (getLaunchType() == LaunchType.HOME) {
                                     navigateToTVPage(
@@ -8840,7 +8942,9 @@ public class AppCMSPresenter {
                     }
                 }
                 if (platformType.equals(PlatformType.ANDROID)) {
-                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                    Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                    stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                    currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                 }
             }
         }
@@ -8938,6 +9042,7 @@ public class AppCMSPresenter {
             Intent setNavigationItemIntent = new Intent(PRESENTER_RESET_NAVIGATION_ITEM_ACTION);
             setNavigationItemIntent.putExtra(activity.getString(R.string.navigation_item_key),
                     currentActions.peek());
+            setNavigationItemIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             activity.sendBroadcast(setNavigationItemIntent);
         }
     }
@@ -9078,6 +9183,7 @@ public class AppCMSPresenter {
         bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
         Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
         args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+        args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
         currentActivity.sendBroadcast(args);
     }
 
@@ -9221,7 +9327,9 @@ public class AppCMSPresenter {
                 appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 activity.startActivity(appCMSIntent);
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
             } catch (Exception e) {
                 //Log.e(TAG, "Error launching page activity: " + pageName);
                 showDialog(DialogType.NETWORK, null, false, null, null);
@@ -10175,6 +10283,7 @@ public class AppCMSPresenter {
                                 cancelInternalEvents();
 
                                 Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
+                                logoAnimIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                 currentActivity.sendBroadcast(logoAnimIntent);
 
                                 NavigationPrimary homePageNav = findHomePageNavItem();
@@ -10214,7 +10323,9 @@ public class AppCMSPresenter {
 
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
             AppCMSPageAPI appCMSPageAPI = navigationPageData.get(pageId);
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+            Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+            stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(stopPageLoadingActionIntent);
             if (forcedDownload) {
                 appCMSPageAPI = null;
                 if (null != pageId)
@@ -10235,6 +10346,7 @@ public class AppCMSPresenter {
                     bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
                     Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
                     args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+                    args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                     currentActivity.sendBroadcast(args);
                     return false;
                 }
@@ -10340,6 +10452,7 @@ public class AppCMSPresenter {
                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                         updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                 args);
+                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                         currentActivity.sendBroadcast(updatePageIntent);
                         setNavItemToCurrentAction(currentActivity);
                     }
@@ -10403,6 +10516,7 @@ public class AppCMSPresenter {
                 updatePageIntent.putExtra(
                         currentActivity.getString(R.string.app_cms_bundle_key),
                         args);
+                updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                 currentActivity.sendBroadcast(updatePageIntent);
 
                 setNavItemToCurrentAction(currentActivity);
@@ -10435,6 +10549,7 @@ public class AppCMSPresenter {
                     new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
             updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                     args);
+            updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(updatePageIntent);
             setNavItemToCurrentAction(currentActivity);
         }
@@ -10630,6 +10745,7 @@ public class AppCMSPresenter {
             bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(args);
         } else if (currentActivity != null && !loadingPage) {
             AppCMSActionType actionType = actionToActionTypeMap.get(action);
@@ -10699,7 +10815,9 @@ public class AppCMSPresenter {
                 sendCloseOthersAction(null, true, false);
             } else if (actionType == AppCMSActionType.LOGIN) {
                 //Log.d(TAG, "Login action selected: " + extraData[0]);
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(pageLoadingActionIntent);
                 //closeSoftKeyboard();
                 login(extraData[0], extraData[1]);
                 sendSignInEmailFirebase();
@@ -10713,7 +10831,9 @@ public class AppCMSPresenter {
                 sendSignInFacebookFirebase();
             } else if (actionType == AppCMSActionType.SIGNUP) {
                 //Log.d(TAG, "Sign-Up selected: " + extraData[0]);
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(pageLoadingActionIntent);
                 signup(extraData[0], extraData[1]);
                 sendSignUpEmailFirebase();
             } else {
@@ -10757,7 +10877,9 @@ public class AppCMSPresenter {
                     default:
                         break;
                 }
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(pageLoadingActionIntent);
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
 
                 String apiUrl = getApiUrl(false,
@@ -10806,6 +10928,7 @@ public class AppCMSPresenter {
                                                 new Intent(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION);
                                         updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
                                                 args);
+                                        updatePageIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                                         currentActivity.sendBroadcast(updatePageIntent);
                                     }
                                 } else {
@@ -10874,9 +10997,13 @@ public class AppCMSPresenter {
     public void showLoadingDialog(boolean showDialog) {
         if (currentActivity != null) {
             if (showDialog) {
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
+                pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(pageLoadingActionIntent);
             } else {
-                currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
+                stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+                currentActivity.sendBroadcast(stopPageLoadingActionIntent);
             }
         }
     }
@@ -11013,6 +11140,7 @@ public class AppCMSPresenter {
     @SuppressWarnings("unused")
     public void openSearch() {
         Intent searchIntent = new Intent(SEARCH_ACTION);
+        searchIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
         currentActivity.sendBroadcast(searchIntent);
     }
 
@@ -11036,6 +11164,7 @@ public class AppCMSPresenter {
             bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
             Intent args = new Intent(AppCMSPresenter.ERROR_DIALOG_ACTION);
             args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+            args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(args);
         } else if (currentActivity != null &&
                 !loadingPage && appCMSMain != null &&
@@ -11325,6 +11454,7 @@ public class AppCMSPresenter {
         args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
         bundle.putBinder(currentActivity.getString(R.string.retryCallBinderKey), retryCallBinder);
         args.putExtra(currentActivity.getString(R.string.retryCallBundleKey), bundle);
+        args.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
         currentActivity.sendBroadcast(args);
     }
 

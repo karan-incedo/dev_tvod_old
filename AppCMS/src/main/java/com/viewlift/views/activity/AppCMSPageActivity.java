@@ -268,6 +268,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         presenterActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 if (intent.getAction() != null
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION)) {
 
@@ -344,6 +355,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         processDeeplinkReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 String deeplinkUrl = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
                 if (!TextUtils.isEmpty(deeplinkUrl)) {
                     if (!isActive) {
@@ -368,6 +390,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         enterFullScreenReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
                 enterFullScreenVideoPlayer();
             }
         };
@@ -375,6 +406,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         exitFullScreenReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
                 boolean relaunchPage = intent.getBooleanExtra(getString(R.string.exit_fullscreen_relaunch_page_extra_key), true);
                 exitFullScreenVideoPlayer(relaunchPage);
             }
@@ -383,6 +423,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
                 if (intent != null && intent.getAction() != null
                         && intent.getAction().equals(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION)) {
                     boolean closeSelf = intent.getBooleanExtra(getString(R.string.close_self_key),
@@ -428,6 +477,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
@@ -453,6 +512,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             wifiConnectedReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
+                    if (intent != null &&
+                            intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                            !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                        return;
+                    }
+                    if (intent == null ||
+                            intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                        return;
+                    }
+
                     appCMSPresenter.setWifiConnected(wifiManager.isWifiEnabled());
                 }
             };
@@ -461,6 +530,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         downloadReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 String action = intent.getAction();
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                     DownloadManager downloadManager = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
@@ -490,6 +569,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         notifyUpdateListsReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 List<Fragment> fragmentList = getSupportFragmentManager().getFragments();
                 for (Fragment fragment : fragmentList) {
                     if (fragment instanceof AppCMSPageFragment) {
@@ -501,6 +590,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         refreshPageDataReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 refreshPageData();
             }
         };
@@ -508,6 +607,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         keepScreenOnReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 keepScreenOn();
             }
         };
@@ -515,6 +624,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         clearKeepScreenOnReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 clearKeepScreenOn();
             }
         };
@@ -522,6 +641,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         chromecastDisconnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
+                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
+                    return;
+                }
+                if (intent == null ||
+                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
+                    return;
+                }
+
                 ViewCreator.clearPlayerView();
                 handleLaunchPageAction(updatedAppCMSBinder,
                         false,
@@ -980,7 +1109,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                 updatedAppCMSBinder != null &&
-                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName()) &&
+                isActive) {
             if (!CastServiceProvider.getInstance(this).isCastingConnected()) {
                 if (!BaseView.isTablet(this)) {
                     appCMSPresenter.unrestrictPortraitOnly();
