@@ -1,11 +1,23 @@
 package com.viewlift.presenters;
 
+import com.urbanairship.UAirship;
+import com.viewlift.models.data.appcms.sites.Notifications;
+import com.viewlift.models.data.urbanairship.UAAudience;
+import com.viewlift.models.data.urbanairship.UANamedUserRequest;
+
 import org.threeten.bp.Period;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
+
+import rx.functions.Action1;
 
 /**
  * Created by viewlift on 12/18/17.
@@ -31,7 +43,8 @@ public class UrbanAirshipEventPresenter {
                                       String subscriptionStatusGroup,
                                       String subscribedTag,
                                       String subscriptionAboutToExpireTag,
-                                      String unsubscribedTag) {
+                                      String unsubscribedTag,
+                                      int daysBeforeSubscriptionEndForNotification) {
         this.loggedInStatusGroup = loggedInStatusGroup;
         this.loggedInStatusTag = loggedInStatusTag;
         this.loggedOutStatusTag = loggedOutStatusTag;
@@ -39,26 +52,161 @@ public class UrbanAirshipEventPresenter {
         this.subscribedTag = subscribedTag;
         this.subscriptionAboutToExpireTag = subscriptionAboutToExpireTag;
         this.unsubscribedTag = unsubscribedTag;
+        this.daysBeforeSubscriptionEndForNotification = daysBeforeSubscriptionEndForNotification;
     }
 
-    public void sendUserLoginEvent(String userId) {
+    public void sendUserLoginEvent(String userId,
+                                   Action1<UANamedUserRequest> sendAction) {
+        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
 
+        UAAudience uaAudience = new UAAudience();
+        uaAudience.addNamedUserIds(userId);
+        uaNamedUserRequest.setUaAudience(uaAudience);
+
+        Map<String, List<String>> uaAdd = new HashMap<>();
+        List<String> uaAddList = new ArrayList<>();
+        uaAddList.add(loggedInStatusTag);
+        uaAdd.put(loggedInStatusGroup, uaAddList);
+        uaNamedUserRequest.setUaAdd(uaAdd);
+
+        Map<String, List<String>> uaRemove = new HashMap<>();
+        List<String> uaRemoveList = new ArrayList<>();
+        uaRemoveList.add(loggedOutStatusTag);
+        uaRemove.put(loggedInStatusGroup, uaRemoveList);
+        uaNamedUserRequest.setUaRemove(uaRemove);
+
+        try {
+            sendAction.call(uaNamedUserRequest);
+        } catch (Exception e) {
+
+        }
+
+//        UAirship.shared().getNamedUser().setId(userId);
+//        UAirship.shared()
+//                .getNamedUser()
+//                .editTagGroups()
+//                .addTag(loggedInStatusGroup, loggedInStatusTag)
+//                .removeTag(loggedInStatusGroup, loggedOutStatusTag)
+//                .apply();
     }
 
-    public void sendUserLogoutEvent(String userId) {
+    public void sendUserLogoutEvent(String userId,
+                                    Action1<UANamedUserRequest> sendAction) {
+        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
 
+        UAAudience uaAudience = new UAAudience();
+        uaAudience.addNamedUserIds(userId);
+        uaNamedUserRequest.setUaAudience(uaAudience);
+
+        Map<String, List<String>> uaAdd = new HashMap<>();
+        List<String> uaAddList = new ArrayList<>();
+        uaAddList.add(loggedOutStatusTag);
+        uaAdd.put(loggedInStatusGroup, uaAddList);
+        uaNamedUserRequest.setUaAdd(uaAdd);
+
+        Map<String, List<String>> uaRemove = new HashMap<>();
+        List<String> uaRemoveList = new ArrayList<>();
+        uaRemoveList.add(loggedInStatusTag);
+        uaRemove.put(loggedInStatusGroup, uaRemoveList);
+        uaNamedUserRequest.setUaRemove(uaRemove);
+
+        try {
+            sendAction.call(uaNamedUserRequest);
+        } catch (Exception e) {
+
+        }
+
+//        UAirship.shared().getNamedUser().setId(userId);
+//        UAirship.shared()
+//                .getNamedUser()
+//                .editTagGroups()
+//                .addTag(loggedInStatusGroup, loggedOutStatusTag)
+//                .removeTag(loggedInStatusGroup, loggedInStatusTag)
+//                .apply();
     }
 
-    public void sendSubscribedEvent(String userId) {
+    public void sendSubscribedEvent(String userId,
+                                    Action1<UANamedUserRequest> sendAction) {
+        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
 
+        UAAudience uaAudience = new UAAudience();
+        uaAudience.addNamedUserIds(userId);
+        uaNamedUserRequest.setUaAudience(uaAudience);
+
+        Map<String, List<String>> uaAdd = new HashMap<>();
+        List<String> uaAddList = new ArrayList<>();
+        uaAddList.add(subscribedTag);
+        uaAdd.put(subscriptionStatusGroup, uaAddList);
+        uaNamedUserRequest.setUaAdd(uaAdd);
+
+        Map<String, List<String>> uaRemove = new HashMap<>();
+        List<String> uaRemoveList = new ArrayList<>();
+        uaRemoveList.add(unsubscribedTag);
+        uaRemoveList.add(subscriptionAboutToExpireTag);
+        uaRemove.put(subscriptionStatusGroup, uaRemoveList);
+        uaNamedUserRequest.setUaRemove(uaRemove);
+
+        try {
+            sendAction.call(uaNamedUserRequest);
+        } catch (Exception e) {
+
+        }
     }
 
-    public void sendSubscriptionAboutToExpireEvent(String userId) {
+    public void sendSubscriptionAboutToExpireEvent(String userId,
+                                                   Action1<UANamedUserRequest> sendAction) {
+        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
 
+        UAAudience uaAudience = new UAAudience();
+        uaAudience.addNamedUserIds(userId);
+        uaNamedUserRequest.setUaAudience(uaAudience);
+
+        Map<String, List<String>> uaAdd = new HashMap<>();
+        List<String> uaAddList = new ArrayList<>();
+        uaAddList.add(subscriptionAboutToExpireTag);
+        uaAdd.put(subscriptionStatusGroup, uaAddList);
+        uaNamedUserRequest.setUaAdd(uaAdd);
+
+        Map<String, List<String>> uaRemove = new HashMap<>();
+        List<String> uaRemoveList = new ArrayList<>();
+        uaRemoveList.add(subscribedTag);
+        uaRemoveList.add(unsubscribedTag);
+        uaRemove.put(subscriptionStatusGroup, uaRemoveList);
+        uaNamedUserRequest.setUaRemove(uaRemove);
+
+        try {
+            sendAction.call(uaNamedUserRequest);
+        } catch (Exception e) {
+
+        }
     }
 
-    public void sendUnsubscribedEvent(String userId) {
+    public void sendUnsubscribedEvent(String userId,
+                                      Action1<UANamedUserRequest> sendAction) {
+        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
 
+        UAAudience uaAudience = new UAAudience();
+        uaAudience.addNamedUserIds(userId);
+        uaNamedUserRequest.setUaAudience(uaAudience);
+
+        Map<String, List<String>> uaAdd = new HashMap<>();
+        List<String> uaAddList = new ArrayList<>();
+        uaAddList.add(unsubscribedTag);
+        uaAdd.put(subscriptionStatusGroup, uaAddList);
+        uaNamedUserRequest.setUaAdd(uaAdd);
+
+        Map<String, List<String>> uaRemove = new HashMap<>();
+        List<String> uaRemoveList = new ArrayList<>();
+        uaRemoveList.add(subscribedTag);
+        uaRemoveList.add(subscriptionAboutToExpireTag);
+        uaRemove.put(subscriptionStatusGroup, uaRemoveList);
+        uaNamedUserRequest.setUaRemove(uaRemove);
+
+        try {
+            sendAction.call(uaNamedUserRequest);
+        } catch (Exception e) {
+
+        }
     }
 
     public boolean subscriptionAboutToExpire(String subscriptionEndDate) {
@@ -66,7 +214,7 @@ public class UrbanAirshipEventPresenter {
             ZonedDateTime nowTime = ZonedDateTime.now(UTC_ZONE_ID);
             ZonedDateTime subscriptionEndTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).parse(subscriptionEndDate));
             Period daysBeforeSubscriptionEnd = Period.ofDays(daysBeforeSubscriptionEndForNotification);
-
+            return subscriptionEndTime.minus(daysBeforeSubscriptionEnd).toEpochSecond() <= nowTime.toEpochSecond();
         }
 
         return false;

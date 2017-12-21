@@ -9,9 +9,11 @@ import android.content.res.AssetManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistRest;
 import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
@@ -62,7 +64,10 @@ import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionRest;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenRest;
+import com.viewlift.models.network.rest.UANamedUserEventCall;
+import com.viewlift.models.network.rest.UANamedUserEventRest;
 import com.viewlift.presenters.AppCMSActionType;
+import com.viewlift.presenters.UrbanAirshipEventPresenter;
 import com.viewlift.stag.generated.Stag;
 
 import java.io.File;
@@ -94,6 +99,15 @@ public class AppCMSUIModule {
     private final long unknownHostExceptionTimeout;
     private final Cache cache;
     private final AssetManager assetManager;
+
+    private final String loggedInStatusGroup;
+    private final String loggedInStatusTag;
+    private final String loggedOutStatusTag;
+    private final String subscriptionStatusGroup;
+    private final String subscribedTag;
+    private final String subscriptionAboutToExpireTag;
+    private final String unsubscribedTag;
+    private final int daysBeforeSubscriptionEndForNotification;
 
     public AppCMSUIModule(Context context) {
         this.baseUrl = context.getString(R.string.app_cms_baseurl);
@@ -129,6 +143,15 @@ public class AppCMSUIModule {
         cache = new Cache(context.getCacheDir(), cacheSize);
 
         this.assetManager = context.getAssets();
+
+        this.loggedInStatusGroup =  context.getString(R.string.ua_user_logged_in_status_group);
+        this.loggedInStatusTag = context.getString(R.string.ua_user_logged_in_tag);
+        this.loggedOutStatusTag = context.getString(R.string.ua_user_logged_out_tag);
+        this.subscriptionStatusGroup = context.getString(R.string.ua_user_subscription_status_group);
+        this.subscribedTag = context.getString(R.string.ua_user_subscribed_tag);
+        this.subscriptionAboutToExpireTag = context.getString(R.string.ua_user_subscription_about_expire_tag);
+        this.unsubscribedTag = context.getString(R.string.ua_user_unsubscribed_tag);
+        this.daysBeforeSubscriptionEndForNotification = context.getResources().getInteger(R.integer.ua_days_before_subscription_end_notification_tag);
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -956,6 +979,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public UANamedUserEventRest providesUANamedUserEventRest(Retrofit retrofit) {
+        return retrofit.create(UANamedUserEventRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSMainUICall providesAppCMSMainUICall(OkHttpClient client,
                                                      AppCMSMainUIRest appCMSMainUIRest,
                                                      Gson gson) {
@@ -1113,6 +1142,13 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public UANamedUserEventCall providesUANamedUserEventCall(UANamedUserEventRest uaNamedUserEventRest,
+                                                             Gson gson) {
+        return new UANamedUserEventCall(uaNamedUserEventRest, gson);
+    }
+
+    @Provides
+    @Singleton
     public Map<String, AppCMSUIKeyType> providesJsonValueKeyMap() {
         return jsonValueKeyMap;
     }
@@ -1139,5 +1175,18 @@ public class AppCMSUIModule {
     @Singleton
     public Map<String, AppCMSActionType> providesActionToActionTypeMap() {
         return actionToActionTypeMap;
+    }
+
+    @Provides
+    @Singleton
+    public UrbanAirshipEventPresenter providesUrbanAirshipEventPresenter() {
+        return new UrbanAirshipEventPresenter(loggedInStatusGroup,
+                loggedInStatusTag,
+                loggedOutStatusTag,
+                subscriptionStatusGroup,
+                subscribedTag,
+                subscriptionAboutToExpireTag,
+                unsubscribedTag,
+                daysBeforeSubscriptionEndForNotification);
     }
 }

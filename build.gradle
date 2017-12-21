@@ -50,7 +50,7 @@ allprojects {
         butterknifeVersion = "8.8.1"
         stagVersion = "2.3.1"
         facebookSdkVersion = "[4,5)"
-        urbanAirshipVersion = "8.3.2"
+        urbanAirshipVersion = "8.9.6"
         appsFlyerVersion = "4.8.3"
         glideTransformationVersion = "2.0.2"
         threetenBpVersion = "1.0.5"

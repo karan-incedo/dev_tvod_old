@@ -81,6 +81,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -138,6 +139,7 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
+import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSMainUIAsyncTask;
@@ -148,6 +150,7 @@ import com.viewlift.models.network.background.tasks.GetAppCMSSiteAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSStreamingInfoAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSVideoDetailAsyncTask;
 import com.viewlift.models.network.background.tasks.PostAppCMSLoginRequestAsyncTask;
+import com.viewlift.models.network.background.tasks.PostUANamedUserEventAsyncTask;
 import com.viewlift.models.network.components.AppCMSAPIComponent;
 import com.viewlift.models.network.components.AppCMSSearchUrlComponent;
 import com.viewlift.models.network.components.DaggerAppCMSAPIComponent;
@@ -186,6 +189,7 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
+import com.viewlift.models.network.rest.UANamedUserEventCall;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -616,6 +620,9 @@ public class AppCMSPresenter {
 
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
 
+    private UrbanAirshipEventPresenter urbanAirshipEventPresenter;
+    private UANamedUserEventCall uaNamedUserEventCall;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -665,7 +672,10 @@ public class AppCMSPresenter {
                            Map<String, AppCMSPageAPI> actionToPageAPIMap,
                            Map<String, AppCMSActionType> actionToActionTypeMap,
 
-                           ReferenceQueue<Object> referenceQueue) {
+                           ReferenceQueue<Object> referenceQueue,
+
+                           UrbanAirshipEventPresenter urbanAirshipEventPresenter,
+                           UANamedUserEventCall uaNamedUserEventCall) {
         this.gson = gson;
 
         this.appCMSMainUICall = appCMSMainUICall;
@@ -765,6 +775,9 @@ public class AppCMSPresenter {
         this.updateDownloadImageIconActionMap = new HashMap<>();
 
         this.temporaryWatchlist = new ArrayList<>();
+
+        this.urbanAirshipEventPresenter = urbanAirshipEventPresenter;
+        this.uaNamedUserEventCall = uaNamedUserEventCall;
 
         clearMaps();
     }
@@ -6648,6 +6661,10 @@ public class AppCMSPresenter {
         ViewCreator.clearPlayerView();
 
         if (currentActivity != null) {
+            if (!TextUtils.isEmpty(getLoggedInUser())) {
+                sendUALoggedOutEvent(getLoggedInUser());
+            }
+
             showLoadingDialog(true);
             GraphRequest revokePermissions = new GraphRequest(AccessToken.getCurrentAccessToken(),
                     getLoggedInUser() + "/permissions/", null,
@@ -6668,6 +6685,8 @@ public class AppCMSPresenter {
             LoginManager.getInstance().logOut();
             //Send Firebase Logout Event
             sendFireBaseLogOutEvent();
+
+            AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
 
             setLoggedInUser(null);
             setLoggedInUserName(null);
@@ -6705,7 +6724,6 @@ public class AppCMSPresenter {
             getPageViewLruCache().evictAll();
             clearPageAPIData(this::navigateToHomePage, false);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
-            AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
         }
     }
 
@@ -8448,6 +8466,14 @@ public class AppCMSPresenter {
                                                         setIsUserSubscribed(false);
                                                     }
 
+                                                    if (urbanAirshipEventPresenter.subscriptionAboutToExpire(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate())) {
+                                                        sendUASubscriptionAboutToExpireEvent(getLoggedInUser());
+                                                    } else if (isUserSubscribed()) {
+                                                        sendUASubscribedEvent(getLoggedInUser());
+                                                    } else {
+                                                        sendUAUnsubscribedEvent(getLoggedInUser());
+                                                    }
+
                                                     UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
                                                     userSubscriptionPlan.setUserId(getLoggedInUser());
                                                     String planReceipt = appCMSSubscriptionPlanResult.getSubscriptionInfo().getReceipt();
@@ -8546,7 +8572,6 @@ public class AppCMSPresenter {
 
     private boolean checkForSubscriptionCancellation(AppCMSUserSubscriptionPlanResult appCMSSubscriptionPlanResult) {
         try {
-
             ZonedDateTime nowTime = ZonedDateTime.now(UTC_ZONE_ID);
             ZonedDateTime subscriptionEndTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).parse(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate()));
             return subscriptionEndTime.toEpochSecond() < nowTime.toEpochSecond();
@@ -8947,6 +8972,8 @@ public class AppCMSPresenter {
                     currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                 }
             }
+
+            sendUALoggedInEvent(getLoggedInUser());
         }
     }
 
@@ -11866,6 +11893,68 @@ public class AppCMSPresenter {
                 iv2.requestLayout();
             }
         }
+    }
+
+    private void sendUALoggedInEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendUserLoginEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUALoggedOutEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendUserLogoutEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUASubscribedEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendSubscribedEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUAUnsubscribedEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendUnsubscribedEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUASubscriptionAboutToExpireEvent(String userId) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendSubscriptionAboutToExpireEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUANamedUserEventRequest(UANamedUserRequest uaNamedUserRequest) {
+        PostUANamedUserEventAsyncTask.Params params =
+                new PostUANamedUserEventAsyncTask.Params
+                        .Builder()
+                        .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
+                        .authKey("9NvLFbMITeuJtb-AqrwOpw")
+                        .build();
+
+        new PostUANamedUserEventAsyncTask(uaNamedUserEventCall)
+                .execute(params, uaNamedUserRequest);
     }
 
     private static class EntitlementCheckActive implements Action1<UserIdentity> {

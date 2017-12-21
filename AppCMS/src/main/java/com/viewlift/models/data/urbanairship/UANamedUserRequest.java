@@ -13,7 +13,7 @@ import java.util.Map;
  */
 
 @UseStag
-public class UANamedUsersRequest {
+public class UANamedUserRequest {
     @SerializedName("audience")
     @Expose
     UAAudience uaAudience;
