@@ -419,6 +419,7 @@ public class AppCMSPageFragment extends Fragment {
             }
         }
         setMiniPlayer();
+
     }
 
     private void updateAllViews(ViewGroup pageViewGroup) {

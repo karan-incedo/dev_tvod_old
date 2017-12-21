@@ -1014,8 +1014,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.resetLaunched();
         appCMSPresenter.clearVideoPlayerViewCache();
         appCMSPresenter.clearWebViewCache();
+        appCMSPresenter.setMiniPLayerVisibility(true);
 
-        //Log.d(TAG, "onDestroy()");
+
     }
 
     @Override
