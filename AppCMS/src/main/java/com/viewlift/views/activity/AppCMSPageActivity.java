@@ -1014,8 +1014,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.resetLaunched();
         appCMSPresenter.clearVideoPlayerViewCache();
         appCMSPresenter.clearWebViewCache();
+        appCMSPresenter.setMiniPLayerVisibility(true);
 
-        //Log.d(TAG, "onDestroy()");
+
     }
 
     @Override
@@ -1509,7 +1510,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (!(appCMSPageFragment instanceof AppCMSPageFragment) && appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
-                appCMSPresenter.dismissPopupWindowPlayer(false);
+//                appCMSPresenter.dismissPopupWindowPlayer(false);
             }
             if (appCMSPageFragment != null) {
                 fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,

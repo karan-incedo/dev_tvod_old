@@ -148,6 +148,8 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
             mRecyclerView.smoothScrollToPosition(0);
             relativeLayoutEvent.startAnimation(animMoveUp);
         });
+        this.removeAllViews();
+
         if (appCMSPresenter.videoPlayerView==null){
             setVisibility(GONE);
             return;
@@ -166,6 +168,7 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
                 appCMSPresenter.videoPlayerView.getPlayerView() != null) {
             appCMSPresenter.videoPlayerView.pausePlayer();
             appCMSPresenter.dismissPopupWindowPlayer(false);
+            appCMSPresenter.setMiniPLayerVisibility(false);
         }
     }
 
