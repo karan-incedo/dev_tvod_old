@@ -12313,37 +12313,28 @@ public class AppCMSPresenter {
 
     public void dismissPopupWindowPlayer(boolean releasePlayer) {
 
-        try {
-            if (relativeLayoutPIP != null) {
-
-                relativeLayoutPIP.removeAllViews();
-                if (videoPlayerViewParent != null) {
-                    videoPlayerView.enableController();
-                    relativeLayoutPIP.removeView(videoPlayerView);
-                    videoPlayerViewParent.addView(videoPlayerView);
-                    pipPlayerVisible = false;
+        if (relativeLayoutPIP != null) {
+            relativeLayoutPIP.removeAllViews();
+            if (videoPlayerView!=null) {
+                videoPlayerView.enableController();
+                if (videoPlayerView.getParent() != null)
+                {
+                    ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
                 }
 
-                relativeLayoutPIP.setVisibility(View.GONE);
-
-                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
-
-                rootView.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
-                            relativeLayoutPIP.disposeRelativeLayoutEvent();
-
-                        }
-                        rootView.removeView(relativeLayoutPIP);
-                        relativeLayoutPIP = null;
-
-                    }
-                }, 100);
+                videoPlayerViewParent.addView(videoPlayerView);
+                relativeLayoutPIP.removeView(videoPlayerView);
+                pipPlayerVisible = false;
             }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            relativeLayoutPIP.setVisibility(View.GONE);
+            RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+            if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
+                relativeLayoutPIP.disposeRelativeLayoutEvent();
+            }
+            rootView.removeView(relativeLayoutPIP);
+            relativeLayoutPIP = null;
         }
+
 
         pipPlayerVisible = false;
     }
@@ -12467,11 +12458,13 @@ public class AppCMSPresenter {
     }
 
     public ModuleList getModuleListByName(List<ModuleList> listModule, String idOrName) {
+        int mosudlePosition=0;
         for (ModuleList moduleList : listModule) {
             if (idOrName.equalsIgnoreCase(moduleList.getType()) || idOrName.equalsIgnoreCase(moduleList.getId())) {
+                moduleList.setModulePosition(mosudlePosition);
                 return moduleList;
-
             }
+            mosudlePosition++;
         }
         return null;
     }

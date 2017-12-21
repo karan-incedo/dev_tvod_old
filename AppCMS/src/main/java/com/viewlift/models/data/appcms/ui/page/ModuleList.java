@@ -62,6 +62,15 @@ public class ModuleList implements ModuleWithComponents, Serializable {
     @Expose
     boolean isSelectable;
 
+    public int getModulePosition() {
+        return modulePosition;
+    }
+
+    public void setModulePosition(int modulePosition) {
+        this.modulePosition = modulePosition;
+    }
+
+    int modulePosition;
 
     public String getId() {
         return id;
