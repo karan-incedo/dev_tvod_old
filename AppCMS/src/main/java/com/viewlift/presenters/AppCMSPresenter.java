@@ -8009,12 +8009,14 @@ public class AppCMSPresenter {
 
     @SuppressLint("StringFormatInvalid")
     private String getBeaconUrl() {
-        if (currentActivity != null &&
-                appCMSMain != null &&
+         if (appCMSMain != null &&
                 appCMSMain.getBeacon() != null &&
                 appCMSMain.getBeacon().getApiBaseUrl() != null) {
-            return currentActivity.getString(R.string.app_cms_beacon_url_base, appCMSMain.getBeacon().getApiBaseUrl());
-        }
+            return appCMSMain.getBeacon().getApiBaseUrl();
+        }else if (currentActivity!=null ){
+
+             return currentActivity.getString(R.string.app_cms_beacon_url_base);
+         }
         return null;
     }
 
