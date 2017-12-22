@@ -167,6 +167,7 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         if (appCMSPresenter.videoPlayerView != null &&
                 appCMSPresenter.videoPlayerView.getPlayerView() != null) {
             appCMSPresenter.videoPlayerView.pausePlayer();
+            appCMSPresenter.unrestrictPortraitOnly();
             appCMSPresenter.dismissPopupWindowPlayer(false);
             appCMSPresenter.setMiniPLayerVisibility(false);
         }
