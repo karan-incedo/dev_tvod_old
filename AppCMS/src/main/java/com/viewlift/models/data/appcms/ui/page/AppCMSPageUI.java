@@ -15,6 +15,10 @@ public class AppCMSPageUI implements Serializable {
     @Expose
     ArrayList<ModuleList> moduleList = null;
 
+    @SerializedName("caching")
+    @Expose
+    Caching caching;
+
     @SerializedName("version")
     @Expose
     String version;
