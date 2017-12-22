@@ -3,6 +3,7 @@ package com.viewlift.models.network.rest;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -86,7 +87,7 @@ public class AppCMSPageUICall {
                     .execute().body());
             appCMSPageUI.setLoadedFromNetwork(true);
         } catch (Exception e) {
-
+            Log.e(TAG, "Error receiving network data " + url + ": " + e.getMessage());
         }
         return appCMSPageUI;
     }

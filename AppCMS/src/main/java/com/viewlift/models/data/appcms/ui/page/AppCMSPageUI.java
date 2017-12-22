@@ -48,4 +48,12 @@ public class AppCMSPageUI implements Serializable {
     public void setLoadedFromNetwork(boolean loadedFromNetwork) {
         this.loadedFromNetwork = loadedFromNetwork;
     }
+
+    public Caching getCaching() {
+        return caching;
+    }
+
+    public void setCaching(Caching caching) {
+        this.caching = caching;
+    }
 }

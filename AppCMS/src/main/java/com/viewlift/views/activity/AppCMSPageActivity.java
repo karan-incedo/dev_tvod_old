@@ -2526,10 +2526,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         baseUrl,
                         endPoint,
                         siteId,
-                        appCMSBinder.getPagePath());
+                        appCMSBinder.getPagePath(),
+                        appCMSBinder.getAppCMSPageUI().getCaching() != null &&
+                                appCMSBinder.getAppCMSPageUI().getCaching().isEnabled());
                 appCMSPresenter.getPageIdContent(apiUrl,
                         appCMSBinder.getPagePath(),
                         null,
+                        appCMSBinder.getAppCMSPageUI().getCaching() != null &&
+                                appCMSBinder.getAppCMSPageUI().getCaching().isEnabled(),
                         appCMSPageAPI -> {
                             if (appCMSPageAPI != null) {
                                 appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
@@ -2595,11 +2599,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     baseUrl,
                                     endPoint,
                                     siteId,
-                                    appCMSBinder.getPagePath());
+                                    appCMSBinder.getPagePath(),
+                                    appCMSBinder.getAppCMSPageUI().getCaching() != null && appCMSBinder.getAppCMSPageUI().getCaching().isEnabled());
 
                             appCMSPresenter.getPageIdContent(apiUrl,
                                     appCMSBinder.getPagePath(),
                                     null,
+                                    appCMSBinder.getAppCMSPageUI().getCaching() != null && appCMSBinder.getAppCMSPageUI().getCaching().isEnabled(),
                                     appCMSPageAPI -> {
                                         if (appCMSPageAPI != null) {
                                             if (appCMSPresenter.isUserLoggedIn()) {

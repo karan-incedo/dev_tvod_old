@@ -389,12 +389,4 @@ public class AppCMSMain implements Serializable {
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
     }
-
-    public TaxProviders getTaxProviders() {
-        return taxProviders;
-    }
-
-    public void setTaxProviders(TaxProviders taxProviders) {
-        this.taxProviders = taxProviders;
-    }
 }
