@@ -526,6 +526,17 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
 
     private void playDownloaded(ContentDatum data, Context context, int position) {
+        // Fix for SVFA-2707
+        if (appCMSPresenter.isAppSVOD() &&
+                !appCMSPresenter.isUserSubscribed() &&
+                (data == null ||
+                        data.getGist() == null ||
+                        (data.getGist() != null && !data.getGist().getFree()))) {
+            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                    null);
+            return;
+        }
+
         List<String> relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_SUCCESSFUL);
         if (data.getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                 data.getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) {
