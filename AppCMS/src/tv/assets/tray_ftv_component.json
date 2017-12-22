@@ -4,16 +4,15 @@
     "loop": false,
     "columns": {
       "tablet": 4,
-      "desktop": 5,
-      "mobile": 2,
+      "desktop": 6,
+      "mobile": 3,
       "ott": 6
     },
-    "thumbnailType": "landscape",
-    "infoHover": false
+    "thumbnailType": "landscape"
   },
-  "view": "AC Tray 02",
-  "type": "AC Tray 03",
-  "blockName": "tray03",
+  "view": "AC Tray 01",
+  "type": "AC Tray 01",
+  "blockName": "tray02",
   "layout": {
     "ftv": {
       "padding": 0,
@@ -29,11 +28,11 @@
           "fontSize": 14
         }
       },
-      "fontFamily": "Lato",
+      "fontFamily": "OpenSans",
       "textAlignment": "left",
       "type": "label",
       "textColor": "#008EE0",
-      "fontWeight": "Bold",
+      "fontWeight": "Semibold",
       "key": "trayTitle"
     },
     {
@@ -43,75 +42,36 @@
           "height": 250
         }
       },
-      "textAlignment": "center",
       "trayClickAction": "lectureDetailPage",
       "components": [
         {
           "layout": {
             "ftv": {
-              "height": 197,
-              "topMargin": 0,
               "padding": 6,
-              "width": 350
+              "topMargin": 0,
+              "width": 350,
+              "height": 197
             }
           },
           "type": "image",
           "key": "thumbnailImage"
-
-        },
-
-        {
-          "layout": {
-            "ftv": {
-              "padding": 0,
-              "topMargin": 9,
-              "leftMargin": 8,
-              "width": 380,
-              "height": 214
-            }
-          },
-          "type": "image",
-          "key": "bedgeImage"
-        },
-
-        {
-          "layout": {
-            "ftv": {
-              "padding": 1,
-              "topMargin": 185,
-              "leftMargin": 8,
-              "width": 160,
-              "height": 30
-            }
-          },
-          "type": "label",
-          "key": "trayTimeAndDataKey",
-          "fontFamily": "Lato",
-          "textAlignment": "left",
-          "textColor": "#FFFFFF",
-          "fontWeight": "Bold",
-          "backgroundColor": "#90000000",
-          "text":"1:52:29 | June 22",
-          "fontSize": 12,
-          "numberOfLines": 1
         },
         {
           "layout": {
             "ftv": {
+              "leftMargin": 0,
               "topMargin": 202,
-              "height": 40,
               "rightMargin": 0,
-              "height": 70
+              "fontSize": 11,
+              "height": 40
             }
           },
-          "fontFamily": "Lato",
-          "fontWeight": "Regular",
+          "fontFamily": "OpenSans",
           "textAlignment": "left",
           "type": "label",
           "textColor": "#ffffff",
-          "key": "thumbnailTitle",
-          "fontSize": 12,
-          "numberOfLines": 2
+          "fontWeight": "Semibold",
+          "key": "thumbnailTitle"
         }
       ],
       "type": "collectionGrid",
