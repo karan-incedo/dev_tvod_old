@@ -70,6 +70,7 @@ import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
 import static com.google.android.exoplayer2.Player.STATE_IDLE;
 import static com.google.android.exoplayer2.Player.STATE_READY;
+import static com.google.android.gms.internal.zzagr.runOnUiThread;
 
 public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEvent.AdErrorListener,
         AdEvent.AdEventListener {
@@ -152,12 +153,13 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     private boolean isTimerRun = true;
     public String lastUrl = "", closedCaptionUri = "";
     ContentDatum onUpdatedContentDatum;
-    private boolean isPreviewShown = false;
+    public boolean isPreviewShown = false;
 
     protected int currentTrackIndex = 0;
     private static final TrackSelection.Factory FIXED_FACTORY = new FixedTrackSelection.Factory();
 
     private ToggleButton mToggleButton;
+    public boolean hideMiniPlayer = false;
 
     public CustomVideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context, appCMSPresenter);
@@ -446,6 +448,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 playedVideoSecs = appCMSPresenter.getPreviewTimerValue();
                             }
                             if (((maxPreviewSecs < playedVideoSecs) || (maxPreviewSecs < secsViewed)) && (userIdentity == null || !userIdentity.isSubscribed())) {
+                               //if mini player is showing than dismiss the mini player
+                                runOnUiThread(() -> appCMSPresenter.dismissPopupWindowPlayer(false));
 
                                 if (onUpdatedContentDatum != null) {
                                     AppCMSPresenter.EntitlementPendingVideoData entitlementPendingVideoData
@@ -463,14 +467,15 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                     appCMSPresenter.setEntitlementPendingVideoData(entitlementPendingVideoData);
                                 }
                                 appCMSPresenter.setPreviewStatus(true);
-
                                 pausePlayer();
-
+                                hideMiniPlayer = true;
                                 showPreviewFrame();
 
                                 cancel();
                                 entitlementCheckCancelled = true;
 
+                            } else {
+                                hideMiniPlayer = false;
 
                             }
                             playedVideoSecs++;
@@ -509,6 +514,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void hidePreviewFrame() {
+        hideMiniPlayer = false;
+
         enableController();
         isPreviewShown = false;
         customPreviewContainer.post(new Runnable() {
@@ -797,21 +804,21 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         customMessageView.setOnClickListener((v) -> {
 
-            if(CastingUtils.getRemoteMediaId(mContext) != null && onUpdatedContentDatum != null) {
+            if (CastingUtils.getRemoteMediaId(mContext) != null && onUpdatedContentDatum != null) {
                 String filmId = CastingUtils.getRemoteMediaId(mContext);
-                if(filmId.equalsIgnoreCase("") && (!filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId()))) {
+                if (filmId.equalsIgnoreCase("") && (!filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId()))) {
                     CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(), permaLink, onUpdatedContentDatum.getGist().getVideoImageUrl(), lastUrl, onUpdatedContentDatum.getGist().getId(), 0, false);
                 }
             }
         });
 
 
-        if(CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()){
+        if (CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()) {
             String filmId = CastingUtils.getRemoteMediaId(mContext);
-            if(filmId.equalsIgnoreCase(""))
-            customMessageView.setText(CastingUtils.getCurrentPlayingVideoName(mContext));
+            if (filmId.equalsIgnoreCase(""))
+                customMessageView.setText(CastingUtils.getCurrentPlayingVideoName(mContext));
             else
-            customMessageView.setText("Casting the "+CastingUtils.getCurrentPlayingVideoName(mContext)+" to "+CastServiceProvider.getInstance((Activity) mContext).getConnectedDeviceName());
+                customMessageView.setText("Casting the " + CastingUtils.getCurrentPlayingVideoName(mContext) + " to " + CastServiceProvider.getInstance((Activity) mContext).getConnectedDeviceName());
         }
 
         parentView.setVisibility(View.GONE);
@@ -1272,8 +1279,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         } catch (Exception e) {
             mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
         }
-        beaconBufferingThread.setBeaconData(videoDataId,permaLink,mStreamId);
-        beaconMessageThread.setBeaconData(videoDataId,permaLink,mStreamId);
+        beaconBufferingThread.setBeaconData(videoDataId, permaLink, mStreamId);
+        beaconMessageThread.setBeaconData(videoDataId, permaLink, mStreamId);
     }
 
     public interface IgetPlayerEvent {

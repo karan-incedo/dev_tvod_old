@@ -12318,8 +12318,18 @@ public class AppCMSPresenter {
 
     public void showPopupWindowPlayer(View scrollView) {
 
-        if(!getMiniPLayerVisibility() || pipPlayerVisible)
+        // if preview frame need to show than gidemini player will be true and miniplayer need to be hide
+        if(videoPlayerView.hideMiniPlayer){
+            videoPlayerView.pausePlayer();
+
+            dismissPopupWindowPlayer(false);
             return;
+        }
+
+        if(!getMiniPLayerVisibility() ){
+            videoPlayerView.pausePlayer();
+            return;
+        }
 
         if (relativeLayoutPIP == null) {
             relativeLayoutPIP = new MiniPlayerView(currentActivity, this,scrollView);
@@ -12337,6 +12347,7 @@ public class AppCMSPresenter {
 
 
     public void dismissPopupWindowPlayer(boolean releasePlayer) {
+        unrestrictPortraitOnly();
 
         if (relativeLayoutPIP != null) {
             relativeLayoutPIP.removeAllViews();
@@ -12359,7 +12370,6 @@ public class AppCMSPresenter {
             rootView.removeView(relativeLayoutPIP);
             relativeLayoutPIP = null;
         }
-
 
         pipPlayerVisible = false;
     }
