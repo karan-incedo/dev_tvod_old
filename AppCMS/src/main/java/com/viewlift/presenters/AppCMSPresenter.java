@@ -4823,6 +4823,9 @@ public class AppCMSPresenter {
                                                                             navigateToLoginPage(loginFromNavPage);
                                                                         });
                                                             }
+                                                        } else {
+                                                            setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
+                                                            initiateItemPurchase();
                                                         }
                                                     } else {
                                                         //Log.d(TAG, "Received a valid signin response");
@@ -8341,21 +8344,17 @@ public class AppCMSPresenter {
 
     private void signup(String email, String password) {
         if (currentActivity != null) {
-            if (launchType != LaunchType.INIT_SIGNUP) {
-                String url = currentActivity.getString(R.string.app_cms_signup_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        appCMSSite.getGist().getSiteInternalName());
-                startLoginAsyncTask(url,
-                        email,
-                        password,
-                        true,
-                        launchType == LaunchType.SUBSCRIBE,
-                        false,
-                        false,
-                        false);
-            } else {
-                initiateItemPurchase();
-            }
+            String url = currentActivity.getString(R.string.app_cms_signup_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName());
+            startLoginAsyncTask(url,
+                    email,
+                    password,
+                    true,
+                    launchType == LaunchType.SUBSCRIBE || (!isUserLoggedIn() && !TextUtils.isEmpty(getRestoreSubscriptionReceipt())),
+                    false,
+                    false,
+                    false);
         }
     }
 
