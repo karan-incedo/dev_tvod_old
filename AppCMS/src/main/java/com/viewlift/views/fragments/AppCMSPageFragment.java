@@ -496,7 +496,7 @@ public class AppCMSPageFragment extends Fragment {
                                 } else {
                                     appCMSPresenter.unrestrictPortraitOnly();
                                     appCMSPresenter.dismissPopupWindowPlayer(false);
-                                    if( appCMSPresenter.videoPlayerView!=null){
+                                    if( appCMSPresenter.videoPlayerView!=null && !appCMSPresenter.videoPlayerView.hideMiniPlayer ){
                                         appCMSPresenter.videoPlayerView.resumePlayerLastState();
                                     }
                                 }
@@ -540,9 +540,7 @@ public class AppCMSPageFragment extends Fragment {
             } else {
                 appCMSPresenter.unrestrictPortraitOnly();
                 appCMSPresenter.dismissPopupWindowPlayer(false);
-                if( appCMSPresenter.videoPlayerView!=null){
-                    appCMSPresenter.videoPlayerView.resumePlayerLastState();
-                }
+
             }
 
         }

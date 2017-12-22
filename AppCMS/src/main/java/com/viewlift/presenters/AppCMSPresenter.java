@@ -12318,7 +12318,7 @@ public class AppCMSPresenter {
 
     public void showPopupWindowPlayer(View scrollView) {
 
-        // if preview frame need to show than gidemini player will be true and miniplayer need to be hide
+        // if preview frame need to show than mini player will be true and miniplayer need to be hide
         if(videoPlayerView.hideMiniPlayer){
             videoPlayerView.pausePlayer();
 

@@ -470,6 +470,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 pausePlayer();
                                 hideMiniPlayer = true;
                                 showPreviewFrame();
+                                System.out.println("Preview Timer Shown -"+playedVideoSecs);
 
                                 cancel();
                                 entitlementCheckCancelled = true;
@@ -480,6 +481,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                             }
                             playedVideoSecs++;
                             appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
+                            System.out.println("Preview Timer -"+playedVideoSecs);
                         }
                     });
 
