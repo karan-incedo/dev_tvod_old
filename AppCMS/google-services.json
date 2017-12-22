@@ -370,6 +370,57 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:66550532779:android:47ef18d279334d99",
+        "android_client_info": {
+          "package_name": "com.viewlift.sportsillustrated"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "525148171038-uctag4gitbjb5ba4puffs6j7271su1d7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.viewlift.sportsillustrated",
+            "certificate_hash": "11af64440dd8648e5fed14370e7e638f44f3c5d2"
+          }
+        },
+        {
+          "client_id": "525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI3iLHa00xKudgoBr7B0xTmXxwyxYnvUc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "525148171038-da7vav95ripsg807mp1i985rv91hf2eu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.viewlift.sportsillustrated"
+              }
+            },
+            {
+              "client_id": "525148171038-1dgfbunn8l27oilqldve5qg7cref8ua1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"
