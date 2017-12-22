@@ -622,6 +622,8 @@ public class AppCMSPresenter {
     private UrbanAirshipEventPresenter urbanAirshipEventPresenter;
     private UANamedUserEventCall uaNamedUserEventCall;
 
+    private boolean purchaseFromRestore;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSMainUICall appCMSMainUICall,
@@ -777,6 +779,8 @@ public class AppCMSPresenter {
 
         this.urbanAirshipEventPresenter = urbanAirshipEventPresenter;
         this.uaNamedUserEventCall = uaNamedUserEventCall;
+
+        this.purchaseFromRestore = false;
 
         clearMaps();
     }
@@ -2461,7 +2465,7 @@ public class AppCMSPresenter {
             if (isUserLoggedIn()) {
 
                 //Log.d(TAG, "Initiating item purchase for subscription");
-                initiateItemPurchase();
+                initiateItemPurchase(false);
             } else {
                 //Log.d(TAG, "Navigating to login page for subscription");
                 navigateToLoginPage(loginFromNavPage);
@@ -2523,10 +2527,13 @@ public class AppCMSPresenter {
         return useCCAve;
     }
 
-    public void initiateItemPurchase() {
+    public void initiateItemPurchase(boolean purchaseFromRestore) {
         //Log.d(TAG, "Initiating item purchase");
 
         //Log.d(TAG, "checkForExistingSubscription()");
+
+        this.purchaseFromRestore = purchaseFromRestore;
+
         checkForExistingSubscription(false);
 
         if (useCCAvenue()) {
@@ -4827,9 +4834,9 @@ public class AppCMSPresenter {
                                                                             navigateToLoginPage(loginFromNavPage);
                                                                         });
                                                             }
-                                                        } else {
+                                                        } else if (!purchaseFromRestore) {
                                                             setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
-                                                            initiateItemPurchase();
+                                                            initiateItemPurchase(true);
                                                         }
                                                     } else {
                                                         //Log.d(TAG, "Received a valid signin response");
@@ -8175,8 +8182,6 @@ public class AppCMSPresenter {
                             setActiveSubscriptionPlanName(planToPurchaseName);
                             setActiveSubscriptionPrice(String.valueOf(planToPurchasePrice));
 
-                            refreshSubscriptionData(null, false);
-
                             if (useCCAvenue()) {
                                 //Log.d(TAG, "Initiating CCAvenue purchase");
                                 initiateCCAvenuePurchase();
@@ -8342,7 +8347,7 @@ public class AppCMSPresenter {
     }
 
     private void signup(String email, String password) {
-        if (currentActivity != null) {
+        if (currentActivity != null && !isUserLoggedIn()) {
             String url = currentActivity.getString(R.string.app_cms_signup_api_url,
                     appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName());
@@ -8627,7 +8632,7 @@ public class AppCMSPresenter {
                         false,
                         true);
             } else {
-                initiateItemPurchase();
+                initiateItemPurchase(false);
             }
         }
     }
@@ -8803,7 +8808,7 @@ public class AppCMSPresenter {
 
         if (followWithSubscription) {
             sendCloseOthersAction(null, true, false);
-            initiateItemPurchase();
+            initiateItemPurchase(false);
             Intent stopPageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION);
             stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(stopPageLoadingActionIntent);
