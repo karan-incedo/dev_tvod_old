@@ -584,8 +584,8 @@ public class AppCMSPresenter {
     public boolean isAppBackground = false;
     private HashMap<String, CustomVideoPlayerView> playerViewCache;
     private HashMap<String, CustomWebView> webViewCache;
-	private AppCMSWatchlistResult filmsInUserWatchList;
-	private List<String> temporaryWatchlist;
+    private AppCMSWatchlistResult filmsInUserWatchList;
+    private List<String> temporaryWatchlist;
 
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -1721,7 +1721,7 @@ public class AppCMSPresenter {
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
                                 //Todo need to manage it depend on PP
-                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar)){
+                                if (currentActivity.getResources().getBoolean(R.bool.show_navbar)) {
                                     appbarPresent = true;
                                     navbarPresent = true;
                                 }
@@ -4393,11 +4393,11 @@ public class AppCMSPresenter {
             } else {
                 AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
                         currentActivity.getString(R.string.app_cms_page_autoplay_module_key_01));
-                if (pageAPI==null){
+                if (pageAPI == null) {
                     pageAPI = binder.getContentData().convertToAppCMSPageAPI(
                             currentActivity.getString(R.string.app_cms_page_autoplay_module_key_02));
                 }
-                if (pageAPI==null){
+                if (pageAPI == null) {
                     pageAPI = binder.getContentData().convertToAppCMSPageAPI(
                             currentActivity.getString(R.string.app_cms_page_autoplay_module_key_03));
                 }
@@ -6969,7 +6969,7 @@ public class AppCMSPresenter {
                     pageId.contains(navigationPrimary.getPageId()) &&
                     !isViewPlanPage(pageId)) {
                 return true;
-            }else if (navigationPrimary.getItems() !=null) {
+            } else if (navigationPrimary.getItems() != null) {
                 for (NavigationPrimary item : navigationPrimary.getItems()) {
                     if (pageId != null &&
                             item != null &&
@@ -7935,7 +7935,7 @@ public class AppCMSPresenter {
 
     public String getPermalinkCompletePath(String pagePath) {
         StringBuffer permalinkCompletePath = new StringBuffer();
-        if(currentActivity!=null) {
+        if (currentActivity != null) {
             permalinkCompletePath.append(currentActivity.getString(R.string.https_scheme));
             permalinkCompletePath.append(appCMSMain.getDomainName());
             //  permalinkCompletePath.append(File.separatorChar); //Commented due to Page path is already having '/' with it
@@ -8029,14 +8029,14 @@ public class AppCMSPresenter {
 
     @SuppressLint("StringFormatInvalid")
     private String getBeaconUrl() {
-         if (appCMSMain != null &&
+        if (appCMSMain != null &&
                 appCMSMain.getBeacon() != null &&
                 appCMSMain.getBeacon().getApiBaseUrl() != null) {
             return appCMSMain.getBeacon().getApiBaseUrl();
-        }else if (currentActivity!=null ){
+        } else if (currentActivity != null) {
 
-             return currentActivity.getString(R.string.app_cms_beacon_url_base);
-         }
+            return currentActivity.getString(R.string.app_cms_beacon_url_base);
+        }
         return null;
     }
 
@@ -12319,20 +12319,20 @@ public class AppCMSPresenter {
     public void showPopupWindowPlayer(View scrollView) {
 
         // if preview frame need to show than mini player will be true and miniplayer need to be hide
-        if(videoPlayerView.hideMiniPlayer){
+        if (videoPlayerView.hideMiniPlayer) {
             videoPlayerView.pausePlayer();
 
             dismissPopupWindowPlayer(false);
             return;
         }
 
-        if(!getMiniPLayerVisibility() ){
+        if (!getMiniPLayerVisibility()) {
             videoPlayerView.pausePlayer();
             return;
         }
 
         if (relativeLayoutPIP == null) {
-            relativeLayoutPIP = new MiniPlayerView(currentActivity, this,scrollView);
+            relativeLayoutPIP = new MiniPlayerView(currentActivity, this, scrollView);
         } else {
             relativeLayoutPIP.init();
         }
@@ -12347,14 +12347,12 @@ public class AppCMSPresenter {
 
 
     public void dismissPopupWindowPlayer(boolean releasePlayer) {
-        unrestrictPortraitOnly();
 
         if (relativeLayoutPIP != null) {
             relativeLayoutPIP.removeAllViews();
-            if (videoPlayerView!=null) {
+            if (videoPlayerView != null) {
                 videoPlayerView.enableController();
-                if (videoPlayerView.getParent() != null)
-                {
+                if (videoPlayerView.getParent() != null) {
                     ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
                 }
 
@@ -12493,7 +12491,7 @@ public class AppCMSPresenter {
     }
 
     public ModuleList getModuleListByName(List<ModuleList> listModule, String idOrName) {
-        int mosudlePosition=0;
+        int mosudlePosition = 0;
         for (ModuleList moduleList : listModule) {
             if (idOrName.equalsIgnoreCase(moduleList.getType()) || idOrName.equalsIgnoreCase(moduleList.getId())) {
                 moduleList.setModulePosition(mosudlePosition);
