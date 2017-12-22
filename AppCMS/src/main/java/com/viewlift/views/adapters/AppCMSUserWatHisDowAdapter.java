@@ -466,6 +466,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 }
                             }
                             if (action.contains(trayAction)) {
+                                if (viewTypeKey == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
+                                    /*play movie if already downloaded*/
+                                    playDownloaded(data, clickPosition);
+                                    return;
+                                }
                                 /*open video detail page*/
                                 appCMSPresenter.launchButtonSelectedAction(permalink,
                                         actionPresenter,

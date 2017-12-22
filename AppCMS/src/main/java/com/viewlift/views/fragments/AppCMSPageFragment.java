@@ -494,6 +494,7 @@ public class AppCMSPageFragment extends Fragment {
                                         }
                                     }
                                 } else {
+                                    appCMSPresenter.unrestrictPortraitOnly();
                                     appCMSPresenter.dismissPopupWindowPlayer(false);
                                 }
                             }

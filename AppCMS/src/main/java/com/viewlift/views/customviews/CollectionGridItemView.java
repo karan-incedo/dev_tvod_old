@@ -439,9 +439,7 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");
-                    if (appCMSPresenter.isSportsTemplate()) {
-                        view.setVisibility(GONE);
-                    }
+
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
@@ -517,9 +515,6 @@ public class CollectionGridItemView extends BaseView {
                                     .append(context.getString(R.string.mins_abbreviation));
 
                             ((TextView) view).setText(runtimeText);
-                        }
-                        if (appCMSPresenter.isSportsTemplate()) {
-                            view.setVisibility(GONE);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         // Todo thumbinfo and runtime to be separated
