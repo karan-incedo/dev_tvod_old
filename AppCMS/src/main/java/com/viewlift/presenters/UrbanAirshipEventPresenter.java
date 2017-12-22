@@ -1,7 +1,7 @@
 package com.viewlift.presenters;
 
-import com.urbanairship.UAirship;
-import com.viewlift.models.data.appcms.sites.Notifications;
+//import com.urbanairship.UAirship;
+//import com.viewlift.models.data.appcms.sites.Notifications;
 import com.viewlift.models.data.urbanairship.UAAudience;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 
@@ -81,6 +81,13 @@ public class UrbanAirshipEventPresenter {
 
         }
 
+        // NOTE: The following SDK implementation does not update the tags for the give user
+        // Testing executed using the following UA endpoint:
+        // https://go.urbanairship.com/api/named_users/?id=<userId>
+        // Http Headers:
+        // Authorization: Basic <Base64 Encoded username:password> (See UANamedUserEventCall.getBasicAuthHeaderValue())
+        // Accept: application/vnd.urbanairship+json; version=3;
+        // Content-Type: application/json
 //        UAirship.shared().getNamedUser().setId(userId);
 //        UAirship.shared()
 //                .getNamedUser()
@@ -88,6 +95,9 @@ public class UrbanAirshipEventPresenter {
 //                .addTag(loggedInStatusGroup, loggedInStatusTag)
 //                .removeTag(loggedInStatusGroup, loggedOutStatusTag)
 //                .apply();
+//        UAirship.shared()
+//                .getNamedUser()
+//                .forceUpdate();
     }
 
     public void sendUserLogoutEvent(String userId,
@@ -116,6 +126,13 @@ public class UrbanAirshipEventPresenter {
 
         }
 
+        // NOTE: The following SDK implementation does not update the tags for the give user
+        // Testing executed using the following UA endpoint:
+        // https://go.urbanairship.com/api/named_users/?id=<userId>
+        // Http Headers:
+        // Authorization: Basic <Base64 Encoded username:password> (See UANamedUserEventCall.getBasicAuthHeaderValue())
+        // Accept: application/vnd.urbanairship+json; version=3;
+        // Content-Type: application/json
 //        UAirship.shared().getNamedUser().setId(userId);
 //        UAirship.shared()
 //                .getNamedUser()
@@ -123,6 +140,9 @@ public class UrbanAirshipEventPresenter {
 //                .addTag(loggedInStatusGroup, loggedOutStatusTag)
 //                .removeTag(loggedInStatusGroup, loggedInStatusTag)
 //                .apply();
+//        UAirship.shared()
+//                .getNamedUser()
+//                .forceUpdate();
     }
 
     public void sendSubscribedEvent(String userId,

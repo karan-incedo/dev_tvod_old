@@ -11950,7 +11950,7 @@ public class AppCMSPresenter {
                 new PostUANamedUserEventAsyncTask.Params
                         .Builder()
                         .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
-                        .authKey("9NvLFbMITeuJtb-AqrwOpw")
+                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
                         .build();
 
         new PostUANamedUserEventAsyncTask(uaNamedUserEventCall)
