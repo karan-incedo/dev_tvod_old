@@ -473,7 +473,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
         appCMSPresenter.setNetworkConnected(isConnected, null);
-        appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+        if (activeNetwork != null) {
+            appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+        }
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -1320,7 +1322,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             true);
                 }
             } else if (requestCode == AppCMSPresenter.ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE) {
-                appCMSPresenter.initiateItemPurchase();
+                appCMSPresenter.initiateItemPurchase(false);
             } else if (requestCode == AppCMSPresenter.CC_AVENUE_REQUEST_CODE) {
                 boolean subscriptionSuccess = data.getBooleanExtra(getString(R.string.app_cms_ccavenue_payment_success),
                         false);
@@ -1344,7 +1346,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!TextUtils.isEmpty(appCMSPresenter.getActiveSubscriptionSku())) {
                     appCMSPresenter.showConfirmCancelSubscriptionDialog(retry -> {
                         if (retry) {
-                            appCMSPresenter.initiateItemPurchase();
+                            appCMSPresenter.initiateItemPurchase(false);
                         } else {
                             appCMSPresenter.sendCloseOthersAction(null, true, false);
                         }
