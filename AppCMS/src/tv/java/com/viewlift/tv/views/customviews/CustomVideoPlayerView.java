@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
@@ -43,6 +44,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Handler;
 
 import rx.functions.Action1;
 
@@ -160,8 +162,9 @@ public class CustomVideoPlayerView
                 if (!appCMSPresenter.isUserLoggedIn()) {
                     if (userFreePlayTimeExceeded()) {
                         setBackgroundImage();
-                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                        showRestrictMessage(getUnSubscribeOvelayText());
                         toggleLoginButtonVisibility(true);
+                        exitFullScreenPlayer();
                     } else {
                         videoData = contentDatum;
                         if (shouldRequestAds)
@@ -200,16 +203,19 @@ public class CustomVideoPlayerView
                                     setBackgroundImage();
                                     showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                     toggleLoginButtonVisibility(false);
+                                    exitFullScreenPlayer();
                                 }
                             } else {
                                 setBackgroundImage();
                                 showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                 toggleLoginButtonVisibility(false);
+                                exitFullScreenPlayer();
                             }
                         } catch (Exception e) {
                             setBackgroundImage();
                             showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                             toggleLoginButtonVisibility(false);
+                            exitFullScreenPlayer();
                         }
                     });
                 }
@@ -261,15 +267,7 @@ public class CustomVideoPlayerView
                 if (appCMSPresenter.getUserFreePlayTimePreference() >= totalFreePreviewTimeInMillis) {
                     stopTimer();
                     appCMSPresenter.getCurrentActivity().runOnUiThread(() -> {
-                        String message = null;
-                        if (appCMSPresenter.getAppCMSAndroid() != null
-                                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
-                            message = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
-                        }
-                        if (message == null) {
-                            message = getResources().getString(R.string.unsubscribe_text);
-                        }
+                        String message = getUnSubscribeOvelayText();
                         if (appCMSPresenter.isUserLoggedIn()) {
                             String finalMessage = message;
                             appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
@@ -282,18 +280,21 @@ public class CustomVideoPlayerView
                                             setBackgroundImage();
                                             showRestrictMessage(finalMessage);
                                             toggleLoginButtonVisibility(false);
+                                            exitFullScreenPlayer();
                                         }
                                     } else /*Unsubscribed*/{
                                         pausePlayer();
                                         setBackgroundImage();
                                         showRestrictMessage(finalMessage);
                                         toggleLoginButtonVisibility(false);
+                                        exitFullScreenPlayer();
                                     }
                                 } catch (Exception e) {
                                     pausePlayer();
                                     setBackgroundImage();
                                     showRestrictMessage(finalMessage);
                                     toggleLoginButtonVisibility(false);
+                                    exitFullScreenPlayer();
                                 }
                             });
                         } else {
@@ -301,6 +302,7 @@ public class CustomVideoPlayerView
                             showRestrictMessage(message);
                             setBackgroundImage();
                             toggleLoginButtonVisibility(true);
+                            exitFullScreenPlayer();
                         }
                     });
 
@@ -311,6 +313,20 @@ public class CustomVideoPlayerView
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, 1000);
+    }
+
+    @NonNull
+    private String getUnSubscribeOvelayText() {
+        String message = null;
+        if (appCMSPresenter.getAppCMSAndroid() != null
+                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
+                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+            message = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+        }
+        if (message == null) {
+            message = getResources().getString(R.string.unsubscribe_text);
+        }
+        return message;
     }
 
     private boolean userFreePlayTimeExceeded() {
@@ -424,11 +440,13 @@ public class CustomVideoPlayerView
                         setBackgroundImage();
                         showRestrictMessage(getResources().getString(R.string.autoplay_off_msg));
                         toggleLoginButtonVisibility(false);
+                        exitFullScreenPlayer();
                     }
                 } else {
                     setBackgroundImage();
                     showRestrictMessage(getResources().getString(R.string.no_more_videos_in_queue));
                     toggleLoginButtonVisibility(false);
+                    exitFullScreenPlayer();
                 }
                 break;
             case STATE_BUFFERING:
@@ -1085,6 +1103,15 @@ public class CustomVideoPlayerView
             titleView.setText(contentDatum.getGist().getTitle());
         }
 
+    }
+
+    private void exitFullScreenPlayer(){
+        getPlayerView().hideController();
+        getPlayerView().setUseController(false);
+        headerTitleContaineer.setVisibility(INVISIBLE);
+        new android.os.Handler().postDelayed(() -> {
+            appCMSPresenter.exitFullScreenPlayer();
+        },100);
     }
 
 }
