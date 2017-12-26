@@ -104,6 +104,7 @@ public class AppCMSTVTrayAdapter
 
     public void setContentData(List<ContentDatum> adapterData){
         this.adapterData = adapterData;
+        sortData();
         notifyDataSetChanged();
     }
 

@@ -36,7 +36,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
-import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsLoginDialogFragment;
@@ -341,6 +340,12 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
             if (null != fragment && fragment instanceof AppCmsTVPageFragment) {
                 ((AppCmsTVPageFragment) fragment).refreshBrowseFragment();
+                AppCmsTVPageFragment appCmsTVPageFragment = ((AppCmsTVPageFragment) fragment);
+                AppCMSBinder appCmsBinder = appCMSBinderMap.get(appCmsTVPageFragment.getTag());
+                if (appCmsBinder.getPageName()
+                        .equalsIgnoreCase(getString(R.string.app_cms_history_navigation_title))) {
+                    ((AppCmsTVPageFragment) fragment).updateAdapterData(appCmsBinder);
+                }
             } else if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
                 AppCmsMyProfileFragment profileFragment = ((AppCmsMyProfileFragment) fragment);
                 AppCMSBinder appCmsBinder = appCMSBinderMap.get(profileFragment.getTag());
