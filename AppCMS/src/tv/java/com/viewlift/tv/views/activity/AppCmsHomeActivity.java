@@ -41,7 +41,6 @@ import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsLoginDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsNavigationFragment;
-import com.viewlift.tv.views.fragment.AppCmsPlayerDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsResetPasswordFragment;
 import com.viewlift.tv.views.fragment.AppCmsSearchFragment;
 import com.viewlift.tv.views.fragment.AppCmsSignUpDialogFragment;
@@ -375,6 +374,15 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     protected void onPause() {
         unregisterReceiver(presenterActionReceiver);
+
+        //when activity pause then close the full screen player.
+        if(appCMSPresenter.isFullScreenVisible){
+            appCMSPresenter.videoPlayerView.getPlayerView().hideController();
+            appCMSPresenter.videoPlayerView.getPlayerView().setUseController(false);
+            appCMSPresenter.exitFullScreenPlayer();
+            return;
+        }
+
         super.onPause();
         isActive = false;
     }
@@ -649,6 +657,8 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public void onBackPressed() {
 
         if(appCMSPresenter.isFullScreenVisible){
+            appCMSPresenter.videoPlayerView.getPlayerView().hideController();
+            appCMSPresenter.videoPlayerView.getPlayerView().setUseController(false);
             appCMSPresenter.exitFullScreenPlayer();
             return;
         }
@@ -730,6 +740,40 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
         int action = event.getAction();
+        if(appCMSPresenter.isFullScreenVisible){
+            appCMSPresenter.videoPlayerView.getPlayerView().showController();
+            switch (action) {
+                case KeyEvent.ACTION_DOWN:
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                            appCMSPresenter.videoPlayerView.findViewById(R.id.exo_pause).requestFocus();
+                            appCMSPresenter.videoPlayerView.findViewById(R.id.exo_play).requestFocus();
+                            if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
+                                return super.dispatchKeyEvent(event)
+                                        || appCMSPresenter.videoPlayerView.getPlayerView()
+                                        .dispatchKeyEvent(event);
+                            }
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_REWIND:
+                            if (null != appCMSPresenter.videoPlayerView) {
+                                appCMSPresenter.videoPlayerView.findViewById(R.id.exo_rew).requestFocus();
+                                return super.dispatchKeyEvent(event);
+                            }
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                            if (null != appCMSPresenter.videoPlayerView) {
+                                appCMSPresenter.videoPlayerView.findViewById(R.id.exo_ffwd).requestFocus();
+                                return super.dispatchKeyEvent(event);
+                            }
+                        case KeyEvent.KEYCODE_DPAD_DOWN:
+                            return true;
+                        default:
+                            return super.dispatchKeyEvent(event);
+                    }
+                default:
+                    return super.dispatchKeyEvent(event);
+            }
+        }
 
         switch (action) {
             case KeyEvent.ACTION_DOWN:
@@ -1052,13 +1096,4 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         }
     }
 
-    public void showPlayerDialog(CustomVideoPlayerView customVideoPlayerView) {
-
-        AppCmsPlayerDialogFragment playerDialogFragment = new AppCmsPlayerDialogFragment();
-        playerDialogFragment.setCustomPlayerView(customVideoPlayerView);
-
-        // FragmentTransaction ft = getFragmentManager().beginTransaction();
-        playerDialogFragment.show(getFragmentManager(),"");
-
-    }
 }

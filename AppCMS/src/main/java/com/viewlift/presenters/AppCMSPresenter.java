@@ -11679,15 +11679,16 @@ public class AppCMSPresenter {
             relativeLayoutFull.setVisibility(View.VISIBLE);
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
+            videoPlayerView.getPlayerView().showController();
 
             isFullScreenVisible = true;
-            restrictLandscapeOnly();
+         /*   restrictLandscapeOnly();
             new Handler().postDelayed(() -> {
                 unrestrictPortraitOnly();
             }, 3000);
             if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-              //  ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
-            }
+                ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
+            }*/
         }
 
     }

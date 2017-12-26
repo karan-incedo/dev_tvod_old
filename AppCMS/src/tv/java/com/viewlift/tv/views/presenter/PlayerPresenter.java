@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v17.leanback.widget.Presenter;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -11,6 +12,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
+
+import rx.functions.Action1;
 
 /**
  * Created by nitin.tyagi on 11/2/2017.
@@ -78,28 +81,6 @@ public class PlayerPresenter extends Presenter {
         mCustomVideoPlayerView.requestFocusOnLogin();
 
         cardView.setBackground(Utils.getTrayBorder(context, Utils.getPrimaryHoverColor(context, appCmsPresenter), Utils.getSecondaryHoverColor(context, appCmsPresenter)));
-
-        //CustomVideoPlayerView videoPlayerView = null;
-       /* if(null != cardView && cardView.getChildCount() > 0){
-            videoPlayerView = (CustomVideoPlayerView)cardView.getChildAt(0);
-        }else {
-            videoPlayerView = playerView(cardView.getContext());
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT);
-            videoPlayerView.setLayoutParams(layoutParams);
-
-            cardView.addView(videoPlayerView);
-            boolean svodServiceType = appCmsPresenter.getAppCMSMain().getServiceType().equals(
-                    context.getString(R.string.app_cms_main_svod_service_type_key));
-
-            boolean requestAds = !svodServiceType;
-            String adsUrl = appCmsPresenter.getAdsUrl(appCmsPresenter.getPermalinkCompletePath(contentData.getGist().getPermalink()));
-            if(adsUrl == null) {
-                requestAds = false;
-            }
-            videoPlayerView.setupAds(requestAds ? adsUrl : null);
-            videoPlayerView.setVideoUri(contentData.getGist().getId());
-        }*/
     }
 
     @Override
@@ -119,15 +100,14 @@ public class PlayerPresenter extends Presenter {
         CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
         videoPlayerView.init(context);
         videoPlayerView.getPlayerView().hideController();
-        videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
+       /* videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
             @Override
             public void onVisibilityChange(int i) {
                 if (i == 0) {
                    videoPlayerView.getPlayerView().hideController();
                 }
             }
-        });
-
+        });*/
         return videoPlayerView;
     }
 

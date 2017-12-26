@@ -42,6 +42,16 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
         textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter);
     }
 
+    public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter , int zoomFactor){
+        super(zoomFactor);
+        mContext = context;
+        setShadowEnabled(false);
+        setSelectEffectEnabled(false);
+        mAppCMSPresenter  = appCMSPresenter;
+        textColor = Utils.getTitleColorForST(mContext,mAppCMSPresenter);
+    }
+
+
     @Override
     protected void onBindRowViewHolder(RowPresenter.ViewHolder holder, Object item) {
         super.onBindRowViewHolder(holder, item);
@@ -105,8 +115,8 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 headerTitleContainer.setVisibility(View.GONE);
                 headerTitle.setVisibility(View.GONE);
                 Log.d("TAG" , "Height = "+listRowHeight + "Width = "+listRowWidth);
-                listRowParam.height = /*listRowHeight;*/Utils.getViewYAxisAsPerScreen(mContext , 962);//mContext.getResources().getDisplayMetrics().heightPixels + 100;
-                listRowParam.width = /*listRowWidth;*/Utils.getViewXAxisAsPerScreen(mContext , 1590);//LinearLayout.LayoutParams.MATCH_PARENT;
+                listRowParam.height = listRowHeight;//Utils.getViewYAxisAsPerScreen(mContext , 962);
+                listRowParam.width = listRowWidth;//Utils.getViewXAxisAsPerScreen(mContext , 1590);
                 listRowView.setLayoutParams(listRowParam);
 
                 horizontalGrLayoutParams.setMargins(Utils.getViewXAxisAsPerScreen(mContext , 370), 0 , 0,0);

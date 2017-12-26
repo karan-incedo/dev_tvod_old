@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -42,6 +43,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import rx.functions.Action1;
 
 import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
 import static com.google.android.exoplayer2.Player.STATE_ENDED;
@@ -101,11 +104,19 @@ public class CustomVideoPlayerView
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         createCustomMessageView();
+        createTitleView();
         imageViewContainer = findViewById(R.id.videoPlayerThumbnailImageContainer);
         imageView = (ImageView) findViewById(R.id.videoPlayerThumbnailImage);
         setListener(this);
         parentScreenName = mContext.getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setupAds();
+        getPlayerView().hideController();
+        setOnPlayerControlsStateChanged(new Action1<Integer>() {
+            @Override
+            public void call(Integer integer) {
+                headerTitleContaineer.setVisibility(integer);
+            }
+        });
     }
 
 
@@ -121,7 +132,7 @@ public class CustomVideoPlayerView
 
     public void requestFocusOnLogin(){
         if(customMessageContaineer.getVisibility() == View.VISIBLE){
-            loginButton.requestFocus();
+            //loginButton.requestFocus();
         }
     }
 
@@ -141,6 +152,7 @@ public class CustomVideoPlayerView
         showProgressBar("Loading...");
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             this.contentDatum = contentDatum;
+            setTitle();
             adsUrl = getAdsUrl(contentDatum);
             Log.d(TAG, "CVP Free : " + contentDatum.getGist().getFree());
             if (!contentDatum.getGist().getFree()) {
@@ -408,55 +420,15 @@ public class CustomVideoPlayerView
                     if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
                         showProgressBar("Loading Next Video...");
                         setVideoUri(relatedVideoId.get(currentPlayingIndex));
-/*
-                        showProgressBar("Loading Next Video...");
-                        appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
-                            @Override
-                            public void call(ContentDatum contentDatum) {
-                                imageViewContainer.setVisibility(GONE);
-                                if (!contentDatum.getGist().getFree()) {
-                                    //check login and subscription first.
-                                    if (!appCMSPresenter.isUserLoggedIn()) {
-                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                        setBackgroundImage();
-                                    } else *//*User not logged in *//* {
-                                        //check subscription data
-                                        appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
-                                            try {
-                                                if (appCMSUserSubscriptionPlanResult != null) {
-                                                    String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                                                    if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                                            subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                                       // if (shouldRequestAds) requestAds(adsUrl);
-                                                        playVideos(currentPlayingIndex, contentDatum);
-                                                    } else *//*user not subscribed*//* {
-                                                        setBackgroundImage();
-                                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                                    }
-                                                } else *//*received null result from API in appCMSUserSubscriptionPlanResult*//* {
-                                                    setBackgroundImage();
-                                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                                }
-                                            } catch (Exception e) {
-                                                setBackgroundImage();
-                                                showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                            }
-                                        });
-                                    }
-                                } else *//*Video is free*//* {
-                                   // if (shouldRequestAds) requestAds(adsUrl);
-                                    playVideos(currentPlayingIndex, contentDatum);
-                                    imageViewContainer.setVisibility(GONE);
-                                }
-                            }
-                        });*/
                     } else /*Autoplay is turned-off*/ {
                         setBackgroundImage();
                         showRestrictMessage(getResources().getString(R.string.autoplay_off_msg));
+                        toggleLoginButtonVisibility(false);
                     }
                 } else {
                     setBackgroundImage();
                     showRestrictMessage(getResources().getString(R.string.no_more_videos_in_queue));
+                    toggleLoginButtonVisibility(false);
                 }
                 break;
             case STATE_BUFFERING:
@@ -620,7 +592,7 @@ public class CustomVideoPlayerView
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(300, 75);
         loginButton.setLayoutParams(buttonParams);
         loginButton.setPadding(50,0,50,0);
-        loginButton.setBackground(getResources().getDrawable(R.drawable.st_subscriber_module_color_selector));
+        loginButton.setBackgroundColor(getResources().getColor(R.color.colorAccent)/*getResources().getDrawable(R.drawable.st_subscriber_module_color_selector)*/);
         customMessageContaineer.addView(loginButton);
         loginButton.setVisibility(View.VISIBLE);
 
@@ -685,12 +657,22 @@ public class CustomVideoPlayerView
         }
     }
 
+    public boolean isLoginButtonVisible(){
+        return ( (loginButton.getVisibility() == View.VISIBLE)
+                 && (customMessageContaineer.getVisibility() == View.VISIBLE));
+    }
+
+    public void performLoginButtonClick(){
+        if(null != loginButton){
+            loginButton.performClick();
+        }
+    }
      private void showRestrictMessage(String message) {
         if (null != customMessageContaineer && null != customMessageView) {
             hideProgressBar();
             customMessageView.setText(message);
             customMessageContaineer.setVisibility(View.VISIBLE);
-            loginButton.requestFocus();
+           // loginButton.requestFocus();
         }
     }
 
@@ -1072,6 +1054,37 @@ public class CustomVideoPlayerView
                 }
             }
         }
+    }
+    LinearLayout headerTitleContaineer;
+    TextView titleView;
+    private void createTitleView(){
+        headerTitleContaineer = new LinearLayout(getContext());
+        FrameLayout.LayoutParams containeerParam = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , Utils.getViewYAxisAsPerScreen(mContext , 100));
+        containeerParam.gravity = Gravity.TOP;
+
+        headerTitleContaineer.setLayoutParams(containeerParam);
+        headerTitleContaineer.setGravity(Gravity.CENTER_VERTICAL);
+        headerTitleContaineer.setBackgroundColor(getResources().getColor(R.color.appcms_shadow_color));
+
+        titleView = new TextView(getContext());
+        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT ,LinearLayout.LayoutParams.WRAP_CONTENT);
+        textViewParams.leftMargin = 20;
+        titleView.setLayoutParams(textViewParams);
+        titleView.setSingleLine(true);
+        titleView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        titleView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        titleView.setTextColor(Color.parseColor(Utils.getTextColor(getContext() , appCMSPresenter)));
+        titleView.setTextSize(24);
+        headerTitleContaineer.addView(titleView);
+        addView(headerTitleContaineer);
+        headerTitleContaineer.setVisibility(View.INVISIBLE);
+    }
+
+    private void setTitle(){
+        if(null != titleView){
+            titleView.setText(contentDatum.getGist().getTitle());
+        }
+
     }
 
 }

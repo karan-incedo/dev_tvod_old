@@ -147,10 +147,18 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
+            if(appCMSPresenter.isFullScreenVisible){
+                return;
+            }
             if (null != item && item instanceof BrowseFragmentRowData) {
                 BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
                 if(rowData.isPlayerComponent){
+                    if(customVideoVideoPlayerView.isLoginButtonVisible()){
+                        customVideoVideoPlayerView.performLoginButtonClick();
+                        return;
+                    }
                     appCMSPresenter.setVideoPlayerView(customVideoVideoPlayerView);
+                    appCMSPresenter.videoPlayerView.getPlayerView().setUseController(true);
                     appCMSPresenter.showFullScreenPlayer();
                     return;
                 }
@@ -207,6 +215,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                    RowPresenter.ViewHolder rowViewHolder, Row row) {
+            if(appCMSPresenter.isFullScreenVisible){
+                return;
+            }
+
             if (null != item && item instanceof BrowseFragmentRowData) {
                 isPlayerComponentSelected = false;
                 rowData = (BrowseFragmentRowData) item;

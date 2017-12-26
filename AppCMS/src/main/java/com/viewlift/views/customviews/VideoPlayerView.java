@@ -463,10 +463,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
-    @Override
-    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
 
-    }
 
     @Override
     public void onPlayerError(ExoPlaybackException e) {
@@ -477,7 +474,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
-    public void onPositionDiscontinuity(int reason) {
+    public void onPositionDiscontinuity() {
 
     }
 
@@ -487,10 +484,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
-    @Override
-    public void onSeekProcessed() {
-
-    }
 
     public void sendPlayerPosition(long position) {
         mCurrentPlayerPosition = position;

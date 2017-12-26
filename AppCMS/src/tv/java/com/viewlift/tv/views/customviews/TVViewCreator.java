@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.FocusHighlight;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -236,9 +237,15 @@ public class TVViewCreator {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.standaloneplayer))) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
             }
-
             if (null == mRowsAdapter) {
-                AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+                AppCmsListRowPresenter appCmsListRowPresenter;
+
+                if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                    appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter , FocusHighlight.ZOOM_FACTOR_NONE);
+                }else{
+                    appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+                }
+
                 mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
             }
             for (Component component : module.getComponents()) {
@@ -475,7 +482,7 @@ public class TVViewCreator {
                     customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                     customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
                     customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                    customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getWidth()));
+                    customHeaderItem.setmListRowWidth(Integer.valueOf(moduleUI.getLayout().getTv().getWidth()));
 
 
                     PlayerPresenter playerPresenter = new PlayerPresenter(context, appCMSPresenter ,
