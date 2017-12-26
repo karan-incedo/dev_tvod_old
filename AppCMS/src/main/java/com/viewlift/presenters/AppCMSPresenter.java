@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
@@ -184,6 +185,8 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
+import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
+import com.viewlift.tv.views.customviews.FullPlayerView;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -11656,5 +11659,91 @@ public class AppCMSPresenter {
                 now.getTime(),
                 appCMSMain.getSite());
     }
+
+
+    public CustomVideoPlayerView videoPlayerView;
+    public ViewGroup videoPlayerViewParent;
+    private RelativeLayout relativeLayoutFull;
+    public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView) {
+        this.videoPlayerView = customVideoPlayerView;
+    }
+
+    public static boolean isFullScreenVisible;
+
+    public void showFullScreenPlayer() {
+        if (videoPlayerViewParent == null) {
+            videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
+        }
+        if (videoPlayerView != null && videoPlayerView.getParent() != null) {
+            relativeLayoutFull = new FullPlayerView(currentActivity, this);
+            relativeLayoutFull.setVisibility(View.VISIBLE);
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
+
+            isFullScreenVisible = true;
+            restrictLandscapeOnly();
+            new Handler().postDelayed(() -> {
+                unrestrictPortraitOnly();
+            }, 3000);
+            if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
+              //  ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
+            }
+        }
+
+    }
+
+    public void exitFullScreenPlayer() {
+        try {
+            if (relativeLayoutFull != null) {
+//                relativeLayoutFull.removeAllViews();
+                if (videoPlayerViewParent != null) {
+                    relativeLayoutFull.removeView(videoPlayerView);
+                    videoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
+         //           videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
+                    videoPlayerViewParent.addView(videoPlayerView);
+                }
+
+//                relativeLayoutFull.setVisibility(View.GONE);
+//                relativeLayoutFull.removeAllViews();
+
+                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+                rootView.postDelayed(() -> {
+                    try {
+                        rootView.removeView(relativeLayoutFull);
+                        relativeLayoutFull = null;
+                    } catch (Exception e) {
+
+                    }
+                }, 50);
+
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        if (relativeLayoutFull != null) {
+            relativeLayoutFull.setVisibility(View.GONE);
+        }
+      //  restrictPortraitOnly();
+
+/*
+        new Handler().postDelayed(() -> {
+            if (currentActivity != null && isAutoRotate() &&
+                    !AppCMSPresenter.isFullScreenVisible &&
+                    currentActivity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
+                    currentActivity.findViewById(R.id.video_player_id) != null) {
+                unrestrictPortraitOnly();
+            } else if (currentActivity != null && !BaseView.isTablet(currentActivity) && currentActivity.findViewById(R.id.video_player_id) == null) {
+                restrictPortraitOnly();
+            } else if (BaseView.isTablet(currentActivity)) {
+                unrestrictPortraitOnly();
+            }
+        }, 100);
+
+        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
+            ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();
+        }*/
+        isFullScreenVisible = false;
+    }
+
 
 }

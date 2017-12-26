@@ -1,5 +1,7 @@
 package com.viewlift.tv.views.fragment;
 
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -25,6 +28,8 @@ import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 import com.viewlift.tv.views.customviews.TVPageView;
+
+import static com.viewlift.tv.utility.Utils.getViewYAxisAsPerScreen;
 
 /**
  * Created by nitin.tyagi on 6/29/2017.
@@ -145,6 +150,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             if (null != item && item instanceof BrowseFragmentRowData) {
                 BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
                 if(rowData.isPlayerComponent){
+                    appCMSPresenter.setVideoPlayerView(customVideoVideoPlayerView);
+                    appCMSPresenter.showFullScreenPlayer();
                     return;
                 }
                 ContentDatum data = rowData.contentData;
@@ -212,7 +219,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             customVideoVideoPlayerView.requestFocusOnLogin();
                         }
                         Utils.setBrowseFragmentViewParameters(view,
-                                -40,
+                                Utils.getViewYAxisAsPerScreen(getActivity() , (int) getResources().getDimension(R.dimen.browse_fragment_margin_left)),
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
                         isPlayerComponentSelected = true;
                         showMoreContentIcon();
@@ -226,6 +233,9 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));
                         hideController();
                     }
+                   /* Utils.setBrowseFragmentViewParameters(view,
+                            (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
+                            (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));*/
                 }
             }
 

@@ -28,7 +28,7 @@
         android:label="@string/default_app_name"
         android:icon="@drawable/app_icon">
         <activity
-            android:name="com.viewlift.tv.AppCMSLeanbackActivity"
+            android:name="com.viewlift.tv.AppCmsTVSplashActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

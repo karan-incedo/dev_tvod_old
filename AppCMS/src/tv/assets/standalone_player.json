@@ -9,18 +9,20 @@
   "type": "AC StandaloneVideoPlayer 01",
   "blockName": "standaloneVideoPlayer01",
   "layout": {
-    "firetv": {
-      "yAxis": 0,
+    "ftv": {
+      "padding": 0,
       "leftMargin": 0,
-      "rightMargin": 0
+      "rightMargin": 0,
+      "height":962,
+      "width":1590
     }
   },
   "components": [
     {
       "layout": {
-        "firetv": {
-          "yAxis": 0,
-           "xAxis":0
+        "ftv": {
+         "height":872,
+          "width":1551
         }
       },
       "type": "player",

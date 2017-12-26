@@ -11,7 +11,9 @@
     <dimen name="grid_browse_fragment_margin_left">30dp</dimen>
     <dimen name="grid_browse_fragment_margin_top">-150dp</dimen>
     <dimen name="browse_fragment_margin_top">-130dp</dimen>
-    <dimen name="browse_fragment_margin_top_for_player">-190dp</dimen>
+    <dimen name="browse_fragment_margin_top_for_player">-160dp</dimen>
+  <!--  <dimen name="browse_fragment_margin_top">-160dp</dimen>
+    <dimen name="browse_fragment_margin_top_for_player">-160dp</dimen>-->
 
     <dimen name = "jumbotron_weidth">770dp</dimen>
     <dimen name = "jumbotron_height">274dp</dimen>

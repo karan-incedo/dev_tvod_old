@@ -594,7 +594,7 @@ public class CustomVideoPlayerView
         customMessageView.setGravity(Gravity.CENTER);
         customMessageView.setTextSize(20);
         customMessageView.setTypeface(null, Typeface.BOLD);
-        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(1200, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(Utils.getViewXAxisAsPerScreen(mContext , 1400), ViewGroup.LayoutParams.WRAP_CONTENT);
         textViewParams.setMargins(0, 0,0, 50);
         customMessageView.setLayoutParams(textViewParams);
         customMessageView.setPadding(20, 20, 20, 20);

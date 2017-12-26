@@ -1688,11 +1688,6 @@ public class ViewCreator {
                 componentViewResult.componentView.setId(R.id.video_player_id);
                 break;
 
-
-            case PAGE_VIDEO_DETAIL_PLAYER_VIEW_KEY:
-                break;
-
-
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)

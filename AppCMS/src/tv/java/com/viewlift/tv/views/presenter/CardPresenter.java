@@ -46,6 +46,7 @@ public class CardPresenter extends Presenter {
     private Typeface fontType;
     private boolean consumeUpKeyEvent = false;
 
+
     public CardPresenter(Context context,
                          AppCMSPresenter appCMSPresenter,
                          int height,
@@ -75,11 +76,11 @@ public class CardPresenter extends Presenter {
         final FrameLayout frameLayout = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams layoutParams;
 
-        if(mHeight != -1 && mWidth != -1) {
+        if (mHeight != -1 && mWidth != -1) {
             layoutParams = new FrameLayout.LayoutParams(
-                    Utils.getViewXAxisAsPerScreen(mContext,mWidth),
-                    Utils.getViewXAxisAsPerScreen(mContext,mHeight));
-        }else{
+                    Utils.getViewXAxisAsPerScreen(mContext, mWidth),
+                    Utils.getViewXAxisAsPerScreen(mContext, mHeight));
+        } else {
             layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT);
         }
@@ -179,7 +180,7 @@ public class CardPresenter extends Presenter {
                                 int leftMargin = 0;
                                 int topMargin = 0;
                                 if (component.getLayout() != null
-                                        && component.getLayout().getTv() != null){
+                                        && component.getLayout().getTv() != null) {
                                     if (component.getLayout().getTv().getLeftMargin() != null) {
                                         leftMargin = Integer.valueOf(component.getLayout().getTv().getLeftMargin());
                                     }
@@ -190,22 +191,22 @@ public class CardPresenter extends Presenter {
                                 parms.setMargins(leftMargin, topMargin, 0, 0);
 
                                 imageView.setLayoutParams(parms);
-                                if(null != blockName && (blockName.equalsIgnoreCase("tray01")
-                                        || blockName.equalsIgnoreCase("tray02"))){
-                                    imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
+                                if (null != blockName && (blockName.equalsIgnoreCase("tray01")
+                                        || blockName.equalsIgnoreCase("tray02"))) {
+                                    imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, component));
                                 }
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
-                                imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
+                                imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
 
                                 if (itemWidth > itemHeight) {
                                     Glide.with(mContext)
-                                            .load(contentData.getGist().getVideoImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .load(contentData.getGist().getVideoImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                             .placeholder(R.drawable.video_image_placeholder)
                                             .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))
                                             .into(imageView);
                                 } else {
                                     Glide.with(mContext)
-                                            .load(contentData.getGist().getPosterImageUrl()+ "?impolicy=resize&w="+mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .load(contentData.getGist().getPosterImageUrl() + "?impolicy=resize&w=" + mWidth + "&h=" + mHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                             .placeholder(R.drawable.poster_image_placeholder)
                                             .error(ContextCompat.getDrawable(mContext, R.drawable.poster_image_placeholder))
                                             .into(imageView);
@@ -216,7 +217,7 @@ public class CardPresenter extends Presenter {
                                 break;
 
                             case PAGE_BEDGE_IMAGE_KEY:
-                                if(null != contentData.getGist().getBadgeImages() &&
+                                if (null != contentData.getGist().getBadgeImages() &&
                                         null != contentData.getGist().getBadgeImages().get_16x9()) {
                                     Integer bedgeitemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
                                     Integer bedgeitemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
@@ -260,7 +261,7 @@ public class CardPresenter extends Presenter {
                                 Date publishedDate = new Date(contentData.getGist().getPublishDate());
                                 SimpleDateFormat spf = new SimpleDateFormat("MMM dd");
                                 String date = spf.format(publishedDate);
-                                if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata().isDisplayDuration()){
+                                if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata().isDisplayDuration()) {
                                     stringBuilder.append(time);
                                 }
                                 if (mAppCmsPresenter.getAppCMSMain().getBrand().getMetadata().isDisplayPublishedDate()) {
@@ -268,7 +269,7 @@ public class CardPresenter extends Presenter {
                                     stringBuilder.append(date);
                                 }
                                 tvTitle.setVisibility(View.VISIBLE);
-                            } else /*Don't show time and date as metadata is null*/{
+                            } else /*Don't show time and date as metadata is null*/ {
                                 tvTitle.setVisibility(View.INVISIBLE);
                             }
                             tvTitle.setText(stringBuilder);
@@ -280,8 +281,17 @@ public class CardPresenter extends Presenter {
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                             tvTitle.setText(contentData.getGist().getTitle());
                         }
-                        layoutParams.topMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getTopMargin()));
-                        layoutParams.leftMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getLeftMargin()));
+
+                        if (component.getLayout().getTv().getTopMargin() != null)
+                            layoutParams.topMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getTopMargin()));
+                        else
+                            layoutParams.topMargin = Utils.getViewYAxisAsPerScreen(mContext, 0);
+
+                        if (component.getLayout().getTv().getLeftMargin() != null)
+                            layoutParams.leftMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getLeftMargin()));
+                        else
+                            layoutParams.leftMargin = Utils.getViewYAxisAsPerScreen(mContext, 0);
+
                         tvTitle.setLayoutParams(layoutParams);
                         tvTitle.setMaxLines(2);
                         tvTitle.setTextColor(Color.parseColor(component.getTextColor()));
@@ -296,9 +306,9 @@ public class CardPresenter extends Presenter {
 
                     case PAGE_PROGRESS_VIEW_KEY:
                         FrameLayout.LayoutParams progressBarParams = new FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.MATCH_PARENT ,
-                                Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getHeight())));
-                        progressBarParams.topMargin =  Utils.getViewYAxisAsPerScreen(mContext,Integer.valueOf(component.getLayout().getTv().getYAxis()));
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
+                        progressBarParams.topMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getYAxis()));
 
                         ProgressBar progressBar = new ProgressBar(mContext,
                                 null,
@@ -306,9 +316,9 @@ public class CardPresenter extends Presenter {
                         progressBar.setLayoutParams(progressBarParams);
 
                         int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
-                        progressBar.setPadding(gridImagePadding,0,gridImagePadding,0);
-                        progressBar.setProgressDrawable(Utils.getProgressDrawable(mContext , component.getUnprogressColor() ,mAppCmsPresenter));
-                        int progress = (int)Math.ceil(Utils.getPercentage(contentData.getGist().getRuntime() , contentData.getGist().getWatchedTime()));
+                        progressBar.setPadding(gridImagePadding, 0, gridImagePadding, 0);
+                        progressBar.setProgressDrawable(Utils.getProgressDrawable(mContext, component.getUnprogressColor(), mAppCmsPresenter));
+                        int progress = (int) Math.ceil(Utils.getPercentage(contentData.getGist().getRuntime(), contentData.getGist().getWatchedTime()));
                         //Log.d("NITS>>>","Runtime = "+  contentData.getGist().getRuntime()
 //                           + " WatchedTime = "+ contentData.getGist().getWatchedTime()
 //                        +" Percentage = " + contentData.getGist().getWatchedPercentage()
@@ -323,7 +333,7 @@ public class CardPresenter extends Presenter {
     }
 
 
-    private Typeface getFontType(Component component){
+    private Typeface getFontType(Component component) {
         Typeface face = null;
         if (mJsonKeyValuemap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
             AppCMSUIKeyType fontWeight = mJsonKeyValuemap.get(component.getFontWeight());

@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -88,7 +89,7 @@ public class AppCmsNavigationFragment extends Fragment {
         appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-        view.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
+        view.setBackgroundColor(bgColor);
         TextView navMenuTile = (TextView) view.findViewById(R.id.nav_menu_title);
         View navTopLine = view.findViewById(R.id.nav_top_line);
         navMenuSubscriptionModule = (TextView) view.findViewById(R.id.nav_menu_subscription_module);
@@ -136,37 +137,37 @@ public class AppCmsNavigationFragment extends Fragment {
 
             navMenuSubscriptionModule.setOnClickListener(v -> {
 
-                        if(!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
-                            appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
-                            ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                    getActivity(),
-                                    appCMSPresenter,
-                                    getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                    getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
-                                    getString(R.string.subscription),
-                                    getString(R.string.subscription_not_purchased),
-                                    getString(R.string.sign_in_text),
-                                    getString(android.R.string.cancel),
-                                    14
-                            );
+                if (!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
+                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
+                    ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                            getActivity(),
+                            appCMSPresenter,
+                            getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                            getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
+                            getString(R.string.subscription),
+                            getString(R.string.subscription_not_purchased),
+                            getString(R.string.sign_in_text),
+                            getString(android.R.string.cancel),
+                            14
+                    );
 
-                            newFragment.setOnPositiveButtonClicked(s -> {
-                                NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                                appCMSPresenter.navigateToTVPage(
-                                        navigationUser.getPageId(),
-                                        navigationUser.getTitle(),
-                                        navigationUser.getUrl(),
-                                        false,
-                                        Uri.EMPTY,
-                                        false,
-                                        false,
-                                        true);
-                            });
-                        }else{
-                            appCMSPresenter.openTVErrorDialog(
-                                    getActivity().getString(R.string.subscription_not_purchased),
-                                    getActivity().getString(R.string.subscription), false);
-                        }
+                    newFragment.setOnPositiveButtonClicked(s -> {
+                        NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
+                        appCMSPresenter.navigateToTVPage(
+                                navigationUser.getPageId(),
+                                navigationUser.getTitle(),
+                                navigationUser.getUrl(),
+                                false,
+                                Uri.EMPTY,
+                                false,
+                                false,
+                                true);
+                    });
+                } else {
+                    appCMSPresenter.openTVErrorDialog(
+                            getActivity().getString(R.string.subscription_not_purchased),
+                            getActivity().getString(R.string.subscription), false);
+                }
             });
         }
         return view;
@@ -323,23 +324,31 @@ public class AppCmsNavigationFragment extends Fragment {
 
                                 NavigationUser navigationUser = getNavigationUser();
                                 //Log.d("","Selected Title = "+navigationUser.getTitle());
-                                if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
-                                        .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
-                                    appCmsPresenter.navigateToWatchlistPage(
-                                            navigationUser.getPageId(),
-                                            navigationUser.getTitle(),
-                                            navigationUser.getUrl(),
-                                            false);
+
+                                if (navigationUser != null) {
+
+
+                                    if (ANDROID_WATCHLIST_NAV_KEY.equals(appCmsBinder
+                                            .getJsonValueKeyMap().get(navigationUser.getTitle()))) {
+                                        appCmsPresenter.navigateToWatchlistPage(
+                                                navigationUser.getPageId(),
+                                                navigationUser.getTitle(),
+                                                navigationUser.getUrl(),
+                                                false);
+                                    } else {
+                                        appCmsPresenter.navigateToTVPage(
+                                                navigationUser.getPageId(),
+                                                navigationUser.getTitle(),
+                                                navigationUser.getUrl(),
+                                                false,
+                                                Uri.EMPTY,
+                                                false,
+                                                false,
+                                                false);
+                                    }
                                 } else {
-                                    appCmsPresenter.navigateToTVPage(
-                                            navigationUser.getPageId(),
-                                            navigationUser.getTitle(),
-                                            navigationUser.getUrl(),
-                                            false,
-                                            Uri.EMPTY,
-                                            false,
-                                            false,
-                                            false);
+                                    Toast.makeText(mContext, mContext.getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                                    Utils.pageLoading(false, getActivity());
                                 }
 
                             } else if (!appCmsPresenter.navigateToTVPage(primary.getPageId(),
@@ -388,7 +397,8 @@ public class AppCmsNavigationFragment extends Fragment {
                 setTypeFaceValue(appCmsPresenter);
                 navItemView = (TextView) itemView.findViewById(R.id.nav_item_label);
                 navItemlayout = (RelativeLayout) itemView.findViewById(R.id.nav_item_layout);
-                navItemlayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false));
+                navItemlayout.setBackground(Utils.getNavigationSelector(mContext, appCmsPresenter, false, bgColor));
+                // navItemlayout.setBackgroundColor(bgColor);
                 navItemView.setTextColor(Color.parseColor(Utils.getTextColor(mContext, appCmsPresenter)));
                 navItemView.setTypeface(semiBoldTypeFace);
                 navItemlayout.setOnFocusChangeListener(new View.OnFocusChangeListener() {

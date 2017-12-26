@@ -34,7 +34,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     private boolean isFocusOnFirstRow;
 
     public AppCmsListRowPresenter(Context context , AppCMSPresenter appCMSPresenter){
-        super(FocusHighlight.ZOOM_FACTOR_NONE);
+        super(FocusHighlight.ZOOM_FACTOR_XSMALL);
         mContext = context;
         setShadowEnabled(false);
         setSelectEffectEnabled(false);
@@ -46,18 +46,6 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
     protected void onBindRowViewHolder(RowPresenter.ViewHolder holder, Object item) {
         super.onBindRowViewHolder(holder, item);
 
-        try {
-            holder.view.setOnKeyListener((v, keyCode, event) -> {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                    if (isFocusOnFirstRow) {
-                        holder.view.clearFocus();
-                    }
-                }
-                return true;
-            });
-        } catch (Exception e) {
-            Log.d("ANAS OBVH", "Exception: " + e.getLocalizedMessage());
-        }
         if(null != holder.getRow()){
             LinearLayout headerTitleContainer =  ((LinearLayout)holder.getHeaderViewHolder().view);
             final RowHeaderView headerTitle = (RowHeaderView)headerTitleContainer.findViewById(R.id.row_header);
@@ -74,26 +62,10 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             ListRowView listRowView = (ListRowView) holder.view;
             LinearLayout.LayoutParams listRowParam = (LinearLayout.LayoutParams) listRowView.getLayoutParams();
 
-            listRowView.setOnKeyListener((v, keyCode, event) -> {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                    if (isFocusOnFirstRow) {
-                        holder.getSelectedItemViewHolder().view.clearFocus();
-                    }
-                }
-                return true;
-            });
-
             //Horizontal GridView and its layout Params.
             HorizontalGridView horizontalGridView = listRowView.getGridView();
             LinearLayout.LayoutParams horizontalGrLayoutParams = (LinearLayout.LayoutParams) horizontalGridView.getLayoutParams();
-            horizontalGridView.setOnKeyListener((v, keyCode, event) -> {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-                    if (isFocusOnFirstRow) {
-                        horizontalGridView.clearFocus();
-                    }
-                }
-                return true;
-            });
+
             //HeaderTitle layout Params.
             LinearLayout.LayoutParams headerTitleContainerLayoutParams = (LinearLayout.LayoutParams) headerTitleContainer.getLayoutParams();
 
@@ -111,6 +83,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             int listRowLeftmargin = Utils.getViewXAxisAsPerScreen(mContext, customHeaderItem.getmListRowLeftMargin());
             int listRowRightmargin = Utils.getViewXAxisAsPerScreen(mContext, customHeaderItem.getmListRowRightMargin());
             int listRowHeight = Utils.getViewYAxisAsPerScreen(mContext, customHeaderItem.getmListRowHeight());
+            int listRowWidth = Utils.getViewXAxisAsPerScreen(mContext, customHeaderItem.getmListRowWidth());
 
             headerTitle.setTextSize(customHeaderItem.getFontSize());
 
@@ -131,12 +104,12 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
             if(customHeaderItem.ismIsLivePlayer()){
                 headerTitleContainer.setVisibility(View.GONE);
                 headerTitle.setVisibility(View.GONE);
-
-                listRowParam.height = mContext.getResources().getDisplayMetrics().heightPixels + 100;
-                listRowParam.width = LinearLayout.LayoutParams.MATCH_PARENT;
+                Log.d("TAG" , "Height = "+listRowHeight + "Width = "+listRowWidth);
+                listRowParam.height = /*listRowHeight;*/Utils.getViewYAxisAsPerScreen(mContext , 962);//mContext.getResources().getDisplayMetrics().heightPixels + 100;
+                listRowParam.width = /*listRowWidth;*/Utils.getViewXAxisAsPerScreen(mContext , 1590);//LinearLayout.LayoutParams.MATCH_PARENT;
                 listRowView.setLayoutParams(listRowParam);
 
-                horizontalGrLayoutParams.setMargins(-70, 0 , 0,0);
+                horizontalGrLayoutParams.setMargins(Utils.getViewXAxisAsPerScreen(mContext , 370), 0 , 0,0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
 
                 return;

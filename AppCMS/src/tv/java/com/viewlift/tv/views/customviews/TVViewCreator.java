@@ -232,6 +232,11 @@ public class TVViewCreator {
             } else {
                 isCaurosel = false;
             }
+
+            if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.standaloneplayer))) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
+            }
+
             if (null == mRowsAdapter) {
                 AppCmsListRowPresenter appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
                 mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
@@ -467,7 +472,16 @@ public class TVViewCreator {
                     customHeaderItem.setmIsCarousal(false);
                     customHeaderItem.setmIsLivePlayer(true);
                     customHeaderItem.setmModuleId((moduleData != null) ? moduleData.getId() : null);
-                    PlayerPresenter playerPresenter = new PlayerPresenter(context, appCMSPresenter);
+                    customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+                    customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+                    customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+                    customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getWidth()));
+
+
+                    PlayerPresenter playerPresenter = new PlayerPresenter(context, appCMSPresenter ,
+                            Integer.valueOf(component.getLayout().getTv().getHeight()),
+                            Integer.valueOf(component.getLayout().getTv().getWidth()));
+
                     if (videoPlayerView == null) {
                         videoPlayerView = playerPresenter.playerView(context);
                         playerPresenter.setVideoPlayerView(videoPlayerView, true);

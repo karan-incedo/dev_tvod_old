@@ -129,9 +129,9 @@ else
     postBuildStatus ${28} $POST_URL "FOUND_APP" ""
 fi
 
-emulator -avd Nexus_5X_API_23 & adb wait-for-device
+#emulator -avd Nexus_5X_API_23 & adb wait-for-device
 
-sleep 5s # Waits 5 seconds.
+#sleep 5s # Waits 5 seconds.
 
 #emulator -avd Nexus_10_API_24 & adb wait-for-device
 
