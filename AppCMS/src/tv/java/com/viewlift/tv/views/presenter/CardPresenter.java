@@ -163,11 +163,13 @@ public class CardPresenter extends Presenter {
 
                                 imageView.setLayoutParams(parms);
                                 if (null != blockName && (blockName.equalsIgnoreCase("tray01")
-                                        || blockName.equalsIgnoreCase("tray02"))) {
+                                        || blockName.equalsIgnoreCase("tray02")
+                                        || blockName.equalsIgnoreCase("continueWatching01"))) {
                                     imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, component));
                                 }
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
+                                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
                                 if (itemWidth > itemHeight) {
                                     Glide.with(mContext)

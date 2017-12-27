@@ -90,6 +90,7 @@ public class JumbotronPresenter extends CardPresenter {
                                 imageView.setBackground(Utils.getTrayBorder(mContext,borderColor,component));
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding,gridImagePadding,gridImagePadding,gridImagePadding);
+                                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
                                 Glide.with(mContext)
                                         .load(contentData.getGist().getVideoImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                         .error(ContextCompat.getDrawable(mContext, R.drawable.video_image_placeholder))

@@ -78,6 +78,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -497,7 +498,7 @@ public class AppCMSPresenter {
     private MetaPage tosPage;
 
     private PlatformType platformType;
-    private TemplateType templateType = TemplateType.SPORTS;
+    private TemplateType templateType = TemplateType.ENTERTAINMENT;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
     private LaunchType launchType;
     private IInAppBillingService inAppBillingService;
@@ -4162,15 +4163,14 @@ public class AppCMSPresenter {
                                 if (appCMSVideoDetail != null) {
                                     binder.setContentData(appCMSVideoDetail.getRecords().get(0));
                                     AppCMSPageAPI pageAPI = null;
-                                    for (ModuleList moduleList :
-                                            appCMSPageUI.getModuleList()) {
-                                        if (moduleList.getType().equals(currentActivity
-                                                .getString(R.string.app_cms_page_autoplay_module_key))) {
+                                    for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
+                                        if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY)) {
                                             pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
                                                     moduleList.getType());
                                             break;
                                         }
                                     }
+
                                     if (pageAPI != null) {
                                         launchAutoplayActivity(currentActivity,
                                                 appCMSPageUI,
@@ -4201,7 +4201,7 @@ public class AppCMSPresenter {
                         }).execute(params);
             } else {
                 AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
-                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key));
+                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key_01));
 
                 if (pageAPI != null) {
                     launchAutoplayActivity(currentActivity,
@@ -4767,7 +4767,8 @@ public class AppCMSPresenter {
 
     /**
      * this dialog is use for showing a message with OK button in case of TV.
-     *  @param message
+     *
+     * @param message
      * @param headerTitle
      * @param shouldNavigateToLogin
      */
@@ -5570,6 +5571,7 @@ public class AppCMSPresenter {
 
     /**
      * Get the total remaining free time of the user.
+     *
      * @return total remaining time in milli seconds
      */
     public long getUserFreePlayTimePreference() {
@@ -5582,6 +5584,7 @@ public class AppCMSPresenter {
 
     /**
      * Set the total remaining free time of the user.
+     *
      * @param userFreePlayTime in milli seconds
      */
     public void setUserFreePlayTimePreference(long userFreePlayTime) {
@@ -6584,7 +6587,7 @@ public class AppCMSPresenter {
         for (NavigationFooter navigationFooter : navigation.getNavigationFooter()) {
             if (pageId != null &&
                     !TextUtils.isEmpty(pageId) &&
-            navigationFooter != null &&
+                    navigationFooter != null &&
                     !TextUtils.isEmpty(navigationFooter.getPageId())
                     && pageId.contains(navigationFooter.getPageId())) {
                 return true;
@@ -8326,7 +8329,7 @@ public class AppCMSPresenter {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
 
-                                        }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                                        } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -8342,9 +8345,9 @@ public class AppCMSPresenter {
                                                     false,
                                                     false);
 
-                                        }  else if (getLaunchType() == LaunchType.HOME) {
-                                                Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
-                                                currentActivity.sendBroadcast(updateSubscription);
+                                        } else if (getLaunchType() == LaunchType.HOME) {
+                                            Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                                            currentActivity.sendBroadcast(updateSubscription);
 
                                             getPlayerLruCache().evictAll();
                                             navigateToTVPage(
@@ -8411,7 +8414,7 @@ public class AppCMSPresenter {
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                 currentActivity.sendBroadcast(updateSubscription);
 
-                            }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                            } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
                                 Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                 currentActivity.sendBroadcast(myProfileIntent);
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -8427,7 +8430,7 @@ public class AppCMSPresenter {
                                         false,
                                         false);
 
-                            }  else if (getLaunchType() == LaunchType.HOME) {
+                            } else if (getLaunchType() == LaunchType.HOME) {
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                 currentActivity.sendBroadcast(updateSubscription);
 
@@ -8841,7 +8844,7 @@ public class AppCMSPresenter {
     }
 
     public void launchBlankPage() {
-        if(getPlatformType() == PlatformType.ANDROID) {
+        if (getPlatformType() == PlatformType.ANDROID) {
             if (currentActivity != null) {
                 Bundle args = getPageActivityBundle(currentActivity,
                         null,
@@ -8862,7 +8865,7 @@ public class AppCMSPresenter {
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 currentActivity.startActivity(appCMSIntent);
             }
-        }else if(getPlatformType() == PlatformType.TV){
+        } else if (getPlatformType() == PlatformType.TV) {
             launchErrorActivity(PlatformType.TV);
         }
     }
@@ -9754,7 +9757,7 @@ public class AppCMSPresenter {
                     }
                     navigation = appCMSAndroidUI.getNavigation();
 
-                    if(getTemplateType() == TemplateType.ENTERTAINMENT) {
+                    if (getTemplateType() == TemplateType.ENTERTAINMENT) {
                         //add search in navigation item.
                         NavigationPrimary myProfile = new NavigationPrimary();
                         myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
@@ -9779,7 +9782,7 @@ public class AppCMSPresenter {
                                 //Log.d(TAG, "Launching first page: " + firstPage.getPageName());
                                 cancelInternalEvents();
 
-                                if(getTemplateType() == TemplateType.ENTERTAINMENT) {
+                                if (getTemplateType() == TemplateType.ENTERTAINMENT) {
                                     Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
                                     currentActivity.sendBroadcast(logoAnimIntent);
                                 }
@@ -10255,7 +10258,7 @@ public class AppCMSPresenter {
                                     && !contentDatum.getStreamingInfo().getIsLiveStream();
 
                             adsUrl = getAdsUrl(pagePath);
-                            if(adsUrl == null) {
+                            if (adsUrl == null) {
                                 requestAds = false;
                             }
                             String backgroundColor = appCMSMain.getBrand()
@@ -10390,8 +10393,15 @@ public class AppCMSPresenter {
                                 if (appCMSPageAPI != null) {
                                     cancelInternalEvents();
                                     pushActionInternalEvents(this.action + BaseView.isLandscape(currentActivity));
-                                    Bundle args = getPageActivityBundle(currentActivity,
-                                            this.appCMSPageUI,
+
+//                                    AppCMSPageUI appCMSPageUI1;
+//                                    if (pageId.equalsIgnoreCase("2732e02e-daa4-4818-ae2d-5a224920d053")) {
+//                                        appCMSPageUI1 = new GsonBuilder().create().fromJson(com.viewlift.tv.utility.Utils.loadJsonFromAssets(currentActivity, "test.json"), AppCMSPageUI.class);
+//                                    } else {
+//                                        appCMSPageUI1 = appCMSPageUI;
+//                                    }
+
+                                    Bundle args = getPageActivityBundle(currentActivity, this.appCMSPageUI,
                                             appCMSPageAPI,
                                             this.pageId,
                                             appCMSPageAPI.getTitle(),
@@ -10621,7 +10631,7 @@ public class AppCMSPresenter {
     }
 
     @SuppressWarnings("unused")
-    public void openSearch(String pageId , String pageTitle) {
+    public void openSearch(String pageId, String pageTitle) {
         Intent searchIntent = new Intent(SEARCH_ACTION);
         Bundle bundle = getPageActivityBundle(
                 currentActivity,
@@ -10630,8 +10640,8 @@ public class AppCMSPresenter {
                 pageId,
                 pageTitle,
                 pageIdToPageNameMap.get(pageId),
-                pageTitle,false,false,false,false,
-                false,Uri.EMPTY,ExtraScreenType.NONE
+                pageTitle, false, false, false, false,
+                false, Uri.EMPTY, ExtraScreenType.NONE
         );
 
         searchIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -11618,15 +11628,16 @@ public class AppCMSPresenter {
         }
     }
 
-    public MetaPage getPrivacyPolicyPage(){
+    public MetaPage getPrivacyPolicyPage() {
         return privacyPolicyPage;
     }
 
-    public MetaPage getTosPage(){
+    public MetaPage getTosPage() {
         return tosPage;
     }
 
-    private LruCache<String , Object> tvPlayerViewCache;
+    private LruCache<String, Object> tvPlayerViewCache;
+
     public LruCache<String, Object> getPlayerLruCache() {
         if (tvPlayerViewCache == null) {
             int Player_lru_cache_size = 5;
