@@ -386,7 +386,8 @@ public class CustomVideoPlayerView
             setUri(Uri.parse(url), null);
             if (null != appCMSPresenter.getCurrentActivity() &&
                     appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
-                if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
+                if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive
+                        && !((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isHardPause()) {
                   /*  if(shouldRequestAds){
                         requestAds(adsUrl);
                     }else {*/
@@ -950,24 +951,16 @@ public class CustomVideoPlayerView
                 View rewind = getPlayerView().findViewById(R.id.exo_rew);
                 rewind.setTag(rewind.getVisibility());
                 rewind.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-                    int newVis = rewind.getVisibility();
-                    if ((int) rewind.getTag() != newVis) {
-                        rewind.setTag(rewind.getVisibility());
-                        if (rewind.getVisibility() == VISIBLE) {
-                            rewind.setVisibility(GONE);
-                        }
+                    if (rewind.getVisibility() == VISIBLE) {
+                        rewind.setVisibility(GONE);
                     }
                 });
 
                 View forward = getPlayerView().findViewById(R.id.exo_ffwd);
                 forward.setTag(rewind.getVisibility());
                 forward.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-                    int newVis = forward.getVisibility();
-                    if ((int) forward.getTag() != newVis) {
-                        forward.setTag(forward.getVisibility());
-                        if (forward.getVisibility() == VISIBLE) {
-                            forward.setVisibility(GONE);
-                        }
+                    if (forward.getVisibility() == VISIBLE) {
+                        forward.setVisibility(GONE);
                     }
                 });
             }

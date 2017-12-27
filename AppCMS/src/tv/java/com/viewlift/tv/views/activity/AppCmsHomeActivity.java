@@ -81,6 +81,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
     private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
     private FrameLayout subNavHolder;
+    private boolean isHardPause;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -745,7 +746,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
         int action = event.getAction();
-        if(appCMSPresenter.isFullScreenVisible){
+        if(AppCMSPresenter.isFullScreenVisible){
             appCMSPresenter.videoPlayerView.getPlayerView().showController();
             switch (action) {
                 case KeyEvent.ACTION_DOWN:
@@ -754,11 +755,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             appCMSPresenter.videoPlayerView.findViewById(R.id.exo_pause).requestFocus();
                             appCMSPresenter.videoPlayerView.findViewById(R.id.exo_play).requestFocus();
                             if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
+                                isHardPause = appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady();
                                 return super.dispatchKeyEvent(event)
                                         || appCMSPresenter.videoPlayerView.getPlayerView()
                                         .dispatchKeyEvent(event);
                             }
                             break;
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                            if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
+                                isHardPause = appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady();
+                            }
+                            return super.dispatchKeyEvent(event);
                         case KeyEvent.KEYCODE_MEDIA_REWIND:
                             if (null != appCMSPresenter.videoPlayerView) {
                                 appCMSPresenter.videoPlayerView.findViewById(R.id.exo_rew).requestFocus();
@@ -1101,4 +1108,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         }
     }
 
+    public boolean isHardPause() {
+        return isHardPause;
+    }
+
+    public void setHardPause(boolean hardPause) {
+        isHardPause = hardPause;
+    }
 }
