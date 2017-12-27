@@ -73,7 +73,6 @@
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
-        <item>AC RawHtml 01</item>
         <item>AC WebFrame 01</item>
     </string-array>
 
@@ -461,4 +460,7 @@
     <string name="icon_image_key">iconImage</string>
 
     <string name="app_cms_subtitle_label">subtitleLabel</string>
+
+    <string name="app_cms_rawhtml_title_key">rawHtmlTitleKey</string>
+    <string name="app_cms_rawhtml_image_key">rawHtmlImageKey</string>
 </resources>

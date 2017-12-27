@@ -87,6 +87,8 @@ import com.viewlift.views.customviews.StarRating;
 import com.viewlift.views.customviews.ViewCreatorMultiLineLayoutListener;
 import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 
+import org.jsoup.Jsoup;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -237,7 +239,7 @@ public class TVViewCreator {
             }
 
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.standaloneplayer))) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
+             //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
             }
 
 
@@ -272,13 +274,10 @@ public class TVViewCreator {
               //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
             }
 
-         /*   if (context.getResources().getString(R.string.app_cms_ancillary_pages_module).equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
+           if ("AC RawHtml 01".equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "rawhtml01.json"), ModuleList.class);
             }
-*/
-         /*   if ("AC ContactUs 01".equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
-            }*/
+
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -1349,7 +1348,15 @@ public class TVViewCreator {
                             ((TextView) componentViewResult.componentView).setMaxLines(2);
                             ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                             break;
-
+                        case RAW_HTML_TITLE_KEY:
+                            String txtColor = Utils.getTitleColorForST(context , appCMSPresenter);
+                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(txtColor));
+                            if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
+                                ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                            }
+                            ((TextView) componentViewResult.componentView).setMaxLines(1);
+                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            break;
                         case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
@@ -1743,6 +1750,19 @@ public class TVViewCreator {
                         });
                         break;
 
+                    case RAW_HTML_IMAGE_KEY:
+                        String imgUrl = "";
+                        try {
+                            imgUrl = Jsoup.parse(moduleAPI.getRawText()).body().getElementsByAttribute("src").attr("src");
+                        }catch (Exception e){
+                        }
+                        Glide.with(context)
+                                .load(imgUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                .into((ImageView) componentViewResult.componentView);
+                        break;
+
                     case PAGE_THUMBNAIL_VIDEO_IMAGE_KEY:
                         int imageWidth = (int) Utils.getViewWidth(context,
                                 component.getLayout(),
@@ -1813,7 +1833,6 @@ public class TVViewCreator {
                     case PAGE_VIDEO_DETAIL_APP_LOGO_KEY:
                         componentViewResult.componentView.setBackgroundResource(R.drawable.app_logo);
                         break;
-
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             Glide.with(context)

@@ -647,6 +647,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BANNER_DETAIL_BUTTON);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_banner_detail_title_key),
                 AppCMSUIKeyType.PAGE_BANNER_DETAIL_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_rawhtml_title_key),
+                AppCMSUIKeyType.RAW_HTML_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_rawhtml_image_key),
+                AppCMSUIKeyType.RAW_HTML_IMAGE_KEY);
     }
 
     private void createPageNameToActionMap(Context context) {
