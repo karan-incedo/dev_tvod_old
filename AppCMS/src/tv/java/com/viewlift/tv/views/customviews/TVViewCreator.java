@@ -254,20 +254,12 @@ public class TVViewCreator {
             }
             return null;
         } else {
-            if (context.getResources().getString(R.string.appcms_watchlist_module).equalsIgnoreCase(module.getView())) {
+            if (module.getView().contains("AC Watchlist")) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
             }
 
-            if (context.getResources().getString(R.string.app_cms_page_history_module_key).equalsIgnoreCase(module.getView())) {
+            if (module.getView().contains("AC History")) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
-            }
-
-            if (context.getResources().getString(R.string.app_cms_ancillary_pages_module).equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
-            }
-
-            if ("AC ContactUs 01".equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
             }
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
@@ -1011,57 +1003,50 @@ public class TVViewCreator {
                             buttonRemoveAll.setId(R.id.appcms_removeall);
                             buttonRemoveAll.setOnClickListener(v -> {
                                 OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
-                                switch (jsonValueKeyMap.get(viewType)) {
-                                    case PAGE_HISTORY_MODULE_KEY:
-                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                                context,
-                                                appCMSPresenter,
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
-                                                null,
-                                                context.getString(R.string.clear_history_message),
-                                                context.getString(R.string.yes),
-                                                context.getString(android.R.string.cancel),
-                                                22.5f
+                                if (viewType.contains("AC History")){
+                                    ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                            context,
+                                            appCMSPresenter,
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                            null,
+                                            context.getString(R.string.clear_history_message),
+                                            context.getString(R.string.yes),
+                                            context.getString(android.R.string.cancel),
+                                            22.5f
 
-                                        );
-                                        newFragment.setOnPositiveButtonClicked(s ->
-                                                appCMSPresenter.makeClearHistoryRequest(
-                                                        appCMSDeleteHistoryResult -> {
-                                                            onInternalEvent.sendEvent(null);
-                                                            buttonRemoveAll.setFocusable(false);
-                                                            buttonRemoveAll.setVisibility(View.INVISIBLE);
+                                    );
+                                    newFragment.setOnPositiveButtonClicked(s ->
+                                            appCMSPresenter.makeClearHistoryRequest(
+                                                    appCMSDeleteHistoryResult -> {
+                                                        onInternalEvent.sendEvent(null);
+                                                        buttonRemoveAll.setFocusable(false);
+                                                        buttonRemoveAll.setVisibility(View.INVISIBLE);
 
-                                                        }
-                                                )
-                                        );
-                                        break;
-
-                                    case PAGE_WATCHLIST_MODULE_KEY:
-                                        ClearDialogFragment newFragment1 = Utils.getClearDialogFragment(
-                                                context,
-                                                appCMSPresenter,
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
-                                                null,
-                                                context.getString(R.string.clear_watchlist_message),
-                                                context.getString(R.string.yes),
-                                                context.getString(android.R.string.cancel),
-                                                22.5f
-                                        );
-                                        newFragment1.setOnPositiveButtonClicked(s ->
-                                                appCMSPresenter.makeClearWatchlistRequest(
-                                                        appCMSAddToWatchlistResult -> {
-                                                            onInternalEvent.sendEvent(null);
-                                                            buttonRemoveAll.setFocusable(false);
-                                                            buttonRemoveAll.setVisibility(View.INVISIBLE);
-                                                        }
-                                                )
-                                        );
-                                        break;
-
-                                    default:
-                                        break;
+                                                    }
+                                            )
+                                    );
+                                } else if (viewType.contains("AC Watchlist")){
+                                    ClearDialogFragment newFragment1 = Utils.getClearDialogFragment(
+                                            context,
+                                            appCMSPresenter,
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                            null,
+                                            context.getString(R.string.clear_watchlist_message),
+                                            context.getString(R.string.yes),
+                                            context.getString(android.R.string.cancel),
+                                            22.5f
+                                    );
+                                    newFragment1.setOnPositiveButtonClicked(s ->
+                                            appCMSPresenter.makeClearWatchlistRequest(
+                                                    appCMSAddToWatchlistResult -> {
+                                                        onInternalEvent.sendEvent(null);
+                                                        buttonRemoveAll.setFocusable(false);
+                                                        buttonRemoveAll.setVisibility(View.INVISIBLE);
+                                                    }
+                                            )
+                                    );
                                 }
                             });
                         } else {
