@@ -498,7 +498,7 @@ public class AppCMSPresenter {
     private MetaPage tosPage;
 
     private PlatformType platformType;
-    private TemplateType templateType = TemplateType.SPORTS;
+    private TemplateType templateType = TemplateType.ENTERTAINMENT;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
     private LaunchType launchType;
     private IInAppBillingService inAppBillingService;
@@ -4163,38 +4163,13 @@ public class AppCMSPresenter {
                                 if (appCMSVideoDetail != null) {
                                     binder.setContentData(appCMSVideoDetail.getRecords().get(0));
                                     AppCMSPageAPI pageAPI = null;
-
                                     for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
-                                        if (moduleList.getType().equals(currentActivity
-                                                .getString(R.string.app_cms_page_autoplay_module_key_01))) {
+                                        if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY)) {
                                             pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
                                                     moduleList.getType());
                                             break;
                                         }
                                     }
-
-                                    if (pageAPI == null) {
-                                        for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
-                                            if (moduleList.getType().equals(currentActivity
-                                                    .getString(R.string.app_cms_page_autoplay_module_key_02))) {
-                                                pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
-                                                        moduleList.getType());
-                                                break;
-                                            }
-                                        }
-                                    }
-
-                                    if (pageAPI == null) {
-                                        for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
-                                            if (moduleList.getType().equals(currentActivity
-                                                    .getString(R.string.app_cms_page_autoplay_module_key_03))) {
-                                                pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
-                                                        moduleList.getType());
-                                                break;
-                                            }
-                                        }
-                                    }
-
 
                                     if (pageAPI != null) {
                                         launchAutoplayActivity(currentActivity,

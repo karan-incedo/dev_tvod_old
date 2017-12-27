@@ -169,6 +169,7 @@ public class CardPresenter extends Presenter {
                                 }
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
                                 imageView.setPadding(gridImagePadding, gridImagePadding, gridImagePadding, gridImagePadding);
+                                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
 
                                 if (itemWidth > itemHeight) {
                                     Glide.with(mContext)
