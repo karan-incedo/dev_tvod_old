@@ -103,6 +103,7 @@ public class TVViewCreator {
 
     private static LruCache<String, TVPageView> pageViewLruCache;
     private static int PAGE_LRU_CACHE_SIZE = 10;
+    private static int DEFAULT_GRID_COLUMN = 3;
     public ArrayObjectAdapter mRowsAdapter;
     ComponentViewResult componentViewResult;
     int trayIndex = -1;
@@ -442,7 +443,8 @@ public class TVViewCreator {
                         if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
                             List<ContentDatum> contentData1 = moduleData.getContentData();
                             List<Component> components = component.getComponents();
-                            for (ContentDatum contentData : contentData1) {
+                            for (int i = 0; i < contentData1.size(); i++) {
+                                ContentDatum contentData = contentData1.get(i);
                                 BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                                 rowData.contentData = contentData;
                                 rowData.uiComponentList = components;
@@ -450,9 +452,15 @@ public class TVViewCreator {
                                 rowData.blockName = moduleUI.getBlockName();
                                 rowData.rowNumber = trayIndex;
                                 traylistRowAdapter.add(rowData);
+                                int noOfGridItem = DEFAULT_GRID_COLUMN;
 
-                                if ((traylistRowAdapter.size()  % 3 == 0) /*already four items in the adapter*/
-                                  /*  || i == appCMSSearchResults.size() - 1 *//*Reached the last item*/) {
+                                if (null != moduleUI.getSettings()
+                                        && null != moduleUI.getSettings().getColumns()
+                                        && moduleUI.getSettings().getColumns().getOtt() > 0) {
+                                    noOfGridItem = moduleUI.getSettings().getColumns().getOtt();
+                                }
+                                if ((traylistRowAdapter.size() % noOfGridItem == 0)
+                                    || i == contentData1.size() - 1 /*Reached the last item*/) {
                                     mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                                     customHeaderItem = null;
                                     createHeaderItem(component, context, moduleUI, moduleData, "", false);
