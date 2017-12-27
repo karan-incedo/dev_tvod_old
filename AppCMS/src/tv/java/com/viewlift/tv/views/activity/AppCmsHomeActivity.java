@@ -36,7 +36,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCmsTvSearchComponent;
 import com.viewlift.tv.views.component.DaggerAppCmsTvSearchComponent;
-import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 import com.viewlift.tv.views.fragment.AppCmsBrowseFragment;
 import com.viewlift.tv.views.fragment.AppCmsGenericDialogFragment;
 import com.viewlift.tv.views.fragment.AppCmsLoginDialogFragment;
@@ -82,6 +81,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
     private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
     private FrameLayout subNavHolder;
+    private boolean isHardPause;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -341,6 +341,12 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
             if (null != fragment && fragment instanceof AppCmsTVPageFragment) {
                 ((AppCmsTVPageFragment) fragment).refreshBrowseFragment();
+                AppCmsTVPageFragment appCmsTVPageFragment = ((AppCmsTVPageFragment) fragment);
+                AppCMSBinder appCmsBinder = appCMSBinderMap.get(appCmsTVPageFragment.getTag());
+                if (appCmsBinder.getPageName()
+                        .equalsIgnoreCase(getString(R.string.app_cms_history_navigation_title))) {
+                    ((AppCmsTVPageFragment) fragment).updateAdapterData(appCmsBinder);
+                }
             } else if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
                 AppCmsMyProfileFragment profileFragment = ((AppCmsMyProfileFragment) fragment);
                 AppCMSBinder appCmsBinder = appCMSBinderMap.get(profileFragment.getTag());
@@ -740,7 +746,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
         int action = event.getAction();
-        if(appCMSPresenter.isFullScreenVisible){
+        if(AppCMSPresenter.isFullScreenVisible){
             appCMSPresenter.videoPlayerView.getPlayerView().showController();
             switch (action) {
                 case KeyEvent.ACTION_DOWN:
@@ -749,11 +755,17 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             appCMSPresenter.videoPlayerView.findViewById(R.id.exo_pause).requestFocus();
                             appCMSPresenter.videoPlayerView.findViewById(R.id.exo_play).requestFocus();
                             if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
+                                isHardPause = appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady();
                                 return super.dispatchKeyEvent(event)
                                         || appCMSPresenter.videoPlayerView.getPlayerView()
                                         .dispatchKeyEvent(event);
                             }
                             break;
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                            if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
+                                isHardPause = appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady();
+                            }
+                            return super.dispatchKeyEvent(event);
                         case KeyEvent.KEYCODE_MEDIA_REWIND:
                             if (null != appCMSPresenter.videoPlayerView) {
                                 appCMSPresenter.videoPlayerView.findViewById(R.id.exo_rew).requestFocus();
@@ -1096,4 +1108,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         }
     }
 
+    public boolean isHardPause() {
+        return isHardPause;
+    }
+
+    public void setHardPause(boolean hardPause) {
+        isHardPause = hardPause;
+    }
 }

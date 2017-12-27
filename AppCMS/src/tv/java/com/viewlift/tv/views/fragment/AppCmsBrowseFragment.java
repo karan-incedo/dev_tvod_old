@@ -1,7 +1,5 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Activity;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -28,8 +25,6 @@ import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 import com.viewlift.tv.views.customviews.TVPageView;
-
-import static com.viewlift.tv.utility.Utils.getViewYAxisAsPerScreen;
 
 /**
  * Created by nitin.tyagi on 6/29/2017.
@@ -73,7 +68,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 if(null != customVideoVideoPlayerView){
                     if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
                     } else {
-                        if(activity.isActive) {
+                        if(activity.isActive && !activity.isHardPause()) {
                             customVideoVideoPlayerView.resumePlayer();
                         }
                     }
@@ -159,6 +154,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                     }
                     appCMSPresenter.setVideoPlayerView(customVideoVideoPlayerView);
                     appCMSPresenter.videoPlayerView.getPlayerView().setUseController(true);
+                    customVideoVideoPlayerView.hideControlsForLiveStream();
                     appCMSPresenter.showFullScreenPlayer();
                     return;
                 }

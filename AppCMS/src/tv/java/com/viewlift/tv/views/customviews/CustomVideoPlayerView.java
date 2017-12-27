@@ -44,7 +44,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
 
 import rx.functions.Action1;
 
@@ -98,6 +97,7 @@ public class CustomVideoPlayerView
     private Timer timer;
     private TimerTask timerTask;
     private ContentDatum contentDatum;
+    private boolean isLiveStream;
 
     public CustomVideoPlayerView(Context context) {
         super(context);
@@ -154,6 +154,9 @@ public class CustomVideoPlayerView
         showProgressBar("Loading...");
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             this.contentDatum = contentDatum;
+            if (contentDatum.getStreamingInfo() != null) {
+                this.isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
+            }
             setTitle();
             adsUrl = getAdsUrl(contentDatum);
             Log.d(TAG, "CVP Free : " + contentDatum.getGist().getFree());
@@ -383,7 +386,8 @@ public class CustomVideoPlayerView
             setUri(Uri.parse(url), null);
             if (null != appCMSPresenter.getCurrentActivity() &&
                     appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
-                if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
+                if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive
+                        && !((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isHardPause()) {
                   /*  if(shouldRequestAds){
                         requestAds(adsUrl);
                     }else {*/
@@ -932,6 +936,35 @@ public class CustomVideoPlayerView
                 false);
         if (!TextUtils.isEmpty(message)) {
             Toast.makeText(mContext, message, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Method is used to hide the progress bar, timer, rewind and forward button when a live stream
+     * playing
+     */
+    public void hideControlsForLiveStream() {
+        try {
+            getPlayerView().findViewById(R.id.exo_progress_container).setVisibility(isLiveStream ? GONE : VISIBLE);
+
+            if (isLiveStream) {
+                View rewind = getPlayerView().findViewById(R.id.exo_rew);
+                rewind.setTag(rewind.getVisibility());
+                rewind.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                    if (rewind.getVisibility() == VISIBLE) {
+                        rewind.setVisibility(GONE);
+                    }
+                });
+
+                View forward = getPlayerView().findViewById(R.id.exo_ffwd);
+                forward.setTag(rewind.getVisibility());
+                forward.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                    if (forward.getVisibility() == VISIBLE) {
+                        forward.setVisibility(GONE);
+                    }
+                });
+            }
+        } catch (Exception e) {
         }
     }
 

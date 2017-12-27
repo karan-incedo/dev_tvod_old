@@ -485,7 +485,6 @@ public class TVViewCreator {
                             mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                         }
                     }
-
                 }
                 break;
 
@@ -1039,57 +1038,50 @@ public class TVViewCreator {
                             buttonRemoveAll.setId(R.id.appcms_removeall);
                             buttonRemoveAll.setOnClickListener(v -> {
                                 OnInternalEvent onInternalEvent = componentViewResult.onInternalEvent;
-                                switch (jsonValueKeyMap.get(viewType)) {
-                                    case PAGE_HISTORY_MODULE_KEY:
-                                        ClearDialogFragment newFragment = Utils.getClearDialogFragment(
-                                                context,
-                                                appCMSPresenter,
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
-                                                null,
-                                                context.getString(R.string.clear_history_message),
-                                                context.getString(R.string.yes),
-                                                context.getString(android.R.string.cancel),
-                                                22.5f
+                                if (viewType.contains("AC History")){
+                                    ClearDialogFragment newFragment = Utils.getClearDialogFragment(
+                                            context,
+                                            appCMSPresenter,
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                            null,
+                                            context.getString(R.string.clear_history_message),
+                                            context.getString(R.string.yes),
+                                            context.getString(android.R.string.cancel),
+                                            22.5f
 
-                                        );
-                                        newFragment.setOnPositiveButtonClicked(s ->
-                                                appCMSPresenter.makeClearHistoryRequest(
-                                                        appCMSDeleteHistoryResult -> {
-                                                            onInternalEvent.sendEvent(null);
-                                                            buttonRemoveAll.setFocusable(false);
-                                                            buttonRemoveAll.setVisibility(View.INVISIBLE);
+                                    );
+                                    newFragment.setOnPositiveButtonClicked(s ->
+                                            appCMSPresenter.makeClearHistoryRequest(
+                                                    appCMSDeleteHistoryResult -> {
+                                                        onInternalEvent.sendEvent(null);
+                                                        buttonRemoveAll.setFocusable(false);
+                                                        buttonRemoveAll.setVisibility(View.INVISIBLE);
 
-                                                        }
-                                                )
-                                        );
-                                        break;
-
-                                    case PAGE_WATCHLIST_MODULE_KEY:
-                                        ClearDialogFragment newFragment1 = Utils.getClearDialogFragment(
-                                                context,
-                                                appCMSPresenter,
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
-                                                context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
-                                                null,
-                                                context.getString(R.string.clear_watchlist_message),
-                                                context.getString(R.string.yes),
-                                                context.getString(android.R.string.cancel),
-                                                22.5f
-                                        );
-                                        newFragment1.setOnPositiveButtonClicked(s ->
-                                                appCMSPresenter.makeClearWatchlistRequest(
-                                                        appCMSAddToWatchlistResult -> {
-                                                            onInternalEvent.sendEvent(null);
-                                                            buttonRemoveAll.setFocusable(false);
-                                                            buttonRemoveAll.setVisibility(View.INVISIBLE);
-                                                        }
-                                                )
-                                        );
-                                        break;
-
-                                    default:
-                                        break;
+                                                    }
+                                            )
+                                    );
+                                } else if (viewType.contains("AC Watchlist")){
+                                    ClearDialogFragment newFragment1 = Utils.getClearDialogFragment(
+                                            context,
+                                            appCMSPresenter,
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
+                                            context.getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_height),
+                                            null,
+                                            context.getString(R.string.clear_watchlist_message),
+                                            context.getString(R.string.yes),
+                                            context.getString(android.R.string.cancel),
+                                            22.5f
+                                    );
+                                    newFragment1.setOnPositiveButtonClicked(s ->
+                                            appCMSPresenter.makeClearWatchlistRequest(
+                                                    appCMSAddToWatchlistResult -> {
+                                                        onInternalEvent.sendEvent(null);
+                                                        buttonRemoveAll.setFocusable(false);
+                                                        buttonRemoveAll.setVisibility(View.INVISIBLE);
+                                                    }
+                                            )
+                                    );
                                 }
                             });
                         } else {
@@ -1183,7 +1175,7 @@ public class TVViewCreator {
                             } else if (!TextUtils.isEmpty(component.getText())) {
                                 ((TextView) componentViewResult.componentView).setText(component.getText().toUpperCase());
                             }
-                            ((TextView) componentViewResult.componentView).setTextColor(textColor);
+                            ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(Utils.getFocusColor(context, appCMSPresenter)));
                             componentViewResult.componentView.setFocusable(false);
                             componentViewResult.componentView.setTag("TITLE");
                             break;

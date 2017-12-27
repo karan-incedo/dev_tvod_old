@@ -28,7 +28,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.RemoteException;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
@@ -4165,10 +4164,8 @@ public class AppCMSPresenter {
                                 if (appCMSVideoDetail != null) {
                                     binder.setContentData(appCMSVideoDetail.getRecords().get(0));
                                     AppCMSPageAPI pageAPI = null;
-                                    for (ModuleList moduleList :
-                                            appCMSPageUI.getModuleList()) {
-                                        if (moduleList.getType().equals(currentActivity
-                                                .getString(R.string.app_cms_page_autoplay_module_key))) {
+                                    for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
+                                        if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY)) {
                                             pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
                                                     moduleList.getType());
                                             break;
@@ -4204,7 +4201,7 @@ public class AppCMSPresenter {
                         }).execute(params);
             } else {
                 AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
-                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key));
+                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key_01));
 
                 if (pageAPI != null) {
                     launchAutoplayActivity(currentActivity,

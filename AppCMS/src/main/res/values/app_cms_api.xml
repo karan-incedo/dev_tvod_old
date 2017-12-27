@@ -212,7 +212,9 @@
     <string name="app_cms_page_video_credits_directedby_key">Directed by</string>
     <string name="app_cms_page_video_credits_directors">Directors</string>
     <string name="app_cms_page_video_credits_starring_key">Starring</string>
-    <string name="app_cms_page_autoplay_module_key">AC AutoPlay 01</string>
+    <string name="app_cms_page_autoplay_module_key_01">AC AutoPlay 01</string>
+    <string name="app_cms_page_autoplay_module_key_02">AC AutoPlay 02</string>
+    <string name="app_cms_page_autoplay_module_key_03">AC AutoPlay 03</string>
 
     <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>

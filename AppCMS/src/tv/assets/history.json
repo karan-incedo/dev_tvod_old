@@ -1,8 +1,8 @@
 {
   "id": "596730f6-c016-4cb8-b73e-96edda509f56",
   "settings": {},
-  "view": "AC History 01",
-  "type": "AC History 01",
+  "view": "AC History 02",
+  "type": "AC History 02",
   "layout": {
     "ftv": {
       "yAxis": 0,
@@ -222,7 +222,7 @@
           "key": "deleteItemButton"
         }*/
       ],
-      "itemClickAction": "lectureDetailPage",
+      "itemClickAction": "watchVideo",
       "type": "tableView",
       "key": "tableView"
     }
