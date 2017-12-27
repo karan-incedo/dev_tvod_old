@@ -889,13 +889,14 @@ public class AppCMSPresenter {
                 } else {
                     try {
                         if (usedCachedAPI) {
-                            if (pageId.equals(homePage.getPageId())) {
-                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
+                            if (isUserLoggedIn()) {
+                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
                                         appCMSMain.getApiBaseUrlCached(),
                                         siteId,
-                                        pageId);
+                                        pageId,
+                                        getLoggedInUser());
                             } else {
-                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
+                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
                                         appCMSMain.getApiBaseUrlCached(),
                                         siteId,
                                         pageId);
@@ -8596,7 +8597,7 @@ public class AppCMSPresenter {
             String siteId = appCMSSite.getGist().getSiteInternalName();
             boolean usePageIdQueryParam = true;
             boolean viewPlans = isViewPlanPage(endPoint);
-            boolean showPage = false;
+            boolean showPage = isShowPage(pageId);
             String apiUrl = getApiUrl(usePageIdQueryParam,
                     viewPlans,
                     showPage,
