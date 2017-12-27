@@ -226,6 +226,7 @@ public class TVViewCreator {
                                  boolean isFromLoginDialog) {
         TVModuleView moduleView = null;
         boolean isCaurosel = false;
+        boolean isGrid = false;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getType())) {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.carousel_nodule))) {
                 // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "carousel_ftv_component.json"), ModuleList.class);
@@ -237,6 +238,14 @@ public class TVViewCreator {
             if (module.getView().equalsIgnoreCase(context.getResources().getString(R.string.standaloneplayer))) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "standalone_player.json"), ModuleList.class);
             }
+
+
+            if (module.getView().equalsIgnoreCase("AC Grid 01")) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
+                isGrid = true;
+            }
+
+
             if (null == mRowsAdapter) {
                 AppCmsListRowPresenter appCmsListRowPresenter;
 
@@ -250,25 +259,25 @@ public class TVViewCreator {
             }
             for (Component component : module.getComponents()) {
                 createTrayModule(context, component, module.getLayout(), module, moduleAPI,
-                        pageView, jsonValueKeyMap, appCMSPresenter, appCMSPageAPI, isCaurosel);
+                        pageView, jsonValueKeyMap, appCMSPresenter, appCMSPageAPI, isCaurosel , isGrid);
             }
             return null;
         } else {
             if (context.getResources().getString(R.string.appcms_watchlist_module).equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
+             //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
             }
 
             if (context.getResources().getString(R.string.app_cms_page_history_module_key).equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
+              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
             }
 
-            if (context.getResources().getString(R.string.app_cms_ancillary_pages_module).equalsIgnoreCase(module.getView())) {
+         /*   if (context.getResources().getString(R.string.app_cms_ancillary_pages_module).equalsIgnoreCase(module.getView())) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
             }
-
-            if ("AC ContactUs 01".equalsIgnoreCase(module.getView())) {
+*/
+         /*   if ("AC ContactUs 01".equalsIgnoreCase(module.getView())) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "contact_us.json"), ModuleList.class);
-            }
+            }*/
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
@@ -360,7 +369,8 @@ public class TVViewCreator {
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  final AppCMSPresenter appCMSPresenter,
                                  AppCMSPageAPI appCMSPageAPI,
-                                 boolean isCarousel) {
+                                 boolean isCarousel,
+                                 boolean isGrid) {
 
         // Sort the data in case of continue watching tray
         if (jsonValueKeyMap.get(moduleUI.getType()) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
@@ -384,30 +394,14 @@ public class TVViewCreator {
                     case PAGE_TRAY_TITLE_KEY:
                         if (moduleData != null) {
                             customHeaderItem = null;
-                            customHeaderItem = new CustomHeaderItem(context, trayIndex++,
-                                    (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle() : "");
-                            customHeaderItem.setmIsCarousal(isCarousel);
-                            customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                            customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                            customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-                            customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                            customHeaderItem.setFontFamily(component.getFontFamily());
-                            customHeaderItem.setFontWeight(component.getFontWeight());
-                            customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
-                            customHeaderItem.setmModuleId((moduleData != null) ? moduleData.getId() : null);
+                            createHeaderItem(component, context, moduleUI, moduleData, (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle() : "", isCarousel);
                         }
                         break;
                 }
                 break;
             case PAGE_CAROUSEL_VIEW_KEY: {
-                customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
-                customHeaderItem.setmIsCarousal(true);
-                customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-                customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                customHeaderItem.setmModuleId((moduleData != null) ? moduleData.getId() : null);
-            }
+                createHeaderItem(component, context, moduleUI, moduleData, "", true);
+                }
 
             if (moduleData != null) {
                 CardPresenter cardPresenter = new JumbotronPresenter(context, appCMSPresenter);
@@ -433,16 +427,7 @@ public class TVViewCreator {
             case PAGE_COLLECTIONGRID_KEY:
                         /*for(Component component1 : component.getComponents()){*/
                 if (customHeaderItem == null) {
-                    customHeaderItem = new CustomHeaderItem(context, trayIndex++, moduleData != null ? moduleData.getTitle() : "");
-                    customHeaderItem.setmIsCarousal(false);
-                    customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                    customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                    customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-                    customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                    customHeaderItem.setFontFamily(component.getFontFamily());
-                    customHeaderItem.setFontWeight(component.getFontWeight());
-                    customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
-                    customHeaderItem.setmModuleId((moduleData != null) ? moduleData.getId() : null);
+                    createHeaderItem(component, context, moduleUI, moduleData, moduleData != null ? moduleData.getTitle() : "", false);
                 }
                 if (null != moduleData) {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
@@ -451,22 +436,49 @@ public class TVViewCreator {
                             component.getTrayBackground(),
                             jsonValueKeyMap
                     );
-                    ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
 
-                    if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
-                        List<ContentDatum> contentData1 = moduleData.getContentData();
-                        List<Component> components = component.getComponents();
-                        for (ContentDatum contentData : contentData1) {
-                            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                            rowData.contentData = contentData;
-                            rowData.uiComponentList = components;
-                            rowData.action = component.getTrayClickAction();
-                            rowData.blockName = moduleUI.getBlockName();
-                            rowData.rowNumber = trayIndex;
-                            traylistRowAdapter.add(rowData);
+                    if(isGrid){
+                        ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+                        if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
+                            List<ContentDatum> contentData1 = moduleData.getContentData();
+                            List<Component> components = component.getComponents();
+                            for (ContentDatum contentData : contentData1) {
+                                BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                                rowData.contentData = contentData;
+                                rowData.uiComponentList = components;
+                                rowData.action = component.getTrayClickAction();
+                                rowData.blockName = moduleUI.getBlockName();
+                                rowData.rowNumber = trayIndex;
+                                traylistRowAdapter.add(rowData);
+
+                                if ((traylistRowAdapter.size()  % 3 == 0) /*already four items in the adapter*/
+                                  /*  || i == appCMSSearchResults.size() - 1 *//*Reached the last item*/) {
+                                    mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
+                                    customHeaderItem = null;
+                                    createHeaderItem(component, context, moduleUI, moduleData, "", false);
+                                    traylistRowAdapter = null;
+                                    traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+                                }
+                            }
                         }
-                        mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
+                    }else{
+                        ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+                        if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
+                            List<ContentDatum> contentData1 = moduleData.getContentData();
+                            List<Component> components = component.getComponents();
+                            for (ContentDatum contentData : contentData1) {
+                                BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                                rowData.contentData = contentData;
+                                rowData.uiComponentList = components;
+                                rowData.action = component.getTrayClickAction();
+                                rowData.blockName = moduleUI.getBlockName();
+                                rowData.rowNumber = trayIndex;
+                                traylistRowAdapter.add(rowData);
+                            }
+                            mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
+                        }
                     }
+
                 }
                 break;
 
@@ -475,16 +487,9 @@ public class TVViewCreator {
                         && moduleData.getContentData() != null
                         && !moduleData.getContentData().isEmpty()) {
                     CustomVideoPlayerView videoPlayerView = (CustomVideoPlayerView) appCMSPresenter.getPlayerLruCache().get(appCMSPageAPI.getId());
-                    customHeaderItem = new CustomHeaderItem(context, trayIndex++, "");
-                    customHeaderItem.setmIsCarousal(false);
+
+                    createHeaderItem(component, context, moduleUI, moduleData, "", false);
                     customHeaderItem.setmIsLivePlayer(true);
-                    customHeaderItem.setmModuleId((moduleData != null) ? moduleData.getId() : null);
-                    customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                    customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-                    customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
-                    customHeaderItem.setmListRowWidth(Integer.valueOf(moduleUI.getLayout().getTv().getWidth()));
-
-
                     PlayerPresenter playerPresenter = new PlayerPresenter(context, appCMSPresenter ,
                             Integer.valueOf(component.getLayout().getTv().getHeight()),
                             Integer.valueOf(component.getLayout().getTv().getWidth()));
@@ -507,6 +512,22 @@ public class TVViewCreator {
                 }
                 break;
         }
+    }
+
+    private void createHeaderItem(Component component, Context context, ModuleList moduleUI, Module moduleData, String name, boolean mIsCarousal) {
+        customHeaderItem = new CustomHeaderItem(context, trayIndex++, name);
+        customHeaderItem.setmIsCarousal(mIsCarousal);
+        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+        customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+        customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
+        customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+        if(null != moduleUI.getLayout().getTv().getWidth()) {
+            customHeaderItem.setmListRowWidth(Integer.valueOf(moduleUI.getLayout().getTv().getWidth()));
+        }
+        customHeaderItem.setFontFamily(component.getFontFamily());
+        customHeaderItem.setFontWeight(component.getFontWeight());
+        customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
+        customHeaderItem.setmModuleId((moduleData != null) ? moduleData.getId() : null);
     }
 
 

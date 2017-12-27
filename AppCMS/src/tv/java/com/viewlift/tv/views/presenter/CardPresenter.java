@@ -192,7 +192,8 @@ public class CardPresenter extends Presenter {
 
                                 imageView.setLayoutParams(parms);
                                 if (null != blockName && (blockName.equalsIgnoreCase("tray01")
-                                        || blockName.equalsIgnoreCase("tray02"))) {
+                                        || blockName.equalsIgnoreCase("tray02"))
+                                        || blockName.equalsIgnoreCase("grid01")) {
                                     imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, component));
                                 }
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
