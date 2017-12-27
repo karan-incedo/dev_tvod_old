@@ -4201,7 +4201,7 @@ public class AppCMSPresenter {
                         }).execute(params);
             } else {
                 AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
-                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key));
+                        currentActivity.getString(R.string.app_cms_page_autoplay_module_key_01));
 
                 if (pageAPI != null) {
                     launchAutoplayActivity(currentActivity,
