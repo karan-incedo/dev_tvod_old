@@ -18,7 +18,6 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.main.Metadata;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -339,36 +338,27 @@ public class TVCollectionGridItemView extends TVBaseView {
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_SUBTITLE_LABEL) {
 
-                    Metadata metadata = appCMSPresenter.getAppCMSMain().getBrand().getMetadata();
-                    if (metadata != null && data != null) {
-                        StringBuilder stringBuilder = new StringBuilder();
+                    StringBuilder stringBuilder = new StringBuilder();
 
-                        if (metadata.isDisplayDuration()){
-                            if (data.getGist() != null) {
-                                stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
-                            }
-                        }
-
-                        if (metadata.isDisplayAuthor()){
-                            if (data.getContentDetails() != null
-                                    && data.getContentDetails().getAuthor() != null) {
-                                if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                                stringBuilder.append(data.getContentDetails().getAuthor());
-                            }
-                        }
-
-                        if (metadata.isDisplayPublishedDate()){
-                            if (data.getGist() != null) {
-                                if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                                Date publishedDate = new Date(data.getGist().getPublishDate());
-                                SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
-                                String date = spf.format(publishedDate);
-                                stringBuilder.append("Published on ");
-                                stringBuilder.append(date);
-                            }
-                        }
-                        ((TextView) view).setText(stringBuilder);
+                    if (data.getGist() != null) {
+                        stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
                     }
+
+                    if (data.getContentDetails() != null
+                            && data.getContentDetails().getAuthor() != null) {
+                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                        stringBuilder.append(data.getContentDetails().getAuthor());
+                    }
+
+                    if (data.getGist() != null) {
+                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                        Date publishedDate = new Date(data.getGist().getPublishDate());
+                        SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                        String date = spf.format(publishedDate);
+                        stringBuilder.append("Published on ");
+                        stringBuilder.append(date);
+                    }
+                    ((TextView) view).setText(stringBuilder);
                 }
             } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 int gridImagePadding = Integer.valueOf(
