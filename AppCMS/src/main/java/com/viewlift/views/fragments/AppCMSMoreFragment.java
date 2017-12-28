@@ -110,7 +110,7 @@ public class AppCMSMoreFragment extends DialogFragment {
         appCMSPresenter.dismissOpenDialogs(null);
 
         try {
-            setBgColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+            setBgColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor()));
         } catch (Exception e) {
             setBgColor(ContextCompat.getColor(getContext(), android.R.color.black));
         }

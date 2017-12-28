@@ -224,6 +224,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     String blockName;
 
+    @SerializedName("trayBackground")
+    @Expose
+    String trayBackground;
+
     boolean yAxisSetManually;
 
     boolean widthModified;
@@ -571,5 +575,12 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setWidthModified(boolean widthModified) {
         this.widthModified = widthModified;
+    }
+	 public String getTrayBackground() {
+        return trayBackground;
+    }
+
+    public void setTrayBackground(String trayBackground) {
+        this.trayBackground = trayBackground;
     }
 }

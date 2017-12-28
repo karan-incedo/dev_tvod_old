@@ -105,7 +105,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private Action1<Boolean> onClosedCaptionButtonClicked;
     protected PlayerState playerState;
     protected SimpleExoPlayer player;
-    //protected SimpleExoPlayerView playerView;
     protected AppCMSSimpleExoPlayerView playerView;
     private int resumeWindow;
     private long resumePosition;
@@ -116,8 +115,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private long mCurrentPlayerPosition;
     private ErrorEventListener mErrorEventListener;
-
-    private StreamingQualitySelector streamingQualitySelector;
 
     private Map<String, Integer> failedMediaSourceLoads;
 
@@ -135,7 +132,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private PageView pageView;
 
     private RecyclerView listView;
-    private StreamingQualitySelectorAdapter listViewAdapter;
+
 
     public VideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context);
@@ -332,21 +329,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         failedMediaSourceLoads = new HashMap<>();
     }
 
-    public StreamingQualitySelector getStreamingQualitySelector() {
-        return streamingQualitySelector;
-    }
-
-    public void setStreamingQualitySelector(StreamingQualitySelector streamingQualitySelector) {
-        this.streamingQualitySelector = streamingQualitySelector;
-    }
 
     private void initializePlayer(Context context) {
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        //ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
-
+        
         ccToggleButton = createCC_ToggleButton();
         ((RelativeLayout)playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -356,12 +345,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
-       /* currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
-        if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection)) {
-            createStreamingQualitySelector();
-        } else {
-            currentStreamingQualitySelector.setVisibility(View.GONE);
-        }*/
+    
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
@@ -399,73 +383,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         setFillBasedOnOrientation();
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
-//        fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
-    }
-
-    private void createStreamingQualitySelector() {
-        if (streamingQualitySelector != null) {
-            currentStreamingQualitySelector.setVisibility(VISIBLE);
-            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
-            if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
-                listView = new RecyclerView(getContext());
-                listViewAdapter = new StreamingQualitySelectorAdapter(getContext(),
-                        appCMSPresenter,
-                        availableStreamingQualities);
-
-                listView.setAdapter(listViewAdapter);
-                listView.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
-                listView.setLayoutManager(new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.VERTICAL,
-                        false));
-
-                setSelectedStreamingQualityIndex();
-
-                final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                if (listView.getParent() != null && listView.getParent() instanceof ViewGroup) {
-                    ((ViewGroup) listView.getParent()).removeView(listView);
-                }
-                builder.setView(listView);
-                final Dialog dialog = builder.create();
-                if (dialog.getWindow() != null) {
-                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                            Color.parseColor(appCMSPresenter.getAppBackgroundColor())));
-                }
-                currentStreamingQualitySelector.setOnClickListener(v -> {
-                    dialog.show();
-                    listViewAdapter.notifyDataSetChanged();
-                });
-                listViewAdapter.setItemClickListener(v -> {
-                    try {
-                        long currentPosition = getCurrentPosition();
-                        setUri(Uri.parse(streamingQualitySelector.getStreamingQualityUrl(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()))),
-                                closedCaptionUri);
-                        setCurrentPosition(currentPosition);
-                        currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
-                        dialog.hide();
-                    } catch (Exception e) {
-
-                    }
-                });
-            } else {
-                currentStreamingQualitySelector.setVisibility(GONE);
-            }
-        } else {
-            currentStreamingQualitySelector.setVisibility(GONE);
-        }
-    }
-
-    private void setSelectedStreamingQualityIndex() {
-        if (streamingQualitySelector != null && listViewAdapter != null) {
-            try {
-                List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
-                if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
-                    listViewAdapter.setSelectedIndex(availableStreamingQualities.indexOf(streamingQualitySelector.getMpegResolutionFromUrl(uri.toString())));
-                }
-            } catch (Exception e) {
-                listViewAdapter.setSelectedIndex(0);
-            }
-            listViewAdapter.notifyDataSetChanged();
-        }
     }
 
     private MediaSource buildMediaSource(Uri uri, Uri ccFileUrl) {
@@ -587,11 +504,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
-
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
-
         if (mErrorEventListener != null) {
             mErrorEventListener.onRefreshTokenCallback();
         }
@@ -601,15 +516,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onPositionDiscontinuity(int reason) {
 
     }
-//    @Override
-//    public void onPositionDiscontinuity() {
-//
-//    }
-
-//    @Override
-//    public void onPositionDiscontinuity() {
-//
-//    }
 
 
     @Override
@@ -621,11 +527,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onSeekProcessed() {
 
     }
-
-//    @Override
-//    public void onSeekProcessed() {
-//
-//    }
 
     public void sendPlayerPosition(long position) {
         mCurrentPlayerPosition = position;
@@ -705,14 +606,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
-    public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs,
-                                          long initializationDurationMs) {
-        //
+    public void onVideoDecoderInitialized(String decoderName, long initializedTimestampMs, long initializationDurationMs) {
+
     }
 
     @Override
     public void onVideoInputFormatChanged(Format format) {
-        setBitrate(format.bitrate/1000);
+        setBitrate(format.bitrate / 1000);
         setVideoHeight(format.height);
         setVideoWidth(format.width);
     }
@@ -856,12 +756,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         void onFinishCallback(String message);
     }
 
-    public interface StreamingQualitySelector {
-        List<String> getAvailableStreamingQualities();
-        String getStreamingQualityUrl(String streamingQuality);
-        String getMpegResolutionFromUrl(String mpegUrl);
-    }
-
     public static class PlayerState {
         boolean playWhenReady;
         int playbackState;
@@ -919,13 +813,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         /**
          * @param context               A context.
          * @param listener              An optional listener.
-         * @param baseDataSourceFactory A {@link Factory} to be used to create a base {@link DataSource}
+         * @param baseDataSourceFactory A {@link DataSource.Factory} to be used to create a base {@link DataSource}
          *                              for {@link DefaultDataSource}.
          * @param policyCookie          The cookie used for accessing CDN protected data.
          * @see DefaultDataSource#DefaultDataSource(Context, TransferListener, DataSource)
          */
         public UpdatedUriDataSourceFactory(Context context, TransferListener<? super DataSource> listener,
-                                           Factory baseDataSourceFactory, String policyCookie,
+                                           DataSource.Factory baseDataSourceFactory, String policyCookie,
                                            String signatureCookie, String keyPairIdCookie) {
             this.context = context.getApplicationContext();
             this.listener = listener;
@@ -1138,69 +1032,5 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         mToggleButton.setVisibility(GONE);
         return mToggleButton;
     }
-    private static class StreamingQualitySelectorAdapter extends AppCMSDownloadRadioAdapter<String> {
-        List<String> availableStreamingQualities;
-        int selectedIndex;
-        AppCMSPresenter appCMSPresenter;
-        public StreamingQualitySelectorAdapter(Context context,
-                                               AppCMSPresenter appCMSPresenter,
-                                               List<String> items) {
-            super(context, items);
-            this.appCMSPresenter = appCMSPresenter;
-            this.availableStreamingQualities = items;
-        }
 
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-            ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
-            viewHolder.getmText().setTextColor(Color.parseColor(ViewCreator.getColor(viewGroup.getContext(), appCMSPresenter.getAppCMSMain()
-                    .getBrand().getCta().getPrimary().getTextColor())));
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (viewHolder.getmRadio().getButtonDrawable() != null) {
-                    viewHolder.getmRadio().getButtonDrawable().setColorFilter(Color.parseColor(
-                            ViewCreator.getColor(viewGroup.getContext(),
-                                    appCMSPresenter.getAppCMSMain().getBrand()
-                                            .getCta().getPrimary().getBackgroundColor())),
-                            PorterDuff.Mode.MULTIPLY);
-                }
-            } else {
-                int switchOnColor = Color.parseColor(
-                        ViewCreator.getColor(viewGroup.getContext(),
-                                appCMSPresenter.getAppCMSMain().getBrand()
-                                        .getCta().getPrimary().getBackgroundColor()));
-                ColorStateList colorStateList = new ColorStateList(
-                        new int[][]{
-                                new int[]{android.R.attr.state_checked},
-                                new int[]{}
-                        }, new int[]{
-                        switchOnColor,
-                        switchOnColor
-                });
-
-                viewHolder.getmRadio().setButtonTintList(colorStateList);
-            }
-            return viewHolder;
-        }
-
-        @Override
-        public void onBindViewHolder(AppCMSDownloadRadioAdapter.ViewHolder viewHolder, int i) {
-            super.onBindViewHolder(viewHolder, i);
-            viewHolder.getmText().setText(availableStreamingQualities.get(i));
-            if (selectedIndex == i) {
-                viewHolder.getmRadio().setChecked(true);
-            } else {
-                viewHolder.getmRadio().setChecked(false);
-            }
-            viewHolder.getmRadio().invalidate();
-        }
-
-        public void setSelectedIndex(int selectedIndex) {
-            this.selectedIndex = selectedIndex;
-        }
-
-        public int getDownloadQualityPosition() {
-            return downloadQualityPosition;
-        }
-    }
 }

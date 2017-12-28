@@ -7,7 +7,7 @@ import com.vimeo.stag.UseStag;
 import java.io.Serializable;
 
 /**
- * Created by Sandeep.Singh on 12/8/17.
+
  */
 @UseStag
 public class SubscriptionFlowContent implements Serializable {

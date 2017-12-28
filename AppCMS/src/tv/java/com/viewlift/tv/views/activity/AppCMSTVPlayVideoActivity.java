@@ -201,7 +201,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                                                 getResources().getDimensionPixelSize(R.dimen.text_clear_dialog_width),
                                                 getResources().getDimensionPixelSize(R.dimen.text_add_to_watchlist_sign_in_dialog_height),
                                                 getString(R.string.subscription_required),
-                                                getString(R.string.subscription_not_purchased),
+                                                getString(R.string.unsubscribe_text),
                                                 getString(android.R.string.cancel),
                                                 getString(R.string.blank_string),
                                                 14
@@ -401,6 +401,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     protected void onResume() {
         super.onResume();
         registerRecievers();
+        appCMSPresenter.setCancelAllLoads(false);
         if (!appCMSPresenter.isNetworkConnected()) {
            // appCMSPresenter.showErrorDialog(AppCMSPresenter.Error.NETWORK, null); //TODO : need to show error dialog.
             finish();
@@ -515,5 +516,13 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     @Override
     public void onRetry(Bundle bundle) {
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (appCMSPlayVideoFragment != null) {
+            appCMSPlayVideoFragment.cancelTimer();
+        }
     }
 }

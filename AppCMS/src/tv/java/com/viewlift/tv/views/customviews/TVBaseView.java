@@ -35,7 +35,7 @@ public abstract class TVBaseView extends FrameLayout {
     protected static int DEVICE_HEIGHT;
     public static final int STANDARD_MOBILE_WIDTH_PX = 1920;
     public static final int STANDARD_MOBILE_HEIGHT_PX = 1080;
-    private static float LETTER_SPACING = 0.17f;
+    private static float LETTER_SPACING = 0.05f;
     private ViewGroup childrenContainer;
     protected boolean[] componentHasViewList;
 
@@ -46,7 +46,6 @@ public abstract class TVBaseView extends FrameLayout {
     }
 
 
-
     public abstract void init();
 
     protected abstract Component getChildComponent(int index);
@@ -54,38 +53,60 @@ public abstract class TVBaseView extends FrameLayout {
     protected abstract Layout getLayout();
 
 
-    public static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        long runtime = (data.getGist().getRuntime() / 60);
+    /**
+     * Fix for JM-26
+     */
+    static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+
+        long durationInSeconds = data.getGist().getRuntime();
+
+        long minutes = durationInSeconds / 60;
+        long seconds = durationInSeconds % 60;
+
         String year = data.getGist().getYear();
         String primaryCategory =
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-        boolean appendFirstSep = runtime >= 0 &&
-                (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-        boolean appendSecondSep = (runtime >= 0 || !TextUtils.isEmpty(year)) &&
-                !TextUtils.isEmpty(primaryCategory);
-        StringBuffer infoText = new StringBuffer();
-        if (runtime >= 0) {
-            infoText.append(runtime + " " + context.getResources().getQuantityString(R.plurals.mins_abbreviation , (int)runtime));
+//        boolean appendFirstSep = minutes > 0
+//                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+//        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
+//                && !TextUtils.isEmpty(primaryCategory);
+
+        StringBuilder infoText = new StringBuilder();
+
+        if (minutes == 1) {
+            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.min_abbreviation));
+        } else if (minutes > 1 && minutes < 10) {
+            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+        } else if (minutes >= 10) {
+            infoText.append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
         }
-        if (appendFirstSep) {
-            infoText.append(context.getString(R.string.text_separator));
+
+        if (seconds == 1) {
+            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
+        } else if (seconds > 1 && seconds < 10) {
+            infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
+        } else if (seconds >= 10) {
+            infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
         }
+
         if (!TextUtils.isEmpty(year)) {
+            infoText.append(context.getString(R.string.text_separator));
             infoText.append(year);
         }
-        if (appendSecondSep) {
-            infoText.append(context.getString(R.string.text_separator));
-        }
+
         if (!TextUtils.isEmpty(primaryCategory)) {
+            infoText.append(context.getString(R.string.text_separator));
             infoText.append(primaryCategory.toUpperCase());
         }
+
         ((TextView) view).setText(infoText.toString());
          view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
 
     }
+
     public ViewGroup getChildrenContainer() {
         if (childrenContainer == null) {
             return createChildrenContainer();
@@ -98,6 +119,7 @@ public abstract class TVBaseView extends FrameLayout {
             componentHasViewList[index] = hasView;
         }
     }
+
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new FrameLayout(getContext());
         int viewWidth = (int) getViewWidth(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
@@ -108,6 +130,7 @@ public abstract class TVBaseView extends FrameLayout {
         addView(childrenContainer);
         return childrenContainer;
     }
+
     public void setViewMarginsFromComponent(Component childComponent,
                                             View view,
                                             Layout parentLayout,
@@ -121,7 +144,7 @@ public abstract class TVBaseView extends FrameLayout {
         view.setPadding(0, 0, 0, 0);
 
         int lm = 0, tm = 0, rm = 0, bm = 0;
-        int deviceHeight =    getContext().getResources().getDisplayMetrics().heightPixels;
+        int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         int viewWidth = (int) getViewWidth(getContext(), layout, FrameLayout.LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, FrameLayout.LayoutParams.WRAP_CONTENT);
 
@@ -156,7 +179,7 @@ public abstract class TVBaseView extends FrameLayout {
                     lm = Math.round(scaledLm);
                 }
 
-                if(mobile.getTopMargin() != null && (Float.valueOf(mobile.getTopMargin())) != 0){
+                if (mobile.getTopMargin() != null && (Float.valueOf(mobile.getTopMargin())) != 0) {
                     float scaledLm = DEVICE_HEIGHT * ((Float.valueOf(mobile.getTopMargin()) / STANDARD_MOBILE_HEIGHT_PX));
                     tm = Math.round(scaledLm);
                 }
@@ -199,6 +222,12 @@ public abstract class TVBaseView extends FrameLayout {
                             gravity = Gravity.CENTER_HORIZONTAL;
                         }
                         break;
+                    case PAGE_TEXTALIGNMENT_CENTER_HORIZONTAL_KEY:
+                        gravity = Gravity.CENTER_HORIZONTAL;
+                        break;
+                    case PAGE_TEXTALIGNMENT_CENTER_VERTICAL_KEY:
+                        gravity = Gravity.CENTER_VERTICAL;
+                        break;
                 }
                 ((TextView) view).setGravity(gravity);
             }
@@ -240,7 +269,9 @@ public abstract class TVBaseView extends FrameLayout {
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
-                    viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
+                    //  if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 50);
+                  //  }
                     break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
@@ -266,6 +297,9 @@ public abstract class TVBaseView extends FrameLayout {
                                 ? childComponent.getLayout().getTv().getPadding()
                                 : "0");
                 view.setPadding(imagePadding, imagePadding, imagePadding, imagePadding);
+        }else if(componentType == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY){
+            viewHeight = DEVICE_HEIGHT;
+            viewWidth = FrameLayout.LayoutParams.MATCH_PARENT;
         }
 
         if (useWidthOfScreen) {
@@ -326,5 +360,40 @@ public abstract class TVBaseView extends FrameLayout {
             }
             textView.setTypeface(face);
         }
+
+
+        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            Typeface face = null;
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_bold));
+                    //Log.d("" , "setTypeFace===Opensans_Bold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_MEDIUM_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_medium));
+                    //Log.d("" , "setTypeFace===Opensans_SemiBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_LIGHT_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_light));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_REGULAR_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_regular));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                default:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
+                    //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+            }
+
+            textView.setTypeface(face);
+        }
+
+
+
     }
 }

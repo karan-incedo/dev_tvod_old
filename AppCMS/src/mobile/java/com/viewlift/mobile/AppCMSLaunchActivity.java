@@ -14,9 +14,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.appsflyer.AppsFlyerLib;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.mobile.imageutils.FrescoImageLoader;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -25,6 +28,7 @@ import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
+import com.viewlift.views.utilities.ImageUtils;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
@@ -80,10 +84,10 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                         activeNetwork.isConnectedOrConnecting();
                 if (!appStartWithNetworkConnected && isConnected && appCMSPresenterComponent != null) {
                     appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(AppCMSLaunchActivity.this,
-                            getString(R.string.app_cms_app_name),
+                            Utils.getProperty("SiteId", getApplicationContext()),
                             searchQuery,
                             AppCMSPresenter.PlatformType.ANDROID,
-                            false);
+                            true);
                 } else if (!isConnected) {
                     appStartWithNetworkConnected = false;
                 }
@@ -97,10 +101,14 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
                 appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
             }
 
+            Fresco.initialize(getApplicationContext());
+
+            ImageUtils.registerImageLoader(new FrescoImageLoader());
+
             UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
 
             AppsFlyerLib.getInstance().startTracking(getApplication());
-        }).run();
+        });
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
@@ -131,6 +139,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     public void handleIntent(Intent intent) {
         if (intent != null) {
             try {
+                String action = intent.getAction();
                 final Uri data = intent.getData();
                 //Log.i(TAG, "Received intent action: " + action);
                 if (data != null) {
@@ -169,15 +178,11 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
 
         if (appCMSPresenterComponent != null) {
             try {
-                if (appCMSPresenterComponent.appCMSPresenter().isLaunched()) {
-                    appCMSPresenterComponent.appCMSPresenter().sendCloseOthersAction(null, true, true);
-                } else {
-                    appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                            getString(R.string.app_cms_app_name),
-                            searchQuery,
-                            AppCMSPresenter.PlatformType.ANDROID,
-                            false);
-                }
+                appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
+                        Utils.getProperty("SiteId", getApplicationContext()),
+                        searchQuery,
+                        AppCMSPresenter.PlatformType.ANDROID,
+                        forceReloadFromNetwork);
             } catch (Exception e) {
                 //Log.e(TAG, "Caught exception retrieving AppCMS data: " + e.getMessage());
             }

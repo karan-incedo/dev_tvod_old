@@ -79,7 +79,6 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
             downloadBtn.setActivated(false);
             downloadBtn.setOnClickListener(null);
         }
-
         closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
                 .getCta().getPrimary().getTextColor()));
 

@@ -1,6 +1,7 @@
 package com.viewlift.models.network.background.tasks;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
@@ -34,7 +35,7 @@ public class GetAppCMSMainUIAsyncTask {
                             return call.call(params.context,
                                     params.siteId,
                                     0,
-                                    params.bustCache);
+                                    params.forceReloadFromNetwork);
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
@@ -43,14 +44,13 @@ public class GetAppCMSMainUIAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 
     public static class Params {
         Context context;
         String siteId;
-        boolean bustCache;
+        boolean forceReloadFromNetwork;
 
         public static class Builder {
             Params params;
@@ -69,8 +69,8 @@ public class GetAppCMSMainUIAsyncTask {
                 return this;
             }
 
-            public Builder bustCache(boolean bustCache) {
-                params.bustCache = bustCache;
+            public Builder forceReloadFromNetwork(boolean forceReloadFromNetwork) {
+                params.forceReloadFromNetwork = forceReloadFromNetwork;
                 return this;
             }
 

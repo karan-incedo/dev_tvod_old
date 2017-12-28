@@ -7,10 +7,18 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+
+    <!-- Allows unlocking your device and activating its screen so UI tests can succeed -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- Allows for storing and retrieving screenshots -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Allows changing locales -->
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
 
     <application
         android:icon="@mipmap/app_logo"
@@ -61,7 +69,7 @@
                     android:pathPrefix="/videos" />
                 <data
                     android:scheme="https"
-                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:host="@string/app_cms_app_host_name"
                     android:pathPrefix="/videos" />
                 <data
                     android:scheme="http"
@@ -69,32 +77,8 @@
                     android:pathPrefix="/films/title" />
                 <data
                     android:scheme="https"
-                    android:host="@string/app_cms_app_host_name_suffix"
+                    android:host="@string/app_cms_app_host_name"
                     android:pathPrefix="/films/title" />
-                <data
-                    android:scheme="http"
-                    android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/show/title" />
-                <data
-                    android:scheme="https"
-                    android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/show/title" />
-                <data
-                    android:scheme="http"
-                    android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/films/title/" />
-                <data
-                    android:scheme="https"
-                    android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/films/title/" />
-                <data
-                    android:scheme="http"
-                    android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/show/title/" />
-                <data
-                    android:scheme="https"
-                    android:host="@string/app_cms_app_host_name_suffix"
-                    android:pathPrefix="/show/title/" />
             </intent-filter>
         </activity>
 

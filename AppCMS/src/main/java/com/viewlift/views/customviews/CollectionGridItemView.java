@@ -238,7 +238,7 @@ public class CollectionGridItemView extends BaseView {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                    childComponent, data,position));
+                    childComponent, data));
             boolean bringToFront = true;
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
@@ -333,9 +333,7 @@ public class CollectionGridItemView extends BaseView {
                             final int imageWidth = deviceWidth;
                             final int imageHeight = childViewHeight;
 
-
                             if (!ImageUtils.loadImageWithLinearGradient((ImageView) view,
-//                                ((SimpleDraweeView) view).setImageURI(imageUrl);
                                     imageUrl,
                                     imageWidth,
                                     imageHeight)) {
@@ -404,37 +402,22 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
-                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
-                            0 < childViewWidth &&
-                            0 < childViewHeight) {
-                        if (childViewWidth < childViewHeight &&
-                                data.getGist().getImageGist().get_3x4() != null &&
-                                data.getGist().getBadgeImages().get_3x4() != null) {
-                            String imageUrl = data.getGist().getBadgeImages().get_3x4();
+                            data.getGist().getImageGist().get_3x4() != null &&
+                            data.getGist().getBadgeImages().get_3x4() != null &&
+                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getBadgeImages().get_3x4(),
+                                childViewWidth,
+                                childViewHeight);
 
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
-                                Glide.with(context)
-                                        .load(imageUrl)
-                                        .override(childViewWidth, childViewHeight)
-                                        .into((ImageView) view);
-                            }
-                        } else if (data.getGist().getImageGist().get_16x9() != null &&
-                                data.getGist().getBadgeImages().get_16x9() != null) {
-                            String imageUrl = data.getGist().getBadgeImages().get_16x9();
-
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
-                                Glide.with(context)
-                                        .load(imageUrl)
-                                        .override(childViewWidth, childViewHeight)
-                                        .into((ImageView) view);
-                            }
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(childViewWidth, childViewHeight)
+                                    .into((ImageView) view);
                         }
-                        view.setVisibility(VISIBLE);
-                        bringToFront = true;
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
-                        view.setVisibility(GONE);
-                        bringToFront = false;
                     }
+                    bringToFront = false;
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
@@ -471,12 +454,12 @@ public class CollectionGridItemView extends BaseView {
                     }
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                            childComponent, data,position));
+                            childComponent, data));
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                 view.setOnClickListener(v ->
                         onClickHandler.click(CollectionGridItemView.this,
-                                childComponent, data,position));
+                                childComponent, data));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
@@ -517,11 +500,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        // Todo thumbinfo and runtime to be separated
-                        //String publishDate = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
-                        //String thumbInfo=runTime+" | "+publishDate;  Removed publish date as per Clients request.
-                        String runTime = convertSecondsToTime(data.getGist().getRuntime());
-                        String thumbInfo = runTime;
+                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
@@ -544,8 +523,7 @@ public class CollectionGridItemView extends BaseView {
                                             data.getGist().getDescription(),
                                             appCMSPresenter,
                                             true,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
-                                            true);
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
                         }
@@ -559,16 +537,15 @@ public class CollectionGridItemView extends BaseView {
                                             data.getGist().getDescription(),
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
-                                            true);
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
 
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_TITLE_KEY) {
                         ((TextView) view).setText(data.getName());
-                        if (componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
-                                componentType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                        if (componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) ||
+                                componentType.equals(AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY)) {
                             ((TextView) view).setTextColor(themeColor);
                         } else {
                             ((TextView) view).setTextColor(Color.parseColor(childComponent.getTextColor()));
@@ -724,7 +701,7 @@ public class CollectionGridItemView extends BaseView {
     public interface OnClickHandler {
         void click(CollectionGridItemView collectionGridItemView,
                    Component childComponent,
-                   ContentDatum data, int clickPosition);
+                   ContentDatum data);
 
         void play(Component childComponent, ContentDatum data);
     }

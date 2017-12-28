@@ -81,17 +81,11 @@ public class AutoplayActivity
     @Override
     public void onCountdownFinished() {
 
-        binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
         appCMSPresenter.playNextVideo(binder,
                 binder.getCurrentPlayingVideoIndex() + 1,
                 binder.getContentData().getGist().getWatchedTime());
-        finish();
-    }
-
-    @Override
-    public void cancelCountdown() {
-        binder.setAutoplayCancelled(true);
-        finish();
+        binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
+//        finish();
     }
 
     @Override

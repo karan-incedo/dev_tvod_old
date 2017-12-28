@@ -17,6 +17,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
 
@@ -83,29 +84,31 @@ public class AppCMSTVTrayAdapter
         if (this.adapterData == null) {
             this.adapterData = new ArrayList<>();
         }
-        switch (jsonValueKeyMap.get(viewType)) {
-            case PAGE_HISTORY_MODULE_KEY:
-                this.isHistory = true;
-                break;
 
-            case PAGE_WATCHLIST_MODULE_KEY:
-                this.isWatchlist = true;
-                break;
+        if (null != jsonValueKeyMap.get(viewType)) {
+            switch (jsonValueKeyMap.get(viewType)) {
+                case PAGE_HISTORY_MODULE_KEY:
+                    this.isHistory = true;
+                    break;
 
-            default:
-                break;
+                case PAGE_WATCHLIST_MODULE_KEY:
+                    this.isWatchlist = true;
+                    break;
+                default:
+                    break;
+            }
         }
         sortData();
     }
 
 
-    public void setContentData(List<ContentDatum> adapterData){
+    public void setContentData(List<ContentDatum> adapterData) {
         this.adapterData = adapterData;
         notifyDataSetChanged();
     }
 
-    private String getDefaultAction(Context context , Component component) {
-        if(null != component.getItemClickAction()){
+    private String getDefaultAction(Context context, Component component) {
+        if (null != component.getItemClickAction()) {
             return component.getItemClickAction();
         }
         return context.getString(R.string.app_cms_action_videopage_key);
@@ -135,41 +138,43 @@ public class AppCMSTVTrayAdapter
 
             for (int i = 0; i < component.getComponents().size(); i++) {
                 Component childComponent = component.getComponents().get(i);
-                tvViewCreator.createComponentView(context,
-                        childComponent,
-                        this.parentLayout,
-                        module,
-                        null,
-                        childComponent.getSettings(),
-                        jsonValueKeyMap,
-                        appCMSPresenter,
-                        false,
-                        this.viewType,
-                        false);
-
-                if (componentViewResult.onInternalEvent != null) {
-                    onInternalEvents.add(componentViewResult.onInternalEvent);
-                }
-
-                View componentView = componentViewResult.componentView;
-                if (componentView != null) {
-                    TVCollectionGridItemView.ItemContainer itemContainer =
-                            new TVCollectionGridItemView.ItemContainer.Builder()
-                                    .childView(componentView)
-                                    .component(childComponent)
-                                    .build();
-                    collectionGridItemView.addChild(itemContainer);
-                    collectionGridItemView.setComponentHasView(i, true);
-                    collectionGridItemView.setViewMarginsFromComponent(childComponent,
-                            componentView,
-                            collectionGridItemView.getLayout(),
-                            collectionGridItemView.getChildrenContainer(),
+                if (null != childComponent) {
+                    tvViewCreator.createComponentView(context,
+                            childComponent,
+                            this.parentLayout,
+                            module,
+                            null,
+                            childComponent.getSettings(),
                             jsonValueKeyMap,
+                            appCMSPresenter,
                             false,
-                            false,
-                            this.viewType);
-                } else {
-                    collectionGridItemView.setComponentHasView(i, false);
+                            this.viewType,
+                            false);
+
+                    if (componentViewResult.onInternalEvent != null) {
+                        onInternalEvents.add(componentViewResult.onInternalEvent);
+                    }
+
+                    View componentView = componentViewResult.componentView;
+                    if (componentView != null) {
+                        TVCollectionGridItemView.ItemContainer itemContainer =
+                                new TVCollectionGridItemView.ItemContainer.Builder()
+                                        .childView(componentView)
+                                        .component(childComponent)
+                                        .build();
+                        collectionGridItemView.addChild(itemContainer);
+                        collectionGridItemView.setComponentHasView(i, true);
+                        collectionGridItemView.setViewMarginsFromComponent(childComponent,
+                                componentView,
+                                collectionGridItemView.getLayout(),
+                                collectionGridItemView.getChildrenContainer(),
+                                jsonValueKeyMap,
+                                false,
+                                false,
+                                this.viewType);
+                    } else {
+                        collectionGridItemView.setComponentHasView(i, false);
+                    }
                 }
             }
             return new ViewHolder(collectionGridItemView);
@@ -252,13 +257,12 @@ public class AppCMSTVTrayAdapter
                         }
 
                         if (defaultAction.equalsIgnoreCase(context.getString(R.string.app_cms_action_watchvideo_key))) {
-                            play(childComponent,data);
-                        }
-                        else if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
+                            play(childComponent, data);
+                        } else if (!appCMSPresenter.launchTVButtonSelectedAction(permalink,
                                 action/*"lectureDetailPage"*/,
                                 title,
                                 extraData,
-                                 data,
+                                data,
                                 false, -1, null)) {
                          /*   Log.e(TAG, "Could not launch action: " + " permalink: " + permalink
                                     + " action: " + action + " hlsUrl: " + hlsUrl);  */
@@ -285,10 +289,17 @@ public class AppCMSTVTrayAdapter
                         appCMSPresenter.editWatchlist(data.getGist().getId(),
                                 addToWatchlistResult -> {
                                     adapterData.remove(data);
-                                    View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    View view = null;
+                                    try {
+                                        view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    } catch (Exception e) {
+                                        if (context instanceof AppCmsHomeActivity) {
+                                            view = ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall);
+                                        }
+                                    }
                                     if (view != null) {
                                         view.setFocusable(adapterData.size() != 0);
-                                        view.setVisibility(View.INVISIBLE);
+                                        view.setVisibility(adapterData.size() != 0 ? View.VISIBLE : View.INVISIBLE);
                                     }
                                     notifyDataSetChanged();
                                 }, false);
@@ -297,10 +308,17 @@ public class AppCMSTVTrayAdapter
                                 true,
                                 appCMSAddToWatchlistResult -> {
                                     adapterData.remove(data);
-                                    View view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    View view = null;
+                                    try {
+                                        view = ((View) itemView.getParent().getParent()).findViewById(R.id.appcms_removeall);
+                                    } catch (Exception e) {
+                                        if (context instanceof AppCmsHomeActivity) {
+                                            view = ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall);
+                                        }
+                                    }
                                     if (view != null) {
                                         view.setFocusable(adapterData.size() != 0);
-                                        view.setVisibility(View.INVISIBLE);
+                                        view.setVisibility(adapterData.size() != 0 ? View.VISIBLE : View.INVISIBLE);
                                     }
                                     notifyDataSetChanged();
                                 });
@@ -371,11 +389,12 @@ public class AppCMSTVTrayAdapter
                 this.componentView = (TVCollectionGridItemView) itemView;
         }
     }
+
     private void sortData() {
         if (adapterData != null) {
             if (isWatchlist) {
                 Collections.sort(adapterData, (o1, o2)
-                        -> Long.compare(o1.getAddedDate(), o2.getAddedDate()));
+                        -> Long.compare(o2.getAddedDate(), o1.getAddedDate()));
             } else if (isHistory) {
                 Collections.sort(adapterData, (o1, o2)
                         -> Long.compare(o1.getUpdateDate(), o2.getUpdateDate()));

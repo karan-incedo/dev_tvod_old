@@ -64,17 +64,13 @@ public class AppCMSRestorePurchaseCall {
                         if (readyAction != null) {
                             //Log.d(TAG, "Received response: " + signInResponse);
                             parsedSigninResponse = gson.fromJson(signInResponse, SignInResponse.class);
-                            Observable.just(parsedSigninResponse)
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(readyAction);
+                            Observable.just(parsedSigninResponse).subscribe(readyAction);
                         }
                     } catch (JsonSyntaxException e) {
                         //Log.e(TAG, "Failed to retrieve sign-in response: " +
 //                                e.getMessage());
                         if (readyAction != null) {
-                            Observable.just(parsedSigninResponse)
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(readyAction);
+                            Observable.just(parsedSigninResponse).subscribe(readyAction);
                         }
                     }
                 } else if (response.errorBody() != null) {
@@ -83,17 +79,13 @@ public class AppCMSRestorePurchaseCall {
                         //Log.d(TAG, "Received raw error response: " + errorResponse);
                         if (readyAction != null) {
                             parsedSigninResponse = gson.fromJson(errorResponse, SignInResponse.class);
-                            Observable.just(parsedSigninResponse)
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(readyAction);
+                            Observable.just(parsedSigninResponse).subscribe(readyAction);
                         }
                     } catch (JsonSyntaxException | NullPointerException | IOException e) {
                         //Log.e(TAG, "Failed to retrieve error body: " +
 //                                e.getMessage());
                         if (readyAction != null) {
-                            Observable.just(parsedSigninResponse)
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(readyAction);
+                            Observable.just(parsedSigninResponse).subscribe(readyAction);
                         }
                     }
                 }
@@ -103,9 +95,7 @@ public class AppCMSRestorePurchaseCall {
             public void onFailure(Call<JsonElement> call, Throwable t) {
                 //Log.e(TAG, "Failed to retrieve network response for sign-in request: " +
 //                        t.getMessage());
-                Observable.just((SignInResponse) null)
-                        .onErrorResumeNext(throwable -> Observable.empty())
-                        .subscribe(readyAction);
+                Observable.just((SignInResponse) null).subscribe(readyAction);
             }
         });
     }

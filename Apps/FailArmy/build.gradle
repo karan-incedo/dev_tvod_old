@@ -4,10 +4,9 @@ apply plugin: 'realm-android'
 def final packageName = 'com.viewlift.failarmy'
 def final customApplicationId = 'FailArmy'
 def final hostName = "failarmy.viewlift.com"
-def final hostNameSuffix = "*.failarmy.viewlift.com"
 
 
-def final appVersionName = "0.0.18"
+def final appVersionName = "0.0.8"
 
 buildscript {
     repositories {
@@ -33,14 +32,13 @@ repositories {
 }
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 25
     buildToolsVersion '26.0.2'
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 26
-        versionCode 18
-
+        targetSdkVersion 25
+        versionCode 8
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -52,15 +50,13 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 26
-            targetSdkVersion 26
-            aaptOptions {
-                cruncherEnabled = false
-            }
+            compileSdkVersion 23
+            targetSdkVersion 25
         }
         tv {
+
             minSdkVersion 21
-            compileSdkVersion 26
+            compileSdkVersion 25
             versionCode 3010031
             versionName "1.2.1"
             dimension = "green"
@@ -99,19 +95,16 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
-            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
         release {
             multiDexEnabled true
-            minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled false
             resValue "string", "package_name", "${packageName}"
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
-            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
@@ -225,7 +218,7 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
     tvCompile "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
     tvCompile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvCompile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
+    tvCompile 'com.github.bumptech.glide:glide:3.4.+'
     compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
     compile "com.google.code.gson:gson:$rootProject.ext.gsonVersion"
@@ -276,8 +269,6 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-
-    compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'

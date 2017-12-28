@@ -74,15 +74,11 @@ public class AppCMSSubscriptionPlanCall {
                                     //Log.d(TAG, "Response code: " + response.code());
 //                                    String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
                                     //Log.d(TAG, "Response: " + responseValue);
-                                    Observable.just(response.body())
-                                            .onErrorResumeNext(throwable -> Observable.empty())
-                                            .subscribe(planResultAction1);
+                                    Observable.just(response.body()).subscribe(planResultAction1);
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Exception occurred when sending update subscription: " +
 //                                            e.getMessage());
-                                    Observable.just((List<AppCMSSubscriptionPlanResult>) null)
-                                            .onErrorResumeNext(throwable -> Observable.empty())
-                                            .subscribe(planResultAction1);
+                                    Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
                                 }
                             }
 
@@ -90,9 +86,7 @@ public class AppCMSSubscriptionPlanCall {
                             public void onFailure(@NonNull Call<List<AppCMSSubscriptionPlanResult>> call,
                                                   @NonNull Throwable t) {
                                 //Log.e(TAG, "onFailure: " + t.getMessage());
-                                Observable.just((List<AppCMSSubscriptionPlanResult>) null)
-                                        .onErrorResumeNext(throwable -> Observable.empty())
-                                        .subscribe(planResultAction1);
+                                Observable.just((List<AppCMSSubscriptionPlanResult>) null).subscribe(planResultAction1);
                             }
                         });
                 break;
@@ -108,24 +102,18 @@ public class AppCMSSubscriptionPlanCall {
                             //Log.d(TAG, "Response code: " + response.code());
 //                            String responseValue = gson.toJson(response.body(), AppCMSUserSubscriptionPlanResult.class);
                             //Log.d(TAG, "Response: " + responseValue);
-                            Observable.just(response.body())
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(userSubscriptionPlanResult);
+                            Observable.just(response.body()).subscribe(userSubscriptionPlanResult);
                         } catch (Exception e) {
                             //Log.e(TAG, "Exception occurred when sending update subscription: " +
 //                                    e.getMessage());
-                            Observable.just((AppCMSUserSubscriptionPlanResult) null)
-                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                    .subscribe(userSubscriptionPlanResult);
+                            Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AppCMSUserSubscriptionPlanResult> call, Throwable t) {
                         //Log.e(TAG, "onFailure: " + t.getMessage());
-                        Observable.just((AppCMSUserSubscriptionPlanResult) null)
-                                .onErrorResumeNext(throwable -> Observable.empty())
-                                .subscribe(userSubscriptionPlanResult);
+                        Observable.just((AppCMSUserSubscriptionPlanResult) null).subscribe(userSubscriptionPlanResult);
                     }
                 });
                 break;
@@ -144,15 +132,11 @@ public class AppCMSSubscriptionPlanCall {
                                     //Log.d(TAG, "Response code: " + response.code());
 //                                    String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
                                     //Log.d(TAG, "Response: " + responseValue);
-                                    Observable.just(response.body())
-                                            .onErrorResumeNext(throwable -> Observable.empty())
-                                            .subscribe(resultAction1);
+                                    Observable.just(response.body()).subscribe(resultAction1);
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Exception occurred when sending update subscription: " +
 //                                            e.getMessage());
-                                    Observable.just((AppCMSSubscriptionPlanResult) null)
-                                            .onErrorResumeNext(throwable -> Observable.empty())
-                                            .subscribe(resultAction1);
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                 }
                             }
 
@@ -160,9 +144,7 @@ public class AppCMSSubscriptionPlanCall {
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
                                 //Log.e(TAG, "onFailure: " + t.getMessage());
-                                Observable.just((AppCMSSubscriptionPlanResult) null)
-                                        .onErrorResumeNext(throwable -> Observable.empty())
-                                        .subscribe(resultAction1);
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
                 break;
@@ -183,19 +165,13 @@ public class AppCMSSubscriptionPlanCall {
 //                                    String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
                                     //Log.d(TAG, "Response: " + responseValue);
                                     if (response.body() != null) {
-                                        Observable.just(response.body())
-                                                .onErrorResumeNext(throwable -> Observable.empty())
-                                                .subscribe(resultAction1);
+                                        Observable.just(response.body()).subscribe(resultAction1);
                                     } else if (response.errorBody() != null) {
                                         AppCMSSubscriptionPlanResult errorResponse =
                                                 gson.fromJson(response.errorBody().string(), AppCMSSubscriptionPlanResult.class);
-                                        Observable.just(errorResponse)
-                                                .onErrorResumeNext(throwable -> Observable.empty())
-                                                .subscribe(resultAction1);
+                                        Observable.just(errorResponse).subscribe(resultAction1);
                                     } else {
-                                        Observable.just((AppCMSSubscriptionPlanResult) null)
-                                                .onErrorResumeNext(throwable -> Observable.empty())
-                                                .subscribe(resultAction1);
+                                        Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                     }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Exception occurred when sending update subscription: " +
@@ -204,18 +180,12 @@ public class AppCMSSubscriptionPlanCall {
                                         if (response.errorBody() != null) {
                                             AppCMSSubscriptionPlanResult errorResponse =
                                                     gson.fromJson(response.errorBody().string(), AppCMSSubscriptionPlanResult.class);
-                                            Observable.just(errorResponse)
-                                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                                    .subscribe(resultAction1);
+                                            Observable.just(errorResponse).subscribe(resultAction1);
                                         } else {
-                                            Observable.just((AppCMSSubscriptionPlanResult) null)
-                                                    .onErrorResumeNext(throwable -> Observable.empty())
-                                                    .subscribe(resultAction1);
+                                            Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                         }
                                     } catch (Exception e1) {
-                                        Observable.just((AppCMSSubscriptionPlanResult) null)
-                                                .onErrorResumeNext(throwable -> Observable.empty())
-                                                .subscribe(resultAction1);
+                                        Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                     }
                                 }
                             }
@@ -224,9 +194,7 @@ public class AppCMSSubscriptionPlanCall {
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
                                 //Log.e(TAG, "onFailure: " + t.getMessage());
-                                Observable.just((AppCMSSubscriptionPlanResult) null)
-                                        .onErrorResumeNext(throwable -> Observable.empty())
-                                        .subscribe(resultAction1);
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
                 break;
@@ -243,13 +211,9 @@ public class AppCMSSubscriptionPlanCall {
                                     //Log.d(TAG, "Response code: " + response.code());
 //                                    String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
                                     //Log.d(TAG, "Response: " + responseValue);
-                                    Observable.just(response.body())
-                                            .onErrorResumeNext(throwable -> Observable.empty())
-                                            .subscribe(resultAction1);
+                                    Observable.just(response.body()).subscribe(resultAction1);
                                 } catch (Exception e) {
-                                    Observable.just((AppCMSSubscriptionPlanResult) null)
-                                            .onErrorResumeNext(throwable -> Observable.empty())
-                                            .subscribe(resultAction1);
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                 }
                             }
 
@@ -257,9 +221,7 @@ public class AppCMSSubscriptionPlanCall {
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
                                 //Log.e(TAG, "onFailure: " + t.getMessage());
-                                Observable.just((AppCMSSubscriptionPlanResult) null)
-                                        .onErrorResumeNext(throwable -> Observable.empty())
-                                        .subscribe(resultAction1);
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
                 break;
@@ -277,13 +239,9 @@ public class AppCMSSubscriptionPlanCall {
                                     //Log.d(TAG, "Response code: " + response.code());
 //                                    String responseValue = gson.toJson(response.body(), AppCMSSubscriptionPlanResult.class);
                                     //Log.d(TAG, "Response: " + responseValue);
-                                    Observable.just(response.body())
-                                            .onErrorResumeNext(throwable -> Observable.empty())
-                                            .subscribe(resultAction1);
+                                    Observable.just(response.body()).subscribe(resultAction1);
                                 } catch (Exception e) {
-                                    Observable.just((AppCMSSubscriptionPlanResult) null)
-                                            .onErrorResumeNext(throwable -> Observable.empty())
-                                            .subscribe(resultAction1);
+                                    Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                                 }
                             }
 
@@ -291,9 +249,7 @@ public class AppCMSSubscriptionPlanCall {
                             public void onFailure(@NonNull Call<AppCMSSubscriptionPlanResult> call,
                                                   @NonNull Throwable t) {
                                 //Log.e(TAG, "onFailure: " + t.getMessage());
-                                Observable.just((AppCMSSubscriptionPlanResult) null)
-                                        .onErrorResumeNext(throwable -> Observable.empty())
-                                        .subscribe(resultAction1);
+                                Observable.just((AppCMSSubscriptionPlanResult) null).subscribe(resultAction1);
                             }
                         });
                 break;

@@ -1,37 +1,45 @@
 {
-  "id": "1199cc6e-0357-4943-ab85-848f5e945370",
+  "id": "1fc378ca-51db-4c21-be1b-fd2f7e9a6062",
   "settings": {
-    "thumbnailType": "portrait"
+    "loop": false,
+    "columns": {
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
+    },
+    "thumbnailType": "landscape"
   },
   "view": "AC Tray 01",
   "type": "AC Tray 01",
+  "blockName": "tray02",
   "layout": {
     "ftv": {
-      "height": 450,
-      "rightMargin": 0,
+      "padding": 0,
       "leftMargin": 0,
-      "padding":0
+      "rightMargin": 0,
+      "height": 260
     }
   },
   "components": [
     {
-      "fontWeight": "Semibold",
-      "textColor": "#008EE0",
-      "textAlignment": "left",
-      "fontFamily": "OpenSans",
-      "type": "label",
-      "key": "trayTitle",
       "layout": {
         "ftv": {
-          "fontSize": 18
+          "fontSize": 14
         }
-      }
+      },
+      "fontFamily": "OpenSans",
+      "textAlignment": "left",
+      "type": "label",
+      "textColor": "#008EE0",
+      "fontWeight": "Semibold",
+      "key": "trayTitle"
     },
     {
       "layout": {
         "ftv": {
-          "width": 260,
-          "height": 430
+          "width": 350,
+          "height": 250
         }
       },
       "trayClickAction": "lectureDetailPage",
@@ -39,30 +47,30 @@
         {
           "layout": {
             "ftv": {
-              "height": 380,
-              "topMargin": 0,
               "padding": 6,
-              "width": 260
+              "topMargin": 0,
+              "width": 350,
+              "height": 197
             }
           },
           "type": "image",
           "key": "thumbnailImage"
         },
         {
-          "fontWeight": "Semibold",
-          "textColor": "#ffffff",
-          "textAlignment": "left",
           "layout": {
             "ftv": {
-              "topMargin": 385,
-              "height": 40,
+              "leftMargin": 0,
+              "topMargin": 202,
               "rightMargin": 0,
               "fontSize": 11,
-              "leftMargin": 0
+              "height": 40
             }
           },
           "fontFamily": "OpenSans",
+          "textAlignment": "left",
           "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
           "key": "thumbnailTitle"
         }
       ],

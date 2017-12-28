@@ -48,9 +48,7 @@ public class AppCMSBeaconCall {
 
                 @Override
                 public void onResponse(Call<BeaconResponse> call, Response<BeaconResponse> response) {
-                    Observable.just(response.body())
-                            .onErrorResumeNext(throwable -> Observable.empty())
-                            .subscribe(action1);
+                    Observable.just(response.body()).subscribe(action1);
                 }
 
                 @Override

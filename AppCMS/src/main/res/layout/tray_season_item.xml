@@ -53,6 +53,18 @@
                 app:layout_constraintTop_toTopOf="@+id/app_cms_episode_video_image" />
 
             <TextView
+                android:id="@+id/app_cms_episode_duration"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:layout_marginEnd="2dp"
+                android:layout_marginTop="72dp"
+                android:gravity="end"
+                android:textAlignment="viewEnd"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/mins_abbreviation"
@@ -105,7 +117,8 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginBottom="@dimen/app_cms_episode_progressbar_height"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitCenter"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/app_cms_episode_video_size"

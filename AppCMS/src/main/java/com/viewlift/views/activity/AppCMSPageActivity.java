@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -35,7 +34,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -79,7 +77,6 @@ import com.viewlift.models.data.appcms.ui.android.NavigationPrimary;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
-import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -88,7 +85,6 @@ import com.viewlift.views.customviews.TabCreator;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
-import com.viewlift.views.fragments.AppCMSDraggableFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -301,6 +297,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                    Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
 //                            intent.getStringExtra(getString(R.string.navigation_item_key)));
                     selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
+                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION)) {
+                    if (intent.getData() != null) {
+                        processDeepLink(intent.getData());
+                    }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
@@ -311,30 +311,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 false,
                                 false,
                                 false);
-                    }
-                }
-            }
-        };
-
-        processDeeplinkReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String deeplinkUrl = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
-                if (!TextUtils.isEmpty(deeplinkUrl)) {
-                    if (!isActive) {
-                        if (appCMSPresenter.getCurrentActivity() != null) {
-                            try {
-                                Intent appCMSIntent = new Intent(appCMSPresenter.getCurrentActivity(),
-                                        AppCMSPageActivity.class);
-                                appCMSIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                                appCMSIntent.putExtra(getString(R.string.deeplink_uri_extra_key), deeplinkUrl);
-                                appCMSPresenter.getCurrentActivity().startActivity(appCMSIntent);
-                            } catch (Exception e) {
-
-                            }
-                        }
-                    } else {
-                        processDeepLink(Uri.parse(deeplinkUrl));
                     }
                 }
             }
@@ -361,7 +337,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 if (appCMSBinder != null) {
                                     appCMSPresenter.refreshPageAPIData(appCMSBinder.getAppCMSPageUI(),
                                             appCMSBinder.getPageId(),
-                                            null,
                                             appCMSBinderAction);
                                 }
                             }
@@ -375,12 +350,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         };
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = null;
-
-        if (connectivityManager != null) {
-            activeNetwork = connectivityManager.getActiveNetworkInfo();
-        }
-
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
         appCMSPresenter.setNetworkConnected(isConnected, null);
@@ -437,7 +407,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 appCMSPresenter.startNextDownload();
                             }
                         } catch (Exception e) {
-
+                            //
                         }
                     }
                 }
@@ -473,6 +443,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_RESET_NAVIGATION_ITEM_ACTION));
         registerReceiver(presenterActionReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
+        registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION));
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION));
@@ -484,8 +456,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
         registerReceiver(refreshPageDataReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
-        registerReceiver(processDeeplinkReceiver,
-                new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
 
         resumeInternalEvents = false;
 
@@ -600,15 +570,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         manageTopBar();
         createTabBar();
         startFreeTrialTool();
-        /* for (int i = 0; i < tabCount; i++) {
-            addNavigationItem();
-        }
-        createMenuNavItem();
-        createHomeNavItem(tabCount, appCMSPresenter.findHomePageNavItem());
-        createLiveNavItem(tabCount, appCMSPresenter.findLivePageNavItem());
-        createMoviesNavItem(tabCount, appCMSPresenter.findMoviesPageNavItem());
-        createSearchNavItem(tabCount, getString(R.string.app_cms_search_page_tag));
-        createMenuNavItem(tabCount);*/
+        
 
         //Settings The Firebase Analytics for Android
         FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -819,7 +781,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.checkForExistingSubscription(false);
 
-        appCMSPresenter.refreshPages(shouldRefresh -> {
+        appCMSPresenter.refreshPages(() -> {
             if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
             } else if (appCMSPresenter.isAppUpgradeAvailable()) {
@@ -832,11 +794,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 newVersionUpgradeAvailable.requestLayout();
             } else {
                 newVersionUpgradeAvailable.setVisibility(View.GONE);
-                if (shouldRefresh) {
-                    refreshPageData();
-                } else {
-                    pageLoading(false);
-                }
+                refreshPageData();
             }
         }, true, 0, 0);
 
@@ -853,12 +811,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.setShowNetworkConnectivity(false);
             }
         } catch (Exception e) {
-            //
-        }
 
-        if (pendingDeeplinkUri != null) {
-            processDeepLink(pendingDeeplinkUri);
-            pendingDeeplinkUri = null;
         }
     }
 
@@ -910,9 +863,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         try {
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
-
         }
-        //appCMSPresenter.pausePIP();
+
     }
 
     @Override
@@ -932,11 +884,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 false,
                                 false);
                     }
-                }
-
-                String deeplinkUri = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
-                if (!TextUtils.isEmpty(deeplinkUri)) {
-                    pendingDeeplinkUri = Uri.parse(deeplinkUri);
                 }
             }
         } catch (Exception e) {
@@ -982,7 +929,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(downloadReceiver);
             unregisterReceiver(notifyUpdateListsReceiver);
             unregisterReceiver(refreshPageDataReceiver);
-            unregisterReceiver(processDeeplinkReceiver);
             unregisterReceiver(presenterCloseActionReceiver);
         } catch (IllegalArgumentException e) {
 //            Log.e(TAG, "receiver not regiestered " + e.getMessage());
@@ -1023,6 +969,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     public void onSuccess(AppCMSBinder appCMSBinder) {
         appCMSPresenter.restartInternalEvents();
         resumeInternalEvents = true;
+
+        if (appCMSBinder != null && appCMSBinder.getSearchQuery() != null) {
+            //Log.d(TAG, "Successfully loaded page " + appCMSBinder.getPageName());
+            //Log.d(TAG, "Processing search query for deeplink " +
+//                    appCMSBinder.getSearchQuery().toString());
+            processDeepLink(appCMSBinder.getSearchQuery());
+            appCMSBinder.clearSearchQuery();
+        }
+
+        reportFullyDrawn();
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -1465,9 +1421,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
                     break;
-                case DRAGGABLE_PANEL:
-                    appCMSPageFragment = AppCMSDraggableFragment.newInstance(this, appCMSBinder);
-                    break;
                 case SEARCH:
                     try {
                         appCMSPageFragment = AppCMSSearchFragment.newInstance(this,
@@ -1866,12 +1819,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (fragment instanceof AppCMSPageFragment) {
                     ((AppCMSPageFragment) fragment).refreshView(appCMSBinder);
                 }
-                if (appCMSBinder.getAppCMSPageAPI() != null || appCMSBinder.getExtraScreenType()
-                        != AppCMSPresenter.ExtraScreenType.NONE) {
-                    pageLoading(false);
-                } else {
-                    pageLoading(true);
-                }
+                pageLoading(false);
                 handleToolbar(appCMSBinder.isAppbarPresent(),
                         appCMSBinder.getAppCMSMain(),
                         appCMSBinder.getPageId());
@@ -2121,22 +2069,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         for (String pathSegment : deeplinkUri.getPathSegments()) {
             pagePath.append(File.separatorChar);
             pagePath.append(pathSegment);
-            if (pathSegment.contains(getString(R.string.app_cms_shows_deeplink_path_name))) {
-                action = getString(R.string.app_cms_action_showvideopage_key);
-            }
         }
-
-        appCMSPresenter.forceLoad();
-
-        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-        actionPresenter.setAction(action);
-
         //Log.d(TAG, "Launching deep link " +
 //                deeplinkUri.toString() +
 //                " with path: " +
 //                pagePath.toString());
         appCMSPresenter.launchButtonSelectedAction(pagePath.toString(),
-                actionPresenter,
+                action,
                 title,
                 null,
                 null,
@@ -2189,9 +2128,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else {
             String endPoint = appCMSPresenter.getPageIdToPageAPIUrl(appCMSBinder.getPageId());
             boolean usePageIdQueryParam = true;
-            if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName()) ||
-                    appCMSPresenter.isPageAShowPage(appCMSBinder.getScreenName())) {
-                endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getPageName());
+            if (appCMSPresenter.isPageAVideoPage(appCMSBinder.getScreenName())) {
+                endPoint = appCMSPresenter.getPageNameToPageAPIUrl(appCMSBinder.getScreenName());
                 usePageIdQueryParam = false;
             }
 
@@ -2209,7 +2147,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getPagePath());
                 appCMSPresenter.getPageIdContent(apiUrl,
                         appCMSBinder.getPagePath(),
-                        null,
                         appCMSPageAPI -> {
                             if (appCMSPageAPI != null) {
                                 appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
@@ -2279,7 +2216,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                             appCMSPresenter.getPageIdContent(apiUrl,
                                     appCMSBinder.getPagePath(),
-                                    null,
                                     appCMSPageAPI -> {
                                         if (appCMSPageAPI != null) {
                                             if (appCMSPresenter.isUserLoggedIn()) {
@@ -2341,20 +2277,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
-
-        if (updatedAppCMSBinder != null && updatedAppCMSBinder.getSearchQuery() != null) {
-            //Log.d(TAG, "Successfully loaded page " + appCMSBinder.getPageName());
-            //Log.d(TAG, "Processing search query for deeplink " +
-//                    appCMSBinder.getSearchQuery().toString());
-            appCMSPresenter.sendDeepLinkAction(updatedAppCMSBinder.getSearchQuery());
-            updatedAppCMSBinder.clearSearchQuery();
-        }
-
-        try {
-            reportFullyDrawn();
-        } catch (Exception e) {
-
-        }
     }
 
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

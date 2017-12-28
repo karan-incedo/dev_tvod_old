@@ -41,34 +41,24 @@ public class AppCMSFacebookLoginCall {
             @Override
             public void onResponse(Call<FacebookLoginResponse> call, Response<FacebookLoginResponse> response) {
                 if (response.body() != null) {
-                    Observable.just(response.body())
-                            .onErrorResumeNext(throwable -> Observable.empty())
-                            .subscribe(readyAction);
+                    Observable.just(response.body()).subscribe(readyAction);
                 } else if (response.errorBody() != null) {
                     try {
                         FacebookLoginResponse facebookLoginResponse =
                                 gson.fromJson(response.errorBody().string(),
                                         FacebookLoginResponse.class);
-                        Observable.just(facebookLoginResponse)
-                                .onErrorResumeNext(throwable -> Observable.empty())
-                                .subscribe(readyAction);
+                        Observable.just(facebookLoginResponse).subscribe(readyAction);
                     } catch (Exception e) {
-                        Observable.just((FacebookLoginResponse) null)
-                                .onErrorResumeNext(throwable -> Observable.empty())
-                                .subscribe(readyAction);
+                        Observable.just((FacebookLoginResponse) null).subscribe(readyAction);
                     }
                 } else {
-                    Observable.just((FacebookLoginResponse) null)
-                            .onErrorResumeNext(throwable -> Observable.empty())
-                            .subscribe(readyAction);
+                    Observable.just((FacebookLoginResponse) null).subscribe(readyAction);
                 }
             }
 
             @Override
             public void onFailure(Call<FacebookLoginResponse> call, Throwable t) {
-                Observable.just((FacebookLoginResponse) null)
-                        .onErrorResumeNext(throwable -> Observable.empty())
-                        .subscribe(readyAction);
+                Observable.just((FacebookLoginResponse) null).subscribe(readyAction);
             }
         });
     }

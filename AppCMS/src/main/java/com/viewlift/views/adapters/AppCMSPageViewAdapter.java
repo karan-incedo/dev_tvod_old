@@ -17,17 +17,16 @@ import java.util.List;
  */
 
 public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAdapter.PageViewHolder> {
-    private List<ModuleView> childViews;
+    private List<View> childViews;
     private static int TYPE_PLAYER = 0;
     private static int TYPE_STANZA = 1;
 
 
     public AppCMSPageViewAdapter() {
         childViews = new ArrayList<>();
-        setHasStableIds(false);
     }
 
-    public void addView(ModuleView view) {
+    public void addView(View view) {
         if (childViews == null) {
             childViews = new ArrayList<>();
         }
@@ -79,7 +78,6 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
                         ViewGroup.LayoutParams.WRAP_CONTENT);
         viewGroup.setLayoutParams(viewGroupLayoutParams);
         return new PageViewHolder(viewGroup);
-       // return new PageViewHolder(childViews.get(viewType));
     }
 
     @Override
@@ -98,27 +96,6 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public int getItemCount() {
         return childViews != null ? childViews.size() : 0;
-    }
-
-    public List<String> getViewIdList(int firstIndex, int lastIndex) {
-        List<String> viewIdList = new ArrayList<>();
-        try {
-            if (childViews != null && !childViews.isEmpty()) {
-                int childViewsSize = childViews.size();
-                for (int i = firstIndex; i < lastIndex && i < childViewsSize; i++) {
-                    if (childViews.get(i) != null &&
-                            childViews.get(i).getModule() != null) {
-                        String viewModuleId = childViews.get(i).getModule().getId();
-                        if (!TextUtils.isEmpty(viewModuleId)) {
-                            viewIdList.add(viewModuleId);
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-
-        }
-        return viewIdList;
     }
 
     public static class PageViewHolder extends RecyclerView.ViewHolder {

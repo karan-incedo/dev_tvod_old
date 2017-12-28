@@ -28,7 +28,6 @@ import com.viewlift.views.customviews.BaseView;
 /**
  * Created by viewlift on 5/30/17.
  */
-
 public class AppCMSNavItemsFragment extends DialogFragment {
     private static final String TAG = "NavItemsAdapter";
 

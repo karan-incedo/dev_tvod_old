@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.CustomProgressBar;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
@@ -37,6 +38,10 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
             return;
         }
         setContentView(R.layout.activity_launch_tv);
+
+        ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
+        imageView.setBackgroundResource(R.drawable.tv_logo);
+
         //Log.d(TAG, "Launching application from main.json");
 
         //Log.d(TAG, "onCreate()");
@@ -49,7 +54,7 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
 
         if(appCMSPresenterComponent.appCMSPresenter().isNetworkConnected()){
         appCMSPresenterComponent.appCMSPresenter().getAppCMSMain(this,
-                getString(R.string.app_cms_app_name),
+                Utils.getProperty("SiteId", getApplicationContext()),
                 Uri.parse(""),
                 AppCMSPresenter.PlatformType.TV,
                 false);

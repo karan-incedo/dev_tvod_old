@@ -40,6 +40,11 @@ public class PrimaryCta implements Serializable {
         return bannerText;
     }
 
+    public void setBannerText(String bannerText) {
+        this.bannerText = bannerText;
+    }
+
+
     public String getCtaText() {
         return ctaText;
     }

@@ -66,7 +66,6 @@ public class GetAppCMSSignedURLAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
                     if (appCMSSignedURLResultAction1 != null && result != null) {
                         Observable.just(result).subscribe(appCMSSignedURLResultAction1);

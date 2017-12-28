@@ -50,7 +50,6 @@ public class NavBarItemView extends LinearLayout {
         init();
     }
 
-
     public NavBarItemView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
@@ -73,6 +72,7 @@ public class NavBarItemView extends LinearLayout {
 
     public void init() {
         hasFocus = false;
+        setPadding(0, 0, 0, 0);
         setOrientation(VERTICAL);
         createChildren();
     }

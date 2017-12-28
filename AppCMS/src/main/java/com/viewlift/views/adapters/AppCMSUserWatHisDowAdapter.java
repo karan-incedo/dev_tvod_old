@@ -391,8 +391,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 @Override
                 public void click(CollectionGridItemView collectionGridItemView,
                                   Component childComponent,
-                                  ContentDatum data,
-                                  int clickPosition) {
+                                  ContentDatum data) {
                     if (isClickable) {
                         if (data.getGist() != null) {
                             //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -424,7 +423,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
                             if (action.contains(deleteSingleItemDownloadAction)) {
                                 /*delete a single downloaded video*/
-                                deleteDownloadVideo(data, clickPosition);
+                                deleteDownloadVideo(data, position);
                             }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/
@@ -455,7 +454,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (action.contains(videoAction)) {
                                 if (viewTypeKey == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                     /*play movie if already downloaded*/
-                                    playDownloaded(data, clickPosition);
+                                    playDownloaded(data, position);
                                 } else {
                                     /*play movie from web URL*/
                                     appCMSPresenter.launchVideoPlayer(data,
@@ -468,12 +467,12 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (action.contains(trayAction)) {
                                 if (viewTypeKey == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                     /*play movie if already downloaded*/
-                                    playDownloaded(data, clickPosition);
+                                    playDownloaded(data, position);
                                     return;
                                 }
                                 /*open video detail page*/
                                 appCMSPresenter.launchButtonSelectedAction(permalink,
-                                        actionPresenter,
+                                        action,
                                         title,
                                         null,
                                         data,
@@ -631,15 +630,13 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         if (Boolean.parseBoolean(extraData[3])) {
             relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_COMPLETED);
         }
-        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-        actionPresenter.setAction(action);
 
         if (permalink == null ||
                 hlsUrl == null ||
                 extraData[2] == null ||
                 !appCMSPresenter.launchButtonSelectedAction(
                         permalink,
-                        actionPresenter,
+                        action,
                         title,
                         extraData,
                         data,
