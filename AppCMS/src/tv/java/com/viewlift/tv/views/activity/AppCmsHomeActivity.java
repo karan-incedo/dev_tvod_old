@@ -81,7 +81,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     private AppCmsResetPasswordFragment appCmsResetPasswordFragment;
     private AppCmsSubNavigationFragment appCmsSubNavigationFragment;
     private FrameLayout subNavHolder;
-    private boolean isHardPause;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -755,7 +754,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             appCMSPresenter.videoPlayerView.findViewById(R.id.exo_pause).requestFocus();
                             appCMSPresenter.videoPlayerView.findViewById(R.id.exo_play).requestFocus();
                             if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
-                                isHardPause = appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady();
+                                appCMSPresenter.videoPlayerView.setHardPause(appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady());
                                 return super.dispatchKeyEvent(event)
                                         || appCMSPresenter.videoPlayerView.getPlayerView()
                                         .dispatchKeyEvent(event);
@@ -763,17 +762,19 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             break;
                         case KeyEvent.KEYCODE_DPAD_CENTER:
                             if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
-                                isHardPause = appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady();
+                                appCMSPresenter.videoPlayerView.setHardPause(appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady());
                             }
                             return super.dispatchKeyEvent(event);
                         case KeyEvent.KEYCODE_MEDIA_REWIND:
                             if (null != appCMSPresenter.videoPlayerView) {
+                                if (appCMSPresenter.videoPlayerView.isLiveStream()) return true;
                                 appCMSPresenter.videoPlayerView.findViewById(R.id.exo_rew).requestFocus();
                                 return super.dispatchKeyEvent(event);
                             }
                             break;
                         case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                             if (null != appCMSPresenter.videoPlayerView) {
+                                if (appCMSPresenter.videoPlayerView.isLiveStream()) return true;
                                 appCMSPresenter.videoPlayerView.findViewById(R.id.exo_ffwd).requestFocus();
                                 return super.dispatchKeyEvent(event);
                             }
@@ -1108,11 +1109,4 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         }
     }
 
-    public boolean isHardPause() {
-        return isHardPause;
-    }
-
-    public void setHardPause(boolean hardPause) {
-        isHardPause = hardPause;
-    }
 }

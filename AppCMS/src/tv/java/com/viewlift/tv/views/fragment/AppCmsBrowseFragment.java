@@ -68,7 +68,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 if(null != customVideoVideoPlayerView){
                     if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
                     } else {
-                        if(activity.isActive && !activity.isHardPause()) {
+                        if(activity.isActive && !customVideoVideoPlayerView.isHardPause()) {
                             customVideoVideoPlayerView.resumePlayer();
                         }
                     }

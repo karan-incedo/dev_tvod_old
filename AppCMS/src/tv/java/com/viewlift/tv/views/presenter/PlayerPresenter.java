@@ -72,6 +72,7 @@ public class PlayerPresenter extends Presenter {
 
         if(shouldStartPlayer){
             mCustomVideoPlayerView.setVideoUri(contentData.getGist().getId());
+            shouldStartPlayer = false;
         }
 
         mCustomVideoPlayerView.requestFocusOnLogin();
@@ -99,14 +100,6 @@ public class PlayerPresenter extends Presenter {
         CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
         videoPlayerView.init(context);
         videoPlayerView.getPlayerView().hideController();
-       /* videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
-            @Override
-            public void onVisibilityChange(int i) {
-                if (i == 0) {
-                   videoPlayerView.getPlayerView().hideController();
-                }
-            }
-        });*/
         return videoPlayerView;
     }
 
