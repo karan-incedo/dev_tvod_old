@@ -1,22 +1,17 @@
 package com.viewlift.views.fragments;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -30,15 +25,14 @@ import com.viewlift.views.customviews.BaseView;
 
 public class AppCMSTeamListFragment extends DialogFragment {
     private static final String TAG = "AppCMSTeamListFragment";
-
-    private AppCMSPresenter appCMSPresenter;
-    private AppCMSBinder appCMSBinder;
-    private AppCMSTeamItemAdapter appCMSTeamItemAdapter;
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
+    private AppCMSPresenter appCMSPresenter;
+    private AppCMSBinder appCMSBinder;
+    private AppCMSTeamItemAdapter appCMSTeamItemAdapter;
 
     public static AppCMSTeamListFragment newInstance(Context context,
                                                      AppCMSBinder appCMSBinder,
@@ -121,8 +115,15 @@ public class AppCMSTeamListFragment extends DialogFragment {
         appCMSTeamItemAdapter.setUserLoggedIn(appCMSPresenter.isUserLoggedIn());
         appCMSTeamItemAdapter.setUserSubscribed(appCMSPresenter.isUserSubscribed());
         appCMSTeamItemAdapter.notifyDataSetChanged();
+        appCMSPresenter.setIsTeamPageVisible(true);
+        appCMSPresenter.dismissPopupWindowPlayer(false);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        appCMSPresenter.setIsTeamPageVisible(false);
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -132,6 +133,7 @@ public class AppCMSTeamListFragment extends DialogFragment {
             appCMSPresenter.restrictPortraitOnly();
 
         }
+        appCMSPresenter.setIsTeamPageVisible(false);
     }
 
     private void setBgColor(int bgColor, View view) {

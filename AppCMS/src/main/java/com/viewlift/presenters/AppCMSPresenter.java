@@ -665,6 +665,7 @@ public class AppCMSPresenter {
         }
     };
     private LruCache<String, Object> tvPlayerViewCache;
+    private boolean isTeamPAgeVisible = false;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -11497,6 +11498,9 @@ public class AppCMSPresenter {
                 dismissPopupWindowPlayer(false);
                 return;
             }
+            if (getIsTeamPageVisible()) {
+                return;
+            }
 
             if (!getMiniPLayerVisibility()) {
                 videoPlayerView.pausePlayer();
@@ -11872,13 +11876,23 @@ public class AppCMSPresenter {
         return currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template");
     }
 
+    public boolean getIsTeamPageVisible() {
+        return isTeamPAgeVisible;
+    }
+
+    public void setIsTeamPageVisible(boolean isVisible) {
+        isTeamPAgeVisible = isVisible;
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME
     }
 
+
     public enum PlatformType {
         ANDROID, TV
     }
+
 
     public enum TemplateType {
         ENTERTAINMENT, SPORTS
@@ -11887,7 +11901,6 @@ public class AppCMSPresenter {
     public enum BeaconEvent {
         PLAY, RESUME, PING, AD_REQUEST, AD_IMPRESSION, FIRST_FRAME, BUFFERING, FAILED_TO_START, DROPPED_STREAM
     }
-
 
     public enum DialogType {
         NETWORK,
@@ -11927,7 +11940,6 @@ public class AppCMSPresenter {
         UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
         SIGN_OUT
     }
-
 
     public enum RETRY_TYPE {
         VIDEO_ACTION, BUTTON_ACTION, PAGE_ACTION, SEARCH_RETRY_ACTION, WATCHLIST_RETRY_ACTION,
