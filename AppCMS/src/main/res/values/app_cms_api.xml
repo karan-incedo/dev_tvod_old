@@ -535,13 +535,12 @@
 
     <string name="app_cms_page_download_size_key">downloadDuration</string>
     <string name="app_cms_page_download_duration_key">downloadDuration</string>
-    <string name="app_cms_page_download_description_key">downloadDescription</string>
+    <string name="app_cms_page_download_description_key">description</string>
     <string name="app_cms_page_delete_download_key">deleteDownload</string>
     <string name="app_cms_delete_single_download_action">deleteSingleItemDownload</string>
 
-   
 
-    <string name="app_cms_page_history_description_key">historyDescription</string>
+    <string name="app_cms_page_history_description_key">description</string>
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
 </resources>
