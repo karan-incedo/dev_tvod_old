@@ -796,17 +796,24 @@ public class TVViewCreator {
                     case PAGE_START_WATCHING_BUTTON_KEY:
                         Button startWatchingButton = (Button)componentViewResult.componentView;
                         if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.getUserVideoStatus(
-                                    moduleAPI.getContentData().get(0).getGist().getId(),
-                                    userVideoStatusResponse -> {
-                                        if (null != userVideoStatusResponse) {
-                                            Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
-                                            );
-                                            if(userVideoStatusResponse.getWatchedTime() > 0){
-                                                startWatchingButton.setText(context.getString(R.string.resume_watching));
+
+                            if(null != moduleAPI && null != moduleAPI.getContentData()
+                                    && moduleAPI.getContentData().size() > 0 ){
+
+                                appCMSPresenter.getUserVideoStatus(
+                                        moduleAPI.getContentData().get(0).getGist().getId(),
+                                        userVideoStatusResponse -> {
+                                            if (null != userVideoStatusResponse) {
+                                                Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
+                                                );
+                                                if(userVideoStatusResponse.getWatchedTime() > 0){
+                                                    startWatchingButton.setText(context.getString(R.string.resume_watching));
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+
+                            }
+
                         }
 
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {

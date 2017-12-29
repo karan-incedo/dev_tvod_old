@@ -396,6 +396,7 @@ public class AppCMSTVTrayAdapter
             if (isWatchlist) {
                 Collections.sort(adapterData, (o1, o2)
                         -> Long.compare(o1.getAddedDate(), o2.getAddedDate()));
+                Collections.reverse(adapterData);
             } else if (isHistory) {
                 Collections.sort(adapterData, (o1, o2)
                         -> Long.compare(o1.getUpdateDate(), o2.getUpdateDate()));
