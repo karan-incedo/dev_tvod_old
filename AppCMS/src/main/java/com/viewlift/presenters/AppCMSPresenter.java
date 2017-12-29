@@ -1285,10 +1285,12 @@ public class AppCMSPresenter {
                     contentDatum.getGist().getId() != null) {
             getUserVideoStatus(contentDatum.getGist().getId(), userVideoStatusResponse -> {
 
+                if(userVideoStatusResponse != null) {
                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(), contentDatum);
                     appCMSTrayMenuDialogFragment.show(currentActivity.getFragmentManager(), "AppCMSTrayMenuDialogFragment");
                     appCMSTrayMenuDialogFragment.setMoreClickListener(trayMenuClickListener);
+                }
                 });
             }
 
@@ -1519,7 +1521,7 @@ public class AppCMSPresenter {
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         currentActivity.startActivity(playVideoIntent);
 
-                        sendCloseOthersAction(null, true, false);
+                        //sendCloseOthersAction(null, true, false);
                     } else {
                         entitlementPendingVideoData = new EntitlementPendingVideoData();
                         entitlementPendingVideoData.action = action;

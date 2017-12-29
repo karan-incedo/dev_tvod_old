@@ -754,8 +754,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     public void showOverlayWhenCastingConnected() {
         if (CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()) {
-
             if (parentView != null) {
+                customMessageView.setText(getResources().getString(R.string.app_cms_touch_to_cast_msg));
                 parentView.setVisibility(VISIBLE);
             }
             pausePlayer();
@@ -769,8 +769,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
         } else {
             if (parentView != null) {
-
-                customMessageView.setText(getResources().getString(R.string.app_cms_touch_to_cast_msg));
                 parentView.setVisibility(GONE);
             }
         }
@@ -808,7 +806,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
             if (CastingUtils.getRemoteMediaId(mContext) != null && onUpdatedContentDatum != null) {
                 String filmId = CastingUtils.getRemoteMediaId(mContext);
-                if (filmId.equalsIgnoreCase("") && (!filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId()))) {
+                if (filmId.equalsIgnoreCase("") || (!filmId.equalsIgnoreCase(onUpdatedContentDatum.getGist().getId()))) {
                     CastServiceProvider.getInstance((Activity) mContext).launchSingeRemoteMedia(onUpdatedContentDatum.getGist().getTitle(), permaLink, onUpdatedContentDatum.getGist().getVideoImageUrl(), lastUrl, onUpdatedContentDatum.getGist().getId(), 0, false);
                 }
             }
