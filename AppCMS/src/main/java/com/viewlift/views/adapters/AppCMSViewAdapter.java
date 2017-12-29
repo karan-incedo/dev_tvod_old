@@ -420,7 +420,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
                                     contentType = data.getGist().getContentType();
                                 }
-e
+
                                 if (action.contains(openOptionsAction)) {
                                     appCMSPresenter.launchButtonSelectedAction(permalink,
                                             openOptionsAction,
