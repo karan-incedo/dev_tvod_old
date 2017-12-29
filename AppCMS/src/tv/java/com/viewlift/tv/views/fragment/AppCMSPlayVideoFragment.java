@@ -411,7 +411,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 );
 
         if (!shouldRequestAds) {
-            //videoPlayerView.getPlayer().setPlayWhenReady(true);
             preparePlayer();
             startTimer();
         }

@@ -28,6 +28,7 @@ import com.google.ads.interactivemedia.v3.api.AdsLoader;
 import com.google.ads.interactivemedia.v3.api.AdsManager;
 import com.google.ads.interactivemedia.v3.api.AdsRequest;
 import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
+import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -85,7 +86,7 @@ public class CustomVideoPlayerView
     private long mStopBufferMilliSec;
     private long mStartBufferMilliSec;
     private double ttfirstframe;
-    private int currentPlayingIndex = 0;
+    private int currentPlayingIndex = -1;
     private List<String> relatedVideoId;
     private String parentScreenName;
     private String mStreamId;
@@ -98,6 +99,7 @@ public class CustomVideoPlayerView
     private TimerTask timerTask;
     private ContentDatum contentDatum;
     private boolean isLiveStream;
+    private boolean isHardPause;
 
     public CustomVideoPlayerView(Context context) {
         super(context);
@@ -311,8 +313,11 @@ public class CustomVideoPlayerView
 
                     return;
                 }
-                Log.d(TAG, "CVP Timer called off. " + (appCMSPresenter.getUserFreePlayTimePreference() + 1000));
-                appCMSPresenter.setUserFreePlayTimePreference(appCMSPresenter.getUserFreePlayTimePreference() + 1000);
+                if (null != getPlayer() &&
+                        getPlayer().getPlayWhenReady()) {
+                    Log.d(TAG, "CVP Timer called off. " + (appCMSPresenter.getUserFreePlayTimePreference() + 1000));
+                    appCMSPresenter.setUserFreePlayTimePreference(appCMSPresenter.getUserFreePlayTimePreference() + 1000);
+                }
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, 1000);
@@ -363,6 +368,7 @@ public class CustomVideoPlayerView
         return entitlementCheckMultiplier * 60 * 1000;
     }
 
+    String lastUrl = null;
     private void playVideos(int currentIndex, ContentDatum contentDatum) {
         try {
             mStreamId = appCMSPresenter.getStreamingId(videoData.getGist().getTitle());
@@ -380,28 +386,23 @@ public class CustomVideoPlayerView
             }
         }
 
-
         Log.d(TAG , "Url is = "+url);
         if (null != url) {
+            lastUrl = url;
             setUri(Uri.parse(url), null);
             if (null != appCMSPresenter.getCurrentActivity() &&
                     appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
                 if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive
-                        && !((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isHardPause()) {
-                  /*  if(shouldRequestAds){
-                        requestAds(adsUrl);
-                    }else {*/
+                        && !isHardPause()) {
                         getPlayerView().getPlayer().setPlayWhenReady(true);
-                  //  }
                 } else {
                     getPlayerView().getPlayer().setPlayWhenReady(false);
                 }
             }
 
-            if (currentIndex == 0) {
+            if (currentPlayingIndex == -1) {
                 relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
             }
-            currentPlayingIndex = currentIndex;
             hideProgressBar();
         }
     }
@@ -431,8 +432,8 @@ public class CustomVideoPlayerView
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         switch (playbackState) {
             case STATE_ENDED:
-//                getPlayerView().getPlayer().setPlayWhenReady(false);
                 currentPlayingIndex++;
+//                getPlayerView().getPlayer().setPlayWhenReady(false);
                 Log.d(TAG, "appCMSPresenter.getAutoplayEnabledUserPref(mContext): " +
                         appCMSPresenter.getAutoplayEnabledUserPref(mContext));
                 if (null != relatedVideoId
@@ -545,14 +546,15 @@ public class CustomVideoPlayerView
         if (null != getPlayer() && !getPlayer().getPlayWhenReady()) {
             if (appCMSPresenter.getCurrentActivity() != null && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
                 if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
-                    getPlayer().setPlayWhenReady(true);
                     startFreePlayTimer();
-
-                    if (beaconMessageThread != null) {
-                        beaconMessageThread.sendBeaconPing = true;
-                    }
-                    if (beaconBufferingThread != null) {
-                        beaconBufferingThread.sendBeaconBuffering = true;
+                    if(!isHardPause()) {
+                        getPlayer().setPlayWhenReady(true);
+                        if (beaconMessageThread != null) {
+                            beaconMessageThread.sendBeaconPing = true;
+                        }
+                        if (beaconBufferingThread != null) {
+                            beaconBufferingThread.sendBeaconBuffering = true;
+                        }
                     }
                 }
             }
@@ -1147,4 +1149,24 @@ public class CustomVideoPlayerView
         },100);
     }
 
+
+    public boolean isHardPause() {
+        Log.d(TAG , "NITS isHardPause3() = "+isHardPause);
+        return isHardPause;
+    }
+
+    public void setHardPause(boolean hardPause) {
+        Log.d(TAG , "NITS setHardPause() = "+isHardPause);
+        isHardPause = hardPause;
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException e) {
+        super.onPlayerError(e);
+        String errorString = null;
+        if (e instanceof ExoPlaybackException) {
+            errorString = e.getCause().toString();
+            setUri(Uri.parse(lastUrl), null);
+        }
+    }
 }

@@ -68,7 +68,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 if(null != customVideoVideoPlayerView){
                     if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
                     } else {
-                        if(activity.isActive && !activity.isHardPause()) {
+                        if(activity.isActive) {
                             customVideoVideoPlayerView.resumePlayer();
                         }
                     }
@@ -152,10 +152,12 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         customVideoVideoPlayerView.performLoginButtonClick();
                         return;
                     }
+                    appCMSPresenter.setVideoPlayerView(null);
                     appCMSPresenter.setVideoPlayerView(customVideoVideoPlayerView);
                     appCMSPresenter.videoPlayerView.getPlayerView().setUseController(true);
                     customVideoVideoPlayerView.hideControlsForLiveStream();
                     appCMSPresenter.showFullScreenPlayer();
+                    appCMSPresenter.videoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.videoPlayerView.getPlayer().getContentPosition() + 1000);
                     return;
                 }
                 ContentDatum data = rowData.contentData;

@@ -11696,11 +11696,15 @@ public class AppCMSPresenter {
 //                relativeLayoutFull.removeAllViews();
                 if (videoPlayerViewParent != null) {
                     relativeLayoutFull.removeView(videoPlayerView);
-                    videoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
+                    if (videoPlayerView != null && videoPlayerView.getParent() != null) {
+                        ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
+                    }
+                        videoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
          //           videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
                     videoPlayerViewParent.addView(videoPlayerView);
                 }
-
+                videoPlayerView=null;
+                videoPlayerViewParent=null;
 //                relativeLayoutFull.setVisibility(View.GONE);
 //                relativeLayoutFull.removeAllViews();
 
