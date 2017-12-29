@@ -12007,32 +12007,33 @@ public class AppCMSPresenter {
     }
 
     public void showPopupWindowPlayer(View scrollView) {
+        if (videoPlayerView!=null) {
+            // if preview frame need to show than mini player will be true and miniplayer need to be hide
+            if (videoPlayerView.hideMiniPlayer) {
+                videoPlayerView.pausePlayer();
 
-        // if preview frame need to show than mini player will be true and miniplayer need to be hide
-        if (videoPlayerView.hideMiniPlayer) {
-            videoPlayerView.pausePlayer();
+                dismissPopupWindowPlayer(false);
+                return;
+            }
 
-            dismissPopupWindowPlayer(false);
-            return;
+            if (!getMiniPLayerVisibility()) {
+                videoPlayerView.pausePlayer();
+                return;
+            }
+
+            if (relativeLayoutPIP == null) {
+                relativeLayoutPIP = new MiniPlayerView(currentActivity, this, scrollView);
+            } else {
+                relativeLayoutPIP.init();
+            }
+            relativeLayoutPIP.setVisibility(View.VISIBLE);
+
+            if (relativeLayoutPIP.getParent() == null) {
+                ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+            }
+            pipPlayerVisible = true;
+
         }
-
-        if (!getMiniPLayerVisibility()) {
-            videoPlayerView.pausePlayer();
-            return;
-        }
-
-        if (relativeLayoutPIP == null) {
-            relativeLayoutPIP = new MiniPlayerView(currentActivity, this, scrollView);
-        } else {
-            relativeLayoutPIP.init();
-        }
-        relativeLayoutPIP.setVisibility(View.VISIBLE);
-
-        if (relativeLayoutPIP.getParent() == null) {
-            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
-        }
-        pipPlayerVisible = true;
-
     }
 
 
