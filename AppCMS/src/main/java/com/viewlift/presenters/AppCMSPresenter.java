@@ -1285,6 +1285,8 @@ public class AppCMSPresenter {
                     contentDatum.getGist().getId() != null) {
             getUserVideoStatus(contentDatum.getGist().getId(), userVideoStatusResponse -> {
 
+                    if(userVideoStatusResponse == null)
+                        return;
                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(), contentDatum);
                     appCMSTrayMenuDialogFragment.show(currentActivity.getFragmentManager(), "AppCMSTrayMenuDialogFragment");
@@ -12009,7 +12011,7 @@ public class AppCMSPresenter {
     public void showPopupWindowPlayer(View scrollView) {
 
         // if preview frame need to show than mini player will be true and miniplayer need to be hide
-        if (videoPlayerView.hideMiniPlayer) {
+        if (videoPlayerView != null && videoPlayerView.hideMiniPlayer) {
             videoPlayerView.pausePlayer();
 
             dismissPopupWindowPlayer(false);
