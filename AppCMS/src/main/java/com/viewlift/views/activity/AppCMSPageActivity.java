@@ -978,7 +978,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSBinder.clearSearchQuery();
         }
 
-        reportFullyDrawn();
+        try {
+            reportFullyDrawn();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -1355,6 +1359,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!castDisabled) {
             setMediaRouterButtonVisibility(appCMSBinder.getPageId());
         }
+//        appCMSPresenter.dismissPopupWindowPlayer(false);
+
         createFragment(appCMSBinder);
     }
 
