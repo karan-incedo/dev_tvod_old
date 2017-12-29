@@ -1,6 +1,5 @@
 package com.viewlift.views.customviews;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -16,7 +15,6 @@ import java.util.List;
  * Created by viewlift on 5/17/17.
  */
 
-@SuppressLint("ViewConstructor")
 public class ModuleView<T extends ModuleWithComponents> extends BaseView {
     private static final String TAG = "ModuleView";
 
@@ -26,9 +24,7 @@ public class ModuleView<T extends ModuleWithComponents> extends BaseView {
 
     private List<HeightLayoutAdjuster> heightLayoutAdjusterList;
 
-    public ModuleView(Context context,
-                      T module,
-                      boolean init) {
+    public ModuleView(Context context, T module, boolean init) {
         super(context);
         this.module = module;
         this.childComponentAndViewList = new ArrayList<>();
@@ -52,8 +48,6 @@ public class ModuleView<T extends ModuleWithComponents> extends BaseView {
             initializeComponentHasViewList(module.getComponents().size());
         }
         setPadding(0, 0, 0, 0);
-
-        setFocusableInTouchMode(true);
     }
 
     @Override

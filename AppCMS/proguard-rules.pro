@@ -16,6 +16,11 @@
    public *;
 }
 
+-ignorewarnings
+-keep class * {
+    public private *;
+}
+
 -keep class com.viewlift.AppCMSApplication { *;}
 -keep class com.urbanairship.Autopilot { *;}
 

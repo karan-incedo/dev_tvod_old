@@ -441,10 +441,10 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 public void run() {
                     appCMSPresenter.getUserData(userIdentity -> {
                         if (!entitlementCheckCancelled && isTimerRun) {
-                            if (!isLiveStream && appCMSMain.getFeatures().getFreePreview().isPer_video()) {
+                            if (!isLiveStream && appCMSMain.getFeatures().getFreePreview().isPerVideo()) {
                                 secsViewed = (int) getPlayer().getCurrentPosition() / 1000;
                             }
-                            if (!appCMSMain.getFeatures().getFreePreview().isPer_video()) {
+                            if (!appCMSMain.getFeatures().getFreePreview().isPerVideo()) {
                                 playedVideoSecs = appCMSPresenter.getPreviewTimerValue();
                             }
                             if (((maxPreviewSecs < playedVideoSecs) || (maxPreviewSecs < secsViewed)) && (userIdentity == null || !userIdentity.isSubscribed())) {
@@ -548,7 +548,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
                     } else {
                         //disableController();
-                        showRestrictMessage(getResources().getString(R.string.app_cms_autoplay_off_msg));
+                        showRestrictMessage(getResources().getString(R.string.autoplay_off_msg));
                     }
 
                 } else {

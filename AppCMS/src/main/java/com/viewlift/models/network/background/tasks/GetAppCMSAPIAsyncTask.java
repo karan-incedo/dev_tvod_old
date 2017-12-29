@@ -1,13 +1,11 @@
 package com.viewlift.models.network.background.tasks;
 
-import android.content.Context;
 import android.util.LruCache;
 
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 
 import java.io.IOException;
-import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -32,41 +30,17 @@ public class GetAppCMSAPIAsyncTask {
         this.readyAction = readyAction;
     }
 
-    public void executeWithModules(Params params) {
-        currentParams = params;
-        Observable
-                .fromCallable(() -> {
-                    if (currentParams != null) {
-                        try {
-                            return call.callWithModules(currentParams.urlWithContent,
-                                    currentParams.authToken);
-                        } catch (Exception e) {
-                            //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
-                        }
-                    }
-                    return null;
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(throwable -> Observable.empty())
-                .subscribe((result) -> {
-                    Observable.just(result).subscribe(readyAction);
-                });
-    }
-
     public void execute(Params params) {
         currentParams = params;
         Observable
                 .fromCallable(() -> {
                     if (currentParams != null) {
                         try {
-                            return call.call(currentParams.context,
-                                    currentParams.urlWithContent,
+                            return call.call(currentParams.urlWithContent,
                                     currentParams.authToken,
                                     currentParams.pageId,
                                     currentParams.loadFromFile,
-                                    0,
-                                    currentParams.modules);
+                                    0);
                         } catch (IOException e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
@@ -75,15 +49,13 @@ public class GetAppCMSAPIAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> {
-                    if (params.appCMSPageAPILruCache != null ) {
+                    if (params.appCMSPageAPILruCache != null &&
+                            readyAction != null) {
                         if (result != null) {
                             params.appCMSPageAPILruCache.put(params.pageId, result);
                         }
-                        if (readyAction != null) {
-                            Observable.just(result).subscribe(readyAction);
-                        }
+                        Observable.just(result).subscribe(readyAction);
                     }
                 });
     }
@@ -104,12 +76,10 @@ public class GetAppCMSAPIAsyncTask {
     }
 
     public static class Params {
-        Context context;
         String urlWithContent;
         String authToken;
         String pageId;
         boolean loadFromFile;
-        List<String> modules;
         LruCache<String, AppCMSPageAPI> appCMSPageAPILruCache;
 
         public static class Builder {
@@ -119,8 +89,7 @@ public class GetAppCMSAPIAsyncTask {
                 params = new Params();
             }
 
-            public Builder context(Context context) {
-                params.context = context;
+            public Builder context() {
                 return this;
             }
 
@@ -141,11 +110,6 @@ public class GetAppCMSAPIAsyncTask {
 
             public Builder loadFromFile(boolean loadFromFile) {
                 params.loadFromFile = loadFromFile;
-                return this;
-            }
-
-            public Builder modules(List<String> modules) {
-                params.modules = modules;
                 return this;
             }
 

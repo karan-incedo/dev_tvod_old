@@ -106,13 +106,9 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 action = viewHolder.view.getContext().getString(R.string.app_cms_action_showvideopage_key);
             }
             String title = appCMSSearchResults.get(adapterPosition).getGist().getTitle();
-
-            AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-            actionPresenter.setAction(action);
-
             //Log.d(TAG, "Launching " + permalink + ":" + action);
             if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                    actionPresenter,
+                    action,
                     title,
                     null,
                     null,
@@ -198,7 +194,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                 ContentDatum contentDatum = new ContentDatum();
                 contentDatum.setGist(appCMSSearchResults.get(adapterPosition).getGist());
                 appCMSPresenter.launchButtonSelectedAction(permalink,
-                        new AppCMSActionPresenter.Builder().action(action).build(),
+                        action,
                         title,
                         null,
                         contentDatum,

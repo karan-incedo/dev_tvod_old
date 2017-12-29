@@ -1,6 +1,7 @@
 package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
@@ -18,16 +19,19 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
+import com.viewlift.models.data.appcms.ui.main.Metadata;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -230,6 +234,54 @@ public class TVCollectionGridItemView extends TVBaseView {
                     });
                     view.setBackground(Utils.getTrayBorder(context, borderColor, component));
                     view.setPadding(1, 3, 1, 3);
+                }else if(componentKey == AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY){
+                    int childViewWidth = (int) getViewWidth(getContext(),
+                            childComponent.getLayout(),
+                            ViewGroup.LayoutParams.MATCH_PARENT);
+                    int childViewHeight = (int) getViewHeight(getContext(),
+                            childComponent.getLayout(),
+                            getViewHeight(getContext(),
+                                    component.getLayout(),
+                                    ViewGroup.LayoutParams.WRAP_CONTENT));
+
+                    if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl())) {
+                        String imageUrl =
+                                context.getString(R.string.app_cms_image_with_resize_query,
+                                        data.getGist().getVideoImageUrl(),
+                                        childViewWidth,
+                                        childViewHeight);
+                      /*  Log.d(TAG, "Loading image Title: " + data.getGist().getTitle());
+                        Log.d(TAG, "Loading image: " + imageUrl);*/
+                        Glide.with(context)
+                                .load(imageUrl)
+                                .override(childViewWidth, childViewHeight)
+                                .centerCrop()
+                                .into((ImageView) view);
+
+                        bringToFront = false;
+                        view.setFocusable(true);
+
+                        view.setBackgroundResource(R.drawable.st_menu_color_selector);
+                        view.setOnClickListener(v ->
+                                {
+                           // Toast.makeText(context, "Clicked on " + data.getGist().getTitle(), Toast.LENGTH_SHORT).show();
+                            appCMSPresenter.showLoadingDialog(true);
+
+                             appCMSPresenter.navigateToTVPage(
+                                    data.getGist().getId(),
+                                     data.getGist().getTitle(),
+                                    data.getGist().getPermalink(),
+                                    false,
+                                    Uri.EMPTY,
+                                    true,
+                                   false,
+                                    false);
+
+                            new android.os.Handler().postDelayed(() -> view.setClickable(true), 3000);
+                        });
+
+                    }
+
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
@@ -279,6 +331,32 @@ public class TVCollectionGridItemView extends TVBaseView {
                         String fmt = getResources().getText(R.string.item_shop).toString();
                         ((TextView) view).setText(MessageFormat.format(fmt, days));
                     }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_SUBTITLE_LABEL) {
+
+                    Metadata metadata = appCMSPresenter.getAppCMSMain().getBrand().getMetadata();
+                    metadata = new Metadata();
+                    metadata.setDisplayPublishedDate(true);
+                    metadata.setDisplayAuthor(true);
+                    metadata.setDisplayDuration(true);
+                    StringBuilder stringBuilder = new StringBuilder();
+
+
+                    if (metadata.isDisplayDuration()){
+                        stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
+                    }
+                    if (metadata.isDisplayAuthor()){
+                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                        stringBuilder.append("by John Smith");
+                    }
+                    if (metadata.isDisplayPublishedDate()){
+                        if (stringBuilder.length() > 0) stringBuilder.append(" | ");
+                        Date publishedDate = new Date(data.getGist().getPublishDate());
+                        SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                        String date = spf.format(publishedDate);
+                        stringBuilder.append("Published on ");
+                        stringBuilder.append(date);
+                    }
+                    ((TextView) view).setText(stringBuilder);
                 }
             } else if (componentKey == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 int gridImagePadding = Integer.valueOf(
@@ -297,6 +375,8 @@ public class TVCollectionGridItemView extends TVBaseView {
                 ((ProgressBar) view).setProgress(0);
                 ((ProgressBar) view).setProgress(progress);
                 view.setFocusable(false);
+            } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY) {
+
             }
             view.forceLayout();
         }

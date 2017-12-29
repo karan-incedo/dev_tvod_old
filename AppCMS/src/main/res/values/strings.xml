@@ -8,6 +8,7 @@
     <string name="app_cms_download_setting_bundle_key">app_cms_download_setting_bundle_key</string>
     <string name="app_cms_download_setting_binder_key">app_cms_download_setting_binder_key</string>
 
+    <string name="something_wrong">Something went wrong. Please try again!</string>
     <string name="app_cms_bundle_key">app_cms_bundle</string>
     <string name="launch_binder_key">launch_binder</string>
     <string name="video_player_data_key">video_player_data</string>
@@ -21,7 +22,14 @@
     <string name="menu_navigation_key">menu_navigation</string>
     <string name="ellipse_char">&#8230;</string>
     <string name="min_abbreviation">MIN</string>
-    <string name="mins_abbreviation">MINS</string>
+    <string name="sec_abbreviation">SEC</string>
+    <string name="secs_abbreviation">SECS</string>
+    <string name="mins_abbreviation">&#160;MINS</string>
+
+    <plurals name="mins_plural">
+        <item quantity="one">%d MIN</item>
+        <item quantity="other">%d MINS</item>
+    </plurals>
     <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
     <string name="blank_separator">&#160;</string>
@@ -219,12 +227,8 @@
 
     <!-- Google Cancel Subscription API -->
     <string name="google_cancel_subscription_api">https://www.googleapis.com/androidpublisher/v2/applications/$1%s/purchases/subscriptions/$2%s/tokens/$3%s:cancel</string>
-
-    <!-- Runtime Abbreviations -->
-    <string name="runtime_minute_abbreviation">MIN</string>
-    <string name="runtime_minutes_abbreviation">MINS</string>
-    <string name="runtime_seconds_abbreviation">SECS</string>
-    <string name="runtime_episodes_abbreviation">EPISODES</string>
+    <string name="minute_for_runtime">MIN</string>
+    <string name="minutes_for_runtime">MINS</string>
 
     <!-- apps flyer keys -->
     <string name="app_cms_appsflyer_login_status">af_login_status</string>
@@ -322,7 +326,6 @@
     <string name="app_cms_subscription_upgrade_unavailable_user_dialog">There are currently no plans available for upgrade for the plan you are currently subscribed.</string>
     <string name="app_cms_subscription_upgrade_cancel_title">You did not purchase the subscription through the Google Play store</string>
     <string name="app_cms_subscription_upgrade_for_web_user_dialog">To upgrade your subscription, go to the My Account section on our website.</string>
-    <string name="app_cms_subscription_upgrade_for_ios_user_dialog">To upgrade your subscription, go to Manage Subscription on your iOS device.</string>
     <string name="app_cms_subscription_cancel_for_web_user_dialog">To cancel your subscription, go to the My Account section on our website.</string>
     <string name="app_cms_subscription_cancel_for_ios_user_dialog">To cancel your subscription, go to Manage Subscription on your iOS device.</string>
 
@@ -432,6 +435,9 @@
     <string name="remove_from_watchlist">REMOVE FROM WATCHLIST</string>
     <string name="add_to_watchlist">ADD TO WATCHLIST</string>
     <string name="add_to_watchlist_dialog_text">You have to be signed in to add this to your watchlist.</string>
+    <string name="open_account_dialog_text">You have to be signed in to view account.</string>
+    <string name="open_watchlist_dialog_text">You have to be signed in to view your Watchlist.</string>
+    <string name="open_history_dialog_text">You have to be signed in to view your History.</string>
     <string name="sign_up_tos_and_pp_text">By creating an account, you agree to our terms of use and privacy policy.</string>
     <string name="close">Close</string>
     <string name="yes">YES</string>
@@ -464,6 +470,22 @@
     <string name="app_cms_close_text">CLOSE</string>
     <string name="close_one_page_key">close_one_page</string>
     <string name="logged_in_as">Logged in as %s</string>
+    <string name="st_home_icon_key">icon-home</string>
+    <string name="st_show_icon_key">icon-grid</string>
+    <string name="st_teams_icon_key">icon-bracket</string>
+    <string name="st_watchlist_icon_key">icon-watchlist</string>
+    <string name="st_history_icon_key" >icon-clock</string>
+    <string name="st_settings_icon_key">icon-gear</string>
+    <string name="st_search_icon_key">icon-search</string>
+    <string name="st_autoplay_icon_key">icon-autoplay</string>
+    <string name="st_closed_caption_icon_key">icon-cc</string>
+    <string name="st_manage_subscription_icon_key">icon-manage-subscription</string>
+    <string name="st_account_icon_key">icon-account</string>
+    <string name="st_faq_icon_key">icon-faq</string>
+    <string name="st_signin_icon_key">icon-signin</string>
+    <string name="st_signout_icon_key">icon-signout</string>
+    <string name="st_contact_icon_key">icon-contact</string>
+    <string name="st_live_icon_key">icon-live</string>
     <string name="search_blank_toast_msg">Please enter a value to search.</string>
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
     <string name="published_on">Published on</string>
@@ -475,7 +497,12 @@
     <string name="deeplink_uri_extra_key">deeplink_uri</string>
 
     <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
-    <string name="app_cms_autoplay_off_msg">ON Autoplay from Setting to play next video</string>
+    <string name="visit_website_msg">Please visit our website to start your subscription.</string>
+    <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
+    <string name="no_more_videos_in_queue">No more videos in queue.</string>
+    <string name="shouldNavigateToLogin">shouldNavigateToLogin</string>
+    <string name="resume_watching">Resume Watching</string>
+    
     <string name="app_cms_video_ended_text_message">Live programming ended, [prees/swipe] down for more content</string>
     <string name="app_cms_touch_to_cast_msg">Touch to cast the video on your \n Chromecast device.</string>
 

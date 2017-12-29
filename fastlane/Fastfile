@@ -1,0 +1,210 @@
+# Customise this file, documentation can be found here:
+# https://github.com/fastlane/fastlane/tree/master/fastlane/docs
+# All available actions: https://docs.fastlane.tools/actions
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "2.47.0"
+
+default_platform :android
+
+platform :android do
+  before_all do
+    # ENV["SLACK_URL"] = "https://hooks.slack.com/services/..."
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    gradle(task: "assembleRelease")
+    supply
+  end
+
+  # You can define as many lanes as you want
+
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+
+    # slack(
+    #   message: "Successfully deployed new App Update."
+    # )
+  end
+
+
+  desc "Mobile track app. Deploy a new version to the Google Play Store - Beta channel"
+
+     lane :mobilebeta do |options|
+
+         #Post status on UI
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" CLEAN_PROJECT ''"
+
+         gradle(task: "clean")
+
+         #Post status on UI
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" BUILD_INPROGRESS ''"
+
+         #Generate Assemble Debug build
+         gradle(task: "assembleDebug")
+
+         #Generate Assemble Test build
+         gradle(task: "assembleAndroidTest")
+
+         #Capture phone screenshots
+          begin
+              phones_screenshots(app_package_name: options[:app_package_name], app_apk_path: options[:app_apk_path], tests_apk_path: options[:tests_apk_path])
+              rescue => ex
+                 UI.error("Something went wrong: #{ex}")
+          end
+
+         #Post status on UI
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" SCREEN_SHOT_CAPTURED ''"
+
+         #Capture Tablet screenshots
+         begin
+              teninchtablet_screenshots(app_package_name: options[:app_package_name], app_apk_path: options[:app_apk_path], tests_apk_path: options[:tests_apk_path])
+              rescue => ex
+                     UI.error("Something went wrong: #{ex}")
+         end
+
+
+         #Post status on UI
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" SCREEN_SHOT_CAPTURED ''"
+
+         #Generate Assemble Release build
+         gradle(task: "assembleRelease")
+
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" RELEASE_SIGNING_AND_ZIPALIGN ''"
+
+         sign_apk(
+            apk_path: options[:apk_path],
+            keystore_path: options[:keystore_path],
+            alias: options[:alias],
+            storepass: options[:storepass],
+            tsa: "http://timestamp.comodoca.com/rfc316",
+          )
+
+          zipalign(apk_path: "#{lane_context[SharedValues::SIGNED_APK_PATH]}")
+          gradle(task: "test")
+    end
+
+     desc "TV release app. Upload new version of TV App on Partner Portal"
+
+     lane :tvbeta do |options|
+
+         #Post status on UI
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" CLEAN_PROJECT ''"
+
+         gradle(task: "clean")
+
+         #Post status on UI
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" BUILD_INPROGRESS ''"
+
+         #Generate Assemble Debug build
+         gradle(task: "assembleDebug")
+
+         #Generate Assemble Test build
+         gradle(task: "assembleAndroidTest")
+
+         #Capture tv screenshots
+          begin
+             tv_screenshots(app_package_name: options[:app_package_name], app_apk_path: options[:app_apk_path], tests_apk_path: options[:tests_apk_path])
+             rescue => ex
+                UI.error("Something went wrong: #{ex}")
+          end
+
+         #Post status on UI
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" SCREEN_SHOT_CAPTURED ''"
+
+         #Generate Assemble Release build
+         gradle(task: "assembleRelease")
+
+         sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" RELEASE_SIGNING_AND_ZIPALIGN ''"
+
+
+          sign_apk(
+            apk_path: options[:apk_path],
+            keystore_path: options[:keystore_path],
+            alias: options[:alias],
+            storepass: options[:storepass],
+            tsa: "http://timestamp.comodoca.com/rfc316",
+          )
+
+          zipalign(apk_path: "#{lane_context[SharedValues::SIGNED_APK_PATH]}")
+          gradle(task: "test")
+
+    end
+
+    desc "Supply build and metadata on playstore"
+    lane :supply_onplaystore do |options|
+     supply(
+           track: options[:track],
+           package_name: options[:package_name],
+           json_key: options[:json_key_file],
+           apk: options[:apk_path]
+         )
+    end
+
+
+    desc "Take phone screenshots"
+    lane :phones_screenshots do |options|
+      screengrab(
+      app_package_name: options[:app_package_name],
+      device_type: "phone",
+      app_apk_path: options[:app_apk_path],
+      tests_apk_path: options[:tests_apk_path]
+      )
+    end
+
+    desc "Take seven inch tablet screenshots"
+    lane :seveninchtablet_screenshots do |options|
+      screengrab(
+      app_package_name: options[:app_package_name],
+      device_type: "sevenInch",
+      app_apk_path: options[:app_apk_path],
+      tests_apk_path: options[:tests_apk_path]
+      )
+    end
+
+    desc "Take ten inch tablet screenshots"
+    lane :teninchtablet_screenshots do |options|
+      screengrab(
+      app_package_name: options[:app_package_name],
+      device_type: "tenInch",
+      app_apk_path: options[:app_apk_path],
+      tests_apk_path: options[:tests_apk_path]
+     )
+    end
+
+    desc "Take tv screenshots"
+        lane :tv_screenshots do |options|
+          screengrab(
+          app_package_name: options[:app_package_name],
+          device_type: "tv",
+          app_apk_path: options[:app_apk_path],
+          tests_apk_path: options[:tests_apk_path]
+         )
+    end
+
+
+   error do |lane, exception, options|
+    sh "../../../PostBuildStatus.sh "+options[:buildid] + " "+options[:posturl]+" FAILED \""+ exception.to_s + "\""
+   end
+end
+
+
+# More information about multiple platforms in fastlane: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Platforms.md
+# All available actions: https://docs.fastlane.tools/actions
+
+# fastlane reports which actions are used. No personal data is recorded. 
+# Learn more at https://github.com/fastlane/fastlane#metrics

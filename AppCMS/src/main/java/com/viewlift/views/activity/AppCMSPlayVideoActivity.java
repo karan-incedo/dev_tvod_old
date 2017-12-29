@@ -53,8 +53,7 @@ import rx.functions.Action1;
 
 public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent,
-        AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
-        VideoPlayerView.StreamingQualitySelector {
+        AppCMSPlayVideoFragment.OnUpdateContentDatumEvent {
     private static final String TAG = "VideoPlayerActivity";
 
     private BroadcastReceiver handoffReceiver;
@@ -150,12 +149,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 !binder.getContentData().getContentDetails().getTrailers().isEmpty() &&
                                 binder.getContentData().getContentDetails().getTrailers().get(0) != null) {
                             id = binder.getContentData().getContentDetails().getTrailers().get(0).getId();
-                        } else if (binder.getContentData().getShowDetails() != null &&
-                                binder.getContentData().getShowDetails().getTrailers() != null &&
-                                !binder.getContentData().getShowDetails().getTrailers().isEmpty() &&
-                                binder.getContentData().getShowDetails().getTrailers().get(0) != null &&
-                                binder.getContentData().getShowDetails().getTrailers().get(0).getId() != null) {
-                            id = binder.getContentData().getShowDetails().getTrailers().get(0).getId();
                         }
                     }
                     if (id != null) {
@@ -430,17 +423,21 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                         && relateVideoIds != null
                         && currentlyPlayingIndex < relateVideoIds.size() - 1) {
                     binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                    appCMSPresenter.openAutoPlayScreen(binder, o -> {
-                        //
+                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                        }
                     });
                 } else {
                     closePlayer();
                 }
             } else {
                 if (binder.getRelateVideoIds() != null
-                        && currentlyPlayingIndex < relateVideoIds.size() - 1) {
-                    appCMSPresenter.openAutoPlayScreen(binder, o -> {
-                        //
+                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                        }
                     });
                 } else {
                     closePlayer();
@@ -523,19 +520,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         return null;
     }
 
-    @Override
-    public List<String> getAvailableStreamingQualities() {
-        return new ArrayList<>(availableStreamingFormats.keySet());
-    }
-
-    @Override
-    public String getStreamingQualityUrl(String streamingQuality) {
-        if (availableStreamingFormats != null && availableStreamingFormats.containsKey(streamingQuality)) {
-            return availableStreamingFormats.get(streamingQuality);
-        }
-        return null;
-    }
-
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
         if (availableStreamingFormats == null) {
             availableStreamingFormats = new HashMap<>();
@@ -556,7 +540,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
+
     public String getMpegResolutionFromUrl(String mpegUrl) {
         if (mpegUrl != null) {
             int mpegIndex = mpegUrl.indexOf(".mp4");

@@ -27,11 +27,9 @@ import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
-import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
-import com.viewlift.views.customviews.ViewCreator;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 
@@ -52,13 +50,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         implements OnInternalEvent, AppCMSBaseAdapter {
     private static final String TAG = "AppCMSTrayAdapter";
 
-    private static final int SECONDS_PER_MIN = 60;
-
-    protected  ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
+    private static final int SECONDS_PER_MINS = 60;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
-    private RecyclerView mRecyclerView;
+    RecyclerView mRecyclerView;
     private List<ContentDatum> adapterData;
     private String defaultAction;
     private boolean isHistory;
@@ -73,14 +69,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private String moduleId;
 
     public AppCMSTrayItemAdapter(Context context,
-                                 ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
                                  List<ContentDatum> adapterData,
                                  List<Component> components,
                                  AppCMSPresenter appCMSPresenter,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  String viewType,
                                  RecyclerView listView) {
-        this.collectionGridItemViewCreator = collectionGridItemViewCreator;
         this.adapterData = adapterData;
         this.sortData();
         this.components = components;
@@ -107,8 +101,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         this.receivers = new ArrayList<>();
         this.tintColor = Color.parseColor(getColor(context,
-                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-               // appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
         this.userId = appCMSPresenter.getLoggedInUser();
 
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
@@ -122,7 +115,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             if (isWatchlist || isDownload) {
                 sortByAddedDate();
             } else if (isHistory) {
-                sortByMostRecentlyWatchedDate();
+                sortByUpdateDate();
             }
         }
     }
@@ -132,7 +125,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 o2.getAddedDate()));
     }
 
-    private void sortByMostRecentlyWatchedDate() {
+    private void sortByUpdateDate() {
         Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
                 o2.getGist().getUpdateDate()));
         Collections.reverse(adapterData);
@@ -303,7 +296,6 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             holder.appCMSContinueWatchingPlayButton.setOnClickListener(v -> {
-
                 if (isDownload) {
                     playDownloaded(contentDatum,
                             holder.itemView.getContext(),
@@ -346,38 +338,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
             });
 
             if (contentDatum.getGist() != null) {
-                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MIN) == 0) {
-                    StringBuilder runtimeText = new StringBuilder();
-                    if ((contentDatum.getSeason() != null)) {
-                        int totalEpisodes = 0;
-                        int numSeasons = contentDatum.getSeason().size();
-
-                        for (int i = 0; i < numSeasons; i++) {
-                            if (contentDatum.getSeason().get(i).getEpisodes() != null) {
-                                totalEpisodes += contentDatum.getSeason().get(i).getEpisodes().size();
-                            }
-                        }
-
-                        runtimeText.append(totalEpisodes)
-                                .append(" ")
-                                .append(holder.itemView.getContext().getString(R.string.runtime_episodes_abbreviation));
-                    } else {
-                        runtimeText.append(contentDatum.getGist().getRuntime())
-                                .append(" ")
-                                .append(holder.itemView.getContext().getString(R.string.runtime_seconds_abbreviation));
-                    }
-
-                    holder.appCMSContinueWatchingDuration.setText(runtimeText);
-                } else if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MIN) < 2) {
+                if ((contentDatum.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
                     StringBuilder runtimeText = new StringBuilder()
-                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MIN)
+                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
                             .append(" ")
                             .append(holder.itemView.getContext().getString(R.string.min_abbreviation));
 
                     holder.appCMSContinueWatchingDuration.setText(runtimeText);
                 } else {
                     StringBuilder runtimeText = new StringBuilder()
-                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MIN)
+                            .append(contentDatum.getGist().getRuntime() / SECONDS_PER_MINS)
                             .append(" ")
                             .append(holder.itemView.getContext().getString(R.string.mins_abbreviation));
 
@@ -564,16 +534,12 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if (Boolean.parseBoolean(extraData[3])) {
             relatedVideoIds = getListOfUpcomingMovies(position, DownloadStatus.STATUS_COMPLETED);
         }
-
-        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-        actionPresenter.setAction(action);
-
         if (permalink == null ||
                 hlsUrl == null ||
                 extraData[2] == null ||
                 !appCMSPresenter.launchButtonSelectedAction(
                         permalink,
-                        actionPresenter,
+                        action,
                         title,
                         extraData,
                         data,
@@ -850,11 +816,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
         //Log.d(TAG, "Launching " + permalink + ": " + action);
 
-        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-        actionPresenter.setAction(action);
-
         if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                actionPresenter,
+                action,
                 title,
                 extraData,
                 data,

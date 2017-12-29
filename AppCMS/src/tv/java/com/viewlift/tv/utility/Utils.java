@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -15,18 +14,14 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.StateListDrawable;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -34,11 +29,11 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.tv.FireTV;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.views.activity.AppCmsBaseActivity;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
 
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
@@ -269,11 +264,11 @@ public class Utils {
         return -1.0f;
     }
 
-    public static StateListDrawable getNavigationSelector(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation){
+    public static StateListDrawable getNavigationSelector(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation , int selectedColor){
         StateListDrawable res = new StateListDrawable();
-        res.addState(new int[]{android.R.attr.state_focused}, getNavigationSelectedState(context ,appCMSPresenter , isSubNavigation));
-        res.addState(new int[]{android.R.attr.state_pressed}, getNavigationSelectedState(context , appCMSPresenter , isSubNavigation));
-        res.addState(new int[]{android.R.attr.state_selected},getNavigationSelectedState(context , appCMSPresenter , isSubNavigation));
+        res.addState(new int[]{android.R.attr.state_focused}, getNavigationSelectedState(context ,appCMSPresenter , isSubNavigation , selectedColor));
+        res.addState(new int[]{android.R.attr.state_pressed}, getNavigationSelectedState(context , appCMSPresenter , isSubNavigation , selectedColor));
+        res.addState(new int[]{android.R.attr.state_selected},getNavigationSelectedState(context , appCMSPresenter , isSubNavigation , selectedColor));
         res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent)));
         return res;
     }
@@ -294,7 +289,8 @@ public class Utils {
     }
 
 
-    public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter , boolean isSubNavigation){
+    public static LayerDrawable getNavigationSelectedState(Context context , AppCMSPresenter appCMSPresenter ,
+                                                           boolean isSubNavigation , int selectorColor){
         GradientDrawable focusedLayer = new GradientDrawable();
         focusedLayer.setShape(GradientDrawable.RECTANGLE);
         focusedLayer.setColor(Color.parseColor(getFocusColor(context,appCMSPresenter)));
@@ -304,7 +300,8 @@ public class Utils {
         if(isSubNavigation){
             transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_sub_nav_background));
         }else{
-            transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_nav_background)/*Color.parseColor(getFocusColor(appCMSPresenter))*/);
+            //transparentLayer.setColor(ContextCompat.getColor(context , R.color.appcms_nav_background)/*Color.parseColor(getFocusColor(appCMSPresenter))*/);
+            transparentLayer.setColor(selectorColor);
         }
 
         LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{
@@ -347,6 +344,18 @@ public class Utils {
         return res;
     }
 
+    public static StateListDrawable getTrayBorder(Context context , String primaryHover, String secondaryHover){
+        StateListDrawable res = new StateListDrawable();
+        res.addState(new int[]{android.R.attr.state_focused}, getGradientDrawable(primaryHover, secondaryHover));
+        res.addState(new int[]{android.R.attr.state_pressed}, getGradientDrawable(primaryHover, secondaryHover));
+        res.addState(new int[]{android.R.attr.state_selected}, getGradientDrawable(primaryHover, secondaryHover));
+        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
+                context,
+                android.R.color.transparent
+        )));
+        return res;
+    }
+
     private static GradientDrawable getBorder(Context context , String borderColor , boolean isEditText , Component component , boolean isNormalState){
         GradientDrawable ageBorder = new GradientDrawable();
         ageBorder.setShape(GradientDrawable.RECTANGLE);
@@ -362,6 +371,10 @@ public class Utils {
                 isEditText ? android.R.color.white : android.R.color.transparent
         ));
         return ageBorder;
+    }
+
+    private static GradientDrawable getGradientDrawable(String primaryHover, String secondaryHover){
+        return new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{Color.parseColor(primaryHover), Color.parseColor(secondaryHover)});
     }
 
     /**
@@ -446,9 +459,6 @@ public class Utils {
         return color;
     }
 
-
-
-
     public static Typeface getTypeFace(Context context,
                             Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                             Component component) {
@@ -476,6 +486,35 @@ public class Utils {
                     //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
             }
         }
+
+        else if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_LATO_FONTFAMILY_KEY) {
+            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+            if (fontWeight == null) {
+                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+            }
+            switch (fontWeight) {
+                case PAGE_TEXT_BOLD_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_bold));
+                    //Log.d("" , "setTypeFace===Opensans_Bold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_MEDIUM_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_medium));
+                    //Log.d("" , "setTypeFace===Opensans_SemiBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_LIGHT_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_light));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                case PAGE_TEXT_REGULAR_KEY:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.lato_regular));
+                    //Log.d("" , "setTypeFace===Opensans_ExtraBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+                    break;
+                default:
+                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
+                    //Log.d("" , "setTypeFace===Opensans_RegularBold" + " text = "+ ( ( component != null && component.getKey() != null ) ? component.getKey().toString() : null ) );
+            }
+        }
+
         return face;
     }
 
@@ -505,6 +544,18 @@ public class Utils {
         return color;
     }
 
+     public static String getTitleColorForST(Context context , AppCMSPresenter appCMSPresenter){
+        String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , android.R.color.white)));
+        //Log.d("Utils.java" , "getTitleColor = "+color);
+        if(null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+                && null != appCMSPresenter.getAppCMSMain().getBrand()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()){
+            color = appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor();
+        }
+        return color;
+    }
+
     public static String getBackGroundColor(Context context  ,AppCMSPresenter appCMSPresenter){
         String color  = getColor(context,Integer.toHexString(ContextCompat.getColor(context , R.color.dialog_bg_color)));
         //Log.d("Utils.java" , "getBackGroundColor = "+color);
@@ -525,6 +576,32 @@ public class Utils {
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
                 && null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary()){
             color =  appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor();
+        }
+        return color;
+    }
+
+    public static String getPrimaryHoverColor(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, R.color.colorAccent)));
+        //Log.d("Utils.java" , "getFocusColor = "+color);
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+                && null != appCMSPresenter.getAppCMSMain().getBrand()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimaryHover()) {
+            color = appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimaryHover().getBackgroundColor();
+        }
+        return color;
+    }
+
+    public static String getSecondaryHoverColor(Context context, AppCMSPresenter appCMSPresenter) {
+        String color = getColor(context, Integer.toHexString(ContextCompat.getColor(context, R.color.colorAccent)));
+        //Log.d("Utils.java" , "getFocusColor = "+color);
+        if (null != appCMSPresenter && null != appCMSPresenter.getAppCMSMain()
+                && null != appCMSPresenter.getAppCMSMain().getBrand()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                && null != appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondaryHover()) {
+            color = appCMSPresenter.getAppCMSMain().getBrand().getCta().getSecondaryHover().getBackgroundColor();
         }
         return color;
     }
@@ -584,4 +661,52 @@ public class Utils {
     }
 
 
+    public static String convertSecondsToTime(long runtime) {
+        StringBuilder timeInString = new StringBuilder();
+        runtime = runtime * 1000;
+
+        long days = TimeUnit.MILLISECONDS.toDays(runtime);
+        runtime -= TimeUnit.DAYS.toMillis(days);
+        if (days != 0) {
+            timeInString.append(Long.toString(days));
+        }
+
+        long hours = TimeUnit.MILLISECONDS.toHours(runtime);
+        runtime -= TimeUnit.HOURS.toMillis(hours);
+        if (hours != 0 || timeInString.length() > 0) {
+            if (timeInString.length() > 0) {
+                timeInString.append(":");
+            }
+            /*if (hours < 10) {
+                timeInString.append("0");
+            }*/
+            timeInString.append(Long.toString(hours));
+        } else {
+            timeInString.append("0");
+        }
+
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(runtime);
+        runtime -= TimeUnit.MINUTES.toMillis(minutes);
+//        if (minutes != 0 || timeInString.length() > 0){
+        if (timeInString.length() > 0) {
+            timeInString.append(":");
+        }
+        if (minutes < 10) {
+            timeInString.append("0");
+        }
+        timeInString.append(Long.toString(minutes));
+//        }
+
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(runtime);
+//        if (seconds != 0 || timeInString.length() > 0){
+        if (timeInString.length() > 0) {
+            timeInString.append(":");
+        }
+        if (seconds < 10) {
+            timeInString.append("0");
+        }
+        timeInString.append(Long.toString(seconds));
+//        }
+        return timeInString.toString();
+    }
 }

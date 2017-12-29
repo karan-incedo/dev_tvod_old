@@ -189,15 +189,10 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
-            if (shouldRefresh) {
-                //on refresh pull to request enable miniplayer view
-                appCMSPresenter.setMiniPLayerVisibility(true);
-
-                appCMSPresenter.clearPageAPIData(() -> {
-                            mainView.setRefreshing(false);
-                        },
-                        true);
-            }
+            appCMSPresenter.refreshAPIData(() -> {
+                        mainView.setRefreshing(false);
+            },
+                    true);
         });
         addView(mainView);
         return childrenContainer;

@@ -157,7 +157,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         adsManager.addAdEventListener(AppCMSPlayVideoFragment.this);
         adsManager.init();
     };
-    private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
     private boolean showEntitlementDialog = false;
     private String mStreamId;
     private long mStartBufferMilliSec = 0l;
@@ -267,9 +266,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         if (context instanceof OnUpdateContentDatumEvent) {
             onUpdateContentDatumEvent = (OnUpdateContentDatumEvent) context;
         }
-        if (context instanceof VideoPlayerView.StreamingQualitySelector) {
-            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
-        }
+
     }
 
     @Override
@@ -378,7 +375,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                             //Log.d(TAG, "Video player entitlement check triggered");
                             if (!entitlementCheckCancelled) {
                                 int secsViewed=0;
-                                if(appCMSMain.getFeatures().getFreePreview().isPer_video()){
+                                if(appCMSMain.getFeatures().getFreePreview().isPerVideo()){
                                     secsViewed = (int) videoPlayerView.getCurrentPosition() / 1000;
                                 }else{
                                     playedVideoSecs=appCMSPresenter.getPreviewTimerValue();
@@ -478,12 +475,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         });
 
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
-
+        videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
-
-        if (streamingQualitySelector != null) {
-            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
-        }
 
         if (!TextUtils.isEmpty(policyCookie) &&
                 !TextUtils.isEmpty(signatureCookie) &&
@@ -1304,7 +1297,6 @@ public class AppCMSPlayVideoFragment extends Fragment
         return parentalRating != null ? parentalRating : getString(R.string.age_rating_converted_default);
     }
 
-    // TODO: 11/30/17 Replace countdown timer with value coming from Template Builder.
     private void startCountdown() {
         new CountDownTimer(totalCountdownInMillis, countDownIntervalInMillis) {
             @Override

@@ -41,7 +41,6 @@ public class AppCMSVideoPageBinder extends Binder {
     private volatile int currentPlayingVideoIndex;
     private String currentMovieName;
     private int playerState;
-    private boolean autoplayCancelled;
 
     public AppCMSVideoPageBinder(
             AppCMSPageUI appCMSPageUI,
@@ -279,11 +278,5 @@ public class AppCMSVideoPageBinder extends Binder {
         this.playerState = playerState;
     }
 
-    public boolean isAutoplayCancelled() {
-        return autoplayCancelled;
-    }
 
-    public void setAutoplayCancelled(boolean autoplayCancelled) {
-        this.autoplayCancelled = autoplayCancelled;
-    }
 }

@@ -64,8 +64,7 @@ public class AppCMSChangePasswordFragment extends android.support.v4.app.Fragmen
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
 
-        int bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
-       // int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor());
+        int bgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
         int buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta()
                 .getPrimary().getBackgroundColor());
         int textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral()

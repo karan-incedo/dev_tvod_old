@@ -6,8 +6,11 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,6 +21,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -58,21 +62,18 @@ public class AppCMSMainUICall {
     }
 
     @WorkerThread
-    public AppCMSMain call(Context context, String siteId, int tryCount, boolean bustCache) {
+    public AppCMSMain call(Context context, String siteId, int tryCount, boolean forceReloadFromNetwork) {
         Date now = new Date();
-        StringBuilder appCMSMainUrlSb = new StringBuilder(context.getString(R.string.app_cms_main_url,
-                context.getString(R.string.app_cms_baseurl),
-                siteId));
-        if (bustCache) {
-            appCMSMainUrlSb.append("?x=");
-            appCMSMainUrlSb.append(now.getTime());
-        }
+        final String appCMSMainUrl = context.getString(R.string.app_cms_main_url,
+                Utils.getProperty("BaseUrl", context),
+                siteId,
+                now.getTime());
         AppCMSMain main = null;
         AppCMSMain mainInStorage = null;
         try {
-            //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
+            Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
-            final String hostName = new URL(appCMSMainUrlSb.toString()).getHost();
+            final String hostName = new URL(appCMSMainUrl).getHost();
             ExecutorService executor = Executors.newCachedThreadPool();
             Future<List<InetAddress>> future = executor.submit(()
                     -> okHttpClient.dns().lookup(hostName));
@@ -81,22 +82,22 @@ public class AppCMSMainUICall {
             } catch (TimeoutException e) {
                 //Log.e(TAG, "Connection timed out: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, bustCache);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (InterruptedException e) {
                 //Log.e(TAG, "Connection interrupted: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, bustCache);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 return null;
             } catch (ExecutionException e) {
                 //Log.e(TAG, "Execution error: " + e.toString());
                 if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, bustCache);
+                    return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
                 }
                 try {
-                    return readMainFromFile(getResourceFilename(appCMSMainUrlSb.toString()));
+                    return readMainFromFile(getResourceFilename(appCMSMainUrl));
                 } catch (Exception e1) {
                     //Log.e(TAG, "Could not retrieve main.json from file: " +
 //                        e1.getMessage());
@@ -108,18 +109,12 @@ public class AppCMSMainUICall {
 
             try {
 //                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
-                long start = System.currentTimeMillis();
-                Log.d(TAG, "Start main.json request: " + start);
-                main = appCMSMainUIRest.get(appCMSMainUrlSb.toString()).execute().body();
-                long end = System.currentTimeMillis();
-                Log.d(TAG, "End main.json request: " + end);
-                Log.d(TAG, "main.json URL: " + appCMSMainUrlSb.toString());
-                Log.d(TAG, "Total Time main.json request: " + (end - start));
+                main = appCMSMainUIRest.get(appCMSMainUrl).execute().body();
             } catch (Exception e) {
                 Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
             }
 
-            String filename = getResourceFilename(appCMSMainUrlSb.toString());
+            String filename = getResourceFilename(appCMSMainUrl);
             try {
                 mainInStorage = readMainFromFile(filename);
             } catch (Exception exception) {
@@ -141,7 +136,7 @@ public class AppCMSMainUICall {
         }
 
         if (main == null && tryCount == 0) {
-            return call(context, siteId, tryCount + 1, bustCache);
+            return call(context, siteId, tryCount + 1, forceReloadFromNetwork);
         }
 
         return main;

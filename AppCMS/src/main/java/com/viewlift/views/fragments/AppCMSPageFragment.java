@@ -339,16 +339,12 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public AppCMSViewComponent buildAppCMSViewComponent() {
-        String screenName = appCMSBinder.getScreenName();
-        if (!appCMSPresenter.isPageAVideoPage(screenName)) {
-            screenName = appCMSBinder.getPageId();
-        }
         return DaggerAppCMSViewComponent.builder()
                 .appCMSPageViewModule(new AppCMSPageViewModule(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
                         appCMSBinder.getAppCMSPageAPI(),
                         appCMSPresenter.getAppCMSAndroidModules(),
-                        screenName,
+                        appCMSBinder.getScreenName(),
                         appCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter))
                 .build();
@@ -383,16 +379,11 @@ public class AppCMSPageFragment extends Fragment {
             }
 
             try {
-                String screenName = appCMSBinder.getScreenName();
-                if (!appCMSPresenter.isPageAVideoPage(screenName)) {
-                    screenName = appCMSBinder.getPageId();
-                }
-
                 pageView = viewCreator.generatePage(getContext(),
                         appCMSBinder.getAppCMSPageUI(),
                         appCMSBinder.getAppCMSPageAPI(),
                         appCMSPresenter.getAppCMSAndroidModules(),
-                        screenName,
+                        appCMSBinder.getScreenName(),
                         appCMSBinder.getJsonValueKeyMap(),
                         appCMSPresenter,
                         modulesToIgnore);

@@ -13,8 +13,6 @@ import android.widget.RelativeLayout;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,19 +75,7 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         internalEventReceivers = new ArrayList<>();
     }
 
-    public boolean dotsInitialized() {
-        try {
-            return childViews.size() > 0;
-        } catch (Exception e) {
-
-        }
-        return false;
-    }
-
     public void addDots(int size) {
-        if (childrenContainer != null) {
-            childrenContainer.removeAllViews();
-        }
         for (int i = 0; i < size; i++) {
             addDot();
         }
@@ -101,12 +87,14 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         dotView.addView(dotImageView);
         childrenContainer.addView(dotView);
         childViews.add(dotImageView);
-
         final int index = childViews.size() - 1;
-        dotView.setOnClickListener(v -> {
-            deselect(selectedViewIndex);
-            select(index);
-            sendEvent(new InternalEvent<>(index));
+        dotView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deselect(selectedViewIndex);
+                select(index);
+                sendEvent(new InternalEvent<>(index));
+            }
         });
     }
 
@@ -114,12 +102,6 @@ public class DotSelectorView extends BaseView implements OnInternalEvent {
         if (0 <= index && index < childViews.size()) {
             ((GradientDrawable) childViews.get(index).getBackground()).setColor(selectedColor);
             selectedViewIndex = index;
-        }
-    }
-
-    public void deSelectAll() {
-        for (int i = 0; i < childViews.size(); i++) {
-            deselect(i);
         }
     }
 

@@ -8,10 +8,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
-import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.view.Gravity;
 import android.view.View;
@@ -30,7 +28,6 @@ import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
-import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.Map;
@@ -103,7 +100,7 @@ public class LoginModule extends ModuleView {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
             underlineColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor());
             transparentColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
-            bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
+            bgColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getBackgroundColor());
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
             childContainer.setBackgroundColor(bgColor);
@@ -204,8 +201,8 @@ public class LoginModule extends ModuleView {
                                 if (appCMSPresenter.isAppSVOD()) {
                                     if (TextUtils.isEmpty(appCMSPresenter.getRestoreSubscriptionReceipt())) {
                                         //appCMSPresenter.sendCloseOthersAction(null,
-                                        //true,
-                                        //false);
+                                                //true,
+                                                //false);
                                         appCMSPresenter.navigateToSubscriptionPlansPage(appCMSPresenter.getLoginFromNavPage());
 
                                     } else {
@@ -361,12 +358,8 @@ public class LoginModule extends ModuleView {
                                     String[] authData = new String[2];
                                     authData[0] = visibleEmailInputView.getText().toString();
                                     authData[1] = visiblePasswordInputView.getText().toString();
-
-                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                                    actionPresenter.setAction(component.getAction());
-
                                     appCMSPresenter.launchButtonSelectedAction(null,
-                                            actionPresenter,
+                                            component.getAction(),
                                             null,
                                             authData,
                                             null,
@@ -385,25 +378,6 @@ public class LoginModule extends ModuleView {
                                     if (launchType == AppCMSPresenter.LaunchType.SUBSCRIBE) {
                                         visibleEmailInputView = emailInputViews[1];
                                     }
-                                    if (appCMSPresenter.getLoginPageUserName() != null) {
-                                        emailInputViews[childIndex].setText(appCMSPresenter.getLoginPageUserName());
-                                    }
-                                    emailInputViews[childIndex].addTextChangedListener(new TextWatcher() {
-                                        @Override
-                                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                        }
-
-                                        @Override
-                                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            appCMSPresenter.setLoginPageUserName(charSequence.toString());
-                                        }
-
-                                        @Override
-                                        public void afterTextChanged(Editable editable) {
-
-                                        }
-                                    });
                                     break;
 
                                 case PAGE_PASSWORDTEXTFIELD_KEY:
@@ -415,26 +389,6 @@ public class LoginModule extends ModuleView {
                                             .setImeOptions(EditorInfo.IME_ACTION_SEND | EditorInfo.IME_ACTION_GO);
                                     passwordInputViews[childIndex]
                                             .setTransformationMethod(PasswordTransformationMethod.getInstance());
-                                    if (appCMSPresenter.getLoginPagePassword() != null) {
-                                        passwordInputViews[childIndex].setText(appCMSPresenter.getLoginPagePassword());
-                                    }
-
-                                    passwordInputViews[childIndex].addTextChangedListener(new TextWatcher() {
-                                        @Override
-                                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                                        }
-
-                                        @Override
-                                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                                            appCMSPresenter.setLoginPagePassword(charSequence.toString());
-                                        }
-
-                                        @Override
-                                        public void afterTextChanged(Editable editable) {
-
-                                        }
-                                    });
 
                                     passwordInputViews[childIndex].setOnEditorActionListener((v, actionId, event) -> {
                                         boolean isImeActionSent = false;
@@ -446,12 +400,8 @@ public class LoginModule extends ModuleView {
                                                 String[] authData = new String[2];
                                                 authData[0] = visibleEmailInputView.getText().toString();
                                                 authData[1] = visiblePasswordInputView.getText().toString();
-
-                                                AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                                                actionPresenter.setAction(loginInSignUpAction);
-
                                                 appCMSPresenter.launchButtonSelectedAction(null,
-                                                        actionPresenter,
+                                                        loginInSignUpAction,
                                                         null,
                                                         authData,
                                                         null,

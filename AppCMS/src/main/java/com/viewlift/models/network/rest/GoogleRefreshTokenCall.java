@@ -37,16 +37,12 @@ public class GoogleRefreshTokenCall {
                 .enqueue(new Callback<GoogleRefreshTokenResponse>() {
                     @Override
                     public void onResponse(Call<GoogleRefreshTokenResponse> call, Response<GoogleRefreshTokenResponse> response) {
-                        Observable.just(response.body())
-                                .onErrorResumeNext(throwable -> Observable.empty())
-                                .subscribe(readyAction);
+                        Observable.just(response.body()).subscribe(readyAction);
                     }
 
                     @Override
                     public void onFailure(Call<GoogleRefreshTokenResponse> call, Throwable t) {
-                        Observable.just((GoogleRefreshTokenResponse) null)
-                                .onErrorResumeNext(throwable -> Observable.empty())
-                                .subscribe(readyAction);
+                        Observable.just((GoogleRefreshTokenResponse) null).subscribe(readyAction);
                     }
                 });
     }

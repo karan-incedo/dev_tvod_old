@@ -41,21 +41,15 @@ public class AppCMSCCAvenueCall {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response != null && response.body() != null) {
-                    Observable.just(response.body())
-                            .onErrorResumeNext(throwable -> Observable.empty())
-                            .subscribe(rasReadyAction);
+                    Observable.just(response.body()).subscribe(rasReadyAction);
                 } else {
-                    Observable.just((String) null)
-                            .onErrorResumeNext(throwable -> Observable.empty())
-                            .subscribe(rasReadyAction);
+                    Observable.just((String) null).subscribe(rasReadyAction);
                 }
             }
 
             @Override
             public void onFailure(Call<String> call, Throwable t) {
-                Observable.just((String) null)
-                        .onErrorResumeNext(throwable -> Observable.empty())
-                        .subscribe(rasReadyAction);
+                Observable.just((String) null).subscribe(rasReadyAction);
             }
         });
     }

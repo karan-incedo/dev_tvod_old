@@ -57,7 +57,6 @@ public class GetAppCMSRefreshIdentityAsyncTask {
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .onErrorResumeNext(throwable -> Observable.empty())
                 .subscribe((result) -> Observable.just(result).subscribe(readyAction));
     }
 }

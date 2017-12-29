@@ -89,27 +89,30 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         this.listView.getLayoutManager().scrollToPosition(updatedIndex);
 
         this.carouselHandler = new Handler();
-        this.carouselUpdater = () -> {
-            if (adapterData.size() > 1 && !cancelled && (loop || (!loop && updatedIndex < adapterData.size()))) {
-                int firstVisibleIndex =
-                        ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
-                int lastVisibleIndex =
-                        ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findLastVisibleItemPosition();
-                Log.d(TAG, "firstVisibleIndex: " + firstVisibleIndex);
-                Log.d(TAG, "lastVisibleIndex: " + lastVisibleIndex);
-                Log.d(TAG, "updatedIndex: " + updatedIndex);
-                if (updatedIndex < firstVisibleIndex) {
-                    updatedIndex = firstVisibleIndex;
+        this.carouselUpdater = new Runnable() {
+            @Override
+            public void run() {
+                if (adapterData.size() > 1 && !cancelled && (loop || (!loop && updatedIndex < adapterData.size()))) {
+                    int firstVisibleIndex =
+                            ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findFirstVisibleItemPosition();
+                    int lastVisibleIndex =
+                            ((LinearLayoutManager) AppCMSCarouselItemAdapter.this.listView.getLayoutManager()).findLastVisibleItemPosition();
+                    Log.d(TAG, "firstVisibleIndex: " + firstVisibleIndex);
+                    Log.d(TAG, "lastVisibleIndex: " + lastVisibleIndex);
+                    Log.d(TAG, "updatedIndex: " + updatedIndex);
+                    if (updatedIndex < firstVisibleIndex) {
+                        updatedIndex = firstVisibleIndex;
+                    }
+                    if (lastVisibleIndex < updatedIndex) {
+                        updatedIndex = lastVisibleIndex;
+                    }
+                    if (0 <= updatedIndex) {
+                        updateCarousel(updatedIndex + 1, false);
+                    }
+                    postUpdateCarousel();
+                } else if (cancelled) {
+                    updatedIndex = getDefaultIndex();
                 }
-                if (lastVisibleIndex < updatedIndex) {
-                    updatedIndex = lastVisibleIndex;
-                }
-                if (0 <= updatedIndex) {
-                    updateCarousel(updatedIndex + 1, false);
-                }
-                postUpdateCarousel();
-            } else if (cancelled) {
-                updatedIndex = getDefaultIndex();
             }
         };
 
@@ -208,7 +211,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                     if (!scrolled && childIndex != -1 && adapterData.size() != 0) {
                         onClickHandler.click(null,
                                 component,
-                                adapterData.get(childIndex % adapterData.size()), childIndex);
+                                adapterData.get(childIndex % adapterData.size()));
                     } else {
                         listView.removeOnScrollListener(scrollListener);
                         postUpdateCarousel();
@@ -275,7 +278,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
         }
 
         if (adapterData.size() != 0) {
-            bindView(holder.componentView, adapterData.get(position % adapterData.size()), position);
+            bindView(holder.componentView, adapterData.get(position % adapterData.size()),position);
         }
     }
 
@@ -340,7 +343,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
 
     public void updateCarousel(int index, boolean fromEvent) {
         synchronized (listView) {
-//            index = calculateUpdateIndex(index);
+            index = calculateUpdateIndex(index);
             setUpdatedIndex(index);
             try {
                 listView.smoothScrollToPosition(updatedIndex);
@@ -348,7 +351,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                 //Log.e(TAG, "Error scrolling to position: " + updatedIndex);
             }
             if (!fromEvent) {
-                sendEvent(new InternalEvent<Object>(updatedIndex));
+                sendEvent(new InternalEvent<Object>(index));
             }
         }
     }

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
+
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
@@ -76,14 +78,15 @@ public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
 
     private FrameLayout childrenContainer;
     protected ViewGroup createChildrenContainer() {
-        childrenContainer = new FrameLayout(getContext());
+
+         childrenContainer = new FrameLayout(getContext());
         int viewWidth =  (int) Utils.getViewWidth(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
         int viewHeight = (int) Utils.getViewHeight(getContext(), getLayout(), (float) LayoutParams.MATCH_PARENT);
 
         FrameLayout.LayoutParams childContainerLayoutParams =
                 new FrameLayout.LayoutParams(viewWidth, viewHeight);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
-        addView(childrenContainer);
+         addView(childrenContainer);
         return childrenContainer;
     }
 

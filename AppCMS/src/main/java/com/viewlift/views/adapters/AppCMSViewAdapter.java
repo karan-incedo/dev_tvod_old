@@ -332,10 +332,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data,
-                                      int clickPosition) {
+                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data) {
 
-                        selectedPosition = clickPosition;
+
                         for (int i = 0; i < planItemView.length; i++) {
                             if (planItemView[i] != null) {
                                 if (selectedPosition == i) {
@@ -373,8 +372,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data,
-                                      int clickPosition) {
+                                      ContentDatum data) {
                         if (isClickable) {
                             subcriptionPlanClick(collectionGridItemView, data);
 
@@ -391,8 +389,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data,
-                                      int clickPosition) {
+                                      ContentDatum data) {
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -426,26 +423,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     contentType = data.getGist().getContentType();
                                 }
 
-//                                if (!appCMSPresenter.isAppSVOD()) { // FIXME: Change to use T-Builder.
-//                                    action = draggableVideoAction;
-//                                } else if (contentType.equals(episodicContentType)) {
-//                                    action = showAction;
-//                                } else if (contentType.equals(fullLengthFeatureType)) {
-//                                    action = videoAction;
-//                                }
-                                if (action.contains(mContext.getString(R.string.app_cms_action_open_option_dialog))) {
-                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                                    actionPresenter.setAction(action);
-                                    appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            actionPresenter,
-                                            title,
-                                            null,
-                                            data,
-                                            false,
-                                            currentPlayingIndex,
-                                            relatedVideoIds);
-                                    return;
-                                }
                                 if (contentType.equals(episodicContentType)) {
                                     action = showAction;
                                 } else if (contentType.equals(fullLengthFeatureType)) {
@@ -466,38 +443,19 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                                action);
                                     }
                                 } else {
-                                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                                    actionPresenter.setAction(action);
-
-                                    if (appCMSPresenter.getCurrentActivity().getResources()
-                                            .getBoolean(R.bool.video_detail_page_plays_video) &&
-                                            !showAction.equals(action)) {
-                                        if (!appCMSPresenter.launchVideoPlayer(data,
-                                                currentPlayingIndex,
-                                                relatedVideoIds,
-                                                -1,
-                                                action)) {
-                                            //Log.e(TAG, "Could not launch action: " +
+                                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            action,
+                                            title,
+                                            null,
+                                            null,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds)) {
+                                        //Log.e(TAG, "Could not launch action: " +
 //                                                " permalink: " +
 //                                                permalink +
 //                                                " action: " +
 //                                                action);
-                                        }
-                                    } else {
-                                        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                                actionPresenter,
-                                                title,
-                                                null,
-                                                null,
-                                                false,
-                                                currentPlayingIndex,
-                                                relatedVideoIds)) {
-                                            //Log.e(TAG, "Could not launch action: " +
-//                                                " permalink: " +
-//                                                permalink +
-//                                                " action: " +
-//                                                action);
-                                        }
                                     }
                                 }
                             }
@@ -544,7 +502,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnClickListener(v -> onClickHandler.click(itemView,
-                    component, data, position));
+                    component, data));
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
@@ -629,12 +587,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
 //                                    action);
                         }
                     } else {
-                        AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                        actionPresenter.setAction(action);
-
-                        if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.use_draggable_panel)) {
-                            actionPresenter.setExtraScreenType(AppCMSPresenter.ExtraScreenType.DRAGGABLE_PANEL);
-                        }
 
                         if (appCMSPresenter.getCurrentActivity().getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
                                 !showAction.equals(action)) {
@@ -651,7 +603,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                             }
                         } else {
                             if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                                    actionPresenter,
+                                    action,
                                     title,
                                     null,
                                     null,

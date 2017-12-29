@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -89,7 +90,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
                 .appCMSPresenter();
 
         String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
-        mView.findViewById(R.id.fragment_clear_overlay).setBackgroundColor(Color.parseColor(backGroundColor));
+      //  mView.findViewById(R.id.fragment_clear_overlay).setBackgroundColor(Color.parseColor(backGroundColor));
 
         /*Bind Views*/
         negativeButton = (Button) mView.findViewById(R.id.btn_cancel);
@@ -217,6 +218,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
                 return false;
             }
         });
+
         return mView;
     }
 
@@ -227,6 +229,7 @@ public class ClearDialogFragment extends AbsDialogFragment {
         int height = getArguments().getInt(DIALOG_HEIGHT_KEY);
         bundle.putInt(getString(R.string.tv_dialog_width_key), width);
         bundle.putInt(getString(R.string.tv_dialog_height_key), height);
+
         super.onActivityCreated(bundle);
     }
 

@@ -12,6 +12,7 @@
         android:id="@+id/nav_item_selector"
         android:layout_width="1dp"
         android:layout_height="wrap_content" />
+    <!--nav_item_logo place for team list page image icon -->
     <ImageView
         android:id="@+id/nav_item_logo"
         android:layout_gravity="start|center_vertical"
