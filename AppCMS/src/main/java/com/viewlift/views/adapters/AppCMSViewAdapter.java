@@ -436,7 +436,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (contentType.equals(episodicContentType)) {
                                     action = showAction;
                                 } else if (contentType.equals(fullLengthFeatureType)) {
-                                    action = videoAction;
+                                    action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                 }
 
                                 if (data.getGist() == null ||
@@ -457,7 +457,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                             action,
                                             title,
                                             null,
-                                            null,
+                                            action.equalsIgnoreCase("openOptionDialog") ? data : null,
                                             false,
                                             currentPlayingIndex,
                                             relatedVideoIds)) {

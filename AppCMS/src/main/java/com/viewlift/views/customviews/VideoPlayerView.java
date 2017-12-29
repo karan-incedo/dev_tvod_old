@@ -978,6 +978,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
             int result = 0;
+            if(dataSource == null){
+                return 0;
+            }
             if (dataSource instanceof FileDataSource) {
                 try {
                     long bytesRead = ((FileDataSource) dataSource).getBytesRead();
