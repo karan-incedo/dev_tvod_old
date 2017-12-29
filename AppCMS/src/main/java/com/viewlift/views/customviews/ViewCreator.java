@@ -1930,6 +1930,7 @@ public class ViewCreator {
                     videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
+
                 videoPlayerViewSingle.checkVideoStatus();
                 componentViewResult.componentView.setId(R.id.video_player_id);
                 break;

@@ -189,6 +189,7 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
+            appCMSPresenter.setMiniPLayerVisibility(true);
             appCMSPresenter.refreshAPIData(() -> {
                         mainView.setRefreshing(false);
             },
