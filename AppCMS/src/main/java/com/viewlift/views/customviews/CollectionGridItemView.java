@@ -238,7 +238,7 @@ public class CollectionGridItemView extends BaseView {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                    childComponent, data));
+                    childComponent, data,position));
             boolean bringToFront = true;
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
@@ -454,12 +454,12 @@ public class CollectionGridItemView extends BaseView {
                     }
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                            childComponent, data));
+                            childComponent, data,position));
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                 view.setOnClickListener(v ->
                         onClickHandler.click(CollectionGridItemView.this,
-                                childComponent, data));
+                                childComponent, data,position));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
@@ -701,7 +701,7 @@ public class CollectionGridItemView extends BaseView {
     public interface OnClickHandler {
         void click(CollectionGridItemView collectionGridItemView,
                    Component childComponent,
-                   ContentDatum data);
+                   ContentDatum data,int clickPosition);
 
         void play(Component childComponent, ContentDatum data);
     }

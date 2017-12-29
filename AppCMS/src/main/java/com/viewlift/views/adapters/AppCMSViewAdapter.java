@@ -329,9 +329,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data) {
+                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data,
+                                      int clickPosition) {
 
-
+                        selectedPosition = clickPosition;
                         for (int i = 0; i < planItemView.length; i++) {
                             if (planItemView[i] != null) {
                                 if (selectedPosition == i) {
@@ -369,7 +370,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data) {
+                                      ContentDatum data,int clickPosition) {
                         if (isClickable) {
                             subcriptionPlanClick(collectionGridItemView, data);
 
@@ -386,7 +387,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data) {
+                                      ContentDatum data,int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -419,11 +420,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
                                     contentType = data.getGist().getContentType();
                                 }
-
-//
-                                if (action.contains(mContext.getString(R.string.app_cms_action_open_option_dialog))) {
+e
+                                if (action.contains(openOptionsAction)) {
                                     appCMSPresenter.launchButtonSelectedAction(permalink,
-                                            action,
+                                            openOptionsAction,
+
                                             title,
                                             null,
                                             data,
@@ -511,7 +512,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnClickListener(v -> onClickHandler.click(itemView,
-                    component, data));
+                    component, data,position));
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||

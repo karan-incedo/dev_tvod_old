@@ -211,7 +211,7 @@ public class AppCMSCarouselItemAdapter extends AppCMSViewAdapter implements OnIn
                     if (!scrolled && childIndex != -1 && adapterData.size() != 0) {
                         onClickHandler.click(null,
                                 component,
-                                adapterData.get(childIndex % adapterData.size()));
+                                adapterData.get(childIndex % adapterData.size()),childIndex);
                     } else {
                         listView.removeOnScrollListener(scrollListener);
                         postUpdateCarousel();

@@ -327,6 +327,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                         emptyList = true;
                                         sendEvent(hideRemoveAllButtonEvent);
                                         notifyDataSetChanged();
+                                        updateData(mRecyclerView,adapterData);
                                     }
                                 }),
                 null);
@@ -360,9 +361,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         adapterData = null;
         notifyDataSetChanged();
         adapterData = contentData;
-
-        //sortPlan(); as per MSEAN-1434
-
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
@@ -384,7 +382,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 @Override
                 public void click(CollectionGridItemView collectionGridItemView,
                                   Component childComponent,
-                                  ContentDatum data) {
+                                  ContentDatum data,int clickPosition) {
                     if (isClickable) {
                         if (data.getGist() != null) {
                             //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -421,9 +419,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                 appCMSPresenter.editWatchlist(data.getGist().getId(),
                                         addToWatchlistResult -> {
                                             adapterData.remove(data);
+
                                             if (adapterData.size() == 0) {
                                                 emptyList = true;
                                                 sendEvent(hideRemoveAllButtonEvent);
+                                                updateData(mRecyclerView,adapterData);
                                             }
                                             notifyDataSetChanged();
                                         }, false);
@@ -437,6 +437,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                                             if (adapterData.size() == 0) {
                                                 emptyList = true;
                                                 sendEvent(hideRemoveAllButtonEvent);
+                                                updateData(mRecyclerView,adapterData);
                                             }
                                             notifyDataSetChanged();
                                         }, false);
