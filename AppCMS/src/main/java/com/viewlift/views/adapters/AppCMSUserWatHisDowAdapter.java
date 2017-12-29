@@ -391,7 +391,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 @Override
                 public void click(CollectionGridItemView collectionGridItemView,
                                   Component childComponent,
-                                  ContentDatum data) {
+                                  ContentDatum data,int clickPosition) {
                     if (isClickable) {
                         if (data.getGist() != null) {
                             //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
