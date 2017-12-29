@@ -786,6 +786,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 return super.dispatchKeyEvent(event);
                             }
                         case KeyEvent.KEYCODE_DPAD_DOWN:
+                        case KeyEvent.KEYCODE_DPAD_UP:
                             return true;
                         default:
                             return super.dispatchKeyEvent(event);

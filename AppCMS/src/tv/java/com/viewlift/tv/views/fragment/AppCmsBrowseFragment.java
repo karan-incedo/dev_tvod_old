@@ -149,7 +149,13 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
                 if(rowData.isPlayerComponent){
                     if(customVideoVideoPlayerView.isLoginButtonVisible()){
-                        customVideoVideoPlayerView.performLoginButtonClick();
+                        if(!appCMSPresenter.isUserLoggedIn()) {
+                            customVideoVideoPlayerView.performLoginButtonClick();
+                        }
+                        else{
+                         customVideoVideoPlayerView.showRestrictMessage("Please reload this screen from menu.");
+                         customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
+                        }
                         return;
                     }
                     appCMSPresenter.setVideoPlayerView(null);
@@ -226,7 +232,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         if( null != itemViewHolder && null != itemViewHolder.view
                                 && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoPlayerView){
                             customVideoVideoPlayerView  =  (CustomVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
-                            customVideoVideoPlayerView.requestFocusOnLogin();
+                            if(customVideoVideoPlayerView.isLoginButtonVisible() && appCMSPresenter.isUserLoggedIn()){
+                               customVideoVideoPlayerView.showRestrictMessage("Please reload this screen from Menu.");
+                               customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
+                            }
                         }
                         Utils.setBrowseFragmentViewParameters(view,
                                 Utils.getViewYAxisAsPerScreen(getActivity() , (int) getResources().getDimension(R.dimen.browse_fragment_margin_left)),

@@ -625,16 +625,18 @@ public class CustomVideoPlayerView
             public void onClick(View v) {
                 if(appCMSPresenter.isNetworkConnected()) {
                     NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
-                    appCMSPresenter.navigateToTVPage(
-                            navigationUser.getPageId(),
-                            navigationUser.getTitle(),
-                            navigationUser.getUrl(),
-                            false,
-                            Uri.EMPTY,
-                            false,
-                            false,
-                            true);
+                    if (null != navigationUser) {
+                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
+                        appCMSPresenter.navigateToTVPage(
+                                navigationUser.getPageId(),
+                                navigationUser.getTitle(),
+                                navigationUser.getUrl(),
+                                false,
+                                Uri.EMPTY,
+                                false,
+                                false,
+                                true);
+                    }
                 }
             }
         });
@@ -675,7 +677,7 @@ public class CustomVideoPlayerView
         }
     }
 
-    private void toggleLoginButtonVisibility (boolean show) {
+    public void toggleLoginButtonVisibility (boolean show) {
         if (loginButton != null) {
             loginButton.setVisibility(show ? VISIBLE : GONE);
         }
@@ -691,7 +693,7 @@ public class CustomVideoPlayerView
             loginButton.performClick();
         }
     }
-     private void showRestrictMessage(String message) {
+     public void showRestrictMessage(String message) {
         if (null != customMessageContaineer && null != customMessageView) {
             hideProgressBar();
             customMessageView.setText(message);
@@ -1121,7 +1123,7 @@ public class CustomVideoPlayerView
 
         titleView = new TextView(getContext());
         LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT ,LinearLayout.LayoutParams.WRAP_CONTENT);
-        textViewParams.leftMargin = 20;
+        textViewParams.leftMargin = 45;
         titleView.setLayoutParams(textViewParams);
         titleView.setSingleLine(true);
         titleView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
@@ -1168,5 +1170,9 @@ public class CustomVideoPlayerView
             errorString = e.getCause().toString();
             setUri(Uri.parse(lastUrl), null);
         }
+    }
+
+    public boolean isLiveStream(){
+        return isLiveStream;
     }
 }

@@ -244,7 +244,7 @@ public class TVViewCreator {
 
 
             if (module.getView().equalsIgnoreCase("AC Grid 01")) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
+               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
                 isGrid = true;
             }
 
@@ -275,7 +275,7 @@ public class TVViewCreator {
             }
 
            if ("AC RawHtml 01".equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "rawhtml01.json"), ModuleList.class);
+              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "rawhtml01.json"), ModuleList.class);
             }
 
             moduleView = new TVModuleView<>(context, module);

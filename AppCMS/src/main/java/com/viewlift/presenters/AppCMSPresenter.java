@@ -8410,6 +8410,7 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(myProfileIntent);
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                 currentActivity.sendBroadcast(updateSubscription);
+                                getPlayerLruCache().evictAll();
 
                             }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
                                 Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
