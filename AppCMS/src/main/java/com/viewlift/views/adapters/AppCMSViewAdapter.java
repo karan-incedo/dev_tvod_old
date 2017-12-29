@@ -58,6 +58,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     boolean useMarginsAsPercentages;
     String componentViewType;
     AppCMSAndroidModules appCMSAndroidModules;
+    CollectionGridItemView planItemView[];
+    int selectedPosition = -1;
     private boolean useParentSize;
     private String defaultAction;
     private AppCMSUIKeyType viewTypeKey;
@@ -73,8 +75,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private String watchVideoAction;
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
-    CollectionGridItemView planItemView[];
-    int selectedPosition = -1;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -420,6 +420,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     contentType = data.getGist().getContentType();
                                 }
 
+//
+                                if (action.contains(mContext.getString(R.string.app_cms_action_open_option_dialog))) {
+                                    appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            action,
+                                            title,
+                                            null,
+                                            data,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds);
+                                    return;
+                                }
                                 if (contentType.equals(episodicContentType)) {
                                     action = showAction;
                                 } else if (contentType.equals(fullLengthFeatureType)) {
