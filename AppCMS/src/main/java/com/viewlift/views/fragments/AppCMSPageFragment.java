@@ -3,6 +3,7 @@ package com.viewlift.views.fragments;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
@@ -509,36 +511,50 @@ public class AppCMSPageFragment extends Fragment {
         }
     };
 
+    int firstVisibleIndex = -1;
+    int videoPlayerModulePostition = 0;
 
     public void setMiniPlayer() {
-        if ((pageView != null && pageView.findViewById(R.id.home_nested_scroll_view) != null) && pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView) {
-            int videoPlayerModulePostition = 0;
-            RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
-            nestedScrollView.addOnScrollListener(scrollListenerForMiniPlayer);
-            int firstVisibleIndex = ((LinearLayoutManager) nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition();
-            ModuleList singleVideoUI = appCMSPresenter.getModuleListByName(pageView.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key));
-            if (singleVideoUI != null) {
-                videoPlayerModulePostition = singleVideoUI.getModulePosition();
-            }
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if ((pageView != null && pageView.getAppCMSPageUI() != null && pageView.findViewById(R.id.home_nested_scroll_view) != null) && pageView.findViewById(R.id.home_nested_scroll_view) instanceof RecyclerView) {
+                    RecyclerView nestedScrollView = (RecyclerView) pageView.findViewById(R.id.home_nested_scroll_view);
+                    nestedScrollView.addOnScrollListener(scrollListenerForMiniPlayer);
+                    nestedScrollView.refreshDrawableState();
+                    nestedScrollView.getAdapter().notifyDataSetChanged();
+                    ViewTreeObserver positionObserver = nestedScrollView.getViewTreeObserver();
+                    firstVisibleIndex = ((LinearLayoutManager) nestedScrollView.getLayoutManager()).findFirstVisibleItemPosition();
+                    System.out.println("Scroll Position -" + firstVisibleIndex);
 
-            if (firstVisibleIndex >= videoPlayerModulePostition && singleVideoUI != null &&
-                    singleVideoUI.getSettings().isShowPIP()) {
-                if (appCMSPresenter.isPagePrimary(appCMSBinder.getScreenName()) || appCMSPresenter.isPagePrimary(appCMSBinder.getPageId())) {
-
-                    View nextChild = (pageView.findChildViewById(R.id.video_player_id));
-                    ViewGroup group = (ViewGroup) nextChild;
-                    if ((group.getChildAt(0)) != null) {
-                        ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
-                        appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
+                    ModuleList singleVideoUI = appCMSPresenter.getModuleListByName(pageView.getAppCMSPageUI().getModuleList(), getString(R.string.app_cms_page_video_player_module_key));
+                    if (singleVideoUI != null) {
+                        videoPlayerModulePostition = singleVideoUI.getModulePosition();
                     }
-                    appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+
+                    if (firstVisibleIndex >= 0) {
+                        if (firstVisibleIndex >= videoPlayerModulePostition && singleVideoUI != null &&
+                                singleVideoUI.getSettings().isShowPIP()) {
+                            if (appCMSPresenter.isPagePrimary(appCMSBinder.getScreenName()) || appCMSPresenter.isPagePrimary(appCMSBinder.getPageId())) {
+
+                                View nextChild = (pageView.findChildViewById(R.id.video_player_id));
+                                ViewGroup group = (ViewGroup) nextChild;
+                                if (nextChild != null && ((CustomVideoPlayerView) group.getChildAt(0)) != null) {
+                                    ((CustomVideoPlayerView) group.getChildAt(0)).requestAudioFocus();
+                                    appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
+                                    appCMSPresenter.showPopupWindowPlayer(nestedScrollView);
+                                }
+
+                            }
+                        } else {
+                            appCMSPresenter.dismissPopupWindowPlayer(false);
+
+                        }
+                    }
                 }
-            } else {
-                appCMSPresenter.dismissPopupWindowPlayer(false);
-
             }
-
-        }
+        }, 200);
     }
 
 }
