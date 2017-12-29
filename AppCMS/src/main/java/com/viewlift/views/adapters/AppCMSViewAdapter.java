@@ -8,7 +8,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +17,11 @@ import android.widget.TextView;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
-import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -61,6 +58,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     boolean useMarginsAsPercentages;
     String componentViewType;
     AppCMSAndroidModules appCMSAndroidModules;
+    CollectionGridItemView planItemView[];
+    int selectedPosition = -1;
     private boolean useParentSize;
     private String defaultAction;
     private AppCMSUIKeyType viewTypeKey;
@@ -76,8 +75,6 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     private String watchVideoAction;
     private String watchTrailerAction;
     private String watchTrailerQuailifier;
-    CollectionGridItemView planItemView[];
-    int selectedPosition = -1;
 
     public AppCMSViewAdapter(Context context,
                              ViewCreator viewCreator,
@@ -332,9 +329,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
             if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
-                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data) {
+                    public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data,
+                                      int clickPosition) {
 
-
+                        selectedPosition = clickPosition;
                         for (int i = 0; i < planItemView.length; i++) {
                             if (planItemView[i] != null) {
                                 if (selectedPosition == i) {
@@ -372,7 +370,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data) {
+                                      ContentDatum data,int clickPosition) {
                         if (isClickable) {
                             subcriptionPlanClick(collectionGridItemView, data);
 
@@ -389,7 +387,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data) {
+                                      ContentDatum data,int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -423,6 +421,18 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     contentType = data.getGist().getContentType();
                                 }
 
+                                if (action.contains(openOptionsAction)) {
+                                    appCMSPresenter.launchButtonSelectedAction(permalink,
+                                            openOptionsAction,
+
+                                            title,
+                                            null,
+                                            data,
+                                            false,
+                                            currentPlayingIndex,
+                                            relatedVideoIds);
+                                    return;
+                                }
                                 if (contentType.equals(episodicContentType)) {
                                     action = showAction;
                                 } else if (contentType.equals(fullLengthFeatureType)) {
@@ -502,7 +512,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnClickListener(v -> onClickHandler.click(itemView,
-                    component, data));
+                    component, data,position));
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
