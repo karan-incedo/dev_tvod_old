@@ -774,12 +774,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                             return super.dispatchKeyEvent(event);
                         case KeyEvent.KEYCODE_MEDIA_REWIND:
                             if (null != appCMSPresenter.videoPlayerView) {
+                                if (appCMSPresenter.videoPlayerView.isLiveStream()) return true;
                                 appCMSPresenter.videoPlayerView.findViewById(R.id.exo_rew).requestFocus();
                                 return super.dispatchKeyEvent(event);
                             }
                             break;
                         case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
                             if (null != appCMSPresenter.videoPlayerView) {
+                                if (appCMSPresenter.videoPlayerView.isLiveStream()) return true;
                                 appCMSPresenter.videoPlayerView.findViewById(R.id.exo_ffwd).requestFocus();
                                 return super.dispatchKeyEvent(event);
                             }

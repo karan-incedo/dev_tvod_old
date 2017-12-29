@@ -8325,7 +8325,7 @@ public class AppCMSPresenter {
                                             currentActivity.sendBroadcast(myProfileIntent);
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
-
+                                            getPlayerLruCache().evictAll();
                                         }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
@@ -8343,8 +8343,8 @@ public class AppCMSPresenter {
                                                     false);
 
                                         }  else if (getLaunchType() == LaunchType.HOME) {
-                                                Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
-                                                currentActivity.sendBroadcast(updateSubscription);
+                                            Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
+                                            currentActivity.sendBroadcast(updateSubscription);
 
                                             getPlayerLruCache().evictAll();
                                             navigateToTVPage(

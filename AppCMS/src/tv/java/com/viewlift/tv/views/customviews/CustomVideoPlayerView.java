@@ -484,8 +484,8 @@ public class CustomVideoPlayerView
                     if (!sentBeaconFirstFrame) {
                         mStopBufferMilliSec = new Date().getTime();
                         ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                        appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                                videoData.getGist().getPermalink(),
+                        appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                                contentDatum.getGist().getPermalink(),
                                 parentScreenName,
                                 getCurrentPosition(),
                                 false,
@@ -731,8 +731,8 @@ public class CustomVideoPlayerView
 
             apod += 1;
             if (appCMSPresenter != null) {
-                appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                        videoData.getGist().getPermalink(),
+                appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                        contentDatum.getGist().getPermalink(),
                         parentScreenName,
                         getCurrentPosition(),
                         false,
@@ -775,8 +775,8 @@ public class CustomVideoPlayerView
                 }
 
                 if (appCMSPresenter != null) {
-                    appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                            videoData.getGist().getPermalink(),
+                    appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                            contentDatum.getGist().getPermalink(),
                             parentScreenName,
                             getCurrentPosition(),
                             false,
@@ -802,8 +802,8 @@ public class CustomVideoPlayerView
                 if (appCMSPresenter != null) {
                     mStopBufferMilliSec = new Date().getTime();
                     ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                    appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                            videoData.getGist().getPermalink(),
+                    appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                            contentDatum.getGist().getPermalink(),
                             parentScreenName,
                             getCurrentPosition(),
                             false,
@@ -845,8 +845,8 @@ public class CustomVideoPlayerView
         beaconBufferingTimeoutMsec = mContext.getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
 
         if (!sentBeaconPlay) {
-            appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                    videoData.getGist().getPermalink(),
+            appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                    contentDatum.getGist().getPermalink(),
                     parentScreenName,
                     getCurrentPosition(),
                     false,
@@ -867,8 +867,8 @@ public class CustomVideoPlayerView
         beaconMessageThread = new BeaconPingThread(
                 beaconMsgTimeoutMsec,
                 appCMSPresenter,
-                videoData.getGist().getId(),
-                videoData.getGist().getPermalink(),
+                contentDatum.getGist().getId(),
+                contentDatum.getGist().getPermalink(),
                 false,
                 parentScreenName,
                 this,
@@ -877,8 +877,8 @@ public class CustomVideoPlayerView
         beaconBufferingThread = new BeaconBufferingThread(
                 beaconBufferingTimeoutMsec,
                 appCMSPresenter,
-                videoData.getGist().getId(),
-                videoData.getGist().getPermalink(),
+                contentDatum.getGist().getId(),
+                contentDatum.getGist().getPermalink(),
                 parentScreenName,
                 this,
                 mStreamId);
