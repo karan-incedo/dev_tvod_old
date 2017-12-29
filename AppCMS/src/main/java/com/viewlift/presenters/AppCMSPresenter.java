@@ -8564,7 +8564,9 @@ public class AppCMSPresenter {
         } else {
             setIsUserSubscribed(isUserSubscribed);
         }
-
+        if (loginFromNavPage) {
+            entitlementPendingVideoData = null;
+        }
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
