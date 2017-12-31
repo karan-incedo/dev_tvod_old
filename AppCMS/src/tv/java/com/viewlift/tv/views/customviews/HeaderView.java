@@ -121,6 +121,7 @@ public class HeaderView extends TVBaseView {
                 }
                 switch (componentKey) {
                     case PAGE_VIDEO_TITLE_KEY:
+                    case PAGE_SHOW_TITLE_KEY:
                         if (!TextUtils.isEmpty(mModuleData.getContentData().get(0).getGist().getTitle())) {
                             ((TextView) componentView).setText(mModuleData.getContentData().get(0).getGist().getTitle());
                             if (component.getNumberOfLines() != 0) {

@@ -1169,4 +1169,8 @@ public class CustomVideoPlayerView
             setUri(Uri.parse(lastUrl), null);
         }
     }
+
+    public boolean isLiveStream() {
+        return isLiveStream;
+    }
 }

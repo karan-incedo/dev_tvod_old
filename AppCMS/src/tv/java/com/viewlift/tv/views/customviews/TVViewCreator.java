@@ -244,7 +244,7 @@ public class TVViewCreator {
 
 
             if (module.getView().equalsIgnoreCase("AC Grid 01")) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
+//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
                 isGrid = true;
             }
 
@@ -275,7 +275,11 @@ public class TVViewCreator {
             }
 
            if ("AC RawHtml 01".equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "rawhtml01.json"), ModuleList.class);
+//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "rawhtml01.json"), ModuleList.class);
+            }
+
+           if ("AC VideoPlayerWithInfo 01".equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             }
 
             moduleView = new TVModuleView<>(context, module);
@@ -523,10 +527,13 @@ public class TVViewCreator {
     private void createHeaderItem(Component component, Context context, ModuleList moduleUI, Module moduleData, String name, boolean mIsCarousal) {
         customHeaderItem = new CustomHeaderItem(context, trayIndex++, name);
         customHeaderItem.setmIsCarousal(mIsCarousal);
-        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-        customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+        String padding = moduleUI.getLayout().getTv().getPadding();
+        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(padding != null ? padding : "0"));
+        customHeaderItem.setmListRowRightMargin(Integer.valueOf(padding != null ? padding : "0"));
         customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-        customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+        if (null != moduleUI.getLayout().getTv().getHeight()) {
+            customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+        }
         if(null != moduleUI.getLayout().getTv().getWidth()) {
             customHeaderItem.setmListRowWidth(Integer.valueOf(moduleUI.getLayout().getTv().getWidth()));
         }
@@ -646,6 +653,11 @@ public class TVViewCreator {
                         Utils.getFocusColor(context, appCMSPresenter)));
 
                 switch (componentKey) {
+                    case PAGE_SHOW_SWITCH_SEASONS_KEY:
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                            appCMSPresenter.showSwitchSeasonsDialog(moduleAPI.getContentData().get(0).getSeason());
+                        });
+                        break;
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         componentViewResult.componentView.setFocusable(false);
@@ -809,16 +821,14 @@ public class TVViewCreator {
                                     });
                         }
 
-                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                playVideo(appCMSPresenter, context, component, moduleAPI);
-                                componentViewResult.componentView.setClickable(false);
+                        View componentView = componentViewResult.componentView;
+                        componentView.setOnClickListener(v -> {
+                            playVideo(appCMSPresenter, context, component, moduleAPI);
+                            componentView.setClickable(false);
 
-                                new Handler().postDelayed(() -> {
-                                    componentViewResult.componentView.setClickable(true);
-                                }, 3000);
-                            }
+                            new Handler().postDelayed(() -> {
+                                componentView.setClickable(true);
+                            }, 3000);
                         });
                         break;
 
@@ -1649,7 +1659,8 @@ public class TVViewCreator {
                     case PAGE_VIDEO_IMAGE_KEY:
                         ImageView imageView = new ImageView(componentViewResult.componentView.getContext());
 
-                        int padding = Integer.valueOf(component.getLayout().getTv().getPadding());
+                        String pad = component.getLayout().getTv().getPadding();
+                        int padding = Integer.valueOf(pad != null ? pad : "0");
                         imageView.setPadding(padding + 1, padding, padding + 1, padding);
 
                         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
@@ -2132,6 +2143,10 @@ public class TVViewCreator {
                 if (module.getId().equals(moduleAPI.getId())) {
                     return moduleAPI;
                 }
+            }
+
+            if (module.getId().equalsIgnoreCase("d3de2b27-0e90-492e-974a-54fcc220a638")){
+                return appCMSPageAPI.getModules().get(1);
             }
         }
         return null;

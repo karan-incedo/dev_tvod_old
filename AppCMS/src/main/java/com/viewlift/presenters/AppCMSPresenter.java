@@ -98,6 +98,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.Settings;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
@@ -186,6 +187,7 @@ import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 import com.viewlift.tv.views.customviews.FullPlayerView;
+import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -274,6 +276,7 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY_ACTION;
+import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
 /*
  * Created by viewlift on 5/3/17.
@@ -499,7 +502,6 @@ public class AppCMSPresenter {
     private MetaPage tosPage;
 
     private PlatformType platformType;
-    private TemplateType templateType = TemplateType.SPORTS;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
     private LaunchType launchType;
     private IInAppBillingService inAppBillingService;
@@ -10492,7 +10494,16 @@ public class AppCMSPresenter {
     }
 
     public TemplateType getTemplateType() {
-        return templateType;
+        String templateName = appCMSMain.getTemplateName();
+        if ("Entertainment".equalsIgnoreCase(templateName)){
+            return TemplateType.ENTERTAINMENT;
+        } else if ("Education".equalsIgnoreCase(templateName)){
+            return TemplateType.EDUCATION;
+        } else if ("LIVE".equalsIgnoreCase(templateName)){
+            return TemplateType.LIVE;
+        } else /*if (templateName.equalsIgnoreCase("Sports"))*/{
+            return TemplateType.SPORTS;
+        }
     }
 
     public boolean isRemovableSDCardAvailable() {
@@ -11114,6 +11125,14 @@ public class AppCMSPresenter {
         this.shouldLaunchLoginAction = false;
     }
 
+    public void showSwitchSeasonsDialog(List<Season_> seasons) {
+        android.app.FragmentTransaction ft = getCurrentActivity().getFragmentManager()
+                .beginTransaction();
+        SwitchSeasonsDialogFragment switchSeasonsDialogFragment = SwitchSeasonsDialogFragment.newInstance(seasons);
+        switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
+
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME
     }
@@ -11123,7 +11142,7 @@ public class AppCMSPresenter {
     }
 
     public enum TemplateType {
-        ENTERTAINMENT, SPORTS
+        ENTERTAINMENT, SPORTS, EDUCATION, LIVE
     }
 
     public enum BeaconEvent {
