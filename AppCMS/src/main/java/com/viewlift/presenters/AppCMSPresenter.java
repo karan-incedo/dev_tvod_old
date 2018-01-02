@@ -28,6 +28,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.RemoteException;
 import android.os.StatFs;
 import android.support.annotation.NonNull;
@@ -10098,7 +10099,7 @@ public class AppCMSPresenter {
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-        sendCloseOthersAction(null, true, false);
+       // sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
@@ -10294,6 +10295,8 @@ public class AppCMSPresenter {
                             playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
 
                             currentActivity.startActivityForResult(playVideoIntent, PLAYER_REQUEST_CODE);
+
+                            new Handler().postDelayed(() -> sendCloseOthersAction(null, true, false), 200);
                         });
                 //sendStopLoadingPageAction();
 

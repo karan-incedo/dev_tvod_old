@@ -76,6 +76,15 @@
         <item>AC WebFrame 01</item>
     </string-array>
 
+
+    <!-- AppCMS JSON data input keys -->
+    <string-array name="app_cms_modules_to_ignore_tv">
+        <item>AC Masthead 01</item>
+        <item>AC Footer 01</item>
+        <item>AC WebFrame 01</item>
+        <item>AC Banner 01</item>
+    </string-array>
+
     <string-array name="app_cms_download_quality_array">
         <item>720p</item>
         <item>360p</item>

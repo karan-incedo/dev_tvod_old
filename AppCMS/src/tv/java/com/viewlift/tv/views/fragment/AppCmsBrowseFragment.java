@@ -153,7 +153,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                             customVideoVideoPlayerView.performLoginButtonClick();
                         }
                         else{
-                         customVideoVideoPlayerView.showRestrictMessage("Please reload this screen from menu.");
+                         customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
                          customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
                         }
                         return;
@@ -233,7 +233,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                                 && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoPlayerView){
                             customVideoVideoPlayerView  =  (CustomVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
                             if(customVideoVideoPlayerView.isLoginButtonVisible() && appCMSPresenter.isUserLoggedIn()){
-                               customVideoVideoPlayerView.showRestrictMessage("Please reload this screen from Menu.");
+                               customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
                                customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
                             }
                         }

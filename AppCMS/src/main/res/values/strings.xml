@@ -468,6 +468,7 @@
     <string name="no_more_videos_in_queue">No more videos in queue.</string>
     <string name="shouldNavigateToLogin">shouldNavigateToLogin</string>
     <string name="resume_watching">Resume Watching</string>
+    <string name="reload_page_from_menu">We encountered an issue while loading the live player. Please refresh this screen in the app Menu.</string>
 
 </resources>
 

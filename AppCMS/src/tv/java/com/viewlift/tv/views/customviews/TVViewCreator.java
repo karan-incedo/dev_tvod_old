@@ -48,6 +48,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -218,7 +219,7 @@ public class TVViewCreator {
         }
     }
 
-
+    TVModuleView moduleView = null;
 
     public View createModuleView(final Context context,
                                  ModuleList module,
@@ -227,7 +228,7 @@ public class TVViewCreator {
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  AppCMSPresenter appCMSPresenter, AppCMSPageAPI appCMSPageAPI,
                                  boolean isFromLoginDialog) {
-        TVModuleView moduleView = null;
+        moduleView = null;
         boolean isCaurosel = false;
         boolean isGrid = false;
         if (Arrays.asList(context.getResources().getStringArray(R.array.app_cms_tray_modules)).contains(module.getType())) {
@@ -274,8 +275,9 @@ public class TVViewCreator {
               //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
             }
 
-           if ("AC RawHtml 01".equalsIgnoreCase(module.getView())) {
-              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "rawhtml01.json"), ModuleList.class);
+           if ("AC RichText 01".equalsIgnoreCase(module.getView())) {
+              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
+              // Toast.makeText(context,"reading file..",Toast.LENGTH_SHORT).show();
             }
 
             moduleView = new TVModuleView<>(context, module);
@@ -337,7 +339,7 @@ public class TVViewCreator {
                     }
 
                     View componentView = componentViewResult.componentView;
-                    if (componentView != null) {
+                    if (componentView != null && moduleView != null) {
                         childrenContainer.addView(componentView);
                         moduleView.setComponentHasView(i, true);
 
@@ -350,7 +352,7 @@ public class TVViewCreator {
                                 componentViewResult.useWidthOfScreen,
                                 module.getView());
 
-                    } else {
+                    } else if(moduleView != null) {
                         moduleView.setComponentHasView(i, false);
                     }
                 }
@@ -1352,9 +1354,13 @@ public class TVViewCreator {
                             ((TextView) componentViewResult.componentView).setTextColor(Color.parseColor(txtColor));
                             if (!TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle());
+                                ((TextView) componentViewResult.componentView).setMaxLines(1);
+                                ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+                            }else{
+                                componentViewResult.componentView = null;
+                                moduleView = null;
                             }
-                            ((TextView) componentViewResult.componentView).setMaxLines(1);
-                            ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
+
                             break;
                         case PAGE_AUTOPLAY_MOVIE_TITLE_KEY:
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getTitle())) {
@@ -1755,11 +1761,16 @@ public class TVViewCreator {
                             imgUrl = Jsoup.parse(moduleAPI.getRawText()).body().getElementsByAttribute("src").attr("src");
                         }catch (Exception e){
                         }
-                        Glide.with(context)
-                                .load(imgUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
-                                .into((ImageView) componentViewResult.componentView);
+                        if(null != imgUrl && ( imgUrl.endsWith("png") || imgUrl.endsWith("jpeg") || imgUrl.endsWith("jpg"))) {
+                            Glide.with(context)
+                                    .load(imgUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                    .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                                    .into((ImageView) componentViewResult.componentView);
+                        }else{
+                            componentViewResult.componentView = null;
+                            moduleView = null;
+                        }
                         break;
 
                     case PAGE_THUMBNAIL_VIDEO_IMAGE_KEY:
