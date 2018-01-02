@@ -96,13 +96,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     boolean isLoadedNext;
     private AppCMSPresenter appCMSPresenter;
     private ToggleButton ccToggleButton;
-    private LinearLayout chromecastLivePlayerParent;
-    private FrameLayout chromecastButtonPlaceholder;
-    private ViewGroup chromecastButtonPreviousParent;
     private ImageButton enterFullscreenButton;
-    private ImageButton exitFullscreenButton;
     private TextView currentStreamingQualitySelector;
-    private AlwaysSelectedTextView videoPlayerTitle;
     private boolean isClosedCaptionEnabled = false;
     private Uri uri;
     private Action1<PlayerState> onPlayerStateChanged;
@@ -137,8 +132,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private boolean playOnReattach;
 
     private String filmId;
-
-    private PageView pageView;
 
     private RecyclerView listView;
     private StreamingQualitySelectorAdapter listViewAdapter;
@@ -350,7 +343,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void initializeView(Context context) {
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
+        playerView = findViewById(R.id.videoPlayerView);
         playerJustInitialized = true;
         fullScreenMode = false;
         init(context);
@@ -379,28 +372,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumePosition = C.TIME_UNSET;
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
+        ccToggleButton = playerView.findViewById(R.id.ccButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
             }
             isClosedCaptionEnabled = isChecked;
         });
-
-        chromecastLivePlayerParent = playerView.findViewById(R.id.chromecast_live_player_parent);
-
-        chromecastButtonPlaceholder = playerView.findViewById(R.id.chromecast_live_player_placeholder);
-
         enterFullscreenButton = playerView.findViewById(R.id.full_screen_button);
 
         enterFullscreenButton.setOnClickListener(v -> {
             enterFullScreenMode();
-        });
-
-        exitFullscreenButton = playerView.findViewById(R.id.full_screen_back_button);
-
-        exitFullscreenButton.setOnClickListener(v -> {
-            exitFullscreenMode();
         });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
@@ -409,9 +391,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             currentStreamingQualitySelector.setVisibility(View.GONE);
         }
-
-        videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
-        videoPlayerTitle.setText("");
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
@@ -445,14 +424,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         setFillBasedOnOrientation();
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
-//        fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
-    }
-
-    public void setVideoTitle(String title, int textColor) {
-        if (videoPlayerTitle != null) {
-            videoPlayerTitle.setText(title);
-            videoPlayerTitle.setTextColor(textColor);
-        }
     }
 
     private void createStreamingQualitySelector() {
@@ -837,14 +808,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         this.keyPairIdCookie = keyPairIdCookie;
     }
 
-    public PageView getPageView() {
-        return pageView;
-    }
-
-    public void setPageView(PageView pageView) {
-        this.pageView = pageView;
-    }
-
     public interface ErrorEventListener {
         void onRefreshTokenCallback();
 
@@ -1183,19 +1146,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
-    public void showChromecastLiveVideoPlayer(boolean show) {
-        if (show) {
-            chromecastLivePlayerParent.setVisibility(VISIBLE);
-            if (appCMSPresenter.getCurrentMediaRouteButton() != null) {
-                chromecastButtonPlaceholder.setVisibility(VISIBLE);
-            } else {
-                chromecastButtonPlaceholder.setVisibility(INVISIBLE);
-            }
-        } else {
-            chromecastLivePlayerParent.setVisibility(INVISIBLE);
-        }
-    }
-
     public void enterFullScreenMode() {
         disableFullScreenMode();
         fullScreenMode = true;
@@ -1204,10 +1154,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void disableFullScreenMode() {
         if (enterFullscreenButton != null &&
-                exitFullscreenButton != null &&
                 BaseView.isTablet(getContext())) {
             enterFullscreenButton.setVisibility(GONE);
-            exitFullscreenButton.setVisibility(VISIBLE);
         }
     }
 
@@ -1219,29 +1167,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void enableFullScreenMode() {
         if (enterFullscreenButton != null &&
-                exitFullscreenButton != null &&
                 BaseView.isTablet(getContext())) {
-            exitFullscreenButton.setVisibility(INVISIBLE);
             enterFullscreenButton.setVisibility(VISIBLE);
-        }
-    }
-
-    public void setChromecastButton(ImageButton chromecastButton) {
-        if (chromecastButton.getParent() != null && chromecastButton.getParent() instanceof ViewGroup) {
-            chromecastButtonPreviousParent = (ViewGroup) chromecastButton.getParent();
-            chromecastButtonPreviousParent.removeView(chromecastButton);
-        }
-        chromecastButtonPlaceholder.addView(chromecastButton);
-    }
-
-    public void resetChromecastButton(ImageButton chromecastButton) {
-        if (chromecastButton != null &&
-                chromecastButton.getParent() != null &&
-                chromecastButton.getParent() instanceof ViewGroup) {
-            ((ViewGroup) chromecastButton.getParent()).removeView(chromecastButton);
-        }
-        if (chromecastButtonPreviousParent != null) {
-            chromecastButtonPreviousParent.addView(chromecastButton);
         }
     }
 

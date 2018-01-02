@@ -1522,15 +1522,15 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restrictLandscapeOnly();
         }
         if (!castDisabled && mMediaRouteButton != null) {
-            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
+//            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
         }
-        ViewCreator.openFullScreenVideoPlayer(this);
+        ViewCreator.openFullScreenVideoPlayer();
     }
 
     public void exitFullScreenVideoPlayer(boolean launchPage) {
         showSystemUI(getWindow().getDecorView());
         appCMSPresenter.unrestrictPortraitOnly();
-        ViewCreator.closeFullScreenVideoPlayer(this);
+        ViewCreator.closeFullScreenVideoPlayer();
         if (launchPage) {
             handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
         }

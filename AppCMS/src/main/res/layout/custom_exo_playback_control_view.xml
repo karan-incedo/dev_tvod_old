@@ -6,51 +6,6 @@
     android:background="@android:color/transparent">
 
     <LinearLayout
-        android:id="@+id/chromecast_live_player_parent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="#CC000000"
-        android:orientation="horizontal"
-        android:visibility="gone">
-        <ImageButton
-            android:id="@+id/full_screen_back_button"
-            android:layout_width="@dimen/chromecast_default_width"
-            android:layout_height="@dimen/chromecast_default_height"
-            android:src="@drawable/ic_keyboard_arrow_left_white_24dp"
-            android:scaleType="fitCenter"
-            android:paddingTop="@dimen/chromecast_default_padding_top"
-            android:paddingStart="@dimen/chromecast_default_padding_end"
-            android:background="@android:color/transparent"
-            android:visibility="invisible"/>
-
-        <com.viewlift.views.customviews.AlwaysSelectedTextView
-            android:id="@+id/app_cms_video_player_title_view"
-            android:layout_width="352dp"
-            android:layout_height="56dp"
-            android:layout_gravity="center"
-            android:layout_margin="4dp"
-            android:layout_weight="10"
-            android:background="@android:color/transparent"
-            android:ellipsize="marquee"
-            android:fadingEdge="horizontal"
-            android:gravity="center"
-            android:padding="12dp"
-            android:singleLine="true"
-            android:textAlignment="center"
-            android:textSize="@dimen/app_cms_video_player_title_view_text_size" />
-
-        <FrameLayout
-            android:id="@+id/chromecast_live_player_placeholder"
-            android:layout_width="@dimen/chromecast_default_width"
-            android:layout_height="@dimen/chromecast_default_height"
-            android:layout_marginEnd="@dimen/chromecast_default_margin_end"
-            android:paddingTop="@dimen/chromecast_default_padding_top"
-            android:paddingEnd="@dimen/chromecast_default_padding_end"
-            android:background="@android:color/transparent"/>
-    </LinearLayout>
-
-    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#CC000000"

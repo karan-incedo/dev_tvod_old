@@ -40,11 +40,11 @@ public class PageView extends BaseView {
     private SwipeRefreshLayout mainView;
     private AppCMSPageViewAdapter appCMSPageViewAdapter;
 
-    private ViewDimensions fullScreenViewOriginalDimensions;
-
     private boolean shouldRefresh;
 
     private boolean reparentChromecastButton;
+
+    private View fullScreenVideoPlayerView;
 
     @Inject
     public PageView(Context context,
@@ -60,36 +60,28 @@ public class PageView extends BaseView {
         init();
     }
 
-    public void openViewInFullScreen(View view, ViewGroup viewParent) {
-        shouldRefresh = false;
-        if (fullScreenViewOriginalDimensions == null) {
-            fullScreenViewOriginalDimensions = new ViewDimensions();
+    public void setFullScreenVideoPlayerView(View fullScreenVideoPlayerView) {
+        this.fullScreenVideoPlayerView = fullScreenVideoPlayerView;
+        fullScreenVideoPlayerView.setVisibility(GONE);
+        if (fullScreenVideoPlayerView.getParent() != null &&
+                fullScreenVideoPlayerView instanceof ViewGroup) {
+            ((ViewGroup) fullScreenVideoPlayerView.getParent()).removeView(fullScreenVideoPlayerView);
         }
-        try {
-            fullScreenViewOriginalDimensions.width = view.getLayoutParams().width;
-            fullScreenViewOriginalDimensions.height = view.getLayoutParams().height;
-        } catch (Exception e) {
-            //
-        }
-
-        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-        view.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-
-        childrenContainer.setVisibility(GONE);
-        viewParent.removeView(view);
-        addView(view);
+        addView(fullScreenVideoPlayerView);
     }
 
-    public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
+    public void openViewInFullScreen() {
+        shouldRefresh = false;
+        if (fullScreenVideoPlayerView != null) {
+            fullScreenVideoPlayerView.setVisibility(VISIBLE);
+            fullScreenVideoPlayerView.bringToFront();
+        }
+    }
+
+    public void closeFullScreenView() {
         shouldRefresh = true;
-        if (fullScreenViewOriginalDimensions != null) {
-            removeView(view);
-
-            view.getLayoutParams().width = fullScreenViewOriginalDimensions.width;
-            view.getLayoutParams().height = fullScreenViewOriginalDimensions.height;
-
-            viewParent.addView(view);
-            childrenContainer.setVisibility(VISIBLE);
+        if (fullScreenVideoPlayerView != null) {
+            fullScreenVideoPlayerView.setVisibility(GONE);
         }
     }
 
@@ -305,10 +297,5 @@ public class PageView extends BaseView {
 
     public void setReparentChromecastButton(boolean reparentChromecastButton) {
         this.reparentChromecastButton = reparentChromecastButton;
-    }
-
-    private static class ViewDimensions {
-        int width;
-        int height;
     }
 }
