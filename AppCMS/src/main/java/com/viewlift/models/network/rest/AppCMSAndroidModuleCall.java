@@ -82,7 +82,7 @@ public class AppCMSAndroidModuleCall {
     }
 
     private void addMissingModulesFromAssets(Map<String, ModuleList> moduleListMap) {
-        if (assetManager != null) {
+        if (assetManager != null && moduleListMap != null) {
             for (String[] jsonFromAssetsVal : jsonFromAssets) {
                 if (jsonFromAssetsVal != null && jsonFromAssetsVal.length == 2) {
                     if (!moduleListMap.containsKey(jsonFromAssetsVal[0])) {
