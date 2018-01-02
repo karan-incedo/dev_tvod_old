@@ -1707,7 +1707,6 @@ public class AppCMSPresenter {
                         String endPoint = actionToPageAPIUrlMap.get(actionPresenter.getAction());
                         String siteId = appCMSSite.getGist().getSiteInternalName();
                         boolean usePageIdQueryParam = false;
-                        boolean viewPlans = isViewPlanPage(endPoint);
                         boolean showPage = false;
 
                         switch (actionType) {
@@ -1751,8 +1750,11 @@ public class AppCMSPresenter {
                         }
 
                         AppCMSPageUI appCMSPageUI = actionToPageMap.get(actionPresenter.getAction());
+
+
+
                         String apiUrl = getApiUrl(usePageIdQueryParam,
-                                viewPlans,
+                                false,
                                 showPage,
                                 baseUrl,
                                 endPoint,
@@ -4747,6 +4749,16 @@ public class AppCMSPresenter {
 
     public void checkForExistingSubscription(boolean showErrorDialogIfSubscriptionExists) {
         //Log.d(TAG, "Checking for existing Google Play subscription");
+
+        if (!isUserSubscribed()) {
+            setActiveSubscriptionPrice(null);
+            setActiveSubscriptionId(null);
+            setActiveSubscriptionSku(null);
+            setActiveSubscriptionCountryCode(null);
+            setActiveSubscriptionPlanName(null);
+            setActiveSubscriptionReceipt(null);
+        }
+
         if (currentActivity != null) {
             Bundle activeSubs;
             try {
@@ -4835,9 +4847,11 @@ public class AppCMSPresenter {
                                                                             navigateToLoginPage(loginFromNavPage);
                                                                         });
                                                             }
-                                                        } else if (!purchaseFromRestore) {
+                                                        } else {
                                                             setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
-                                                            initiateItemPurchase(true);
+                                                            if (!purchaseFromRestore) {
+                                                                initiateItemPurchase(true);
+                                                            }
                                                         }
                                                     } else {
                                                         //Log.d(TAG, "Received a valid signin response");
@@ -8596,7 +8610,7 @@ public class AppCMSPresenter {
             String endPoint = pageIdToPageAPIUrlMap.get(pageId);
             String siteId = appCMSSite.getGist().getSiteInternalName();
             boolean usePageIdQueryParam = true;
-            boolean viewPlans = isViewPlanPage(endPoint);
+            boolean viewPlans = isViewPlanPage(pageId);
             boolean showPage = isShowPage(pageId);
             String apiUrl = getApiUrl(usePageIdQueryParam,
                     viewPlans,
@@ -8620,21 +8634,17 @@ public class AppCMSPresenter {
             Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
             pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
             currentActivity.sendBroadcast(pageLoadingActionIntent);
-            if (launchType != LaunchType.INIT_SIGNUP) {
-                String url = currentActivity.getString(R.string.app_cms_signin_api_url,
-                        appCMSMain.getApiBaseUrl(),
-                        appCMSSite.getGist().getSiteInternalName());
-                startLoginAsyncTask(url,
-                        email,
-                        password,
-                        false,
-                        false,
-                        false,
-                        false,
-                        true);
-            } else {
-                initiateItemPurchase(false);
-            }
+            String url = currentActivity.getString(R.string.app_cms_signin_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName());
+            startLoginAsyncTask(url,
+                    email,
+                    password,
+                    false,
+                    (!isUserLoggedIn() && !TextUtils.isEmpty(getRestoreSubscriptionReceipt())),
+                    false,
+                    false,
+                    true);
         }
     }
 

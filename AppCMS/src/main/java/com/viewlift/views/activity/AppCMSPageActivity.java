@@ -2520,7 +2520,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (!TextUtils.isEmpty(endPoint)) {
                 String baseUrl = appCMSMain.getApiBaseUrl();
                 String siteId = appCMSSite.getGist().getSiteInternalName();
-                boolean viewPlans = appCMSPresenter.isViewPlanPage(endPoint);
+                boolean viewPlans = appCMSPresenter.isViewPlanPage(appCMSBinder.getPageId());
                 boolean showPage = appCMSPresenter.isShowPage(appCMSBinder.getPageId());
                 String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
                         viewPlans,
@@ -2593,7 +2593,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         if (!TextUtils.isEmpty(endPoint)) {
                             String baseUrl = appCMSMain.getApiBaseUrl();
                             String siteId = appCMSSite.getGist().getSiteInternalName();
-                            boolean viewPlans = appCMSPresenter.isViewPlanPage(endPoint);
+                            boolean viewPlans = appCMSPresenter.isViewPlanPage(appCMSBinder.getPageId());
                             boolean showPage = appCMSPresenter.isShowPage(appCMSBinder.getPageId());
                             String apiUrl = appCMSPresenter.getApiUrl(usePageIdQueryParam,
                                     viewPlans,
