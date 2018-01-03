@@ -132,7 +132,11 @@ public class HeaderView extends TVBaseView {
                         break;
 
                     case PAGE_VIDEO_SUBTITLE_KEY:
-                        setViewWithSubtitle(mContext , mModuleData.getContentData().get(0) , componentView);
+                        setVideoViewWithSubtitle(mContext , mModuleData.getContentData().get(0) , componentView);
+                        break;
+
+                    case PAGE_SHOW_SUBTITLE_KEY:
+                        setShowViewWithSubtitle(mContext , mModuleData.getContentData().get(0) , componentView);
                         break;
                 }
         }

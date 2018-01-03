@@ -248,23 +248,22 @@ public class TVViewCreator {
                 isGrid = true;
             }
 
-
-            if (null == mRowsAdapter) {
-                AppCmsListRowPresenter appCmsListRowPresenter;
-
-                if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
-                    appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter , FocusHighlight.ZOOM_FACTOR_NONE);
-                }else{
-                    appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
-                }
-
-                mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
-            }
             for (Component component : module.getComponents()) {
                 createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                         pageView, jsonValueKeyMap, appCMSPresenter, appCMSPageAPI, isCaurosel , isGrid);
             }
             return null;
+        } else if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())){
+            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+            moduleView = new ShowDetailModuleView(
+                    context,
+                    module,
+                    appCMSPageAPI,
+                    this,
+                    appCMSPresenter,
+                    jsonValueKeyMap);
+            ViewGroup childrenContainer = moduleView.getChildrenContainer();
+
         } else {
             if (context.getResources().getString(R.string.appcms_watchlist_module).equalsIgnoreCase(module.getView())) {
              //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
@@ -278,8 +277,8 @@ public class TVViewCreator {
 //                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "rawhtml01.json"), ModuleList.class);
             }
 
-           if ("AC VideoPlayerWithInfo 01".equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+           if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())) {
+//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             }
 
             moduleView = new TVModuleView<>(context, module);
@@ -376,6 +375,18 @@ public class TVViewCreator {
                                  boolean isCarousel,
                                  boolean isGrid) {
 
+        if (null == mRowsAdapter) {
+            AppCmsListRowPresenter appCmsListRowPresenter;
+
+            if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter , FocusHighlight.ZOOM_FACTOR_NONE);
+            }else{
+                appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+            }
+
+            mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+        }
+
         // Sort the data in case of continue watching tray
         if (jsonValueKeyMap.get(moduleUI.getType()) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
             if (moduleData != null && moduleData.getContentData() != null) {
@@ -396,7 +407,15 @@ public class TVViewCreator {
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
-                        if (moduleData != null) {
+                        if (moduleData != null
+                                && moduleData.getContentData() != null
+                                && moduleData.getContentData().get(0) != null
+                                && moduleData.getContentData().get(0).getGist() != null
+                                && moduleData.getContentData().get(0).getGist().getContentType() != null
+                                && moduleData.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                            customHeaderItem = null;
+                            createHeaderItem(component, context, moduleUI, moduleData, "SEASON 1", isCarousel);
+                        } else {
                             customHeaderItem = null;
                             createHeaderItem(component, context, moduleUI, moduleData, (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle() : "", isCarousel);
                         }
@@ -472,6 +491,22 @@ public class TVViewCreator {
                                 }
                             }
                         }
+                    } else if (moduleData.getModuleType().equalsIgnoreCase("ShowDetailModule")
+                            && moduleData.getContentData() != null
+                            && moduleData.getContentData().get(0) != null) {
+                        Log.d(TAG, "It's a series");
+                        ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+                        List<Component> components = component.getComponents();
+                        for (ContentDatum contentDatum : moduleData.getContentData().get(0).getSeason().get(0).getEpisodes()) {
+                            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                            rowData.contentData = contentDatum;
+                            rowData.uiComponentList = components;
+                            rowData.action = component.getTrayClickAction();
+                            rowData.blockName = moduleUI.getBlockName();
+                            rowData.rowNumber = trayIndex;
+                            traylistRowAdapter.add(rowData);
+                        }
+                        mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                     }else{
                         ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
                         if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {

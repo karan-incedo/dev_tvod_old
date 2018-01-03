@@ -237,6 +237,13 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.UPDATE_SUBSCRIPTION)) {
                     updateSubscriptionStrip();
+                } else if (intent.getAction().equals(AppCMSPresenter.SWITCH_SEASON_ACTION)) {
+                    Log.d(TAG, "Broadcast Received " + intent.getIntExtra(context.getString(R.string.app_cms_selected_season_key), 0));
+                    Fragment parentFragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
+                    AppCmsBrowseFragment browseFragment = (AppCmsBrowseFragment) parentFragment.getChildFragmentManager().
+                            findFragmentById(R.id.appcms_browsefragment);
+                    browseFragment.getAdapter().get(0);
+                    Log.d(TAG, browseFragment.toString());
                 }
             }
         };
@@ -375,6 +382,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.UPDATE_SUBSCRIPTION));
+        registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.SWITCH_SEASON_ACTION));
     }
 
     @Override

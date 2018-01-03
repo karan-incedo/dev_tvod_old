@@ -9,7 +9,7 @@
       "yAxis": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 1080
+      "height" : 630
     }
   },
   "components": [
@@ -43,15 +43,15 @@
         {
           "layout": {
             "ftv": {
-              "topMargin" : 7,
+              "topMargin": 7,
               "rightMargin": 89,
               "width": 590,
-              "gravity":"center",
+              "gravity": "center",
               "fontSize": 13,
               "height": 36
             }
           },
-          "gravity":"center",
+          "gravity": "center",
           "fontFamily": "OpenSans",
           "numberOfLines": 1,
           "textAlignment": "right",
@@ -70,19 +70,20 @@
         "ftv": {
           "topMargin": 138,
           "height": 390,
-          "width":1920
+          "width": 1920
         }
       },
       "type": "label",
-      "backgroundColor":"#0a151c"
-    },{
+      "backgroundColor": "#0a151c"
+    },
+    {
       "layout": {
         "ftv": {
           "leftMargin": 1220,
           "topMargin": 138,
           "rightMargin": 0,
           "height": 390,
-          "width":700
+          "width": 700
         }
       },
       "type": "image",
@@ -212,7 +213,8 @@
       "textColor": "#ffffff",
       "fontWeight": "Semibold",
       "key": "showDescriptionText"
-    },{
+    },
+    {
       "id": "bd769581-5e30-4d46-a422-bc962c31d3bd",
       "settings": {
         "loop": true,
@@ -233,61 +235,76 @@
           "padding": 0,
           "leftMargin": 0,
           "rightMargin": 0,
-          "height": 450
+          "height": 270
         }
       },
-      "components": [{
-        "layout": {
-          "ftv": {
-            "fontSize": 18
-          }
-        },
-        "fontFamily": "OpenSans",
-        "textAlignment": "left",
-        "type": "label",
-        "textColor": "#008EE0",
-        "fontWeight": "Semibold",
-        "key": "trayTitle"
-      }, {
-        "layout": {
-          "ftv": {
-            "width": 260,
-            "height": 430
-          }
-        },
-        "trayClickAction": "lectureDetailPage",
-        "components": [{
+      "components": [
+        {
           "layout": {
             "ftv": {
-              "padding": 6,
-              "topMargin": 0,
-              "width": 260,
-              "height": 380
-            }
-          },
-          "type": "image",
-          "key": "thumbnailImage"
-        }, {
-          "layout": {
-            "ftv": {
-              "leftMargin": 0,
-              "topMargin": 385,
-              "rightMargin": 0,
-              "fontSize": 11,
-              "height": 40
+              "fontSize": 18
             }
           },
           "fontFamily": "OpenSans",
           "textAlignment": "left",
           "type": "label",
-          "textColor": "#ffffff",
+          "textColor": "#008EE0",
           "fontWeight": "Semibold",
-          "key": "thumbnailTitle"
+          "key": "trayTitle"
+        },{
+          "layout": {
+            "ftv": {
+              "leftMargin": 0,
+              "topMargin": 60,
+              "rightMargin": 4.8,
+              "height": 2
+            }
+          },
+          "backgroundColor": "#808080",
+          "type": "separatorView"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "width": 260,
+              "height": 270
+            }
+          },
+          "trayClickAction": "watchVideo",
+          "components": [
+           {
+              "layout": {
+                "ftv": {
+                  "padding": 6,
+                  "topMargin": 20,
+                  "width": 255,
+                  "height": 143
+                }
+              },
+              "type": "image",
+              "key": "thumbnailImage"
+            },
+            {
+              "layout": {
+                "ftv": {
+                  "leftMargin": 0,
+                  "topMargin": 167,
+                  "rightMargin": 0,
+                  "fontSize": 12,
+                  "height": 40
+                }
+              },
+              "fontFamily": "OpenSans",
+              "textAlignment": "left",
+              "type": "label",
+              "textColor": "#ffffff",
+              "fontWeight": "Semibold",
+              "key": "thumbnailTitle"
+            }
+          ],
+          "type": "collectionGrid",
+          "key": "collectionGrid"
         }
-        ],
-        "type": "collectionGrid",
-        "key": "collectionGrid"
-      }
       ]
     }
   ]

@@ -1,6 +1,7 @@
 package com.viewlift.tv.views.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -106,6 +107,11 @@ public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
         public void onBindViewHolder(SwitchSeasonsViewHolder holder, int position) {
             holder.item.setText("Season " + (position + 1));
             holder.item.setOnClickListener(v -> {
+                Intent updateSeasonIntent =
+                        new Intent(AppCMSPresenter.SWITCH_SEASON_ACTION);
+                updateSeasonIntent.putExtra(appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_selected_season_key),
+                        position);
+                appCMSPresenter.getCurrentActivity().sendBroadcast(updateSeasonIntent);
                 SwitchSeasonsDialogFragment.this.dismiss();
             });
         }

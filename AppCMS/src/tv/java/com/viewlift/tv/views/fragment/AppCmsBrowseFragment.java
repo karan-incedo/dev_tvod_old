@@ -213,7 +213,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                    RowPresenter.ViewHolder rowViewHolder, Row row) {
-            if(appCMSPresenter.isFullScreenVisible){
+            if(AppCMSPresenter.isFullScreenVisible){
                 return;
             }
 
