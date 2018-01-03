@@ -607,6 +607,14 @@ public class ViewCreator {
 
                     boolean shouldHideComponent;
 
+                    String viewType = module.getView();
+
+                    AppCMSUIKeyType parentViewType = jsonValueKeyMap.get(viewType);
+
+                    if (parentViewType == null) {
+                        parentViewType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                    }
+
                     if (moduleAPI != null) {
 
                         updateUserHistory(appCMSPresenter,
@@ -855,7 +863,7 @@ public class ViewCreator {
                                         }
 
                                         List<String> filmIds = new ArrayList<>();
-                                        if (moduleType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                                        if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
                                                 moduleAPI.getContentData() != null &&
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0) != null &&
@@ -1902,6 +1910,12 @@ public class ViewCreator {
             componentViewResult.useMarginsAsPercentagesOverride = false;
         }
 
+        AppCMSUIKeyType parentViewType = jsonValueKeyMap.get(viewType);
+
+        if (parentViewType == null) {
+            moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
         int tintColor = Color.parseColor(getColor(context,
                 appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
 
@@ -2054,8 +2068,6 @@ public class ViewCreator {
                                     .build());
                         }
                     } else {
-                        AppCMSUIKeyType parentViewType = jsonValueKeyMap.get(viewType);
-
                         if (parentViewType == AppCMSUIKeyType.PAGE_GRID_MODULE_KEY) {
                             int numCols = 1;
                             if (settings != null && settings.getColumns() != null) {
@@ -2474,7 +2486,7 @@ public class ViewCreator {
 
                         List<String> filmIds = new ArrayList<>();
 
-                        if (moduleType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
+                        if (parentViewType == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY &&
                                 moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
@@ -4522,7 +4534,9 @@ public class ViewCreator {
                                     UpdateImageIconAction.this.imageButton.setImageResource(
                                             R.drawable.remove_from_watchlist);
                                     UpdateImageIconAction.this.imageButton.setOnClickListener(removeClickListener);
-                                }, true);
+                                },
+                                true,
+                                UpdateImageIconAction.this.filmIds.indexOf(filmId) == UpdateImageIconAction.this.filmIds.size() - 1);
                     }
                 } else {
                     appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
@@ -4540,7 +4554,9 @@ public class ViewCreator {
                                 UpdateImageIconAction.this.imageButton.setImageResource(
                                         R.drawable.add_to_watchlist);
                                 UpdateImageIconAction.this.imageButton.setOnClickListener(addClickListener);
-                            }, false);
+                            },
+                            false,
+                            UpdateImageIconAction.this.filmIds.indexOf(filmId) == UpdateImageIconAction.this.filmIds.size() - 1);
                 }
             };
         }

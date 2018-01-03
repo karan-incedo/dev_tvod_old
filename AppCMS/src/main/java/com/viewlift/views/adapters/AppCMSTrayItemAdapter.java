@@ -944,7 +944,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         if (adapterData.size() == 0) {
                             sendEvent(hideRemoveAllButtonEvent);
                         }
-                    }, false);
+                    },
+                    false,
+                    true);
         }
     }
 

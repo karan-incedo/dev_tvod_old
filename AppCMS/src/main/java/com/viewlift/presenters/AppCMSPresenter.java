@@ -587,7 +587,9 @@ public class AppCMSPresenter {
                             stopPageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                             currentActivity.sendBroadcast(stopPageLoadingActionIntent);
                             Toast.makeText(currentContext, "Updated Successfully :", Toast.LENGTH_LONG);
-                        }, isAddedOrNot);
+                        },
+                                isAddedOrNot,
+                                true);
                     } else {
                         if (isAppSVOD() && isUserLoggedIn()) {
                             showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED, null);
@@ -3004,7 +3006,9 @@ public class AppCMSPresenter {
     }
 
     public void editWatchlist(final String filmId,
-                              final Action1<AppCMSAddToWatchlistResult> resultAction1, boolean add) {
+                              final Action1<AppCMSAddToWatchlistResult> resultAction1,
+                              boolean add,
+                              boolean showToast) {
         if (!isNetworkConnected()) {
             if (!isUserSubscribed()) {
                 showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
@@ -3052,10 +3056,12 @@ public class AppCMSPresenter {
                             Observable.just(addToWatchlistResult)
                                     .onErrorResumeNext(throwable -> Observable.empty())
                                     .subscribe(resultAction1);
-                            if (add) {
-                                displayCustomToast("Added to Watchlist");
-                            } else {
-                                displayCustomToast("Removed from Watchlist");
+                            if (showToast) {
+                                if (add) {
+                                    displayCustomToast("Added to Watchlist");
+                                } else {
+                                    displayCustomToast("Removed from Watchlist");
+                                }
                             }
                             populateFilmsInUserWatchlist();
                         } catch (Exception e) {
