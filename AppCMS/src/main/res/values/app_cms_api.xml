@@ -404,6 +404,7 @@
     <string name="app_cms_toggle_switch_type">toggleSwitch</string>
     <string name="app_cms_autoplay_toggle_switch_key">autoplayToggleSwitch</string>
     <string name="app_cms_closed_caption_toggle_switch_key">closedCaptionToggleSwitch</string>
+    <string name="app_cms_cellular_data_toggle_switch_key">cellularDataToggle</string>
     <string name="app_cms_logout_button_key">logout button</string>
     <string name="app_cms_title_label">titleLabel</string>
     <string name="app_cms_description_label">descriptionLabel</string>

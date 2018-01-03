@@ -7614,6 +7614,7 @@ public class AppCMSPresenter {
                 case DOWNLOAD_VIA_MOBILE_DISABLED:
                     title = currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_title);
                     message = optionalMessage;
+                    break;
 
                 default:
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);

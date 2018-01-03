@@ -1249,26 +1249,18 @@ public class ViewCreator {
                                                 ((Switch) view).setChecked(appCMSPresenter
                                                         .getUserDownloadLocationPref());
                                                 if (appCMSPresenter.isExternalStorageAvailable()) {
-                                                    componentViewResult.componentView.setEnabled(true);
+                                                    view.setEnabled(true);
                                                     appCMSPresenter.setUserDownloadLocationPref(true);
                                                 } else {
-                                                    componentViewResult.componentView.setEnabled(false);
-                                                    ((Switch) componentViewResult.componentView).setChecked(false);
+                                                    view.setEnabled(false);
+                                                    ((Switch) view).setChecked(false);
                                                     appCMSPresenter.setUserDownloadLocationPref(false);
                                                 }
                                                 break;
 
                                             case PAGE_DOWNLOAD_VIA_CELLULAR_NETWORK_KEY:
-                                                ((Switch) view).setChecked(appCMSPresenter
-                                                        .getDownloadOverCellularEnabled());
-                                                if (appCMSPresenter.isExternalStorageAvailable()) {
-                                                    componentViewResult.componentView.setEnabled(true);
-                                                    appCMSPresenter.setDownloadOverCellularEnabled(true);
-                                                } else {
-                                                    componentViewResult.componentView.setEnabled(false);
-                                                    ((Switch) componentViewResult.componentView).setChecked(false);
-                                                    appCMSPresenter.setDownloadOverCellularEnabled(false);
-                                                }
+                                                componentViewResult.componentView.setEnabled(true);
+                                                ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getDownloadOverCellularEnabled());
                                                 break;
 
                                             default:
@@ -4145,6 +4137,27 @@ public class ViewCreator {
                         componentViewResult.componentView.setVisibility(View.GONE);
                     }
                 }
+
+                if (componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_VIA_CELLULAR_NETWORK_KEY) {
+                    if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
+                            appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
+                        ((Switch) componentViewResult.componentView)
+                                .setOnCheckedChangeListener((buttonView, isChecked) -> {
+                                    if (isChecked) {
+                                        appCMSPresenter.setDownloadOverCellularEnabled(true);
+                                    } else {
+                                        appCMSPresenter.setDownloadOverCellularEnabled(false);
+                                    }
+                                });
+
+                        ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter
+                                .getDownloadOverCellularEnabled());
+                        componentViewResult.componentView.setEnabled(true);
+                        ((Switch) componentViewResult.componentView).setChecked(appCMSPresenter.getDownloadOverCellularEnabled());
+                    }
+                }
+
+
                 break;
 
             default:

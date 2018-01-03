@@ -479,16 +479,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (intent != null &&
-                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) != null &&
-                        !intent.getStringExtra(getString(R.string.app_cms_package_name_key)).equals(getPackageName())) {
-                    return;
-                }
-                if (intent == null ||
-                        intent.getStringExtra(getString(R.string.app_cms_package_name_key)) == null) {
-                    return;
-                }
-
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 boolean isConnected = activeNetwork != null &&
                         activeNetwork.isConnectedOrConnecting();
@@ -683,6 +673,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
         registerReceiver(processDeeplinkReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
+        registerReceiver(networkConnectedReceiver,
+                new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         resumeInternalEvents = false;
 
@@ -1041,8 +1033,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         resume();
 
         try {
-            registerReceiver(networkConnectedReceiver,
-                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
             registerReceiver(presenterCloseActionReceiver,
                     new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
             registerReceiver(enterFullScreenReceiver,
@@ -1180,7 +1170,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.cancelCustomToast();
 
         try {
-            unregisterReceiver(networkConnectedReceiver);
             unregisterReceiver(presenterCloseActionReceiver);
             unregisterReceiver(enterFullScreenReceiver);
             unregisterReceiver(exitFullScreenReceiver);
@@ -1264,6 +1253,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(notifyUpdateListsReceiver);
         unregisterReceiver(refreshPageDataReceiver);
         unregisterReceiver(processDeeplinkReceiver);
+        unregisterReceiver(networkConnectedReceiver);
 
         if (inAppBillingServiceConn != null) {
             try {
