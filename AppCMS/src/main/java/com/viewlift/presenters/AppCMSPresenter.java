@@ -14,7 +14,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.database.StaleDataException;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -58,10 +57,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -205,7 +202,6 @@ import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AppCMSUpgradeActivity;
 import com.viewlift.views.activity.AutoplayActivity;
-import com.viewlift.views.adapters.AppCMSBaseAdapter;
 import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
@@ -230,7 +226,6 @@ import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
 import org.threeten.bp.ZoneId;
 import org.threeten.bp.ZonedDateTime;
-import org.threeten.bp.format.DateTimeFormatter;
 import org.threeten.bp.temporal.ChronoUnit;
 
 import java.io.BufferedReader;
@@ -371,7 +366,7 @@ public class AppCMSPresenter {
     private static final String SUBSCRIPTION_STATUS = "subscription_status_pref_name";
     private static final String PREVIEW_LIVE_STATUS = "live_preview_status_pref_name";
     private static final String PREVIEW_LIVE_TIMER_VALUE = "live_preview_timer_pref_name";
-	private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
+    private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String FLOODLIGHT_STATUS_PREF_NAME = "floodlight_status_pref_key";
@@ -387,12 +382,12 @@ public class AppCMSPresenter {
 
     private static final String SUBSCRIPTION_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC+00:00");
-
+    public static FullPlayerView relativeLayoutFull;
+    public static boolean isFullScreenVisible;
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private static int PAGE_API_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
-
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
@@ -411,14 +406,12 @@ public class AppCMSPresenter {
     private final String FIREBASE_PLAN_NAME = "item_name";
     private final String FIREBASE_CURRENCY_NAME = "currency";
     private final String FIREBASE_VALUE = "value";
-
     private final String FIREBASE_TRANSACTION_ID = "transaction_id";
     private final String FIREBASE_ADD_CART = "add_to_cart";
     private final String FIREBASE_ECOMMERCE_PURCHASE = "ecommerce_purchase";
     private final String FIREBASE_CHANGE_SUBSCRIPTION = "change_subscription";
     private final String FIREBASE_CANCEL_SUBSCRIPTION = "cancel_subscription";
     private final String DOWNLOAD_UI_ID = "download_page_id_pref";
-
     private final Gson gson;
     private final AppCMSMainUICall appCMSMainUICall;
     private final AppCMSAndroidUICall appCMSAndroidUICall;
@@ -432,33 +425,27 @@ public class AppCMSPresenter {
     private final AppCMSGoogleLoginCall appCMSGoogleLoginCall;
     private final AppCMSUserIdentityCall appCMSUserIdentityCall;
     private final GoogleRefreshTokenCall googleRefreshTokenCall;
-
+    //private final AppCMSCCAvenueCall appCMSCCAvenueCall;
     //private final GoogleCancelSubscriptionCall googleCancelSubscriptionCall;
     private final String FIREBASE_SCREEN_SIGN_OUT = "sign_out";
     private final String FIREBASE_SCREEN_LOG_OUT = "log_out";
-    //private final AppCMSCCAvenueCall appCMSCCAvenueCall;
-
     private final AppCMSUpdateWatchHistoryCall appCMSUpdateWatchHistoryCall;
     private final Map<String, AppCMSUIKeyType> jsonValueKeyMap;
     private final Map<String, String> pageNameToActionMap;
     private final Map<String, AppCMSPageUI> actionToPageMap;
-
     private final Map<String, AppCMSActionType> actionToActionTypeMap;
     private final AppCMSWatchlistCall appCMSWatchlistCall;
     private final AppCMSHistoryCall appCMSHistoryCall;
     private final AppCMSUserDownloadVideoStatusCall appCMSUserDownloadVideoStatusCall;
     private final AppCMSBeaconCall appCMSBeaconCall;
-
     private final AppCMSRestorePurchaseCall appCMSRestorePurchaseCall;
     private final AppCMSAndroidModuleCall appCMSAndroidModuleCall;
     private final AppCMSSignedURLCall appCMSSignedURLCall;
-
     private final AppCMSUserVideoStatusCall appCMSUserVideoStatusCall;
     private final AppCMSAddToWatchlistCall appCMSAddToWatchlistCall;
     private final AppCMSDeleteHistoryCall appCMSDeleteHistoryCall;
     private final AppCMSSubscriptionPlanCall appCMSSubscriptionPlanCall;
     private final AppCMSAnonymousAuthTokenCall appCMSAnonymousAuthTokenCall;
-
     private final String[] physicalPaths = {
             "/storage/sdcard0", "/storage/sdcard1", // Motorola Xoom
             "/storage/extsdcard", // Samsung SGS3
@@ -493,8 +480,11 @@ public class AppCMSPresenter {
     public CustomVideoPlayerView videoPlayerView = null;
     public FrameLayout.LayoutParams videoPlayerViewLP = null;
     public ViewGroup videoPlayerViewParent = null;
+    public boolean isconfig = false;
+    public boolean isAppBackground = false;
     MiniPlayerView relativeLayoutPIP;
-    public static FullPlayerView relativeLayoutFull;
+    Boolean isMoreOptionsAvailable = false;
+    String loginPageUserName, loginPagePassword;
     private boolean isRenewable;
     private String FIREBASE_EVENT_LOGIN_SCREEN = "Login Screen";
     private String serverClientId;
@@ -528,10 +518,8 @@ public class AppCMSPresenter {
     private MetaPage subscriptionPage;
     private MetaPage historyPage;
     private MetaPage watchlistPage;
-
     private MetaPage privacyPolicyPage;
     private MetaPage tosPage;
-
     private PlatformType platformType;
     private TemplateType templateType = TemplateType.ENTERTAINMENT;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
@@ -587,15 +575,6 @@ public class AppCMSPresenter {
     private Action0 afterLoginAction;
     private boolean shouldLaunchLoginAction;
     private Map<String, ContentDatum> userHistoryData;
-    private String cachedAPIUserToken;
-    private boolean usedCachedAPI;
-    public boolean isconfig = false;
-    public boolean isAppBackground = false;
-    private HashMap<String, CustomVideoPlayerView> playerViewCache;
-    private HashMap<String, CustomWebView> webViewCache;
-    private AppCMSWatchlistResult filmsInUserWatchList;
-    private List<String> temporaryWatchlist;
-
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -655,26 +634,38 @@ public class AppCMSPresenter {
 
                 }
             };
-
-
+    private String cachedAPIUserToken;
+    private boolean usedCachedAPI;
+    private HashMap<String, CustomVideoPlayerView> playerViewCache;
+    private HashMap<String, CustomWebView> webViewCache;
+    private AppCMSWatchlistResult filmsInUserWatchList;
+    private List<String> temporaryWatchlist;
     private Typeface regularFontFace;
     private Typeface boldTypeFace;
     private Typeface semiBoldTypeFace;
     private Typeface extraBoldTypeFace;
     private long mLastClickTime = 0;
     private boolean showNetworkConnectivity;
-
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
+    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
+        @Override
+        public void handleReport(Report report) {
 
-    public AppCMSAndroidUI getAppCMSAndroid() {
-        return appCMSAndroid;
-    }
+            if (!Reports.STATUS_SOURCE_PLAYER.equals(report.getString(Reports.FIELD_STATUS_SOURCE))) {
+                return;
+            }
 
-    public void setAppCMSAndroid(AppCMSAndroidUI appCMSAndroid) {
-        this.appCMSAndroid = appCMSAndroid;
-    }
+            String eventId = report.getString(Reports.FIELD_STATUS_EVENT_ID, "unknown");
+            String msg = report.getString(Reports.FIELD_STATUS_MESSAGE, "unknown status");
+            int code = report.getInt(Reports.FIELD_STATUS_CODE, -1);
+
+            Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
+        }
+    };
+    private LruCache<String, Object> tvPlayerViewCache;
+    private boolean isTeamPAgeVisible = false;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -840,6 +831,29 @@ public class AppCMSPresenter {
             return null;
         };
         passwordEditText.setFilters(new InputFilter[]{filter});
+    }
+
+    public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeMilliSeconds);
+        return formatter.format(calendar.getTime());
+    }
+
+    public static String getColor(Context context, String color) {
+        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
+            return context.getString(R.string.color_hash_prefix) + color;
+        }
+        return color;
+    }
+
+    public AppCMSAndroidUI getAppCMSAndroid() {
+        return appCMSAndroid;
+    }
+
+    public void setAppCMSAndroid(AppCMSAndroidUI appCMSAndroid) {
+        this.appCMSAndroid = appCMSAndroid;
     }
 
     public boolean shouldShowNetworkContectivity() {
@@ -1283,14 +1297,14 @@ public class AppCMSPresenter {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
             if (contentDatum != null && contentDatum.getGist() != null &&
                     contentDatum.getGist().getId() != null) {
-            getUserVideoStatus(contentDatum.getGist().getId(), userVideoStatusResponse -> {
+                getUserVideoStatus(contentDatum.getGist().getId(), userVideoStatusResponse -> {
 
-                    if(userVideoStatusResponse == null)
-                        return;
+                if(userVideoStatusResponse != null) {
                     currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                     AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(), contentDatum);
                     appCMSTrayMenuDialogFragment.show(currentActivity.getFragmentManager(), "AppCMSTrayMenuDialogFragment");
                     appCMSTrayMenuDialogFragment.setMoreClickListener(trayMenuClickListener);
+                }
                 });
             }
 
@@ -1521,7 +1535,7 @@ public class AppCMSPresenter {
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                         currentActivity.startActivity(playVideoIntent);
 
-                        sendCloseOthersAction(null, true, false);
+                        //sendCloseOthersAction(null, true, false);
                     } else {
                         entitlementPendingVideoData = new EntitlementPendingVideoData();
                         entitlementPendingVideoData.action = action;
@@ -4321,7 +4335,7 @@ public class AppCMSPresenter {
                                     for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
                                         if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
                                                 jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
-                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03) ) {
+                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03)) {
                                             pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
                                                     moduleList.getType());
                                             break;
@@ -5470,7 +5484,6 @@ public class AppCMSPresenter {
         return getFloodLightStatus();
     }
 
-
     private String getClosedCaptionsPath(String fileName) {
         return currentActivity.getFilesDir().getAbsolutePath() + File.separator
                 + "closedCaptions" + File.separator + fileName + MEDIA_SUFFIX_SRT;
@@ -5860,7 +5873,6 @@ public class AppCMSPresenter {
         }
     }
 
-
     public boolean setPreviewStatus(boolean previewStatus) {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(SUBSCRIPTION_STATUS, 0);
@@ -5876,7 +5888,6 @@ public class AppCMSPresenter {
         }
         return false;
     }
-
 
     public boolean setMiniPLayerVisibility(boolean previewStatus) {
         if (currentContext != null) {
@@ -6905,7 +6916,7 @@ public class AppCMSPresenter {
     }
 
     public void showMoreDialog(String title, String fullText) {
-        if (platformType == PlatformType.ANDROID ) {
+        if (platformType == PlatformType.ANDROID) {
             if (currentActivity != null &&
                     currentActivity instanceof AppCompatActivity &&
                     isAdditionalFragmentViewAvailable()) {
@@ -8566,7 +8577,9 @@ public class AppCMSPresenter {
         } else {
             setIsUserSubscribed(isUserSubscribed);
         }
-
+        if (loginFromNavPage) {
+            entitlementPendingVideoData = null;
+        }
         //Log.d(TAG, "checkForExistingSubscription()");
         checkForExistingSubscription(false);
 
@@ -9984,7 +9997,6 @@ public class AppCMSPresenter {
         return -1;
     }
 
-
     private int getPrivacyPolicyPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
@@ -9994,7 +10006,6 @@ public class AppCMSPresenter {
         }
         return -1;
     }
-
 
     private int getTOSPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
@@ -10751,7 +10762,6 @@ public class AppCMSPresenter {
         return result;
     }
 
-
     @SuppressWarnings("unused")
     private void LaunchTVVideoPlayerActivity(String pagePath, String filmTitle, String[] extraData,
                                              boolean closeLauncher, ContentDatum contentDatum,
@@ -11271,7 +11281,6 @@ public class AppCMSPresenter {
         currentActivity.sendBroadcast(args);
     }
 
-
     public void setEntitlementPendingVideoData(EntitlementPendingVideoData entitlementPendingVideoData) {
         this.entitlementPendingVideoData = entitlementPendingVideoData;
     }
@@ -11426,22 +11435,6 @@ public class AppCMSPresenter {
         mKit.startKiswePlayerActivity(currentActivity, eventId);
     }
 
-    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
-        @Override
-        public void handleReport(Report report) {
-
-            if (!Reports.STATUS_SOURCE_PLAYER.equals(report.getString(Reports.FIELD_STATUS_SOURCE))) {
-                return;
-            }
-
-            String eventId = report.getString(Reports.FIELD_STATUS_EVENT_ID, "unknown");
-            String msg = report.getString(Reports.FIELD_STATUS_MESSAGE, "unknown status");
-            int code = report.getInt(Reports.FIELD_STATUS_CODE, -1);
-
-            Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
-        }
-    };
-
     public void showEmptySearchToast() {
         showToast(getCurrentActivity().getResources().getString(R.string.search_blank_toast_msg), Toast.LENGTH_SHORT);
     }
@@ -11455,13 +11448,451 @@ public class AppCMSPresenter {
         this.shouldLaunchLoginAction = false;
     }
 
+    public MetaPage getPrivacyPolicyPage() {
+        return privacyPolicyPage;
+    }
+
+    public MetaPage getTosPage() {
+        return tosPage;
+    }
+
+    public LruCache<String, Object> getPlayerLruCache() {
+        if (tvPlayerViewCache == null) {
+            int Player_lru_cache_size = 5;
+            tvPlayerViewCache = new LruCache<>(Player_lru_cache_size);
+        }
+        return tvPlayerViewCache;
+    }
+
+    public String getAdsUrl(String pagePath) {
+
+        String videoTag = null;
+        if (appCMSAndroid != null
+                && appCMSAndroid.getAdvertising() != null
+                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
+            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
+        }
+        if (videoTag == null) {
+            return null;
+        }
+
+        Date now = new Date();
+
+        return currentActivity.getString(R.string.app_cms_ads_api_url,
+                videoTag,
+                getPermalinkCompletePath(pagePath),
+                now.getTime(),
+                appCMSMain.getSite());
+    }
+
+    public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView) {
+        this.videoPlayerView = customVideoPlayerView;
+    }
+
+    public void showPopupWindowPlayer(View scrollView) {
+        if (videoPlayerView != null) {
+            // if preview frame need to show than mini player will be true and miniplayer need to be hide
+            if (videoPlayerView.hideMiniPlayer) {
+                videoPlayerView.pausePlayer();
+
+                dismissPopupWindowPlayer(false);
+                return;
+            }
+            if (getIsTeamPageVisible()) {
+                return;
+            }
+
+            if (!getMiniPLayerVisibility()) {
+                videoPlayerView.pausePlayer();
+                return;
+            }
+
+            if (relativeLayoutPIP == null) {
+                relativeLayoutPIP = new MiniPlayerView(currentActivity, this, scrollView);
+            } else {
+                relativeLayoutPIP.init();
+            }
+            relativeLayoutPIP.setVisibility(View.VISIBLE);
+
+            if (relativeLayoutPIP.getParent() == null) {
+                ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+            }
+            pipPlayerVisible = true;
+
+        }
+    }
+
+    public void dismissPopupWindowPlayer(boolean releasePlayer) {
+
+        if (relativeLayoutPIP != null && currentActivity != null) {
+            relativeLayoutPIP.removeAllViews();
+            if (videoPlayerView != null) {
+                videoPlayerView.enableController();
+                if (videoPlayerView.getParent() != null) {
+                    ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
+                }
+
+                videoPlayerViewParent.addView(videoPlayerView);
+                relativeLayoutPIP.removeView(videoPlayerView);
+                pipPlayerVisible = false;
+            }
+            relativeLayoutPIP.setVisibility(View.GONE);
+            RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+            if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
+                relativeLayoutPIP.disposeRelativeLayoutEvent();
+            }
+            rootView.removeView(relativeLayoutPIP);
+            relativeLayoutPIP = null;
+        }
+
+        pipPlayerVisible = false;
+    }
+
+    public void showFullScreenPlayer() {
+        if (videoPlayerViewParent == null) {
+            videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
+        }
+        if (videoPlayerView != null && videoPlayerView.getParent() != null) {
+            relativeLayoutFull = new FullPlayerView(currentActivity, this);
+            relativeLayoutFull.setVisibility(View.VISIBLE);
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
+            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
+
+            isFullScreenVisible = true;
+            restrictLandscapeOnly();
+            new Handler().postDelayed(() -> {
+                unrestrictPortraitOnly();
+            }, 3000);
+            if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
+                ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
+            }
+        }
+
+    }
+
+    public void exitFullScreenPlayer() {
+        try {
+            if (relativeLayoutFull != null) {
+//                relativeLayoutFull.removeAllViews();
+                if (videoPlayerViewParent != null) {
+                    relativeLayoutFull.removeView(videoPlayerView);
+                    videoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
+                    videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
+                    videoPlayerViewParent.addView(videoPlayerView);
+                }
+
+//                relativeLayoutFull.setVisibility(View.GONE);
+//                relativeLayoutFull.removeAllViews();
+
+                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
+                rootView.postDelayed(() -> {
+                    try {
+                        rootView.removeView(relativeLayoutFull);
+                        relativeLayoutFull = null;
+                    } catch (Exception e) {
+
+                    }
+                }, 50);
+
+            }
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        if (relativeLayoutFull != null) {
+            relativeLayoutFull.setVisibility(View.GONE);
+        }
+        restrictPortraitOnly();
+
+
+        new Handler().postDelayed(() -> {
+            if (currentActivity != null && isAutoRotate() &&
+                    !AppCMSPresenter.isFullScreenVisible &&
+                    currentActivity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
+                    currentActivity.findViewById(R.id.video_player_id) != null) {
+                unrestrictPortraitOnly();
+            } else if (currentActivity != null && !BaseView.isTablet(currentActivity) && currentActivity.findViewById(R.id.video_player_id) == null) {
+                restrictPortraitOnly();
+            } else if (BaseView.isTablet(currentActivity)) {
+                unrestrictPortraitOnly();
+            }
+        }, 100);
+
+        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
+            ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();
+        }
+        isFullScreenVisible = false;
+    }
+
+    public boolean isAutoRotate() {
+        if (currentActivity != null) {
+            return (android.provider.Settings.System.getInt(currentActivity.getContentResolver(), android.provider.Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
+        }
+        return false;
+    }
+
+    public ModuleList getTabBarUIModule() {
+        AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
+        ModuleList footerModule = null;
+        if (appCmsHomePage != null) {
+            ArrayList<ModuleList> moduleList = appCmsHomePage.getModuleList();
+            for (int i = moduleList.size() - 1; i >= 0; i--) {
+                if (moduleList.get(i).getType().contains("AC Footer 01")) {
+                    footerModule = moduleList.get(i);
+                    break;
+                }
+            }
+        }
+        return footerModule;
+    }
+
+    public ModuleList getTabBarUIFooterModule() {
+        /*FIX for MSEAN-1324*/
+        ModuleList footerModule = null;
+        if (getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key)) != null) {
+            footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
+        }
+        return footerModule;
+    }
+
+    public ModuleList getModuleListComponent(String moduleId) {
+        ModuleList moduleList = null;
+        /*FIX for MSEAN-1324*/
+        if (appCMSAndroidModules != null && appCMSAndroidModules.getModuleListMap() != null) {
+            moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
+        }
+        return moduleList;
+    }
+
+    public ModuleList getModuleListByName(List<ModuleList> listModule, String idOrName) {
+        int mosudlePosition = 0;
+        for (ModuleList moduleList : listModule) {
+            if (idOrName.equalsIgnoreCase(moduleList.getType()) || idOrName.equalsIgnoreCase(moduleList.getId())) {
+                moduleList.setModulePosition(mosudlePosition);
+                return moduleList;
+            }
+            mosudlePosition++;
+        }
+        return null;
+    }
+
+    public Module getModuleById(List<Module> listModule, String idOrName) {
+        for (Module moduleList : listModule) {
+            if (idOrName.equalsIgnoreCase(moduleList.getId())) {
+                return moduleList;
+
+            }
+        }
+        return null;
+    }
+
+    public void setVideoPlayerViewCache(String key, CustomVideoPlayerView videoPlayerView) {
+        if (playerViewCache == null) {
+            playerViewCache = new HashMap<String, CustomVideoPlayerView>();
+        }
+        playerViewCache.put(key, videoPlayerView);
+    }
+
+    public void clearVideoPlayerViewCache() {
+        if (playerViewCache != null) {
+            playerViewCache.clear();
+        }
+    }
+
+    public CustomVideoPlayerView getVideoPlayerViewCache(String key) {
+        if (playerViewCache == null) {
+            playerViewCache = new HashMap<String, CustomVideoPlayerView>();
+        }
+        if (playerViewCache.get(key) != null) {
+            return playerViewCache.get(key);
+        }
+        return null;
+    }
+
+    public void setWebViewCache(String key, CustomWebView webView) {
+        if (webViewCache == null) {
+            webViewCache = new HashMap<String, CustomWebView>();
+        }
+        webViewCache.put(key, webView);
+    }
+
+    public void clearWebViewCache() {
+        if (webViewCache != null) {
+            webViewCache.clear();
+        }
+    }
+
+    public CustomWebView getWebViewCache(String key) {
+        if (webViewCache == null) {
+            webViewCache = new HashMap<String, CustomWebView>();
+        }
+        if (webViewCache.get(key) != null) {
+            return webViewCache.get(key);
+        }
+        return null;
+    }
+
+    public void launchFullScreenStandalonePlayer(String videoId) {
+        refreshVideoData(videoId, new Action1<ContentDatum>() {
+            @Override
+            public void call(ContentDatum contentDatum) {
+                if (/*moduleAPI.getContentData() != null &&
+                                            !moduleAPI.getContentData().isEmpty() &&*/
+                        contentDatum != null &&
+                                contentDatum.getContentDetails() != null) {
+
+                    List<String> relatedVideoIds = null;
+                    if (contentDatum.getContentDetails() != null &&
+                            contentDatum.getContentDetails().getRelatedVideoIds() != null) {
+                        relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();
+                    }
+                    int currentPlayingIndex = -1;
+                    if (relatedVideoIds == null) {
+                        currentPlayingIndex = 0;
+                    }
+
+                    launchVideoPlayer(contentDatum,
+                            currentPlayingIndex,
+                            relatedVideoIds,
+                            contentDatum.getGist().getWatchedTime(),
+                            "watchVideo");
+
+                }
+            }
+        });
+    }
+
+    public void setMoreIconAvailable() {
+
+        isMoreOptionsAvailable = true;
+    }
+
+    public Boolean getIsMoreOptionsAvailable() {
+
+        return isMoreOptionsAvailable;
+    }
+
+    public long setCurrentWatchProgress(long runTime, long watchedTime) {
+        long videoPlayTime;
+        if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
+            long playDifference = runTime - watchedTime;
+            long playTimePercentage = ((watchedTime * 100) / runTime);
+
+            // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
+            if (playTimePercentage >= 98 && playDifference <= 30) {
+                videoPlayTime = 0;
+            } else {
+                videoPlayTime = watchedTime;
+            }
+        } else {
+            videoPlayTime = 0;
+        }
+        return videoPlayTime;
+
+    }
+
+    public String getLoginPageUserName() {
+        return loginPageUserName;
+    }
+
+    public void setLoginPageUserName(String loginPageUserName) {
+        this.loginPageUserName = loginPageUserName;
+    }
+
+    public String getLoginPagePassword() {
+        return loginPagePassword;
+    }
+
+    public void setLoginPagePassword(String loginPagePassword) {
+        this.loginPagePassword = loginPagePassword;
+    }
+
+    public String getLastWatchedTime(ContentDatum contentDatum) {
+        long currentTime = System.currentTimeMillis();
+        long lastWatched = contentDatum.getGist().getUpdateDate();
+
+        if (currentTime == 0) {
+            lastWatched = 0;
+        }
+
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(currentTime - lastWatched);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);
+        long hours = TimeUnit.MILLISECONDS.toHours(currentTime - lastWatched);
+        long days = TimeUnit.MILLISECONDS.toDays(currentTime - lastWatched);
+
+        int weeks = (int) ((currentTime - lastWatched) / (1000 * 60 * 60 * 24 * 7));
+        int months = (weeks / 4);
+        int years = months / 12;
+
+        String lastWatchedMessage = "";
+
+        if (years > 0) {
+            if (years > 1) {
+                lastWatchedMessage = years + " years ago";
+            } else {
+                lastWatchedMessage = years + " year ago";
+            }
+        } else if (months > 0 && months < 12) {
+            if (months > 1) {
+                lastWatchedMessage = months + " months ago";
+            } else {
+                lastWatchedMessage = months + " month ago";
+            }
+        } else if (weeks > 0 && weeks < 4) {
+            if (weeks > 1) {
+                lastWatchedMessage = weeks + " weeks ago";
+            } else {
+                lastWatchedMessage = weeks + " week ago";
+            }
+        } else if (days > 0 && days < 6) {
+            if (days > 1) {
+                lastWatchedMessage = days + " days ago";
+            } else {
+                lastWatchedMessage = days + " day ago";
+            }
+        } else if (hours > 0 && hours < 24) {
+            if (hours > 1) {
+                lastWatchedMessage = hours + " hours ago";
+            } else {
+                lastWatchedMessage = hours + " hour ago";
+            }
+        } else if (minutes > 0 && minutes < 60) {
+            if (minutes > 1) {
+                lastWatchedMessage = minutes + " mins ago";
+            } else {
+                lastWatchedMessage = minutes + " min ago";
+            }
+        } else if (seconds < 60) {
+            if (seconds > 3) {
+                lastWatchedMessage = seconds + " secs ago";
+            } else {
+                lastWatchedMessage = "Just now";
+            }
+        }
+
+        return lastWatchedMessage;
+    }
+
+    public Boolean isSportsTemplate() {
+        return currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template");
+    }
+
+    public boolean getIsTeamPageVisible() {
+        return isTeamPAgeVisible;
+    }
+
+    public void setIsTeamPageVisible(boolean isVisible) {
+        isTeamPAgeVisible = isVisible;
+    }
+
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME
     }
 
+
     public enum PlatformType {
         ANDROID, TV
     }
+
 
     public enum TemplateType {
         ENTERTAINMENT, SPORTS
@@ -11531,6 +11962,7 @@ public class AppCMSPresenter {
     private interface OnRunOnUIThread {
         void runOnUiThread(Action0 runOnUiThreadAction);
     }
+
     private static class EntitlementCheckActive implements Action1<UserIdentity> {
         private final Action0 onFailAction;
         private final Action0 onSuccessAction;
@@ -11936,7 +12368,6 @@ public class AppCMSPresenter {
         }
     }
 
-
     public static class SemVer {
         private static final String SEMVER_REGEX = "(\\d+)\\.(\\d+)\\.(\\d+)";
         int major;
@@ -11962,457 +12393,5 @@ public class AppCMSPresenter {
                 }
             }
         }
-    }
-
-    public MetaPage getPrivacyPolicyPage() {
-        return privacyPolicyPage;
-    }
-
-    public MetaPage getTosPage() {
-        return tosPage;
-    }
-
-    private LruCache<String, Object> tvPlayerViewCache;
-
-    public LruCache<String, Object> getPlayerLruCache() {
-        if (tvPlayerViewCache == null) {
-            int Player_lru_cache_size = 5;
-            tvPlayerViewCache = new LruCache<>(Player_lru_cache_size);
-        }
-        return tvPlayerViewCache;
-    }
-
-
-    public String getAdsUrl(String pagePath) {
-
-        String videoTag = null;
-        if (appCMSAndroid != null
-                && appCMSAndroid.getAdvertising() != null
-                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
-            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
-        }
-        if (videoTag == null) {
-            return null;
-        }
-
-        Date now = new Date();
-
-        return currentActivity.getString(R.string.app_cms_ads_api_url,
-                videoTag,
-                getPermalinkCompletePath(pagePath),
-                now.getTime(),
-                appCMSMain.getSite());
-    }
-	
-    public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView) {
-        this.videoPlayerView = customVideoPlayerView;
-    }
-
-    public void showPopupWindowPlayer(View scrollView) {
-
-        // if preview frame need to show than mini player will be true and miniplayer need to be hide
-        if (videoPlayerView != null && videoPlayerView.hideMiniPlayer) {
-            videoPlayerView.pausePlayer();
-
-            dismissPopupWindowPlayer(false);
-            return;
-        }
-
-        if (!getMiniPLayerVisibility()) {
-            videoPlayerView.pausePlayer();
-            return;
-        }
-
-        if (relativeLayoutPIP == null) {
-            relativeLayoutPIP = new MiniPlayerView(currentActivity, this, scrollView);
-        } else {
-            relativeLayoutPIP.init();
-        }
-        relativeLayoutPIP.setVisibility(View.VISIBLE);
-
-        if (relativeLayoutPIP.getParent() == null) {
-            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
-        }
-        pipPlayerVisible = true;
-
-    }
-
-
-    public void dismissPopupWindowPlayer(boolean releasePlayer) {
-
-        if (relativeLayoutPIP != null) {
-            relativeLayoutPIP.removeAllViews();
-            if (videoPlayerView != null) {
-                videoPlayerView.enableController();
-                if (videoPlayerView.getParent() != null) {
-                    ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
-                }
-
-                videoPlayerViewParent.addView(videoPlayerView);
-                relativeLayoutPIP.removeView(videoPlayerView);
-                pipPlayerVisible = false;
-            }
-            relativeLayoutPIP.setVisibility(View.GONE);
-            RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
-            if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
-                relativeLayoutPIP.disposeRelativeLayoutEvent();
-            }
-            rootView.removeView(relativeLayoutPIP);
-            relativeLayoutPIP = null;
-        }
-
-        pipPlayerVisible = false;
-    }
-
-    public static boolean isFullScreenVisible;
-
-    public void showFullScreenPlayer() {
-        if (videoPlayerViewParent == null) {
-            videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
-        }
-        if (videoPlayerView != null && videoPlayerView.getParent() != null) {
-            relativeLayoutFull = new FullPlayerView(currentActivity, this);
-            relativeLayoutFull.setVisibility(View.VISIBLE);
-            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
-            ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
-
-            isFullScreenVisible = true;
-            restrictLandscapeOnly();
-            new Handler().postDelayed(() -> {
-                unrestrictPortraitOnly();
-            }, 3000);
-            if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-                ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
-            }
-        }
-
-    }
-
-    public void exitFullScreenPlayer() {
-        try {
-            if (relativeLayoutFull != null) {
-//                relativeLayoutFull.removeAllViews();
-                if (videoPlayerViewParent != null) {
-                    relativeLayoutFull.removeView(videoPlayerView);
-                    videoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
-                    videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
-                    videoPlayerViewParent.addView(videoPlayerView);
-                }
-
-//                relativeLayoutFull.setVisibility(View.GONE);
-//                relativeLayoutFull.removeAllViews();
-
-                RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
-                rootView.postDelayed(() -> {
-                    try {
-                        rootView.removeView(relativeLayoutFull);
-                        relativeLayoutFull = null;
-                    } catch (Exception e) {
-
-                    }
-                }, 50);
-
-            }
-        } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
-        }
-        if (relativeLayoutFull != null) {
-            relativeLayoutFull.setVisibility(View.GONE);
-        }
-        restrictPortraitOnly();
-
-
-        new Handler().postDelayed(() -> {
-            if (currentActivity != null && isAutoRotate() &&
-                    !AppCMSPresenter.isFullScreenVisible &&
-                    currentActivity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
-                    currentActivity.findViewById(R.id.video_player_id) != null) {
-                unrestrictPortraitOnly();
-            } else if (currentActivity != null && !BaseView.isTablet(currentActivity) && currentActivity.findViewById(R.id.video_player_id) == null) {
-                restrictPortraitOnly();
-            } else if (BaseView.isTablet(currentActivity)) {
-                unrestrictPortraitOnly();
-            }
-        }, 100);
-
-        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-            ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();
-        }
-        isFullScreenVisible = false;
-    }
-
-
-    public boolean isAutoRotate() {
-        if (currentActivity != null) {
-            return (android.provider.Settings.System.getInt(currentActivity.getContentResolver(), android.provider.Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
-        }
-        return false;
-    }
-
-    public ModuleList getTabBarUIModule() {
-        AppCMSPageUI appCmsHomePage = getAppCMSPageUI(homePage.getPageName());
-        ModuleList footerModule = null;
-        if (appCmsHomePage != null) {
-            ArrayList<ModuleList> moduleList = appCmsHomePage.getModuleList();
-            for (int i = moduleList.size() - 1; i >= 0; i--) {
-                if (moduleList.get(i).getType().contains("AC Footer 01")) {
-                    footerModule = moduleList.get(i);
-                    break;
-                }
-            }
-        }
-        return footerModule;
-    }
-
-    public ModuleList getTabBarUIFooterModule() {
-        /*FIX for MSEAN-1324*/
-        ModuleList footerModule = null;
-        if (getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key)) != null) {
-            footerModule = getModuleListComponent(currentActivity.getResources().getString(R.string.app_cms_module_list_footer_key));
-        }
-        return footerModule;
-    }
-
-    public ModuleList getModuleListComponent(String moduleId) {
-        ModuleList moduleList = null;
-        /*FIX for MSEAN-1324*/
-        if (appCMSAndroidModules != null && appCMSAndroidModules.getModuleListMap() != null) {
-            moduleList = appCMSAndroidModules.getModuleListMap().get(moduleId);
-        }
-        return moduleList;
-    }
-
-    public ModuleList getModuleListByName(List<ModuleList> listModule, String idOrName) {
-        int mosudlePosition = 0;
-        for (ModuleList moduleList : listModule) {
-            if (idOrName.equalsIgnoreCase(moduleList.getType()) || idOrName.equalsIgnoreCase(moduleList.getId())) {
-                moduleList.setModulePosition(mosudlePosition);
-                return moduleList;
-            }
-            mosudlePosition++;
-        }
-        return null;
-    }
-
-    public Module getModuleById(List<Module> listModule, String idOrName) {
-        for (Module moduleList : listModule) {
-            if (idOrName.equalsIgnoreCase(moduleList.getId())) {
-                return moduleList;
-
-            }
-        }
-        return null;
-    }
-
-    public void setVideoPlayerViewCache(String key, CustomVideoPlayerView videoPlayerView) {
-        if (playerViewCache == null) {
-            playerViewCache = new HashMap<String, CustomVideoPlayerView>();
-        }
-        playerViewCache.put(key, videoPlayerView);
-    }
-
-    public void clearVideoPlayerViewCache() {
-        if (playerViewCache != null) {
-            playerViewCache.clear();
-        }
-    }
-
-    public CustomVideoPlayerView getVideoPlayerViewCache(String key) {
-        if (playerViewCache == null) {
-            playerViewCache = new HashMap<String, CustomVideoPlayerView>();
-        }
-        if (playerViewCache.get(key) != null) {
-            return playerViewCache.get(key);
-        }
-        return null;
-    }
-
-    public void setWebViewCache(String key, CustomWebView webView) {
-        if (webViewCache == null) {
-            webViewCache = new HashMap<String, CustomWebView>();
-        }
-        webViewCache.put(key, webView);
-    }
-
-    public void clearWebViewCache() {
-        if (webViewCache != null) {
-            webViewCache.clear();
-        }
-    }
-
-    public CustomWebView getWebViewCache(String key) {
-        if (webViewCache == null) {
-            webViewCache = new HashMap<String, CustomWebView>();
-        }
-        if (webViewCache.get(key) != null) {
-            return webViewCache.get(key);
-        }
-        return null;
-    }
-
-
-    public static String getDateFormat(long timeMilliSeconds, String dateFormat) {
-        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
-        // Create a calendar object that will convert the date and time value in milliseconds to date.
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeMilliSeconds);
-        return formatter.format(calendar.getTime());
-    }
-
-
-    public void launchFullScreenStandalonePlayer(String videoId) {
-        refreshVideoData(videoId, new Action1<ContentDatum>() {
-            @Override
-            public void call(ContentDatum contentDatum) {
-                if (/*moduleAPI.getContentData() != null &&
-                                            !moduleAPI.getContentData().isEmpty() &&*/
-                        contentDatum != null &&
-                                contentDatum.getContentDetails() != null) {
-
-                    List<String> relatedVideoIds = null;
-                    if (contentDatum.getContentDetails() != null &&
-                            contentDatum.getContentDetails().getRelatedVideoIds() != null) {
-                        relatedVideoIds = contentDatum.getContentDetails().getRelatedVideoIds();
-                    }
-                    int currentPlayingIndex = -1;
-                    if (relatedVideoIds == null) {
-                        currentPlayingIndex = 0;
-                    }
-
-                    launchVideoPlayer(contentDatum,
-                            currentPlayingIndex,
-                            relatedVideoIds,
-                            contentDatum.getGist().getWatchedTime(),
-                            "watchVideo");
-
-                }
-            }
-        });
-    }
-
-    Boolean isMoreOptionsAvailable = false;
-
-    public void setMoreIconAvailable() {
-
-        isMoreOptionsAvailable = true;
-    }
-
-    public Boolean getIsMoreOptionsAvailable() {
-
-        return isMoreOptionsAvailable;
-    }
-
-    public long setCurrentWatchProgress(long runTime, long watchedTime) {
-        long videoPlayTime;
-        if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
-            long playDifference = runTime - watchedTime;
-            long playTimePercentage = ((watchedTime * 100) / runTime);
-
-            // if video watchtime is greater or equal to 98% of total run time and interval is less than 30 then play from start
-            if (playTimePercentage >= 98 && playDifference <= 30) {
-                videoPlayTime = 0;
-            } else {
-                videoPlayTime = watchedTime;
-            }
-        } else {
-            videoPlayTime = 0;
-        }
-        return videoPlayTime;
-
-    }
-
-    public static String getColor(Context context, String color) {
-        if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
-            return context.getString(R.string.color_hash_prefix) + color;
-        }
-        return color;
-    }
-
-    String loginPageUserName, loginPagePassword;
-
-    public String getLoginPageUserName() {
-        return loginPageUserName;
-    }
-
-    public void setLoginPageUserName(String loginPageUserName) {
-        this.loginPageUserName = loginPageUserName;
-    }
-
-    public String getLoginPagePassword() {
-        return loginPagePassword;
-    }
-
-    public void setLoginPagePassword(String loginPagePassword) {
-        this.loginPagePassword = loginPagePassword;
-    }
-
-    public String getLastWatchedTime(ContentDatum contentDatum) {
-        long currentTime = System.currentTimeMillis();
-        long lastWatched = contentDatum.getGist().getUpdateDate();
-
-        if (currentTime == 0) {
-            lastWatched = 0;
-        }
-
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(currentTime - lastWatched);
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(currentTime - lastWatched);
-        long hours = TimeUnit.MILLISECONDS.toHours(currentTime - lastWatched);
-        long days = TimeUnit.MILLISECONDS.toDays(currentTime - lastWatched);
-
-        int weeks = (int) ((currentTime - lastWatched) / (1000 * 60 * 60 * 24 * 7));
-        int months = (weeks / 4);
-        int years = months / 12;
-
-        String lastWatchedMessage = "";
-
-        if (years > 0) {
-            if (years > 1) {
-                lastWatchedMessage = years + " years ago";
-            } else {
-                lastWatchedMessage = years + " year ago";
-            }
-        } else if (months > 0 && months < 12) {
-            if (months > 1) {
-                lastWatchedMessage = months + " months ago";
-            } else {
-                lastWatchedMessage = months + " month ago";
-            }
-        } else if (weeks > 0 && weeks < 4) {
-            if (weeks > 1) {
-                lastWatchedMessage = weeks + " weeks ago";
-            } else {
-                lastWatchedMessage = weeks + " week ago";
-            }
-        } else if (days > 0 && days < 6) {
-            if (days > 1) {
-                lastWatchedMessage = days + " days ago";
-            } else {
-                lastWatchedMessage = days + " day ago";
-            }
-        } else if (hours > 0 && hours < 24) {
-            if (hours > 1) {
-                lastWatchedMessage = hours + " hours ago";
-            } else {
-                lastWatchedMessage = hours + " hour ago";
-            }
-        } else if (minutes > 0 && minutes < 60) {
-            if (minutes > 1) {
-                lastWatchedMessage = minutes + " mins ago";
-            } else {
-                lastWatchedMessage = minutes + " min ago";
-            }
-        } else if (seconds < 60) {
-            if (seconds > 3) {
-                lastWatchedMessage = seconds + " secs ago";
-            } else {
-                lastWatchedMessage = "Just now";
-            }
-        }
-
-        return lastWatchedMessage;
-    }
-
-    public Boolean isSportsTemplate() {
-        return currentActivity.getString(R.string.app_template_type).equalsIgnoreCase("sports_template");
     }
 }

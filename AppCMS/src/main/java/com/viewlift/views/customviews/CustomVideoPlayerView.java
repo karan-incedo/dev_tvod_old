@@ -754,8 +754,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
     public void showOverlayWhenCastingConnected() {
         if (CastServiceProvider.getInstance((Activity) mContext).isCastingConnected()) {
-
             if (parentView != null) {
+                customMessageView.setText(getResources().getString(R.string.app_cms_touch_to_cast_msg));
                 parentView.setVisibility(VISIBLE);
             }
             pausePlayer();
@@ -769,8 +769,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
         } else {
             if (parentView != null) {
-
-                customMessageView.setText(getResources().getString(R.string.app_cms_touch_to_cast_msg));
                 parentView.setVisibility(GONE);
             }
         }
