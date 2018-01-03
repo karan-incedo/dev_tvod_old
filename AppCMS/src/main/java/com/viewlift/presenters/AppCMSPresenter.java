@@ -7159,7 +7159,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    public void showToast(String message, int messageDuration) {
+    private void showToast(String message, int messageDuration) {
         Toast.makeText(currentActivity, message, messageDuration).show();
     }
 

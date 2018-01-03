@@ -1,5 +1,6 @@
 package com.viewlift.views.customviews;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -46,6 +47,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.exoplayer2.Player;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.casting.CastServiceProvider;
@@ -70,12 +72,12 @@ import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.presenters.VideoPlayerPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
+import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
@@ -102,7 +104,8 @@ import rx.functions.Action1;
 public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private static VideoPlayerView videoPlayerView;
-    private static VideoPlayerPresenter videoPlayerPresenter = new VideoPlayerPresenter();
+    private static AppCMSVideoPageBinder videoPlayerViewBinder;
+    private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
 
@@ -275,17 +278,25 @@ public class ViewCreator {
         if (videoPlayerView != null && videoPlayerContent != null) {
             videoPlayerView.setAppCMSPresenter(appCMSPresenter);
             videoPlayerView.enableController();
-            if (!TextUtils.isEmpty(videoPlayerContent.ccUrl)) {
-                videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
-                videoPlayerView.getPlayerView().getSubtitleView()
-                        .setVisibility(appCMSPresenter.getClosedCaptionPreference()
-                                ? View.VISIBLE
-                                : View.GONE);
+            if (videoPlayerViewBinder != null) {
+                if (!TextUtils.isEmpty(videoPlayerContent.ccUrl)) {
+                    videoPlayerView.setClosedCaptionEnabled(appCMSPresenter.getClosedCaptionPreference());
+                    videoPlayerView.getPlayerView().getSubtitleView()
+                            .setVisibility(appCMSPresenter.getClosedCaptionPreference()
+                                    ? View.VISIBLE
+                                    : View.GONE);
+                }
+                videoPlayerView.setUri(Uri.parse(videoPlayerContent.videoUrl),
+                        !TextUtils.isEmpty(videoPlayerContent.ccUrl) ? Uri.parse(videoPlayerContent.ccUrl) : null);
+                //Log.i(TAG, "Playing video: " + title);
             }
-            videoPlayerView.setUri(Uri.parse(videoPlayerContent.videoUrl),
-                    !TextUtils.isEmpty(videoPlayerContent.ccUrl) ? Uri.parse(videoPlayerContent.ccUrl) : null);
-            //Log.i(TAG, "Playing video: " + title);
             videoPlayerView.setCurrentPosition(videoPlayerContent.videoPlayTime * SECS_TO_MSECS);
+        }
+    }
+
+    public static void applyChromecastButtonToFullScreenPlayer(ImageButton chromecastButton) {
+        if (videoPlayerView != null) {
+            videoPlayerView.setChromecastButton(chromecastButton);
         }
     }
 
@@ -346,6 +357,11 @@ public class ViewCreator {
             currentWatchedTime = videoPlayerView.getCurrentPosition();
         }
 
+        if (videoPlayerView.getDuration() <= currentWatchedTime &&
+                0 < currentWatchedTime) {
+            videoPlayerViewBinder.setAutoplayCancelled(true);
+        }
+
         videoPlayerView.setUri(Uri.parse(videoUrl), null);
 
         if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
@@ -363,16 +379,120 @@ public class ViewCreator {
             videoPlayerView.getPlayerView().getPlayer().seekTo(currentWatchedTime);
         }
 
+        videoPlayerView.setOnPlayerStateChanged(playerState -> {
+            if (videoPlayerViewBinder != null) {
+                if (playerState.getPlaybackState() == Player.STATE_ENDED &&
+                        videoPlayerViewBinder.getPlayerState() != Player.STATE_ENDED &&
+                        0 < videoPlayerView.getDuration() &&
+                        videoPlayerView.getDuration() <= videoPlayerView.getCurrentPosition()) {
+                    if (!videoPlayerViewBinder.isAutoplayCancelled() &&
+                            videoPlayerViewBinder.getCurrentPlayingVideoIndex() <
+                            videoPlayerViewBinder.getRelateVideoIds().size()) {
+                        if (presenter.getAutoplayEnabledUserPref(presenter.getCurrentActivity()) &&
+                                videoPlayerViewBinder != null) {
+                            videoPlayerViewBinder.setCurrentPlayingVideoIndex(videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1);
+                            presenter.playNextVideo(videoPlayerViewBinder,
+                                    videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1,
+                                    videoPlayerViewBinder.getContentData().getGist().getWatchedTime());
+                        }
+                    }
+                }
+                videoPlayerViewBinder.setAutoplayCancelled(videoPlayerViewBinder.getPlayerState() == playerState.getPlaybackState());
+                videoPlayerViewBinder.setPlayerState(playerState.getPlaybackState());
+            }
+        });
+
         return videoPlayerView;
     }
 
     private void updateVideoPlayerBinder(AppCMSPresenter appCMSPresenter,
                                          ContentDatum contentDatum) {
-        videoPlayerPresenter.updateVideoPlayerBinder(appCMSPresenter, contentDatum);
+        if (!ignoreBinderUpdate ||
+                (videoPlayerViewBinder != null &&
+                        videoPlayerViewBinder.getContentData() != null &&
+                        videoPlayerViewBinder.getContentData().getGist() != null &&
+                        videoPlayerViewBinder.getContentData().getGist().getId() != null &&
+                        contentDatum != null &&
+                        contentDatum.getGist() != null &&
+                        !videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId()))) {
+            if (videoPlayerViewBinder == null) {
+                videoPlayerViewBinder =
+                        appCMSPresenter.getDefaultAppCMSVideoPageBinder(contentDatum,
+                                -1,
+                                contentDatum.getContentDetails().getRelatedVideoIds(),
+                                false,
+                                false,  /** TODO: Replace with a value that is true if the video is a trailer */
+                                !appCMSPresenter.isAppSVOD(),
+                                appCMSPresenter.getAppAdsURL(contentDatum.getGist().getPermalink()),
+                                appCMSPresenter.getAppBackgroundColor());
+            } else {
+                int currentlyPlayingIndex = -1;
+                if (videoPlayerViewBinder.getRelateVideoIds() != null &&
+                        videoPlayerViewBinder.getRelateVideoIds().contains(contentDatum.getGist().getId())) {
+                    currentlyPlayingIndex = videoPlayerViewBinder.getRelateVideoIds().indexOf(contentDatum.getGist().getId());
+                } else {
+                    videoPlayerViewBinder.setPlayerState(Player.STATE_IDLE);
+                    videoPlayerViewBinder.setRelateVideoIds(contentDatum.getContentDetails().getRelatedVideoIds());
+                }
+                if (videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId())) {
+                    currentlyPlayingIndex = videoPlayerViewBinder.getCurrentPlayingVideoIndex();
+                    videoPlayerViewBinder.setAutoplayCancelled(true);
+                }
+                videoPlayerViewBinder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                videoPlayerViewBinder.setContentData(contentDatum);
+            }
+        }
+        ignoreBinderUpdate = false;
     }
 
     public void setIgnoreBinderUpdate(boolean ignoreBinderUpdate) {
-//        this.ignoreBinderUpdate = ignoreBinderUpdate;
+        this.ignoreBinderUpdate = ignoreBinderUpdate;
+    }
+
+    public static void openFullScreenVideoPlayer(FragmentActivity activity) {
+        if (videoPlayerView != null && videoPlayerView.getParent() != null
+                && videoPlayerView.getParent() instanceof ViewGroup) {
+            PageView pageViewAncestor = videoPlayerView.getPageView();
+            if (pageViewAncestor != null) {
+                pageViewAncestor.openViewInFullScreen(videoPlayerView,
+                        (ViewGroup) videoPlayerView.getParent());
+                videoPlayerView.showChromecastLiveVideoPlayer(true);
+                if (videoPlayerView.shouldPlayOnReattach() &&
+                        !CastServiceProvider.getInstance(activity).isCastingConnected()) {
+                    videoPlayerView.startPlayer();
+                } else {
+                    videoPlayerView.resumePlayer();
+                }
+            }
+            videoPlayerView.disableFullScreenMode();
+        }
+
+        if (videoPlayerContent != null) {
+            videoPlayerContent.fullScreenEnabled = true;
+        }
+    }
+
+    public static void closeFullScreenVideoPlayer(Activity activity) {
+        if (videoPlayerView != null) {
+            PageView pageViewAncestor = videoPlayerView.getPageView();
+            if (pageViewAncestor != null) {
+                pageViewAncestor.closeViewFromFullScreen(videoPlayerView,
+                        (ViewGroup) videoPlayerView.getParent());
+                videoPlayerView.showChromecastLiveVideoPlayer(false);
+                if (videoPlayerView.shouldPlayOnReattach() &&
+                        !CastServiceProvider.getInstance(activity).isCastingConnected()) {
+                    videoPlayerView.startPlayer();
+                } else {
+                    videoPlayerView.resumePlayer();
+                }
+            }
+
+            videoPlayerView.enableFullScreenMode();
+        }
+
+        if (videoPlayerContent != null) {
+            videoPlayerContent.fullScreenEnabled = false;
+        }
     }
 
     public static String getColor(Context context, String color) {
@@ -2117,29 +2237,12 @@ public class ViewCreator {
                         }
                     }
 
-                    videoPlayerPresenter.init(appCMSPresenter.getCurrentActivity(),
-                            moduleAPI.getContentData().get(0),
-                            bundle -> {
-                                videoPlayerPresenter.create(bundle, appCMSPresenter.getCurrentActivity());
-                                pageView.setFullScreenVideoPlayerView(videoPlayerPresenter.createFullPlayerView(appCMSPresenter.getCurrentActivity()));
-                            });
-
-                    videoPlayerPresenter.setPageView(pageView);
-
-                    if (videoPlayerPresenter.getFullScreenVideoPlayerRoot() != null) {
-                        pageView.setFullScreenVideoPlayerView(videoPlayerPresenter.getFullScreenVideoPlayerRoot());
-                    }
-
-                    componentViewResult.componentView = videoPlayerPresenter.createEmbeddedPlayerView(context,
+                    componentViewResult.componentView = playerView(context,
+                            appCMSPresenter,
                             videoUrl,
                             closedCaptionUrl,
                             moduleAPI.getContentData().get(0).getGist().getId(),
                             moduleAPI.getContentData().get(0).getGist().getWatchedTime());
-
-                    if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
-                        appCMSPresenter.unrestrictPortraitOnly();
-                    }
-
                     componentViewResult.componentView.setId(R.id.video_player_id);
                 }
 
@@ -3568,25 +3671,15 @@ public class ViewCreator {
                                 }
                             }
 
-                            videoPlayerPresenter.init(appCMSPresenter.getCurrentActivity(),
-                                    moduleAPI.getContentData().get(0),
-                                    bundle -> {
-                                        videoPlayerPresenter.create(bundle, appCMSPresenter.getCurrentActivity());
-                                        pageView.setFullScreenVideoPlayerView(videoPlayerPresenter.createFullPlayerView(appCMSPresenter.getCurrentActivity()));
-                                    });
-
-                            videoPlayerPresenter.setPageView(pageView);
-
-                            if (videoPlayerPresenter.getFullScreenVideoPlayerRoot() != null) {
-                                pageView.setFullScreenVideoPlayerView(videoPlayerPresenter.getFullScreenVideoPlayerRoot());
-                            }
-
-                            componentViewResult.componentView = videoPlayerPresenter.createEmbeddedPlayerView(context,
-                                    videoUrl,
-                                    closedCaptionUrl,
-                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                            componentViewResult.componentView = playerView(context, appCMSPresenter,
+                                    videoUrl, closedCaptionUrl, moduleAPI.getContentData().get(0).getGist().getId(),
                                     moduleAPI.getContentData().get(0).getGist().getWatchedTime());
-
+                            videoPlayerView.setPageView(pageView);
+                            String videoTitleTextColor = appCMSPresenter.getAppTextColor();
+                            if (videoTitleTextColor != null) {
+                                videoPlayerView.setVideoTitle(moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                        Color.parseColor(getColor(context, videoTitleTextColor)));
+                            }
                             if (!CastServiceProvider.getInstance(appCMSPresenter.getCurrentActivity()).isCastingConnected()) {
                                 appCMSPresenter.unrestrictPortraitOnly();
                             }
@@ -3636,6 +3729,56 @@ public class ViewCreator {
                             }
                         }
                         break;
+
+//                    case PAGE_VIDEO_DETAIL_PLAYER:
+//                    videoUrl = null;
+//
+//                    if (moduleAPI != null &&
+//                            moduleAPI.getContentData() != null &&
+//                            !moduleAPI.getContentData().isEmpty() &&
+//                            moduleAPI.getContentData().get(0) != null &&
+//                            moduleAPI.getContentData().get(0).getStreamingInfo() != null &&
+//                            moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets() != null) {
+//                        VideoAssets videoAssets = moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets();
+//                        videoUrl = videoAssets.getHls();
+//
+//                        if (videoAssets.getMpeg() != null && !videoAssets.getMpeg().isEmpty()) {
+//                            if (videoAssets.getMpeg().get(0) != null) {
+//                                videoUrl = videoAssets.getMpeg().get(0).getUrl();
+//                            }
+//
+//                            for (int i = 0; i < videoAssets.getMpeg().size() && TextUtils.isEmpty(videoUrl); i++) {
+//                                if (videoAssets.getMpeg().get(i) != null &&
+//                                        videoAssets.getMpeg().get(i).getRenditionValue() != null) {
+//                                    videoUrl = videoAssets.getMpeg().get(i).getUrl();
+//                                }
+//                            }
+//                        }
+//
+//                        if (moduleAPI.getContentData() != null &&
+//                                !moduleAPI.getContentData().isEmpty() &&
+//                                moduleAPI.getContentData().get(0) != null &&
+//                                moduleAPI.getContentData().get(0).getContentDetails() != null) {
+//
+//                            List<String> relatedVideoIds = null;
+//                            if (moduleAPI.getContentData().get(0).getContentDetails() != null &&
+//                                    moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds() != null) {
+//                                relatedVideoIds = moduleAPI.getContentData().get(0).getContentDetails().getRelatedVideoIds();
+//                            }
+//                            int currentPlayingIndex = -1;
+//                            if (relatedVideoIds == null) {
+//                                currentPlayingIndex = 0;
+//                            }
+//                        }
+//                    }
+//
+//                    componentViewResult.componentView = playerView(context, videoUrl,
+//                            moduleAPI.getContentData().get(0).getGist().getId());
+//
+//                    videoPlayerView.setPageView(pageView);
+//                    appCMSPresenter.unrestrictPortraitOnly();
+//                    componentViewResult.componentView.setId(R.id.video_player_id);
+//                    break;
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
@@ -4294,35 +4437,35 @@ public class ViewCreator {
 
             CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
                 CastHelper castHelper = CastHelper.getInstance(appCMSPresenter.getCurrentActivity());
-//                if ((castHelper.getRemoteMediaClient() != null &&
-//                        !castHelper.getRemoteMediaClient().isPlaying()) ||
-//                        (castHelper.getStartingFilmId() != null &&
-//                        !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId()))) {
-//
-//                    if (videoPlayerViewBinder != null) {
-//                        if (videoPlayerView != null) {
-//                            videoPlayerView.pausePlayer();
-//                        }
-//                        long castPlayPosition = watchedTime * 1000;
-//                        if (!isCastConnected) {
-//                            castPlayPosition = videoPlayerView.getCurrentPosition();
-//                        }
-//
-//                        castHelper.launchRemoteMedia(appCMSPresenter,
-//                                videoPlayerViewBinder.getRelateVideoIds(),
-//                                videoPlayerViewBinder.getContentData().getGist().getId(),
-//                                castPlayPosition,
-//                                videoPlayerViewBinder,
-//                                true,
-//                                null);
-//
-//                        if (!BaseView.isTablet(appCMSPresenter.getCurrentActivity())) {
-//                            appCMSPresenter.restrictPortraitOnly();
-//                        }
-//
-//                        appCMSPresenter.sendExitFullScreenAction(false);
-//                    }
-//                }
+                if ((castHelper.getRemoteMediaClient() != null &&
+                        !castHelper.getRemoteMediaClient().isPlaying()) ||
+                        (castHelper.getStartingFilmId() != null &&
+                        !castHelper.getStartingFilmId().equals(videoPlayerViewBinder.getContentData().getGist().getId()))) {
+
+                    if (videoPlayerViewBinder != null) {
+                        if (videoPlayerView != null) {
+                            videoPlayerView.pausePlayer();
+                        }
+                        long castPlayPosition = watchedTime * 1000;
+                        if (!isCastConnected) {
+                            castPlayPosition = videoPlayerView.getCurrentPosition();
+                        }
+
+                        castHelper.launchRemoteMedia(appCMSPresenter,
+                                videoPlayerViewBinder.getRelateVideoIds(),
+                                videoPlayerViewBinder.getContentData().getGist().getId(),
+                                castPlayPosition,
+                                videoPlayerViewBinder,
+                                true,
+                                null);
+
+                        if (!BaseView.isTablet(appCMSPresenter.getCurrentActivity())) {
+                            appCMSPresenter.restrictPortraitOnly();
+                        }
+
+                        appCMSPresenter.sendExitFullScreenAction(false);
+                    }
+                }
             };
 
             castProvider.setActivityInstance((FragmentActivity) appCMSPresenter.getCurrentActivity(),
@@ -4340,20 +4483,6 @@ public class ViewCreator {
             }
         } catch (Exception e) {
             //Log.e(TAG, "Error initializing cast provider: " + e.getMessage());
-        }
-    }
-
-    public static void openFullScreenVideoPlayer() {
-        PageView pageViewAncestor = videoPlayerPresenter.getPageView();
-        if (pageViewAncestor != null) {
-            pageViewAncestor.openViewInFullScreen();
-        }
-    }
-
-    public static void closeFullScreenVideoPlayer() {
-        PageView pageViewAncestor = videoPlayerPresenter.getPageView();
-        if (pageViewAncestor != null) {
-            pageViewAncestor.closeFullScreenView();
         }
     }
 
