@@ -8500,6 +8500,8 @@ public class AppCMSPresenter {
                                                     } else {
                                                         sendUAUnsubscribedEvent(getLoggedInUser());
                                                     }
+                                                    sendUASubscriptionEndDateEvent(getLoggedInUser(),
+                                                            appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
 
                                                     UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
                                                     userSubscriptionPlan.setUserId(getLoggedInUser());
@@ -11969,6 +11971,17 @@ public class AppCMSPresenter {
         if (currentContext != null &&
                 currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
             urbanAirshipEventPresenter.sendSubscriptionAboutToExpireEvent(userId,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private void sendUASubscriptionEndDateEvent(String userId, String subscriptionEndDate) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendSubscriptionEndDateEvent(userId,
+                    subscriptionEndDate,
                     uaNamedUserRequest -> {
                         sendUANamedUserEventRequest(uaNamedUserRequest);
                     });

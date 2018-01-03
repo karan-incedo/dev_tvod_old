@@ -25,6 +25,7 @@ import rx.functions.Action1;
 
 public class UrbanAirshipEventPresenter {
     private static final String SUBSCRIPTION_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+    private static final String YYMMDD_DATE_FORMAT = "yyyy-MM-dd";
     private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC+00:00");
 
     private String loggedInStatusGroup;
@@ -173,6 +174,28 @@ public class UrbanAirshipEventPresenter {
         }
     }
 
+    public void sendSubscriptionEndDateEvent(String userId,
+                                             String subscriptionEndDate,
+                                             Action1<UANamedUserRequest> sendAction) {
+        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
+
+        UAAudience uaAudience = new UAAudience();
+        uaAudience.addNamedUserIds(userId);
+        uaNamedUserRequest.setUaAudience(uaAudience);
+
+        Map<String, List<String>> uaAdd = new HashMap<>();
+        List<String> uaAddList = new ArrayList<>();
+        uaAddList.add(getZonedDateTimeYYMMDD(subscriptionEndDate));
+        uaAdd.put(subscriptionStatusGroup, uaAddList);
+        uaNamedUserRequest.setUaAdd(uaAdd);
+
+        try {
+            sendAction.call(uaNamedUserRequest);
+        } catch (Exception e) {
+
+        }
+    }
+
     public void sendSubscriptionAboutToExpireEvent(String userId,
                                                    Action1<UANamedUserRequest> sendAction) {
         UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
@@ -227,6 +250,19 @@ public class UrbanAirshipEventPresenter {
         } catch (Exception e) {
 
         }
+    }
+
+    public String getZonedDateTimeYYMMDD(String date) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.from(DateTimeFormatter.ofPattern(SUBSCRIPTION_DATE_FORMAT).parse(date));
+
+        String zonedDateFormatYYMMDD = null;
+        try {
+            zonedDateFormatYYMMDD = zonedDateTime.format(DateTimeFormatter.ofPattern(YYMMDD_DATE_FORMAT));
+        } catch (Exception e) {
+
+        }
+
+        return zonedDateFormatYYMMDD;
     }
 
     public boolean subscriptionAboutToExpire(String subscriptionEndDate) {
