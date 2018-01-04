@@ -58,6 +58,8 @@ public class LoginModule extends ModuleView {
     private int underlineColor;
     private int transparentColor;
     private int bgColor;
+    private int ctaTextColor;
+    private int ctaBgColor;
     private int loginBorderPadding;
     private EditText visibleEmailInputView;
     private EditText visiblePasswordInputView;
@@ -102,6 +104,10 @@ public class LoginModule extends ModuleView {
             underlineColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getPageTitleColor());
             transparentColor = ContextCompat.getColor(getContext(), android.R.color.transparent);
             bgColor = Color.parseColor(appCMSPresenter.getAppBackgroundColor());
+            ctaTextColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                    .getPrimary().getTextColor());
+            ctaBgColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta()
+                    .getPrimary().getBackgroundColor());
             int textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
             ViewGroup childContainer = getChildrenContainer();
             childContainer.setBackgroundColor(bgColor);
@@ -347,6 +353,8 @@ public class LoginModule extends ModuleView {
                             if (componentKey == AppCMSUIKeyType.PAGE_LOGIN_BUTTON_KEY ||
                                     (componentKey == AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY)) {
                                 loginInSignUpAction = component.getAction();
+                                ((TextView) componentView).setTextColor(ctaTextColor);
+                                componentView.setBackgroundColor(ctaBgColor);
                             }
 
                             componentView.setOnClickListener(v -> {

@@ -2338,12 +2338,17 @@ public class ViewCreator {
                     }
                 }
 
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getCta().getPrimary().getTextColor())) {
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
                     if (componentViewResult.componentView instanceof TextView) {
                         ((TextView) componentViewResult.componentView).setTextColor(
-                                Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain()
-                                        .getBrand().getCta().getPrimary().getTextColor())));
+                                Color.parseColor(getColor(context, appCMSPresenter.getAppTextColor())));
+                    }
+                }
+
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppBackgroundColor())) {
+                    if (componentViewResult.componentView instanceof TextView) {
+                        componentViewResult.componentView.setBackgroundColor(
+                                Color.parseColor(getColor(context, appCMSPresenter.getAppBackgroundColor())));
                     }
                 }
 
@@ -2900,6 +2905,11 @@ public class ViewCreator {
 
                         removeAllLayoutParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
 
+                        ((TextView) componentViewResult.componentView).setTextColor(Color
+                                .parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                        componentViewResult.componentView.setBackgroundColor(Color
+                            .parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+
                         componentViewResult.componentView.setLayoutParams(removeAllLayoutParams);
 
                         componentViewResult.onInternalEvent = new OnRemoveAllInternalEvent(moduleId,
@@ -3038,8 +3048,7 @@ public class ViewCreator {
                     try {
                         componentViewResult.componentView.getBackground().setColorFilter(Color.parseColor(
                                 getColor(context,
-                                        appCMSPresenter.getAppCMSMain().getBrand()
-                                                .getCta().getPrimary().getBackgroundColor())),
+                                        appCMSPresenter.getAppBackgroundColor())),
                                 PorterDuff.Mode.SRC_ATOP);
                     } catch (Exception e) {
                         //
@@ -3099,14 +3108,14 @@ public class ViewCreator {
                         componentViewResult.shouldHideComponent = true;
                     }
 
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor())) {
-                        textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
+                        textColor = Color.parseColor(getColor(context, appCMSPresenter.getAppTextColor()));
                     } else if (component.getStyles() != null) {
                         if (!TextUtils.isEmpty(component.getStyles().getColor())) {
                             textColor = Color.parseColor(getColor(context, component.getStyles().getColor()));
                         } else if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor())) {
                             textColor =
-                                    Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                                    Color.parseColor(getColor(context, appCMSPresenter.getAppTextColor()));
                         }
                     }
 
@@ -4078,11 +4087,11 @@ public class ViewCreator {
             case PAGE_TOGGLE_BUTTON_KEY:
                 componentViewResult.componentView = new Switch(context);
                 ((Switch) componentViewResult.componentView).getTrackDrawable().setTint(Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                        appCMSPresenter.getAppTextColor()));
                 int switchOnColor = Color.parseColor(
                         appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
                 int switchOffColor = Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor());
+                        appCMSPresenter.getAppTextColor());
                 ColorStateList colorStateList = new ColorStateList(
                         new int[][]{
                                 new int[]{android.R.attr.state_checked},
@@ -4358,12 +4367,10 @@ public class ViewCreator {
                         false);
 
                 try {
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
-                            .getCta().getPrimary().getTextColor())) {
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
                         ((TextView) result).setTextColor(
                                 Color.parseColor(
-                                        getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
-                                                .getBrand().getCta().getPrimary().getBackgroundColor())));
+                                        getColor(parent.getContext(), appCMSPresenter.getAppTextColor())));
                     }
                 } catch (Exception e) {
                     //
@@ -4409,12 +4416,10 @@ public class ViewCreator {
                         false);
 
                 try {
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand()
-                            .getCta().getPrimary().getTextColor())) {
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
                         ((TextView) result).setTextColor(
                                 Color.parseColor(
-                                        getColor(parent.getContext(), appCMSPresenter.getAppCMSMain()
-                                                .getBrand().getCta().getPrimary().getBackgroundColor())));
+                                        getColor(parent.getContext(), appCMSPresenter.getAppTextColor())));
                     }
                 } catch (Exception e) {
                     //

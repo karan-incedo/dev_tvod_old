@@ -836,11 +836,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
                 appCMSPresenter.launchSearchPage();
             });
-        } else {
+        } else if (!shouldReadNavItemsFromAppCMS()) {
             createSearchNavItem(tabCount, getString(R.string.app_cms_search_page_tag));
         }
 
-        createMenuNavItem(tabCount);
+        if (!shouldReadNavItemsFromAppCMS()) {
+            createMenuNavItem(tabCount);
+        }
 
         FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
         if (mFireBaseAnalytics != null && appCMSPresenter != null) {
@@ -900,9 +902,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter != null) {
             try {
                 newVersionUpgradeAvailable.setBackgroundColor(Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+                        appCMSPresenter.getAppBackgroundColor()));
                 newVersionAvailableTextView.setTextColor(Color.parseColor(
-                        appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                        appCMSPresenter.getAppTextColor()));
             } catch (Exception e) {
 //                //Log.w(TAG, "Failed to set AppCMS branding colors for soft upgrade messages: " +
 //                        e.getMessage());
@@ -1829,6 +1831,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void closeMenuPageIfHighlighted(NavBarItemView menuNavBarItemView) {
+        if (!menuNavBarItemView.isItemSelected()) {
+            resumeInternalEvents = true;
+            selectNavItem(menuNavBarItemView);
+        } else {
+            unselectNavItem(menuNavBarItemView);
+            appCMSPresenter.sendCloseOthersAction(null, true, false);
+        }
+    }
+
     private void selectNavItem(NavBarItemView v) {
         unselectAllNavItems();
         v.select(true);
@@ -1858,7 +1871,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     public void setSelectedMenuTabIndex(int selectedMenuTabIndex) {
-        currentMenuTabIndex = selectedMenuTabIndex;
+        navMenuPageIndex = selectedMenuTabIndex;
     }
 
     private void handleNavbar(AppCMSBinder appCMSBinder) {
@@ -2386,16 +2399,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         if (menuNavBarItemView.getParent() == null) {
             appCMSTabNavContainer.addView(menuNavBarItemView);
-        }
-    }
-
-    private void closeMenuPageIfHighlighted(NavBarItemView menuNavBarItemView) {
-        if (!menuNavBarItemView.isItemSelected()) {
-            resumeInternalEvents = true;
-            selectNavItem(menuNavBarItemView);
-        } else {
-            unselectNavItem(menuNavBarItemView);
-            appCMSPresenter.sendCloseOthersAction(null, true, false);
         }
     }
 

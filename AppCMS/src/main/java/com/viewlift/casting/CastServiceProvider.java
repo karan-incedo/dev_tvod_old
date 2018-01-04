@@ -404,8 +404,7 @@ public class CastServiceProvider {
 
                 Target target = new ViewTarget(mMediaRouteButton.getId(), mActivity);
                 TextPaint textPaint = new TextPaint();
-                textPaint.setColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                        .getCta().getPrimary().getTextColor()));
+                textPaint.setColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
                 textPaint.setTextSize(scaledSizeInPixels);
 
                 mShowCaseView = new ShowcaseView.Builder(mActivity)
@@ -415,12 +414,9 @@ public class CastServiceProvider {
                         .build();
 
                 mShowCaseView.forceTextPosition(ShowcaseView.ABOVE_SHOWCASE);
-                mShowCaseView.setShowcaseColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                        .getBrand().getCta().getPrimary().getBackgroundColor()));
-                mShowCaseView.setEndButtonBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                        .getBrand().getCta().getPrimary().getBackgroundColor()));
-                mShowCaseView.setEndButtonTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                        .getBrand().getCta().getPrimary().getTextColor()));
+                mShowCaseView.setShowcaseColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+                mShowCaseView.setEndButtonBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+                mShowCaseView.setEndButtonTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
                 mShowCaseView.show();
                 mShowCaseView.invalidate();

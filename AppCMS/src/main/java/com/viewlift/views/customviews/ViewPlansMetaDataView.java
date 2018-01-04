@@ -112,8 +112,7 @@ public class ViewPlansMetaDataView extends LinearLayout {
         TextView featureDetailText = new TextView(getContext());
         featureDetailText.setMaxLines(2);
         featureDetailText.setEllipsize(TextUtils.TruncateAt.END);
-        featureDetailText.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain()
-                .getBrand().getCta().getPrimary().getTextColor()));
+        featureDetailText.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
         for (int featureDetailsIndex = 0; featureDetailsIndex < featureDetails.size();
              featureDetailsIndex++) {
