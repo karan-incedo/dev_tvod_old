@@ -857,7 +857,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
         btnStartFreeTrial = new Button(mContext);
         btnStartFreeTrial.setBackgroundColor(Color.parseColor(appCMSPresenter.getTabBarUIFooterModule().getTabSeparator_color()));
-        btnStartFreeTrial.setText(getResources().getString(R.string.app_cms_start_free_trial));
+        if (appCMSPresenter.getAppCMSAndroid() != null && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
+                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getSubscriptionButtonText() != null) {
+            btnStartFreeTrial.setText(appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getSubscriptionButtonText());
+        } else {
+            btnStartFreeTrial.setText(getResources().getString(R.string.app_cms_start_free_trial));
+        }
         btnStartFreeTrial.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
         btnStartFreeTrial.setPadding(10, 10, 10, 10);
         btnStartFreeTrial.setLayoutParams(buttonParams);
@@ -873,7 +878,12 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
             }
         });
         btnLogin = new Button(mContext);
-        btnLogin.setText(getResources().getString(R.string.app_cms_login));
+        if (appCMSPresenter.getAppCMSAndroid() != null && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
+                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getLoginButtonText() != null) {
+            btnLogin.setText(appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getLoginButtonText());
+        } else {
+            btnLogin.setText(getResources().getString(R.string.app_cms_login));
+        }
         btnLogin.setBackgroundColor(Color.parseColor(appCMSPresenter.getTabBarUIFooterModule().getTabSeparator_color()));
         btnLogin.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
         btnLogin.setPadding(10, 10, 10, 10);

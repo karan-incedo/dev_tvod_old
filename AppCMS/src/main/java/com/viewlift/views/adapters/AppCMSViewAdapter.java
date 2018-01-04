@@ -59,7 +59,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     String componentViewType;
     AppCMSAndroidModules appCMSAndroidModules;
     CollectionGridItemView planItemView[];
-    int selectedPosition = -1;
+    static int selectedPosition = -1;
     private boolean useParentSize;
     private String defaultAction;
     private AppCMSUIKeyType viewTypeKey;
@@ -331,8 +331,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data,
                                       int clickPosition) {
-
-                        selectedPosition = clickPosition;
+                        if(appCMSPresenter.isSelectedSubscriptionPlan()){
+                            selectedPosition = clickPosition;
+                        }else{
+                            appCMSPresenter.setSelectedSubscriptionPlan(true);
+                        }
                         for (int i = 0; i < planItemView.length; i++) {
                             if (planItemView[i] != null) {
                                 if (selectedPosition == i) {

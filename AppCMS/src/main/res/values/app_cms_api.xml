@@ -208,7 +208,7 @@
     <string name="app_cms_page_shop_title">shop</string>
     <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>
     <string name="app_cms_page_watchlist_duration_key">duration</string>
-    <string name="app_cms_page_watchlist_description_key">description</string>
+    <string name="app_cms_page_watchlist_description_key">listItemDescription</string>
     <string name="app_cms_page_watchlist_title_key">title</string>
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
@@ -535,12 +535,12 @@
 
     <string name="app_cms_page_download_size_key">downloadDuration</string>
     <string name="app_cms_page_download_duration_key">downloadDuration</string>
-    <string name="app_cms_page_download_description_key">description</string>
+    <string name="app_cms_page_download_description_key">listItemDescription</string>
     <string name="app_cms_page_delete_download_key">deleteDownload</string>
     <string name="app_cms_delete_single_download_action">deleteSingleItemDownload</string>
 
 
-    <string name="app_cms_page_history_description_key">description</string>
+    <string name="app_cms_page_history_description_key">listItemDescription</string>
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
 </resources>

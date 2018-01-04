@@ -616,6 +616,7 @@ public class ViewCreator {
                                                 ((TextView) view).setTextSize(fontSize);
                                             }
                                             ((TextView) view).setGravity(Gravity.CENTER);
+                                            ((TextView) view).setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                             applyBorderToComponent(context,
                                                     view,
                                                     component,
@@ -2898,7 +2899,7 @@ public class ViewCreator {
                                 String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                 ((TextView) componentViewResult.componentView).setText(parentalRating);
                                 ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
-
+                                ((TextView) componentViewResult.componentView).setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                 if (parentalRating.length() > 2) {
                                     resizeText = true;
                                 }

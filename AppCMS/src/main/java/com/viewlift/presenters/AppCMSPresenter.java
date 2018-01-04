@@ -576,6 +576,7 @@ public class AppCMSPresenter {
     private boolean loginFromNavPage;
     private Action0 afterLoginAction;
     private boolean shouldLaunchLoginAction;
+    private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
@@ -4668,12 +4669,20 @@ public class AppCMSPresenter {
             String FIREBASE_SCREEN_BEGIN_CHECKOUT = "begin_checkout";
             bundle.putString(FIREBASE_SCREEN_BEGIN_CHECKOUT, FIREBASE_SCREEN_BEGIN_CHECKOUT);
             sendFirebaseSelectedEvents(FIREBASE_SCREEN_BEGIN_CHECKOUT, bundle);
-
+            setSelectedSubscriptionPlan(true);
             if (!launchSuccess) {
                 //Log.e(TAG, "Failed to launch page: " + subscriptionPage.getPageName());
                 launchBlankPage();
             }
         }
+    }
+
+    public boolean isSelectedSubscriptionPlan() {
+        return selectedSubscriptionPlan;
+    }
+
+    public void setSelectedSubscriptionPlan(boolean selectedSubscriptionPlan) {
+        this.selectedSubscriptionPlan = selectedSubscriptionPlan;
     }
 
     public void checkForExistingSubscription(boolean showErrorDialogIfSubscriptionExists) {
@@ -4918,6 +4927,7 @@ public class AppCMSPresenter {
                 //Log.e(TAG, "Failed to launch page: " + loginPage.getPageName());
                 launchBlankPage();
             }
+            setSelectedSubscriptionPlan(false);
         }
     }
 
@@ -11597,6 +11607,9 @@ public class AppCMSPresenter {
         if (videoPlayerView != null && videoPlayerView.getParent() != null) {
             relativeLayoutFull = new FullPlayerView(currentActivity, this);
             relativeLayoutFull.setVisibility(View.VISIBLE);
+            if(((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)) == null){
+                return;
+            }
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
 
