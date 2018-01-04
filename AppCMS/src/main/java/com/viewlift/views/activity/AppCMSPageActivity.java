@@ -2529,7 +2529,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         baseUrl,
                         endPoint,
                         siteId,
-                        appCMSBinder.getPagePath());
+                        appCMSBinder.getPagePath(),
+                        appCMSBinder.getAppCMSPageUI().getCaching() != null &&
+                                appCMSBinder.getAppCMSPageUI().getCaching().isEnabled());
                 appCMSPresenter.getPageIdContent(apiUrl,
                         appCMSBinder.getPagePath(),
                         null,
@@ -2598,7 +2600,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                     baseUrl,
                                     endPoint,
                                     siteId,
-                                    appCMSBinder.getPagePath());
+                                    appCMSBinder.getPagePath(),
+                                    appCMSBinder.getAppCMSPageUI().getCaching() != null &&
+                                            appCMSBinder.getAppCMSPageUI().getCaching().isEnabled());
 
                             appCMSPresenter.getPageIdContent(apiUrl,
                                     appCMSBinder.getPagePath(),
