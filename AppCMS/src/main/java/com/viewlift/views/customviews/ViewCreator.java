@@ -352,6 +352,7 @@ public class ViewCreator {
                                             videoPlayerViewSingle = playerView(context, videoId, moduleAPI.getId() + component.getKey(), appCMSPresenter);
                                             ((FrameLayout) view).addView(videoPlayerViewSingle);
                                         }
+                                        appCMSPresenter.videoPlayerView=videoPlayerViewSingle;
                                         videoPlayerViewSingle.checkVideoStatus();
                                         appCMSPresenter.setVideoPlayerViewCache(moduleAPI.getId() + component.getKey(), videoPlayerViewSingle);
                                         (view).setId(R.id.video_player_id);
@@ -1931,7 +1932,7 @@ public class ViewCreator {
                     videoPlayerViewSingle = playerView(context, videoId, moduleId + component.getKey(), appCMSPresenter);
                     ((FrameLayout) componentViewResult.componentView).addView(videoPlayerViewSingle);
                 }
-
+                appCMSPresenter.videoPlayerView=videoPlayerViewSingle;
                 videoPlayerViewSingle.checkVideoStatus();
                 componentViewResult.componentView.setId(R.id.video_player_id);
                 break;
@@ -2879,6 +2880,8 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist() != null &&
                                         moduleAPI.getContentData().get(0).getGist().getPublishDate() != 0) {
                                     long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                    long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
+
                                     String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");
                                     ((TextView) componentViewResult.componentView).setText(publishDate);
 

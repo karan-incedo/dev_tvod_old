@@ -384,6 +384,8 @@ public class AppCMSPresenter {
     private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC+00:00");
     public static FullPlayerView relativeLayoutFull;
     public static boolean isFullScreenVisible;
+    public static boolean isExitFullScreen=false;
+
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private static int PAGE_API_LRU_CACHE_SIZE = 10;
     private final String USER_ID_KEY = "user_id";
@@ -482,7 +484,7 @@ public class AppCMSPresenter {
     public ViewGroup videoPlayerViewParent = null;
     public boolean isconfig = false;
     public boolean isAppBackground = false;
-    MiniPlayerView relativeLayoutPIP;
+    public MiniPlayerView relativeLayoutPIP;
     Boolean isMoreOptionsAvailable = false;
     String loginPageUserName, loginPagePassword;
     private boolean isRenewable;
@@ -842,6 +844,43 @@ public class AppCMSPresenter {
         return formatter.format(calendar.getTime());
     }
 
+    public static String convertSecondsToTime(long runtime) {
+        StringBuilder timeInString = new StringBuilder();
+        runtime = runtime * 1000;
+
+        long days = TimeUnit.MILLISECONDS.toDays(runtime);
+        runtime -= TimeUnit.DAYS.toMillis(days);
+        if (days != 0){
+            timeInString.append(Long.toString(days));
+        }
+
+        long hours = TimeUnit.MILLISECONDS.toHours(runtime);
+        runtime -= TimeUnit.HOURS.toMillis(hours);
+        if (hours != 0 || timeInString.length() > 0){
+            if (timeInString.length() > 0) {
+                timeInString.append(":");
+            }
+            timeInString.append(Long.toString(hours));
+        }
+
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(runtime);
+        runtime -= TimeUnit.MINUTES.toMillis(minutes);
+//        if (minutes != 0 || timeInString.length() > 0){
+        if (timeInString.length() > 0) {
+            timeInString.append(":");
+        }
+        timeInString.append(Long.toString(minutes));
+//        }
+
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(runtime);
+//        if (seconds != 0 || timeInString.length() > 0){
+        if (timeInString.length() > 0) {
+            timeInString.append(":");
+        }
+        timeInString.append(Long.toString(seconds));
+//        }
+        return timeInString.toString();
+    }
     public static String getColor(Context context, String color) {
         if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
             return context.getString(R.string.color_hash_prefix) + color;
@@ -3747,7 +3786,7 @@ public class AppCMSPresenter {
 
             int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
             paint.setColor(tintColor);
-            paint.setStrokeWidth(iv2.getWidth() / 10);
+            paint.setStrokeWidth(iv2.getWidth() / 9);
             paint.setStyle(Paint.Style.FILL);
             final RectF oval = new RectF();
             paint.setStyle(Paint.Style.STROKE);
@@ -11499,7 +11538,7 @@ public class AppCMSPresenter {
         this.videoPlayerView = customVideoPlayerView;
     }
 
-    public void showPopupWindowPlayer(View scrollView) {
+    public void showPopupWindowPlayer(View scrollView, ViewGroup group) {
         if (videoPlayerView != null) {
             // if preview frame need to show than mini player will be true and miniplayer need to be hide
             if (videoPlayerView.hideMiniPlayer) {
@@ -11517,17 +11556,20 @@ public class AppCMSPresenter {
                 return;
             }
 
-            if (relativeLayoutPIP == null) {
-                relativeLayoutPIP = new MiniPlayerView(currentActivity, this, scrollView);
-            } else {
-                relativeLayoutPIP.init();
-            }
-            relativeLayoutPIP.setVisibility(View.VISIBLE);
 
-            if (relativeLayoutPIP.getParent() == null) {
-                ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+            if (relativeLayoutPIP != null) {
+
+                relativeLayoutPIP.init();
+
+                relativeLayoutPIP.setVisibility(View.VISIBLE);
+
+                if (relativeLayoutPIP.getParent() == null && currentActivity!=null && currentActivity.findViewById(R.id.app_cms_parent_view)!=null) {
+                    ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+                }
+                videoPlayerViewParent = group;
+
+                pipPlayerVisible = true;
             }
-            pipPlayerVisible = true;
 
         }
     }
@@ -11617,18 +11659,18 @@ public class AppCMSPresenter {
         restrictPortraitOnly();
 
 
-        new Handler().postDelayed(() -> {
-            if (currentActivity != null && isAutoRotate() &&
-                    !AppCMSPresenter.isFullScreenVisible &&
-                    currentActivity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
-                    currentActivity.findViewById(R.id.video_player_id) != null) {
-                unrestrictPortraitOnly();
-            } else if (currentActivity != null && !BaseView.isTablet(currentActivity) && currentActivity.findViewById(R.id.video_player_id) == null) {
-                restrictPortraitOnly();
-            } else if (BaseView.isTablet(currentActivity)) {
-                unrestrictPortraitOnly();
-            }
-        }, 100);
+//        new Handler().postDelayed(() -> {
+//            if (currentActivity != null && isAutoRotate() &&
+//                    !AppCMSPresenter.isFullScreenVisible &&
+//                    currentActivity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
+//                    currentActivity.findViewById(R.id.video_player_id) != null) {
+//                unrestrictPortraitOnly();
+//            } else if (currentActivity != null && !BaseView.isTablet(currentActivity) && currentActivity.findViewById(R.id.video_player_id) == null) {
+//                restrictPortraitOnly();
+//            } else if (BaseView.isTablet(currentActivity)) {
+//                unrestrictPortraitOnly();
+//            }
+//        }, 100);
 
         if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
             ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();

@@ -120,8 +120,8 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         relativeLayoutEvent.setOnTouchListener(new OnSwipeTouchListener(context) {
             public void onSwipeTop() {
                 //Toast.makeText(context, "top", Toast.LENGTH_SHORT).show();
-                mRecyclerView.smoothScrollToPosition(0);
-                relativeLayoutEvent.startAnimation(animMoveUp);
+//                mRecyclerView.smoothScrollToPosition(0);
+//                relativeLayoutEvent.startAnimation(animMoveUp);
 
             }
 
@@ -158,8 +158,6 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         if (findViewById(relativeLayoutEventViewId) == null) {
             addView(relativeLayoutEvent);
         }
-
-
 
     }
 
