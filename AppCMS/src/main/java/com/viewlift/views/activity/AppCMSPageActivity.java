@@ -473,7 +473,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
         appCMSPresenter.setNetworkConnected(isConnected, null);
-        appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+        if (activeNetwork != null) {
+            appCMSPresenter.setActiveNetworkType(activeNetwork.getType());
+        }
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {

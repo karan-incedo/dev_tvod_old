@@ -3949,6 +3949,14 @@ public class AppCMSPresenter {
         return getStorageDirectories(currentActivity).length > 0;
     }
 
+    public boolean downloadsAvailableForApp() {
+        if (appCMSMain != null &&
+                appCMSMain.getFeatures() != null) {
+            return appCMSMain.getFeatures().isMobileAppDownloads();
+        }
+        return false;
+    }
+
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
@@ -6201,7 +6209,9 @@ public class AppCMSPresenter {
             if (!TextUtils.isEmpty(downloadPageId)) {
                 onDownloadPage = downloadPageId.equals(pageId);
             }
-            if (!networkConnected && (downloadInProgress || !onDownloadPage)) {
+            if (!networkConnected &&
+                    (downloadInProgress || !onDownloadPage) &&
+                    downloadsAvailableForApp()) {
                 navigateToDownloadPage(getDownloadPageId(),
                         null, null, false);
             }
@@ -7442,7 +7452,7 @@ public class AppCMSPresenter {
 
     private void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-            if (!isUserSubscribed()) {//fix SVFA-1911
+            if (!isUserSubscribed() || !downloadsAvailableForApp()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
                             if (retryAction != null) {
@@ -7459,8 +7469,10 @@ public class AppCMSPresenter {
                 return;
             }
 
-            navigateToDownloadPage(getDownloadPageId(),
-                    null, null, launchActivity);
+            if (downloadsAvailableForApp()) {
+                navigateToDownloadPage(getDownloadPageId(),
+                        null, null, launchActivity);
+            }
         } catch (Exception e) {
             launchBlankPage();// Fix for SVFA-1435 after killing app
             sendStopLoadingPageAction(false, null);
