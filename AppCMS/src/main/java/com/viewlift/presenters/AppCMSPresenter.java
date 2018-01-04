@@ -858,7 +858,8 @@ public class AppCMSPresenter {
                             String baseUrl,
                             String endpoint,
                             String siteId,
-                            String pageId) {
+                            String pageId,
+                            boolean usedCachedAPI) {
         if (currentContext != null && pageId != null) {
             String urlWithContent;
             if (usePageIdQueryParam) {
@@ -871,16 +872,16 @@ public class AppCMSPresenter {
                                     currentContext.getString(R.string.app_cms_subscription_platform_key));
                 } else {
                     try {
-                        if ((pageId.equals(homePage.getPageId()) ||
-                                pageId.equals(moviesPage.getPageId())) &&
-                                !isUserLoggedIn() &&
-                                usedCachedAPI) {
-                            if (pageId.equals(homePage.getPageId())) {
-                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
-                                        siteId,
-                                        pageId);
-                            } else {
+                        if (usedCachedAPI) {
+                            if (isUserLoggedIn()) {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
+                                        appCMSMain.getApiBaseUrlCached(),
+                                        siteId,
+                                        pageId,
+                                        getLoggedInUser());
+                            } else {
+                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
+                                        appCMSMain.getApiBaseUrlCached(),
                                         siteId,
                                         pageId);
                             }
@@ -1733,18 +1734,22 @@ public class AppCMSPresenter {
                                 break;
                         }
 
+                        AppCMSPageUI appCMSPageUI = actionToPageMap.get(actionPresenter.getAction());
+
                         String apiUrl = getApiUrl(usePageIdQueryParam,
                                 viewPlans,
                                 showPage,
                                 baseUrl,
                                 endPoint,
                                 siteId,
-                                pagePath);
+                                pagePath,
+                                appCMSPageUI.getCaching() != null &&
+                                        appCMSPageUI.getCaching().isEnabled());
 
                         Intent pageLoadingActionIntent = new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION);
                         pageLoadingActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                         currentActivity.sendBroadcast(pageLoadingActionIntent);
-                        AppCMSPageUI appCMSPageUI = actionToPageMap.get(actionPresenter.getAction());
+
                         if (appCMSPageUI != null) {
                             int finalCurrentlyPlayingIndex1 = currentlyPlayingIndex;
                             List<String> finalRelateVideoIds1 = relateVideoIds;
@@ -8379,7 +8384,8 @@ public class AppCMSPresenter {
                     baseUrl,
                     endPoint,
                     siteId,
-                    subscriptionPage.getPageId());
+                    subscriptionPage.getPageId(),
+                    false);
             getPageIdContent(apiUrl,
                     subscriptionPage.getPageId(),
                     null,
@@ -8573,7 +8579,9 @@ public class AppCMSPresenter {
                     baseUrl,
                     endPoint,
                     siteId,
-                    getPageId(appCMSPageUI));
+                    getPageId(appCMSPageUI),
+                    appCMSPageUI.getCaching() != null &&
+                            appCMSPageUI.getCaching().isEnabled());
             getPageViewLruCache().remove(pageId);
             getPageIdContent(apiUrl,
                     getPageId(appCMSPageUI),
@@ -9901,7 +9909,8 @@ public class AppCMSPresenter {
                             baseUrl,
                             endPoint,
                             siteId,
-                            moviesPage.getPageId()),
+                            moviesPage.getPageId(),
+                            false),
                             moviesPage.getPageId(),
                             null,
                             null);
@@ -10357,7 +10366,9 @@ public class AppCMSPresenter {
                         appCMSMain.getApiBaseUrl(),
                         pageIdToPageAPIUrlMap.get(pageId),
                         appCMSSite.getGist().getSiteInternalName(),
-                        pageId);
+                        pageId,
+                        appCMSPageUI.getCaching() != null &&
+                                appCMSPageUI.getCaching().isEnabled());
 
                 getPageIdContent(apiUrl,
                         pageId,
@@ -10888,7 +10899,9 @@ public class AppCMSPresenter {
                         appCMSMain.getApiBaseUrl(),
                         actionToPageAPIUrlMap.get(action),
                         appCMSSite.getGist().getSiteInternalName(),
-                        pagePath);
+                        pagePath,
+                        appCMSPageUI.getCaching() != null &&
+                                appCMSPageUI.getCaching().isEnabled());
 
                 getPageIdContent(apiUrl,
                         pagePath,
