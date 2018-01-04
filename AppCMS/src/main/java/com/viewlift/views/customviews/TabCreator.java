@@ -19,6 +19,7 @@ public class TabCreator {
     public interface OnClickHandler {
         NavBarItemView getSelectedNavItem();
         void setSelectedMenuTabIndex(int selectedMenuTabIndex);
+        void setSelectedSearchTabIndex(int selectedSearchTabIndex);
         void selectNavItemAndLaunchPage(NavBarItemView navBarItemView,
                                         String pageId,
                                         String pageTitle);
@@ -75,6 +76,7 @@ public class TabCreator {
 
                 appCMSPresenter.launchSearchPage();
             });
+            onClickHandler.setSelectedMenuTabIndex(currentIndex);
         } else if (tabItem.getTitle().equalsIgnoreCase("Menu")) {
             navBarItemView.setOnClickListener(v -> {
                 if (!appCMSPresenter.launchNavigationPage()) {
