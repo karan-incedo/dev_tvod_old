@@ -287,7 +287,7 @@
     <string name="app_cms_login_required_message">Please login to continue.</string>
     <string name="app_cms_subscription_button_text">SUBSCRIBE</string>
     <string name="app_cast_overlay_text">Touch To Cast Videos On TV</string>
-    <string name="app_cms_existing_subscription_error_message">You already have a Google Play Store subscription. Please enter your email and set a new password to reactivate your account and start watching.</string>
+    <string name="app_cms_existing_subscription_error_message">The Play Store Google ID already has a subscription. Please sign into the app with an email and password that was used when the account was created.  Please login to start watching.</string>
     <string name="app_cms_existing_subscription_logout_error_message">The Play Store Google ID already has a subscription. Please sign out of this account and then select SUBSCRIBE NOW to restore this purchase and start watching.</string>
     <string name="app_cms_existing_subscription_title">Existing Subscription</string>
     <string name="sent_beacon_play_key">sent_beacon_play</string>
