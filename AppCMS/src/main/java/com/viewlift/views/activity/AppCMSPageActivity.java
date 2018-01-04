@@ -570,7 +570,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         manageTopBar();
         createTabBar();
         startFreeTrialTool();
-        
+
 
         //Settings The Firebase Analytics for Android
         FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -689,6 +689,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
         return false;
     }
+
     private void inflateCastMiniController() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
                 ConnectionResult.SUCCESS && appCMSPresenter.isNetworkConnected()) {
@@ -980,7 +981,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         try {
             reportFullyDrawn();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -1159,11 +1160,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && !BaseView.isTablet(this) && appCMSPresenter.isExitFullScreen) {
+//            appCMSPresenter.restrictPortraitOnly();
+//            appCMSPresenter.isExitFullScreen = false;
+//            return;
+//        }
         if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView != null) {
-            //appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
             appCMSPresenter.restrictLandscapeOnly();
             return;
         }
+
         if (appCMSPresenter != null) {
             appCMSPresenter.cancelInternalEvents();
             appCMSPresenter.onConfigurationChange(true);
@@ -1569,7 +1575,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (navigation != null && navigation.getNavigationPrimary() != null &&
                     navigation.getNavigationPrimary().isEmpty() || !appCMSBinder.isNavbarPresent()) {  // for the pages like Hoichoi it is Used here where we dont getting value in settings
                 appCMSTabNavContainer.setVisibility(View.GONE);
-            }else {
+            } else {
                 appCMSTabNavContainer.setVisibility(View.VISIBLE);
                 selectNavItem(appCMSBinder.getPageId());
             }
@@ -2314,15 +2320,17 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
     }
-    public void setCastingVisibility(boolean isVisible){
-        if(isVisible){
+
+    public void setCastingVisibility(boolean isVisible) {
+        if (isVisible) {
             ll_media_route_button.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             ll_media_route_button.setVisibility(View.GONE);
 
         }
 
     }
+
     private void setCastingInstance() {
         try {
             CastServiceProvider.getInstance(this).setActivityInstance(AppCMSPageActivity.this, mMediaRouteButton);

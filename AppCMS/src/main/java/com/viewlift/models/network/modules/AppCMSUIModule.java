@@ -718,6 +718,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_size_key),
                 AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
+                AppCMSUIKeyType.PAGE_API_DESCRIPTION);
     }
 
     private void createPageNameToActionMap(Context context) {

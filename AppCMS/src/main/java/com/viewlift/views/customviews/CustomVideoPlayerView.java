@@ -448,7 +448,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 playedVideoSecs = appCMSPresenter.getPreviewTimerValue();
                             }
                             if (((maxPreviewSecs < playedVideoSecs) || (maxPreviewSecs < secsViewed)) && (userIdentity == null || !userIdentity.isSubscribed())) {
-                               //if mini player is showing than dismiss the mini player
+                                //if mini player is showing than dismiss the mini player
                                 runOnUiThread(() -> appCMSPresenter.dismissPopupWindowPlayer(false));
 
                                 if (onUpdatedContentDatum != null) {
@@ -470,7 +470,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                                 pausePlayer();
                                 hideMiniPlayer = true;
                                 showPreviewFrame();
-                                System.out.println("Preview Timer Shown -"+playedVideoSecs);
+                                System.out.println("Preview Timer Shown -" + playedVideoSecs);
 
                                 cancel();
                                 entitlementCheckCancelled = true;
@@ -481,7 +481,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                             }
                             playedVideoSecs++;
                             appCMSPresenter.setPreviewTimerValue(playedVideoSecs);
-                            System.out.println("Preview Timer -"+playedVideoSecs);
+                            System.out.println("Preview Timer -" + playedVideoSecs);
                         }
                     });
 
@@ -971,6 +971,18 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         mToggleButton.setTextOn("");
         mToggleButton.setText("");
         mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.full_screen_toggle_selector, null));
+        mToggleButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (!appCMSPresenter.isFullScreenVisible) {
+                    appCMSPresenter.isExitFullScreen = true;
+                } else {
+                    appCMSPresenter.isExitFullScreen = false;
+
+                }
+            }
+        });
         mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -980,11 +992,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (appCMSPresenter.videoPlayerView == null) {
                         appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
                     }
+                    appCMSPresenter.isFullScreenVisible = true;
+
                     appCMSPresenter.restrictLandscapeOnly();
                     appCMSPresenter.showFullScreenPlayer();
                     llTopBar.setVisibility(View.VISIBLE);
-
                 } else {
+                    appCMSPresenter.isFullScreenVisible = false;
+
                     llTopBar.setVisibility(View.GONE);
                     appCMSPresenter.restrictPortraitOnly();
 
