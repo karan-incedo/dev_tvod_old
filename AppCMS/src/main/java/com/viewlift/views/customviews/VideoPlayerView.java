@@ -1132,22 +1132,23 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
-            viewHolder.getmText().setTextColor(Color.parseColor(ViewCreator.getColor(viewGroup.getContext(), appCMSPresenter.getAppCMSMain()
-                    .getBrand().getCta().getPrimary().getTextColor())));
+
+            viewHolder.getmText().setBackgroundColor(
+                    Color.parseColor(ViewCreator.getColor(viewGroup.getContext(), appCMSPresenter.getAppBackgroundColor())));
+
+            viewHolder.getmText().setTextColor(Color.parseColor(ViewCreator.getColor(viewGroup.getContext(), appCMSPresenter.getAppTextColor())));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (viewHolder.getmRadio().getButtonDrawable() != null) {
                     viewHolder.getmRadio().getButtonDrawable().setColorFilter(Color.parseColor(
                             ViewCreator.getColor(viewGroup.getContext(),
-                                    appCMSPresenter.getAppCMSMain().getBrand()
-                                            .getCta().getPrimary().getBackgroundColor())),
+                                    appCMSPresenter.getAppBackgroundColor())),
                             PorterDuff.Mode.MULTIPLY);
                 }
             } else {
                 int switchOnColor = Color.parseColor(
                         ViewCreator.getColor(viewGroup.getContext(),
-                                appCMSPresenter.getAppCMSMain().getBrand()
-                                        .getCta().getPrimary().getBackgroundColor()));
+                                appCMSPresenter.getAppBackgroundColor()));
                 ColorStateList colorStateList = new ColorStateList(
                         new int[][]{
                                 new int[]{android.R.attr.state_checked},

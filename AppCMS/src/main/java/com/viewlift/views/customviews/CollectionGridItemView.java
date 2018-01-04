@@ -506,7 +506,7 @@ public class CollectionGridItemView extends BaseView {
                                             data.getGist().getDescription(),
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            Color.parseColor(appCMSPresenter.getAppTextColor()),
                                             true);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {

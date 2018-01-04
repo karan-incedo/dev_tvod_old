@@ -22,6 +22,7 @@ public class TabCreator {
         void selectNavItemAndLaunchPage(NavBarItemView navBarItemView,
                                         String pageId,
                                         String pageTitle);
+        void closeMenuPageIfHighlighted(NavBarItemView menuNavBarItemView);
     }
 
     private LinearLayout appCMSTabNavContainer;
@@ -34,7 +35,7 @@ public class TabCreator {
         int highlightColor;
         try {
             highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                    .getGeneral().getBlockTitleColor());
+                    .getCta().getPrimary().getBackgroundColor());
         } catch (Exception e) {
             //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
 //                            e.getMessage());
@@ -48,16 +49,55 @@ public class TabCreator {
         navBarItemView.setImage(tabIcon);
         navBarItemView.setHighlightColor(highlightColor);
         navBarItemView.setLabel(tabItem.getTitle());
-        navBarItemView.setOnClickListener(v -> {
-            if (onClickHandler.getSelectedNavItem() == navBarItemView) {
-                return;
-            }
 
-            appCMSPresenter.showMainFragmentView(true);
-            onClickHandler.selectNavItemAndLaunchPage(navBarItemView,
-                    tabItem.getPageId(),
-                    tabItem.getTitle());
-        });
+        if (tabItem.getTitle().equalsIgnoreCase("Search")) {
+            navBarItemView.setOnClickListener(v -> {
+                if (onClickHandler.getSelectedNavItem() == navBarItemView) {
+                    return;
+                }
+
+                if (!appCMSPresenter.isNetworkConnected()) {
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                () -> appCMSPresenter.launchBlankPage(),
+                                null);
+                        return;
+                    }
+
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                            true,
+                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                    null, null, false),
+                            null);
+                    return;
+                }
+
+                appCMSPresenter.launchSearchPage();
+            });
+        } else if (tabItem.getTitle().equalsIgnoreCase("Menu")) {
+            navBarItemView.setOnClickListener(v -> {
+                if (!appCMSPresenter.launchNavigationPage()) {
+                    //Log.e(TAG, "Could not launch navigation page!");
+                } else {
+                    if (navBarItemView.getResources().getBoolean(R.bool.menu_icon_dismisses_menu_page)) {
+                        onClickHandler.closeMenuPageIfHighlighted(navBarItemView);
+                    }
+                }
+            });
+            onClickHandler.setSelectedMenuTabIndex(currentIndex);
+        } else {
+            navBarItemView.setOnClickListener(v -> {
+                if (onClickHandler.getSelectedNavItem() == navBarItemView) {
+                    return;
+                }
+
+                appCMSPresenter.showMainFragmentView(true);
+                onClickHandler.selectNavItemAndLaunchPage(navBarItemView,
+                        tabItem.getPageId(),
+                        tabItem.getTitle());
+            });
+        }
 
         navBarItemView.setTag(tabItem.getPageId());
         if (navBarItemView.getParent() == null) {

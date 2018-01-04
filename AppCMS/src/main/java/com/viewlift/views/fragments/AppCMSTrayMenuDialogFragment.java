@@ -60,19 +60,14 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
         Button closeBtn = (Button) view.findViewById(R.id.moreDialogCloseBtn);
 
         addToWatchList.setText(isAdded ? "REMOVE TO WATCHLIST" : "ADD TO WATCHLIST");
-        addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getBackgroundColor()));
-        addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getTextColor()));
+        addToWatchList.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+        addToWatchList.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
         isDownloaded = appCMSPresenter.isVideoDownloaded(contentDatum.getId());
         downloadBtn.setVisibility(isDownloaded ? View.GONE : View.VISIBLE);
-        downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getBackgroundColor()));
-        downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getTextColor()));
-        closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                .getCta().getPrimary().getTextColor()));
+        downloadBtn.setBackgroundColor(Color.parseColor(appCMSPresenter.getAppBackgroundColor()));
+        downloadBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
+        closeBtn.setTextColor(Color.parseColor(appCMSPresenter.getAppTextColor()));
 
         addToWatchList.setOnClickListener(this);
         downloadBtn.setOnClickListener(this);
