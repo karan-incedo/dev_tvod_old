@@ -362,7 +362,9 @@ public class ViewCreator {
             videoPlayerViewBinder.setAutoplayCancelled(true);
         }
 
-        videoPlayerView.setUri(Uri.parse(videoUrl), null);
+        if (resetWatchTime) {
+            videoPlayerView.setUri(Uri.parse(videoUrl), null);
+        }
 
         if (!CastServiceProvider.getInstance(presenter.getCurrentActivity()).isCastingConnected()) {
             videoPlayerView.startPlayer();

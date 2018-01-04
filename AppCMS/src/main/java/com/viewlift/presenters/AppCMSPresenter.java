@@ -1753,8 +1753,6 @@ public class AppCMSPresenter {
 
                         AppCMSPageUI appCMSPageUI = actionToPageMap.get(actionPresenter.getAction());
 
-
-
                         String apiUrl = getApiUrl(usePageIdQueryParam,
                                 false,
                                 showPage,
@@ -3975,6 +3973,14 @@ public class AppCMSPresenter {
 
     public boolean isExternalStorageAvailable() {
         return getStorageDirectories(currentActivity).length > 0;
+    }
+
+    public boolean downloadsAvailableForApp() {
+        if (appCMSMain != null &&
+                appCMSMain.getFeatures() != null) {
+            return appCMSMain.getFeatures().isMobileAppDownloads();
+        }
+        return false;
     }
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
@@ -6239,7 +6245,9 @@ public class AppCMSPresenter {
             if (!TextUtils.isEmpty(downloadPageId)) {
                 onDownloadPage = downloadPageId.equals(pageId);
             }
-            if (!networkConnected && (downloadInProgress || !onDownloadPage)) {
+            if (!networkConnected &&
+                    (downloadInProgress || !onDownloadPage) &&
+                    downloadsAvailableForApp()) {
                 navigateToDownloadPage(getDownloadPageId(),
                         null, null, false);
             }
@@ -7485,7 +7493,7 @@ public class AppCMSPresenter {
 
     private void openDownloadScreenForNetworkError(boolean launchActivity, Action0 retryAction) {
         try { // Applied this flow for fixing SVFA-1435 App Launch Scenario
-            if (!isUserSubscribed()) {//fix SVFA-1911
+            if (!isUserSubscribed() || !downloadsAvailableForApp()) {//fix SVFA-1911
                 showDialog(DialogType.NETWORK, null, true,
                         () -> {
                             if (retryAction != null) {
@@ -7502,8 +7510,10 @@ public class AppCMSPresenter {
                 return;
             }
 
-            navigateToDownloadPage(getDownloadPageId(),
-                    null, null, launchActivity);
+            if (downloadsAvailableForApp()) {
+                navigateToDownloadPage(getDownloadPageId(),
+                        null, null, launchActivity);
+            }
         } catch (Exception e) {
             launchBlankPage();// Fix for SVFA-1435 after killing app
             sendStopLoadingPageAction(false, null);
@@ -8628,7 +8638,8 @@ public class AppCMSPresenter {
                     endPoint,
                     siteId,
                     getPageId(appCMSPageUI),
-                    appCMSPageUI.getCaching() != null && appCMSPageUI.getCaching().isEnabled());
+                    appCMSPageUI.getCaching() != null &&
+                            appCMSPageUI.getCaching().isEnabled());
             getPageViewLruCache().remove(pageId);
             getPageIdContent(apiUrl,
                     getPageId(appCMSPageUI),
@@ -10413,7 +10424,8 @@ public class AppCMSPresenter {
                         pageIdToPageAPIUrlMap.get(pageId),
                         appCMSSite.getGist().getSiteInternalName(),
                         pageId,
-                        appCMSPageUI.getCaching() != null && appCMSPageUI.getCaching().isEnabled());
+                        appCMSPageUI.getCaching() != null &&
+                                appCMSPageUI.getCaching().isEnabled());
 
                 getPageIdContent(apiUrl,
                         pageId,
@@ -10946,7 +10958,8 @@ public class AppCMSPresenter {
                         actionToPageAPIUrlMap.get(action),
                         appCMSSite.getGist().getSiteInternalName(),
                         pagePath,
-                        appCMSPageUI.getCaching() != null && appCMSPageUI.getCaching().isEnabled());
+                        appCMSPageUI.getCaching() != null &&
+                                appCMSPageUI.getCaching().isEnabled());
 
                 getPageIdContent(apiUrl,
                         pagePath,
