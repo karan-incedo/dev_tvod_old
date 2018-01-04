@@ -992,27 +992,41 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restrictPortraitOnly();
         }
 
-        appCMSPresenter.setEntitlementPendingVideoData(null);
-        if (!handlingClose && !isPageLoading()) {
-            if (appCMSPresenter.isAddOnFragmentVisible()) {
-                for (Fragment fragment : getSupportFragmentManager().getFragments()) {
-                    if (fragment instanceof AppCMSMoreFragment) {
-                        ((AppCMSMoreFragment) fragment).sendDismissAction();
-                    }
+        boolean exitFullscreen = false;
+        if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                updatedAppCMSBinder != null &&
+                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+            if (BaseView.isTablet(this)) {
+                if (ViewCreator.playerViewFullScreenEnabled()) {
+                    exitFullScreenVideoPlayer(true);
+                    exitFullscreen = true;
                 }
-                return;
             }
-
-            handlingClose = true;
-            handleCloseAction(false);
-            handlingClose = false;
-        } else if (isPageLoading()) {
-            pageLoading(false);
-            appCMSPresenter.setIsLoading(false);
-            appCMSPresenter.setNavItemToCurrentAction(this);
         }
 
-        appCMSPresenter.cancelCustomToast();
+        if (!exitFullscreen) {
+            appCMSPresenter.setEntitlementPendingVideoData(null);
+            if (!handlingClose && !isPageLoading()) {
+                if (appCMSPresenter.isAddOnFragmentVisible()) {
+                    for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                        if (fragment instanceof AppCMSMoreFragment) {
+                            ((AppCMSMoreFragment) fragment).sendDismissAction();
+                        }
+                    }
+                    return;
+                }
+
+                handlingClose = true;
+                handleCloseAction(false);
+                handlingClose = false;
+            } else if (isPageLoading()) {
+                pageLoading(false);
+                appCMSPresenter.setIsLoading(false);
+                appCMSPresenter.setNavItemToCurrentAction(this);
+            }
+
+            appCMSPresenter.cancelCustomToast();
+        }
     }
 
     @Override
