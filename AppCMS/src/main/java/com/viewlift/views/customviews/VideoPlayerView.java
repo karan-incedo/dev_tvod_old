@@ -224,7 +224,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void startPlayer() {
         if (player != null) {
             player.setPlayWhenReady(true);
-            appCMSPresenter.sendKeepScreenOnAction();
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendKeepScreenOnAction();
+            }
         }
     }
 
@@ -237,10 +239,12 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 player.setPlayWhenReady(player.getPlayWhenReady());
             }
 
-            if (player.getPlayWhenReady()) {
-                appCMSPresenter.sendKeepScreenOnAction();
-            } else {
-                appCMSPresenter.sendClearKeepScreenOnAction();
+            if (appCMSPresenter != null) {
+                if (player.getPlayWhenReady()) {
+                    appCMSPresenter.sendKeepScreenOnAction();
+                } else {
+                    appCMSPresenter.sendClearKeepScreenOnAction();
+                }
             }
         }
     }
@@ -248,21 +252,27 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void pausePlayer() {
         if (player != null) {
             player.setPlayWhenReady(false);
-            appCMSPresenter.sendClearKeepScreenOnAction();
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendClearKeepScreenOnAction();
+            }
         }
     }
 
     public void stopPlayer() {
         if (player != null) {
             player.stop();
-            appCMSPresenter.sendClearKeepScreenOnAction();
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendClearKeepScreenOnAction();
+            }
         }
     }
 
     public void releasePlayer() {
         if (player != null) {
             player.release();
-            appCMSPresenter.sendClearKeepScreenOnAction();
+            if (appCMSPresenter != null) {
+                appCMSPresenter.sendClearKeepScreenOnAction();
+            }
         }
     }
 
@@ -456,7 +466,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private void createStreamingQualitySelector() {
-        if (streamingQualitySelector != null) {
+        if (streamingQualitySelector != null && appCMSPresenter != null) {
             currentStreamingQualitySelector.setVisibility(VISIBLE);
             List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
             if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
@@ -1187,7 +1197,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void showChromecastLiveVideoPlayer(boolean show) {
         if (show) {
             chromecastLivePlayerParent.setVisibility(VISIBLE);
-            if (appCMSPresenter.getCurrentMediaRouteButton() != null) {
+            if (appCMSPresenter != null && appCMSPresenter.getCurrentMediaRouteButton() != null) {
                 chromecastButtonPlaceholder.setVisibility(VISIBLE);
             } else {
                 chromecastButtonPlaceholder.setVisibility(INVISIBLE);
@@ -1200,7 +1210,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void enterFullScreenMode() {
         disableFullScreenMode();
         fullScreenMode = true;
-        appCMSPresenter.sendEnterFullScreenAction();
+        if (appCMSPresenter != null) {
+            appCMSPresenter.sendEnterFullScreenAction();
+        }
     }
 
     public void disableFullScreenMode() {
@@ -1215,7 +1227,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void exitFullscreenMode() {
         enableFullScreenMode();
         fullScreenMode = false;
-        appCMSPresenter.sendExitFullScreenAction(true);
+        if (appCMSPresenter != null) {
+            appCMSPresenter.sendExitFullScreenAction(true);
+        }
     }
 
     public void enableFullScreenMode() {

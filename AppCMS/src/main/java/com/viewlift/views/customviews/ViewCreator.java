@@ -1090,6 +1090,11 @@ public class ViewCreator {
                                             ((DotSelectorView) view).deSelectAll();
                                             ((DotSelectorView) view).select(0);
                                         }
+                                        if (numDots <= 1) {
+                                            view.setVisibility(View.GONE);
+                                        } else {
+                                            componentViewResult.componentView.setVisibility(View.VISIBLE);
+                                        }
                                     }
                                 } else {
                                     if (componentType == AppCMSUIKeyType.PAGE_CASTVIEW_VIEW_KEY) {
@@ -2313,6 +2318,13 @@ public class ViewCreator {
                 componentViewResult.onInternalEvent = (DotSelectorView) componentViewResult.componentView;
                 componentViewResult.onInternalEvent.setModuleId(moduleId);
                 componentViewResult.useMarginsAsPercentagesOverride = false;
+
+                if (numDots <= 1) {
+                    componentViewResult.componentView.setVisibility(View.GONE);
+                } else {
+                    componentViewResult.componentView.setVisibility(View.VISIBLE);
+                }
+
                 break;
 
             case PAGE_BUTTON_KEY:

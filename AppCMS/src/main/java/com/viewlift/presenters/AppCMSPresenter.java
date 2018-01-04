@@ -3446,18 +3446,36 @@ public class AppCMSPresenter {
     }
 
     private void clearSubscriptionPlans() {
-        realmController.deleteSubscriptionPlans();
+        if (realmController != null) {
+            try {
+                realmController.deleteSubscriptionPlans();
+            } catch (Exception e) {
+
+            }
+        }
     }
 
     private void createSubscriptionPlan(SubscriptionPlan subscriptionPlan) {
-        realmController.addSubscriptionPlan(subscriptionPlan);
+        if (realmController != null) {
+            try {
+                realmController.addSubscriptionPlan(subscriptionPlan);
+            } catch (Exception e) {
+
+            }
+        }
     }
 
     @SuppressWarnings("unused")
     public List<SubscriptionPlan> getExistingSubscriptionPlans() {
         List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
-        RealmResults<SubscriptionPlan> subscriptionPlanRealmResults = realmController.getAllSubscriptionPlans();
-        subscriptionPlans.addAll(subscriptionPlanRealmResults);
+        if (realmController != null) {
+            try {
+                RealmResults<SubscriptionPlan> subscriptionPlanRealmResults = realmController.getAllSubscriptionPlans();
+                subscriptionPlans.addAll(subscriptionPlanRealmResults);
+            } catch (Exception e) {
+
+            }
+        }
         return subscriptionPlans;
     }
 
@@ -3586,8 +3604,15 @@ public class AppCMSPresenter {
     }
 
     public boolean isDownloadUnfinished() {
-        List<DownloadVideoRealm> unFinishedVideoList = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
-        return unFinishedVideoList != null && !unFinishedVideoList.isEmpty();
+        if (getRealmController() != null) {
+            try {
+                List<DownloadVideoRealm> unFinishedVideoList = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
+                return unFinishedVideoList != null && !unFinishedVideoList.isEmpty();
+            } catch (Exception e) {
+
+            }
+        }
+        return false;
     }
 
     @SuppressWarnings("unused")
@@ -3605,10 +3630,17 @@ public class AppCMSPresenter {
 
     public String getDownloadedFileSize(String filmId) {
 
-        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(filmId);
-        if (downloadVideoRealm == null)
-            return "";
-        return getDownloadedFileSize(downloadVideoRealm.getVideoSize());
+        if (realmController != null) {
+            try {
+                DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(filmId);
+                if (downloadVideoRealm == null)
+                    return "";
+                return getDownloadedFileSize(downloadVideoRealm.getVideoSize());
+            } catch (Exception e) {
+
+            }
+        }
+        return "";
     }
 
     @UiThread
@@ -3628,7 +3660,14 @@ public class AppCMSPresenter {
 
     @UiThread
     private DownloadVideoRealm getVideoDownloadedByOtherUser(String videoId) {
-        return realmController.getDownloadById(videoId);
+        if (realmController != null) {
+            try {
+                return realmController.getDownloadById(videoId);
+            } catch (Exception e) {
+
+            }
+        }
+        return null;
     }
 
     public String getDownloadedFileSize(long size) {
@@ -4855,7 +4894,7 @@ public class AppCMSPresenter {
                                                                         () -> {
                                                                             setRestoreSubscriptionReceipt(restoreSubscriptionReceipt);
                                                                             sendCloseOthersAction(null, true, false);
-                                                                            launchType = LaunchType.INIT_SIGNUP;
+                                                                            launchType = LaunchType.LOGIN_AND_SIGNUP;
                                                                             navigateToLoginPage(loginFromNavPage);
                                                                         });
                                                             }
@@ -7274,7 +7313,7 @@ public class AppCMSPresenter {
                 if (dialogType == DialogType.EXISTING_SUBSCRIPTION) {
                     title = currentActivity.getString(R.string.app_cms_existing_subscription_title);
                     message = currentActivity.getString(R.string.app_cms_existing_subscription_error_message);
-                    positiveButtonText = currentActivity.getString(R.string.app_cms_login_and_signup_button_text);
+                    positiveButtonText = currentActivity.getString(R.string.app_cms_login_button_text);
                 }
 
                 if (dialogType == DialogType.EXISTING_SUBSCRIPTION_LOGOUT) {
@@ -8341,7 +8380,14 @@ public class AppCMSPresenter {
     }
 
     public List<SubscriptionPlan> availablePlans() {
-        return realmController.getAllSubscriptionPlans();
+        if (realmController != null) {
+            try {
+                return realmController.getAllSubscriptionPlans();
+            } catch (Exception e) {
+
+            }
+        }
+        return new ArrayList<>();
     }
 
     public boolean upgradesAvailableForUser() {
@@ -10677,10 +10723,8 @@ public class AppCMSPresenter {
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
                 String action = null;
-                if ((currentActivity != null &&
-                        currentActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video)) ||
-                        (binder.getPageID() != null &&
-                                !isShowPage(binder.getPageID()))) {
+                if (currentActivity != null &&
+                        currentActivity.getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
                     action = currentContext.getString(R.string.app_cms_action_detailvideopage_key);
                 }
 

@@ -529,7 +529,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public List<String> getAvailableStreamingQualities() {
-        return new ArrayList<>(availableStreamingFormats.keySet());
+        if (availableStreamingFormats != null) {
+            return new ArrayList<>(availableStreamingFormats.keySet());
+        }
+        return new ArrayList<>();
     }
 
     @Override
