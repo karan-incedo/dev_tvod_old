@@ -69,8 +69,11 @@ public class PageView extends BaseView {
         viewParent.removeView(view);
 
         View rootView = getRootView();
-        if (rootView != null && rootView instanceof ViewGroup) {
-            ((ViewGroup) rootView).addView(view);
+        if (rootView != null) {
+            View parentView = rootView.findViewById(R.id.app_cms_parent_view);
+            if (parentView != null && parentView instanceof ViewGroup) {
+                ((ViewGroup) parentView).addView(view);
+            }
         } else {
             addView(view);
         }
