@@ -1185,6 +1185,11 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             viewHolder.getmRadio().invalidate();
         }
 
+        @Override
+        public void setItemClickListener(ItemClickListener itemClickListener) {
+            this.itemClickListener = itemClickListener;
+        }
+
         public void setSelectedIndex(int selectedIndex) {
             this.selectedIndex = selectedIndex;
         }

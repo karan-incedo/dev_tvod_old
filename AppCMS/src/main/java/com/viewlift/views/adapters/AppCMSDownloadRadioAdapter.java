@@ -28,7 +28,7 @@ public abstract class AppCMSDownloadRadioAdapter<T>
     int tintColor;
     protected int downloadQualityPosition = 1; // Default position is 1, i.e 720p
     List<T> mItems;
-    private ItemClickListener itemClickListener;
+    protected ItemClickListener itemClickListener;
     private Context mContext;
 
     public AppCMSDownloadRadioAdapter(Context context, List<T> items) {
