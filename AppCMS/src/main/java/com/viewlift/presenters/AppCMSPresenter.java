@@ -6,6 +6,7 @@ import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -7380,6 +7381,13 @@ public class AppCMSPresenter {
                         });
                     }
 
+                    dialog.setOnShowListener(arg0 -> {
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
+                        if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
+                        }
+                    });
+
                     if (dialog.getWindow() != null) {
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                                 Color.parseColor(getAppBackgroundColor())));
@@ -7665,6 +7673,14 @@ public class AppCMSPresenter {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                             ContextCompat.getColor(currentContext, R.color.colorPrimaryDark)));
                 }
+
+                dialog.setOnShowListener(arg0 -> {
+                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
+                    if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
+                    }
+                });
+
                 currentActivity.runOnUiThread(() -> {
                     if (currentActivity.getWindow().isActive()) {
                         try {
