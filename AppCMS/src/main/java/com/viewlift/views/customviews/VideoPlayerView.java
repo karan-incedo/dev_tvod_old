@@ -208,7 +208,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (getContext().getResources().getBoolean(R.bool.enable_stream_quality_selection) &&
                 currentStreamingQualitySelector != null &&
                 streamingQualitySelector != null) {
-            currentStreamingQualitySelector.setText(streamingQualitySelector.getMpegResolutionFromUrl(uri.toString()));
+            List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
+            int streamingQualityIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(videoUri.toString());
+            currentStreamingQualitySelector.setText(availableStreamingQualities.get(streamingQualityIndex));
             setSelectedStreamingQualityIndex();
         }
     }
@@ -360,7 +362,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void initializeView(Context context) {
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
+        playerView = findViewById(R.id.videoPlayerView);
         playerJustInitialized = true;
         fullScreenMode = false;
         init(context);
@@ -865,6 +867,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         List<String> getAvailableStreamingQualities();
         String getStreamingQualityUrl(String streamingQuality);
         String getMpegResolutionFromUrl(String mpegUrl);
+        int getMpegResolutionIndexFromUrl(String mpegUrl);
     }
 
     public static class PlayerState {
