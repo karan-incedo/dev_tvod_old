@@ -1485,6 +1485,31 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void enterFullScreenVideoPlayer() {
+        hideSystemUI(getWindow().getDecorView());
+        if (!BaseView.isLandscape(this)) {
+            appCMSPresenter.rotateToLandscape();
+        }
+        if (BaseView.isTablet(this)) {
+            appCMSPresenter.restrictLandscapeOnly();
+        }
+        if (!castDisabled && mMediaRouteButton != null) {
+            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
+        }
+        ViewCreator.openFullScreenVideoPlayer(this);
+    }
+
+    @Override
+    public void exitFullScreenVideoPlayer(boolean launchPage) {
+        showSystemUI(getWindow().getDecorView());
+        appCMSPresenter.unrestrictPortraitOnly();
+        ViewCreator.closeFullScreenVideoPlayer(this);
+        if (launchPage) {
+            handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
+        }
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (appCMSPresenter != null) {
@@ -1506,49 +1531,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false);
                 }
 
-                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                        updatedAppCMSBinder != null &&
-                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-                    if (!BaseView.isTablet(this)) {
-                        appCMSPresenter.unrestrictPortraitOnly();
-                        if (BaseView.isLandscape(this) ||
-                                ViewCreator.playerViewFullScreenEnabled()) {
-                            enterFullScreenVideoPlayer();
-                        } else {
-                            exitFullScreenVideoPlayer(true);
-                        }
-                    } else {
-                        if (ViewCreator.playerViewFullScreenEnabled()) {
-                            enterFullScreenVideoPlayer();
-                        } else {
-                            ViewCreator.enableFullScreenMode();
-                        }
-                    }
-                }
+//                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+//                        updatedAppCMSBinder != null &&
+//                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+//                    if (!BaseView.isTablet(this)) {
+//                        appCMSPresenter.unrestrictPortraitOnly();
+//                        if (BaseView.isLandscape(this) ||
+//                                ViewCreator.playerViewFullScreenEnabled()) {
+//                            enterFullScreenVideoPlayer();
+//                        } else {
+//                            exitFullScreenVideoPlayer(true);
+//                        }
+//                    } else {
+//                        if (ViewCreator.playerViewFullScreenEnabled()) {
+//                            enterFullScreenVideoPlayer();
+//                        } else {
+//                            ViewCreator.enableFullScreenMode();
+//                        }
+//                    }
+//                }
             }
-        }
-    }
-
-    public void enterFullScreenVideoPlayer() {
-        hideSystemUI(getWindow().getDecorView());
-        if (!BaseView.isLandscape(this)) {
-            appCMSPresenter.rotateToLandscape();
-        }
-        if (BaseView.isTablet(this)) {
-            appCMSPresenter.restrictLandscapeOnly();
-        }
-        if (!castDisabled && mMediaRouteButton != null) {
-            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
-        }
-        ViewCreator.openFullScreenVideoPlayer(this);
-    }
-
-    public void exitFullScreenVideoPlayer(boolean launchPage) {
-        showSystemUI(getWindow().getDecorView());
-        appCMSPresenter.unrestrictPortraitOnly();
-        ViewCreator.closeFullScreenVideoPlayer(this);
-        if (launchPage) {
-            handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
         }
     }
 
@@ -2167,25 +2169,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             mSearchTopButton.setVisibility(View.GONE);
         } else if (shouldShowSearchInToolbar()) {
             mSearchTopButton.setVisibility(View.VISIBLE);
-        }
-
-        if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                updatedAppCMSBinder != null &&
-                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-            if (!BaseView.isTablet(this)) {
-                appCMSPresenter.unrestrictPortraitOnly();
-                if (BaseView.isLandscape(this)) {
-                    enterFullScreenVideoPlayer();
-                } else {
-                    exitFullScreenVideoPlayer(false);
-                }
-            } else {
-                if (ViewCreator.playerViewFullScreenEnabled()) {
-                    appCMSPresenter.sendEnterFullScreenAction();
-                } else {
-                    ViewCreator.enableFullScreenMode();
-                }
-            }
         }
     }
 

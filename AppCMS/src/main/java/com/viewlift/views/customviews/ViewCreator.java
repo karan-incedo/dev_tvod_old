@@ -451,7 +451,7 @@ public class ViewCreator {
         this.ignoreBinderUpdate = ignoreBinderUpdate;
     }
 
-    public static void openFullScreenVideoPlayer(FragmentActivity activity) {
+    public static void openFullScreenVideoPlayer(Activity activity) {
         if (videoPlayerView != null && videoPlayerView.getParent() != null
                 && videoPlayerView.getParent() instanceof ViewGroup) {
             PageView pageViewAncestor = videoPlayerView.getPageView();
@@ -1475,6 +1475,24 @@ public class ViewCreator {
                     ((ViewGroup) appCMSPresenter.getCurrentMediaRouteButton().getParent()).removeView(appCMSPresenter.getCurrentMediaRouteButton());
                 }
                 appCMSPresenter.getCurrentMediaRouteButtonParent().addView(appCMSPresenter.getCurrentMediaRouteButton());
+            }
+        }
+
+        if (context.getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+                appCMSPresenter.isPageAVideoPage(screenName)) {
+            if (!BaseView.isTablet(context)) {
+                appCMSPresenter.unrestrictPortraitOnly();
+                if (BaseView.isLandscape(context)) {
+                    openFullScreenVideoPlayer(appCMSPresenter.getCurrentActivity());
+                } else {
+                    closeFullScreenVideoPlayer(appCMSPresenter.getCurrentActivity());
+                }
+            } else {
+                if (ViewCreator.playerViewFullScreenEnabled()) {
+                    openFullScreenVideoPlayer(appCMSPresenter.getCurrentActivity());
+                } else {
+                    closeFullScreenVideoPlayer(appCMSPresenter.getCurrentActivity());
+                }
             }
         }
 
@@ -3686,6 +3704,10 @@ public class ViewCreator {
                                     videoUrl, closedCaptionUrl, moduleAPI.getContentData().get(0).getGist().getId(),
                                     moduleAPI.getContentData().get(0).getGist().getWatchedTime());
                             videoPlayerView.setPageView(pageView);
+                            if (videoPlayerView.getParent() != null &&
+                                    videoPlayerView.getParent() instanceof ViewGroup) {
+                                ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
+                            }
                             String videoTitleTextColor = appCMSPresenter.getAppTextColor();
                             if (videoTitleTextColor != null) {
                                 videoPlayerView.setVideoTitle(moduleAPI.getContentData().get(0).getGist().getTitle(),
