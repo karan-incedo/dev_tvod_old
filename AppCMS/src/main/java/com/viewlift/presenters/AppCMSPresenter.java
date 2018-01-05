@@ -6385,7 +6385,7 @@ public class AppCMSPresenter {
                                         facebookLoginResponse.isSubscribed(),
                                         launchType == LaunchType.INIT_SIGNUP ||
                                                 launchType == LaunchType.SUBSCRIBE ||
-                                                (!isUserLoggedIn() && !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
+                                                !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
                                         refreshSubscriptionData);
                             }
                         }
@@ -6449,7 +6449,7 @@ public class AppCMSPresenter {
                                         googleLoginResponse.isSubscribed(),
                                         launchType == LaunchType.INIT_SIGNUP ||
                                                 launchType == LaunchType.SUBSCRIBE ||
-                                                (!isUserLoggedIn() && !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
+                                                !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
                                         refreshSubscriptionData);
                             }
                         }
