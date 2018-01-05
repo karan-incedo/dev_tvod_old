@@ -524,7 +524,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             try {
                 List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
                 if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
-                    listViewAdapter.setSelectedIndex(availableStreamingQualities.indexOf(streamingQualitySelector.getMpegResolutionFromUrl(uri.toString())));
+                    listViewAdapter.setSelectedIndex(streamingQualitySelector.getMpegResolutionIndexFromUrl(uri.toString()));
                 }
             } catch (Exception e) {
                 listViewAdapter.setSelectedIndex(0);
@@ -1146,22 +1146,19 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
             ViewHolder viewHolder = super.onCreateViewHolder(viewGroup, i);
 
-            viewHolder.getmText().setBackgroundColor(
-                    Color.parseColor(ViewCreator.getColor(viewGroup.getContext(), appCMSPresenter.getAppBackgroundColor())));
-
-            viewHolder.getmText().setTextColor(Color.parseColor(ViewCreator.getColor(viewGroup.getContext(), appCMSPresenter.getAppTextColor())));
+            viewHolder.getmText().setTextColor(Color.parseColor(ViewCreator.getColor(viewGroup.getContext(), appCMSPresenter.getAppCtaTextColor())));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 if (viewHolder.getmRadio().getButtonDrawable() != null) {
                     viewHolder.getmRadio().getButtonDrawable().setColorFilter(Color.parseColor(
                             ViewCreator.getColor(viewGroup.getContext(),
-                                    appCMSPresenter.getAppBackgroundColor())),
+                                    appCMSPresenter.getAppCtaBackgroundColor())),
                             PorterDuff.Mode.MULTIPLY);
                 }
             } else {
                 int switchOnColor = Color.parseColor(
                         ViewCreator.getColor(viewGroup.getContext(),
-                                appCMSPresenter.getAppBackgroundColor()));
+                                appCMSPresenter.getAppCtaBackgroundColor()));
                 ColorStateList colorStateList = new ColorStateList(
                         new int[][]{
                                 new int[]{android.R.attr.state_checked},

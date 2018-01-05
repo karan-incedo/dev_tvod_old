@@ -3062,7 +3062,7 @@ public class ViewCreator {
                     try {
                         componentViewResult.componentView.getBackground().setColorFilter(Color.parseColor(
                                 getColor(context,
-                                        appCMSPresenter.getAppBackgroundColor())),
+                                        appCMSPresenter.getAppCtaBackgroundColor())),
                                 PorterDuff.Mode.SRC_ATOP);
                     } catch (Exception e) {
                         //
@@ -4381,10 +4381,10 @@ public class ViewCreator {
                         false);
 
                 try {
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCtaBackgroundColor())) {
                         ((TextView) result).setTextColor(
                                 Color.parseColor(
-                                        getColor(parent.getContext(), appCMSPresenter.getAppTextColor())));
+                                        getColor(parent.getContext(), appCMSPresenter.getAppCtaBackgroundColor())));
                     }
                 } catch (Exception e) {
                     //
@@ -4430,10 +4430,10 @@ public class ViewCreator {
                         false);
 
                 try {
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
+                    if (!TextUtils.isEmpty(appCMSPresenter.getAppCtaBackgroundColor())) {
                         ((TextView) result).setTextColor(
                                 Color.parseColor(
-                                        getColor(parent.getContext(), appCMSPresenter.getAppTextColor())));
+                                        getColor(parent.getContext(), appCMSPresenter.getAppCtaBackgroundColor())));
                     }
                 } catch (Exception e) {
                     //
