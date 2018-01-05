@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,7 +24,7 @@ import com.viewlift.views.customviews.BaseView;
  * Created by sandeep.singh on 11/7/2017.
  */
 
-public class AppCMSTeamListFragment extends DialogFragment {
+public class AppCMSTeamListFragment extends Fragment {
     private static final String TAG = "AppCMSTeamListFragment";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";

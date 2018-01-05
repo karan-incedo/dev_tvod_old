@@ -750,43 +750,6 @@ public class CollectionGridItemView extends BaseView {
         return formatter.format(calendar.getTime());
     }
 
-    public static String convertSecondsToTime(long runtime) {
-        StringBuilder timeInString = new StringBuilder();
-        runtime = runtime * 1000;
-
-        long days = TimeUnit.MILLISECONDS.toDays(runtime);
-        runtime -= TimeUnit.DAYS.toMillis(days);
-        if (days != 0){
-            timeInString.append(Long.toString(days));
-        }
-
-        long hours = TimeUnit.MILLISECONDS.toHours(runtime);
-        runtime -= TimeUnit.HOURS.toMillis(hours);
-        if (hours != 0 || timeInString.length() > 0){
-            if (timeInString.length() > 0) {
-                timeInString.append(":");
-            }
-            timeInString.append(Long.toString(hours));
-        }
-
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(runtime);
-        runtime -= TimeUnit.MINUTES.toMillis(minutes);
-//        if (minutes != 0 || timeInString.length() > 0){
-        if (timeInString.length() > 0) {
-            timeInString.append(":");
-        }
-        timeInString.append(Long.toString(minutes));
-//        }
-
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(runtime);
-//        if (seconds != 0 || timeInString.length() > 0){
-        if (timeInString.length() > 0) {
-            timeInString.append(":");
-        }
-        timeInString.append(Long.toString(seconds));
-//        }
-        return timeInString.toString();
-    }
     public List<ItemContainer> getChildItems() {
         return childItems;
     }
