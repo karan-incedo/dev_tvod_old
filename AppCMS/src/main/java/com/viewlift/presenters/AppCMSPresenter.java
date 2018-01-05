@@ -6446,7 +6446,7 @@ public class AppCMSPresenter {
                                 waithingFor3rdPartyLogin = false;
 
                                 finalizeLogin(forceSubscribed,
-                   er                     googleLoginResponse.isSubscribed(),
+                                        googleLoginResponse.isSubscribed(),
                                         launchType == LaunchType.INIT_SIGNUP ||
                                                 launchType == LaunchType.SUBSCRIBE ||
                                                 (!isUserLoggedIn() && !TextUtils.isEmpty(getRestoreSubscriptionReceipt()),
