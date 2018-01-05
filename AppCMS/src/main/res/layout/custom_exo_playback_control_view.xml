@@ -81,6 +81,18 @@
                 android:id="@id/exo_ffwd"
                 style="@style/ExoMediaButton.FastForward" />
 
+            <TextView
+                android:id="@+id/streamingQualitySelector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:background="@drawable/streaming_quality_background"
+                android:visibility="gone"
+                android:layout_margin="@dimen/streaming_quality_view_margin"
+                android:padding="@dimen/streaming_quality_view_padding"/>
+
             <ToggleButton
                 android:id="@+id/ccButton"
                 android:layout_width="@dimen/app_cms_video_controller_cc_width"
@@ -91,17 +103,6 @@
                 android:checked="false"
                 android:textOff=""
                 android:textOn="" />
-
-            <TextView
-                android:id="@+id/streamingQualitySelector"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
-                android:gravity="center"
-                android:textAlignment="center"
-                android:background="@drawable/streaming_quality_background"
-                android:visibility="gone"
-                android:padding="@dimen/streaming_quality_view_padding"/>
 
             <ImageButton
                 android:id="@+id/full_screen_button"
