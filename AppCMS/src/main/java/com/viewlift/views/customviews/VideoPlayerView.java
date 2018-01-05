@@ -224,6 +224,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void startPlayer() {
         if (player != null) {
             player.setPlayWhenReady(true);
+            appCMSPresenter.cancelInternalEvents();
             appCMSPresenter.sendKeepScreenOnAction();
         }
     }
@@ -255,6 +256,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void stopPlayer() {
         if (player != null) {
             player.stop();
+            appCMSPresenter.restartInternalEvents();
             appCMSPresenter.sendClearKeepScreenOnAction();
         }
     }

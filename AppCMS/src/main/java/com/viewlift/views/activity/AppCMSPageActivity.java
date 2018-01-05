@@ -2173,6 +2173,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void hideSystemUI(View decorView) {
+        appCMSParentView.getLayoutParams().width = BaseView.getDeviceWidth();
+        appCMSParentView.getLayoutParams().height = BaseView.getDeviceHeight();
         decorView.setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
