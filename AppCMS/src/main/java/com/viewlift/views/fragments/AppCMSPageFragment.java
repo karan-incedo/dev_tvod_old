@@ -562,7 +562,7 @@ public class AppCMSPageFragment extends Fragment {
             }, 10);
         }
     }
-	
+
 	private void removeAllViews(ViewGroup viewGroup) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
