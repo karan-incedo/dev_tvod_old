@@ -35,7 +35,7 @@ public abstract class TVBaseView extends FrameLayout {
     protected static int DEVICE_HEIGHT;
     public static final int STANDARD_MOBILE_WIDTH_PX = 1920;
     public static final int STANDARD_MOBILE_HEIGHT_PX = 1080;
-    private static float LETTER_SPACING = 0.17f;
+    private static float LETTER_SPACING = 0.05f;
     private ViewGroup childrenContainer;
     protected boolean[] componentHasViewList;
 
@@ -179,7 +179,7 @@ public abstract class TVBaseView extends FrameLayout {
                     lm = Math.round(scaledLm);
                 }
 
-                if(mobile.getTopMargin() != null && (Float.valueOf(mobile.getTopMargin())) != 0){
+                if (mobile.getTopMargin() != null && (Float.valueOf(mobile.getTopMargin())) != 0) {
                     float scaledLm = DEVICE_HEIGHT * ((Float.valueOf(mobile.getTopMargin()) / STANDARD_MOBILE_HEIGHT_PX));
                     tm = Math.round(scaledLm);
                 }

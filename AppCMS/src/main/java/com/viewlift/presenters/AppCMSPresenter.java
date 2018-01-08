@@ -6585,7 +6585,7 @@ public class AppCMSPresenter {
         for (NavigationFooter navigationFooter : navigation.getNavigationFooter()) {
             if (pageId != null &&
                     !TextUtils.isEmpty(pageId) &&
-            navigationFooter != null &&
+                    navigationFooter != null &&
                     !TextUtils.isEmpty(navigationFooter.getPageId())
                     && pageId.contains(navigationFooter.getPageId())) {
                 return true;
@@ -8429,7 +8429,7 @@ public class AppCMSPresenter {
                                         false,
                                         false);
 
-                            }  else if (getLaunchType() == LaunchType.HOME) {
+                            } else if (getLaunchType() == LaunchType.HOME) {
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                 currentActivity.sendBroadcast(updateSubscription);
 
@@ -8843,7 +8843,7 @@ public class AppCMSPresenter {
     }
 
     public void launchBlankPage() {
-        if(getPlatformType() == PlatformType.ANDROID) {
+        if (getPlatformType() == PlatformType.ANDROID) {
             if (currentActivity != null) {
                 Bundle args = getPageActivityBundle(currentActivity,
                         null,
@@ -8864,7 +8864,7 @@ public class AppCMSPresenter {
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 currentActivity.startActivity(appCMSIntent);
             }
-        }else if(getPlatformType() == PlatformType.TV){
+        } else if (getPlatformType() == PlatformType.TV) {
             launchErrorActivity(PlatformType.TV);
         }
     }
@@ -9756,7 +9756,7 @@ public class AppCMSPresenter {
                     }
                     navigation = appCMSAndroidUI.getNavigation();
 
-                    if(getTemplateType() == TemplateType.ENTERTAINMENT) {
+                    if (getTemplateType() == TemplateType.ENTERTAINMENT) {
                         //add search in navigation item.
                         NavigationPrimary myProfile = new NavigationPrimary();
                         myProfile.setPageId(currentActivity.getString(R.string.app_cms_my_profile_label,
@@ -9781,7 +9781,7 @@ public class AppCMSPresenter {
                                 //Log.d(TAG, "Launching first page: " + firstPage.getPageName());
                                 cancelInternalEvents();
 
-                                if(getTemplateType() == TemplateType.ENTERTAINMENT) {
+                                if (getTemplateType() == TemplateType.ENTERTAINMENT) {
                                     Intent logoAnimIntent = new Intent(AppCMSPresenter.ACTION_LOGO_ANIMATION);
                                     currentActivity.sendBroadcast(logoAnimIntent);
                                 }
@@ -10293,7 +10293,6 @@ public class AppCMSPresenter {
                             bundle.putBinder(currentActivity.getString(R.string.app_cms_video_player_binder_key),
                                     appCMSVideoPageBinder);
                             playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
-
                             currentActivity.startActivityForResult(playVideoIntent, PLAYER_REQUEST_CODE);
 
                             new Handler().postDelayed(() -> sendCloseOthersAction(null, true, false), 200);
@@ -10625,7 +10624,7 @@ public class AppCMSPresenter {
     }
 
     @SuppressWarnings("unused")
-    public void openSearch(String pageId , String pageTitle) {
+    public void openSearch(String pageId, String pageTitle) {
         Intent searchIntent = new Intent(SEARCH_ACTION);
         Bundle bundle = getPageActivityBundle(
                 currentActivity,
@@ -10634,8 +10633,8 @@ public class AppCMSPresenter {
                 pageId,
                 pageTitle,
                 pageIdToPageNameMap.get(pageId),
-                pageTitle,false,false,false,false,
-                false,Uri.EMPTY,ExtraScreenType.NONE
+                pageTitle, false, false, false, false,
+                false, Uri.EMPTY, ExtraScreenType.NONE
         );
 
         searchIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
@@ -11622,15 +11621,16 @@ public class AppCMSPresenter {
         }
     }
 
-    public MetaPage getPrivacyPolicyPage(){
+    public MetaPage getPrivacyPolicyPage() {
         return privacyPolicyPage;
     }
 
-    public MetaPage getTosPage(){
+    public MetaPage getTosPage() {
         return tosPage;
     }
 
-    private LruCache<String , Object> tvPlayerViewCache;
+    private LruCache<String, Object> tvPlayerViewCache;
+
     public LruCache<String, Object> getPlayerLruCache() {
         if (tvPlayerViewCache == null) {
             int Player_lru_cache_size = 5;

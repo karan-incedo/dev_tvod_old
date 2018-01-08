@@ -45,6 +45,8 @@
 
     <string name="video_image_key">video_image_key</string>
 
+    <string name="buffering_text">Buffering...</string>
+
 
     <plurals name="mins_abbreviation">
         <item quantity="one">MIN</item>
@@ -57,10 +59,10 @@
     <string name="no_data_in_history_text">You haven\'t watched anything yet.</string>
     <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
 
-     <string name="blank_email_error_msg">Please enter email to continue.</string>
+    <string name="blank_email_error_msg">Please enter email to continue.</string>
     <string name="blank_password_error_msg">Please enter password to continue.</string>
     <string name="back">BACK</string>
-    
+
     <string name="watch_live_text">WATCH LIVE GAMES - <u>START FREE TRIAL NOW</u> </string>
 
     <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>

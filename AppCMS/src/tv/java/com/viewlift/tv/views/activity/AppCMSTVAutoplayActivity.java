@@ -100,7 +100,7 @@ public class AppCMSTVAutoplayActivity extends AppCmsBaseActivity
                 binder.getCurrentPlayingVideoIndex() + 1,
                 0);
         binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
-        //finish();
+//        finish();
     }
 
     @Override

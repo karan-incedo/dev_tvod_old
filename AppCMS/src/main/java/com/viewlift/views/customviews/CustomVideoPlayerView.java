@@ -455,7 +455,7 @@ public class CustomVideoPlayerView
                 }
                 break;
             case STATE_BUFFERING:
-                showProgressBar("buffering...");
+                showProgressBar(getResources().getString(R.string.buffering_text));
 
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = false;

@@ -636,8 +636,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 //            }
 //        }
 
-        // appCMSBinderStack.remove(getTag(appCMSBinder));
-
         appCMSBinderStack.push(tag);
         appCMSBinderMap.put(tag, appCMSBinder);
 

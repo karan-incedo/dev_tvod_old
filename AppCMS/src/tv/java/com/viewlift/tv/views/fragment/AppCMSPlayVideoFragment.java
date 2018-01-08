@@ -263,7 +263,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 switch (playerState.getPlaybackState()) {
                     case ExoPlayer.STATE_BUFFERING:
                         Log.d(TAG, "Video STATE_BUFFERING");
-                        text += "buffering...";
+                        text += getResources().getString(R.string.buffering_text);
+
                         playBackStateLayout.setVisibility(View.VISIBLE);
 
                         if (beaconMessageThread != null) {
@@ -273,7 +274,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                             beaconBufferingThread.sendBeaconBuffering = true;
                             if (!beaconBufferingThread.isAlive()) {
                                 beaconBufferingThread.start();
-                             }
+                            }
                         }
 
                         break;
@@ -359,6 +360,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private boolean isAdsDisplaying = false;
+
     public boolean isAdsPlaying() {
         return isAdsDisplaying;
     }
@@ -734,7 +736,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "Ad Error: " + adErrorEvent.getError().getMessage());
-        if(videoPlayerView.getPlayer() != null){
+        if (videoPlayerView.getPlayer() != null) {
             videoPlayerView.getPlayer().setPlayWhenReady(true);
         }
         isAdsDisplaying = false;
@@ -904,11 +906,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     public boolean showController(KeyEvent event) {
-        if(null != videoPlayerView) {
+        if (null != videoPlayerView) {
             SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
             if (null != playerView) {
-                if(null != playerView.getPlayer()){
-                    if( playerView.getPlayer().getPlayWhenReady() ) {
+                if (null != playerView.getPlayer()) {
+                    if (playerView.getPlayer().getPlayWhenReady()) {
                         playerView.showController();
 //                        return playerView.dispatchMediaKeyEvent(event);
                     }
@@ -1066,7 +1068,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                             }
                         }
                     }
-                }catch (InterruptedException e) {
+                } catch (InterruptedException e) {
                     Log.e(TAG, "BeaconPingThread sleep interrupted");
                 }
             }
