@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -67,13 +66,7 @@ public class PageView extends BaseView {
 
         childrenContainer.setVisibility(GONE);
         viewParent.removeView(view);
-
-        View rootView = getRootView();
-        if (rootView != null && rootView instanceof ViewGroup) {
-            ((ViewGroup) rootView).addView(view);
-        } else {
-            addView(view);
-        }
+        addView(view);
 
         view.forceLayout();
 
@@ -82,10 +75,8 @@ public class PageView extends BaseView {
 
     public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
         shouldRefresh = true;
-        if (view.getParent() != null &&
-                view.getParent() instanceof ViewGroup &&
-                ((ViewGroup) view.getParent()).getId() == R.id.app_cms_parent_view) {
-            ((ViewGroup) view.getParent()).removeView(view);
+        if (view.getParent() == this) {
+            removeView(view);
 
             childrenContainer.setVisibility(VISIBLE);
 

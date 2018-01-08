@@ -1483,15 +1483,15 @@ public class ViewCreator {
             if (!BaseView.isTablet(context)) {
                 appCMSPresenter.unrestrictPortraitOnly();
                 if (BaseView.isLandscape(context)) {
-                    appCMSPresenter.sendEnterFullScreenAction();
+                    openFullScreenVideoPlayer(appCMSPresenter.getCurrentActivity());
                 } else {
-                    appCMSPresenter.sendExitFullScreenAction(false);
+                    closeFullScreenVideoPlayer(appCMSPresenter.getCurrentActivity());
                 }
             } else {
                 if (ViewCreator.playerViewFullScreenEnabled()) {
-                    appCMSPresenter.sendEnterFullScreenAction();
+                    openFullScreenVideoPlayer(appCMSPresenter.getCurrentActivity());
                 } else {
-                    appCMSPresenter.sendExitFullScreenAction(false);
+                    closeFullScreenVideoPlayer(appCMSPresenter.getCurrentActivity());
                 }
             }
         }
