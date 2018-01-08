@@ -363,11 +363,6 @@ public class ViewCreator {
             currentWatchedTime = videoPlayerView.getCurrentPosition();
         }
 
-//        if (videoPlayerView.getDuration() <= currentWatchedTime &&
-//                0 < currentWatchedTime) {
-//            videoPlayerViewBinder.setAutoplayCancelled(true);
-//        }
-
         if (resetWatchTime) {
             videoPlayerView.setUri(Uri.parse(videoUrl), null);
         }
@@ -428,29 +423,6 @@ public class ViewCreator {
                 null,
                 resetWatchTime);
 
-//        videoPlayerView.setOnPlayerStateChanged(playerState -> {
-//            if (videoPlayerViewBinder != null) {
-//                if (playerState.getPlaybackState() == Player.STATE_ENDED &&
-//                        videoPlayerViewBinder.getPlayerState() != Player.STATE_ENDED &&
-//                        0 < videoPlayerView.getDuration() &&
-//                        videoPlayerView.getDuration() <= videoPlayerView.getCurrentPosition()) {
-//                    if (!videoPlayerViewBinder.isAutoplayCancelled() &&
-//                            videoPlayerViewBinder.getCurrentPlayingVideoIndex() <
-//                            videoPlayerViewBinder.getRelateVideoIds().size()) {
-//                        if (presenter.getAutoplayEnabledUserPref(presenter.getCurrentActivity()) &&
-//                                videoPlayerViewBinder != null) {
-//                            videoPlayerViewBinder.setCurrentPlayingVideoIndex(videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1);
-//                            presenter.playNextVideo(videoPlayerViewBinder,
-//                                    videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1,
-//                                    videoPlayerViewBinder.getContentData().getGist().getWatchedTime());
-//                        }
-//                    }
-//                }
-//                videoPlayerViewBinder.setAutoplayCancelled(videoPlayerViewBinder.getPlayerState() == playerState.getPlaybackState());
-//                videoPlayerViewBinder.setPlayerState(playerState.getPlaybackState());
-//            }
-//        });
-
         return videoPlayerView;
     }
 
@@ -485,7 +457,6 @@ public class ViewCreator {
                 }
                 if (videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId())) {
                     currentlyPlayingIndex = videoPlayerViewBinder.getCurrentPlayingVideoIndex();
-//                    videoPlayerViewBinder.setAutoplayCancelled(true);
                 }
                 videoPlayerViewBinder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
                 videoPlayerViewBinder.setContentData(contentDatum);
