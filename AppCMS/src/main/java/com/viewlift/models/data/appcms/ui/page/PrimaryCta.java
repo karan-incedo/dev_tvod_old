@@ -16,6 +16,12 @@ public class PrimaryCta implements Serializable {
     @Expose
     String ctaText;
 
+
+    @SerializedName("bannerText")
+    @Expose
+    String bannerText;
+
+
     @SerializedName("displayedPath")
     @Expose
     String displayedPath;
@@ -31,10 +37,6 @@ public class PrimaryCta implements Serializable {
     @SerializedName("url")
     @Expose
     String url;
-
-    @SerializedName("bannerText")
-    @Expose
-    String bannerText;
 
     public String getBannerText() {
         return bannerText;

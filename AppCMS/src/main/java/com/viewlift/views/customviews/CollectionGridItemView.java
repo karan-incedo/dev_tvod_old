@@ -119,9 +119,9 @@ public class CollectionGridItemView extends BaseView {
         }
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
         marginLayoutParams.setMargins(horizontalMargin,
-                5,
+                verticalMargin,
                 horizontalMargin,
-                5);
+                verticalMargin);
         layoutParams = new FrameLayout.LayoutParams(marginLayoutParams);
         setLayoutParams(layoutParams);
         childItems = new ArrayList<>();
@@ -173,7 +173,6 @@ public class CollectionGridItemView extends BaseView {
             CardView.LayoutParams childContainerLayoutParams =
                     new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.MATCH_PARENT);
-            childContainerLayoutParams.setMargins(0,0,0,0);
             childrenContainer.setLayoutParams(childContainerLayoutParams);
 
             if (createRoundedCorners) {
@@ -191,6 +190,7 @@ public class CollectionGridItemView extends BaseView {
     public boolean performClick() {
         return super.performClick();
     }
+
     public void addChild(ItemContainer itemContainer) {
         if (childrenContainer == null) {
             createChildrenContainer();

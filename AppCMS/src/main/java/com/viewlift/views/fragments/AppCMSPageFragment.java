@@ -373,7 +373,6 @@ public class AppCMSPageFragment extends Fragment {
         sendFirebaseAnalyticsEvents(appCMSBinder);
         this.appCMSBinder = appCMSBinder;
         ViewCreator viewCreator = getViewCreator();
-        viewCreator.setIgnoreBinderUpdate(true);
         List<String> modulesToIgnore = getModulesToIgnore();
         if (viewCreator != null && modulesToIgnore != null) {
             boolean updatePage = false;
@@ -401,9 +400,7 @@ public class AppCMSPageFragment extends Fragment {
                 if (pageViewGroup != null &&
                         pageView != null &&
                         pageView.getParent() == null) {
-                    if (pageViewGroup.getChildCount() > 0) {
-                        pageViewGroup.removeAllViews();
-                    }
+                    removeAllViews(pageViewGroup);
                     pageViewGroup.addView(pageView);
                     if (updatePage) {
                         updateAllViews(pageViewGroup);
@@ -441,12 +438,6 @@ public class AppCMSPageFragment extends Fragment {
                 child.requestLayout();
             }
         }
-    }
-
-    public interface OnPageCreation {
-        void onSuccess(AppCMSBinder appCMSBinder);
-
-        void onError(AppCMSBinder appCMSBinder);
     }
 
     public synchronized void setPageOriantationForVideoPage() {
@@ -567,6 +558,21 @@ public class AppCMSPageFragment extends Fragment {
                 }
             }, 10);
         }
+    }
+	
+	private void removeAllViews(ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
+                removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
+            }
+        }
+        viewGroup.removeAllViews();
+    }
+
+    public interface OnPageCreation {
+        void onSuccess(AppCMSBinder appCMSBinder);
+
+        void onError(AppCMSBinder appCMSBinder);
     }
 
 }
