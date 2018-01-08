@@ -30,8 +30,8 @@ public class Navigation implements Serializable {
     @SerializedName("tabBar")
     @Expose
     List<NavigationPrimary> tabBar = null;
-	
-	
+
+
 	@SerializedName("right")
     @Expose
     List<NavigationPrimary> right = null;
