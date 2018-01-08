@@ -199,7 +199,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver downloadReceiver;
     private BroadcastReceiver notifyUpdateListsReceiver;
     private BroadcastReceiver refreshPageDataReceiver;
-    private BroadcastReceiver processDeeplinkReceiver;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -1160,11 +1159,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-//        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && !BaseView.isTablet(this) && appCMSPresenter.isExitFullScreen) {
-//            appCMSPresenter.restrictPortraitOnly();
-//            appCMSPresenter.isExitFullScreen = false;
-//            return;
-//        }
         if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView != null) {
             appCMSPresenter.restrictLandscapeOnly();
             return;
@@ -1365,8 +1359,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!castDisabled) {
             setMediaRouterButtonVisibility(appCMSBinder.getPageId());
         }
-//        appCMSPresenter.dismissPopupWindowPlayer(false);
-
         createFragment(appCMSBinder);
     }
 
@@ -1475,8 +1467,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (!(appCMSPageFragment instanceof AppCMSPageFragment) && appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
-//                appCMSPresenter.dismissPopupWindowPlayer(false);
-            }
+          }
             if (appCMSPageFragment != null) {
                 fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));

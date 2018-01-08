@@ -8,6 +8,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -61,6 +62,7 @@ import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
+import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSUserWatHisDowAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
@@ -155,32 +157,25 @@ public class ViewCreator {
         return totalEpisodes;
     }
 
+    /**
+     * Fix for JM-26
+     */
     static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int numberOfViewsToBeSeparated = 0;
+
         long durationInSeconds = data.getGist().getRuntime();
 
         long minutes = durationInSeconds / 60;
         long seconds = durationInSeconds % 60;
 
         String year = data.getGist().getYear();
-        String primaryCategory = data.getGist().getPrimaryCategory() != null ?
-                data.getGist().getPrimaryCategory().getTitle() : null;
-
-        if (!TextUtils.isEmpty(String.valueOf(data.getGist().getRuntime()))) {
-            numberOfViewsToBeSeparated++;
-        }
-
-        if (!TextUtils.isEmpty(data.getGist().getYear())) {
-            numberOfViewsToBeSeparated++;
-        }
-
-        if (data.getGist().getPrimaryCategory() != null) {
-            if (!TextUtils.isEmpty(data.getGist().getPrimaryCategory().getTitle())) {
-                numberOfViewsToBeSeparated++;
-            }
-        }
-        boolean appendFirstSep = numberOfViewsToBeSeparated > 1;
-        boolean appendSecondSep = numberOfViewsToBeSeparated > 2;
+        String primaryCategory =
+                data.getGist().getPrimaryCategory() != null ?
+                        data.getGist().getPrimaryCategory().getTitle() :
+                        null;
+//        boolean appendFirstSep = minutes > 0
+//                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+//        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
+//                && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
 
@@ -485,7 +480,8 @@ public class ViewCreator {
                                                     }
 
                                                     appCMSPresenter.launchVideoPlayer(moduleAPI.getContentData().get(0),
-                                                            currentPlayingIndex, relatedVideoIds,
+                                                            currentPlayingIndex,
+                                                            relatedVideoIds,
                                                             moduleAPI.getContentData().get(0).getGist().getWatchedTime(),
                                                             component.getAction());
 
@@ -1247,6 +1243,8 @@ public class ViewCreator {
                     appCMSAndroidModules);
             pageView.addModuleViewWithModuleId(module.getId(), moduleView);
         } else {
+
+
             if (module.getComponents() != null) {
 
                 updateModuleHeight(context,
@@ -1580,17 +1578,6 @@ public class ViewCreator {
                 appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
 
         switch (componentType) {
-
-            case PAGE_RATINGBAR:
-                if (moduleAPI.getContentData() != null &&
-                        !moduleAPI.getContentData().isEmpty() &&
-                        moduleAPI.getContentData().get(0) != null &&
-                        moduleAPI.getContentData().get(0).getGist() != null) {
-                    componentViewResult.componentView = new StarRating(context, Color.parseColor(getColor(context, component.getBorderColor())),
-                            Color.parseColor(getColor(context, component.getFillColor())),
-                            moduleAPI.getContentData().get(0).getGist().getAverageStarRating());
-                }
-                break;
             case PAGE_TABLE_VIEW_KEY:
                 if (moduleType == AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY) {
 
@@ -1643,45 +1630,7 @@ public class ViewCreator {
                                     LinearLayoutManager.VERTICAL,
                                     false));
 
-                    CollectionGridItemViewCreator collectionGridItemViewCreator =
-                            new CollectionGridItemViewCreator(this,
-                                    parentLayout,
-                                    false,
-                                    component,
-                                    appCMSPresenter,
-                                    moduleAPI,
-                                    appCMSAndroidModules,
-                                    settings,
-                                    jsonValueKeyMap,
-                                    ViewGroup.LayoutParams.MATCH_PARENT,
-                                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                                    true,
-                                    true,
-                                    viewType,
-                                    false,
-                                    false);
-
-//                    AppCMSTrayItemAdapter appCMSTrayItemAdapter = new AppCMSTrayItemAdapter(context,
-//                            collectionGridItemViewCreator,
-//                            moduleAPI != null ? moduleAPI.getContentData() : null,
-//                            component.getComponents(),
-//                            appCMSPresenter,
-//                            jsonValueKeyMap,
-//                            viewType,
-//                            (RecyclerView) componentViewResult.componentView);
-//
-//                    ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSTrayItemAdapter);
-//                    componentViewResult.onInternalEvent = appCMSTrayItemAdapter;
-//                    componentViewResult.onInternalEvent.setModuleId(moduleId);
-//
-//                    if (pageView != null) {
-//                        pageView.addListWithAdapter(new ListWithAdapter.Builder()
-//                                .adapter(appCMSTrayItemAdapter)
-//                                .listview((RecyclerView) componentViewResult.componentView)
-//                                .id(moduleId + component.getKey())
-//                                .build());
-//                    }
-//                }
+                    
                     AppCMSUserWatHisDowAdapter appCMSUserWatHisDowAdapter = new AppCMSUserWatHisDowAdapter(context,
                             this,
                             appCMSPresenter,
@@ -4097,7 +4046,7 @@ public class ViewCreator {
     }
 
     private static class EmptyPStyledTextHandler extends StyledTextHandler {
-        EmptyPStyledTextHandler(Style style) {
+        public EmptyPStyledTextHandler(Style style) {
             super(style);
         }
 
