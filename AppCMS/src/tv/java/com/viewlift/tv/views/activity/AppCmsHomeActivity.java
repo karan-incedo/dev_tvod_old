@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -49,6 +48,7 @@ import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 
 import java.util.HashMap;
@@ -238,12 +238,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                 } else if (intent.getAction().equals(AppCMSPresenter.UPDATE_SUBSCRIPTION)) {
                     updateSubscriptionStrip();
                 } else if (intent.getAction().equals(AppCMSPresenter.SWITCH_SEASON_ACTION)) {
-                    Log.d(TAG, "Broadcast Received " + intent.getIntExtra(context.getString(R.string.app_cms_selected_season_key), 0));
-                    Fragment parentFragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
-                    AppCmsBrowseFragment browseFragment = (AppCmsBrowseFragment) parentFragment.getChildFragmentManager().
-                            findFragmentById(R.id.appcms_browsefragment);
-                    browseFragment.getAdapter().get(0);
-                    Log.d(TAG, browseFragment.toString());
+                    AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder = (AppCMSSwitchSeasonBinder) intent.getExtras().getBundle("app_cms_season_selector_key").getBinder("app_cms_episode_data");
+                    AppCmsTVPageFragment parentFragment = (AppCmsTVPageFragment) getFragmentManager().findFragmentById(R.id.home_placeholder);
+                    parentFragment.updateSeasonData(appCMSSwitchSeasonBinder);
                 }
             }
         };

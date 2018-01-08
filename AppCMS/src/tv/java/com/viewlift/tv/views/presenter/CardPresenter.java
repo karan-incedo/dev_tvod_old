@@ -194,7 +194,9 @@ public class CardPresenter extends Presenter {
                                 if (null != blockName && (blockName.equalsIgnoreCase("tray01")
                                         || blockName.equalsIgnoreCase("tray02")
                                         || blockName.equalsIgnoreCase("grid01")
-                                        || blockName.equalsIgnoreCase("showDetail01"))) {
+                                        || blockName.equalsIgnoreCase("showDetail01")
+                                        || blockName.equalsIgnoreCase("tray04")
+                                        || blockName.equalsIgnoreCase("continuewatching01"))) {
                                     imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, component));
                                 }
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());

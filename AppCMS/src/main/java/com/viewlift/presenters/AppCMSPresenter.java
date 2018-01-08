@@ -98,7 +98,6 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.DeleteHistoryRequest;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.Mpeg;
-import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.Settings;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
@@ -198,6 +197,7 @@ import com.viewlift.views.activity.AutoplayActivity;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -10729,6 +10729,13 @@ public class AppCMSPresenter {
                                                     }
                                                     //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                     if (!TextUtils.isEmpty(extraData[1])) {
+
+                                                        List<String> relatedVideoIds;
+                                                        if (relateVideoIds == null) {
+                                                            relatedVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
+                                                        } else {
+                                                            relatedVideoIds = relateVideoIds;
+                                                        }
                                                         launchTVButtonSelectedAction(contentDatum.getGist().getId(),
                                                                 action,
                                                                 appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
@@ -10736,7 +10743,7 @@ public class AppCMSPresenter {
                                                                 appCMSVideoDetail.getRecords().get(0),
                                                                 false,
                                                                 currentlyPlayingIndex,
-                                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                                                relatedVideoIds);
                                                     } else {
                                                         openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                                                 currentActivity.getString(R.string.app_name)),
@@ -11130,10 +11137,11 @@ public class AppCMSPresenter {
         this.shouldLaunchLoginAction = false;
     }
 
-    public void showSwitchSeasonsDialog(List<Season_> seasons) {
-        android.app.FragmentTransaction ft = getCurrentActivity().getFragmentManager()
-                .beginTransaction();
-        SwitchSeasonsDialogFragment switchSeasonsDialogFragment = SwitchSeasonsDialogFragment.newInstance(seasons);
+    public void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
+        android.app.FragmentTransaction ft =
+                getCurrentActivity().getFragmentManager().beginTransaction();
+        SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
+                SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
         switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
 
     }

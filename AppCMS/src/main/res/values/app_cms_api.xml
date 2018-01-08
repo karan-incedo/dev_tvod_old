@@ -195,6 +195,7 @@
     <string name="app_cms_page_thumbnail_image_video_key">videoThumbnailImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_start_watching_button_key">startWatching</string>
+    <string name="app_cms_page_show_start_watching_button_key">showStartWatching</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
     <string name="app_cms_page_show_video_description_key">showDescriptionText</string>
     <string name="app_cms_page_video_title_key">videoTitle</string>
@@ -207,6 +208,7 @@
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
+    <string name="app_cms_show_watchTrailer_key">watchShowTrailer</string>
     <string name="app_cms_start_watching_key">startWatching</string>
     <string name="app_cms_switch_seasons_key">switchSeasons</string>
     <string name="app_cms_page_share_key">shareButton</string>

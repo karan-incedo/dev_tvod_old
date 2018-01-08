@@ -1,7 +1,10 @@
 package com.viewlift.tv.views.fragment;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,6 +23,7 @@ import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 
 import java.util.List;
 
@@ -29,13 +33,51 @@ import java.util.List;
  */
 
 public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
-    private static List<Season_> mSeasons;
-    private RecyclerView rvSwitchSeasons;
+    private List<Season_> mSeasons;
+    private static AppCMSSwitchSeasonBinder mAppCMSSwitchSeasonBinder;
     private AppCMSPresenter appCMSPresenter;
     private Activity mContext;
+    private BroadcastReceiver broadcastReceiver;
+    private static int selectedSeasonIndex;
+    private SwitchSeasonsAdapter switchSeasonsAdapter;
 
     public SwitchSeasonsDialogFragment() {
         super();
+        mSeasons = mAppCMSSwitchSeasonBinder.getSeasonList();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(AppCMSPresenter.SWITCH_SEASON_ACTION));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getAction() != null && intent.getAction().equals(AppCMSPresenter.SWITCH_SEASON_ACTION)) {
+                    if (intent.getExtras() != null
+                            && intent.getExtras().getBundle("app_cms_season_selector_key") != null
+                            && intent.getExtras().getBundle("app_cms_season_selector_key").getBinder("app_cms_episode_data") != null
+                            && intent.getExtras().getBundle("app_cms_season_selector_key").getBinder("app_cms_episode_data") instanceof AppCMSSwitchSeasonBinder) {
+                        AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder = (AppCMSSwitchSeasonBinder) intent.getExtras().getBundle("app_cms_season_selector_key").getBinder("app_cms_episode_data");
+                        if (appCMSSwitchSeasonBinder != null) {
+                            selectedSeasonIndex = appCMSSwitchSeasonBinder.getSelectedSeasonIndex();
+                        }
+                    }
+                }
+            }
+        };
     }
 
     @Override
@@ -63,16 +105,17 @@ public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
                 .appCMSPresenter();
         mContext = appCMSPresenter.getCurrentActivity();
 
-        rvSwitchSeasons = mView.findViewById(R.id.rv_switch_seasons);
+        RecyclerView rvSwitchSeasons = mView.findViewById(R.id.rv_switch_seasons);
         LinearLayoutManager layout = new LinearLayoutManager(mContext);
         layout.setOrientation(LinearLayoutManager.HORIZONTAL);
         rvSwitchSeasons.setLayoutManager(layout);
-        rvSwitchSeasons.setAdapter(new SwitchSeasonsAdapter());
+        switchSeasonsAdapter = new SwitchSeasonsAdapter();
+        rvSwitchSeasons.setAdapter(switchSeasonsAdapter);
         return mView;
     }
 
-    public static SwitchSeasonsDialogFragment newInstance(List<Season_> seasons) {
-        mSeasons = seasons;
+    public static SwitchSeasonsDialogFragment newInstance(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
+        mAppCMSSwitchSeasonBinder = appCMSSwitchSeasonBinder;
         return new SwitchSeasonsDialogFragment();
     }
 
@@ -80,7 +123,6 @@ public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
         @Override
         public SwitchSeasonsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             String textColor = Utils.getTextColor(getActivity(), appCMSPresenter);
-            String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
             String focusColor = Utils.getFocusColor(getActivity(), appCMSPresenter);
 
             Component component = new Component();
@@ -106,11 +148,17 @@ public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
         @Override
         public void onBindViewHolder(SwitchSeasonsViewHolder holder, int position) {
             holder.item.setText("Season " + (position + 1));
+            if (position == selectedSeasonIndex) {
+                holder.item.requestFocus();
+            }
             holder.item.setOnClickListener(v -> {
                 Intent updateSeasonIntent =
                         new Intent(AppCMSPresenter.SWITCH_SEASON_ACTION);
-                updateSeasonIntent.putExtra(appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_selected_season_key),
-                        position);
+                Bundle bundle = new Bundle();
+                mAppCMSSwitchSeasonBinder.setSelectedSeasonIndex(holder.getAdapterPosition());
+                bundle.putBinder("app_cms_episode_data", mAppCMSSwitchSeasonBinder);
+                updateSeasonIntent.putExtra("app_cms_season_selector_key",
+                        bundle);
                 appCMSPresenter.getCurrentActivity().sendBroadcast(updateSeasonIntent);
                 SwitchSeasonsDialogFragment.this.dismiss();
             });
@@ -126,7 +174,7 @@ public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
 
         Button item;
 
-        public SwitchSeasonsViewHolder(View itemView) {
+        SwitchSeasonsViewHolder(View itemView) {
             super(itemView);
             item = (Button) itemView;
         }

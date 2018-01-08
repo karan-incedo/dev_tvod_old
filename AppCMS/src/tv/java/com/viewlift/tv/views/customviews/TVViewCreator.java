@@ -80,6 +80,7 @@ import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.tv.views.presenter.JumbotronPresenter;
 import com.viewlift.tv.views.presenter.PlayerPresenter;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CreditBlocksView;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -89,6 +90,7 @@ import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 
 import org.jsoup.Jsoup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -247,6 +249,9 @@ public class TVViewCreator {
 //                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
                 isGrid = true;
             }
+            if (module.getBlockName().equalsIgnoreCase("tray04")) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
+            }
 
             for (Component component : module.getComponents()) {
                 createTrayModule(context, component, module.getLayout(), module, moduleAPI,
@@ -262,8 +267,22 @@ public class TVViewCreator {
                     this,
                     appCMSPresenter,
                     jsonValueKeyMap);
-            ViewGroup childrenContainer = moduleView.getChildrenContainer();
-
+            final TVPageView finalPageView = pageView;
+            if (null != moduleAPI.getContentData()
+                    && null != moduleAPI.getContentData().get(0)
+                    && null != moduleAPI.getContentData().get(0).getGist()
+                    && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
+                Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                        .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
+                        TVBaseView.DEVICE_HEIGHT) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                        finalPageView.setBackground(drawable);
+                        finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
+                    }
+                });
+            }
         } else {
             if (context.getResources().getString(R.string.appcms_watchlist_module).equalsIgnoreCase(module.getView())) {
              //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
@@ -414,7 +433,7 @@ public class TVViewCreator {
                                 && moduleData.getContentData().get(0).getGist().getContentType() != null
                                 && moduleData.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("SERIES")) {
                             customHeaderItem = null;
-                            createHeaderItem(component, context, moduleUI, moduleData, "SEASON 1", isCarousel);
+                            createHeaderItem(component, context, moduleUI, moduleData, moduleData.getTitle() != null ? moduleData.getTitle() : "SEASON 1", isCarousel);
                         } else {
                             customHeaderItem = null;
                             createHeaderItem(component, context, moduleUI, moduleData, (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle() : "", isCarousel);
@@ -454,8 +473,8 @@ public class TVViewCreator {
                 }
                 if (null != moduleData) {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
-                            Integer.valueOf(component.getLayout().getTv().getHeight()),
-                            Integer.valueOf(component.getLayout().getTv().getWidth()),
+                            Integer.valueOf(component.getLayout().getTv().getHeight() != null ? component.getLayout().getTv().getHeight() : "0"),
+                            Integer.valueOf(component.getLayout().getTv().getWidth() != null ? component.getLayout().getTv().getWidth() : "0"),
                             component.getTrayBackground(),
                             jsonValueKeyMap
                     );
@@ -491,15 +510,24 @@ public class TVViewCreator {
                                 }
                             }
                         }
-                    } else if (moduleData.getModuleType().equalsIgnoreCase("ShowDetailModule")
+                    } else if (moduleData.getModuleType() != null
+                            && moduleData.getModuleType().equalsIgnoreCase("ShowDetailModule")
                             && moduleData.getContentData() != null
                             && moduleData.getContentData().get(0) != null) {
                         Log.d(TAG, "It's a series");
                         ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
                         List<Component> components = component.getComponents();
-                        for (ContentDatum contentDatum : moduleData.getContentData().get(0).getSeason().get(0).getEpisodes()) {
+                        List<ContentDatum> episodes = moduleData.getContentData().get(0).getSeason().get(0).getEpisodes();
+                        for (int i = 0; i < episodes.size(); i++) {
+                            List<String> relatedVids = new ArrayList<>();
+                            for (int j = i + 1; j < episodes.size(); j++) {
+                                ContentDatum contentDatum = episodes.get(j);
+                                relatedVids.add(contentDatum.getGist().getId());
+                            }
+                            ContentDatum contentDatum = episodes.get(i);
                             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                             rowData.contentData = contentDatum;
+                            rowData.relatedVideoIds = relatedVids;
                             rowData.uiComponentList = components;
                             rowData.action = component.getTrayClickAction();
                             rowData.blockName = moduleUI.getBlockName();
@@ -690,7 +718,16 @@ public class TVViewCreator {
                 switch (componentKey) {
                     case PAGE_SHOW_SWITCH_SEASONS_KEY:
                         componentViewResult.componentView.setOnClickListener(v -> {
-                            appCMSPresenter.showSwitchSeasonsDialog(moduleAPI.getContentData().get(0).getSeason());
+                            AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder =
+                                    new AppCMSSwitchSeasonBinder(
+                                            moduleAPI.getContentData().get(0).getSeason(),
+                                            null,
+                                            component,
+                                            component.getAction(),
+                                            component.getBlockName(),
+                                            0,
+                                            0);
+                            appCMSPresenter.showSwitchSeasonsDialog(appCMSSwitchSeasonBinder);
                         });
                         break;
                     case PAGE_INFO_KEY:
@@ -737,6 +774,54 @@ public class TVViewCreator {
 //                                                component.getAction() +
 //                                                " hls URL: " +
 //                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                    }
+
+                                    // Disable the button for 1 second and enable it back in handler
+                                    btnWatchTrailer.setClickable(false);
+
+                                    // enable the button after 1 second
+                                    new Handler().postDelayed(() ->
+                                            btnWatchTrailer.setClickable(true), 1000);
+                                }
+                            });
+                        } else {
+                            componentViewResult.componentView = null;
+                        }
+                        break;
+
+
+                    case PAGE_SHOW_WATCH_TRAILER_KEY:
+                        if (moduleAPI.getContentData().get(0).getShowDetails() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().size() > 0 &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
+                            View btnWatchTrailer = componentViewResult.componentView;
+                            componentViewResult.componentView.setFocusable(true);
+                            componentViewResult.componentView.setTag("WATCH_TRAILER");
+                            componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    appCMSPresenter.showLoadingDialog(true);
+                                    String[] extraData = new String[4];
+                                    Trailer trailerInfo = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0);
+                                    extraData[0] = trailerInfo.getPermalink();
+                                    extraData[1] = trailerInfo.getVideoAssets().getHls() != null ? trailerInfo.getVideoAssets().getHls() :
+                                            (trailerInfo.getVideoAssets().getMpeg().size() > 0) ? trailerInfo.getVideoAssets().getMpeg().get(0).getUrl() : null;
+
+                                    extraData[2] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId();
+                                    if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                            component.getAction(),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            extraData,
+                                            moduleAPI.getContentData().get(0),
+                                            false,
+                                            -1,
+                                            null)) {
+                                        appCMSPresenter.showLoadingDialog(false);
                                     }
 
                                     // Disable the button for 1 second and enable it back in handler
@@ -859,6 +944,33 @@ public class TVViewCreator {
                         View componentView = componentViewResult.componentView;
                         componentView.setOnClickListener(v -> {
                             playVideo(appCMSPresenter, context, component, moduleAPI);
+                            componentView.setClickable(false);
+
+                            new Handler().postDelayed(() -> {
+                                componentView.setClickable(true);
+                            }, 3000);
+                        });
+                        break;
+
+                    case PAGE_SHOW_START_WATCHING_BUTTON_KEY:
+                        startWatchingButton = (Button) componentViewResult.componentView;
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.getUserVideoStatus(
+                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                                    userVideoStatusResponse -> {
+                                        if (null != userVideoStatusResponse) {
+                                            Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
+                                            );
+                                            if(userVideoStatusResponse.getWatchedTime() > 0){
+                                                startWatchingButton.setText(context.getString(R.string.resume_watching));
+                                            }
+                                        }
+                                    });
+                        }
+
+                        componentView = componentViewResult.componentView;
+                        componentView.setOnClickListener(v -> {
+                            playEpisode(appCMSPresenter, context, component, moduleAPI);
                             componentView.setClickable(false);
 
                             new Handler().postDelayed(() -> {
@@ -2253,6 +2365,30 @@ public class TVViewCreator {
             return context.getString(R.string.color_hash_prefix) + color;
         }
         return color;
+    }
+
+    private void playEpisode(AppCMSPresenter appCMSPresenter, Context context, Component component, Module moduleAPI) {
+        appCMSPresenter.showLoadingDialog(true);
+        if (moduleAPI.getContentData() != null &&
+                moduleAPI.getContentData().size() > 0 &&
+                moduleAPI.getContentData().get(0) != null &&
+                moduleAPI.getContentData().get(0).getSeason() != null &&
+                moduleAPI.getContentData().get(0).getSeason().get(0) != null &&
+                moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes() != null &&
+                moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0) != null) {
+
+            List<String> relatedVideosIds = new ArrayList<>();
+            for (ContentDatum episode : moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes()) {
+                relatedVideosIds.add(episode.getGist().getId());
+            }
+
+            appCMSPresenter.launchTVVideoPlayer(
+                    moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0),
+                    0,
+                    relatedVideosIds,
+                    0);
+
+        }
     }
 
     private void playVideo(AppCMSPresenter appCMSPresenter, Context context, Component component, Module moduleAPI) {

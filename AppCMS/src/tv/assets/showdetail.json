@@ -74,7 +74,7 @@
         }
       },
       "type": "label",
-      "backgroundColor": "#0a151c"
+      "backgroundColor": "#800a151c"
     },
     {
       "layout": {
@@ -87,7 +87,7 @@
         }
       },
       "type": "image",
-      "key": "showImage"
+      "key": "videoThumbnailImage"
     },
     {
       "layout": {
@@ -119,9 +119,9 @@
       "type": "button",
       "textColor": "ffffff",
       "fontWeight": "Semibold",
-      "key": "startWatching"
+      "key": "showStartWatching"
     },
-    {
+   /* {
       "layout": {
         "ftv": {
           "leftMargin": 365,
@@ -140,11 +140,16 @@
       "textColor": "ffffff",
       "fontWeight": "Semibold",
       "key": "addToWatchlist"
-    },
+    },*/
     {
       "layout": {
         "ftv": {
-          "leftMargin": 635,
+          /*"leftMargin": 635,
+          "topMargin": 570,
+          "fontSize": 9,
+          "height": 60,
+          "width": 250*/
+          "leftMargin": 365,
           "topMargin": 570,
           "fontSize": 9,
           "height": 60,
@@ -164,11 +169,16 @@
     {
       "layout": {
         "ftv": {
-          "leftMargin": 905,
+          "leftMargin": 635,
           "topMargin": 570,
           "fontSize": 9,
           "height": 60,
           "width": 250
+          /*"leftMargin": 905,
+          "topMargin": 570,
+          "fontSize": 9,
+          "height": 60,
+          "width": 250*/
         }
       },
       "borderColor": "ffffff",
@@ -179,7 +189,7 @@
       "type": "button",
       "textColor": "ffffff",
       "fontWeight": "Semibold",
-      "key": "watchTrailer"
+      "key": "watchShowTrailer"
     },
     {
       "layout": {
