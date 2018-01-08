@@ -72,6 +72,7 @@ import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSActionPresenter;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.presenters.AppCMSVideoPlayerPresenter;
 import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSDownloadQualityAdapter;
 import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
@@ -105,6 +106,7 @@ public class ViewCreator {
     private static final String TAG = "ViewCreator";
     private static VideoPlayerView videoPlayerView;
     private static AppCMSVideoPageBinder videoPlayerViewBinder;
+    private static AppCMSVideoPlayerPresenter appCMSVideoPlayerPresenter;
     private boolean ignoreBinderUpdate;
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
@@ -338,6 +340,10 @@ public class ViewCreator {
             videoPlayerContent = new VideoPlayerContent();
         }
 
+        if (appCMSVideoPlayerPresenter == null) {
+            appCMSVideoPlayerPresenter = new AppCMSVideoPlayerPresenter();
+        }
+
         videoPlayerContent.videoUrl = videoUrl;
         videoPlayerContent.ccUrl = ccUrl;
 
@@ -357,10 +363,10 @@ public class ViewCreator {
             currentWatchedTime = videoPlayerView.getCurrentPosition();
         }
 
-        if (videoPlayerView.getDuration() <= currentWatchedTime &&
-                0 < currentWatchedTime) {
-            videoPlayerViewBinder.setAutoplayCancelled(true);
-        }
+//        if (videoPlayerView.getDuration() <= currentWatchedTime &&
+//                0 < currentWatchedTime) {
+//            videoPlayerViewBinder.setAutoplayCancelled(true);
+//        }
 
         if (resetWatchTime) {
             videoPlayerView.setUri(Uri.parse(videoUrl), null);
@@ -381,28 +387,69 @@ public class ViewCreator {
             videoPlayerView.getPlayerView().getPlayer().seekTo(currentWatchedTime);
         }
 
-        videoPlayerView.setOnPlayerStateChanged(playerState -> {
-            if (videoPlayerViewBinder != null) {
-                if (playerState.getPlaybackState() == Player.STATE_ENDED &&
-                        videoPlayerViewBinder.getPlayerState() != Player.STATE_ENDED &&
-                        0 < videoPlayerView.getDuration() &&
-                        videoPlayerView.getDuration() <= videoPlayerView.getCurrentPosition()) {
-                    if (!videoPlayerViewBinder.isAutoplayCancelled() &&
-                            videoPlayerViewBinder.getCurrentPlayingVideoIndex() <
-                            videoPlayerViewBinder.getRelateVideoIds().size()) {
-                        if (presenter.getAutoplayEnabledUserPref(presenter.getCurrentActivity()) &&
-                                videoPlayerViewBinder != null) {
-                            videoPlayerViewBinder.setCurrentPlayingVideoIndex(videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1);
-                            presenter.playNextVideo(videoPlayerViewBinder,
-                                    videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1,
-                                    videoPlayerViewBinder.getContentData().getGist().getWatchedTime());
-                        }
+        appCMSVideoPlayerPresenter.updateBinder(context,
+                presenter,
+                videoPlayerView,
+                new AppCMSVideoPlayerPresenter.OnClosePlayerEvent() {
+                    @Override
+                    public void closePlayer() {
+
                     }
-                }
-                videoPlayerViewBinder.setAutoplayCancelled(videoPlayerViewBinder.getPlayerState() == playerState.getPlaybackState());
-                videoPlayerViewBinder.setPlayerState(playerState.getPlaybackState());
-            }
-        });
+
+                    @Override
+                    public void onMovieFinished() {
+
+                    }
+
+                    @Override
+                    public void onRemotePlayback(long currentPosition, int castingMode, boolean sentBeaconPlay, Action1<CastHelper.OnApplicationEnded> onApplicationEndedAction) {
+
+                    }
+                },
+                new AppCMSVideoPlayerPresenter.OnUpdateContentDatumEvent() {
+                    @Override
+                    public void updateContentDatum(ContentDatum contentDatum) {
+
+                    }
+
+                    @Override
+                    public ContentDatum getCurrentContentDatum() {
+                        return null;
+                    }
+
+                    @Override
+                    public List<String> getCurrentRelatedVideoIds() {
+                        return null;
+                    }
+                },
+                videoPlayerViewBinder,
+                0,
+                false,
+                null,
+                resetWatchTime);
+
+//        videoPlayerView.setOnPlayerStateChanged(playerState -> {
+//            if (videoPlayerViewBinder != null) {
+//                if (playerState.getPlaybackState() == Player.STATE_ENDED &&
+//                        videoPlayerViewBinder.getPlayerState() != Player.STATE_ENDED &&
+//                        0 < videoPlayerView.getDuration() &&
+//                        videoPlayerView.getDuration() <= videoPlayerView.getCurrentPosition()) {
+//                    if (!videoPlayerViewBinder.isAutoplayCancelled() &&
+//                            videoPlayerViewBinder.getCurrentPlayingVideoIndex() <
+//                            videoPlayerViewBinder.getRelateVideoIds().size()) {
+//                        if (presenter.getAutoplayEnabledUserPref(presenter.getCurrentActivity()) &&
+//                                videoPlayerViewBinder != null) {
+//                            videoPlayerViewBinder.setCurrentPlayingVideoIndex(videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1);
+//                            presenter.playNextVideo(videoPlayerViewBinder,
+//                                    videoPlayerViewBinder.getCurrentPlayingVideoIndex() + 1,
+//                                    videoPlayerViewBinder.getContentData().getGist().getWatchedTime());
+//                        }
+//                    }
+//                }
+//                videoPlayerViewBinder.setAutoplayCancelled(videoPlayerViewBinder.getPlayerState() == playerState.getPlaybackState());
+//                videoPlayerViewBinder.setPlayerState(playerState.getPlaybackState());
+//            }
+//        });
 
         return videoPlayerView;
     }
@@ -438,7 +485,7 @@ public class ViewCreator {
                 }
                 if (videoPlayerViewBinder.getContentData().getGist().getId().equals(contentDatum.getGist().getId())) {
                     currentlyPlayingIndex = videoPlayerViewBinder.getCurrentPlayingVideoIndex();
-                    videoPlayerViewBinder.setAutoplayCancelled(true);
+//                    videoPlayerViewBinder.setAutoplayCancelled(true);
                 }
                 videoPlayerViewBinder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
                 videoPlayerViewBinder.setContentData(contentDatum);
@@ -1549,6 +1596,21 @@ public class ViewCreator {
                 }
 
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+
+                if (moduleAPI != null) {
+                    AppCMSUIKeyType viewType = jsonValueKeyMap.get(module.getView());
+                    if (viewType == null) {
+                        viewType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                    }
+                    if (viewType == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY &&
+                            (moduleAPI.getContentData() == null ||
+                            moduleAPI.getContentData().isEmpty()) &&
+                            appCMSPresenter.getAllUserHistory() != null &&
+                            !appCMSPresenter.getAllUserHistory().isEmpty()) {
+                        moduleAPI.setContentData(appCMSPresenter.getAllUserHistory());
+                    }
+                }
+
                 View childView = createModuleView(context, module, moduleAPI,
                         appCMSAndroidModules,
                         pageView,
@@ -2263,6 +2325,7 @@ public class ViewCreator {
                             closedCaptionUrl,
                             moduleAPI.getContentData().get(0).getGist().getId(),
                             moduleAPI.getContentData().get(0).getGist().getWatchedTime());
+
                     componentViewResult.componentView.setId(R.id.video_player_id);
                 }
 
