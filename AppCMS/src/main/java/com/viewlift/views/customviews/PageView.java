@@ -177,7 +177,6 @@ public class PageView extends BaseView {
                         LayoutParams.MATCH_PARENT);
         childrenContainer.setLayoutParams(nestedScrollViewLayoutParams);
         ((RecyclerView) childrenContainer).setLayoutManager(new LinearLayoutManager(getContext(),
-
                 LinearLayoutManager.VERTICAL,
                 false));
         ((RecyclerView) childrenContainer).setAdapter(appCMSPageViewAdapter);

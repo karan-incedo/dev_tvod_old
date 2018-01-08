@@ -9,9 +9,22 @@
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
 
+
     <!-- Allows unlocking your device and activating its screen so UI tests can succeed -->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Allows for storing and retrieving screenshots -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Allows changing locales -->
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+
+
+    <!-- Allows unlocking your device and activating its screen so UI tests can succeed -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <!-- Allows for storing and retrieving screenshots -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -53,8 +66,8 @@
 
         <activity
             android:name="com.viewlift.mobile.AppCMSLaunchActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/AppThemeTransparent">
+            android:theme="@style/AppThemeTransparent"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
