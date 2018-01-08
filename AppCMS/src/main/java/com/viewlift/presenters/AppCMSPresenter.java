@@ -1724,7 +1724,7 @@ public class AppCMSPresenter {
                                 screenName.append(currentActivity.getString(
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
-                                //Todo need to manage it depend on PP
+                                //Todo need to manage it depend on Template
                                 if (currentActivity.getResources().getBoolean(R.bool.show_navbar)) {
                                     appbarPresent = true;
                                     navbarPresent = true;
