@@ -18,7 +18,7 @@
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 370
+      "height": 390
     }
   },
   "components": [{
@@ -38,7 +38,7 @@
     "layout": {
       "ftv": {
         "width": 560,
-        "height": 368
+        "height": 388
       }
     },
     "trayClickAction": "lectureDetailPage",
@@ -58,9 +58,9 @@
       "layout": {
         "ftv": {
           "leftMargin": 8,
-          "topMargin": 315,
+          "topMargin": 320,
           "rightMargin": 0,
-          "height": 34
+          "height": 68
         }
       },
       "fontFamily": "Lato",

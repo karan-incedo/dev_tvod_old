@@ -874,7 +874,8 @@ public class CustomVideoPlayerView
                 false,
                 parentScreenName,
                 this,
-                mStreamId);
+                mStreamId,
+                isLiveStream());
 
         beaconBufferingThread = new BeaconBufferingThread(
                 beaconBufferingTimeoutMsec,
@@ -984,6 +985,7 @@ public class CustomVideoPlayerView
         boolean sendBeaconPing;
         boolean isTrailer;
         int playbackState;
+        boolean isLiveStream;
 
 
         public BeaconPingThread(long beaconMsgTimeoutMsec,
@@ -993,7 +995,8 @@ public class CustomVideoPlayerView
                                 boolean isTrailer,
                                 String parentScreenName,
                                 VideoPlayerView videoPlayerView,
-                                String mStreamId) {
+                                String mStreamId,
+                                boolean isLiveStream) {
             this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
             this.appCMSPresenter = appCMSPresenter;
             this.filmId = filmId;
@@ -1002,6 +1005,7 @@ public class CustomVideoPlayerView
             this.videoPlayerView = videoPlayerView;
             this.isTrailer = isTrailer;
             this.mStreamId = mStreamId;
+            this.isLiveStream = isLiveStream;
         }
 
         @Override
@@ -1033,7 +1037,7 @@ public class CustomVideoPlayerView
                                     0,
                                     false);
 
-                            if (!isTrailer && videoPlayerView != null) {
+                            if (!isTrailer && videoPlayerView != null && !isLiveStream) {
                                 appCMSPresenter.updateWatchedTime(filmId,
                                         videoPlayerView.getCurrentPosition() / 1000);
                             }

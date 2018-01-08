@@ -645,6 +645,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId(), 1);
+
+        if(isPoped){
+            if (appCMSBinderStack.contains(getTag(appCMSBinder)))
+                appCMSBinderStack.remove(getTag(appCMSBinder));
+        }
         //if(!isPoped)
         setPageFragment(updatedAppCMSBinder);
         //else
@@ -725,7 +730,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     private void setPageFragment(AppCMSBinder appCMSBinder) {
         Fragment attached = getFragmentManager().findFragmentById(R.id.home_placeholder);
-
         if (attached == null || (attached != null && !attached.getTag().equalsIgnoreCase(getTag(appCMSBinder)))) {
             AppCmsTVPageFragment appCMSPageFragment = AppCmsTVPageFragment.newInstance(this, appCMSBinder);
             FragmentManager fragmentManager = getFragmentManager();

@@ -57,24 +57,20 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
+    public void onResume() {
+        super.onResume();
         AppCmsHomeActivity activity = (AppCmsHomeActivity) getActivity();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(null != customVideoVideoPlayerView){
-                    if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
-                    } else {
-                        if(activity.isActive) {
-                            customVideoVideoPlayerView.resumePlayer();
-                        }
+        new Handler().postDelayed(() -> {
+            if(null != customVideoVideoPlayerView){
+                if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
+                } else {
+                    if(activity.isActive) {
+                        customVideoVideoPlayerView.resumePlayer();
                     }
                 }
             }
-        },500);
+        },50);
     }
 
     public void requestFocus(boolean requestFocus) {
@@ -289,9 +285,12 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     @Override
     public void onPause() {
-        if(null != customVideoVideoPlayerView){
-            customVideoVideoPlayerView.pausePlayer();
-        }
+        new Handler().postDelayed(() -> {
+            if(null != customVideoVideoPlayerView){
+                customVideoVideoPlayerView.pausePlayer();
+            }
+        },51);
+
         super.onPause();
     }
 

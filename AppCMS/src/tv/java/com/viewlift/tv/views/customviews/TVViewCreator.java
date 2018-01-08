@@ -245,7 +245,7 @@ public class TVViewCreator {
 
 
             if (module.getView().equalsIgnoreCase("AC Grid 01")) {
-               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
+              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
                 isGrid = true;
             }
 
