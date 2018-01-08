@@ -46,6 +46,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.exoplayer2.Player;
 import com.viewlift.R;
@@ -1026,7 +1027,7 @@ public class ViewCreator {
                                                         viewHeight);
                                                 Glide.with(context)
                                                         .load(imageUrl)
-                                                        .override(viewWidth, viewHeight)
+                                                        .apply(new RequestOptions().override(viewWidth, viewHeight))
                                                         .into((ImageView) view);
                                             } else if (viewWidth > 0 && viewHeight > 0) {
                                                 String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -1035,13 +1036,12 @@ public class ViewCreator {
                                                         viewHeight);
                                                 Glide.with(context)
                                                         .load(videoImageUrl)
-                                                        .override(viewWidth, viewHeight)
+                                                        .apply(new RequestOptions().override(viewWidth, viewHeight))
                                                         .into((ImageView) view);
                                             } else if (viewHeight > 0) {
                                                 Glide.with(context)
                                                         .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                                        .override(Target.SIZE_ORIGINAL, viewHeight)
-                                                        .centerCrop()
+                                                        .apply(new RequestOptions().override(Target.SIZE_ORIGINAL, viewHeight).centerCrop())
                                                         .into((ImageView) view);
                                             } else {
                                                 Glide.with(context)
@@ -3597,7 +3597,7 @@ public class ViewCreator {
                                     Glide.with(context)
 //                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .override(viewWidth, viewHeight)
+                                            .apply(new RequestOptions().override(viewWidth, viewHeight))
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else if (viewWidth > 0) {
@@ -3605,8 +3605,7 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .override(viewWidth, viewHeight)
-                                            .centerCrop()
+                                            .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else {
@@ -3734,7 +3733,7 @@ public class ViewCreator {
                                             viewHeight);
                                     Glide.with(context)
                                             .load(imageUrl)
-                                            .override(viewWidth, viewHeight)
+                                            .apply(new RequestOptions().override(viewWidth, viewHeight))
                                             .into((ImageView) componentViewResult.componentView);
                                 } else if (viewWidth > 0) {
                                     String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -3743,12 +3742,11 @@ public class ViewCreator {
                                             viewHeight);
                                     Glide.with(context)
                                             .load(videoImageUrl)
-                                            .override(viewWidth, viewHeight)
-                                            .into((ImageView) componentViewResult.componentView);
+                                            .apply(new RequestOptions().override(viewWidth, viewHeight))                                            .into((ImageView) componentViewResult.componentView);
                                 } else {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .fitCenter()
+                                            .apply(new RequestOptions().fitCenter())
                                             .into((ImageView) componentViewResult.componentView);
                                 }
 
