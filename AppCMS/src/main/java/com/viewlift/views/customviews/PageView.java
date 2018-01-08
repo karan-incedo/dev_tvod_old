@@ -8,7 +8,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -66,6 +68,12 @@ public class PageView extends BaseView {
 
         childrenContainer.setVisibility(GONE);
         viewParent.removeView(view);
+
+        LayoutParams adjustedLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT);
+
+        view.setLayoutParams(adjustedLayoutParams);
+
         addView(view);
 
         view.forceLayout();
@@ -80,7 +88,7 @@ public class PageView extends BaseView {
 
             childrenContainer.setVisibility(VISIBLE);
 
-            view.forceLayout();
+            getRootView().forceLayout();
 
             Log.d(TAG, "Video Player closed out fullscreen");
         }
