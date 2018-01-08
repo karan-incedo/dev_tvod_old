@@ -93,6 +93,11 @@
     <string name="app_cms_page_progress_view_key">progressView</string>
     <string name="app_cms_page_carousel_key">carousel</string>
     <string name="app_cms_page_video_player_key">player</string>
+    <string name="app_cms_page_video_player_key_value">videoPlayer</string>
+
+    <string name="app_cms_page_web_view_key">web_view</string>
+    <string name="app_cms_page_full_screen_key">full_Screen_icon</string>
+
     <string name="app_cms_page_page_control_key">pageControl</string>
     <string name="app_cms_page_separator_key">separatorView</string>
     <string name="app_cms_page_segmented_view">AC SegmentedView</string>
@@ -123,8 +128,23 @@
     <string name="app_cms_page_font_bold_key">Bold</string>
     <string name="app_cms_page_font_semibold_key">Semibold</string>
     <string name="app_cms_page_font_extrabold_key">ExtraBold</string>
+    <string name="app_cms_page_font_black_key">Black</string>
+    <string name="app_cms_page_font_black_italic_key">BlackItalic</string>
+    <string name="app_cms_page_font_bold_italic_key">BoldItalic</string>
+    <string name="app_cms_page_font_hairline_key">Hairline</string>
+    <string name="app_cms_page_font_hairline_italic_key">HairlineItalic</string>
+    <string name="app_cms_page_font_heavy_key">Heavy</string>
+    <string name="app_cms_page_font_heavy_italic_key">HeavyItalic</string>
+    <string name="app_cms_page_font_light_key">Light</string>
+    <string name="app_cms_page_font_light_italic_key">LightItalic</string>
+    <string name="app_cms_page_font_medium_key">Medium</string>
+    <string name="app_cms_page_font_medium_italic_key">MediumItalic</string>
+    <string name="app_cms_page_font_thin_key">Thin</string>
+    <string name="app_cms_page_font_thin_italic_key">ThinItalic</string>
+    <string name="app_cms_page_font_semibold_italic_key">SemiboldItalic</string>
+
     <string name="app_cms_page_font_family_key">OpenSans</string>
-    <string name="app_cms_page_lato_font_key">Lato</string>
+    <string name="app_cms_page_font_lato_family_key">Lato</string>
     <string name="app_cms_page_textview_key">textView</string>
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>
@@ -141,6 +161,8 @@
     <string name="app_cms_page_settings_component_key">AC Settings Account 01</string>
     <string name="app_cms_page_carousel_module_key">AC Carousel 01</string>
     <string name="app_cms_page_video_player_module_key">AC StandaloneVideoPlayer 01</string>
+    <string name="app_cms_page_banner_module_key">AC Banner 01</string>
+    <!--<string name="app_cms_page_show_player_module_key">AC StandaloneVideoPlayer Show 01</string>-->
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
@@ -172,20 +194,22 @@
 
     <string name="app_cms_user_management_autoplay_text_key">autoplayTitle</string>
     <string name="app_cms_user_management_use_sd_card_for_downloads_text_key">Use SD Card For Downloads</string>
-
     <string name="app_cms_page_history_module_key">AC History 01</string>
+    <string name="app_cms_page_history_module_key2">AC History 02</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
+    <string name="app_cms_page_watchlist_module_key2">AC Watchlist 02</string>
     <string name="app_cms_page_download_module_key">AC Downloads 01</string>
+    <string name="app_cms_page_download_module_key2">AC Downloads 02</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
-
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
 
     <string name="app_cms_page_history_title">History</string>
     <string name="app_cms_page_watchlist_title">WatchList</string>
     <string name="app_cms_page_download_title">My Downloads</string>
-
+    <string name="app_cms_page_shop_title">shop</string>
+    <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>
     <string name="app_cms_page_watchlist_duration_key">duration</string>
-    <string name="app_cms_page_watchlist_description_key">description</string>
+    <string name="app_cms_page_watchlist_description_key">listItemDescription</string>
     <string name="app_cms_page_watchlist_title_key">title</string>
 
     <string name="app_cms_page_video_download_button_key">downloadButton</string>
@@ -200,6 +224,8 @@
     <string name="app_cms_page_video_title_key">videoTitle</string>
     <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
+    <string name="app_cms_page_video_publishdate_key">videopublishdate</string>
+
     <string name="app_cms_page_show_video_subtitle_key">showSubTitle</string>
     <string name="app_cms_page_video_ageLabel_key">ageLabel</string>
     <string name="app_cms_page_video_share_key">shareButton</string>
@@ -235,9 +261,11 @@
     <string name="app_cms_page_thumbnail_option_key">thumbnailInfo</string>
     <string name="app_cms_page_thumbnail_badgeimage">thumbnailBadgeImage</string>
     <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
+    <string name="app_cms_action_purchase_plan">purchasePlan</string>
 
     <!-- Subscription Keys -->
-    <string name="app_cms_page_subscription_selectionplan_key">AC SelectPlan 02</string>
+    <string name="app_cms_page_subscription_selectionplan_02_key">AC SelectPlan 02</string>
+    <string name="app_cms_page_subscription_selectionplan_01_key">AC SelectPlan 01</string>
     <string name="app_cms_page_subscription_selection_plan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_imagetextrow_key">AC ImageTextRow 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
@@ -247,6 +275,7 @@
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
+    <string name="app_cms_team_page_tag">Teams</string>
     <string name="app_cms_ccavenue_page_tag">ccavenue</string>
     <string name="app_cms_search_page_tag">search</string>
     <string name="app_cms_video_page_tag">video</string>
@@ -257,12 +286,14 @@
     <string name="app_cms_more_page_tag">more</string>
     <string name="app_cms_device">device</string>
     <string name="app_cms_closing_page_name">closing_page</string>
+    <string name="app_cms_menu_screen_tag">Menu Screen</string>
 
     <!-- AppAppCMSPageUIPage names for Actions -->
     <string name="app_cms_pagename_authscreen_key">Authentication Screen</string>
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
     <string name="app_cms_pagename_homescreen_key">Home Page</string>
+    <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
@@ -316,6 +347,9 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
+    <string name="app_cms_cached_page_api_url">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
+    <string name="app_cms_cached_page_api_url_with_user_id">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=null&amp;gzip=true</string>
+
     <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
     <string name="app_cms_page_path_query_parameter">path=</string>
@@ -352,6 +386,7 @@
     <string name="app_cms_user_id">userId</string>
     <string name="app_cms_site_name">site</string>
 
+
     <!-- AppCMS Register Subscription API -->
     <string name="app_cms_register_subscription_api_url">%1$s/subscription/subscribe?site=%2$s&amp;platform=%3$s</string>
 
@@ -366,11 +401,16 @@
     <string name="app_cms_menu_label">Menu</string>
     <string name="app_cms_live_icon_name">live_</string>
     <string name="app_cms_home_icon_name">home_page_</string>
+    <string name="app_cms_shows_icon_name">shows_</string>
+    <string name="app_cms_team_icon_name">teams_</string>
+
     <string name="app_cms_home_label">Home</string>
     <string name="app_cms_movies_icon_name">categories_page_categories</string>
     <string name="app_cms_movies_label">Movies</string>
     <string name="app_cms_search_icon_name">search_</string>
     <string name="app_cms_search_label">Search</string>
+
+    <string name="app_cms_shows_label">Shows</string>
     <string name="app_cms_teams_label">Teams</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
     <string name="profile_label">Profile</string>
@@ -443,6 +483,7 @@
 
     <string name="contact_us">Contact Us</string>
 
+    <string name="app_cms_page_show_player_key">playerShow</string>
     <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
     <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
     <string name="app_cms_contact_us_module">AC ContactUs 01</string>
@@ -460,7 +501,47 @@
     <string name="app_cms_banner_detail_title_key">bannerTitle</string>
 
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
-    <string name="icon_image_key">iconImage</string>
+    <string name="app_cms_page_play_show_image_key">playLiveImageShow</string>
+    
+     <string name="icon_image_key">iconImage</string>
+     <string name="app_cms_subtitle_label">subtitleLabel</string>
 
-    <string name="app_cms_subtitle_label">subtitleLabel</string>
+    <string name="app_cms_floodlight_url_base">https://ad.doubleclick.net/ddm/activity/</string>
+    <string name="app_cms_floodlight_url">src=6070801;cat=appco0;type=msnbm0;dc_rdid=%1$s&amp;dc_lat=;tag_for_child_directed_treatment=;ord=%2$s&amp;</string>
+    <!--watchlist / history / queue UI json keys-->
+    <string name="app_cms_page_ratingbar_key">ratingBar</string>
+    <string name="app_cms_page_video_type_key">videoTypeImage</string>
+    <string name="app_cms_page_delete_watchlist_key">deleteWatchlist</string>
+    <string name="app_cms_page_delete_history_key">deleteHistory</string>
+    <string name="app_cms_delete_single_watchlist_action">deleteSingleItemWatchlist</string>
+    <string name="app_cms_delete_single_history_action">deleteSingleItemHistory</string>
+    <!--video content type-->
+    <string name="app_cms_content_type_shows">SHOW</string>
+    <string name="app_cms_shows_deeplink_path_name">show</string>
+    <string name="app_cms_content_type_episode">EPISODE</string>
+
+    <string name="app_cms_table_background_view">tableBackground</string>
+
+    <string name="app_cms_text_alignment_right">right</string>
+
+    <string name="navigation_settings_primaryCta_placement">Banner</string>
+
+    <string name="forward_slash">/</string>
+    <string name="app_cms_plan_renewal_cycle_type_monthly">MONTH</string>
+    <string name="plan_type_month">Month</string>
+    <string name="app_cms_plan_renewal_cycle_type_yearly">YEAR</string>
+    <string name="plan_type_year">Year</string>
+    <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
+    <string name="plan_type_day">Month</string>
+
+    <string name="app_cms_page_download_size_key">downloadDuration</string>
+    <string name="app_cms_page_download_duration_key">downloadDuration</string>
+    <string name="app_cms_page_download_description_key">listItemDescription</string>
+    <string name="app_cms_page_delete_download_key">deleteDownload</string>
+    <string name="app_cms_delete_single_download_action">deleteSingleItemDownload</string>
+
+
+    <string name="app_cms_page_history_description_key">listItemDescription</string>
+    <string name="app_cms_page_history_duration_key">historyDuration</string>
+    <string name="app_cms_page_history_watched_time_key">watchedTime</string>
 </resources>

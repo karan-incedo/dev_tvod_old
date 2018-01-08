@@ -6,12 +6,15 @@ import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.google.android.exoplayer2.C;
@@ -40,7 +43,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -58,6 +60,8 @@ import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -71,21 +75,23 @@ import rx.functions.Action1;
  */
 
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
-        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener {
+        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener, AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
     protected String userAgent;
     boolean isLoadedNext;
+    private AppCMSPresenter appCMSPresenter;
     private ToggleButton ccToggleButton;
+    private TextView currentStreamingQualitySelector;
     private boolean isClosedCaptionEnabled = false;
     private Uri uri;
     private Action1<PlayerState> onPlayerStateChanged;
     private Action1<Integer> onPlayerControlsStateChanged;
     private Action1<Boolean> onClosedCaptionButtonClicked;
-    private PlayerState playerState;
-    private SimpleExoPlayer player;
-    private SimpleExoPlayerView playerView;
+    protected PlayerState playerState;
+    protected SimpleExoPlayer player;
+    protected AppCMSSimpleExoPlayerView playerView;
     private int resumeWindow;
     private long resumePosition;
 
@@ -106,8 +112,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private String keyPairIdCookie;
 
     private boolean playerJustInitialized;
+    private boolean mAudioFocusGranted = false;
+    private String filmId;
+    DefaultTrackSelector trackSelector;
+    private PageView pageView;
 
-    public VideoPlayerView(Context context) {
+    private RecyclerView listView;
+
+
+    public VideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context);
         initializeView(context);
     }
@@ -163,8 +176,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             if (ccToggleButton != null) {
                 ccToggleButton.setChecked(isClosedCaptionEnabled);
+                ccToggleButton.setVisibility(VISIBLE);
             }
         }
+
     }
 
     public boolean shouldPlayWhenReady() {
@@ -192,6 +207,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         if (player != null) {
             player.setPlayWhenReady(false);
         }
+
     }
 
     public void stopPlayer() {
@@ -256,7 +272,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         isClosedCaptionEnabled = closedCaptionEnabled;
     }
 
-    public SimpleExoPlayerView getPlayerView() {
+    public AppCMSSimpleExoPlayerView getPlayerView() {
         return playerView;
     }
 
@@ -289,7 +305,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void initializeView(Context context) {
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = (SimpleExoPlayerView) findViewById(R.id.videoPlayerView);
+        playerView = (AppCMSSimpleExoPlayerView) findViewById(R.id.videoPlayerView);
         playerJustInitialized = true;
     }
 
@@ -299,37 +315,42 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         failedMediaSourceLoads = new HashMap<>();
     }
 
+
     private void initializePlayer(Context context) {
         resumeWindow = C.INDEX_UNSET;
         resumePosition = C.TIME_UNSET;
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        ccToggleButton = (ToggleButton) playerView.findViewById(R.id.ccButton);
-        if (ccToggleButton != null) {
-            ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                if (onClosedCaptionButtonClicked != null) {
-                    onClosedCaptionButtonClicked.call(isChecked);
-                }
-                isClosedCaptionEnabled = isChecked;
-            });
-        }
+
+        ccToggleButton = createCC_ToggleButton();
+        ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
+        ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (onClosedCaptionButtonClicked != null) {
+                onClosedCaptionButtonClicked.call(isChecked);
+            }
+            isClosedCaptionEnabled = isChecked;
+        });
 
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
-        DefaultTrackSelector trackSelector =
+        trackSelector =
                 new DefaultTrackSelector(videoTrackSelectionFactory);
 
         trackSelector.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(getContext()));
 
+        if (player != null) {
+            player.release();
+        }
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
         player.addListener(this);
         player.setVideoDebugListener(this);
         playerView.setPlayer(player);
         playerView.setControllerVisibilityListener(visibility -> {
             if (onPlayerControlsStateChanged != null) {
+
                 onPlayerControlsStateChanged.call(visibility);
             }
         });
@@ -623,6 +644,23 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         //Log.d(TAG, "Rendered first frame");
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        //commented due to custom video player implementation
+//        pausePlayer();
+//
+//        appCMSPresenter.updateWatchedTime(getFilmId(), player.getCurrentPosition());
+    }
+
+    public String getFilmId() {
+        return filmId;
+    }
+
+    public void setFilmId(String filmId) {
+        this.filmId = filmId;
+    }
+
     public String getPolicyCookie() {
         return policyCookie;
     }
@@ -645,6 +683,56 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public void setKeyPairIdCookie(String keyPairIdCookie) {
         this.keyPairIdCookie = keyPairIdCookie;
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                pausePlayer();
+                break;
+
+            case AudioManager.AUDIOFOCUS_GAIN:
+                if (getPlayer() != null && getPlayer().getPlayWhenReady()) {
+                    startPlayer();
+                } else {
+                    pausePlayer();
+                }
+                break;
+
+            case AudioManager.AUDIOFOCUS_LOSS:
+                pausePlayer();
+                abandonAudioFocus();
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    protected void abandonAudioFocus() {
+        if (getContext() != null) {
+            AudioManager am = (AudioManager) getContext().getApplicationContext()
+                    .getSystemService(Context.AUDIO_SERVICE);
+            int result = am.abandonAudioFocus(this);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = false;
+            }
+        }
+    }
+
+    public boolean requestAudioFocus() {
+        if (getContext() != null && !mAudioFocusGranted) {
+            AudioManager am = (AudioManager) getContext().getApplicationContext()
+                    .getSystemService(Context.AUDIO_SERVICE);
+            int result = am.requestAudioFocus(this,
+                    AudioManager.STREAM_MUSIC,
+                    AudioManager.AUDIOFOCUS_GAIN);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                mAudioFocusGranted = true;
+            }
+        }
+        return mAudioFocusGranted;
     }
 
     public interface ErrorEventListener {
@@ -670,6 +758,14 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         String policyCookie;
         String signatureCookie;
         String keyPairIdCookie;
+    }
+
+    public AppCMSPresenter getAppCMSPresenter() {
+        return appCMSPresenter;
+    }
+
+    public void setAppCMSPresenter(AppCMSPresenter appCMSPresenter) {
+        this.appCMSPresenter = appCMSPresenter;
     }
 
     private static class UpdatedUriDataSourceFactory implements Factory {
@@ -867,6 +963,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
             int result = 0;
+            if (dataSource == null) {
+                return 0;
+            }
             if (dataSource instanceof FileDataSource) {
                 try {
                     long bytesRead = ((FileDataSource) dataSource).getBytesRead();
@@ -904,4 +1003,22 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             }
         }
     }
+
+    protected ToggleButton createCC_ToggleButton() {
+        ToggleButton mToggleButton = new ToggleButton(getContext());
+        RelativeLayout.LayoutParams toggleLP = new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()), BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()));
+        toggleLP.addRule(RelativeLayout.CENTER_VERTICAL);
+        toggleLP.addRule(RelativeLayout.RIGHT_OF, R.id.exo_media_controller);
+        toggleLP.setMarginStart(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
+        toggleLP.setMarginEnd(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
+        mToggleButton.setLayoutParams(toggleLP);
+        mToggleButton.setChecked(false);
+        mToggleButton.setTextOff("");
+        mToggleButton.setTextOn("");
+        mToggleButton.setText("");
+        mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cc_toggle_selector, null));
+        mToggleButton.setVisibility(GONE);
+        return mToggleButton;
+    }
+
 }

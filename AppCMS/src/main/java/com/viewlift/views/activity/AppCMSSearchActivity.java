@@ -153,12 +153,10 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         });
 
         appCMSSearchView.setOnSuggestionListener(new SearchView.OnSuggestionListener() {
-
             @Override
             public boolean onSuggestionSelect(int position) {
                 return true;
             }
-
             @Override
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
@@ -168,7 +166,6 @@ public class AppCMSSearchActivity extends AppCompatActivity {
                 return true;
             }
         });
-
         if (appCMSMain != null &&
                 appCMSMain.getBrand() != null &&
                 appCMSMain.getBrand().getGeneral() != null &&

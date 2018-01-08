@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="default_app_name">@string/app_name</string>
     <string name="error_loading_page"><![CDATA[Could not retrieve data!<br>Please try again later!]]></string>
     <string name="fragment_page_bundle_key">fragment_page</string>
@@ -32,6 +32,7 @@
     </plurals>
     <string name="_mins_abbreviation">%d MINS</string>
     <string name="text_separator">&#160;|&#160;</string>
+    <string name="blank_separator">&#160;</string>
     <string name="color_hash_prefix">#</string>
     <string name="string_with_ellipse">%1$s&#8230;</string>
     <string name="string_with_ellipse_and_more">%1$s&#8230; MORE</string>
@@ -94,6 +95,28 @@
     <string name="opensans_semibold_ttf">fonts/OpenSans-Semibold.ttf</string>
     <string name="opensans_extrabold_ttf">fonts/OpenSans-ExtraBold.ttf</string>
     <string name="opensans_regular_ttf">fonts/OpenSans-Regular.ttf</string>
+
+
+    <string name="font_bold_ttf">fonts/%1$s-Bold.ttf</string>
+    <string name="font_italic_ttf">fonts/%1$s-Italic.ttf</string>
+    <string name="font_semibold_ttf">fonts/%1$s-Semibold.ttf</string>
+    <string name="font_semibold_italic_ttf">fonts/%1$s-SemiboldItalic.ttf</string>
+    <string name="font_bold_italic_ttf">fonts/%1$s-BoldItalic.ttf</string>
+    <string name="font_black_ttf">fonts/%1$s-Black.ttf</string>
+    <string name="font_black_italic_ttf">fonts/%1$s-BlackItalic.ttf</string>
+    <string name="font_light_ttf">fonts/%1$s-Light.ttf</string>
+    <string name="font_light_italic_ttf">fonts/%1$s-LightItalic.ttf</string>
+    <string name="font_hairline_ttf">fonts/%1$s-Hairline.ttf</string>
+    <string name="font_hairline_italic_ttf">fonts/%1$s-HairlineItalic.ttf</string>
+    <string name="font_heavy_ttf">fonts/%1$s-Heavy.ttf</string>
+    <string name="font_heavy_italic_ttf">fonts/%1$s-HeavyItalic.ttf</string>
+    <string name="font_medium_ttf">fonts/%1$s-Medium.ttf</string>
+    <string name="font_medium_italic_ttf">fonts/%1$s-MediumItalic.ttf</string>
+    <string name="font_thin_ttf">fonts/%1$s-Thin.ttf</string>
+    <string name="font_thin_italic_ttf">fonts/%1$s-ThinItalic.ttf</string>
+    <string name="font_extrabold_ttf">fonts/%1$s-ExtraBold.ttf</string>
+    <string name="font_regular_ttf">fonts/%1$s-Regular.ttf</string>
+
     <string name="helvaticaneu_bold">fonts/HelveticaNeu-Bold.ttf</string>
     <string name="helvaticaneu_italic">fonts/HelveticaNeu-Italic.ttf</string>
     <string name="lato_regular">fonts/Lato-Regular.ttf</string>
@@ -168,6 +191,7 @@
     <!--User Management - Closed Captions-->
     <string name="app_cms_closed_captions_toggle_button_key">closedCaptionsToggle</string>
 
+
     <string name="media_route_menu_title">Play on&#8230;</string>
     <string name="countdown_seconds">%d seconds</string>
     <string name="related_movies_id_list">related_movies_id</string>
@@ -176,6 +200,11 @@
     <plurals name="countdown_seconds">
         <item quantity="one">%d second</item>
         <item quantity="other">%d seconds</item>
+    </plurals>
+
+    <plurals name="min_duration_unit">
+        <item quantity="one">MIN</item>
+        <item quantity="other">MINS</item>
     </plurals>
 
     <!-- AppCMS Login values -->
@@ -324,6 +353,7 @@
     <string name="app_cms_signup_name_matches_password_message">Please enter a password that is not the same your name.</string>
     <string name="app_cms_signup_invalid_password_message">Please enter a password that is between 5 to 50 characters in length.</string>
     <string name="loading_video_text">Loading Video</string>
+    <string name="loading_next_video_text">Loading Next Video...</string>
     <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
@@ -462,12 +492,77 @@
     <string name="st_live_icon_key">icon-live</string>
     <string name="search_blank_toast_msg">Please enter a value to search.</string>
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
+    <string name="published_on">Published on</string>
+
+    <string name="app_cms_module_list_footer_key">footer01</string>
+    <string name="app_cms_module_list_tray3_key">tray03</string>
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
+
+    <string name="deeplink_uri_extra_key">deeplink_uri</string>
+
+    <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
     <string name="visit_website_msg">Please visit our website to start your subscription.</string>
     <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
     <string name="no_more_videos_in_queue">No more videos in queue.</string>
     <string name="shouldNavigateToLogin">shouldNavigateToLogin</string>
     <string name="resume_watching">Resume Watching</string>
+    
+    <string name="app_cms_video_ended_text_message">No more videos in queue.</string>
+    <string name="app_cms_touch_to_cast_msg">Touch to cast the video on your \n Chromecast device.</string>
+
+    <string name="app_cms_live_preview_text_message">Did you enjoy your free preview?  Want more access to your DC sports teams?  Become a member now so you don’t miss another play!</string>
+    <string name="app_cms_start_free_trial">Start Your Free Trial</string>
+
+    <string name="pop_dialog_tickets">Tickets</string>
+    <string name="pop_dialog_facebook">Facebook</string>
+    <string name="pop_dialog_instagram">Instagram</string>
+    <string name="dialog_close_button">Close</string>
+    <string name="app_template_type">sports_template</string>
+
+    <string name="error_no_decoder">This device does not provide a decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_no_secure_decoder">This device does not provide a secure decoder for <xliff:g id="mime_type">%1$s</xliff:g></string>
+
+    <string name="error_querying_decoders">Unable to query device decoders</string>
+
+    <string name="error_instantiating_decoder">Unable to instantiate decoder <xliff:g id="decoder_name">%1$s</xliff:g></string>
+    <string name="selection_disabled"> Disabled</string>
+
+    <string name="selection_default">Default</string>
+
+    <string name="selection_default_none">Default (none)</string>
+    <string name="unexpected_intent_action">Unexpected intent action: <xliff:g id="action">%1$s</xliff:g></string>
+
+    <string name="enable_random_adaptation">Enable random adaptation</string>
+
+    <string name="error_drm_not_supported">Protected content not supported on API levels below 18</string>
+
+    <string name="error_drm_unsupported_scheme">This device does not support the required DRM scheme</string>
+
+    <string name="error_drm_unknown">An unknown DRM error occurred</string>
+
+
+    <string name="error_unsupported_video">Media includes video tracks, but none are playable by this device</string>
+
+    <string name="error_unsupported_audio">Media includes audio tracks, but none are playable by this device</string>
+
+    <string name="storage_permission_denied">Permission to access storage was denied</string>
+
+    <string name="sample_list_load_error">One or more sample lists failed to load</string>
+<plurals name="episode_subtitle_text">
+        <item quantity="one">EPISODE</item>
+        <item quantity="other">EPISODES</item>
+    </plurals>
+
+    <plurals name="minute_subtitle_text">
+        <item quantity="one">MIN</item>
+        <item quantity="other">MINS</item>
+    </plurals>
+
+    <plurals name="seconds_subtitle_text">
+        <item quantity="one">SEC</item>
+        <item quantity="other">SECS</item>
+    </plurals>
 
 </resources>
 
