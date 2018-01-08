@@ -1503,13 +1503,13 @@ public class ViewCreator {
                 if (BaseView.isLandscape(context)) {
                     appCMSPresenter.sendEnterFullScreenAction();
                 } else {
-                    appCMSPresenter.sendExitFullScreenAction(false);
+                    videoPlayerView.exitFullscreenMode();
                 }
             } else {
                 if (ViewCreator.playerViewFullScreenEnabled()) {
                     appCMSPresenter.sendEnterFullScreenAction();
                 } else {
-                    appCMSPresenter.sendExitFullScreenAction(false);
+                    videoPlayerView.exitFullscreenMode();
                 }
             }
         }
