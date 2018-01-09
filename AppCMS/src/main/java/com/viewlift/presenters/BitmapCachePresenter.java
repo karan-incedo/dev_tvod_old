@@ -1,5 +1,6 @@
 package com.viewlift.presenters;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -25,7 +26,9 @@ public class BitmapCachePresenter {
     private LruCache<String, BitmapDrawable> mMemoryCache;
     private ImageCache.ImageCacheParams mCacheParams;
 
-    public BitmapCachePresenter() {
+    public BitmapCachePresenter(Context context) {
+        mCacheParams = new ImageCache.ImageCacheParams(context,
+                context.getCacheDir().getPath());
 
         // If you're running on Honeycomb or newer, create a
         // synchronized HashSet of references to reusable bitmaps.
@@ -122,7 +125,7 @@ public class BitmapCachePresenter {
     }
 
     static boolean canUseForInBitmap(
-            Bitmap candidate, BitmapFactory.Options targetOptions) {
+        Bitmap candidate, BitmapFactory.Options targetOptions) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             // From Android 4.4 (KitKat) onward we can re-use if the byte size of
