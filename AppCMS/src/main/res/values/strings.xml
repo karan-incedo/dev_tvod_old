@@ -174,6 +174,8 @@
     <string name="related_movies_id_list">related_movies_id</string>
     <string name="loading_vid_on_casting">Loading on casting device..</string>
     <string name="app_cms_page_autoplay_key">AutoPlay Screen</string>
+    <string name="app_cms_page_autoplay_land_key">AutoPlay Screen (Landscape)</string>
+    <string name="app_cms_page_autoplay_port_key">AutoPlay Screen (Portrait)</string>
     <plurals name="countdown_seconds">
         <item quantity="one">%d second</item>
         <item quantity="other">%d seconds</item>
@@ -430,6 +432,7 @@
     <string name="app_connectivity_dialog_title">App Connectivity</string>
     <string name="no_active_subscription">NO ACTIVE SUBSCRIPTION</string>
     <string name="app_cms_autoplay_finished_movie_title_key">finishedMovieNameTitle</string>
+    <string name="app_cms_autoplay_finished_movie_image_key">finishedMovieImage</string>
     <string name="subscription">SUBSCRIPTION</string>
     <string name="subscription_required">SUBSCRIPTION REQUIRED</string>
 
@@ -473,6 +476,7 @@
     <string name="no_more_videos_in_queue">No more videos in queue.</string>
     <string name="shouldNavigateToLogin">shouldNavigateToLogin</string>
     <string name="resume_watching">Resume Watching</string>
+    <string name="season_episode_placeholders">S%d:E%d</string>
 
 </resources>
 

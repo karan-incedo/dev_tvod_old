@@ -89,9 +89,9 @@ public abstract class TVBaseView extends FrameLayout {
         if (minutes == 1) {
             infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.min_abbreviation));
         } else if (minutes > 1 && minutes < 10) {
-            infoText.append("0").append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+            infoText.append("0").append(minutes)/*.append(" ")*/.append(context.getString(R.string.mins_abbreviation));
         } else if (minutes >= 10) {
-            infoText.append(minutes).append(" ").append(context.getString(R.string.mins_abbreviation));
+            infoText.append(minutes)/*.append(" ")*/.append(context.getString(R.string.mins_abbreviation));
         }
 
         if (seconds == 1) {

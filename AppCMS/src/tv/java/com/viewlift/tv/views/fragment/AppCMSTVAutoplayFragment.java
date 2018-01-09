@@ -4,9 +4,15 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +27,8 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
@@ -148,6 +156,8 @@ public class AppCMSTVAutoplayFragment extends Fragment {
             ImageView movieImage = (ImageView) pageView.findViewById(R.id.autoplay_play_movie_image);
             cancelCountdownButton = (Button) pageView.findViewById(R.id.autoplay_cancel_countdown_button);
             TextView finishedMovieTitle = (TextView) pageView.findViewById(R.id.autoplay_finished_movie_title);
+            ImageView finishedMovieImage = (ImageView) pageView.findViewById(R.id.autoplay_finished_movie_image);
+            TextView upNextMovieTitle = (TextView) pageView.findViewById(R.id.autoplay_up_next_movie_title);
             upNextTextView = (TextView) pageView.findViewById(R.id.up_next_text_view_id);
             appCMSTVAutoplayCustomLoader = (AppCMSTVAutoplayCustomLoader) pageView.findViewById(R.id.autoplay_rotating_loader_view_id);
 
@@ -178,8 +188,40 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                 });
             }
 
+            String mediaType = binder.getContentData().getGist().getMediaType();
             if (finishedMovieTitle != null) {
-                finishedMovieTitle.setText(binder.getCurrentMovieName());
+                if (mediaType != null && mediaType.equalsIgnoreCase("episodic")){
+                    String seasonAndEpisodeNumber = getSeasonAndEpisodeNumber(binder.getContentData(),
+                            binder.getCurrentMovieId());
+                    SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(seasonAndEpisodeNumber);
+                    spannableStringBuilder.append(" ").append(binder.getCurrentMovieName());
+                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    finishedMovieTitle.setText(spannableStringBuilder);
+                } else {
+                    finishedMovieTitle.setText(binder.getCurrentMovieName());
+                }
+            }
+
+            if (upNextMovieTitle != null) {
+                if (mediaType != null && mediaType.equalsIgnoreCase("episodic")){
+                    int episodeNumber = getEpisodeNumber(binder.getContentData(),
+                            binder.getContentData().getGist().getId());
+                    String text = upNextMovieTitle.getText().toString();
+                    SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
+                    spannableStringBuilder.append(" ").append(text);
+                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    upNextMovieTitle.setText(spannableStringBuilder);
+                }
+            }
+
+            if (finishedMovieImage != null) {
+                Glide.with(context)
+                        .load(binder.getCurrentMovieImageUrl())/*.diskCacheStrategy(DiskCacheStrategy.SOURCE)*/
+                        .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                        .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
+                        .into(finishedMovieImage);
             }
             if (pageView.getChildAt(0) != null) {
                 pageView.getChildAt(0).setBackgroundResource(R.drawable.autoplay_overlay);
@@ -205,6 +247,41 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                     });
         }
         return pageView;
+    }
+
+    private String getSeasonAndEpisodeNumber(ContentDatum mainContentData, String id) {
+        String returnVal = "";
+        for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
+            Season_ season = mainContentData.getSeason().get(seasonNumber);
+            for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
+                ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
+                if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
+                    returnVal = getString(R.string.season_episode_placeholders, seasonNumber + 1, episodeNumber + 1);
+                    break;
+                }
+            }
+            if (returnVal.length() > 0) break;
+        }
+
+        return returnVal;
+    }
+
+
+    private int getEpisodeNumber(ContentDatum mainContentData, String id) {
+        int returnVal = 0;
+        for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
+            Season_ season = mainContentData.getSeason().get(seasonNumber);
+            for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
+                ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
+                if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
+                    returnVal = episodeNumber + 1;
+                    break;
+                }
+            }
+            if (returnVal > 0) break;
+        }
+
+        return returnVal;
     }
 
     private void startCountdown() {

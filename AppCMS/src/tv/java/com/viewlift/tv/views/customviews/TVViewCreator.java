@@ -76,6 +76,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.fragment.ClearDialogFragment;
+import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.tv.views.presenter.JumbotronPresenter;
@@ -298,6 +299,10 @@ public class TVViewCreator {
 
            if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())) {
 //                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+            }
+
+           if ("AC AutoPlay 01".equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "autoplay_land.json"), ModuleList.class);
             }
 
             moduleView = new TVModuleView<>(context, module);
@@ -525,6 +530,7 @@ public class TVViewCreator {
                                 relatedVids.add(contentDatum.getGist().getId());
                             }
                             ContentDatum contentDatum = episodes.get(i);
+                            contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
                             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
                             rowData.contentData = contentDatum;
                             rowData.relatedVideoIds = relatedVids;
@@ -717,6 +723,7 @@ public class TVViewCreator {
 
                 switch (componentKey) {
                     case PAGE_SHOW_SWITCH_SEASONS_KEY:
+                        SwitchSeasonsDialogFragment.setSelectedSeasonIndex(0);
                         componentViewResult.componentView.setOnClickListener(v -> {
                             AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder =
                                     new AppCMSSwitchSeasonBinder(
@@ -822,6 +829,13 @@ public class TVViewCreator {
                                             -1,
                                             null)) {
                                         appCMSPresenter.showLoadingDialog(false);
+//                                        //Log.e(TAG, "Could not launch action: " +
+//                                                " permalink: " +
+//                                                moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                                " action: " +
+//                                                component.getAction() +
+//                                                " hls URL: " +
+//                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
                                     }
 
                                     // Disable the button for 1 second and enable it back in handler
@@ -1519,6 +1533,7 @@ public class TVViewCreator {
                             ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.MARQUEE);
                             ((TextView) componentViewResult.componentView).setMarqueeRepeatLimit(-1);
                             componentViewResult.componentView.setSelected(true);
+                            componentViewResult.componentView.setId(R.id.autoplay_up_next_movie_title);
                             break;
                         case PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY:
                             componentViewResult.componentView.setId(R.id.autoplay_finished_movie_title);
@@ -1983,6 +1998,11 @@ public class TVViewCreator {
                     case PAGE_VIDEO_DETAIL_APP_LOGO_KEY:
                         componentViewResult.componentView.setBackgroundResource(R.drawable.app_logo);
                         break;
+
+                    case PAGE_AUTOPLAY_FINISHED_MOVIE_IMAGE_KEY:
+                        componentViewResult.componentView.setId(R.id.autoplay_finished_movie_image);
+                        break;
+
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             Glide.with(context)
@@ -2367,7 +2387,10 @@ public class TVViewCreator {
         return color;
     }
 
-    private void playEpisode(AppCMSPresenter appCMSPresenter, Context context, Component component, Module moduleAPI) {
+    private void playEpisode(AppCMSPresenter appCMSPresenter,
+                             Context context,
+                             Component component,
+                             Module moduleAPI) {
         appCMSPresenter.showLoadingDialog(true);
         if (moduleAPI.getContentData() != null &&
                 moduleAPI.getContentData().size() > 0 &&
@@ -2382,8 +2405,10 @@ public class TVViewCreator {
                 relatedVideosIds.add(episode.getGist().getId());
             }
 
+            ContentDatum contentDatum = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0);
+            contentDatum.setSeason(moduleAPI.getContentData().get(0).getSeason());
             appCMSPresenter.launchTVVideoPlayer(
-                    moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0),
+                    contentDatum,
                     0,
                     relatedVideosIds,
                     0);

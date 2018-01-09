@@ -38,7 +38,9 @@ public class AppCMSVideoPageBinder extends Binder {
     private boolean isLoggedIn;
     private boolean isSubscribed;
     private int currentPlayingVideoIndex;
+    private String currentMovieId;
     private String currentMovieName;
+    private String currentMovieImageUrl;
 
     public AppCMSVideoPageBinder(
             AppCMSPageUI appCMSPageUI,
@@ -259,11 +261,27 @@ public class AppCMSVideoPageBinder extends Binder {
         isOffline = offline;
     }
 
+    public String getCurrentMovieId() {
+        return currentMovieId;
+    }
+
+    public void setCurrentMovieId(String currentMovieId) {
+        this.currentMovieId = currentMovieId;
+    }
+
     public String getCurrentMovieName() {
         return currentMovieName;
     }
 
     public void setCurrentMovieName(String currentMovieName) {
         this.currentMovieName = currentMovieName;
+    }
+
+    public String getCurrentMovieImageUrl() {
+        return currentMovieImageUrl;
+    }
+
+    public void setCurrentMovieImageUrl(String currentMovieImageUrl) {
+        this.currentMovieImageUrl = currentMovieImageUrl;
     }
 }
