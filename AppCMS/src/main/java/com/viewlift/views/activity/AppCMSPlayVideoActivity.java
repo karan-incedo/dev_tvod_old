@@ -155,17 +155,42 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (id != null) {
                         appCMSPresenter.refreshVideoData(id,
                                 updatedContentDatum -> {
-                                    try {
-                                        binder.setContentData(updatedContentDatum);
-                                    } catch (Exception e) {
-                                        //
+                                    if (updatedContentDatum != null) {
+                                        try {
+                                            binder.setContentData(updatedContentDatum);
+                                            launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
+                                                    finalFontColor1, defaultVideoResolution, intent,
+                                                    appCMSPlayVideoPageContainer, null);
+                                        } catch (Exception e) {
+                                            //
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                                    getString(R.string.app_cms_video_not_available_errot_message),
+                                                    false,
+                                                    this::finish,
+                                                    null);
+                                        }
+                                    } else {
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                                getString(R.string.app_cms_video_not_available_errot_message),
+                                                false,
+                                                this::finish,
+                                                null);
                                     }
-                                    launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
-                                            finalFontColor1, defaultVideoResolution, intent,
-                                            appCMSPlayVideoPageContainer, null);
                                 });
+                    } else {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                getString(R.string.app_cms_video_not_available_errot_message),
+                                false,
+                                this::finish,
+                                null);
                     }
                 }
+            } else {
+                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                        getString(R.string.app_cms_video_not_available_errot_message),
+                        false,
+                        this::finish,
+                        null);
             }
         } catch (ClassCastException e) {
             //Log.e(TAG, e.getMessage());
@@ -375,6 +400,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             fragmentTransaction.commit();
         } catch (Exception e) {
             //
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                    getString(R.string.app_cms_video_not_available_errot_message),
+                    false,
+                    this::finish,
+                    null);
         }
     }
 

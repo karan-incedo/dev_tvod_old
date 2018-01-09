@@ -446,6 +446,8 @@
     <string name="app_cms_download_over_cellular_disabled_error_message">You are currently using a cellular only network.  Please navigate to the User Settings page and enable downloading over cellular to continue.</string>
     <string name="app_cms_package_name_key">app_cms_package_name</string>
     <string name="exit_fullscreen_relaunch_page_extra_key">exit_fullscreen_relaunch_page_extra</string>
+    <string name="app_cms_video_not_available_errot_title">Video Not Available</string>
+    <string name="app_cms_video_not_available_errot_message">Could not load the video.  Please try again later.</string>
 
     <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>

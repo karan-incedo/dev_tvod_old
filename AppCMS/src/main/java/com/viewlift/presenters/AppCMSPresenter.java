@@ -7703,6 +7703,11 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case VIDEO_NOT_AVAILABLE:
+                    title = currentActivity.getString(R.string.app_cms_video_not_available_errot_title);
+                    message = optionalMessage;
+                    break;
+
                 default:
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
                     if (optionalMessage != null) {
@@ -11883,7 +11888,8 @@ public class AppCMSPresenter {
         UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
         UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
         SIGN_OUT,
-        DOWNLOAD_VIA_MOBILE_DISABLED
+        DOWNLOAD_VIA_MOBILE_DISABLED,
+        VIDEO_NOT_AVAILABLE
     }
 
     public enum RETRY_TYPE {
