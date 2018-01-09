@@ -727,46 +727,43 @@ public class CollectionGridItemView extends BaseView {
 
             boolean scaleImageUp = false;
 
-            Bitmap sourceWithGradient = appCMSPresenter.getBitmapFromCache(imageUrl);
-            if (sourceWithGradient == null) {
-                if (width < imageWidth &&
-                        height < imageHeight) {
-                    scaleImageUp = true;
-                    float widthToHeightRatio =
-                            (float) width / (float) height;
-                    width = (int) (imageHeight * widthToHeightRatio);
-                    height = imageHeight;
-                    sourceWithGradient =
-                            Bitmap.createScaledBitmap(toTransform,
-                                    width,
-                                    height,
-                                    false);
-                } else {
-                    sourceWithGradient =
-                            Bitmap.createBitmap(width,
-                                    height,
-                                    Bitmap.Config.ARGB_8888);
-                }
-
-                Canvas canvas = new Canvas(sourceWithGradient);
-                if (!scaleImageUp) {
-                    canvas.drawBitmap(toTransform, 0, 0, null);
-                }
-
-                Paint paint = new Paint();
-                LinearGradient shader = new LinearGradient(0,
-                        0,
-                        0,
-                        height,
-                        0xFFFFFFFF,
-                        0xFF000000,
-                        Shader.TileMode.CLAMP);
-                paint.setShader(shader);
-                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-                canvas.drawRect(0, 0, width, height, paint);
-                paint = null;
-                appCMSPresenter.addBitmapToCache(imageUrl, sourceWithGradient);
+            Bitmap sourceWithGradient;
+            if (width < imageWidth &&
+                    height < imageHeight) {
+                scaleImageUp = true;
+                float widthToHeightRatio =
+                        (float) width / (float) height;
+                width = (int) (imageHeight * widthToHeightRatio);
+                height = imageHeight;
+                sourceWithGradient =
+                        Bitmap.createScaledBitmap(toTransform,
+                                width,
+                                height,
+                                false);
+            } else {
+                sourceWithGradient =
+                        Bitmap.createBitmap(width,
+                                height,
+                                Bitmap.Config.ARGB_8888);
             }
+
+            Canvas canvas = new Canvas(sourceWithGradient);
+            if (!scaleImageUp) {
+                canvas.drawBitmap(toTransform, 0, 0, null);
+            }
+
+            Paint paint = new Paint();
+            LinearGradient shader = new LinearGradient(0,
+                    0,
+                    0,
+                    height,
+                    0xFFFFFFFF,
+                    0xFF000000,
+                    Shader.TileMode.CLAMP);
+            paint.setShader(shader);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+            canvas.drawRect(0, 0, width, height, paint);
+            paint = null;
             return sourceWithGradient;
         }
 
