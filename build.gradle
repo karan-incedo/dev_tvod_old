@@ -34,7 +34,7 @@ allprojects {
         dexmakerVersion = "1.0"
         androidsupportVersion = "26.1.0"
         androidsupportconstraintVersion = "1.0.2"
-        glideVersion = "3.8.0"
+        glideVersion = "4.5.0"
         daggerVersion = "2.9"
         gsonVersion = "2.8.0"
         retrofit2Version = "2.3.0"

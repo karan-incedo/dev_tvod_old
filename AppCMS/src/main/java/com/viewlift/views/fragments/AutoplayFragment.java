@@ -3,6 +3,7 @@ package com.viewlift.views.fragments;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -17,9 +18,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.animation.GlideAnimation;
-import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SizeReadyCallback;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -166,29 +170,133 @@ public class AutoplayFragment extends Fragment {
             }
 
             if (loadImageFromLocalSystem) {
+                RequestOptions requestOptions = new RequestOptions()
+                        .transform(new BlurTransformation(getContext()));
                 Glide.with(getContext()).load(imageURI)
-                        .bitmapTransform(new BlurTransformation(getContext()))
-                        .into(new SimpleTarget<GlideDrawable>() {
+                        .apply(requestOptions)
+                        .into(new Target<Drawable>() {
+
                             @Override
-                            public void onResourceReady(GlideDrawable resource,
-                                                        GlideAnimation<? super GlideDrawable>
-                                                                glideAnimation) {
+                            public void onStart() {
+
+                            }
+
+                            @Override
+                            public void onStop() {
+
+                            }
+
+                            @Override
+                            public void onDestroy() {
+
+                            }
+
+                            @Override
+                            public void onLoadStarted(@Nullable Drawable placeholder) {
+
+                            }
+
+                            @Override
+                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+
+                            }
+
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                                 if (isAdded() && isVisible()) {
                                     pageView.setBackground(resource);
                                 }
                             }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                            }
+
+                            @Override
+                            public void getSize(@NonNull SizeReadyCallback cb) {
+
+                            }
+
+                            @Override
+                            public void removeCallback(@NonNull SizeReadyCallback cb) {
+
+                            }
+
+                            @Override
+                            public void setRequest(@Nullable Request request) {
+
+                            }
+
+                            @Nullable
+                            @Override
+                            public Request getRequest() {
+                                return null;
+                            }
                         });
             } else {
+                RequestOptions requestOptions = new RequestOptions()
+                        .transform(new BlurTransformation(getContext()));
                 Glide.with(getContext()).load(imageUrl)
-                        .bitmapTransform(new BlurTransformation(getContext()))
-                        .into(new SimpleTarget<GlideDrawable>() {
+                        .apply(requestOptions)
+                        .into(new Target<Drawable>() {
+
                             @Override
-                            public void onResourceReady(GlideDrawable resource,
-                                                        GlideAnimation<? super GlideDrawable>
-                                                                glideAnimation) {
+                            public void onStart() {
+
+                            }
+
+                            @Override
+                            public void onStop() {
+
+                            }
+
+                            @Override
+                            public void onDestroy() {
+
+                            }
+
+                            @Override
+                            public void onLoadStarted(@Nullable Drawable placeholder) {
+
+                            }
+
+                            @Override
+                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+
+                            }
+
+                            @Override
+                            public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                                 if (isAdded() && isVisible()) {
                                     pageView.setBackground(resource);
                                 }
+                            }
+
+                            @Override
+                            public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                            }
+
+                            @Override
+                            public void getSize(@NonNull SizeReadyCallback cb) {
+
+                            }
+
+                            @Override
+                            public void removeCallback(@NonNull SizeReadyCallback cb) {
+
+                            }
+
+                            @Override
+                            public void setRequest(@Nullable Request request) {
+
+                            }
+
+                            @Nullable
+                            @Override
+                            public Request getRequest() {
+                                return null;
                             }
                         });
             }
