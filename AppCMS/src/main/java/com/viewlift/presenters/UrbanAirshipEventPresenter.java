@@ -35,6 +35,8 @@ public class UrbanAirshipEventPresenter {
     private String subscribedTag;
     private String subscriptionAboutToExpireTag;
     private String unsubscribedTag;
+    private String subscriptionEndDateGroup;
+    private String subscriptionPlanGroup;
     private int daysBeforeSubscriptionEndForNotification;
 
     @Inject
@@ -45,6 +47,8 @@ public class UrbanAirshipEventPresenter {
                                       String subscribedTag,
                                       String subscriptionAboutToExpireTag,
                                       String unsubscribedTag,
+                                      String subscriptionEndDateGroup,
+                                      String subscriptionPlanGroup,
                                       int daysBeforeSubscriptionEndForNotification) {
         this.loggedInStatusGroup = loggedInStatusGroup;
         this.loggedInStatusTag = loggedInStatusTag;
@@ -53,6 +57,8 @@ public class UrbanAirshipEventPresenter {
         this.subscribedTag = subscribedTag;
         this.subscriptionAboutToExpireTag = subscriptionAboutToExpireTag;
         this.unsubscribedTag = unsubscribedTag;
+        this.subscriptionEndDateGroup = subscriptionEndDateGroup;
+        this.subscriptionPlanGroup = subscriptionPlanGroup;
         this.daysBeforeSubscriptionEndForNotification = daysBeforeSubscriptionEndForNotification;
     }
 
@@ -174,28 +180,6 @@ public class UrbanAirshipEventPresenter {
         }
     }
 
-    public void sendSubscriptionEndDateEvent(String userId,
-                                             String subscriptionEndDate,
-                                             Action1<UANamedUserRequest> sendAction) {
-        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
-
-        UAAudience uaAudience = new UAAudience();
-        uaAudience.addNamedUserIds(userId);
-        uaNamedUserRequest.setUaAudience(uaAudience);
-
-        Map<String, List<String>> uaAdd = new HashMap<>();
-        List<String> uaAddList = new ArrayList<>();
-        uaAddList.add(getZonedDateTimeYYMMDD(subscriptionEndDate));
-        uaAdd.put(subscriptionStatusGroup, uaAddList);
-        uaNamedUserRequest.setUaAdd(uaAdd);
-
-        try {
-            sendAction.call(uaNamedUserRequest);
-        } catch (Exception e) {
-
-        }
-    }
-
     public void sendSubscriptionAboutToExpireEvent(String userId,
                                                    Action1<UANamedUserRequest> sendAction) {
         UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
@@ -245,6 +229,49 @@ public class UrbanAirshipEventPresenter {
         uaRemove.put(subscriptionStatusGroup, uaRemoveList);
         uaNamedUserRequest.setUaRemove(uaRemove);
 
+        try {
+            sendAction.call(uaNamedUserRequest);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void sendSubscriptionEndDateEvent(String userId,
+                                             String subscriptionEndDate,
+                                             Action1<UANamedUserRequest> sendAction) {
+        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
+
+        UAAudience uaAudience = new UAAudience();
+        uaAudience.addNamedUserIds(userId);
+        uaNamedUserRequest.setUaAudience(uaAudience);
+
+        Map<String, List<String>> uaAdd = new HashMap<>();
+        List<String> uaAddList = new ArrayList<>();
+        uaAddList.add(getZonedDateTimeYYMMDD(subscriptionEndDate));
+        uaAdd.put(subscriptionEndDateGroup, uaAddList);
+        uaNamedUserRequest.setUaAdd(uaAdd);
+
+        try {
+            sendAction.call(uaNamedUserRequest);
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void sendSubscriptionPlanEvent(String userId,
+                                          String subscriptionPlan,
+                                          Action1<UANamedUserRequest> sendAction) {
+        UANamedUserRequest uaNamedUserRequest = new UANamedUserRequest();
+
+        UAAudience uaAudience = new UAAudience();
+        uaAudience.addNamedUserIds(userId);
+        uaNamedUserRequest.setUaAudience(uaAudience);
+
+        Map<String, List<String>> uaAdd = new HashMap<>();
+        List<String> uaAddList = new ArrayList<>();
+        uaAddList.add(getZonedDateTimeYYMMDD(subscriptionPlan));
+        uaAdd.put(subscriptionPlanGroup, uaAddList);
+        uaNamedUserRequest.setUaAdd(uaAdd);
         try {
             sendAction.call(uaNamedUserRequest);
         } catch (Exception e) {

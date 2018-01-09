@@ -83,6 +83,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
+import com.urbanairship.AirshipConfigOptions;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -141,6 +142,7 @@ import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.models.data.appcms.watchlist.AppCMSAddToWatchlistResult;
 import com.viewlift.models.data.appcms.watchlist.AppCMSWatchlistResult;
+import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.background.tasks.GetAppCMSAPIAsyncTask;
 import com.viewlift.models.network.background.tasks.GetAppCMSAndroidUIAsyncTask;
@@ -8603,6 +8605,8 @@ public class AppCMSPresenter {
                                                     }
                                                     sendUASubscriptionEndDateEvent(getLoggedInUser(),
                                                             appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                    sendUASubscriptionPlanEvent(getLoggedInUser(),
+                                                            appCMSSubscriptionPlanResult.getSubscriptionInfo().getIdentifier());
 
                                                     UserSubscriptionPlan userSubscriptionPlan = new UserSubscriptionPlan();
                                                     userSubscriptionPlan.setUserId(getLoggedInUser());
@@ -12047,12 +12051,25 @@ public class AppCMSPresenter {
         }
     }
 
+    private UAAssociateNamedUserRequest getUAAssociateNamedUserRequest(String userId) {
+        UAAssociateNamedUserRequest uaAssociateNamedUserRequest = new UAAssociateNamedUserRequest();
+        uaAssociateNamedUserRequest.setNamedUserId(userId);
+        if (currentContext != null) {
+            uaAssociateNamedUserRequest.setDeviceType(currentContext.getString(R.string.ua_android_device_key));
+        }
+        uaAssociateNamedUserRequest.setChannelId(UAirship.shared().getPushManager().getChannelId());
+
+        return uaAssociateNamedUserRequest;
+    }
+
     private void sendUALoggedInEvent(String userId) {
         if (currentContext != null &&
                 currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
             urbanAirshipEventPresenter.sendUserLoginEvent(userId,
                     uaNamedUserRequest -> {
                         sendUANamedUserEventRequest(uaNamedUserRequest);
+                        sendUAAssociateUserEventRequest(getUAAssociateNamedUserRequest(userId),
+                                true);
                     });
         }
     }
@@ -12063,6 +12080,8 @@ public class AppCMSPresenter {
             urbanAirshipEventPresenter.sendUserLogoutEvent(userId,
                     uaNamedUserRequest -> {
                         sendUANamedUserEventRequest(uaNamedUserRequest);
+                        sendUAAssociateUserEventRequest(getUAAssociateNamedUserRequest(userId),
+                                false);
                     });
         }
     }
@@ -12108,15 +12127,37 @@ public class AppCMSPresenter {
         }
     }
 
-    private void sendUANamedUserEventRequest(UANamedUserRequest uaNamedUserRequest) {
-        PostUANamedUserEventAsyncTask.Params params =
-                new PostUANamedUserEventAsyncTask.Params
+    private void sendUASubscriptionPlanEvent(String userId, String subscriptionPlan) {
+        if (currentContext != null &&
+                currentContext.getResources().getBoolean(R.bool.send_ua_user_churn_events)) {
+            urbanAirshipEventPresenter.sendSubscriptionPlanEvent(userId,
+                    subscriptionPlan,
+                    uaNamedUserRequest -> {
+                        sendUANamedUserEventRequest(uaNamedUserRequest);
+                    });
+        }
+    }
+
+    private PostUANamedUserEventAsyncTask.Params getUAParams() {
+        return new PostUANamedUserEventAsyncTask.Params
                         .Builder()
                         .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
                         /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
-                        .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
-//                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
+//                        .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
+                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
                         .build();
+    }
+
+    private void sendUAAssociateUserEventRequest(UAAssociateNamedUserRequest uaAssociateNamedUserRequest,
+                                                 boolean associate) {
+        PostUANamedUserEventAsyncTask.Params params = getUAParams();
+
+        new PostUANamedUserEventAsyncTask(uaNamedUserEventCall)
+                .execute(params, uaAssociateNamedUserRequest, associate);
+    }
+
+    private void sendUANamedUserEventRequest(UANamedUserRequest uaNamedUserRequest) {
+        PostUANamedUserEventAsyncTask.Params params = getUAParams();
 
         new PostUANamedUserEventAsyncTask(uaNamedUserEventCall)
                 .execute(params, uaNamedUserRequest);

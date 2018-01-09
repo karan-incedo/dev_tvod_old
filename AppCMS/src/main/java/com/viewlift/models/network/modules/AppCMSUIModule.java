@@ -106,6 +106,8 @@ public class AppCMSUIModule {
     private final String subscriptionStatusGroup;
     private final String subscribedTag;
     private final String subscriptionAboutToExpireTag;
+    private final String subscriptionEndDateGroup;
+    private final String subscriptionPlanGroup;
     private final String unsubscribedTag;
     private final int daysBeforeSubscriptionEndForNotification;
 
@@ -151,6 +153,8 @@ public class AppCMSUIModule {
         this.subscribedTag = context.getString(R.string.ua_user_subscribed_tag);
         this.subscriptionAboutToExpireTag = context.getString(R.string.ua_user_subscription_about_expire_tag);
         this.unsubscribedTag = context.getString(R.string.ua_user_unsubscribed_tag);
+        this.subscriptionEndDateGroup = "";
+        this.subscriptionPlanGroup = "";
         this.daysBeforeSubscriptionEndForNotification = context.getResources().getInteger(R.integer.ua_days_before_subscription_end_notification_tag);
     }
 
@@ -1191,6 +1195,8 @@ public class AppCMSUIModule {
                 subscribedTag,
                 subscriptionAboutToExpireTag,
                 unsubscribedTag,
+                subscriptionEndDateGroup,
+                subscriptionPlanGroup,
                 daysBeforeSubscriptionEndForNotification);
     }
 }

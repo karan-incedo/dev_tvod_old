@@ -9,7 +9,7 @@ import com.vimeo.stag.UseStag;
  */
 
 @UseStag
-public class UAAssociateNamedUser {
+public class UAAssociateNamedUserRequest {
     @SerializedName("channel_id")
     @Expose
     String channelId;

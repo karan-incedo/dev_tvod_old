@@ -1,5 +1,6 @@
 package com.viewlift.models.network.background.tasks;
 
+import com.viewlift.models.data.urbanairship.UAAssociateNamedUserRequest;
 import com.viewlift.models.data.urbanairship.UANamedUserRequest;
 import com.viewlift.models.network.rest.UANamedUserEventCall;
 
@@ -53,6 +54,34 @@ public class PostUANamedUserEventAsyncTask {
                             return uaNamedUserEventCall.call(params.accessKey,
                                     params.authKey,
                                     uaNamedUserRequest);
+                        } catch (Exception e) {
+                            //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                        }
+                    }
+                    return null;
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .onErrorResumeNext(throwable -> Observable.empty())
+                .subscribe((result) -> {});
+    }
+
+    public void execute(Params params,
+                        UAAssociateNamedUserRequest uaAssociateNamedUserRequest,
+                        boolean associate) {
+        Observable
+                .fromCallable(() -> {
+                    if (params != null) {
+                        try {
+                            if (associate) {
+                                return uaNamedUserEventCall.sendLoginAssociation(params.accessKey,
+                                        params.authKey,
+                                        uaAssociateNamedUserRequest);
+                            } else {
+                                return uaNamedUserEventCall.sendLogoutDisassociation(params.accessKey,
+                                        params.authKey,
+                                        uaAssociateNamedUserRequest);
+                            }
                         } catch (Exception e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
                         }
