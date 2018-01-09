@@ -149,7 +149,11 @@ public class CastHelper {
 
     public static synchronized CastHelper getInstance(Context context) {
         if (objMain == null) {
-            objMain = new CastHelper(context);
+            try {
+                objMain = new CastHelper(context);
+            } catch (Exception e) {
+
+            }
         }
         return objMain;
     }
