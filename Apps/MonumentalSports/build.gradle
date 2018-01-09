@@ -30,15 +30,15 @@ repositories {
 }
 
 android {
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "27.0.1"
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 23
+        targetSdkVersion 27
         versionCode 65
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 26
+        renderscriptTargetApi 27
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }
@@ -47,13 +47,13 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 23
-            targetSdkVersion 25
+            compileSdkVersion 27
+            targetSdkVersion 27
         }
         tv {
 
             minSdkVersion 21
-            compileSdkVersion 25
+            compileSdkVersion 27
             versionCode 3010010
             versionName "1.0.18"
             dimension = "green"

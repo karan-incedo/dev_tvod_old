@@ -33,17 +33,17 @@ repositories {
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.2'
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 182
 
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        renderscriptTargetApi 26
+        renderscriptTargetApi 27
         renderscriptSupportModeEnabled true
         useLibrary 'org.apache.http.legacy'
     }
@@ -52,15 +52,15 @@ android {
         mobile {
             dimension = "green"
             minSdkVersion 21
-            compileSdkVersion 26
-            targetSdkVersion 26
+            compileSdkVersion 27
+            targetSdkVersion 27
             aaptOptions {
                 cruncherEnabled = false
             }
         }
         tv {
             minSdkVersion 21
-            compileSdkVersion 26
+            compileSdkVersion 27
             versionCode 3010031
             versionName "1.2.1"
             dimension = "green"
