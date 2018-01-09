@@ -1,161 +1,34 @@
 package com.viewlift.presenters;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Build;
-import android.util.LruCache;
+import android.support.v4.app.FragmentManager;
+import android.content.Context;
 
 import com.viewlift.presenters.bitmap.ImageCache;
-import com.viewlift.presenters.bitmap.RecyclingBitmapDrawable;
-import com.viewlift.presenters.bitmap.Utils;
-
-import java.lang.ref.SoftReference;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Created by viewlift on 1/9/18.
  */
 
 public class BitmapCachePresenter {
-    Set<SoftReference<Bitmap>> mReusableBitmaps;
-    private LruCache<String, BitmapDrawable> mMemoryCache;
+    private ImageCache mImageCache;
     private ImageCache.ImageCacheParams mCacheParams;
 
-    public BitmapCachePresenter(Context context) {
+    public BitmapCachePresenter(Context context,
+                                FragmentManager fragmentManager) {
         mCacheParams = new ImageCache.ImageCacheParams(context,
                 context.getCacheDir().getPath());
-
-        // If you're running on Honeycomb or newer, create a
-        // synchronized HashSet of references to reusable bitmaps.
-        if (Utils.hasHoneycomb()) {
-            mReusableBitmaps =
-                    Collections.synchronizedSet(new HashSet<SoftReference<Bitmap>>());
-        }
-
-        mMemoryCache = new LruCache<String, BitmapDrawable>(mCacheParams.memCacheSize) {
-
-            // Notify the removed entry that is no longer being cached.
-            @Override
-            protected void entryRemoved(boolean evicted, String key,
-                                        BitmapDrawable oldValue, BitmapDrawable newValue) {
-                if (RecyclingBitmapDrawable.class.isInstance(oldValue)) {
-                    // The removed entry is a recycling drawable, so notify it
-                    // that it has been removed from the memory cache.
-                    ((RecyclingBitmapDrawable) oldValue).setIsCached(false);
-                } else {
-                    // The removed entry is a standard BitmapDrawable.
-                    if (Utils.hasHoneycomb()) {
-                        // We're running on Honeycomb or later, so add the bitmap
-                        // to a SoftReference set for possible use with inBitmap later.
-                        mReusableBitmaps.add
-                                (new SoftReference<Bitmap>(oldValue.getBitmap()));
-                    }
-                }
-            }
-        };
+        mImageCache = ImageCache.getInstance(fragmentManager,
+                mCacheParams);
     }
 
-    public static Bitmap decodeSampledBitmapFromFile(String filename,
-                                                     int reqWidth, int reqHeight, ImageCache cache) {
-
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        BitmapFactory.decodeFile(filename, options);
-
-        // If we're running on Honeycomb or newer, try to use inBitmap.
-        if (Utils.hasHoneycomb()) {
-            addInBitmapOptions(options, cache);
-        }
-        return BitmapFactory.decodeFile(filename, options);
+    public void addBitmapToCache(Context context, String data, Bitmap value) {
+        BitmapDrawable drawable = new BitmapDrawable(context.getResources(), value);
+        mImageCache.addBitmapToCache(data, drawable);
     }
 
-    private static void addInBitmapOptions(BitmapFactory.Options options,
-                                           ImageCache cache) {
-        // inBitmap only works with mutable bitmaps, so force the decoder to
-        // return mutable bitmaps.
-        options.inMutable = true;
-
-        if (cache != null) {
-            // Try to find a bitmap to use for inBitmap.
-            Bitmap inBitmap = cache.getBitmapFromReusableSet(options);
-
-            if (inBitmap != null) {
-                // If a suitable bitmap has been found, set it as the value of
-                // inBitmap.
-                options.inBitmap = inBitmap;
-            }
-        }
-    }
-
-    // This method iterates through the reusable bitmaps, looking for one
-    // to use for inBitmap:
-    protected Bitmap getBitmapFromReusableSet(BitmapFactory.Options options) {
-        Bitmap bitmap = null;
-
-        if (mReusableBitmaps != null && !mReusableBitmaps.isEmpty()) {
-            synchronized (mReusableBitmaps) {
-                final Iterator<SoftReference<Bitmap>> iterator
-                        = mReusableBitmaps.iterator();
-                Bitmap item;
-
-                while (iterator.hasNext()) {
-                    item = iterator.next().get();
-
-                    if (null != item && item.isMutable()) {
-                        // Check to see it the item can be used for inBitmap.
-                        if (canUseForInBitmap(item, options)) {
-                            bitmap = item;
-
-                            // Remove from reusable set so it can't be used again.
-                            iterator.remove();
-                            break;
-                        }
-                    } else {
-                        // Remove from the set if the reference has been cleared.
-                        iterator.remove();
-                    }
-                }
-            }
-        }
-        return bitmap;
-    }
-
-    static boolean canUseForInBitmap(
-        Bitmap candidate, BitmapFactory.Options targetOptions) {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            // From Android 4.4 (KitKat) onward we can re-use if the byte size of
-            // the new bitmap is smaller than the reusable bitmap candidate
-            // allocation byte count.
-            int width = targetOptions.outWidth / targetOptions.inSampleSize;
-            int height = targetOptions.outHeight / targetOptions.inSampleSize;
-            int byteCount = width * height * getBytesPerPixel(candidate.getConfig());
-            return byteCount <= candidate.getAllocationByteCount();
-        }
-
-        // On earlier versions, the dimensions must match exactly and the inSampleSize must be 1
-        return candidate.getWidth() == targetOptions.outWidth
-                && candidate.getHeight() == targetOptions.outHeight
-                && targetOptions.inSampleSize == 1;
-    }
-
-    /**
-     * A helper function to return the byte usage per pixel of a bitmap based on its configuration.
-     */
-    static int getBytesPerPixel(Bitmap.Config config) {
-        if (config == Bitmap.Config.ARGB_8888) {
-            return 4;
-        } else if (config == Bitmap.Config.RGB_565) {
-            return 2;
-        } else if (config == Bitmap.Config.ARGB_4444) {
-            return 2;
-        } else if (config == Bitmap.Config.ALPHA_8) {
-            return 1;
-        }
-        return 1;
+    public Bitmap getBitmapFromMemCache(String data) {
+        return mImageCache.getBitmapFromDiskCache(data);
     }
 }

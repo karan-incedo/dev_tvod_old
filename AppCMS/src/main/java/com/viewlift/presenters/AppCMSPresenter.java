@@ -22,6 +22,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -487,7 +488,7 @@ public class AppCMSPresenter {
     private AppCMSPageAPICall appCMSPageAPICall;
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
-    private Activity currentActivity;
+    private AppCompatActivity currentActivity;
     private Context currentContext;
     private Navigation navigation;
     private boolean loadFromFile;
@@ -626,6 +627,8 @@ public class AppCMSPresenter {
     private UANamedUserEventCall uaNamedUserEventCall;
 
     private boolean purchaseFromRestore;
+
+    private BitmapCachePresenter bitmapCachePresenter;
 
     @Inject
     public AppCMSPresenter(Gson gson,
@@ -9195,11 +9198,11 @@ public class AppCMSPresenter {
         }
     }
 
-    public Activity getCurrentActivity() {
+    public AppCompatActivity getCurrentActivity() {
         return currentActivity;
     }
 
-    public void setCurrentActivity(Activity activity) {
+    public void setCurrentActivity(AppCompatActivity activity) {
         this.currentActivity = activity;
         this.downloadManager = (DownloadManager) currentActivity.getSystemService(Context.DOWNLOAD_SERVICE);
         this.downloadQueueThread = new DownloadQueueThread(this);
@@ -9209,6 +9212,23 @@ public class AppCMSPresenter {
             this.realmController = RealmController.with(currentActivity);
         } catch (Exception e) {
             //
+        }
+
+        if (bitmapCachePresenter == null) {
+            bitmapCachePresenter = new BitmapCachePresenter(activity, activity.getSupportFragmentManager());
+        }
+    }
+
+    public Bitmap getBitmapFromCache(String url) {
+        if (bitmapCachePresenter != null) {
+            return bitmapCachePresenter.getBitmapFromMemCache(url);
+        }
+        return null;
+    }
+
+    public void addBitmapToCache(String url, Bitmap bitmap) {
+        if (bitmapCachePresenter != null && currentContext != null) {
+            bitmapCachePresenter.addBitmapToCache(currentContext, url, bitmap);
         }
     }
 

@@ -17,6 +17,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -340,76 +341,14 @@ public class CollectionGridItemView extends BaseView {
                                     imageWidth,
                                     imageHeight)) {
 
-                                Transformation gradientTransform = new BitmapTransformation() {
-                                    private static final String ID = "com.viewlift.views.customviews";
-
-                                    @Override
-                                    public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
-                                        try {
-                                            byte[] ID_BYTES = ID.getBytes(STRING_CHARSET_NAME);
-                                            messageDigest.update(ID_BYTES);
-                                        } catch (UnsupportedEncodingException e) {
-
-                                        }
-                                    }
-
-                                    @Override
-                                    protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
-                                                               int outWidth, int outHeight) {
-                                        int width = toTransform.getWidth();
-                                        int height = toTransform.getHeight();
-
-                                        boolean scaleImageUp = false;
-
-                                        Bitmap sourceWithGradient;
-                                        if (width < imageWidth &&
-                                                height < imageHeight) {
-                                            scaleImageUp = true;
-                                            float widthToHeightRatio =
-                                                    (float) width / (float) height;
-                                            width = (int) (imageHeight * widthToHeightRatio);
-                                            height = imageHeight;
-                                            sourceWithGradient =
-                                                    Bitmap.createScaledBitmap(toTransform,
-                                                            width,
-                                                            height,
-                                                            false);
-                                        } else {
-                                            sourceWithGradient =
-                                                    Bitmap.createBitmap(width,
-                                                            height,
-                                                            Bitmap.Config.ARGB_8888);
-                                        }
-
-                                        Canvas canvas = new Canvas(sourceWithGradient);
-                                        if (!scaleImageUp) {
-                                            canvas.drawBitmap(toTransform, 0, 0, null);
-                                        }
-
-                                        Paint paint = new Paint();
-                                        LinearGradient shader = new LinearGradient(0,
-                                                0,
-                                                0,
-                                                height,
-                                                0xFFFFFFFF,
-                                                0xFF000000,
-                                                Shader.TileMode.CLAMP);
-                                        paint.setShader(shader);
-                                        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-                                        canvas.drawRect(0, 0, width, height, paint);
-                                        paint = null;
-                                        return sourceWithGradient;
-                                    }
-
-                                    @Override
-                                    public int hashCode() {
-                                        return ID.hashCode();
-                                    }
-                                };
+                                Transformation gradientTransform = new GradientTransformation(imageWidth,
+                                        imageHeight,
+                                        appCMSPresenter,
+                                        imageUrl);
 
                                 RequestOptions requestOptions = new RequestOptions()
                                         .transform(gradientTransform)
-                                        .diskCacheStrategy(DiskCacheStrategy.DATA);
+                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
 
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -744,6 +683,96 @@ public class CollectionGridItemView extends BaseView {
             public ItemContainer build() {
                 return itemContainer;
             }
+        }
+    }
+
+    private static class GradientTransformation extends BitmapTransformation {
+        private final String ID;
+
+        private int imageWidth, imageHeight;
+        private AppCMSPresenter appCMSPresenter;
+        private String imageUrl;
+
+        public GradientTransformation(int imageWidth,
+                                      int imageHeight,
+                                      AppCMSPresenter appCMSPresenter,
+                                      String imageUrl) {
+            this.imageWidth = imageWidth;
+            this.imageHeight = imageHeight;
+            this.appCMSPresenter = appCMSPresenter;
+            this.imageUrl = imageUrl;
+            this.ID = imageUrl;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof GradientTransformation;
+        }
+
+        @Override
+        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+            try {
+                byte[] ID_BYTES = ID.getBytes(STRING_CHARSET_NAME);
+                messageDigest.update(ID_BYTES);
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG, "Could not update disk cache key: " + e.getMessage());
+            }
+        }
+
+        @Override
+        protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+            int outWidth, int outHeight) {
+            int width = toTransform.getWidth();
+            int height = toTransform.getHeight();
+
+            boolean scaleImageUp = false;
+
+            Bitmap sourceWithGradient = appCMSPresenter.getBitmapFromCache(imageUrl);
+            if (sourceWithGradient == null) {
+                if (width < imageWidth &&
+                        height < imageHeight) {
+                    scaleImageUp = true;
+                    float widthToHeightRatio =
+                            (float) width / (float) height;
+                    width = (int) (imageHeight * widthToHeightRatio);
+                    height = imageHeight;
+                    sourceWithGradient =
+                            Bitmap.createScaledBitmap(toTransform,
+                                    width,
+                                    height,
+                                    false);
+                } else {
+                    sourceWithGradient =
+                            Bitmap.createBitmap(width,
+                                    height,
+                                    Bitmap.Config.ARGB_8888);
+                }
+
+                Canvas canvas = new Canvas(sourceWithGradient);
+                if (!scaleImageUp) {
+                    canvas.drawBitmap(toTransform, 0, 0, null);
+                }
+
+                Paint paint = new Paint();
+                LinearGradient shader = new LinearGradient(0,
+                        0,
+                        0,
+                        height,
+                        0xFFFFFFFF,
+                        0xFF000000,
+                        Shader.TileMode.CLAMP);
+                paint.setShader(shader);
+                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+                canvas.drawRect(0, 0, width, height, paint);
+                paint = null;
+                appCMSPresenter.addBitmapToCache(imageUrl, sourceWithGradient);
+            }
+            return sourceWithGradient;
+        }
+
+        @Override
+        public int hashCode() {
+            return ID.hashCode();
         }
     }
 }
