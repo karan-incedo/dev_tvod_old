@@ -32,8 +32,11 @@
     <string name="ua_user_logged_in_status_group">user_logged_in_status</string>
     <string name="ua_user_logged_in_tag">logged_in</string>
     <string name="ua_user_logged_out_tag">logged_out</string>
-    <string name="ua_user_subscription_status_group">subscription_status</string>
+    <string name="ua_user_subscription_status_group">user_subscription_status</string>
     <string name="ua_user_subscribed_tag">subscribed</string>
     <string name="ua_user_subscription_about_expire_tag">subscription_about_to_expire</string>
-    <string name="ua_user_unsubscribed">unsubscribed</string>
+    <string name="ua_user_unsubscribed_tag">unsubscribed</string>
+    <string name="ua_user_subscription_end_date_group">subscription_end_date</string>
+    <string name="ua_user_subscription_plan_group">plan_name</string>
+    <integer name="ua_days_before_subscription_end_notification_tag">7</integer>
 </resources>
