@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
+import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -32,7 +34,7 @@ import java.util.List;
  */
 
 public class AppCMSPageFragment extends Fragment {
-    //private static final String TAG = "AppCMSPageFragment";
+    private static final String TAG = "AppCMSPageFragment";
     private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
@@ -178,6 +180,8 @@ public class AppCMSPageFragment extends Fragment {
                 appCMSPresenter.dismissPopupWindowPlayer();
             }
         }
+
+        Log.d(TAG, "PageView created");
 
         return pageView;
     }
@@ -395,5 +399,9 @@ public class AppCMSPageFragment extends Fragment {
         void onSuccess(AppCMSBinder appCMSBinder);
 
         void onError(AppCMSBinder appCMSBinder);
+
+        void enterFullScreenVideoPlayer();
+
+        void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
     }
 }

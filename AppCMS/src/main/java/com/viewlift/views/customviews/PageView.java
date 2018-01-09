@@ -5,9 +5,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
@@ -31,6 +34,8 @@ import javax.inject.Inject;
  */
 
 public class PageView extends BaseView {
+    private static final String TAG = "PageView";
+
     private final AppCMSPageUI appCMSPageUI;
     private List<ListWithAdapter> adapterList;
     private List<ViewWithComponentId> viewsWithComponentIds;
@@ -39,8 +44,6 @@ public class PageView extends BaseView {
     private AppCMSPresenter appCMSPresenter;
     private SwipeRefreshLayout mainView;
     private AppCMSPageViewAdapter appCMSPageViewAdapter;
-
-    private ViewDimensions fullScreenViewOriginalDimensions;
 
     private boolean shouldRefresh;
 
@@ -62,34 +65,32 @@ public class PageView extends BaseView {
 
     public void openViewInFullScreen(View view, ViewGroup viewParent) {
         shouldRefresh = false;
-        if (fullScreenViewOriginalDimensions == null) {
-            fullScreenViewOriginalDimensions = new ViewDimensions();
-        }
-        try {
-            fullScreenViewOriginalDimensions.width = view.getLayoutParams().width;
-            fullScreenViewOriginalDimensions.height = view.getLayoutParams().height;
-        } catch (Exception e) {
-            //
-        }
-
-        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-        view.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
 
         childrenContainer.setVisibility(GONE);
         viewParent.removeView(view);
+
+        LayoutParams adjustedLayoutParams = new LayoutParams(LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT);
+
+        view.setLayoutParams(adjustedLayoutParams);
+
         addView(view);
+
+        view.forceLayout();
+
+        Log.d(TAG, "Video Player opened in fullscreen");
     }
 
     public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
         shouldRefresh = true;
-        if (fullScreenViewOriginalDimensions != null) {
+        if (view.getParent() == this) {
             removeView(view);
 
-            view.getLayoutParams().width = fullScreenViewOriginalDimensions.width;
-            view.getLayoutParams().height = fullScreenViewOriginalDimensions.height;
-
-            viewParent.addView(view);
             childrenContainer.setVisibility(VISIBLE);
+
+            getRootView().forceLayout();
+
+            Log.d(TAG, "Video Player closed out fullscreen");
         }
     }
 
@@ -305,10 +306,5 @@ public class PageView extends BaseView {
 
     public void setReparentChromecastButton(boolean reparentChromecastButton) {
         this.reparentChromecastButton = reparentChromecastButton;
-    }
-
-    private static class ViewDimensions {
-        int width;
-        int height;
     }
 }

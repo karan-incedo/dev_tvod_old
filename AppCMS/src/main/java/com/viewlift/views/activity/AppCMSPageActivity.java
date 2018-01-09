@@ -37,6 +37,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -1475,6 +1476,31 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void enterFullScreenVideoPlayer() {
+        hideSystemUI(getWindow().getDecorView());
+        if (!BaseView.isLandscape(this)) {
+            appCMSPresenter.rotateToLandscape();
+        }
+        if (BaseView.isTablet(this)) {
+            appCMSPresenter.restrictLandscapeOnly();
+        }
+        if (!castDisabled && mMediaRouteButton != null) {
+            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
+        }
+        ViewCreator.openFullScreenVideoPlayer(this);
+    }
+
+    @Override
+    public void exitFullScreenVideoPlayer(boolean launchPage) {
+        showSystemUI(getWindow().getDecorView());
+        appCMSPresenter.unrestrictPortraitOnly();
+        ViewCreator.closeFullScreenVideoPlayer(this);
+        if (launchPage) {
+            handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
+        }
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (appCMSPresenter != null) {
@@ -1496,49 +1522,26 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             false);
                 }
 
-                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                        updatedAppCMSBinder != null &&
-                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-                    if (!BaseView.isTablet(this)) {
-                        appCMSPresenter.unrestrictPortraitOnly();
-                        if (BaseView.isLandscape(this) ||
-                                ViewCreator.playerViewFullScreenEnabled()) {
-                            enterFullScreenVideoPlayer();
-                        } else {
-                            exitFullScreenVideoPlayer(true);
-                        }
-                    } else {
-                        if (ViewCreator.playerViewFullScreenEnabled()) {
-                            enterFullScreenVideoPlayer();
-                        } else {
-                            ViewCreator.enableFullScreenMode();
-                        }
-                    }
-                }
+//                if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
+//                        updatedAppCMSBinder != null &&
+//                        appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
+//                    if (!BaseView.isTablet(this)) {
+//                        appCMSPresenter.unrestrictPortraitOnly();
+//                        if (BaseView.isLandscape(this) ||
+//                                ViewCreator.playerViewFullScreenEnabled()) {
+//                            enterFullScreenVideoPlayer();
+//                        } else {
+//                            exitFullScreenVideoPlayer(true);
+//                        }
+//                    } else {
+//                        if (ViewCreator.playerViewFullScreenEnabled()) {
+//                            enterFullScreenVideoPlayer();
+//                        } else {
+//                            ViewCreator.enableFullScreenMode();
+//                        }
+//                    }
+//                }
             }
-        }
-    }
-
-    public void enterFullScreenVideoPlayer() {
-        hideSystemUI(getWindow().getDecorView());
-        if (!BaseView.isLandscape(this)) {
-            appCMSPresenter.rotateToLandscape();
-        }
-        if (BaseView.isTablet(this)) {
-            appCMSPresenter.restrictLandscapeOnly();
-        }
-        if (!castDisabled && mMediaRouteButton != null) {
-            ViewCreator.applyChromecastButtonToFullScreenPlayer(mMediaRouteButton);
-        }
-        ViewCreator.openFullScreenVideoPlayer(this);
-    }
-
-    public void exitFullScreenVideoPlayer(boolean launchPage) {
-        showSystemUI(getWindow().getDecorView());
-        appCMSPresenter.unrestrictPortraitOnly();
-        ViewCreator.closeFullScreenVideoPlayer(this);
-        if (launchPage) {
-            handleLaunchPageAction(updatedAppCMSBinder, false, false, true);
         }
     }
 
@@ -2158,35 +2161,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else if (shouldShowSearchInToolbar()) {
             mSearchTopButton.setVisibility(View.VISIBLE);
         }
-
-        if (getResources().getBoolean(R.bool.video_detail_page_plays_video) &&
-                updatedAppCMSBinder != null &&
-                appCMSPresenter.isPageAVideoPage(updatedAppCMSBinder.getPageName())) {
-            if (!BaseView.isTablet(this)) {
-                appCMSPresenter.unrestrictPortraitOnly();
-                if (BaseView.isLandscape(this)) {
-                    enterFullScreenVideoPlayer();
-                } else {
-                    exitFullScreenVideoPlayer(false);
-                }
-            } else {
-                if (ViewCreator.playerViewFullScreenEnabled()) {
-                    appCMSPresenter.sendEnterFullScreenAction();
-                } else {
-                    ViewCreator.enableFullScreenMode();
-                }
-            }
-        }
     }
 
     private void hideSystemUI(View decorView) {
         decorView.setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+                View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                        View.SYSTEM_UI_FLAG_FULLSCREEN |
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY |
+                        View.SYSTEM_UI_FLAG_LOW_PROFILE);
     }
 
     private void showSystemUI(View decorView) {

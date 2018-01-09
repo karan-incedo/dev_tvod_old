@@ -1951,6 +1951,13 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public ArrayList<ContentDatum> getAllUserHistory() {
+        if (userHistoryData != null) {
+            return new ArrayList(userHistoryData.values());
+        }
+        return null;
+    }
+
     public boolean isFilmAddedToWatchlist(String filmId) {
         try {
             if (filmId != null) {
@@ -6280,6 +6287,12 @@ public class AppCMSPresenter {
         }
     }
 
+    public void sendAppsFlyerFilmViewingEvent(String primaryCategory, String filmId) {
+        if (currentContext != null) {
+            AppsFlyerUtils.filmViewingEvent(currentContext, primaryCategory, filmId, this);
+        }
+    }
+
     public void showNoNetworkConnectivityToast() {
         if (currentContext != null) {
             displayCustomToast(currentContext.getString(R.string.no_network_connectivity_message));
@@ -7239,8 +7252,10 @@ public class AppCMSPresenter {
         return false;
     }
 
-    private void showToast(String message, int messageDuration) {
-        Toast.makeText(currentActivity, message, messageDuration).show();
+    public void showToast(String message, int messageDuration) {
+        if (currentActivity != null) {
+            Toast.makeText(currentActivity, message, messageDuration).show();
+        }
     }
 
     public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {

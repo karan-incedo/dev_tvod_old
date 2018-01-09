@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
@@ -812,6 +813,11 @@ public abstract class BaseView extends FrameLayout {
         }
 
         AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
+
+        if (componentType == null) {
+            componentType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
             if (viewWidth < 0) {
@@ -970,6 +976,18 @@ public abstract class BaseView extends FrameLayout {
             if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                 viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
                 viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+            } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY) {
+                if (getResources().getBoolean(R.bool.video_detail_page_plays_video)) {
+                    if (!BaseView.isTablet(getContext())) {
+                        if (BaseView.isLandscape(getContext())) {
+                            viewWidth = viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        }
+                    } else {
+                        if (ViewCreator.playerViewFullScreenEnabled()) {
+                            viewWidth = viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
+                        }
+                    }
+                }
             }
         }
 
