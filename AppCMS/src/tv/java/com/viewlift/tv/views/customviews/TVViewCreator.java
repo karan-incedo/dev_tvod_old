@@ -494,7 +494,7 @@ public class TVViewCreator {
                 if (null != moduleData
                         && moduleData.getContentData() != null
                         && !moduleData.getContentData().isEmpty()) {
-                    CustomVideoPlayerView videoPlayerView = (CustomVideoPlayerView) appCMSPresenter.getPlayerLruCache().get(appCMSPageAPI.getId());
+                    CustomTVVideoPlayerView videoPlayerView = (CustomTVVideoPlayerView) appCMSPresenter.getPlayerLruCache().get(appCMSPageAPI.getId());
 
                     createHeaderItem(component, context, moduleUI, moduleData, "", false);
                     customHeaderItem.setmIsLivePlayer(true);

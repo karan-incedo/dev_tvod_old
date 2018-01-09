@@ -23,7 +23,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
-import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
+import com.viewlift.tv.views.customviews.CustomTVVideoPlayerView;
 import com.viewlift.tv.views.customviews.TVPageView;
 
 /**
@@ -154,12 +154,12 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                         }
                         return;
                     }
-                    appCMSPresenter.setVideoPlayerView(null);
-                    appCMSPresenter.setVideoPlayerView(customVideoVideoPlayerView);
-                    appCMSPresenter.videoPlayerView.getPlayerView().setUseController(true);
+                    appCMSPresenter.setTVVideoPlayerView(null);
+                    appCMSPresenter.setTVVideoPlayerView(customVideoVideoPlayerView);
+                    appCMSPresenter.tvVideoPlayerView.getPlayerView().setUseController(true);
                     customVideoVideoPlayerView.hideControlsForLiveStream();
-                    appCMSPresenter.showFullScreenPlayer();
-                    appCMSPresenter.videoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.videoPlayerView.getPlayer().getContentPosition() + 1000);
+                    appCMSPresenter.showFullScreenTVPlayer();
+                    appCMSPresenter.tvVideoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.tvVideoPlayerView.getPlayer().getContentPosition() + 1000);
                     return;
                 }
                 ContentDatum data = rowData.contentData;
@@ -210,7 +210,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
     boolean isPlayerComponentSelected = false;
-    CustomVideoPlayerView customVideoVideoPlayerView;
+    CustomTVVideoPlayerView customVideoVideoPlayerView;
     private class ItemViewSelectedListener implements OnItemViewSelectedListener {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
@@ -226,8 +226,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                     data = rowData.contentData;
                     if(rowData.isPlayerComponent){
                         if( null != itemViewHolder && null != itemViewHolder.view
-                                && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoPlayerView){
-                            customVideoVideoPlayerView  =  (CustomVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
+                                && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomTVVideoPlayerView){
+                            customVideoVideoPlayerView  =  (CustomTVVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
                             if(customVideoVideoPlayerView.isLoginButtonVisible() && appCMSPresenter.isUserLoggedIn()){
                                customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
                                customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
@@ -302,7 +302,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         super.onStop();
     }
 
-    public CustomVideoPlayerView getCustomVideoVideoPlayerView(){
+    public CustomTVVideoPlayerView getCustomVideoVideoPlayerView(){
         return customVideoVideoPlayerView;
     }
 

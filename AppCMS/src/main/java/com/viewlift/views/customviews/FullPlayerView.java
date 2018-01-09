@@ -1,16 +1,12 @@
-package com.viewlift.tv.views.customviews;
+package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.view.KeyEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 
 /**
  * Created by sandeep.singh on 11/16/2017.
@@ -18,14 +14,14 @@ import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
 
 public class FullPlayerView extends RelativeLayout {
 
-    private CustomVideoPlayerView videoPlayerView;
+    private TVVideoPlayerView videoPlayerView;
     private AppCMSPresenter appCMSPresenter;
     private Context context;
     private LayoutParams lpView;
     private FrameLayout.LayoutParams lpVideoView;
 
     public FullPlayerView(Context context,
-                          CustomVideoPlayerView videoPlayerView) {
+                          TVVideoPlayerView videoPlayerView) {
         super(context);
         this.context = context;
         this.videoPlayerView = videoPlayerView;
@@ -48,16 +44,16 @@ public class FullPlayerView extends RelativeLayout {
         setLayoutParams(lpView);
         setBackgroundColor(Color.BLACK);
 
-        appCMSPresenter.videoPlayerView.setLayoutParams(lpView);
+        appCMSPresenter.tvVideoPlayerView.setLayoutParams(lpView);
 
-        if(appCMSPresenter.videoPlayerView.getParent()!=null){
-            appCMSPresenter.videoPlayerViewParent=(ViewGroup)appCMSPresenter.videoPlayerView.getParent();
-            ((ViewGroup) appCMSPresenter.videoPlayerView.getParent()).removeView(appCMSPresenter.videoPlayerView);
+        if(appCMSPresenter.tvVideoPlayerView.getParent()!=null){
+            appCMSPresenter.videoPlayerViewParent=(ViewGroup)appCMSPresenter.tvVideoPlayerView.getParent();
+            ((ViewGroup) appCMSPresenter.tvVideoPlayerView.getParent()).removeView(appCMSPresenter.tvVideoPlayerView);
         }
-        //appCMSPresenter.videoPlayerView.updateFullscreenButtonState(appCMSPresenter.getCurrentActivity().getRequestedOrientation());
-       // appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
+        //appCMSPresenter.tvVideoPlayerView.updateFullscreenButtonState(appCMSPresenter.getCurrentActivity().getRequestedOrientation());
+        // appCMSPresenter.tvVideoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
         setVisibility(VISIBLE);
-        addView(appCMSPresenter.videoPlayerView);
+        addView(appCMSPresenter.tvVideoPlayerView);
     }
 
 

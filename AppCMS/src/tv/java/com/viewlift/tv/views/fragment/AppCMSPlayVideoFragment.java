@@ -649,7 +649,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
        /* if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.pause();
         } else {
-            videoPlayerView.pausePlayer();
+            tvVideoPlayerView.pausePlayer();
         }*/
 
         videoPlayerView.pausePlayer();
@@ -670,7 +670,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             }
             videoPlayerInfoContainer.setVisibility(View.VISIBLE);
             videoPlayerView.startPlayer();
-            //videoPlayerView.resumePlayer();
+            //tvVideoPlayerView.resumePlayer();
             if (beaconMessageThread != null) {
                 beaconMessageThread.sendBeaconPing = true;
             }
@@ -706,7 +706,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
         }  /*else {
-            videoPlayerView.resumePlayer();
+            tvVideoPlayerView.resumePlayer();
             Log.d(TAG, "Resuming playback");
         }*/
 

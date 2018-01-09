@@ -185,8 +185,6 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
-import com.viewlift.tv.views.customviews.FullPlayerView;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -200,6 +198,8 @@ import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.TVVideoPlayerView;
+import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.PopupMenu;
@@ -11662,55 +11662,44 @@ public class AppCMSPresenter {
     }
 
 
-    public CustomVideoPlayerView videoPlayerView;
+    public TVVideoPlayerView tvVideoPlayerView;
     public ViewGroup videoPlayerViewParent;
     private RelativeLayout relativeLayoutFull;
-    public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView) {
-        this.videoPlayerView = customVideoPlayerView;
+    public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
+        this.tvVideoPlayerView = customVideoPlayerView;
     }
 
     public static boolean isFullScreenVisible;
 
-    public void showFullScreenPlayer() {
+    public void showFullScreenTVPlayer() {
         if (videoPlayerViewParent == null) {
-            videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
+            videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
         }
-        if (videoPlayerView != null && videoPlayerView.getParent() != null) {
+        if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
             relativeLayoutFull = new FullPlayerView(currentActivity, this);
             relativeLayoutFull.setVisibility(View.VISIBLE);
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
-            videoPlayerView.getPlayerView().showController();
-
+            tvVideoPlayerView.getPlayerView().showController();
             isFullScreenVisible = true;
-         /*   restrictLandscapeOnly();
-            new Handler().postDelayed(() -> {
-                unrestrictPortraitOnly();
-            }, 3000);
-            if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-                ((AppCMSPageActivity) currentActivity).setFullScreenFocus();
-            }*/
+
         }
 
     }
 
-    public void exitFullScreenPlayer() {
+    public void exitFullScreenTVPlayer() {
         try {
             if (relativeLayoutFull != null) {
-//                relativeLayoutFull.removeAllViews();
-                if (videoPlayerViewParent != null) {
-                    relativeLayoutFull.removeView(videoPlayerView);
-                    if (videoPlayerView != null && videoPlayerView.getParent() != null) {
-                        ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
+                 if (videoPlayerViewParent != null) {
+                    relativeLayoutFull.removeView(tvVideoPlayerView);
+                    if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
+                        ((ViewGroup) tvVideoPlayerView.getParent()).removeView(tvVideoPlayerView);
                     }
-                        videoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
-         //           videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_PORTRAIT);
-                    videoPlayerViewParent.addView(videoPlayerView);
+                        tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
+                     videoPlayerViewParent.addView(tvVideoPlayerView);
                 }
-                videoPlayerView=null;
+                tvVideoPlayerView =null;
                 videoPlayerViewParent=null;
-//                relativeLayoutFull.setVisibility(View.GONE);
-//                relativeLayoutFull.removeAllViews();
 
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
                 rootView.postDelayed(() -> {
@@ -11729,25 +11718,6 @@ public class AppCMSPresenter {
         if (relativeLayoutFull != null) {
             relativeLayoutFull.setVisibility(View.GONE);
         }
-      //  restrictPortraitOnly();
-
-/*
-        new Handler().postDelayed(() -> {
-            if (currentActivity != null && isAutoRotate() &&
-                    !AppCMSPresenter.isFullScreenVisible &&
-                    currentActivity.getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT &&
-                    currentActivity.findViewById(R.id.video_player_id) != null) {
-                unrestrictPortraitOnly();
-            } else if (currentActivity != null && !BaseView.isTablet(currentActivity) && currentActivity.findViewById(R.id.video_player_id) == null) {
-                restrictPortraitOnly();
-            } else if (BaseView.isTablet(currentActivity)) {
-                unrestrictPortraitOnly();
-            }
-        }, 100);
-
-        if (currentActivity != null && currentActivity instanceof AppCMSPageActivity) {
-            ((AppCMSPageActivity) currentActivity).exitFullScreenFocus();
-        }*/
         isFullScreenVisible = false;
     }
 

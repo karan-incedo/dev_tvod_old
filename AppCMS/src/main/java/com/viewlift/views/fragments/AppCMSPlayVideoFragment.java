@@ -496,7 +496,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 beaconMessageThread.playbackState = playerState.getPlaybackState();
             }
             if (playerState.getPlaybackState() == ExoPlayer.STATE_READY && !isCastConnected) {
-                System.out.println("videoPlayerView run time onready-" + videoPlayerView.getDuration());
+                System.out.println("tvVideoPlayerView run time onready-" + videoPlayerView.getDuration());
                 long updatedRunTime = 0;
                 try {
                     updatedRunTime = videoPlayerView.getDuration() / 1000;
@@ -602,7 +602,7 @@ public class AppCMSPlayVideoFragment extends Fragment
               /*  appCMSPresenter.sendBeaconPlayMessage(filmId,
                         permaLink,
                         parentScreenName,
-                        videoPlayerView.getCurrentPosition(),
+                        tvVideoPlayerView.getCurrentPosition(),
                         false);*/
                 appCMSPresenter.sendBeaconMessage(filmId,
                         permaLink,
@@ -668,7 +668,7 @@ public class AppCMSPlayVideoFragment extends Fragment
         showCRWWarningMessage = true;
 
         /*if (isVideoDownloaded) {
-            videoPlayerView.startPlayer();
+            tvVideoPlayerView.startPlayer();
         }*/
 
         return rootView;
@@ -676,7 +676,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void setCurrentWatchProgress(long runTime, long watchedTime) {
-        System.out.println("videoPlayerView run time on setcurrent progress-" + runTime + " watch time-" + watchedTime);
+        System.out.println("tvVideoPlayerView run time on setcurrent progress-" + runTime + " watch time-" + watchedTime);
 
         if (runTime > 0 && watchedTime > 0 && runTime > watchedTime) {
             long playDifference = runTime - watchedTime;
@@ -854,7 +854,7 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-                // videoPlayerView.startPlayer();
+                // tvVideoPlayerView.startPlayer();
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = true;
                 }

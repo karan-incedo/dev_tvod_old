@@ -9,7 +9,7 @@ import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
+import com.viewlift.tv.views.customviews.CustomTVVideoPlayerView;
 
 /**
  * Created by nitin.tyagi on 11/2/2017.
@@ -96,16 +96,16 @@ public class PlayerPresenter extends Presenter {
 
 
 
-    public CustomVideoPlayerView playerView(Context context) {
-        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
+    public CustomTVVideoPlayerView playerView(Context context) {
+        CustomTVVideoPlayerView videoPlayerView = new CustomTVVideoPlayerView(context);
         videoPlayerView.init(context);
         videoPlayerView.getPlayerView().hideController();
         return videoPlayerView;
     }
 
-    private CustomVideoPlayerView mCustomVideoPlayerView;
+    private CustomTVVideoPlayerView mCustomVideoPlayerView;
     private boolean shouldStartPlayer;
-    public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView , boolean shouldStartPlayer){
+    public void setVideoPlayerView(CustomTVVideoPlayerView customVideoPlayerView , boolean shouldStartPlayer){
         this.mCustomVideoPlayerView = customVideoPlayerView;
         this.shouldStartPlayer = shouldStartPlayer;
     }

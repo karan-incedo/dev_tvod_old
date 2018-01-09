@@ -14,7 +14,6 @@ import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -383,9 +382,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         //when activity pause then close the full screen player.
         if(appCMSPresenter.isFullScreenVisible){
-            appCMSPresenter.videoPlayerView.getPlayerView().hideController();
-            appCMSPresenter.videoPlayerView.getPlayerView().setUseController(false);
-            appCMSPresenter.exitFullScreenPlayer();
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().hideController();
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().setUseController(false);
+            appCMSPresenter.exitFullScreenTVPlayer();
             return;
         }
 
@@ -666,9 +665,9 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public void onBackPressed() {
 
         if(appCMSPresenter.isFullScreenVisible){
-            appCMSPresenter.videoPlayerView.getPlayerView().hideController();
-            appCMSPresenter.videoPlayerView.getPlayerView().setUseController(false);
-            appCMSPresenter.exitFullScreenPlayer();
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().hideController();
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().setUseController(false);
+            appCMSPresenter.exitFullScreenTVPlayer();
             return;
         }
 
@@ -749,42 +748,42 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         int keyCode = event.getKeyCode();
         int action = event.getAction();
         if(AppCMSPresenter.isFullScreenVisible){
-            appCMSPresenter.videoPlayerView.getPlayerView().showController();
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().showController();
             switch (action) {
                 case KeyEvent.ACTION_DOWN:
                     switch (keyCode) {
                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                            appCMSPresenter.videoPlayerView.findViewById(R.id.exo_pause).requestFocus();
-                            appCMSPresenter.videoPlayerView.findViewById(R.id.exo_play).requestFocus();
-                            if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
-                                appCMSPresenter.videoPlayerView.setHardPause(appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady());
-                                if(appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady()){
-                                    appCMSPresenter.videoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.videoPlayerView.getPlayer().getContentPosition() + 1000);
+                            appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_pause).requestFocus();
+                            appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_play).requestFocus();
+                            if (appCMSPresenter.tvVideoPlayerView.getPlayerView() != null) {
+                                appCMSPresenter.tvVideoPlayerView.setHardPause(appCMSPresenter.tvVideoPlayerView.getPlayer().getPlayWhenReady());
+                                if(appCMSPresenter.tvVideoPlayerView.getPlayer().getPlayWhenReady()){
+                                    appCMSPresenter.tvVideoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.tvVideoPlayerView.getPlayer().getContentPosition() + 1000);
                                 }
                                 return super.dispatchKeyEvent(event)
-                                        || appCMSPresenter.videoPlayerView.getPlayerView()
+                                        || appCMSPresenter.tvVideoPlayerView.getPlayerView()
                                         .dispatchKeyEvent(event);
                             }
                             break;
                         case KeyEvent.KEYCODE_DPAD_CENTER:
-                            if (appCMSPresenter.videoPlayerView.getPlayerView() != null) {
-                                appCMSPresenter.videoPlayerView.setHardPause(appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady());
-                                if(appCMSPresenter.videoPlayerView.getPlayer().getPlayWhenReady()){
-                                    appCMSPresenter.videoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.videoPlayerView.getPlayer().getContentPosition() + 1000);
+                            if (appCMSPresenter.tvVideoPlayerView.getPlayerView() != null) {
+                                appCMSPresenter.tvVideoPlayerView.setHardPause(appCMSPresenter.tvVideoPlayerView.getPlayer().getPlayWhenReady());
+                                if(appCMSPresenter.tvVideoPlayerView.getPlayer().getPlayWhenReady()){
+                                    appCMSPresenter.tvVideoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.tvVideoPlayerView.getPlayer().getContentPosition() + 1000);
                                 }
                             }
                             return super.dispatchKeyEvent(event);
                         case KeyEvent.KEYCODE_MEDIA_REWIND:
-                            if (null != appCMSPresenter.videoPlayerView) {
-                                if (appCMSPresenter.videoPlayerView.isLiveStream()) return true;
-                                appCMSPresenter.videoPlayerView.findViewById(R.id.exo_rew).requestFocus();
+                            if (null != appCMSPresenter.tvVideoPlayerView) {
+                                if (appCMSPresenter.tvVideoPlayerView.isLiveStream()) return true;
+                                appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_rew).requestFocus();
                                 return super.dispatchKeyEvent(event);
                             }
                             break;
                         case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                            if (null != appCMSPresenter.videoPlayerView) {
-                                if (appCMSPresenter.videoPlayerView.isLiveStream()) return true;
-                                appCMSPresenter.videoPlayerView.findViewById(R.id.exo_ffwd).requestFocus();
+                            if (null != appCMSPresenter.tvVideoPlayerView) {
+                                if (appCMSPresenter.tvVideoPlayerView.isLiveStream()) return true;
+                                appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_ffwd).requestFocus();
                                 return super.dispatchKeyEvent(event);
                             }
                         case KeyEvent.KEYCODE_DPAD_DOWN:
