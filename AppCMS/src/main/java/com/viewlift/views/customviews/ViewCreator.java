@@ -378,8 +378,6 @@ public class ViewCreator {
 
         if (resetWatchTime) {
             videoPlayerView.getPlayerView().getPlayer().seekTo(watchedTime);
-        } else if (0L < currentWatchedTime) {
-            videoPlayerView.getPlayerView().getPlayer().seekTo(currentWatchedTime);
         }
 
         appCMSVideoPlayerPresenter.updateBinder(context,
@@ -1503,13 +1501,13 @@ public class ViewCreator {
                 if (BaseView.isLandscape(context)) {
                     appCMSPresenter.sendEnterFullScreenAction();
                 } else {
-                    videoPlayerView.exitFullscreenMode();
+                    videoPlayerView.exitFullscreenMode(false);
                 }
             } else {
                 if (ViewCreator.playerViewFullScreenEnabled()) {
                     appCMSPresenter.sendEnterFullScreenAction();
                 } else {
-                    videoPlayerView.exitFullscreenMode();
+                    videoPlayerView.exitFullscreenMode(false);
                 }
             }
         }

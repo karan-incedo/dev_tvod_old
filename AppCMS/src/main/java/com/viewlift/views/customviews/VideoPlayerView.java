@@ -402,7 +402,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         exitFullscreenButton = playerView.findViewById(R.id.full_screen_back_button);
 
         exitFullscreenButton.setOnClickListener(v -> {
-            exitFullscreenMode();
+            exitFullscreenMode(true);
         });
 
         currentStreamingQualitySelector = playerView.findViewById(R.id.streamingQualitySelector);
@@ -1214,10 +1214,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
-    public void exitFullscreenMode() {
+    public void exitFullscreenMode(boolean relaunchPage) {
         enableFullScreenMode();
         fullScreenMode = false;
-        appCMSPresenter.sendExitFullScreenAction(true);
+        appCMSPresenter.sendExitFullScreenAction(relaunchPage);
     }
 
     public void enableFullScreenMode() {
