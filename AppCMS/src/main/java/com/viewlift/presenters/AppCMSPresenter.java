@@ -214,7 +214,6 @@ import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.TVVideoPlayerView;
-import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -384,9 +383,10 @@ public class AppCMSPresenter {
 
     private static final String SUBSCRIPTION_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
     private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC+00:00");
-    public static FullPlayerView relativeLayoutFull;
-    public static boolean isFullScreenVisible;
+    public TVVideoPlayerView tvVideoPlayerView;
+    private RelativeLayout relativeLayoutFull;
     public static boolean isExitFullScreen = false;
+    public static boolean isFullScreenVisible;
 
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private static int PAGE_API_LRU_CACHE_SIZE = 10;
@@ -10877,9 +10877,17 @@ public class AppCMSPresenter {
     }
 
     public TemplateType getTemplateType() {
-        return templateType;
+        String templateName = appCMSMain.getTemplateName();
+        if ("Entertainment".equalsIgnoreCase(templateName)){
+            return TemplateType.ENTERTAINMENT;
+        } else if ("Education".equalsIgnoreCase(templateName)){
+            return TemplateType.EDUCATION;
+        } else if ("LIVE".equalsIgnoreCase(templateName)){
+            return TemplateType.LIVE;
+        } else /*if (templateName.equalsIgnoreCase("Sports"))*/{
+            return TemplateType.SPORTS;
+        }
     }
-
     public boolean isRemovableSDCardAvailable() {
         return currentActivity != null && getStorageDirectories(currentActivity).length >= 1;
     }
@@ -11513,27 +11521,6 @@ public class AppCMSPresenter {
         return tvPlayerViewCache;
     }
 
-    public String getAdsUrl(String pagePath) {
-
-        String videoTag = null;
-        if (appCMSAndroid != null
-                && appCMSAndroid.getAdvertising() != null
-                && appCMSAndroid.getAdvertising().getVideoTag() != null) {
-            videoTag = appCMSAndroid.getAdvertising().getVideoTag();
-        }
-        if (videoTag == null) {
-            return null;
-        }
-
-        Date now = new Date();
-
-        return currentActivity.getString(R.string.app_cms_ads_api_url,
-                videoTag,
-                getPermalinkCompletePath(pagePath),
-                now.getTime(),
-                appCMSMain.getSite());
-    }
-
     public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView) {
         this.videoPlayerView = customVideoPlayerView;
     }
@@ -11822,7 +11809,6 @@ public class AppCMSPresenter {
     }
 
     public Boolean getIsMoreOptionsAvailable() {
-
         return isMoreOptionsAvailable;
     }
 
@@ -11943,14 +11929,12 @@ public class AppCMSPresenter {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME
     }
 
-
     public enum PlatformType {
         ANDROID, TV
     }
 
-
     public enum TemplateType {
-        ENTERTAINMENT, SPORTS
+        ENTERTAINMENT, SPORTS, EDUCATION, LIVE
     }
 
     public enum BeaconEvent {
@@ -12450,27 +12434,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public MetaPage getPrivacyPolicyPage() {
-        return privacyPolicyPage;
-    }
-
-    public MetaPage getTosPage() {
-        return tosPage;
-    }
-
-    private LruCache<String, Object> tvPlayerViewCache;
-
-    public LruCache<String, Object> getPlayerLruCache() {
-        if (tvPlayerViewCache == null) {
-            int Player_lru_cache_size = 5;
-            tvPlayerViewCache = new LruCache<>(Player_lru_cache_size);
-        }
-        return tvPlayerViewCache;
-    }
-
-
     public String getAdsUrl(String pagePath) {
-
         String videoTag = null;
         if (appCMSAndroid != null
                 && appCMSAndroid.getAdvertising() != null
@@ -12480,26 +12444,16 @@ public class AppCMSPresenter {
         if (videoTag == null) {
             return null;
         }
-
         Date now = new Date();
-
         return currentActivity.getString(R.string.app_cms_ads_api_url,
                 videoTag,
                 getPermalinkCompletePath(pagePath),
                 now.getTime(),
                 appCMSMain.getSite());
     }
-
-
-    public TVVideoPlayerView tvVideoPlayerView;
-    public ViewGroup videoPlayerViewParent;
-    private RelativeLayout relativeLayoutFull;
     public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
         this.tvVideoPlayerView = customVideoPlayerView;
     }
-
-    public static boolean isFullScreenVisible;
-
     public void showFullScreenTVPlayer() {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
@@ -12511,11 +12465,8 @@ public class AppCMSPresenter {
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).setVisibility(View.VISIBLE);
             tvVideoPlayerView.getPlayerView().showController();
             isFullScreenVisible = true;
-
         }
-
     }
-
     public void exitFullScreenTVPlayer() {
         try {
             if (relativeLayoutFull != null) {
@@ -12542,13 +12493,11 @@ public class AppCMSPresenter {
 
             }
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
         }
         if (relativeLayoutFull != null) {
             relativeLayoutFull.setVisibility(View.GONE);
         }
         isFullScreenVisible = false;
     }
-
 
 }

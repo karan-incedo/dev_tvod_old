@@ -952,12 +952,14 @@ public class CustomTVVideoPlayerView
      */
     public void hideControlsForLiveStream() {
         try {
-            getPlayerView().findViewById(R.id.exo_progress_container).setVisibility(isLiveStream ? GONE : VISIBLE);
+            getPlayerView().findViewById(R.id.exo_position).setVisibility(isLiveStream ? GONE : VISIBLE);
+            getPlayerView().findViewById(R.id.exo_progress).setVisibility(isLiveStream ? GONE : VISIBLE);
+            getPlayerView().findViewById(R.id.exo_duration).setVisibility(isLiveStream ? GONE : VISIBLE);
 
             if (isLiveStream) {
                 View rewind = getPlayerView().findViewById(R.id.exo_rew);
                 rewind.setTag(rewind.getVisibility());
-                rewind.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                    rewind.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
                     if (rewind.getVisibility() == VISIBLE) {
                         rewind.setVisibility(GONE);
                     }

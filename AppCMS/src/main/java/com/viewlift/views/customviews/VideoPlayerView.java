@@ -119,6 +119,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private RecyclerView listView;
 
+    public VideoPlayerView(Context context) {
+        super(context);
+        initializeView(context);
+    }
 
     public VideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context);
@@ -484,6 +488,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+    @Override
+    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+    }
 
 
     @Override
@@ -495,13 +503,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
-    public void onPositionDiscontinuity() {
+    public void onPositionDiscontinuity(int reason) {
 
     }
 
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+    }
+
+    @Override
+    public void onSeekProcessed() {
 
     }
 

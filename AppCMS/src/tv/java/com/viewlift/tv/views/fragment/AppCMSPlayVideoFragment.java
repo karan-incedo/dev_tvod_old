@@ -44,6 +44,7 @@ import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.util.Date;
 import java.util.Timer;
@@ -907,12 +908,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     public boolean showController(KeyEvent event) {
         if (null != videoPlayerView) {
-            SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
+            AppCMSSimpleExoPlayerView playerView =  videoPlayerView.getPlayerView();
             if (null != playerView) {
                 if (null != playerView.getPlayer()) {
                     if (playerView.getPlayer().getPlayWhenReady()) {
                         playerView.showController();
-//                        return playerView.dispatchMediaKeyEvent(event);
                     }
                 }
             }

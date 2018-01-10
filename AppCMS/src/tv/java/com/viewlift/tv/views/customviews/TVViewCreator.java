@@ -2140,7 +2140,10 @@ public class TVViewCreator {
                 return new Module();
             }
 
-            if (AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY == jsonValueKeyMap.get(module.getView())) {
+            if (module != null && (jsonValueKeyMap.get(module.getView())
+                    == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01 ||
+                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
+                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03 )) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }
