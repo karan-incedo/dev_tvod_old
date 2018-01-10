@@ -139,7 +139,7 @@ public class AutoplayFragment extends Fragment {
             Uri imageURI = null;
             boolean loadImageFromLocalSystem;
 
-            // TODO: getVideoImageUrl & getPosterImageUrl to be replaced with imageGist.
+            // TODO: Nov 15, '17 getVideoImageUrl & getPosterImageUrl will be replaced with imageGist.
 
             if (BaseView.isTablet(getContext()) && BaseView.isLandscape(getContext())) {
                 if (URLUtil.isFileUrl(binder.getContentData().getGist().getVideoImageUrl())) {

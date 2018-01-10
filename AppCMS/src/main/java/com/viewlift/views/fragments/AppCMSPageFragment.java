@@ -73,8 +73,10 @@ public class AppCMSPageFragment extends Fragment {
         if (context instanceof OnPageCreation) {
             try {
                 onPageCreation = (OnPageCreation) context;
+
                 appCMSBinder =
                         ((AppCMSBinder) getArguments().getBinder(context.getString(R.string.fragment_page_bundle_key)));
+
                 appCMSPresenter = ((AppCMSApplication) getActivity().getApplication())
                         .getAppCMSPresenterComponent()
                         .appCMSPresenter();
@@ -130,10 +132,12 @@ public class AppCMSPageFragment extends Fragment {
             container.removeAllViews();
             pageViewGroup = container;
         }
-        /**
+
+        /*
          * Here we are sending analytics for the screen views. Here we will log the events for
          * the Screen which will come on AppCMSPageActivity.
          */
+
         if (shouldSendFirebaseViewItemEvent) {
             sendFirebaseAnalyticsEvents(appCMSBinder);
             shouldSendFirebaseViewItemEvent = false;
@@ -184,7 +188,6 @@ public class AppCMSPageFragment extends Fragment {
         //Sets whether analytics collection is enabled for this app on this device.
         appCMSPresenter.getmFireBaseAnalytics().setAnalyticsCollectionEnabled(true);
     }
-
 
     @Override
     public void onResume() {
@@ -261,7 +264,6 @@ public class AppCMSPageFragment extends Fragment {
             pageView.notifyAdaptersOfUpdate();
         }
     }
-
 
     @Override
     public void onDestroy() {
@@ -374,8 +376,8 @@ public class AppCMSPageFragment extends Fragment {
         sendFirebaseAnalyticsEvents(appCMSBinder);
         this.appCMSBinder = appCMSBinder;
         ViewCreator viewCreator = getViewCreator();
-        viewCreator.setIgnoreBinderUpdate(true);
         List<String> modulesToIgnore = getModulesToIgnore();
+
         if (viewCreator != null && modulesToIgnore != null) {
             boolean updatePage = false;
             if (pageView != null) {
@@ -402,9 +404,7 @@ public class AppCMSPageFragment extends Fragment {
                 if (pageViewGroup != null &&
                         pageView != null &&
                         pageView.getParent() == null) {
-                    if (pageViewGroup.getChildCount() > 0) {
-                        pageViewGroup.removeAllViews();
-                    }
+                    removeAllViews(pageViewGroup);
                     pageViewGroup.addView(pageView);
                     if (updatePage) {
                         updateAllViews(pageViewGroup);
@@ -442,12 +442,6 @@ public class AppCMSPageFragment extends Fragment {
                 child.requestLayout();
             }
         }
-    }
-
-    public interface OnPageCreation {
-        void onSuccess(AppCMSBinder appCMSBinder);
-
-        void onError(AppCMSBinder appCMSBinder);
     }
 
     public synchronized void setPageOriantationForVideoPage() {
@@ -569,6 +563,21 @@ public class AppCMSPageFragment extends Fragment {
                 }
             }, 10);
         }
+    }
+	
+	private void removeAllViews(ViewGroup viewGroup) {
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
+                removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));
+            }
+        }
+        viewGroup.removeAllViews();
+    }
+
+    public interface OnPageCreation {
+        void onSuccess(AppCMSBinder appCMSBinder);
+
+        void onError(AppCMSBinder appCMSBinder);
     }
 
 }

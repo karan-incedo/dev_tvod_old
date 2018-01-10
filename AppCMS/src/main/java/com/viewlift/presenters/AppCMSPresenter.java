@@ -56,6 +56,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -384,7 +386,7 @@ public class AppCMSPresenter {
     private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC+00:00");
     public static FullPlayerView relativeLayoutFull;
     public static boolean isFullScreenVisible;
-    public static boolean isExitFullScreen=false;
+    public static boolean isExitFullScreen = false;
 
     private static int PAGE_LRU_CACHE_SIZE = 10;
     private static int PAGE_API_LRU_CACHE_SIZE = 10;
@@ -850,13 +852,13 @@ public class AppCMSPresenter {
 
         long days = TimeUnit.MILLISECONDS.toDays(runtime);
         runtime -= TimeUnit.DAYS.toMillis(days);
-        if (days != 0){
+        if (days != 0) {
             timeInString.append(Long.toString(days));
         }
 
         long hours = TimeUnit.MILLISECONDS.toHours(runtime);
         runtime -= TimeUnit.HOURS.toMillis(hours);
-        if (hours != 0 || timeInString.length() > 0){
+        if (hours != 0 || timeInString.length() > 0) {
             if (timeInString.length() > 0) {
                 timeInString.append(":");
             }
@@ -881,6 +883,7 @@ public class AppCMSPresenter {
 //        }
         return timeInString.toString();
     }
+
     public static String getColor(Context context, String color) {
         if (color.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
             return context.getString(R.string.color_hash_prefix) + color;
@@ -1339,12 +1342,12 @@ public class AppCMSPresenter {
                     contentDatum.getGist().getId() != null) {
                 getUserVideoStatus(contentDatum.getGist().getId(), userVideoStatusResponse -> {
 
-                if(userVideoStatusResponse != null) {
-                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
-                    AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(), contentDatum);
-                    appCMSTrayMenuDialogFragment.show(currentActivity.getFragmentManager(), "AppCMSTrayMenuDialogFragment");
-                    appCMSTrayMenuDialogFragment.setMoreClickListener(trayMenuClickListener);
-                }
+                    if (userVideoStatusResponse != null) {
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        AppCMSTrayMenuDialogFragment appCMSTrayMenuDialogFragment = AppCMSTrayMenuDialogFragment.newInstance(userVideoStatusResponse.getQueued(), contentDatum);
+                        appCMSTrayMenuDialogFragment.show(currentActivity.getFragmentManager(), "AppCMSTrayMenuDialogFragment");
+                        appCMSTrayMenuDialogFragment.setMoreClickListener(trayMenuClickListener);
+                    }
                 });
             }
 
@@ -1724,7 +1727,7 @@ public class AppCMSPresenter {
                                 screenName.append(currentActivity.getString(
                                         R.string.app_cms_template_page_separator));
                                 screenName.append(filmTitle);
-                                //Todo need to manage it depend on PP
+                                //Todo need to manage it depend on Template
                                 if (currentActivity.getResources().getBoolean(R.bool.show_navbar)) {
                                     appbarPresent = true;
                                     navbarPresent = true;
@@ -10210,7 +10213,6 @@ public class AppCMSPresenter {
                 appCMSPageAPI = null;
                 if (null != pageId) {
                     getPageAPILruCache().remove(pageId);
-                    getPlayerLruCache().remove(pageId);
                 }
             }
 
@@ -10481,7 +10483,7 @@ public class AppCMSPresenter {
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-        sendCloseOthersAction(null, true, false);
+        //sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
@@ -10675,8 +10677,14 @@ public class AppCMSPresenter {
                             bundle.putBinder(currentActivity.getString(R.string.app_cms_video_player_binder_key),
                                     appCMSVideoPageBinder);
                             playVideoIntent.putExtra(currentActivity.getString(R.string.app_cms_video_player_bundle_binder_key), bundle);
-
                             currentActivity.startActivityForResult(playVideoIntent, PLAYER_REQUEST_CODE);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    sendCloseOthersAction(null, true, false);
+                                }
+                            }, 200);
                         });
                 //sendStopLoadingPageAction();
 
@@ -10815,6 +10823,7 @@ public class AppCMSPresenter {
         }
         return result;
     }
+
 
     @SuppressWarnings("unused")
     private void LaunchTVVideoPlayerActivity(String pagePath, String filmTitle, String[] extraData,
@@ -11568,8 +11577,9 @@ public class AppCMSPresenter {
 
                 relativeLayoutPIP.setVisibility(View.VISIBLE);
 
-                if (relativeLayoutPIP.getParent() == null && currentActivity!=null && currentActivity.findViewById(R.id.app_cms_parent_view)!=null) {
+                if (relativeLayoutPIP.getParent() == null && currentActivity != null && currentActivity.findViewById(R.id.app_cms_parent_view) != null) {
                     ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutPIP);
+                    ((AppCMSPageActivity) currentActivity).dragMiniPlayer(relativeLayoutPIP);
                 }
                 videoPlayerViewParent = group;
 
@@ -11591,8 +11601,35 @@ public class AppCMSPresenter {
 
                 videoPlayerViewParent.addView(videoPlayerView);
                 relativeLayoutPIP.removeView(videoPlayerView);
+
+             /*   videoPlayerViewParent.measure(videoPlayerViewParent.getWidth(), videoPlayerViewParent.getHeight());
+                final int targetHeight = videoPlayerViewParent.getMeasuredHeight();
+
+                videoPlayerView.getLayoutParams().height = 1;
+                Animation a = new Animation()
+                {
+                    @Override
+                    protected void applyTransformation(float interpolatedTime, Transformation t) {
+                        videoPlayerView.getLayoutParams().height = interpolatedTime == 1
+                                ? ViewGroup.LayoutParams.MATCH_PARENT
+                                : (int)(targetHeight * interpolatedTime);
+                        videoPlayerView.requestLayout();
+                    }
+
+                    @Override
+                    public boolean willChangeBounds() {
+                        return true;
+                    }
+                };
+
+                // 1dp/ms
+                //a.setDuration((int)(targetHeight / videoPlayerView.getContext().getResources().getDisplayMetrics().density));
+                a.setDuration(2000);
+                videoPlayerView.startAnimation(a);
+                */
                 pipPlayerVisible = false;
             }
+            expand(videoPlayerView, 5000, videoPlayerViewParent.getMeasuredHeight());
             relativeLayoutPIP.setVisibility(View.GONE);
             RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
             if (relativeLayoutPIP != null && relativeLayoutPIP.getRelativeLayoutEvent() != null) {
@@ -11605,6 +11642,31 @@ public class AppCMSPresenter {
         pipPlayerVisible = false;
     }
 
+    public void expand(final View v, int duration, int targetHeight) {
+
+        int prevHeight = v.getHeight();
+
+        // v.setVisibility(View.VISIBLE);
+        //ValueAnimator valueAnimator = ValueAnimator.ofInt(prevHeight, targetHeight);
+      /*  ValueAnimator valueAnimator = ValueAnimator.ofInt(0, targetHeight);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                v.getLayoutParams().height = (int) animation.getAnimatedValue();
+                v.requestLayout();
+            }
+        });
+        valueAnimator.setInterpolator(new DecelerateInterpolator());
+        valueAnimator.setDuration(duration);
+        valueAnimator.start();
+*/
+        /*ScaleAnimation anim = new ScaleAnimation(1, v.getMeasuredWidth(), 0, v.getMeasuredHeight());
+        anim.setDuration(5000);
+        anim.start();*/
+        Animation animMoveUp = AnimationUtils.loadAnimation(currentActivity, R.anim.scale_player);
+        v.startAnimation(animMoveUp);
+    }
+
     public void showFullScreenPlayer() {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) videoPlayerView.getParent();
@@ -11612,7 +11674,7 @@ public class AppCMSPresenter {
         if (videoPlayerView != null && videoPlayerView.getParent() != null) {
             relativeLayoutFull = new FullPlayerView(currentActivity, this);
             relativeLayoutFull.setVisibility(View.VISIBLE);
-            if(((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)) == null){
+            if (((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)) == null) {
                 return;
             }
             ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view)).addView(relativeLayoutFull);

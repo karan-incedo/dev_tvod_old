@@ -42,7 +42,6 @@ public abstract class BaseView extends FrameLayout {
         DEVICE_WIDTH = getContext().getResources().getDisplayMetrics().widthPixels;
         DEVICE_HEIGHT = getContext().getResources().getDisplayMetrics().heightPixels;
         setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-        this.setFocusableInTouchMode(true);
     }
 
     public static float convertDpToPixel(float dp, Context context) {
@@ -54,12 +53,6 @@ public abstract class BaseView extends FrameLayout {
         return 0.0f;
     }
 
-    public static int dpToPx(int dp, Context context) {
-        return context.getResources().getDimensionPixelSize(dp);
-
-        //return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
-    }
-
     public static float convertPixelsToDp(float px, Context context) {
         if (context != null) {
             Resources resources = context.getResources();
@@ -68,6 +61,10 @@ public abstract class BaseView extends FrameLayout {
             return dp;
         }
         return 0.0f;
+    }
+
+    public static int dpToPx(int dp, Context context) {
+        return context.getResources().getDimensionPixelSize(dp);
     }
 
     public static boolean isTablet(Context context) {
@@ -934,6 +931,11 @@ public abstract class BaseView extends FrameLayout {
                 default:
                     break;
             }
+
+//            int fontsize = getFontsize(getContext(), childComponent);
+//            if (fontsize > 0) {
+//                ((TextView) view).setTextSize((float) fontsize);
+//            }
 
             if (maxViewWidth != -1) {
                 ((TextView) view).setMaxWidth(maxViewWidth);

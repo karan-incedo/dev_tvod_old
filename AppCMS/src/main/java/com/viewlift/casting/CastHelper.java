@@ -595,7 +595,7 @@ public class CastHelper {
                 mCastSession = castSession;
                 if (callBackRemoteListener != null)
                     callBackRemoteListener.onApplicationConnected();
-                 //Toast.makeText(mAppContext,castSession.getCastDevice().getFriendlyName()+" ++++ "+castSession.getCastDevice().getModelName(),Toast.LENGTH_LONG).show();
+
             }
 
             private void onApplicationDisconnected() {

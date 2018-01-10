@@ -1,27 +1,17 @@
 package com.viewlift.views.customviews;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Surface;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -38,7 +28,6 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.decoder.DecoderCounters;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener;
-import com.google.android.exoplayer2.source.BehindLiveWindowException;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
@@ -54,7 +43,6 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -73,12 +61,10 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoRendererEventListener;
 import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.adapters.AppCMSDownloadRadioAdapter;
 import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
@@ -89,7 +75,7 @@ import rx.functions.Action1;
  */
 
 public class VideoPlayerView extends FrameLayout implements Player.EventListener,
-        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener,AudioManager.OnAudioFocusChangeListener {
+        AdaptiveMediaSourceEventListener, SimpleExoPlayer.VideoListener, VideoRendererEventListener, AudioManager.OnAudioFocusChangeListener {
     private static final String TAG = "VideoPlayerFragment";
     private static final DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
     protected DataSource.Factory mediaDataSourceFactory;
@@ -127,7 +113,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private boolean playerJustInitialized;
     private boolean mAudioFocusGranted = false;
- 	private String filmId;
+    private String filmId;
     DefaultTrackSelector trackSelector;
     private PageView pageView;
 
@@ -335,9 +321,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         resumePosition = C.TIME_UNSET;
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
-        
+
         ccToggleButton = createCC_ToggleButton();
-        ((RelativeLayout)playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
+        ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
@@ -345,7 +331,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
-    
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
@@ -356,7 +341,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         trackSelector.setTunnelingAudioSessionId(C.generateAudioSessionIdV21(getContext()));
 
-        if (player!= null ){
+        if (player != null) {
             player.release();
         }
         player = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector);
@@ -978,7 +963,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
             int result = 0;
-            if(dataSource == null){
+            if (dataSource == null) {
                 return 0;
             }
             if (dataSource instanceof FileDataSource) {
@@ -1019,19 +1004,19 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         }
     }
 
-        protected ToggleButton createCC_ToggleButton(){
-        ToggleButton mToggleButton=new ToggleButton(getContext());
-        RelativeLayout.LayoutParams toggleLP=new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width,getContext()),BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width,getContext()));
+    protected ToggleButton createCC_ToggleButton() {
+        ToggleButton mToggleButton = new ToggleButton(getContext());
+        RelativeLayout.LayoutParams toggleLP = new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()), BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_width, getContext()));
         toggleLP.addRule(RelativeLayout.CENTER_VERTICAL);
-        toggleLP.addRule(RelativeLayout.RIGHT_OF,R.id.exo_media_controller);
-        toggleLP.setMarginStart(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin,getContext()));
-        toggleLP.setMarginEnd(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin,getContext()));
+        toggleLP.addRule(RelativeLayout.RIGHT_OF, R.id.exo_media_controller);
+        toggleLP.setMarginStart(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
+        toggleLP.setMarginEnd(BaseView.dpToPx(R.dimen.app_cms_video_controller_cc_left_margin, getContext()));
         mToggleButton.setLayoutParams(toggleLP);
         mToggleButton.setChecked(false);
         mToggleButton.setTextOff("");
         mToggleButton.setTextOn("");
         mToggleButton.setText("");
-        mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cc_toggle_selector,null));
+        mToggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.cc_toggle_selector, null));
         mToggleButton.setVisibility(GONE);
         return mToggleButton;
     }

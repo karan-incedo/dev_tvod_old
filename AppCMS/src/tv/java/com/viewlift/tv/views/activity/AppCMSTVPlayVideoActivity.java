@@ -127,41 +127,42 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 relateVideoIds = binder.getRelateVideoIds();
                 currentlyPlayingIndex = binder.getCurrentPlayingVideoIndex();
 
-        if (!TextUtils.isEmpty(bgColor)) {
-            appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
-        }
+                if (!TextUtils.isEmpty(bgColor)) {
+                    appCMSPlayVideoPageContainer.setBackgroundColor(Color.parseColor(bgColor));
+                }
 
-        boolean freeContent = false;
-        if (binder.getContentData() != null && binder.getContentData().getGist() != null &&
-              binder.getContentData().getGist().getFree()) {
-              freeContent = binder.getContentData().getGist().getFree();
-        }
+                boolean freeContent = false;
+                if (binder.getContentData() != null && binder.getContentData().getGist() != null &&
+                        binder.getContentData().getGist().getFree()) {
+                    freeContent = binder.getContentData().getGist().getFree();
+                }
 
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        appCMSPlayVideoFragment =
-                AppCMSPlayVideoFragment.newInstance(this,
-                        null,
-                        fontColor,
-                        title,
-                        permaLink,
-                        binder.isTrailer(),
-                        hlsUrl,
-                        filmId,
-                        adsUrl,
-                        playAds,
-                        playIndex,
-                        watchedTime,
-                        binder.getContentData().getGist().getRuntime(),
-                        null,
-                        closedCaptionUrl,
-                        null,
-                        freeContent);
-        fragmentTransaction.add(R.id.app_cms_play_video_page_container,
-                appCMSPlayVideoFragment,
-                getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
-        fragmentTransaction.commit();}
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                appCMSPlayVideoFragment =
+                        AppCMSPlayVideoFragment.newInstance(this,
+                                null,
+                                fontColor,
+                                title,
+                                permaLink,
+                                binder.isTrailer(),
+                                hlsUrl,
+                                filmId,
+                                adsUrl,
+                                playAds,
+                                playIndex,
+                                watchedTime,
+                                binder.getContentData().getGist().getRuntime(),
+                                null,
+                                closedCaptionUrl,
+                                null,
+                                freeContent);
+                fragmentTransaction.add(R.id.app_cms_play_video_page_container,
+                        appCMSPlayVideoFragment,
+                        getString(R.string.video_fragment_tag_key));
+                fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
+                fragmentTransaction.commit();
+            }
         } catch (ClassCastException e) {
             e.printStackTrace();
         }
@@ -181,20 +182,20 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         } else {
                             openLoginDialog(intent, true);
                         }
-                    }else if((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
-                            AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)){
-                        openGenericDialog(intent , false);
+                    } else if ((((AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key))).getExtraScreenType() ==
+                            AppCMSPresenter.ExtraScreenType.TERM_OF_SERVICE)) {
+                        openGenericDialog(intent, false);
                     }
-                }else if(intent.getAction().equals(AppCMSPresenter.CLOSE_DIALOG_ACTION)){
+                } else if (intent.getAction().equals(AppCMSPresenter.CLOSE_DIALOG_ACTION)) {
                     closeSignInDialog();
                     closeSignUpDialog();
-                  //  appCMSPlayVideoFragment.resumeVideo();
+                    //  appCMSPlayVideoFragment.resumeVideo();
                     appCMSPresenter.getUserData(
                             userIdentity -> {
-                                if(null != userIdentity){
-                                    if(userIdentity.isSubscribed()){
+                                if (null != userIdentity) {
+                                    if (userIdentity.isSubscribed()) {
                                         appCMSPlayVideoFragment.resumeVideo();
-                                    }else{
+                                    } else {
                                         ClearDialogFragment newFragment = Utils.getClearDialogFragment(
                                                 AppCMSTVPlayVideoActivity.this,
                                                 appCMSPresenter,
@@ -216,24 +217,23 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                                 }
                             }
                     );
-                    Utils.pageLoading(false , AppCMSTVPlayVideoActivity.this);
-                }else if(intent.getAction().equals(AppCMSPresenter.ACTION_RESET_PASSWORD)){
+                    Utils.pageLoading(false, AppCMSTVPlayVideoActivity.this);
+                } else if (intent.getAction().equals(AppCMSPresenter.ACTION_RESET_PASSWORD)) {
                     openResetPasswordScreen(intent);
-                }else if(intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)){
+                } else if (intent.getAction().equals(AppCMSPresenter.ERROR_DIALOG_ACTION)) {
                     openErrorDialog(intent);
-                }else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
-                    Utils.pageLoading(true , AppCMSTVPlayVideoActivity.this);
+                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION)) {
+                    Utils.pageLoading(true, AppCMSTVPlayVideoActivity.this);
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION)) {
-                    Utils.pageLoading(false , AppCMSTVPlayVideoActivity.this);
-                }
-                else if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
+                    Utils.pageLoading(false, AppCMSTVPlayVideoActivity.this);
+                } else if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
 
                 }
             }
         };
 
-       appCMSPresenter =
+        appCMSPresenter =
                 ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -275,12 +275,13 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
 
     AppCmsLoginDialogFragment loginDialog;
     AppCmsSignUpDialogFragment signUpDialog;
-    private void openLoginDialog(Intent intent , boolean isLoginPage){
-        if(null != intent){
+
+    private void openLoginDialog(Intent intent, boolean isLoginPage) {
+        if (null != intent) {
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-            if(null != bundle){
-                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
-                bundle.putBoolean("isLoginPage",isLoginPage);
+            if (null != bundle) {
+                AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage", isLoginPage);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 loginDialog = AppCmsLoginDialogFragment.newInstance(
                         appCMSBinder);
@@ -296,12 +297,13 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             }
         }
     }
-    private void openSignUpDialog(Intent intent , boolean isLoginPage){
-        if(null != intent){
+
+    private void openSignUpDialog(Intent intent, boolean isLoginPage) {
+        if (null != intent) {
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-            if(null != bundle){
-                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
-                bundle.putBoolean("isLoginPage",isLoginPage);
+            if (null != bundle) {
+                AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage", isLoginPage);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 signUpDialog = AppCmsSignUpDialogFragment.newInstance(
                         appCMSBinder);
@@ -323,12 +325,12 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(signUpDialog != null){
+                if (signUpDialog != null) {
                     signUpDialog.dismiss();
                     signUpDialog = null;
                 }
             }
-        },50);
+        }, 50);
 
     }
 
@@ -336,65 +338,64 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(loginDialog != null){
+                if (loginDialog != null) {
                     loginDialog.dismiss();
                     loginDialog = null;
                 }
             }
-        },50);
+        }, 50);
 
     }
 
 
-    private void openResetPasswordScreen(Intent intent){
-        if(null != intent){
+    private void openResetPasswordScreen(Intent intent) {
+        if (null != intent) {
 
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-            if(null != bundle){
-                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
+            if (null != bundle) {
+                AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 appCmsResetPasswordFragment = AppCmsResetPasswordFragment.newInstance(
                         appCMSBinder);
                 appCmsResetPasswordFragment.show(ft, "DIALOG_FRAGMENT_TAG");
-                Utils.pageLoading(false , AppCMSTVPlayVideoActivity.this);
+                Utils.pageLoading(false, AppCMSTVPlayVideoActivity.this);
             }
         }
     }
 
 
-    private void openErrorDialog(Intent intent){
+    private void openErrorDialog(Intent intent) {
         Bundle bundle = intent.getBundleExtra(getString(R.string.retryCallBundleKey));
-        bundle.putBoolean(getString(R.string.retry_key) , bundle.getBoolean(getString(R.string.retry_key)));
-        bundle.putBoolean(getString(R.string.register_internet_receiver_key) , bundle.getBoolean(getString(R.string.register_internet_receiver_key)));
-        bundle.putString(getString(R.string.tv_dialog_msg_key) , bundle.getString(getString(R.string.tv_dialog_msg_key)));
-        bundle.putString(getString(R.string.tv_dialog_header_key) , bundle.getString(getString(R.string.tv_dialog_header_key)));
+        bundle.putBoolean(getString(R.string.retry_key), bundle.getBoolean(getString(R.string.retry_key)));
+        bundle.putBoolean(getString(R.string.register_internet_receiver_key), bundle.getBoolean(getString(R.string.register_internet_receiver_key)));
+        bundle.putString(getString(R.string.tv_dialog_msg_key), bundle.getString(getString(R.string.tv_dialog_msg_key)));
+        bundle.putString(getString(R.string.tv_dialog_header_key), bundle.getString(getString(R.string.tv_dialog_header_key)));
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         AppCmsTvErrorFragment newFragment = AppCmsTvErrorFragment.newInstance(
                 bundle);
         newFragment.setErrorListener(this);
         newFragment.show(ft, "DIALOG_FRAGMENT_TAG");
-        Utils.pageLoading(false , AppCMSTVPlayVideoActivity.this);
+        Utils.pageLoading(false, AppCMSTVPlayVideoActivity.this);
     }
 
 
-    private void openGenericDialog(Intent intent , boolean isLoginPage){
-        if(null != intent){
+    private void openGenericDialog(Intent intent, boolean isLoginPage) {
+        if (null != intent) {
             Bundle bundle = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
-            if(null != bundle){
-                AppCMSBinder appCMSBinder = (AppCMSBinder)bundle.get(getString(R.string.app_cms_binder_key));
-                bundle.putBoolean("isLoginPage",isLoginPage);
+            if (null != bundle) {
+                AppCMSBinder appCMSBinder = (AppCMSBinder) bundle.get(getString(R.string.app_cms_binder_key));
+                bundle.putBoolean("isLoginPage", isLoginPage);
                 FragmentTransaction ft = getFragmentManager().beginTransaction();
                 AppCmsGenericDialogFragment newFragment = AppCmsGenericDialogFragment.newInstance(
-                        appCMSBinder );
+                        appCMSBinder);
                 newFragment.show(ft, "DIALOG_FRAGMENT_TAG");
-                Utils.pageLoading(false , this);
+                Utils.pageLoading(false, this);
             }
         }
 
 
     }
-
 
 
     @Override
@@ -403,12 +404,12 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         registerRecievers();
         appCMSPresenter.setCancelAllLoads(false);
         if (!appCMSPresenter.isNetworkConnected()) {
-           // appCMSPresenter.showErrorDialog(AppCMSPresenter.Error.NETWORK, null); //TODO : need to show error dialog.
+            // appCMSPresenter.showErrorDialog(AppCMSPresenter.Error.NETWORK, null); //TODO : need to show error dialog.
             finish();
         }
     }
 
-    private void registerRecievers(){
+    private void registerRecievers() {
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
         registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.CLOSE_DIALOG_ACTION));
@@ -428,7 +429,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     public void onBackPressed() {
         super.onBackPressed();
         Intent returnIntent = new Intent();
-        setResult(Activity.RESULT_OK,returnIntent);
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 
@@ -446,10 +447,10 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     public boolean dispatchKeyEvent(KeyEvent event) {
 
         boolean result = false;
-        if(event.getAction() == KeyEvent.ACTION_DOWN ){
-            if(null != appCMSPlayVideoFragment ){
-                if(appCMSPlayVideoFragment.isAdsPlaying()){
-                    if (event.getKeyCode() != KeyEvent.KEYCODE_BACK ) {
+        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            if (null != appCMSPlayVideoFragment) {
+                if (appCMSPlayVideoFragment.isAdsPlaying()) {
+                    if (event.getKeyCode() != KeyEvent.KEYCODE_BACK) {
                         return true;
                     }
                 } else {
@@ -457,9 +458,9 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                 }
             }
 
-            switch (event.getKeyCode()){
+            switch (event.getKeyCode()) {
                 case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                    if(null != appCMSPlayVideoPageContainer){
+                    if (null != appCMSPlayVideoPageContainer) {
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_pause).requestFocus();
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_play).requestFocus();
                         if (appCMSPlayVideoFragment != null
@@ -472,13 +473,13 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_REWIND:
-                    if(null != appCMSPlayVideoPageContainer){
+                    if (null != appCMSPlayVideoPageContainer) {
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_rew).requestFocus();
                         return super.dispatchKeyEvent(event);
                     }
                     break;
                 case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
-                    if(null != appCMSPlayVideoPageContainer){
+                    if (null != appCMSPlayVideoPageContainer) {
                         appCMSPlayVideoPageContainer.findViewById(R.id.exo_ffwd).requestFocus();
                         return super.dispatchKeyEvent(event);
                     }
@@ -487,6 +488,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         }
         return super.dispatchKeyEvent(event);
     }
+
     @Override
     public void onMovieFinished() {
         if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {

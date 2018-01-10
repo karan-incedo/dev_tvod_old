@@ -2,6 +2,7 @@ package com.viewlift.views.activity;
 
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -36,6 +37,7 @@ import android.text.TextUtils;
 import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -80,6 +82,7 @@ import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.MiniPlayerView;
 import com.viewlift.views.customviews.NavBarItemView;
 import com.viewlift.views.customviews.TabCreator;
 import com.viewlift.views.customviews.ViewCreator;
@@ -129,57 +132,41 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private static final int NO_NAV_MENU_PAGE_INDEX = -1;
 
     private static final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
+    private final static float CLICK_DRAG_TOLERANCE = 10; // Often, there will be a slight, unintentional, drag when the user taps the view, so we need to account for this.
     private final String FIREBASE_LOGIN_SCREEN_VALUE = "Login Screen";
     private final String LOGIN_STATUS_KEY = "logged_in_status";
     private final String LOGIN_STATUS_LOGGED_IN = "logged_in";
     private final String LOGIN_STATUS_LOGGED_OUT = "not_logged_in";
-
-
     @BindView(R.id.app_cms_parent_layout)
     RelativeLayout appCMSParentLayout;
-
     @BindView(R.id.app_cms_page_loading_progressbar)
     ProgressBar loadingProgressBar;
-
     @BindView(R.id.app_cms_parent_view)
     RelativeLayout appCMSParentView;
-
     @BindView(R.id.app_cms_fragment)
     FrameLayout appCMSFragment;
-
     @BindView(R.id.app_cms_appbarlayout)
     AppBarLayout appBarLayout;
-
     @BindView(R.id.app_cms_tab_nav_container)
     LinearLayout appCMSTabNavContainer;
-
     @BindView(R.id.ll_media_route_button)
     LinearLayout ll_media_route_button;
-
     @BindView(R.id.media_route_button)
     ImageButton mMediaRouteButton;
-
     @BindView(R.id.app_cms_close_button)
     ImageButton closeButton;
-
     @BindView(R.id.app_cms_cast_conroller)
     FrameLayout appCMSCastController;
-
     @BindView(R.id.new_version_available_parent)
     FrameLayout newVersionUpgradeAvailable;
-
     @BindView(R.id.new_version_available_textview)
     TextView newVersionAvailableTextView;
-
     @BindView(R.id.new_version_available_close_button)
     ImageButton newVersionAvailableCloseButton;
-
     @BindView(R.id.app_cms_search_button)
     ImageButton mSearchTopButton;
-
     @BindView(R.id.app_cms_profile_btn)
     ImageButton mProfileTopButton;
-
     @BindView(R.id.app_cms_toolbar)
     Toolbar toolbar;
     @BindView(R.id.app_cms_start_free_trial_tool)
@@ -197,7 +184,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver downloadReceiver;
     private BroadcastReceiver notifyUpdateListsReceiver;
     private BroadcastReceiver refreshPageDataReceiver;
-    private BroadcastReceiver processDeeplinkReceiver;
     private boolean resumeInternalEvents;
     private boolean isActive;
     private boolean shouldSendCloseOthersAction;
@@ -213,7 +199,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private String FIREBASE_SEARCH_SCREEN = "Search Screen";
     private String FIREBASE_MENU_SCREEN = "MENU";
     private String FIREBASE_TEAM_NAVIGATION_SCREEN = "Team Navigation Page";
-
     private String searchQuery;
     private boolean isDownloadPageOpen = false;
     private boolean loaderWaitingFor3rdPartyLogin = false;
@@ -221,6 +206,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private LinearLayout appCMSTabNavContainerItems;
     private Uri pendingDeeplinkUri;
     private TabCreator tabCreator;
+    private float downRawX, downRawY;
+    private float dX, dY;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
