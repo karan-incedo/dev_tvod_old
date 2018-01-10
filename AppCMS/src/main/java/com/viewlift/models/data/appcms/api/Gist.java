@@ -104,6 +104,14 @@ public class Gist implements Serializable {
      */
     String localFileUrl;
 
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    @SerializedName("mediaType")
+    @Expose
+    String mediaType;
+
     public String getId() {
         return id;
     }
