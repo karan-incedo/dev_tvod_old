@@ -77,6 +77,15 @@
         <item>AC WebFrame 01</item>
     </string-array>
 
+
+    <!-- AppCMS JSON data input keys -->
+    <string-array name="app_cms_modules_to_ignore_tv">
+        <item>AC Masthead 01</item>
+        <item>AC Footer 01</item>
+        <item>AC WebFrame 01</item>
+        <item>AC Banner 01</item>
+    </string-array>
+
     <string-array name="app_cms_download_quality_array">
         <item>720p</item>
         <item>360p</item>
@@ -501,8 +510,11 @@
     <string name="app_cms_banner_detail_title_key">bannerTitle</string>
 
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
+
+    <string name="app_cms_rawhtml_title_key">rawHtmlTitleKey</string>
+    <string name="app_cms_rawhtml_image_key">rawHtmlImageKey</string>
     <string name="app_cms_page_play_show_image_key">playLiveImageShow</string>
-    
+
      <string name="icon_image_key">iconImage</string>
      <string name="app_cms_subtitle_label">subtitleLabel</string>
 

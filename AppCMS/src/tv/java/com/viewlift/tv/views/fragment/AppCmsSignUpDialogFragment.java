@@ -45,6 +45,7 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
     private Component semiBoldComp;
     private Context mContext;
     private FrameLayout pageHolder;
+    private TextView subscriptionTitle;
 
 
     public AppCmsSignUpDialogFragment() {
@@ -125,13 +126,22 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
 
 
         View view = inflater.inflate(R.layout.app_cms_login_dialog_fragment, null);
+
+        subscriptionTitle = (TextView)view.findViewById(R.id.nav_top_line);
+        if (subscriptionTitle != null && appCMSPresenter.getTemplateType()
+                .equals(AppCMSPresenter.TemplateType.SPORTS)) {
+            updateSubscriptionStrip();
+        }else{
+            subscriptionTitle.setVisibility(View.GONE);
+        }
+
+
         LinearLayout subNavHolder = (LinearLayout) view.findViewById(R.id.sub_navigation_placholder);
         TextView loginView = (TextView) view.findViewById(R.id.textView_login);
         TextView signupView = (TextView) view.findViewById(R.id.textview_signup);
 
         String backGroundColor = Utils.getBackGroundColor(getActivity(), appCMSPresenter);
         view.setBackgroundColor(Color.parseColor(backGroundColor));
-
 
         loginView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -246,6 +256,57 @@ public class AppCmsSignUpDialogFragment extends DialogFragment {
         return view;
     }
 
+
+    private void updateSubscriptionStrip() {
+        /*Check Subscription in case of SPORTS TEMPLATE*/
+        if (appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+            if (!appCMSPresenter.isUserLoggedIn()) {
+                setSubscriptionText(false);
+            } else {
+                appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
+                    try {
+                        if (appCMSUserSubscriptionPlanResult != null) {
+                            String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
+                            if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
+                                    subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                setSubscriptionText(true);
+                            } else {
+                                setSubscriptionText(false);
+                            }
+                        } else {
+                            setSubscriptionText(false);
+                        }
+                    } catch (Exception e) {
+                        setSubscriptionText(false);
+                    }
+                });
+            }
+        }
+    }
+
+    private void setSubscriptionText(boolean isSubscribe) {
+        String message = getResources().getString(R.string.blank_string);
+        if (!isSubscribe) {
+            if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
+                    && null != appCMSPresenter.getNavigation().getSettings()
+                    && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()
+                    ) {
+                message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
+            } else {
+                message = getResources().getString(R.string.watch_live_text);
+            }
+        }
+        subscriptionTitle.setText(message);
+
+        LinearLayout.LayoutParams textLayoutParams = (LinearLayout.LayoutParams) subscriptionTitle.getLayoutParams();
+        if (message.length() == 0) {
+            textLayoutParams.height = 10;
+        } else {
+            textLayoutParams.height = 40;
+        }
+        subscriptionTitle.setLayoutParams(textLayoutParams);
+    }
 
 
 

@@ -553,7 +553,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
             if (!mShowTeams) {
                 holder.navImageView.setPadding(0, 0, 0, 0);
-                holder.navImageView.setImageResource(getIcon(subItem.icon));
+                holder.navImageView.setImageResource(subItem.icon != null
+                        ? getIcon(subItem.icon) : -1);
             } else {
                 holder.navImageView.setPadding(10, 10, 10, 10);
                 Glide.with(mContext)

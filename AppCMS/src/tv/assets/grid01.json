@@ -6,19 +6,19 @@
       "tablet": 4,
       "desktop": 5,
       "mobile": 3,
-      "ott": 5
+      "ott": 3
     },
     "thumbnailType": "landscape"
   },
-  "view": "AC Tray 02",
-  "type": "AC Tray 03",
-  "blockName": "tray03",
+  "view": "AC Grid 01",
+  "type": "AC Grid 01",
+  "blockName": "grid01",
   "layout": {
     "ftv": {
       "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 350
+      "height": 390
     }
   },
   "components": [{
@@ -37,42 +37,30 @@
   }, {
     "layout": {
       "ftv": {
-        "width": 396,
-        "height": 320
+        "width": 560,
+        "height": 388
       }
     },
     "trayClickAction": "lectureDetailPage",
     "components": [{
       "layout": {
         "ftv": {
-          "padding": 0,
+          "padding": 5,
           "leftMargin": 8,
           "topMargin": 9,
-          "width": 380,
-          "height": 214
+          "width": 551,
+          "height": 310
         }
       },
       "type": "image",
       "key": "thumbnailImage"
-    }, {
-      "layout": {
-        "ftv": {
-          "padding": 0,
-          "leftMargin": 8,
-          "topMargin": 9,
-          "width": 380,
-          "height": 214
-        }
-      },
-      "type": "image",
-      "key": "bedgeImage"
-    }, {
+    },{
       "layout": {
         "ftv": {
           "leftMargin": 8,
-          "topMargin": 230,
+          "topMargin": 320,
           "rightMargin": 0,
-          "height": 70
+          "height": 68
         }
       },
       "fontFamily": "Lato",

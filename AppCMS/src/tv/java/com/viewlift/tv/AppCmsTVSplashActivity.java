@@ -26,7 +26,7 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
  * Created by viewlift on 6/22/17.
  */
 
-public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFragment.ErrorFragmentListener {
+public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFragment.ErrorFragmentListener {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +40,8 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
         setContentView(R.layout.activity_launch_tv);
 
         ImageView imageView = (ImageView) findViewById(R.id.splash_logo);
-        imageView.setBackgroundResource(R.drawable.tv_logo);
+//        imageView.setBackgroundResource(R.drawable.tv_logo);
+        imageView.setBackgroundResource(R.drawable.splash_screen_msn);
 
         //Log.d(TAG, "Launching application from main.json");
 
@@ -93,7 +94,7 @@ public class AppCMSLeanbackActivity extends Activity implements AppCmsTvErrorFra
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        CustomProgressBar.getInstance(AppCMSLeanbackActivity.this).showProgressDialog(AppCMSLeanbackActivity.this,"");
+                        CustomProgressBar.getInstance(AppCmsTVSplashActivity.this).showProgressDialog(AppCmsTVSplashActivity.this,"");
                     }
                 },2000);
             }
