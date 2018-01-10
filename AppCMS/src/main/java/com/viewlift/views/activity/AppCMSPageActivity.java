@@ -837,6 +837,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
                 appCMSPresenter.launchSearchPage();
             });
+
+            navSearchPageIndex = -1;
         } else if (!shouldReadNavItemsFromAppCMS()) {
             createSearchNavItem(tabCount, getString(R.string.app_cms_search_page_tag));
         }
@@ -2424,15 +2426,22 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         if (!foundPage) {
-            NavBarItemView menuNavBarItemView;
-            if (pageId != null && pageId.equalsIgnoreCase("search")) {
-                menuNavBarItemView =
-                        (NavBarItemView) appCMSTabNavContainer.getChildAt(navSearchPageIndex);
+            NavBarItemView otherNavBarItemView = null;
+            if (pageId != null &&
+                    pageId.equalsIgnoreCase("search")) {
+                if (0 <= navSearchPageIndex) {
+                    otherNavBarItemView =
+                            (NavBarItemView) appCMSTabNavContainer.getChildAt(navSearchPageIndex);
+                } else {
+                    unselectAllNavItems();
+                }
             } else {
-                menuNavBarItemView =
+                otherNavBarItemView =
                         (NavBarItemView) appCMSTabNavContainer.getChildAt(navMenuPageIndex);
             }
-            selectNavItem(menuNavBarItemView);
+            if (otherNavBarItemView != null) {
+                selectNavItem(otherNavBarItemView);
+            }
         }
     }
 

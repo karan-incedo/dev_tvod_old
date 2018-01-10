@@ -76,7 +76,7 @@ public class TabCreator {
 
                 appCMSPresenter.launchSearchPage();
             });
-            onClickHandler.setSelectedMenuTabIndex(currentIndex);
+            onClickHandler.setSelectedSearchTabIndex(currentIndex);
         } else if (tabItem.getTitle().equalsIgnoreCase("Menu")) {
             navBarItemView.setOnClickListener(v -> {
                 if (!appCMSPresenter.launchNavigationPage()) {
