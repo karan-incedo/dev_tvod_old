@@ -52,6 +52,7 @@ import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.ViewCreator;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -469,6 +470,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         videoPlayerViewDoneButton.setColorFilter(Color.parseColor(fontColor));
         videoPlayerInfoContainer.bringToFront();
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+        videoPlayerView.applyTimeBarColor(Color.parseColor(ViewCreator.getColor(getContext(),
+                appCMSPresenter.getAppCtaBackgroundColor())));
 
         if (streamingQualitySelector != null) {
             videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);

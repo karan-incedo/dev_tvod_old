@@ -54,6 +54,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
+import com.google.android.exoplayer2.ui.DefaultTimeBar;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.AssetDataSource;
 import com.google.android.exoplayer2.upstream.ContentDataSource;
@@ -104,6 +105,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private ImageButton exitFullscreenButton;
     private TextView currentStreamingQualitySelector;
     private AlwaysSelectedTextView videoPlayerTitle;
+    private DefaultTimeBar timeBar;
     private boolean isClosedCaptionEnabled = false;
     private Uri uri;
     private Action1<PlayerState> onPlayerStateChanged;
@@ -114,6 +116,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private SimpleExoPlayerView playerView;
     private int resumeWindow;
     private long resumePosition;
+    private int timeBarColor;
 
     private long bitrate = 0l;
     private int videoHeight = 0;
@@ -368,7 +371,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     private void initializeView(Context context) {
-        LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        inflater.inflate(R.layout.video_player_view, this);
         playerView = findViewById(R.id.videoPlayerView);
         playerJustInitialized = true;
         fullScreenMode = false;
@@ -434,6 +438,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         mediaDataSourceFactory = buildDataSourceFactory(true);
 
+        timeBar = playerView.findViewById(R.id.exo_progress);
+
         TrackSelection.Factory videoTrackSelectionFactory =
                 new AdaptiveTrackSelection.Factory(BANDWIDTH_METER);
         DefaultTrackSelector trackSelector =
@@ -465,6 +471,15 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
         fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIXED_WIDTH;
 //        fullscreenResizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT;
+    }
+
+    public void applyTimeBarColor(int timeBarColor) {
+        timeBar.applyPlayedColor(timeBarColor);
+        timeBar.applyScrubberColor(timeBarColor);
+        timeBar.applyUnplayedColor(timeBarColor);
+        timeBar.applyBufferedColor(timeBarColor);
+        timeBar.applyAdMarkerColor(timeBarColor);
+        timeBar.applyPlayedAdMarkerColor(timeBarColor);
     }
 
     public void setVideoTitle(String title, int textColor) {
