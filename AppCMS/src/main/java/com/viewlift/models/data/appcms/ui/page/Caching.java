@@ -16,11 +16,23 @@ public class Caching implements Serializable {
     @Expose
     boolean isEnabled;
 
+    boolean overrideCaching;
+
     public boolean isEnabled() {
         return isEnabled;
     }
 
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
+    }
+
+    public boolean shouldOverrideCaching() {
+        boolean currentOverrideCaching = overrideCaching;
+        overrideCaching = false;
+        return currentOverrideCaching;
+    }
+
+    public void setOverrideCaching(boolean overrideCaching) {
+        this.overrideCaching = overrideCaching;
     }
 }

@@ -58,7 +58,7 @@ public class PageView extends BaseView {
         this.viewsWithComponentIds = new ArrayList<>();
         this.moduleViewMap = new HashMap<>();
         this.appCMSPresenter = appCMSPresenter;
-        this.appCMSPageViewAdapter = new AppCMSPageViewAdapter();
+        this.appCMSPageViewAdapter = new AppCMSPageViewAdapter(context);
         this.shouldRefresh = true;
         init();
     }
