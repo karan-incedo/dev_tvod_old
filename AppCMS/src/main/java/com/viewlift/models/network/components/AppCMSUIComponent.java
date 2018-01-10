@@ -9,6 +9,7 @@ import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
 import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSUpdateWatchHistoryCall;
 import com.viewlift.models.network.rest.AppCMSUserIdentityCall;
@@ -28,6 +29,7 @@ import dagger.Component;
 @Singleton
 @Component(modules = {AppCMSUIModule.class})
 public interface AppCMSUIComponent {
+    AppCMSPlaylistCall appCmsPlaylistCall();
     AppCMSMainUICall appCMSMainCall();
 
     AppCMSAndroidUICall appCMSAndroidCall();
