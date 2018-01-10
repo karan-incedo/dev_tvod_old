@@ -569,7 +569,10 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     if (data.getGist() != null && data.getGist().getContentType() != null) {
                         contentType = data.getGist().getContentType();
                     }
-
+                    if (data.getGist() != null && data.getGist().getMediaType() != null
+                            && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
+                        appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), null, false);
+                    }
                     if (contentType.equals(episodicContentType)) {
                         action = showAction;
                     } else if (contentType.equals(fullLengthFeatureType)) {
