@@ -10,6 +10,7 @@ public enum AppCMSActionType {
     HOME_PAGE,
     HISTORY_PAGE,
     WATCHLIST_PAGE,
+    PLAYLIST_PAGE,
     VIDEO_PAGE,
     SHOW_PAGE,
     PLAY_VIDEO_PAGE,
