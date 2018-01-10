@@ -61,6 +61,7 @@ import com.viewlift.R;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
@@ -106,6 +107,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private String keyPairIdCookie;
 
     private boolean playerJustInitialized;
+    private StreamingQualitySelector streamingQualitySelector;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -463,6 +465,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+    @Override
+    public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
+
+    }
 
 
     @Override
@@ -474,13 +480,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     }
 
     @Override
-    public void onPositionDiscontinuity() {
+    public void onPositionDiscontinuity(int reason) {
 
     }
 
 
     @Override
     public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
+
+    }
+
+    @Override
+    public void onSeekProcessed() {
 
     }
 
@@ -896,5 +907,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             }
         }
+    }
+    public interface StreamingQualitySelector {
+        List<String> getAvailableStreamingQualities();
+        String getStreamingQualityUrl(String streamingQuality);
+        String getMpegResolutionFromUrl(String mpegUrl);
+    }
+
+    public StreamingQualitySelector getStreamingQualitySelector() {
+        return streamingQualitySelector;
+    }
+
+    public void setStreamingQualitySelector(StreamingQualitySelector streamingQualitySelector) {
+        this.streamingQualitySelector = streamingQualitySelector;
     }
 }

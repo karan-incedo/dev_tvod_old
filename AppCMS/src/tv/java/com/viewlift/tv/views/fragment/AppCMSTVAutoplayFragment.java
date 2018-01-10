@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -12,7 +13,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
@@ -37,6 +38,7 @@ import com.viewlift.tv.views.customviews.TVPageView;
 import com.viewlift.tv.views.module.AppCMSTVPageViewModule;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.CustomTypefaceSpan;
 import com.viewlift.views.customviews.PageView;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
@@ -60,6 +62,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
     private Button cancelCountdownButton;
     private AppCMSTVAutoplayCustomLoader appCMSTVAutoplayCustomLoader;
     private TextView upNextTextView;
+    private TextView countdownCancelledTextView;
 
     public interface OnPageCreation {
         void onSuccess(AppCMSVideoPageBinder binder);
@@ -159,6 +162,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
             ImageView finishedMovieImage = (ImageView) pageView.findViewById(R.id.autoplay_finished_movie_image);
             TextView upNextMovieTitle = (TextView) pageView.findViewById(R.id.autoplay_up_next_movie_title);
             upNextTextView = (TextView) pageView.findViewById(R.id.up_next_text_view_id);
+            countdownCancelledTextView = (TextView) pageView.findViewById(R.id.countdown_cancelled_text_view_id);
             appCMSTVAutoplayCustomLoader = (AppCMSTVAutoplayCustomLoader) pageView.findViewById(R.id.autoplay_rotating_loader_view_id);
 
             if (movieImage != null) {
@@ -182,12 +186,15 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                         if (upNextTextView != null) {
                             upNextTextView.setVisibility(View.GONE);
                         }
+                        if (countdownCancelledTextView != null) {
+                            countdownCancelledTextView.setVisibility(View.VISIBLE);
+                        }
                     } else {
                         fragmentInteractionListener.closeActivity();
                     }
                 });
             }
-
+            Typeface font = Typeface.createFromAsset(getResources().getAssets(), "fonts/OpenSans-ExtraBold.ttf");
             String mediaType = binder.getContentData().getGist().getMediaType();
             if (finishedMovieTitle != null) {
                 if (mediaType != null && mediaType.equalsIgnoreCase("episodic")){
@@ -195,8 +202,8 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                             binder.getCurrentMovieId());
                     SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(seasonAndEpisodeNumber);
                     spannableStringBuilder.append(" ").append(binder.getCurrentMovieName());
-                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannableStringBuilder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, 5, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 5, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 5, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     finishedMovieTitle.setText(spannableStringBuilder);
                 } else {
                     finishedMovieTitle.setText(binder.getCurrentMovieName());
@@ -211,14 +218,14 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                     SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
                     spannableStringBuilder.append(" ").append(text);
                     spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannableStringBuilder.setSpan(new StyleSpan(android.graphics.Typeface.BOLD), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 5, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     upNextMovieTitle.setText(spannableStringBuilder);
                 }
             }
 
             if (finishedMovieImage != null) {
                 Glide.with(context)
-                        .load(binder.getCurrentMovieImageUrl())/*.diskCacheStrategy(DiskCacheStrategy.SOURCE)*/
+                        .load(binder.getCurrentMovieImageUrl()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
                         .error(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                         .placeholder(ContextCompat.getDrawable(context, R.drawable.video_image_placeholder))
                         .into(finishedMovieImage);
@@ -365,6 +372,9 @@ public class AppCMSTVAutoplayFragment extends Fragment {
             }
             if (upNextTextView != null) {
                 upNextTextView.setVisibility(View.GONE);
+            }
+            if (countdownCancelledTextView != null) {
+                countdownCancelledTextView.setVisibility(View.VISIBLE);
             }
         }
     }

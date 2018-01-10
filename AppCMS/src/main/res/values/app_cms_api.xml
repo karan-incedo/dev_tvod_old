@@ -401,6 +401,7 @@
     <string name="app_cms_autoplay_play_button_key">playButtonAutoplay</string>
     <string name="app_cms_autoplay_cancel_button_key">cancelButton</string>
     <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
+    <string name="app_cms_autoplay_countdown_cancelled_label_key">countdownCancelledLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 
     <string name="app_cms_download_started_message">%1$s has started downloading.</string>

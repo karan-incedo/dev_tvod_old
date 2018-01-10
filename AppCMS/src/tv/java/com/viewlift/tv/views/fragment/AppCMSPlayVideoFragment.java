@@ -111,6 +111,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     private boolean sentBeaconFirstFrame;
     private long mTotalVideoDuration;
     int maxPreviewSecs = 0;
+    private VideoPlayerView.StreamingQualitySelector streamingQualitySelector;
 
 
     public VideoPlayerView getVideoPlayerView() {
@@ -174,6 +175,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if (activity instanceof OnClosePlayerEvent) {
             onClosePlayerEvent = (OnClosePlayerEvent) activity;
         }
+        if (activity instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) activity;
+        }
     }
 
     @Override
@@ -182,6 +186,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         this.mContext = context;
         if (context instanceof OnClosePlayerEvent) {
             onClosePlayerEvent = (OnClosePlayerEvent) context;
+        }
+        if (context instanceof VideoPlayerView.StreamingQualitySelector) {
+            streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
         }
     }
 
@@ -398,6 +405,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         videoPlayerInfoContainer.bringToFront();
 
         videoPlayerView = (VideoPlayerView) rootView.findViewById(R.id.app_cms_video_player_container);
+        if (streamingQualitySelector != null) {
+            videoPlayerView.setStreamingQualitySelector(streamingQualitySelector);
+        }
         videoPlayerView.getPlayerView().hideController();
         videoPlayerInfoContainer.setVisibility(View.INVISIBLE);
 

@@ -10377,6 +10377,7 @@ public class AppCMSPresenter {
                 }
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                 if (action.equalsIgnoreCase("lectureDetailPage")
+                        && contentDatum.getGist().getContentType() != null
                         && contentDatum.getGist().getContentType().equalsIgnoreCase("SERIES")) {
                     action = "showDetailPage";
                 }

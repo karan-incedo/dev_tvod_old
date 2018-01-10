@@ -1,0 +1,193 @@
+{
+  "id": "6bcc33b9-5ca2-4448-9161-bc20fec8541b",
+  "settings": {},
+  "view": "AC AutoPlayLandscape 01",
+  "type": "AC AutoPlayLandscape 01",
+  "blockName": "autoPlay01",
+  "layout": {
+    "mobile": {},
+    "ftv": {
+      "width": 1920,
+      "height": 1080
+    },
+    "tabletLandscape": {},
+    "tabletPortrait": {}
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 40,
+          "topMargin": 337,
+          "rightMargin": 1.46,
+          "width": 900,
+          "fontSize": 13
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "textAlignment": "center",
+      "text": "JUST FINISHED",
+      "type": "label",
+      "textColor": "#979797",
+      "key": "finishedUptitle"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "padding": 6,
+          "leftMargin": 270,
+          "topMargin": 406,
+          "width": 421,
+          "fontSize": 22.5,
+          "height": 237
+        }
+      },
+      "backgroundColor": "008ee0",
+      "type": "image",
+      "key": "finishedMovieImage"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 40,
+          "topMargin": 644,
+          "width": 900,
+          "fontSize": 35.4
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 2,
+      "textAlignment": "center",
+      "text": "Movie Name",
+      "type": "label",
+      "textColor": "#FFFFFF",
+      "fontWeight": "Semibold",
+      "key": "finishedMovieNameTitle"
+    },
+    {
+      "layout":
+      {
+        "ftv": {
+          "leftMargin": 1010,
+          "topMargin": 629,
+          "width": 291,
+          "fontSize": 12.5
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "textAlignment": "left",
+      "text": "Movie Name",
+      "type": "label",
+      "textColor": "#FFFFFF",
+      "fontWeight": "Semibold",
+      "key": "movieNameTitle"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1344,
+          "topMargin": 450,
+          "width": 497,
+          "fontSize": 15.4,
+          "height": 180
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 0,
+      "textAlignment": "left",
+      "type": "label",
+      "textColor": "ffffff",
+      "key": "movieDescription"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "padding": 6,
+          "leftMargin": 1010,
+          "topMargin": 462,
+          "width": 291,
+          "fontSize": 11.5,
+          "height": 163
+        }
+      },
+      "backgroundColor": "008ee0",
+      "type": "image",
+      "textColor": "ffffff",
+      "key": "movieImage"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1344,
+          "topMargin": 676,
+          "width": 300,
+          "fontSize": 12,
+          "height": 60
+        }
+      },
+      "borderColor": "#ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 1,
+      "action": "close",
+      "text": "CANCEL COUNTDOWN",
+      "type": "button",
+      "textColor": "#ffffff",
+      "fontWeight": "Semibold",
+      "key": "cancelButton"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1282,
+          "topMargin": 337,
+          "width": 160,
+          "fontSize": 17.4
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "text": "UP NEXT",
+      "type": "label",
+      "textColor": "#979797",
+      "key": "playInLabel"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1282,
+          "topMargin": 337,
+          "fontSize": 13.5
+        }
+      },
+      "fontFamily": "OpenSans",
+      "numberOfLines": 1,
+      "text": "COUNTDOWN CANCELLED",
+      "type": "label",
+      "textColor": "#979797",
+      "letterSpacing": 4.3,
+      "key": "countdownCancelledLabel"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "leftMargin": 1461,
+          "topMargin": 325,
+          "width": 63,
+          "height": 63
+        }
+      },
+      "showsCountdown": true,
+      "fontFamily": "OpenSans",
+      "textAlignment": "center",
+      "fontSize": 26,
+      "timerValue": 2,
+      "opacity": 0.5,
+      "type": "rotatingLoaderView",
+      "key": "upNextLoader"
+    }
+  ],
+  "alpha": 0.75,
+  "value": 15
+}

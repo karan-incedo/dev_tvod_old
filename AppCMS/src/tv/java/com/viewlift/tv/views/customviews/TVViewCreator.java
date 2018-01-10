@@ -1697,6 +1697,12 @@ public class TVViewCreator {
                             ((TextView) componentViewResult.componentView).setText(component.getText());
                             componentViewResult.componentView.setId(R.id.up_next_text_view_id);
                             break;
+
+                        case PAGE_AUTOPLAY_MOVIE_COUNTDOWN_CANCELLED_LABEL_KEY:
+                            ((TextView) componentViewResult.componentView).setText(component.getText());
+                            componentViewResult.componentView.setId(R.id.countdown_cancelled_text_view_id);
+                            componentViewResult.componentView.setVisibility(View.INVISIBLE);
+                            break;
                         case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
                             if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
                                 TextView tv = (TextView) componentViewResult.componentView;
