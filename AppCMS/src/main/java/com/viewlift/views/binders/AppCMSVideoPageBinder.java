@@ -2,6 +2,7 @@ package com.viewlift.views.binders;
 
 import android.os.Binder;
 
+import com.google.android.exoplayer2.Player;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;

@@ -47,11 +47,9 @@ public class NavigationPrimary implements Serializable {
     @SerializedName("icon")
     @Expose
     String icon;
-
     @SerializedName("platforms")
     @Expose
     Platforms platforms;
-
     public String getTitle() {
         return title;
     }
@@ -107,27 +105,21 @@ public class NavigationPrimary implements Serializable {
     public void setAccessLevels(AccessLevels accessLevels) {
         this.accessLevels = accessLevels;
     }
-
     public String getPagePath() {
         return pagePath;
     }
-
     public void setPagePath(String pagePath) {
         this.pagePath = pagePath;
     }
-
     public String getIcon() {
         return icon;
     }
-
     public void setIcon(String icon) {
         this.icon = icon;
     }
-
     public Platforms getPlatforms() {
         return platforms;
     }
-
     public void setPlatforms(Platforms platforms) {
         this.platforms = platforms;
     }

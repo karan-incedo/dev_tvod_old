@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.viewlift.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,9 @@ import java.util.List;
 
 public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAdapter.PageViewHolder> {
     private List<View> childViews;
+    private static int TYPE_PLAYER = 0;
+    private static int TYPE_STANZA = 1;
+
 
     public AppCMSPageViewAdapter() {
         childViews = new ArrayList<>();
@@ -45,6 +50,25 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     }
 
     @Override
+    public int getItemViewType(int position) {
+
+        if(isPlayerView(position))
+            return TYPE_PLAYER;
+        else if(isStanzaView(position))
+            return TYPE_STANZA;
+        else
+            return position;
+    }
+
+    private boolean isPlayerView(int position){
+        return position == TYPE_PLAYER;
+    }
+
+    private boolean isStanzaView(int position){
+        return position == TYPE_STANZA;
+    }
+
+    @Override
     public PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         FrameLayout viewGroup = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams viewGroupLayoutParams =
@@ -62,6 +86,9 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
         } catch (Exception e) {
 
         }
+       if (childViews.get(position).findViewById(R.id.video_player_id) !=null){
+           TYPE_PLAYER=position;
+       }
     }
 
     @Override

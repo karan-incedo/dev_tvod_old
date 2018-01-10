@@ -28,7 +28,6 @@ import com.viewlift.views.customviews.BaseView;
 /**
  * Created by viewlift on 5/30/17.
  */
-
 public class AppCMSNavItemsFragment extends DialogFragment {
     private static final String TAG = "NavItemsAdapter";
 
@@ -138,6 +137,12 @@ public class AppCMSNavItemsFragment extends DialogFragment {
                 appCMSNavLoginButton.setBackground(loginBorder);
 
                 Button appCMSNavFreeTrialButton = (Button) view.findViewById(R.id.app_cms_nav_free_trial_button);
+                if (appCMSPresenter.getNavigation() != null &&
+                        appCMSPresenter.getNavigation().getSettings() != null &&
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta() != null &&
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText() != null) {
+                    appCMSNavFreeTrialButton.setText(appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText());
+                }
                 if (appCMSPresenter.getAppCMSMain()
                         .getServiceType()
                         .equals(getContext().getString(R.string.app_cms_main_svod_service_type_key))) {

@@ -19,6 +19,12 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     String textColor;
 
+
+
+    @SerializedName("isSelectable")
+    @Expose
+    boolean isSelectable;
+
     @SerializedName("backgroundColor")
     @Expose
     String backgroundColor;
@@ -182,7 +188,7 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("protected")
     @Expose
     boolean isViewProtected;
-	
+
     @SerializedName("selectedText")
     @Expose
     String selectedText;
@@ -223,6 +229,8 @@ public class Component implements ModuleWithComponents, Serializable {
     String trayBackground;
 
     boolean yAxisSetManually;
+
+    boolean widthModified;
 
     public String getText() {
         return text;
@@ -381,7 +389,13 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setTrayClickAction(String trayClickAction) {
         this.trayClickAction = trayClickAction;
     }
+    public boolean isSelectable() {
+        return isSelectable;
+    }
 
+    public void setSelectable(boolean selectable) {
+        isSelectable = selectable;
+    }
     public String getFontFamily() {
         return fontFamily;
     }
@@ -527,7 +541,7 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setSelectedText(String selectedText) {
         this.selectedText = selectedText;
     }
-	
+
     float letterSpacing;
     public float getLetetrSpacing() {
         return letterSpacing;
@@ -555,7 +569,14 @@ public class Component implements ModuleWithComponents, Serializable {
         this.svod = svod;
     }
 
-    public String getTrayBackground() {
+    public boolean isWidthModified() {
+        return widthModified;
+    }
+
+    public void setWidthModified(boolean widthModified) {
+        this.widthModified = widthModified;
+    }
+	 public String getTrayBackground() {
         return trayBackground;
     }
 

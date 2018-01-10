@@ -1,27 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-
-    android:layout_marginLeft="10dp"
-    android:layout_marginRight="10dp"
-    android:layout_marginTop="5dp"
-    android:layout_marginBottom="5dp"
+    android:descendantFocusability="blocksDescendants"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/popImage"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/dialog_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:src="@drawable/amex" />
-
-    <TextView
-        android:id="@+id/popText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="5dp"
-        android:layout_toRightOf="@+id/popImage"
-        android:text="x"
+        android:gravity="center"
         android:textColor="@android:color/white" />
-</RelativeLayout>
+
+</LinearLayout>

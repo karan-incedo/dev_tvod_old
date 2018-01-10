@@ -78,6 +78,10 @@
     @com.facebook.common.internal.DoNotStrip *;
 }
 
+#kiswe class
+-keep class com.kiswe.kmsdkcorekit { *;}
+-keep class veg.mediaplayer.sdk.** { *;}
+
 # Keep native methods
 -keepclassmembers class * {
     native <methods>;

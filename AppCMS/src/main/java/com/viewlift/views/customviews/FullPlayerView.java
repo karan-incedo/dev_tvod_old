@@ -2,10 +2,15 @@ package com.viewlift.views.customviews;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 
 /**
@@ -14,7 +19,8 @@ import com.viewlift.presenters.AppCMSPresenter;
 
 public class FullPlayerView extends RelativeLayout {
 
-    private TVVideoPlayerView videoPlayerView;
+    private TVVideoPlayerView tvVideoPlayerView;
+    private CustomVideoPlayerView videoPlayerView;
     private AppCMSPresenter appCMSPresenter;
     private Context context;
     private LayoutParams lpView;
@@ -24,8 +30,16 @@ public class FullPlayerView extends RelativeLayout {
                           TVVideoPlayerView videoPlayerView) {
         super(context);
         this.context = context;
-        this.videoPlayerView = videoPlayerView;
+        this.tvVideoPlayerView = videoPlayerView;
+        init();
+    }
 
+
+    public FullPlayerView(Context context,
+                          CustomVideoPlayerView videoPlayerView) {
+        super(context);
+        this.context = context;
+        this.videoPlayerView = videoPlayerView;
         init();
     }
 

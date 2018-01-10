@@ -9,20 +9,16 @@
     <item name="download_quality_continue_button" type="id">download_quality_continue_button</item>
     <item name="download_quality_cancel_button" type="id">download_quality_cancel_button</item>
     <item name="video_player_id" type="id">video_player_id</item>
-
     <item name="recyclerview_tray" type="id"/>
-
     <item name="video_play_image" type="id"/>
-
+    <item name="play_live_image_id" type="id"/>
     <item name="scrollview_home" type="id"/>
-
     <item name="login_btn" type="id"/>
-
+    <item name="full_screen_btn_id" type="id"/>
     <item name="edittext_email" type="id"/>
-
     <item name="edittext_password" type="id"/>
-
     <item name="submit_login_btn" type="id"/>
+    <item name="custom_exo_controller" type="id"/>
     <item name="tv_recycler_view" type="id">tv_recycler_view</item>
     <item name="subscription_text" type="id">subscription_text</item>
 

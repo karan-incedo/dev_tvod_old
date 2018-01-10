@@ -73,7 +73,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         this.defaultAction = getDefaultAction(context);
 
         this.tintColor = Color.parseColor(getColor(context,
-                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
     }
 
     private void sortData() {
@@ -363,6 +363,11 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
     @Override
     public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
         //
+    }
+
+    @Override
+    public void setClickable(boolean clickable) {
+
     }
 
     private void click(ContentDatum data) {
