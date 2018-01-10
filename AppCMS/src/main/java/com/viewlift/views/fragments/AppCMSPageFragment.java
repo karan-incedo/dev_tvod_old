@@ -198,9 +198,9 @@ public class AppCMSPageFragment extends Fragment {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    appCMSPresenter.unrestrictPortraitOnly();
+                    setPageOriantationForVideoPage();
                 }
-            }, 1000);
+            }, 3000);
             View nextChild = (pageView.findChildViewById(R.id.video_player_id));
             ViewGroup group = (ViewGroup) nextChild;
             if ((group.getChildAt(0)) != null) {
@@ -325,12 +325,13 @@ public class AppCMSPageFragment extends Fragment {
 
                     appCMSPresenter.videoPlayerView = ((CustomVideoPlayerView) group.getChildAt(0));
                     appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
+                }else{
+                    //getActivity().onBackPressed();
                 }
             }
         }
-        if (!appCMSPresenter.isFullScreenVisible) {
-            handleOrientation(newConfig.orientation);
-        }
+
+        handleOrientation(newConfig.orientation);
     }
 
     private void handleOrientation(int orientation) {
@@ -450,14 +451,15 @@ public class AppCMSPageFragment extends Fragment {
     }
 
     public synchronized void setPageOriantationForVideoPage() {
-
-        if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                appCMSPresenter.isAutoRotate() ) {
-            appCMSPresenter.unrestrictPortraitOnly();
-        } else if (!BaseView.isTablet(getContext())) {
-            appCMSPresenter.restrictPortraitOnly();
-        } else if (BaseView.isTablet(getContext())) {
-            appCMSPresenter.unrestrictPortraitOnly();
+        if (!appCMSPresenter.isFullScreenVisible) {
+            if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
+                    appCMSPresenter.isAutoRotate() && !appCMSPresenter.isFullScreenVisible) {
+                appCMSPresenter.unrestrictPortraitOnly();
+            } else if (!BaseView.isTablet(getContext())) {
+                appCMSPresenter.restrictPortraitOnly();
+            } else if (BaseView.isTablet(getContext())) {
+                appCMSPresenter.unrestrictPortraitOnly();
+            }
         }
     }
 
