@@ -564,6 +564,8 @@
         <item quantity="other">SECS</item>
     </plurals>
 
+    <string name="audio_fragment_tag_key">audio_fragment</string>
+    <string name="media_type_playlist">PLAYLIST</string>
 </resources>
 
 
