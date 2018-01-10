@@ -905,9 +905,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSPresenter != null) {
             try {
                 newVersionUpgradeAvailable.setBackgroundColor(Color.parseColor(
-                        appCMSPresenter.getAppBackgroundColor()));
+                        appCMSPresenter.getAppCtaBackgroundColor()));
                 newVersionAvailableTextView.setTextColor(Color.parseColor(
-                        appCMSPresenter.getAppTextColor()));
+                        appCMSPresenter.getAppCtaTextColor()));
             } catch (Exception e) {
 //                //Log.w(TAG, "Failed to set AppCMS branding colors for soft upgrade messages: " +
 //                        e.getMessage());
@@ -1079,16 +1079,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.refreshPages(shouldRefresh -> {
             if (appCMSPresenter.isAppBelowMinVersion()) {
                 appCMSPresenter.launchUpgradeAppActivity();
-            } else if (appCMSPresenter.isAppUpgradeAvailable()) {
-                newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                newVersionAvailableTextView.setText("");
-                newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
-                        getString(R.string.app_cms_app_version),
-                        appCMSPresenter.getGooglePlayAppStoreVersion()));
-                newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
-                newVersionUpgradeAvailable.requestLayout();
             } else {
-                newVersionUpgradeAvailable.setVisibility(View.GONE);
+                if (appCMSPresenter.isAppUpgradeAvailable()) {
+                    newVersionUpgradeAvailable.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    newVersionAvailableTextView.setText("");
+                    newVersionAvailableTextView.setText(getString(R.string.a_new_version_of_the_app_is_available_text,
+                            getString(R.string.app_cms_app_version),
+                            appCMSPresenter.getGooglePlayAppStoreVersion()));
+                    newVersionUpgradeAvailable.setVisibility(View.VISIBLE);
+                    newVersionUpgradeAvailable.requestLayout();
+                } else {
+                    newVersionUpgradeAvailable.setVisibility(View.GONE);
+                    newVersionUpgradeAvailable.requestLayout();
+                }
                 if (shouldRefresh) {
                     refreshPageData();
                 } else {

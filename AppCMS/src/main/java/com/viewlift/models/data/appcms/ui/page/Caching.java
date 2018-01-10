@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by viewlift on 12/22/17.
@@ -12,11 +13,16 @@ import java.io.Serializable;
 
 @UseStag
 public class Caching implements Serializable {
+    private static final long CACHE_TIME_IN_MINS = 15;
+    private static final long CACHE_TIME_IN_MSEC = 1000 * 60 * CACHE_TIME_IN_MINS;
+
     @SerializedName("isEnabled")
     @Expose
     boolean isEnabled;
 
     boolean overrideCaching;
+
+    long cachingOverrideTime;
 
     public boolean isEnabled() {
         return isEnabled;
@@ -28,11 +34,17 @@ public class Caching implements Serializable {
 
     public boolean shouldOverrideCaching() {
         boolean currentOverrideCaching = overrideCaching;
-        overrideCaching = false;
+        long currentTime = new Date().getTime();
+        /** Set the override caching value to 10 mins if the time to cache update has expired  */
+        if (cachingOverrideTime < currentTime &&
+                CACHE_TIME_IN_MSEC <= cachingOverrideTime - currentTime) {
+            overrideCaching = false;
+        }
         return currentOverrideCaching;
     }
 
     public void setOverrideCaching(boolean overrideCaching) {
         this.overrideCaching = overrideCaching;
+        this.cachingOverrideTime = new Date().getTime();
     }
 }
