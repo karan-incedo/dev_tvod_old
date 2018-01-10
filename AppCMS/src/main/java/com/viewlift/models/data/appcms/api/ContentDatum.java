@@ -106,6 +106,62 @@ public class ContentDatum implements Serializable {
     @SerializedName("parentalRating")
     @Expose
     String parentalRating;
+    @SerializedName("permalink")
+    @Expose
+    String permalink;
+    @SerializedName("title")
+    @Expose
+    String title;
+    @SerializedName("contentType")
+    @Expose
+    String contentType;
+    @SerializedName("mediaType")
+    @Expose
+    String mediaType;
+
+    public boolean isRenewable() {
+        return renewable;
+    }
+
+    public void setAddedDate(long addedDate) {
+        this.addedDate = addedDate;
+    }
+
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getPermalink() {
+        return permalink;
+    }
+
+    public void setPermalink(String permalink) {
+        this.permalink = permalink;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
 
     public Gist getGist() {
         return gist;
