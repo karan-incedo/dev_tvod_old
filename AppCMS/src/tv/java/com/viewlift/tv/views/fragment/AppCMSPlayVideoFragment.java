@@ -225,6 +225,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
     }
 
     private void preparePlayer() {
+        videoPlayerView.setAppCMSPresenter(appCMSPresenter);
         videoPlayerView.init(getActivity());
         videoPlayerView.getPlayer().setPlayWhenReady(true);
         if (!TextUtils.isEmpty(hlsUrl)) {

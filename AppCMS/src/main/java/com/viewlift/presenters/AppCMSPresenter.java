@@ -195,6 +195,7 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
+import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
