@@ -36,6 +36,8 @@ import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSMainUIRest;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
 import com.viewlift.models.network.rest.AppCMSPageUIRest;
+import com.viewlift.models.network.rest.AppCMSPlaylistCall;
+import com.viewlift.models.network.rest.AppCMSPlaylistRest;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityRest;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
@@ -783,7 +785,8 @@ public class AppCMSUIModule {
 
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_watchlistpage_key),
                 AppCMSActionType.WATCHLIST_PAGE);
-
+        actionToActionTypeMap.put(context.getString(R.string.app_cms_action_playlistpage_key),
+                AppCMSActionType.PLAYLIST_PAGE);
         actionToActionTypeMap.put(context.getString(R.string.app_cms_action_videopage_key),
                 AppCMSActionType.PLAY_VIDEO_PAGE);
 
@@ -944,7 +947,11 @@ public class AppCMSUIModule {
     public AppCMSWatchlistRest providesAppCMSWatchlistRest(Retrofit retrofit) {
         return retrofit.create(AppCMSWatchlistRest.class);
     }
-
+    @Provides
+    @Singleton
+    public AppCMSPlaylistRest providesAppCMSPlaylistRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSPlaylistRest.class);
+    }
     @Provides
     @Singleton
     public AppCMSHistoryRest providesAppCMSHistoryRest(Retrofit retrofit) {
@@ -1119,7 +1126,11 @@ public class AppCMSUIModule {
     public AppCMSWatchlistCall providesAppCMSWatchlistCall(AppCMSWatchlistRest appCMSWatchlistRest, Gson gson) {
         return new AppCMSWatchlistCall(appCMSWatchlistRest, gson);
     }
-
+    @Provides
+    @Singleton
+    public AppCMSPlaylistCall providesAppCMSPlaylistCall(AppCMSPlaylistRest appCMSPlaylistRest, Gson gson) {
+        return new AppCMSPlaylistCall(appCMSPlaylistRest, gson);
+    }
     @Provides
     @Singleton
     public AppCMSHistoryCall providesAppCMSHistoryCall(AppCMSHistoryRest appCMSHistoryRest, Gson gson) {

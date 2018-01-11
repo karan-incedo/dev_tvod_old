@@ -556,4 +556,9 @@
     <string name="app_cms_page_history_description_key">listItemDescription</string>
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
+
+    <string name="app_cms_action_playlistpage_key">Playlist Page</string>
+    <!-- AppCMS Playlist API -->
+    <string name="app_cms_playlist_api_url">%1$s/content/playlist?id=%2$s&amp;site=%3$s</string>
+
 </resources>

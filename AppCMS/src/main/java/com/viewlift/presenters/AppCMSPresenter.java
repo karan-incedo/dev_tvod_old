@@ -121,6 +121,7 @@ import com.viewlift.models.data.appcms.history.AppCMSHistoryResult;
 import com.viewlift.models.data.appcms.history.Record;
 import com.viewlift.models.data.appcms.history.UpdateHistoryRequest;
 import com.viewlift.models.data.appcms.history.UserVideoStatusResponse;
+import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSSubscriptionResult;
 import com.viewlift.models.data.appcms.subscriptions.AppCMSUserSubscriptionPlanResult;
@@ -177,6 +178,7 @@ import com.viewlift.models.network.rest.AppCMSHistoryCall;
 import com.viewlift.models.network.rest.AppCMSMainUICall;
 import com.viewlift.models.network.rest.AppCMSPageAPICall;
 import com.viewlift.models.network.rest.AppCMSPageUICall;
+import com.viewlift.models.network.rest.AppCMSPlaylistCall;
 import com.viewlift.models.network.rest.AppCMSRefreshIdentityCall;
 import com.viewlift.models.network.rest.AppCMSResetPasswordCall;
 import com.viewlift.models.network.rest.AppCMSRestorePurchaseCall;
@@ -671,9 +673,10 @@ public class AppCMSPresenter {
     };
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
-
+    private final AppCMSPlaylistCall appCMSPlaylistCall;
     @Inject
     public AppCMSPresenter(Gson gson,
+                           AppCMSPlaylistCall appCMSPlaylistCall,
                            AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
                            AppCMSPageUICall appCMSPageUICall,
@@ -723,7 +726,7 @@ public class AppCMSPresenter {
 
                            ReferenceQueue<Object> referenceQueue) {
         this.gson = gson;
-
+        this.appCMSPlaylistCall = appCMSPlaylistCall;
         this.appCMSMainUICall = appCMSMainUICall;
         this.appCMSAndroidUICall = appCMSAndroidUICall;
         this.appCMSPageUICall = appCMSPageUICall;
@@ -4441,7 +4444,97 @@ public class AppCMSPresenter {
             }
         }
     }
+    public void navigateToPlaylistPage(String pageId, String pageTitle, String url,
+                                       boolean launchActivity) {
 
+        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            MetaPage playlistMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.PLAYLIST_PAGE);
+            AppCMSPageUI appCMSPageUI = navigationPages.get(playlistMetaPage.getPageId());
+
+            getPlaylistPageContent(appCMSMain.getApiBaseUrl(), pageIdToPageAPIUrlMap.get(pageId),
+                    appCMSSite.getGist().getSiteInternalName(),
+                    true,
+                    getPageId(appCMSPageUI), new AppCMSPlaylistAPIAction(false,
+                            false,
+                            false,
+                            appCMSPageUI,
+                            pageId,
+                            pageId,
+                            pageTitle,
+                            pageId,
+                            launchActivity, null) {
+                        @Override
+                        public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
+                            cancelInternalEvents();
+                            pushActionInternalEvents(this.pageId
+                                    + BaseView.isLandscape(currentActivity));
+                            AppCMSPageAPI pageAPI;
+                            if (appCMSPlaylistResult != null) {
+                                pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(this.pageId);
+                            } else {
+                                pageAPI = new AppCMSPageAPI();
+                                pageAPI.setId(this.pageId);
+                                List<String> moduleIds = new ArrayList<>();
+                                List<Module> apiModules = new ArrayList<>();
+                                for (ModuleList module : appCMSPageUI.getModuleList()) {
+                                    Module module1 = new Module();
+                                    module1.setId(module.getId());
+                                    apiModules.add(module1);
+                                    moduleIds.add(module.getId());
+                                }
+                                pageAPI.setModuleIds(moduleIds);
+                                pageAPI.setModules(apiModules);
+                            }
+
+                            navigationPageData.put(this.pageId, pageAPI);
+
+                            if (this.launchActivity) {
+                                launchPageActivity(currentActivity,
+                                        this.appCMSPageUI,
+                                        pageAPI,
+                                        this.pageId,
+                                        this.pageTitle,
+                                        this.pagePath,
+                                        pageIdToPageNameMap.get(this.pageId),
+                                        loadFromFile,
+                                        this.appbarPresent,
+                                        this.fullscreenEnabled,
+                                        this.navbarPresent,
+                                        false,
+                                        this.searchQuery,
+                                        ExtraScreenType.NONE);
+                            } else {
+                                Bundle args = getPageActivityBundle(currentActivity,
+                                        this.appCMSPageUI,
+                                        pageAPI,
+                                        this.pageId,
+                                        this.pageTitle,
+                                        this.pagePath,
+                                        pageIdToPageNameMap.get(this.pageId),
+                                        loadFromFile,
+                                        this.appbarPresent,
+                                        this.fullscreenEnabled,
+                                        this.navbarPresent,
+                                        false,
+                                        null,
+                                        ExtraScreenType.NONE);
+                                if (args != null) {
+                                    Intent playlistPageIntent =
+                                            new Intent(AppCMSPresenter
+                                                    .PRESENTER_NAVIGATE_ACTION);
+                                    playlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                                            args);
+                                    currentActivity.sendBroadcast(playlistPageIntent);
+                                }
+                            }
+
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                    .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        }
+                    });
+
+        }
+    }
     private void getWatchlistPageContent(final String apiBaseUrl, String endPoint,
                                          final String siteId,
                                          boolean userPageIdQueryParam, String pageId,
@@ -4470,7 +4563,34 @@ public class AppCMSPresenter {
             }
         }
     }
+    private void getPlaylistPageContent(final String apiBaseUrl, String endPoint,
+                                        final String siteId,
+                                        boolean userPageIdQueryParam, String pageId,
+                                        final AppCMSPlaylistAPIAction playlist) {
+        if (currentActivity != null) {
+            try {
+                String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        getRefreshToken());
 
+                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                    try {
+                        appCMSPlaylistCall.call(
+                                currentActivity.getString(R.string.app_cms_playlist_api_url,
+                                        apiBaseUrl,
+                                        siteId,
+                                        pageId),
+                                getAuthToken(),
+                                playlist);
+                    } catch (IOException e) {
+                        //Log.e(TAG, "getWatchlistPageContent: " + e.toString());
+                    }
+                });
+            } catch (Exception e) {
+
+            }
+        }
+    }
     public void getHistoryData(final Action1<AppCMSHistoryResult> appCMSHistoryResultAction) {
         if (currentActivity != null) {
             MetaPage historyMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.HISTORY_PAGE);
@@ -12266,7 +12386,40 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
+    private abstract static class AppCMSPlaylistAPIAction implements Action1<AppCMSPlaylistResult> {
+        final boolean appbarPresent;
+        final boolean fullscreenEnabled;
+        final boolean navbarPresent;
+        final AppCMSPageUI appCMSPageUI;
+        final String action;
+        final String pageId;
+        final String pageTitle;
+        final String pagePath;
+        final boolean launchActivity;
+        final Uri searchQuery;
 
+        AppCMSPlaylistAPIAction(boolean appbarPresent,
+                                boolean fullscreenEnabled,
+                                boolean navbarPresent,
+                                AppCMSPageUI appCMSPageUI,
+                                String action,
+                                String pageId,
+                                String pageTitle,
+                                String pagePath,
+                                boolean launchActivity,
+                                Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
+        }
+    }
     private abstract static class AppCMSHistoryAPIAction implements Action1<AppCMSHistoryResult> {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;

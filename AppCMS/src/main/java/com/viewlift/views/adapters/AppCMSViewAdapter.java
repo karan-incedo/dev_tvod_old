@@ -418,7 +418,11 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (relatedVideoIds == null) {
                                     currentPlayingIndex = 0;
                                 }
-
+                                if (data.getGist() != null && data.getGist().getMediaType() != null
+                                        && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
+                                    appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), null, false);
+                                    return;
+                                }
                                 String contentType = "";
 
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
