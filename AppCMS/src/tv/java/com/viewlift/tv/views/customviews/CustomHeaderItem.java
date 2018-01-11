@@ -30,6 +30,16 @@ public class CustomHeaderItem extends HeaderItem {
     private int mListRowRightMargin;
 
     private int mListRowHeight;
+
+    public int getmListRowWidth() {
+        return mListRowWidth;
+    }
+
+    public void setmListRowWidth(int mListRowWidth) {
+        this.mListRowWidth = mListRowWidth;
+    }
+
+    private int mListRowWidth;
     private String mBackGroundColor;
 
 

@@ -12,27 +12,27 @@
     }
   },
   "components": [
-    /* {
-       "layout": {
-         "ftv": {
-           "yAxis": 28,
-           "xAxis": 96,
-           "width": 255,
-           "fontSize": 12,
-           "height": 60
-         }
-       },
-       "borderColor": "66ffffff",
-       "fontFamily": "OpenSans",
-       "borderWidth": 4,
-       "action": "clearWatchlist",
-       "text": "CLEAR WATCHLIST",
-       "type": "button",
-       "textColor": "ffffff",
-       "fontWeight": "Semibold",
-       "key": "removeAll"
-     },*/
     {
+      "layout": {
+        "ftv": {
+          "yAxis": 35,
+          "xAxis": 1585,
+          "width": 270,
+          "fontSize": 13,
+          "height": 70
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "Lato",
+      "borderWidth": 4,
+      "action": "clearWatchlist",
+      "text": "CLEAR WATCHLIST",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "Bold",
+      "key": "removeAll"
+    },
+    /*{
       "layout": {
         "ftv": {
           "width": 1920,
@@ -41,7 +41,7 @@
       },
       "backgroundColor": "#cf0a2c",
       "type": "label"
-    }, {
+    }, */{
       "layout": {
         "ftv": {
           "yAxis": 37,
@@ -53,9 +53,10 @@
       "numberOfLines": 1,
       "textAlignment": "center_horizontal",
       "letterSpacing": 4.5,
-      "text": "QUEUE",
+      "text": "Watchlist",
       "type": "label",
       "fontWeight": "Regular",
+      "textColor": "ffffff",
       "key": "pageTitle"
     },/*
     {
@@ -77,9 +78,9 @@
           "leftMargin": 4.9,
           "yAxis": 183,
           "rightMargin": 2.67,
-          "itemHeight": 250,
+          "itemHeight": 275,
           "itemWidth": 1676,
-          "height": 757
+          "height": 800
         }
       },
       "components": [
@@ -116,6 +117,7 @@
               "width" : 850
             }
           },
+          "numberOfLines": 1,
           "fontFamily": "Lato",
           "textAlignment": "left",
           "type": "label",
@@ -168,7 +170,7 @@
           },
           "type": "image",
           "key": "teamIcon"
-        },
+        }/*,
         {
           "layout": {
             "ftv": {
@@ -182,7 +184,7 @@
           "fillColor" : "cb0022",
           "type": "starRating",
           "key": "starRating"
-        }
+        }*/
         /*,
         {
           "layout": {

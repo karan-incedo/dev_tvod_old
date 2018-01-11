@@ -6,11 +6,14 @@
     android:orientation="vertical"
     tools:context="com.viewlift.tv.views.activity.AppCmsMyProfileFragment">
 
-    <View
+    <TextView
         android:id="@+id/nav_top_line"
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="@color/colorAccent"/>
+        android:layout_alignParentTop="true"
+        android:background="@color/colorAccent"
+        android:focusable="false"
+        android:textAlignment="center" />
 
 
     <LinearLayout
