@@ -109,6 +109,7 @@ import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.api.SubscriptionRequest;
 import com.viewlift.models.data.appcms.api.VideoAssets;
+import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
 import com.viewlift.models.data.appcms.beacon.AppCMSBeaconRequest;
 import com.viewlift.models.data.appcms.beacon.BeaconRequest;
 import com.viewlift.models.data.appcms.beacon.OfflineBeaconData;
@@ -167,6 +168,7 @@ import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
@@ -674,9 +676,11 @@ public class AppCMSPresenter {
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
     private final AppCMSPlaylistCall appCMSPlaylistCall;
+    private final AppCMSAudioDetailCall appCMSAudioDetailCall;
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSPlaylistCall appCMSPlaylistCall,
+                           AppCMSAudioDetailCall appCMSAudioDetailCall,
                            AppCMSMainUICall appCMSMainUICall,
                            AppCMSAndroidUICall appCMSAndroidUICall,
                            AppCMSPageUICall appCMSPageUICall,
@@ -727,6 +731,7 @@ public class AppCMSPresenter {
                            ReferenceQueue<Object> referenceQueue) {
         this.gson = gson;
         this.appCMSPlaylistCall = appCMSPlaylistCall;
+        this.appCMSAudioDetailCall = appCMSAudioDetailCall;
         this.appCMSMainUICall = appCMSMainUICall;
         this.appCMSAndroidUICall = appCMSAndroidUICall;
         this.appCMSPageUICall = appCMSPageUICall;
@@ -4444,10 +4449,77 @@ public class AppCMSPresenter {
             }
         }
     }
+
+    private void getAudioContent(final String apiBaseUrl,
+                                 final String siteId,
+                                 String pageId,
+                                 final AppCMSAudioDetailAPIAction audiDetail) {
+        if (currentActivity != null) {
+            try {
+                String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                        appCMSMain.getApiBaseUrl(),
+                        getRefreshToken());
+
+                appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
+                    try {
+                        appCMSAudioDetailCall.call(
+                                currentActivity.getString(R.string.app_cms_audio_detail_api_url,
+                                        apiBaseUrl,
+                                        siteId,
+                                        pageId),
+                                audiDetail);
+                    } catch (IOException e) {
+                    }
+                });
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
+    public void getAudioDetail(String pageId) {
+        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                .PRESENTER_PAGE_LOADING_ACTION));
+        getAudioContent(appCMSMain.getApiBaseUrl(),
+                appCMSSite.getGist().getSiteInternalName(),
+                pageId,
+                new AppCMSAudioDetailAPIAction(false,
+                        false,
+                        false,
+                        null,
+                        pageId,
+                        pageId,
+                        null,
+                        pageId,
+                        false, null) {
+                    @Override
+                    public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+                        cancelInternalEvents();
+                        pushActionInternalEvents(this.pageId
+                                + BaseView.isLandscape(currentActivity));
+                        AppCMSPageAPI pageAPI;
+                        if (appCMSAudioDetailResult != null) {
+                            pageAPI = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
+                            navigationPageData.put(this.pageId, pageAPI);
+
+                        } else {
+                            Toast.makeText(currentContext, "Unable to fetch data", Toast.LENGTH_SHORT).show();
+                        }
+
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                    }
+                });
+
+
+    }
+
     public void navigateToPlaylistPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
 
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                    .PRESENTER_PAGE_LOADING_ACTION));
             MetaPage playlistMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.PLAYLIST_PAGE);
             AppCMSPageUI appCMSPageUI = navigationPages.get(playlistMetaPage.getPageId());
 
@@ -4535,6 +4607,7 @@ public class AppCMSPresenter {
 
         }
     }
+
     private void getWatchlistPageContent(final String apiBaseUrl, String endPoint,
                                          final String siteId,
                                          boolean userPageIdQueryParam, String pageId,
@@ -4563,6 +4636,7 @@ public class AppCMSPresenter {
             }
         }
     }
+
     private void getPlaylistPageContent(final String apiBaseUrl, String endPoint,
                                         final String siteId,
                                         boolean userPageIdQueryParam, String pageId,
@@ -4591,6 +4665,7 @@ public class AppCMSPresenter {
             }
         }
     }
+
     public void getHistoryData(final Action1<AppCMSHistoryResult> appCMSHistoryResultAction) {
         if (currentActivity != null) {
             MetaPage historyMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.HISTORY_PAGE);
@@ -10998,13 +11073,13 @@ public class AppCMSPresenter {
 
     public TemplateType getTemplateType() {
         String templateName = appCMSMain.getTemplateName();
-        if ("Entertainment".equalsIgnoreCase(templateName)){
+        if ("Entertainment".equalsIgnoreCase(templateName)) {
             return TemplateType.ENTERTAINMENT;
-        } else if ("Education".equalsIgnoreCase(templateName)){
+        } else if ("Education".equalsIgnoreCase(templateName)) {
             return TemplateType.EDUCATION;
-        } else if ("LIVE".equalsIgnoreCase(templateName)){
+        } else if ("LIVE".equalsIgnoreCase(templateName)) {
             return TemplateType.LIVE;
-        } else /*if (templateName.equalsIgnoreCase("Sports"))*/{
+        } else /*if (templateName.equalsIgnoreCase("Sports"))*/ {
             return TemplateType.SPORTS;
         }
     }
@@ -12420,6 +12495,40 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
+    private abstract static class AppCMSAudioDetailAPIAction implements Action1<AppCMSAudioDetailResult> {
+        final boolean appbarPresent;
+        final boolean fullscreenEnabled;
+        final boolean navbarPresent;
+        final AppCMSPageUI appCMSPageUI;
+        final String action;
+        final String pageId;
+        final String pageTitle;
+        final String pagePath;
+        final boolean launchActivity;
+        final Uri searchQuery;
+
+        AppCMSAudioDetailAPIAction(boolean appbarPresent,
+                                   boolean fullscreenEnabled,
+                                   boolean navbarPresent,
+                                   AppCMSPageUI appCMSPageUI,
+                                   String action,
+                                   String pageId,
+                                   String pageTitle,
+                                   String pagePath,
+                                   boolean launchActivity,
+                                   Uri searchQuery) {
+            this.appbarPresent = appbarPresent;
+            this.fullscreenEnabled = fullscreenEnabled;
+            this.navbarPresent = navbarPresent;
+            this.appCMSPageUI = appCMSPageUI;
+            this.action = action;
+            this.pageId = pageId;
+            this.pageTitle = pageTitle;
+            this.pagePath = pagePath;
+            this.launchActivity = launchActivity;
+            this.searchQuery = searchQuery;
+        }
+    }
     private abstract static class AppCMSHistoryAPIAction implements Action1<AppCMSHistoryResult> {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;
@@ -12604,9 +12713,11 @@ public class AppCMSPresenter {
                 now.getTime(),
                 appCMSMain.getSite());
     }
+
     public void setTVVideoPlayerView(TVVideoPlayerView customVideoPlayerView) {
         this.tvVideoPlayerView = customVideoPlayerView;
     }
+
     public void showFullScreenTVPlayer() {
         if (videoPlayerViewParent == null) {
             videoPlayerViewParent = (ViewGroup) tvVideoPlayerView.getParent();
@@ -12620,19 +12731,20 @@ public class AppCMSPresenter {
             isFullScreenVisible = true;
         }
     }
+
     public void exitFullScreenTVPlayer() {
         try {
             if (relativeLayoutFull != null) {
-                 if (videoPlayerViewParent != null) {
+                if (videoPlayerViewParent != null) {
                     relativeLayoutFull.removeView(tvVideoPlayerView);
                     if (tvVideoPlayerView != null && tvVideoPlayerView.getParent() != null) {
                         ((ViewGroup) tvVideoPlayerView.getParent()).removeView(tvVideoPlayerView);
                     }
-                        tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
-                     videoPlayerViewParent.addView(tvVideoPlayerView);
+                    tvVideoPlayerView.setLayoutParams(videoPlayerViewParent.getLayoutParams());
+                    videoPlayerViewParent.addView(tvVideoPlayerView);
                 }
-                tvVideoPlayerView =null;
-                videoPlayerViewParent=null;
+                tvVideoPlayerView = null;
+                videoPlayerViewParent = null;
 
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
                 rootView.postDelayed(() -> {
