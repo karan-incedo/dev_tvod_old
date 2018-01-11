@@ -118,6 +118,7 @@
         <!-- This activity declaration should be in the AppCMS/src/tv/AndroidManifest.xml
         <activity android:name=".tv.views.activity.AppCMSTVAutoplayActivity" />
         -->
+        <activity android:name=".views.activity.AppCMSPlayAudioActivity"></activity>
     </application>
 
 </manifest>
