@@ -24,7 +24,7 @@ import rx.functions.Action1;
 
 public class AppCMSPlaylistCall {
 
-    private static final String TAG = "AppCMSWatchlistCallTAG_";
+    private static final String TAG = AppCMSPlaylistCall.class.getSimpleName() + "TAG";
     private final AppCMSPlaylistRest appCMSPlaylistRest;
 
     @SuppressWarnings({"unused, FieldCanBeLocal"})
@@ -37,12 +37,10 @@ public class AppCMSPlaylistCall {
     }
 
     @WorkerThread
-    public void call(String url, String authToken,
+    public void call(String url,
                      final Action1<AppCMSPlaylistResult> playlistResultAction) throws IOException {
         try {
-            Map<String, String> authTokenMap = new HashMap<>();
-            authTokenMap.put("Authorization", authToken);
-            appCMSPlaylistRest.get(url, authTokenMap).enqueue(new Callback<AppCMSPlaylistResult>() {
+            appCMSPlaylistRest.get(url).enqueue(new Callback<AppCMSPlaylistResult>() {
                 @Override
                 public void onResponse(@NonNull Call<AppCMSPlaylistResult> call,
                                        @NonNull Response<AppCMSPlaylistResult> response) {
