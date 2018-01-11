@@ -74,6 +74,7 @@
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
         <item>AC RawHtml 01</item>
+      <!--  <item>AC WebFrame 01</item>-->
     </string-array>
 
     <string-array name="app_cms_download_quality_array">

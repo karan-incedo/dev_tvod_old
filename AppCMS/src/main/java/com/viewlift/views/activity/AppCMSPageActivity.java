@@ -1142,8 +1142,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        /*if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && !BaseView.isTablet(this) && appCMSPresenter.isExitFullScreen) {
+            appCMSPresenter.restrictPortraitOnly();
+            appCMSPresenter.isExitFullScreen = false;
+            return;
+        }*/
         if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView != null) {
+
             appCMSPresenter.restrictLandscapeOnly();
+            if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+                appCMSPresenter.exitFullScreenPlayer();
             return;
         }
 
@@ -1154,16 +1162,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!appCMSPresenter.isMainFragmentTransparent()) {
                     appCMSPresenter.showMainFragmentView(true);
                 }
-                AppCMSBinder appCMSBinder = !appCMSBinderStack.isEmpty() ?
-                        appCMSBinderMap.get(appCMSBinderStack.peek()) :
-                        null;
+                AppCMSBinder appCMSBinder = !appCMSBinderStack.isEmpty() ? appCMSBinderMap.get(appCMSBinderStack.peek()) : null;
                 if (appCMSBinder != null) {
                     appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
                             + BaseView.isLandscape(this));
-                    handleLaunchPageAction(appCMSBinder,
-                            true,
-                            false,
-                            false);
+                    handleLaunchPageAction(appCMSBinder,true,false,false);
                 }
             }
         }
@@ -1450,7 +1453,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (!(appCMSPageFragment instanceof AppCMSPageFragment) && appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
-          }
+            }
             if (appCMSPageFragment != null) {
                 fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));
