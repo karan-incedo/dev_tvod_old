@@ -35,7 +35,7 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
     private int relativeLayoutEventViewId;
     private RelativeLayout.LayoutParams lpPipView;
     private RecyclerView mRecyclerView;
-    private Animation animMoveRight, animMoveLeft, animMoveUp, animBottomUp;
+    private Animation animBottomSlide;
     private MiniPlayerView miniPlayerView;
 
     public MiniPlayerView(Context context,
@@ -80,16 +80,10 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
             appCMSPresenter.restrictPortraitOnly();
         }
 
-        animMoveRight = AnimationUtils.loadAnimation(context, R.anim.move_right);
-        animMoveLeft = AnimationUtils.loadAnimation(context, R.anim.move_left);
-        animMoveUp = AnimationUtils.loadAnimation(context, R.anim.move_up);
-        animBottomUp = AnimationUtils.loadAnimation(context, R.anim.bottom_up);
+        animBottomSlide = AnimationUtils.loadAnimation(context, R.anim.mini_player_slide_bottom);
 
-        animMoveRight.setAnimationListener(this);
-        animMoveLeft.setAnimationListener(this);
-        animMoveUp.setAnimationListener(this);
-        animBottomUp.setAnimationListener(this);
-        this.startAnimation(animBottomUp);
+
+        this.startAnimation(animBottomSlide);
 
         lpPipView = new RelativeLayout.LayoutParams(BaseView.dpToPx(R.dimen.app_cms_mini_player_width, context),
                 BaseView.dpToPx(R.dimen.app_cms_mini_player_height, context));
@@ -165,6 +159,7 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         appCMSPresenter.videoPlayerView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         addView(appCMSPresenter.videoPlayerView);
         if (findViewById(relativeLayoutEventViewId) == null) {
+            relativeLayoutEvent.setBackgroundColor(Color.TRANSPARENT);
             addView(relativeLayoutEvent);
         }
 
@@ -222,20 +217,15 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
 
     @Override
     public void onAnimationStart(Animation animation) {
-
     }
 
     @Override
     public void onAnimationEnd(Animation animation) {
-        if (animation != animMoveUp && animation != animBottomUp) {
-            removeWithPause();
-        }
 
     }
 
     @Override
     public void onAnimationRepeat(Animation animation) {
-
     }
 
     public class OnSwipeTouchListener implements OnTouchListener {
