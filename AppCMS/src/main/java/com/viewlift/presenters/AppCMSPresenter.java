@@ -195,7 +195,6 @@ import com.viewlift.models.network.rest.AppCMSVideoDetailCall;
 import com.viewlift.models.network.rest.AppCMSWatchlistCall;
 import com.viewlift.models.network.rest.GoogleCancelSubscriptionCall;
 import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
-import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
@@ -11939,14 +11938,6 @@ public class AppCMSPresenter {
         isTeamPAgeVisible = isVisible;
     }
 
-    public void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
-        android.app.FragmentTransaction ft =
-                getCurrentActivity().getFragmentManager().beginTransaction();
-        SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
-                SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
-        switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
-
-    }
 
     public enum LaunchType {
         SUBSCRIBE, LOGIN_AND_SIGNUP, INIT_SIGNUP, NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG, HOME

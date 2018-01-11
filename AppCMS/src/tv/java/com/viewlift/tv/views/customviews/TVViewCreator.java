@@ -725,7 +725,7 @@ public class TVViewCreator {
                                             component.getBlockName(),
                                             0,
                                             0);
-                            appCMSPresenter.showSwitchSeasonsDialog(appCMSSwitchSeasonBinder);
+                            Utils.showSwitchSeasonsDialog(appCMSSwitchSeasonBinder , appCMSPresenter);
                         });
                         break;
                     case PAGE_INFO_KEY:
