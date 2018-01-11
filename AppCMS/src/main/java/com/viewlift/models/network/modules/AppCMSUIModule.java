@@ -20,6 +20,8 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
+import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
@@ -954,6 +956,11 @@ public class AppCMSUIModule {
     }
     @Provides
     @Singleton
+    public AppCMSAudioDetailRest providesAppCMSAudioDetailRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSAudioDetailRest.class);
+    }
+    @Provides
+    @Singleton
     public AppCMSHistoryRest providesAppCMSHistoryRest(Retrofit retrofit) {
         return retrofit.create(AppCMSHistoryRest.class);
     }
@@ -1130,6 +1137,11 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSPlaylistCall providesAppCMSPlaylistCall(AppCMSPlaylistRest appCMSPlaylistRest, Gson gson) {
         return new AppCMSPlaylistCall(appCMSPlaylistRest, gson);
+    }
+    @Provides
+    @Singleton
+    public AppCMSAudioDetailCall providesAppCMSAudioDetailCall(AppCMSAudioDetailRest appCMSAudioDetailRest, Gson gson) {
+        return new AppCMSAudioDetailCall(appCMSAudioDetailRest, gson);
     }
     @Provides
     @Singleton
