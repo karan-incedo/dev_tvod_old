@@ -253,7 +253,9 @@ public class AppCmsTVPageFragment extends Fragment {
     public void updateSeasonData(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
 
         try {
-            if (null != appCmsViewComponent.tvviewCreator() && null != appCmsViewComponent.tvviewCreator().mRowsAdapter) {
+            if (null != appCmsViewComponent.tvviewCreator()
+                    && null != appCmsViewComponent.tvviewCreator().mRowsAdapter
+                    && appCMSSwitchSeasonBinder.getSelectedSeasonIndex() != SwitchSeasonsDialogFragment.getSelectedSeasonIndex()) {
 
                 ListRow listRow = (ListRow) appCmsViewComponent.tvviewCreator().mRowsAdapter.get(0);
                 ArrayObjectAdapter  arrayObjectAdapter = (ArrayObjectAdapter) listRow.getAdapter();

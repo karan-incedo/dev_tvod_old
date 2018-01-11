@@ -258,34 +258,37 @@ public class AppCMSTVAutoplayFragment extends Fragment {
 
     private String getSeasonAndEpisodeNumber(ContentDatum mainContentData, String id) {
         String returnVal = "";
-        for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
-            Season_ season = mainContentData.getSeason().get(seasonNumber);
-            for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
-                ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
-                if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
-                    returnVal = getString(R.string.season_episode_placeholders, seasonNumber + 1, episodeNumber + 1);
-                    break;
+        if (mainContentData.getSeason() != null) {
+            for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
+                Season_ season = mainContentData.getSeason().get(seasonNumber);
+                for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
+                    ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
+                    if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
+                        returnVal = getString(R.string.season_episode_placeholders, seasonNumber + 1, episodeNumber + 1);
+                        break;
+                    }
                 }
+                if (returnVal.length() > 0) break;
             }
-            if (returnVal.length() > 0) break;
         }
-
         return returnVal;
     }
 
 
     private int getEpisodeNumber(ContentDatum mainContentData, String id) {
         int returnVal = 0;
-        for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
-            Season_ season = mainContentData.getSeason().get(seasonNumber);
-            for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
-                ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
-                if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
-                    returnVal = episodeNumber + 1;
-                    break;
+        if (mainContentData.getSeason() != null) {
+            for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
+                Season_ season = mainContentData.getSeason().get(seasonNumber);
+                for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
+                    ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
+                    if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
+                        returnVal = episodeNumber + 1;
+                        break;
+                    }
                 }
+                if (returnVal > 0) break;
             }
-            if (returnVal > 0) break;
         }
 
         return returnVal;

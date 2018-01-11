@@ -257,6 +257,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
         } else {
             findViewById(R.id.press_up_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
             findViewById(R.id.top_logo).setVisibility(View.INVISIBLE);
 
             findViewById(R.id.footer_logo).setVisibility(View.VISIBLE);

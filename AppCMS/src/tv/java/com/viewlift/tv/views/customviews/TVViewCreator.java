@@ -301,7 +301,7 @@ public class TVViewCreator {
 //                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             }
 
-           if ("AC AutoPlay 01".equalsIgnoreCase(module.getView())) {
+           if ("AC AutoPlayLandscape 01".equalsIgnoreCase(module.getView())) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "autoplay_land.json"), ModuleList.class);
             }
 
@@ -734,7 +734,7 @@ public class TVViewCreator {
                                             component.getBlockName(),
                                             0,
                                             0);
-                            appCMSPresenter.showSwitchSeasonsDialog(appCMSSwitchSeasonBinder);
+                            Utils.showSwitchSeasonsDialog(appCMSSwitchSeasonBinder, appCMSPresenter);
                         });
                         break;
                     case PAGE_INFO_KEY:
