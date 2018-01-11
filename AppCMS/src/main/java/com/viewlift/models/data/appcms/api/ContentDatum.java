@@ -2,6 +2,7 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.audio.AudioAssets;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -367,5 +368,17 @@ public class ContentDatum implements Serializable {
         moduleList.add(module);
         appCMSPageAPI.setModules(moduleList);
         return appCMSPageAPI;
+    }
+
+    @SerializedName("audioAssets")
+    @Expose
+    AudioAssets audioAssets = null;
+
+    public AudioAssets getAudioAssets() {
+        return audioAssets;
+    }
+
+    public void setAudioAssets(AudioAssets audioAssets) {
+        this.audioAssets = audioAssets;
     }
 }
