@@ -490,6 +490,7 @@
     <string name="st_signout_icon_key">icon-signout</string>
     <string name="st_contact_icon_key">icon-contact</string>
     <string name="st_live_icon_key">icon-live</string>
+    <string name="st_about_us_icon_key">icon-about</string>
     <string name="search_blank_toast_msg">Please enter a value to search.</string>
     <string name="email_blank_toast_msg_reset_password">Please enter email to reset password.</string>
     <string name="published_on">Published on</string>

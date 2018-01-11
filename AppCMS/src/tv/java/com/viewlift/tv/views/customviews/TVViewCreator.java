@@ -1847,7 +1847,6 @@ public class TVViewCreator {
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             Glide.with(context)
                                     .load(component.getImageName()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    //.error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
                                     .into((ImageView) componentViewResult.componentView);
                         }
                 }
