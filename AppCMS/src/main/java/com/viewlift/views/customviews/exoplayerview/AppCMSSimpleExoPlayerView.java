@@ -772,10 +772,12 @@ public class AppCMSSimpleExoPlayerView extends FrameLayout {
 
         }
 
+
         @Override
         public void onPlayerError(ExoPlaybackException e) {
             // Do nothing.
         }
+
 
         @Override
         public void onPositionDiscontinuity(int reason) {

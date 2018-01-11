@@ -272,7 +272,6 @@ public class CastServiceProvider {
     private void initRoku() {
         rokuWrapper = RokuWrapper.getInstance();
         rokuWrapper.setListener(callBackRokuDiscoveredDevices);
-
     }
 
     /*

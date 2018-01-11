@@ -44,6 +44,7 @@ import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.util.Date;
 import java.util.Timer;
@@ -413,7 +414,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 );
 
         if (!shouldRequestAds) {
-            //videoPlayerView.getPlayer().setPlayWhenReady(true);
             preparePlayer();
             startTimer();
         }
@@ -650,7 +650,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
        /* if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.pause();
         } else {
-            videoPlayerView.pausePlayer();
+            tvVideoPlayerView.pausePlayer();
         }*/
 
         videoPlayerView.pausePlayer();
@@ -671,7 +671,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             }
             videoPlayerInfoContainer.setVisibility(View.VISIBLE);
             videoPlayerView.startPlayer();
-            //videoPlayerView.resumePlayer();
+            //tvVideoPlayerView.resumePlayer();
             if (beaconMessageThread != null) {
                 beaconMessageThread.sendBeaconPing = true;
             }
@@ -707,7 +707,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         if (shouldRequestAds && adsManager != null && isAdDisplayed) {
             adsManager.resume();
         }  /*else {
-            videoPlayerView.resumePlayer();
+            tvVideoPlayerView.resumePlayer();
             Log.d(TAG, "Resuming playback");
         }*/
 
@@ -908,12 +908,11 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     public boolean showController(KeyEvent event) {
         if (null != videoPlayerView) {
-            SimpleExoPlayerView playerView = videoPlayerView.getPlayerView();
+            AppCMSSimpleExoPlayerView playerView =  videoPlayerView.getPlayerView();
             if (null != playerView) {
                 if (null != playerView.getPlayer()) {
                     if (playerView.getPlayer().getPlayWhenReady()) {
                         playerView.showController();
-//                        return playerView.dispatchMediaKeyEvent(event);
                     }
                 }
             }

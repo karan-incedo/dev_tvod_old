@@ -119,6 +119,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private RecyclerView listView;
 
+    public VideoPlayerView(Context context) {
+        super(context);
+        initializeView(context);
+    }
 
     public VideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context);
@@ -489,6 +493,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
@@ -512,6 +517,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onSeekProcessed() {
 
     }
+
 
     public void sendPlayerPosition(long position) {
         mCurrentPlayerPosition = position;

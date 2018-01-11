@@ -1,72 +1,75 @@
 package com.viewlift.tv.views.customviews;
 
-import android.content.Context;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.net.Uri;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
+        import android.content.Context;
+        import android.graphics.Color;
+        import android.graphics.PorterDuff;
+        import android.graphics.Typeface;
+        import android.net.Uri;
+        import android.support.annotation.NonNull;
+        import android.text.TextUtils;
+        import android.util.Log;
+        import android.view.Gravity;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.Button;
+        import android.widget.FrameLayout;
+        import android.widget.ImageView;
+        import android.widget.LinearLayout;
+        import android.widget.ProgressBar;
+        import android.widget.TextView;
+        import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
-import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
-import com.google.ads.interactivemedia.v3.api.AdEvent;
-import com.google.ads.interactivemedia.v3.api.AdsLoader;
-import com.google.ads.interactivemedia.v3.api.AdsManager;
-import com.google.ads.interactivemedia.v3.api.AdsRequest;
-import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
-import com.google.android.exoplayer2.ExoPlayer;
-import com.viewlift.AppCMSApplication;
-import com.viewlift.R;
-import com.viewlift.models.data.appcms.api.ContentDatum;
-import com.viewlift.models.data.appcms.api.VideoAssets;
-import com.viewlift.models.data.appcms.ui.android.NavigationUser;
-import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
-import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.tv.utility.Utils;
-import com.viewlift.tv.views.activity.AppCmsHomeActivity;
-import com.viewlift.views.customviews.VideoPlayerView;
+        import com.bumptech.glide.Glide;
+        import com.bumptech.glide.load.engine.DiskCacheStrategy;
+        import com.google.ads.interactivemedia.v3.api.AdDisplayContainer;
+        import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
+        import com.google.ads.interactivemedia.v3.api.AdEvent;
+        import com.google.ads.interactivemedia.v3.api.AdsLoader;
+        import com.google.ads.interactivemedia.v3.api.AdsManager;
+        import com.google.ads.interactivemedia.v3.api.AdsRequest;
+        import com.google.ads.interactivemedia.v3.api.ImaSdkFactory;
+        import com.google.android.exoplayer2.ExoPlaybackException;
+        import com.google.android.exoplayer2.ExoPlayer;
+        import com.viewlift.AppCMSApplication;
+        import com.viewlift.R;
+        import com.viewlift.models.data.appcms.api.ContentDatum;
+        import com.viewlift.models.data.appcms.api.VideoAssets;
+        import com.viewlift.models.data.appcms.ui.android.NavigationUser;
+        import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
+        import com.viewlift.presenters.AppCMSPresenter;
+        import com.viewlift.tv.utility.Utils;
+        import com.viewlift.tv.views.activity.AppCmsHomeActivity;
+        import com.viewlift.views.customviews.TVVideoPlayerView;
+        import com.viewlift.views.customviews.VideoPlayerView;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+        import java.util.Date;
+        import java.util.List;
+        import java.util.Timer;
+        import java.util.TimerTask;
 
-import rx.functions.Action1;
+        import rx.functions.Action1;
 
-import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
-import static com.google.android.exoplayer2.Player.STATE_ENDED;
-import static com.google.android.exoplayer2.Player.STATE_READY;
+        import static com.google.android.exoplayer2.Player.STATE_BUFFERING;
+        import static com.google.android.exoplayer2.Player.STATE_ENDED;
+        import static com.google.android.exoplayer2.Player.STATE_READY;
 
 /**
- * Created by viewlift on 5/31/17.
+ * Created by nitin.tyagi on 1/8/2018.
  */
 
-public class CustomVideoPlayerView
-        extends VideoPlayerView
+public class CustomTVVideoPlayerView
+        extends TVVideoPlayerView
         implements AdErrorEvent.AdErrorListener,
-        AdEvent.AdEventListener,
-        VideoPlayerView.ErrorEventListener {
-
-    private static final String TAG = CustomVideoPlayerView.class.getSimpleName();
+    AdEvent.AdEventListener,
+    VideoPlayerView.ErrorEventListener {
+        protected static final String TAG = TVVideoPlayerView.class.getSimpleName();
+    private final AppCMSPresenter appCMSPresenter;
     private Context mContext;
-    private AppCMSPresenter appCMSPresenter;
     private LinearLayout custonLoaderContaineer;
     private TextView loaderMessageView;
     private LinearLayout customMessageContaineer;
     private TextView customMessageView;
-    private boolean shouldRequestAds = false;
+    protected boolean shouldRequestAds = false;
     private boolean isADPlay;
     private ImaSdkFactory sdkFactory;
     private AdsLoader adsLoader;
@@ -83,31 +86,41 @@ public class CustomVideoPlayerView
     private long mStopBufferMilliSec;
     private long mStartBufferMilliSec;
     private double ttfirstframe;
-    private int currentPlayingIndex = 0;
-    private List<String> relatedVideoId;
+    private int currentPlayingIndex = -1;
+    protected List<String> relatedVideoId;
     private String parentScreenName;
-    private String mStreamId;
+    protected String mStreamId;
     private int apod;
-    private ContentDatum videoData = null;
+    protected ContentDatum videoData = null;
     private BeaconBufferingThread beaconBufferingThread;
     private BeaconPingThread beaconMessageThread;
     private boolean sentBeaconPlay;
     private Timer timer;
     private TimerTask timerTask;
     private ContentDatum contentDatum;
+    private boolean isHardPause;
 
-    public CustomVideoPlayerView(Context context) {
+
+    public CustomTVVideoPlayerView(Context context) {
         super(context);
         getPlayerView().setUseController(false);
         mContext = context;
         appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         createCustomMessageView();
+        createTitleView();
         imageViewContainer = findViewById(R.id.videoPlayerThumbnailImageContainer);
         imageView = (ImageView) findViewById(R.id.videoPlayerThumbnailImage);
         setListener(this);
         parentScreenName = mContext.getString(R.string.app_cms_beacon_video_player_parent_screen_name);
         setupAds();
+        getPlayerView().hideController();
+        setOnPlayerControlsStateChanged(new Action1<Integer>() {
+            @Override
+            public void call(Integer integer) {
+                headerTitleContaineer.setVisibility(integer);
+            }
+        });
     }
 
 
@@ -123,7 +136,7 @@ public class CustomVideoPlayerView
 
     public void requestFocusOnLogin(){
         if(customMessageContaineer.getVisibility() == View.VISIBLE){
-            loginButton.requestFocus();
+            //loginButton.requestFocus();
         }
     }
 
@@ -133,16 +146,59 @@ public class CustomVideoPlayerView
         adsLoader.addAdErrorListener(this);
         adsLoader.addAdsLoadedListener(adsManagerLoadedEvent -> {
             adsManager = adsManagerLoadedEvent.getAdsManager();
-            adsManager.addAdErrorListener(CustomVideoPlayerView.this);
-            adsManager.addAdEventListener(CustomVideoPlayerView.this);
+            adsManager.addAdErrorListener(CustomTVVideoPlayerView.this);
+            adsManager.addAdEventListener(CustomTVVideoPlayerView.this);
             adsManager.init();
         });
+    }
+
+    public void playVideos(int currentPlayingIndex, ContentDatum contentDatum) {
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(videoData.getGist().getTitle());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        releaseBeaconsThread();
+        startBeaconsThread();
+        hideRestrictedMessage();
+        String url = null;
+        if (null != contentDatum && null != contentDatum.getStreamingInfo()) {
+            shouldRequestAds = !contentDatum.getStreamingInfo().getIsLiveStream();
+            if (null != contentDatum.getStreamingInfo().getVideoAssets()){
+                url = getVideoUrl(contentDatum.getStreamingInfo().getVideoAssets());
+            }
+        }
+
+        Log.d(TAG , "Url is = "+url);
+        if (null != url) {
+            lastUrl = url;
+            setUri(Uri.parse(url), null);
+            if (null != appCMSPresenter.getCurrentActivity() &&
+                    appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
+                if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive
+                        && !isHardPause()) {
+                    getPlayerView().getPlayer().setPlayWhenReady(true);
+                } else {
+                    getPlayerView().getPlayer().setPlayWhenReady(false);
+                }
+            }
+
+            if (currentPlayingIndex == -1) {
+                relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
+            }
+            hideProgressBar();
+        }
+
     }
 
     public void setVideoUri(String videoId) {
         showProgressBar("Loading...");
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             this.contentDatum = contentDatum;
+            if (contentDatum.getStreamingInfo() != null) {
+                isLiveStream = contentDatum.getStreamingInfo().getIsLiveStream();
+            }
+            setTitle();
             adsUrl = getAdsUrl(contentDatum);
             Log.d(TAG, "CVP Free : " + contentDatum.getGist().getFree());
             if (!contentDatum.getGist().getFree()) {
@@ -150,8 +206,9 @@ public class CustomVideoPlayerView
                 if (!appCMSPresenter.isUserLoggedIn()) {
                     if (userFreePlayTimeExceeded()) {
                         setBackgroundImage();
-                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                        showRestrictMessage(getUnSubscribeOvelayText());
                         toggleLoginButtonVisibility(true);
+                        exitFullScreenPlayer();
                     } else {
                         videoData = contentDatum;
                         if (shouldRequestAds)
@@ -173,7 +230,7 @@ public class CustomVideoPlayerView
                                 if ((subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
                                         subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION"))) {
                                     videoData = contentDatum;
-                                  //  if (shouldRequestAds) requestAds(adsUrl);
+                                    //  if (shouldRequestAds) requestAds(adsUrl);
                                     playVideos(0, contentDatum);
                                     // start free play time timer
                                 } else if (!userFreePlayTimeExceeded()){
@@ -190,16 +247,19 @@ public class CustomVideoPlayerView
                                     setBackgroundImage();
                                     showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                     toggleLoginButtonVisibility(false);
+                                    exitFullScreenPlayer();
                                 }
                             } else {
                                 setBackgroundImage();
                                 showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                                 toggleLoginButtonVisibility(false);
+                                exitFullScreenPlayer();
                             }
                         } catch (Exception e) {
                             setBackgroundImage();
                             showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
                             toggleLoginButtonVisibility(false);
+                            exitFullScreenPlayer();
                         }
                     });
                 }
@@ -251,15 +311,7 @@ public class CustomVideoPlayerView
                 if (appCMSPresenter.getUserFreePlayTimePreference() >= totalFreePreviewTimeInMillis) {
                     stopTimer();
                     appCMSPresenter.getCurrentActivity().runOnUiThread(() -> {
-                        String message = null;
-                        if (appCMSPresenter.getAppCMSAndroid() != null
-                                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
-                                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
-                            message = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
-                        }
-                        if (message == null) {
-                            message = getResources().getString(R.string.unsubscribe_text);
-                        }
+                        String message = getUnSubscribeOvelayText();
                         if (appCMSPresenter.isUserLoggedIn()) {
                             String finalMessage = message;
                             appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
@@ -272,18 +324,21 @@ public class CustomVideoPlayerView
                                             setBackgroundImage();
                                             showRestrictMessage(finalMessage);
                                             toggleLoginButtonVisibility(false);
+                                            exitFullScreenPlayer();
                                         }
                                     } else /*Unsubscribed*/{
                                         pausePlayer();
                                         setBackgroundImage();
                                         showRestrictMessage(finalMessage);
                                         toggleLoginButtonVisibility(false);
+                                        exitFullScreenPlayer();
                                     }
                                 } catch (Exception e) {
                                     pausePlayer();
                                     setBackgroundImage();
                                     showRestrictMessage(finalMessage);
                                     toggleLoginButtonVisibility(false);
+                                    exitFullScreenPlayer();
                                 }
                             });
                         } else {
@@ -291,16 +346,34 @@ public class CustomVideoPlayerView
                             showRestrictMessage(message);
                             setBackgroundImage();
                             toggleLoginButtonVisibility(true);
+                            exitFullScreenPlayer();
                         }
                     });
 
                     return;
                 }
-                Log.d(TAG, "CVP Timer called off. " + (appCMSPresenter.getUserFreePlayTimePreference() + 1000));
-                appCMSPresenter.setUserFreePlayTimePreference(appCMSPresenter.getUserFreePlayTimePreference() + 1000);
+                if (null != getPlayer() &&
+                        getPlayer().getPlayWhenReady()) {
+                    Log.d(TAG, "CVP Timer called off. " + (appCMSPresenter.getUserFreePlayTimePreference() + 1000));
+                    appCMSPresenter.setUserFreePlayTimePreference(appCMSPresenter.getUserFreePlayTimePreference() + 1000);
+                }
             }
         };
         timer.scheduleAtFixedRate(timerTask, 0, 1000);
+    }
+
+    @NonNull
+    private String getUnSubscribeOvelayText() {
+        String message = null;
+        if (appCMSPresenter.getAppCMSAndroid() != null
+                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
+                && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage() != null) {
+            message = appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getOverlayMessage();
+        }
+        if (message == null) {
+            message = getResources().getString(R.string.unsubscribe_text);
+        }
+        return message;
     }
 
     private boolean userFreePlayTimeExceeded() {
@@ -334,49 +407,9 @@ public class CustomVideoPlayerView
         return entitlementCheckMultiplier * 60 * 1000;
     }
 
-    private void playVideos(int currentIndex, ContentDatum contentDatum) {
-        try {
-            mStreamId = appCMSPresenter.getStreamingId(videoData.getGist().getTitle());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        releaseBeaconsThread();
-        startBeaconsThread();
-        hideRestrictedMessage();
-        String url = null;
-        if (null != contentDatum && null != contentDatum.getStreamingInfo()) {
-            shouldRequestAds = !contentDatum.getStreamingInfo().getIsLiveStream();
-            if (null != contentDatum.getStreamingInfo().getVideoAssets()){
-                url = getVideoUrl(contentDatum.getStreamingInfo().getVideoAssets());
-            }
-        }
+    String lastUrl = null;
 
-
-        Log.d(TAG , "Url is = "+url);
-        if (null != url) {
-            setUri(Uri.parse(url), null);
-            if (null != appCMSPresenter.getCurrentActivity() &&
-                    appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
-                if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
-                  /*  if(shouldRequestAds){
-                        requestAds(adsUrl);
-                    }else {*/
-                        getPlayerView().getPlayer().setPlayWhenReady(true);
-                  //  }
-                } else {
-                    getPlayerView().getPlayer().setPlayWhenReady(false);
-                }
-            }
-
-            if (currentIndex == 0) {
-                relatedVideoId = contentDatum.getContentDetails().getRelatedVideoIds();
-            }
-            currentPlayingIndex = currentIndex;
-            hideProgressBar();
-        }
-    }
-
-    private String getVideoUrl(VideoAssets videoAssets) {
+    protected String getVideoUrl(VideoAssets videoAssets) {
         String defaultVideoResolution = mContext.getResources().getString(R.string.default_video_resolution);
         String videoUrl = videoAssets.getHls();
 
@@ -401,8 +434,8 @@ public class CustomVideoPlayerView
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
         switch (playbackState) {
             case STATE_ENDED:
-//                getPlayerView().getPlayer().setPlayWhenReady(false);
                 currentPlayingIndex++;
+//                getPlayerView().getPlayer().setPlayWhenReady(false);
                 Log.d(TAG, "appCMSPresenter.getAutoplayEnabledUserPref(mContext): " +
                         appCMSPresenter.getAutoplayEnabledUserPref(mContext));
                 if (null != relatedVideoId
@@ -410,55 +443,17 @@ public class CustomVideoPlayerView
                     if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
                         showProgressBar("Loading Next Video...");
                         setVideoUri(relatedVideoId.get(currentPlayingIndex));
-/*
-                        showProgressBar("Loading Next Video...");
-                        appCMSPresenter.refreshVideoData(relatedVideoId.get(currentPlayingIndex), new Action1<ContentDatum>() {
-                            @Override
-                            public void call(ContentDatum contentDatum) {
-                                imageViewContainer.setVisibility(GONE);
-                                if (!contentDatum.getGist().getFree()) {
-                                    //check login and subscription first.
-                                    if (!appCMSPresenter.isUserLoggedIn()) {
-                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                        setBackgroundImage();
-                                    } else *//*User not logged in *//* {
-                                        //check subscription data
-                                        appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
-                                            try {
-                                                if (appCMSUserSubscriptionPlanResult != null) {
-                                                    String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                                                    if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                                            subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                                       // if (shouldRequestAds) requestAds(adsUrl);
-                                                        playVideos(currentPlayingIndex, contentDatum);
-                                                    } else *//*user not subscribed*//* {
-                                                        setBackgroundImage();
-                                                        showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                                    }
-                                                } else *//*received null result from API in appCMSUserSubscriptionPlanResult*//* {
-                                                    setBackgroundImage();
-                                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                                }
-                                            } catch (Exception e) {
-                                                setBackgroundImage();
-                                                showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
-                                            }
-                                        });
-                                    }
-                                } else *//*Video is free*//* {
-                                   // if (shouldRequestAds) requestAds(adsUrl);
-                                    playVideos(currentPlayingIndex, contentDatum);
-                                    imageViewContainer.setVisibility(GONE);
-                                }
-                            }
-                        });*/
                     } else /*Autoplay is turned-off*/ {
                         setBackgroundImage();
                         showRestrictMessage(getResources().getString(R.string.autoplay_off_msg));
+                        toggleLoginButtonVisibility(false);
+                        exitFullScreenPlayer();
                     }
                 } else {
                     setBackgroundImage();
                     showRestrictMessage(getResources().getString(R.string.no_more_videos_in_queue));
+                    toggleLoginButtonVisibility(false);
+                    exitFullScreenPlayer();
                 }
                 break;
             case STATE_BUFFERING:
@@ -491,8 +486,8 @@ public class CustomVideoPlayerView
                     if (!sentBeaconFirstFrame) {
                         mStopBufferMilliSec = new Date().getTime();
                         ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                        appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                                videoData.getGist().getPermalink(),
+                        appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                                contentDatum.getGist().getPermalink(),
                                 parentScreenName,
                                 getCurrentPosition(),
                                 false,
@@ -516,6 +511,11 @@ public class CustomVideoPlayerView
     }
 
     private void setBackgroundImage() {
+        if (mContext instanceof AppCmsHomeActivity) {
+            if (((AppCmsHomeActivity) mContext).isFinishing()) {
+                return;
+            }
+        }
         String videoImageUrl = null;
         if (contentDatum != null
                 && contentDatum.getGist() != null
@@ -548,14 +548,15 @@ public class CustomVideoPlayerView
         if (null != getPlayer() && !getPlayer().getPlayWhenReady()) {
             if (appCMSPresenter.getCurrentActivity() != null && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
                 if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
-                    getPlayer().setPlayWhenReady(true);
                     startFreePlayTimer();
-
-                    if (beaconMessageThread != null) {
-                        beaconMessageThread.sendBeaconPing = true;
-                    }
-                    if (beaconBufferingThread != null) {
-                        beaconBufferingThread.sendBeaconBuffering = true;
+                    if(!isHardPause()) {
+                        getPlayer().setPlayWhenReady(true);
+                        if (beaconMessageThread != null) {
+                            beaconMessageThread.sendBeaconPing = true;
+                        }
+                        if (beaconBufferingThread != null) {
+                            beaconBufferingThread.sendBeaconBuffering = true;
+                        }
                     }
                 }
             }
@@ -591,7 +592,7 @@ public class CustomVideoPlayerView
         customMessageView.setGravity(Gravity.CENTER);
         customMessageView.setTextSize(20);
         customMessageView.setTypeface(null, Typeface.BOLD);
-        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(1200, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(Utils.getViewXAxisAsPerScreen(mContext , 1400), ViewGroup.LayoutParams.WRAP_CONTENT);
         textViewParams.setMargins(0, 0,0, 50);
         customMessageView.setLayoutParams(textViewParams);
         customMessageView.setPadding(20, 20, 20, 20);
@@ -617,7 +618,7 @@ public class CustomVideoPlayerView
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(300, 75);
         loginButton.setLayoutParams(buttonParams);
         loginButton.setPadding(50,0,50,0);
-        loginButton.setBackground(getResources().getDrawable(R.drawable.st_subscriber_module_color_selector));
+        loginButton.setBackgroundColor(getResources().getColor(R.color.colorAccent)/*getResources().getDrawable(R.drawable.st_subscriber_module_color_selector)*/);
         customMessageContaineer.addView(loginButton);
         loginButton.setVisibility(View.VISIBLE);
 
@@ -626,16 +627,18 @@ public class CustomVideoPlayerView
             public void onClick(View v) {
                 if(appCMSPresenter.isNetworkConnected()) {
                     NavigationUser navigationUser = appCMSPresenter.getLoginNavigation();
-                    appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
-                    appCMSPresenter.navigateToTVPage(
-                            navigationUser.getPageId(),
-                            navigationUser.getTitle(),
-                            navigationUser.getUrl(),
-                            false,
-                            Uri.EMPTY,
-                            false,
-                            false,
-                            true);
+                    if (null != navigationUser) {
+                        appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
+                        appCMSPresenter.navigateToTVPage(
+                                navigationUser.getPageId(),
+                                navigationUser.getTitle(),
+                                navigationUser.getUrl(),
+                                false,
+                                Uri.EMPTY,
+                                false,
+                                false,
+                                true);
+                    }
                 }
             }
         });
@@ -670,28 +673,38 @@ public class CustomVideoPlayerView
         }
     }
 
-    private void hideProgressBar() {
+    protected void hideProgressBar() {
         if (null != custonLoaderContaineer) {
             custonLoaderContaineer.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void toggleLoginButtonVisibility (boolean show) {
+    public void toggleLoginButtonVisibility (boolean show) {
         if (loginButton != null) {
             loginButton.setVisibility(show ? VISIBLE : GONE);
         }
     }
 
-     private void showRestrictMessage(String message) {
+    public boolean isLoginButtonVisible(){
+        return ( (loginButton.getVisibility() == View.VISIBLE)
+                && (customMessageContaineer.getVisibility() == View.VISIBLE));
+    }
+
+    public void performLoginButtonClick(){
+        if(null != loginButton){
+            loginButton.performClick();
+        }
+    }
+    public void showRestrictMessage(String message) {
         if (null != customMessageContaineer && null != customMessageView) {
             hideProgressBar();
             customMessageView.setText(message);
             customMessageContaineer.setVisibility(View.VISIBLE);
-            loginButton.requestFocus();
+            // loginButton.requestFocus();
         }
     }
 
-    private void hideRestrictedMessage() {
+    protected void hideRestrictedMessage() {
         if (null != customMessageContaineer) {
             customMessageContaineer.setVisibility(View.INVISIBLE);
         }
@@ -709,11 +722,11 @@ public class CustomVideoPlayerView
             /*request.setContentProgressProvider(new ContentProgressProvider() {
                 @Override
                 public VideoProgressUpdate getContentProgress() {
-                    if (isAdDisplayed || videoPlayerView.getDuration() <= 0) {
+                    if (isAdDisplayed || tvVideoPlayerView.getDuration() <= 0) {
                         return VideoProgressUpdate.VIDEO_TIME_NOT_READY;
                     }
-                    return new VideoProgressUpdate(videoPlayerView.getCurrentPosition(),
-                            videoPlayerView.getDuration());
+                    return new VideoProgressUpdate(tvVideoPlayerView.getCurrentPosition(),
+                            tvVideoPlayerView.getDuration());
                 }
             });*/
 
@@ -722,8 +735,8 @@ public class CustomVideoPlayerView
 
             apod += 1;
             if (appCMSPresenter != null) {
-                appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                        videoData.getGist().getPermalink(),
+                appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                        contentDatum.getGist().getPermalink(),
                         parentScreenName,
                         getCurrentPosition(),
                         false,
@@ -745,7 +758,7 @@ public class CustomVideoPlayerView
         Log.e(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
         playVideos(0,contentDatum);
         startFreePlayTimer();
-       // startPlayer();
+        // startPlayer();
     }
 
     @Override
@@ -766,8 +779,8 @@ public class CustomVideoPlayerView
                 }
 
                 if (appCMSPresenter != null) {
-                    appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                            videoData.getGist().getPermalink(),
+                    appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                            contentDatum.getGist().getPermalink(),
                             parentScreenName,
                             getCurrentPosition(),
                             false,
@@ -785,7 +798,7 @@ public class CustomVideoPlayerView
                 break;
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-               // this.startPlayer();
+                // this.startPlayer();
                 if (beaconMessageThread != null) {
                     beaconMessageThread.sendBeaconPing = true;
                 }
@@ -793,8 +806,8 @@ public class CustomVideoPlayerView
                 if (appCMSPresenter != null) {
                     mStopBufferMilliSec = new Date().getTime();
                     ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                    appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                            videoData.getGist().getPermalink(),
+                    appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                            contentDatum.getGist().getPermalink(),
                             parentScreenName,
                             getCurrentPosition(),
                             false,
@@ -836,8 +849,8 @@ public class CustomVideoPlayerView
         beaconBufferingTimeoutMsec = mContext.getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
 
         if (!sentBeaconPlay) {
-            appCMSPresenter.sendBeaconMessage(videoData.getGist().getId(),
-                    videoData.getGist().getPermalink(),
+            appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                    contentDatum.getGist().getPermalink(),
                     parentScreenName,
                     getCurrentPosition(),
                     false,
@@ -858,18 +871,19 @@ public class CustomVideoPlayerView
         beaconMessageThread = new BeaconPingThread(
                 beaconMsgTimeoutMsec,
                 appCMSPresenter,
-                videoData.getGist().getId(),
-                videoData.getGist().getPermalink(),
+                contentDatum.getGist().getId(),
+                contentDatum.getGist().getPermalink(),
                 false,
                 parentScreenName,
                 this,
-                mStreamId);
+                mStreamId,
+                isLiveStream());
 
         beaconBufferingThread = new BeaconBufferingThread(
                 beaconBufferingTimeoutMsec,
                 appCMSPresenter,
-                videoData.getGist().getId(),
-                videoData.getGist().getPermalink(),
+                contentDatum.getGist().getId(),
+                contentDatum.getGist().getPermalink(),
                 parentScreenName,
                 this,
                 mStreamId);
@@ -932,6 +946,37 @@ public class CustomVideoPlayerView
         }
     }
 
+    /**
+     * Method is used to hide the progress bar, timer, rewind and forward button when a live stream
+     * playing
+     */
+    public void hideControlsForLiveStream() {
+        try {
+            getPlayerView().findViewById(R.id.exo_position).setVisibility(isLiveStream ? GONE : VISIBLE);
+            getPlayerView().findViewById(R.id.exo_progress).setVisibility(isLiveStream ? GONE : VISIBLE);
+            getPlayerView().findViewById(R.id.exo_duration).setVisibility(isLiveStream ? GONE : VISIBLE);
+
+            if (isLiveStream) {
+                View rewind = getPlayerView().findViewById(R.id.exo_rew);
+                rewind.setTag(rewind.getVisibility());
+                    rewind.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                    if (rewind.getVisibility() == VISIBLE) {
+                        rewind.setVisibility(GONE);
+                    }
+                });
+
+                View forward = getPlayerView().findViewById(R.id.exo_ffwd);
+                forward.setTag(rewind.getVisibility());
+                forward.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+                    if (forward.getVisibility() == VISIBLE) {
+                        forward.setVisibility(GONE);
+                    }
+                });
+            }
+        } catch (Exception e) {
+        }
+    }
+
     private static class BeaconPingThread extends Thread {
         final long beaconMsgTimeoutMsec;
         final AppCMSPresenter appCMSPresenter;
@@ -944,6 +989,7 @@ public class CustomVideoPlayerView
         boolean sendBeaconPing;
         boolean isTrailer;
         int playbackState;
+        boolean isLiveStream;
 
 
         public BeaconPingThread(long beaconMsgTimeoutMsec,
@@ -953,7 +999,8 @@ public class CustomVideoPlayerView
                                 boolean isTrailer,
                                 String parentScreenName,
                                 VideoPlayerView videoPlayerView,
-                                String mStreamId) {
+                                String mStreamId,
+                                boolean isLiveStream) {
             this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
             this.appCMSPresenter = appCMSPresenter;
             this.filmId = filmId;
@@ -962,6 +1009,7 @@ public class CustomVideoPlayerView
             this.videoPlayerView = videoPlayerView;
             this.isTrailer = isTrailer;
             this.mStreamId = mStreamId;
+            this.isLiveStream = isLiveStream;
         }
 
         @Override
@@ -993,7 +1041,7 @@ public class CustomVideoPlayerView
                                     0,
                                     false);
 
-                            if (!isTrailer && videoPlayerView != null) {
+                            if (!isTrailer && videoPlayerView != null && !isLiveStream) {
                                 appCMSPresenter.updateWatchedTime(filmId,
                                         videoPlayerView.getCurrentPosition() / 1000);
                             }
@@ -1068,6 +1116,57 @@ public class CustomVideoPlayerView
                     Log.e(TAG, "beaconBufferingThread sleep interrupted");
                 }
             }
+        }
+    }
+    LinearLayout headerTitleContaineer;
+    TextView titleView;
+    private void createTitleView(){
+        headerTitleContaineer = new LinearLayout(getContext());
+        FrameLayout.LayoutParams containeerParam = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT , Utils.getViewYAxisAsPerScreen(mContext , 100));
+        containeerParam.gravity = Gravity.TOP;
+
+        headerTitleContaineer.setLayoutParams(containeerParam);
+        headerTitleContaineer.setGravity(Gravity.CENTER_VERTICAL);
+        headerTitleContaineer.setBackgroundColor(getResources().getColor(R.color.appcms_shadow_color));
+
+        titleView = new TextView(getContext());
+        LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT ,LinearLayout.LayoutParams.WRAP_CONTENT);
+        textViewParams.leftMargin = 45;
+        titleView.setLayoutParams(textViewParams);
+        titleView.setSingleLine(true);
+        titleView.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+        titleView.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        titleView.setTextColor(Color.parseColor(Utils.getTextColor(getContext() , appCMSPresenter)));
+        titleView.setTextSize(24);
+        headerTitleContaineer.addView(titleView);
+        addView(headerTitleContaineer);
+        headerTitleContaineer.setVisibility(View.INVISIBLE);
+    }
+
+    private void setTitle(){
+        if(null != titleView){
+            titleView.setText(contentDatum.getGist().getTitle());
+        }
+
+    }
+
+    private void exitFullScreenPlayer(){
+        getPlayerView().hideController();
+        getPlayerView().setUseController(false);
+        headerTitleContaineer.setVisibility(INVISIBLE);
+        new android.os.Handler().postDelayed(() -> {
+            appCMSPresenter.exitFullScreenTVPlayer();
+        },100);
+    }
+
+
+    @Override
+    public void onPlayerError(ExoPlaybackException e) {
+        super.onPlayerError(e);
+        String errorString = null;
+        if (e instanceof ExoPlaybackException) {
+            errorString = e.getCause().toString();
+            setUri(Uri.parse(lastUrl), null);
         }
     }
 

@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +18,11 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.main.Metadata;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.activity.AppCmsHomeActivity;
 
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -229,6 +228,12 @@ public class TVCollectionGridItemView extends TVBaseView {
                             clickable[0] = false;
                             new android.os.Handler().postDelayed(() -> clickable[0] = true, 3000);
                             return true;
+                        } else if(event.getAction() == KeyEvent.ACTION_DOWN
+                                && keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+                            ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall).setFocusable(false);
+                        }else if(event.getAction() == KeyEvent.ACTION_DOWN
+                                && keyCode == KeyEvent.KEYCODE_DPAD_UP) {
+                            ((AppCmsHomeActivity) context).findViewById(R.id.appcms_removeall).setFocusable(true);
                         }
                         return false;
                     });
@@ -333,22 +338,19 @@ public class TVCollectionGridItemView extends TVBaseView {
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_SUBTITLE_LABEL) {
 
-                    Metadata metadata = appCMSPresenter.getAppCMSMain().getBrand().getMetadata();
-                    metadata = new Metadata();
-                    metadata.setDisplayPublishedDate(true);
-                    metadata.setDisplayAuthor(true);
-                    metadata.setDisplayDuration(true);
                     StringBuilder stringBuilder = new StringBuilder();
 
-
-                    if (metadata.isDisplayDuration()){
+                    if (data.getGist() != null) {
                         stringBuilder.append(Utils.convertSecondsToTime(data.getGist().getRuntime()));
                     }
-                    if (metadata.isDisplayAuthor()){
+
+                    if (data.getContentDetails() != null
+                            && data.getContentDetails().getAuthor() != null) {
                         if (stringBuilder.length() > 0) stringBuilder.append(" | ");
-                        stringBuilder.append("by John Smith");
+                        stringBuilder.append(data.getContentDetails().getAuthor());
                     }
-                    if (metadata.isDisplayPublishedDate()){
+
+                    if (data.getGist() != null) {
                         if (stringBuilder.length() > 0) stringBuilder.append(" | ");
                         Date publishedDate = new Date(data.getGist().getPublishDate());
                         SimpleDateFormat spf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
@@ -375,8 +377,6 @@ public class TVCollectionGridItemView extends TVBaseView {
                 ((ProgressBar) view).setProgress(0);
                 ((ProgressBar) view).setProgress(progress);
                 view.setFocusable(false);
-            } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_STARRATING_KEY) {
-
             }
             view.forceLayout();
         }

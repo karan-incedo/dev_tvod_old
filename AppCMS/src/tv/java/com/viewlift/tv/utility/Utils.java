@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +53,7 @@ public class Utils {
                                                        int marginTop) {
         //View browseContainerDoc = browseFragmentView.findViewById(R.id.browse_container_dock);
         View browseContainerDoc = browseFragmentView.findViewById(R.id.browse_frame);
-
+        Log.d("Utils.java", "BrowseFragment Margin Left = "+marginLeft + "marginTop = "+marginTop);
         if (null != browseContainerDoc) {
             browseContainerDoc.setBackgroundColor(Color.TRANSPARENT);
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) browseContainerDoc
@@ -354,6 +355,26 @@ public class Utils {
                 android.R.color.transparent
         )));
         return res;
+    }
+
+    public static StateListDrawable getGradientTrayBorder(Context context , String primaryHover, String secondaryHover){
+        StateListDrawable res = new StateListDrawable();
+        res.addState(new int[]{android.R.attr.state_focused}, getGradientDrawable(context, primaryHover, secondaryHover));
+        res.addState(new int[]{android.R.attr.state_pressed}, getGradientDrawable(context, primaryHover, secondaryHover));
+        res.addState(new int[]{android.R.attr.state_selected}, getGradientDrawable(context, primaryHover, secondaryHover));
+        res.addState(new int[]{}, new ColorDrawable(ContextCompat.getColor(
+                context,
+                android.R.color.transparent
+        )));
+        return res;
+    }
+
+    private static Drawable getGradientDrawable(Context context ,String primaryHover, String secondaryHover) {
+
+        LayerDrawable layerDrawable = (LayerDrawable) context.getResources().getDrawable(R.drawable.player_border);
+        GradientDrawable gradientDrawable = (GradientDrawable) layerDrawable.getDrawable(0);
+        gradientDrawable.setColors(new int[]{Color.parseColor(primaryHover), Color.parseColor(secondaryHover)});
+        return layerDrawable;
     }
 
     private static GradientDrawable getBorder(Context context , String borderColor , boolean isEditText , Component component , boolean isNormalState){
