@@ -107,6 +107,10 @@ public class ContentDatum implements Serializable {
     @Expose
     String parentalRating;
 
+    @SerializedName("showDetails")
+    @Expose
+    ShowDetails showDetails;
+
     public Gist getGist() {
         return gist;
     }
@@ -297,6 +301,15 @@ public class ContentDatum implements Serializable {
 
     public void setPlanDetails(List<PlanDetail> planDetails) {
         this.planDetails = planDetails;
+    }
+
+
+    public ShowDetails getShowDetails() {
+        return showDetails;
+    }
+
+    public void setShowDetails(ShowDetails showDetails) {
+        this.showDetails = showDetails;
     }
 
     public AppCMSPageAPI convertToAppCMSPageAPI(String moduleType) {
