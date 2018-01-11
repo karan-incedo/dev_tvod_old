@@ -521,6 +521,7 @@ public class AppCMSPresenter {
     private MetaPage loginPage;
     private MetaPage downloadQualityPage;
     private MetaPage homePage;
+    private MetaPage playlistPage;
     private MetaPage moviesPage;
     private MetaPage downloadPage;
     private MetaPage subscriptionPage;
@@ -4520,13 +4521,11 @@ public class AppCMSPresenter {
         if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_PAGE_LOADING_ACTION));
-            MetaPage playlistMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.PLAYLIST_PAGE);
-            AppCMSPageUI appCMSPageUI = navigationPages.get(playlistMetaPage.getPageId());
+            AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
 
-            getPlaylistPageContent(appCMSMain.getApiBaseUrl(), pageIdToPageAPIUrlMap.get(pageId),
+            getPlaylistPageContent(appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName(),
-                    true,
-                    getPageId(appCMSPageUI), new AppCMSPlaylistAPIAction(false,
+                    pageId, new AppCMSPlaylistAPIAction(false,
                             false,
                             false,
                             appCMSPageUI,
@@ -4637,9 +4636,9 @@ public class AppCMSPresenter {
         }
     }
 
-    private void getPlaylistPageContent(final String apiBaseUrl, String endPoint,
+    private void getPlaylistPageContent(final String apiBaseUrl,
                                         final String siteId,
-                                        boolean userPageIdQueryParam, String pageId,
+                                         String pageId,
                                         final AppCMSPlaylistAPIAction playlist) {
         if (currentActivity != null) {
             try {
@@ -4652,12 +4651,11 @@ public class AppCMSPresenter {
                         appCMSPlaylistCall.call(
                                 currentActivity.getString(R.string.app_cms_playlist_api_url,
                                         apiBaseUrl,
-                                        siteId,
-                                        pageId),
-                                getAuthToken(),
+                                        pageId,
+                                        siteId
+                                        ),
                                 playlist);
                     } catch (IOException e) {
-                        //Log.e(TAG, "getWatchlistPageContent: " + e.toString());
                     }
                 });
             } catch (Exception e) {
@@ -9596,7 +9594,7 @@ public class AppCMSPresenter {
                                 refreshAppCMSAndroid((appCMSAndroid) -> {
                                     if (appCMSAndroid != null) {
                                         for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
-                                            //Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+//                                            Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
 //                                                " " +
 //                                                metaPage.getPageId() +
 //                                                " " +
@@ -9945,6 +9943,11 @@ public class AppCMSPresenter {
                 downloadPage = metaPageList.get(downloadPageIndex);
                 new SoftReference<Object>(downloadPage, referenceQueue);
             }
+            int playlistPageIndex = getPlaylistPage(metaPageList);
+            if (playlistPageIndex >= 0) {
+                playlistPage = metaPageList.get(playlistPageIndex);
+                new SoftReference<Object>(playlistPage, referenceQueue);
+            }
 
             int homePageIndex = getHomePage(metaPageList);
             if (homePageIndex >= 0) {
@@ -10216,6 +10219,15 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
                     == AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    private int getPlaylistPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_PLAYLIST_KEY) {
                 return i;
             }
         }
