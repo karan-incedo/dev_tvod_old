@@ -20,13 +20,14 @@ import java.util.List;
 @UseStag
 public class AppCMSAudioDetailResult {
 
-    @SerializedName("gist")
-    @Expose
-    Gist gist;
 
-    public Gist getGist() {
-        return gist;
-    }
+    //    @SerializedName("gist")
+//    @Expose
+//    Gist gist;
+//
+//    public Gist getGist() {
+//        return gist;
+//    }
 //
 //    @SerializedName("creditBlocks")
 //    @Expose
@@ -52,9 +53,9 @@ public class AppCMSAudioDetailResult {
         StreamingInfo streamingInfo = getStreamingInfo();
         data.add(streamingInfo.convertToContentDatum());
 
-        ContentDatum contentDatum = new ContentDatum();
-        contentDatum.setGist(this.gist);
-        data.add(contentDatum);
+//        ContentDatum contentDatum = new ContentDatum();
+//        contentDatum.setGist(this.gist);
+//        data.add(contentDatum);
 //
 //        ContentDatum contentDatum1 = new ContentDatum();
 //        contentDatum1.setCreditBlocks(this.creditBlocks);
