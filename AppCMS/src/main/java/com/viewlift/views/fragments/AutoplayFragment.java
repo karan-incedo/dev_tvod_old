@@ -156,6 +156,8 @@ public class AutoplayFragment extends Fragment {
                 } else {
                     loadImageFromLocalSystem = false;
                     imageUrl = binder.getContentData().getGist().getPosterImageUrl();
+                    if(imageUrl == null)
+                     imageUrl = binder.getContentData().getGist().getVideoImageUrl();
                 }
             }
 
