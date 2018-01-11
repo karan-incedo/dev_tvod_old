@@ -126,10 +126,6 @@ public class AppCMSMain implements Serializable {
     @Expose
     PaymentProviders paymentProviders;
 
-    @SerializedName("templateName")
-    @Expose
-    String templateName;
-
     public CustomerService getCustomerService() {
         return customerService;
     }
@@ -141,6 +137,10 @@ public class AppCMSMain implements Serializable {
     @SerializedName("customerService")
     @Expose
     CustomerService customerService;
+
+    @SerializedName("templateName")
+    @Expose
+    String templateName;
 
     public String getId() {
         return id;
@@ -361,5 +361,4 @@ public class AppCMSMain implements Serializable {
     public void setTemplateName(String templateName) {
         this.templateName = templateName;
     }
-
 }

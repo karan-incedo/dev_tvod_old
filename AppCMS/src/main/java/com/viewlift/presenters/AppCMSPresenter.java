@@ -206,6 +206,7 @@ import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -290,6 +291,7 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY_ACTION;
+import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
 /*
  * Created by viewlift on 5/3/17.
@@ -306,6 +308,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
     public static final String PRESENTER_UPDATE_LISTS_ACTION = "appcms_presenter_update_lists_action";
     public static final String PRESENTER_REFRESH_PAGE_DATA_ACTION = "appcms_presenter_refresh_page_data_action";
+    public static final String SWITCH_SEASON_ACTION = "switch_season_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -525,7 +528,6 @@ public class AppCMSPresenter {
     private MetaPage privacyPolicyPage;
     private MetaPage tosPage;
     private PlatformType platformType;
-    private TemplateType templateType = TemplateType.SPORTS;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
     private LaunchType launchType;
     private IInAppBillingService inAppBillingService;
@@ -10747,6 +10749,10 @@ public class AppCMSPresenter {
                         break;
                 }
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                if (action.equalsIgnoreCase("lectureDetailPage")
+                        && contentDatum.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                    action = "showDetailPage";
+                }
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
 
                 String apiUrl = getApiUrl(false,
@@ -11106,6 +11112,13 @@ public class AppCMSPresenter {
                                                     }
                                                     //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                     if (!TextUtils.isEmpty(extraData[1])) {
+
+                                                        List<String> relatedVideoIds;
+                                                        if (relateVideoIds == null) {
+                                                            relatedVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
+                                                        } else {
+                                                            relatedVideoIds = relateVideoIds;
+                                                        }
                                                         launchTVButtonSelectedAction(contentDatum.getGist().getId(),
                                                                 action,
                                                                 appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
@@ -11113,7 +11126,7 @@ public class AppCMSPresenter {
                                                                 appCMSVideoDetail.getRecords().get(0),
                                                                 false,
                                                                 currentlyPlayingIndex,
-                                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                                                relatedVideoIds);
                                                     } else {
                                                         openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                                                 currentActivity.getString(R.string.app_name)),
@@ -11923,6 +11936,15 @@ public class AppCMSPresenter {
 
     public void setIsTeamPageVisible(boolean isVisible) {
         isTeamPAgeVisible = isVisible;
+    }
+
+    public void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
+        android.app.FragmentTransaction ft =
+                getCurrentActivity().getFragmentManager().beginTransaction();
+        SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
+                SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
+        switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
+
     }
 
     public enum LaunchType {

@@ -1159,5 +1159,4 @@ public class CustomTVVideoPlayerView
             setUri(Uri.parse(lastUrl), null);
         }
     }
-
 }
