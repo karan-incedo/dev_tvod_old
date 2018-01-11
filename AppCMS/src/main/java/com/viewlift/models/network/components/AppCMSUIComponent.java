@@ -3,6 +3,7 @@ package com.viewlift.models.network.components;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSFacebookLoginCall;
@@ -30,6 +31,9 @@ import dagger.Component;
 @Component(modules = {AppCMSUIModule.class})
 public interface AppCMSUIComponent {
     AppCMSPlaylistCall appCmsPlaylistCall();
+
+    AppCMSAudioDetailCall appCmsAudioDetailCall();
+
     AppCMSMainUICall appCMSMainCall();
 
     AppCMSAndroidUICall appCMSAndroidCall();
