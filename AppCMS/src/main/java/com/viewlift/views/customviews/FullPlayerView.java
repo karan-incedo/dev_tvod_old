@@ -1,16 +1,12 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
-import com.viewlift.R;
 import com.viewlift.presenters.AppCMSPresenter;
 
 /**
@@ -86,6 +82,7 @@ public class FullPlayerView extends RelativeLayout {
             appCMSPresenter.videoPlayerView.updateFullscreenButtonState(Configuration.ORIENTATION_LANDSCAPE);
             appCMSPresenter.videoPlayerView.getPlayerView().getController().show();
             setVisibility(VISIBLE);
+            appCMSPresenter.videoPlayerView.setClickable(true);
             addView(appCMSPresenter.videoPlayerView);
         }
     }

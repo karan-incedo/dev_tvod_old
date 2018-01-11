@@ -157,9 +157,9 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
         addCloseButton();
 
         appCMSPresenter.videoPlayerView.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        appCMSPresenter.videoPlayerView.setClickable(false);
         addView(appCMSPresenter.videoPlayerView);
         if (findViewById(relativeLayoutEventViewId) == null) {
-            relativeLayoutEvent.setBackgroundColor(Color.TRANSPARENT);
             addView(relativeLayoutEvent);
         }
 
@@ -226,6 +226,7 @@ public class MiniPlayerView extends RelativeLayout implements Animation.Animatio
 
     @Override
     public void onAnimationRepeat(Animation animation) {
+
     }
 
     public class OnSwipeTouchListener implements OnTouchListener {

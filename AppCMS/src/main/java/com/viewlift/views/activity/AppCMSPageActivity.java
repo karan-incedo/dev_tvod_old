@@ -1162,11 +1162,16 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (!appCMSPresenter.isMainFragmentTransparent()) {
                     appCMSPresenter.showMainFragmentView(true);
                 }
-                AppCMSBinder appCMSBinder = !appCMSBinderStack.isEmpty() ? appCMSBinderMap.get(appCMSBinderStack.peek()) : null;
+                AppCMSBinder appCMSBinder = !appCMSBinderStack.isEmpty() ?
+                        appCMSBinderMap.get(appCMSBinderStack.peek()) :
+                        null;
                 if (appCMSBinder != null) {
                     appCMSPresenter.pushActionInternalEvents(appCMSBinder.getPageId()
                             + BaseView.isLandscape(this));
-                    handleLaunchPageAction(appCMSBinder,true,false,false);
+                    handleLaunchPageAction(appCMSBinder,
+                            true,
+                            false,
+                            false);
                 }
             }
         }
@@ -2444,11 +2449,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public void dragMiniPlayer(MiniPlayerView relativeLayoutPIP) {
+    public void dragMiniPlayer(final MiniPlayerView relativeLayoutPIP) {
         relativeLayoutPIP.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 int action = event.getAction();
+                System.out.println("Touched  ...");
                 if (action == MotionEvent.ACTION_DOWN) {
                     downRawX = event.getRawX();
                     downRawY = event.getRawY();
