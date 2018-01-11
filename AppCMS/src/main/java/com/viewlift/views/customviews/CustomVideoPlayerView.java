@@ -1002,7 +1002,6 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                     if (appCMSPresenter.videoPlayerView == null) {
                         appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
                     }
-                    appCMSPresenter.isFullScreenVisible = true;
 
                     appCMSPresenter.restrictLandscapeOnly();
                     appCMSPresenter.showFullScreenPlayer();

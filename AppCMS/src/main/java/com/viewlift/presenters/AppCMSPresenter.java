@@ -2368,6 +2368,7 @@ public class AppCMSPresenter {
                                               boolean isRenewable,
                                               String getRenewableFrequency,
                                               boolean upgradesAvailable) {
+        //setSelectedSubscriptionPlan(false);
         if (currentActivity != null) {
             launchType = LaunchType.SUBSCRIBE;
             skuToPurchase = sku;
@@ -2558,6 +2559,7 @@ public class AppCMSPresenter {
                                         Toast.LENGTH_LONG);
                             }
                         } else {
+                            setSelectedSubscriptionPlan(true);
                             if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED) {
                                 showDialog(DialogType.SUBSCRIBE, "Billing response was cancelled by user", false, null, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE) {
@@ -2597,6 +2599,7 @@ public class AppCMSPresenter {
                 //Log.e(TAG, "InAppBillingService: " + inAppBillingService);
             }
         }
+       // setSelectedSubscriptionPlan(false);
     }
 
     @SuppressWarnings("unused")
@@ -4851,10 +4854,12 @@ public class AppCMSPresenter {
                     }
                 }
             } catch (RemoteException e) {
+
                 //Log.e(TAG, "Failed to purchase item with sku: "
 //                        + getActiveSubscriptionSku());
             }
         }
+      //  setSelectedSubscriptionPlan(false);
     }
 
     private boolean existingSubscriptionExpired(InAppPurchaseData inAppPurchaseData,
