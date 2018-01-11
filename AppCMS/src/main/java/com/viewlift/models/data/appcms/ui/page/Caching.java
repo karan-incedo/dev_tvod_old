@@ -37,7 +37,7 @@ public class Caching implements Serializable {
         long currentTime = new Date().getTime();
         /** Set the override caching value to 10 mins if the time to cache update has expired  */
         if (cachingOverrideTime < currentTime &&
-                CACHE_TIME_IN_MSEC <= cachingOverrideTime - currentTime) {
+                CACHE_TIME_IN_MSEC <= currentTime - cachingOverrideTime) {
             overrideCaching = false;
         }
         return currentOverrideCaching;

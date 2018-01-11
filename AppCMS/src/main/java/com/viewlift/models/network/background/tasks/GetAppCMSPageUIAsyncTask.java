@@ -1,5 +1,6 @@
 package com.viewlift.models.network.background.tasks;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.viewlift.models.data.appcms.ui.android.MetaPage;
@@ -126,6 +127,17 @@ public class GetAppCMSPageUIAsyncTask {
                     .observeOn(AndroidSchedulers.mainThread())
                     .onErrorResumeNext(throwable -> Observable.empty())
                     .subscribe((result) -> Observable.just(result).subscribe(readyAction));
+        }
+    }
+
+    public void writeToFile(AppCMSPageUI appCMSPageUI, String url) {
+        if (appCMSPageUI != null && !TextUtils.isEmpty(url)) {
+            Observable
+                    .fromCallable(() -> call.writeToFile(appCMSPageUI, url))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .onErrorResumeNext(throwable -> Observable.empty())
+                    .subscribe(result -> {});
         }
     }
 }

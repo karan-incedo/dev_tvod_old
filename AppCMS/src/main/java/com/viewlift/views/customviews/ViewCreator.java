@@ -1592,6 +1592,10 @@ public class ViewCreator {
                         pageView,
                         jsonValueKeyMap,
                         appCMSPresenter);
+
+                if (moduleAPI == null) {
+                    childView.setVisibility(View.GONE);
+                }
             }
         }
 

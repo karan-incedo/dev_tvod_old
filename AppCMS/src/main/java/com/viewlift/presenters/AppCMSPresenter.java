@@ -9724,6 +9724,7 @@ public class AppCMSPresenter {
                                                                     if (appCMSPageUI != null) {
                                                                         if (appCMSPageUI.getCaching() != null) {
                                                                             appCMSPageUI.getCaching().setOverrideCaching(true);
+                                                                            new GetAppCMSPageUIAsyncTask(appCMSPageUICall, null).writeToFile(appCMSPageUI, metaPage.getPageUI());
                                                                         }
                                                                         navigationPages.put(metaPage.getPageId(), appCMSPageUI);
 

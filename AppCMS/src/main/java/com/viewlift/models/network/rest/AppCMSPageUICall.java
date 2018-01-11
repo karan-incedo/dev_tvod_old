@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,6 +41,19 @@ public class AppCMSPageUICall {
         this.appCMSPageUIRest = appCMSPageUIRest;
         this.gson = gson;
         this.storageDirectory = storageDirectory;
+    }
+
+    @WorkerThread
+    public boolean writeToFile(AppCMSPageUI appCMSPageUI, String url) {
+        String filename = getResourceFilename(url);
+        try {
+            writePageToFile(filename, appCMSPageUI);
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to write AppCMSPageUI file: " +
+                    url);
+        }
+        return false;
     }
 
     @WorkerThread
