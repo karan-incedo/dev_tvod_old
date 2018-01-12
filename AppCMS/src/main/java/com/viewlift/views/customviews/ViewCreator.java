@@ -39,6 +39,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.Target;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -86,6 +87,8 @@ import java.util.List;
 import java.util.Map;
 
 import rx.functions.Action1;
+
+import static com.viewlift.Utils.loadJsonFromAssets;
 
 /*
  * Created by viewlift on 5/5/17.
@@ -219,7 +222,7 @@ public class ViewCreator {
         return color1;
     }
 
-	 public void setIgnoreBinderUpdate(boolean ignoreBinderUpdate) {
+    public void setIgnoreBinderUpdate(boolean ignoreBinderUpdate) {
         this.ignoreBinderUpdate = ignoreBinderUpdate;
     }
 
@@ -348,7 +351,7 @@ public class ViewCreator {
                                             videoPlayerViewSingle = playerView(context, videoId, moduleAPI.getId() + component.getKey(), appCMSPresenter);
                                             ((FrameLayout) view).addView(videoPlayerViewSingle);
                                         }
-                                        appCMSPresenter.videoPlayerView=videoPlayerViewSingle;
+                                        appCMSPresenter.videoPlayerView = videoPlayerViewSingle;
                                         videoPlayerViewSingle.checkVideoStatus();
                                         appCMSPresenter.setVideoPlayerViewCache(moduleAPI.getId() + component.getKey(), videoPlayerViewSingle);
                                         (view).setId(R.id.video_player_id);
@@ -1164,7 +1167,14 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                if (moduleInfo.getBlockName().contains("playlistDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "playlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else {
+                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                }
             } catch (Exception e) {
 
             }
@@ -1184,7 +1194,7 @@ public class ViewCreator {
             if (appCMSPageAPI != null && createModule && appCMSPresenter.isViewPlanPage(appCMSPageAPI.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY )) {
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY)) {
                 createModule = false;
             }
 
@@ -1630,8 +1640,7 @@ public class ViewCreator {
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.VERTICAL,
                                     false));
-
-
+                        moduleAPI.getContentData().remove(0);
                     AppCMSPlaylistAdapter appCMSPlaylistAdapter = new AppCMSPlaylistAdapter(context,
                             this,
                             appCMSPresenter,
@@ -2595,6 +2604,67 @@ public class ViewCreator {
                     componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
                 }
 
+                if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_TITLE) {
+
+                    int textFontColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                    if (!TextUtils.isEmpty(component.getTextColor())) {
+                        textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
+                    }
+                    ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
+                    ((TextView) componentViewResult.componentView).setGravity(Gravity.START);
+
+                    if (!TextUtils.isEmpty(component.getFontFamily())) {
+                        setTypeFace(context,
+                                appCMSPresenter,
+                                jsonValueKeyMap,
+                                component,
+                                (TextView) componentViewResult.componentView);
+                    }
+
+                    if (component.getFontSize() > 0) {
+                        ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                    } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
+                        ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
+                    }
+                    if (moduleAPI != null
+                            && moduleAPI.getContentData() != null
+                            && moduleAPI.getContentData().get(0) != null
+                            && moduleAPI.getContentData().get(0).getAudioGist() != null
+                            && moduleAPI.getContentData().get(0).getAudioGist().getTitle() != null
+                            ) {
+                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getAudioGist().getTitle());
+                    }
+                }
+                if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_SUB_TITLE) {
+
+                    int textFontColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+                    if (!TextUtils.isEmpty(component.getTextColor())) {
+                        textFontColor = Color.parseColor(getColor(context, component.getTextColor()));
+                    }
+                    ((TextView) componentViewResult.componentView).setTextColor(textFontColor);
+                    ((TextView) componentViewResult.componentView).setGravity(Gravity.START);
+
+                    if (!TextUtils.isEmpty(component.getFontFamily())) {
+                        setTypeFace(context,
+                                appCMSPresenter,
+                                jsonValueKeyMap,
+                                component,
+                                (TextView) componentViewResult.componentView);
+                    }
+
+                    if (component.getFontSize() > 0) {
+                        ((TextView) componentViewResult.componentView).setTextSize(component.getFontSize());
+                    } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
+                        ((TextView) componentViewResult.componentView).setTextSize(BaseView.getFontSize(context, component.getLayout()));
+                    }
+                    if (moduleAPI != null
+                            && moduleAPI.getContentData() != null
+                            && moduleAPI.getContentData().get(0) != null
+                            && moduleAPI.getContentData().get(0).getAudioList() != null
+                            ) {
+                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getAudioList().size() + " SONGS");
+                    }
+                }
                 if (componentKey == AppCMSUIKeyType.PAGE_BANNER_DETAIL_TITLE) {
                     int textBgColor = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
 
@@ -3590,6 +3660,7 @@ public class ViewCreator {
             if (jsonValueKeyMap.get(module.getView()) != null) {
                 switch (jsonValueKeyMap.get(module.getView())) {
                     case PAGE_HISTORY_MODULE_KEY:
+                    case PAGE_PLAYLIST_MODULE_KEY:
                     case PAGE_WATCHLIST_MODULE_KEY:
                     case PAGE_AUTOPLAY_MODULE_KEY_01:
                     case PAGE_AUTOPLAY_MODULE_KEY_02:
