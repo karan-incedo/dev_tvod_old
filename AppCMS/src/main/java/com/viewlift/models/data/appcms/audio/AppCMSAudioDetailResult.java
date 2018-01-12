@@ -9,9 +9,8 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
-import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.playlist.AudioList;
+import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
@@ -21,21 +20,21 @@ import java.util.List;
 public class AppCMSAudioDetailResult {
 
 
-    //    @SerializedName("gist")
-//    @Expose
-//    Gist gist;
-//
-//    public Gist getGist() {
-//        return gist;
-//    }
-//
-//    @SerializedName("creditBlocks")
-//    @Expose
-//    List<CreditBlock> creditBlocks;
-//
-//    public List<CreditBlock> getCreditBlocks() {
-//        return creditBlocks;
-//    }
+    @SerializedName("gist")
+    @Expose
+    AudioGist gist;
+
+    public AudioGist getGist() {
+        return gist;
+    }
+
+    @SerializedName("creditBlocks")
+    @Expose
+    List<CreditBlock> creditBlocks;
+
+    public List<CreditBlock> getCreditBlocks() {
+        return creditBlocks;
+    }
 
     @SerializedName("streamingInfo")
     @Expose
@@ -50,16 +49,11 @@ public class AppCMSAudioDetailResult {
         Module module = new Module();
         List<ContentDatum> data = new ArrayList<>();
 
-        StreamingInfo streamingInfo = getStreamingInfo();
-        data.add(streamingInfo.convertToContentDatum());
-
-//        ContentDatum contentDatum = new ContentDatum();
-//        contentDatum.setGist(this.gist);
-//        data.add(contentDatum);
-//
-//        ContentDatum contentDatum1 = new ContentDatum();
-//        contentDatum1.setCreditBlocks(this.creditBlocks);
-//        data.add(contentDatum1);
+        ContentDatum contentDatum = new ContentDatum();
+        contentDatum.setStreamingInfo(this.streamingInfo);
+        contentDatum.setAudioGist(this.gist);
+        contentDatum.setCreditBlocks(this.creditBlocks);
+        data.add(contentDatum);
 
         module.setContentData(data);
         appCMSPageAPI.setId(Id);
