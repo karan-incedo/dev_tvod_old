@@ -240,6 +240,13 @@ public class CollectionGridItemView extends BaseView {
                           int themeColor,
                           AppCMSPresenter appCMSPresenter) {
         final Component childComponent = matchComponentToView(view);
+
+        AppCMSUIKeyType moduleType = jsonValueKeyMap.get(componentViewType);
+
+        if (moduleType == null) {
+            moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
         if (childComponent != null) {
             boolean bringToFront = true;
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
@@ -394,6 +401,11 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                         view.setVisibility(GONE);
                         bringToFront = false;
+                    }
+
+                    if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                        view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                                childComponent, data));
                     }
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {

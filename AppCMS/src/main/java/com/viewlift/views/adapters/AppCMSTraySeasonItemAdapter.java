@@ -344,30 +344,6 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                 if (relatedVideoIds == null) {
                     currentPlayingIndex = 0;
                 }
-
-                if (data.getGist() == null ||
-                        data.getGist().getContentType() == null) {
-                    if (!appCMSPresenter.launchVideoPlayer(data,
-                            data.getGist().getId(),
-                            currentPlayingIndex,
-                            relatedVideoIds,
-                            -1,
-                            action)) {
-                    }
-                } else {
-                    AppCMSActionPresenter actionPresenter = new AppCMSActionPresenter();
-                    actionPresenter.setAction(action);
-
-                    if (!appCMSPresenter.launchButtonSelectedAction(permalink,
-                            actionPresenter,
-                            title,
-                            null,
-                            data,
-                            false,
-                            currentPlayingIndex,
-                            relatedVideoIds)) {
-                    }
-                }
             }
         });
 
