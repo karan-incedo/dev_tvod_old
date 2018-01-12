@@ -748,12 +748,4 @@ public class Utils {
         return timeInString.toString();
     }
 
-    public static void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder, AppCMSPresenter appCMSPresenter) {
-        android.app.FragmentTransaction ft =
-                appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
-        SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
-                SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
-        switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
-
-    }
 }

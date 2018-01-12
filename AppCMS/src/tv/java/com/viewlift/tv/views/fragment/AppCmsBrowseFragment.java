@@ -121,7 +121,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                if (rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                if (null != rowData.contentData.getGist().getContentType() &&
+                        rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
                     appCMSPresenter.launchButtonSelectedAction(rowData.contentData.getGist().getPermalink(),
                             "showDetailPage",
                             rowData.contentData.getGist().getTitle(),
@@ -177,10 +178,14 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 }
                 ContentDatum data = rowData.contentData;
 
-                String action = /*"play"*/rowData.action;
+                String action = rowData.action;
                 if (action.equalsIgnoreCase(getString(R.string.app_cms_action_watchvideo_key))) {
                     pushedPlayKey();
                 } else {
+                    if (null != rowData.contentData.getGist().getContentType() &&
+                            rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")){
+                        action = "showDetailPage";
+                    }
                     String permalink = data.getGist().getPermalink();
                     String title = data.getGist().getTitle();
                     String hlsUrl = getHlsUrl(data);

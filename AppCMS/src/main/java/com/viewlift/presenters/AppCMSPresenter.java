@@ -4382,7 +4382,7 @@ public class AppCMSPresenter {
                                         if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
                                                 jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
                                                 jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03)) {
-                                            pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(pageId,
+                                            pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(autoplayPageId,
                                                     moduleList.getType());
                                             break;
                                         }
@@ -4427,6 +4427,7 @@ public class AppCMSPresenter {
                     pageAPI = binder.getContentData().convertToAppCMSPageAPI(
                             currentActivity.getString(R.string.app_cms_page_autoplay_module_key_03));
                 }
+                final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
                 if (pageAPI != null) {
                     launchAutoplayActivity(currentActivity,

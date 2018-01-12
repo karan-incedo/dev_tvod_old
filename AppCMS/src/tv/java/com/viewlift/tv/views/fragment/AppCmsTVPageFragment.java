@@ -109,7 +109,7 @@ public class AppCmsTVPageFragment extends Fragment {
                 browseFragment.setmRowsAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment, browseFragment, mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
             } else {
-               refreshBrowseFragment();
+               //refreshBrowseFragment();
             }
         }
         return tvPageView;

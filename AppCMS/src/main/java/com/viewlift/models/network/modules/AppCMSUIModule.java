@@ -580,9 +580,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_landscape_module_key_01),
-                AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_portrait_module_key_01),
-                AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_module_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY);
 

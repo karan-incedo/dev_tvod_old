@@ -514,6 +514,7 @@ public class TVViewCreator {
                             for (int j = i + 1; j < episodes.size(); j++) {
                                 ContentDatum contentDatum = episodes.get(j);
                                 relatedVids.add(contentDatum.getGist().getId());
+
                             }
                             ContentDatum contentDatum = episodes.get(i);
                             contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
@@ -2303,7 +2304,9 @@ public class TVViewCreator {
             if (module != null && (jsonValueKeyMap.get(module.getView())
                     == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01 ||
                     jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03 )) {
+                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03  ||
+                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY  ||
+                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY )) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }
