@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 apply plugin: 'realm-android'
+apply plugin: 'kotlin-kapt'
 
 def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
@@ -10,9 +12,11 @@ def final hostNameSuffix = "*.hoichoi.tv"
 def final appVersionName = "2.1.54"
 
 buildscript {
+    ext.kotlin_version = '1.2.10'
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         google()
+        mavenCentral()
     }
 
     dependencies {
@@ -22,6 +26,7 @@ buildscript {
         // We recommend changing it to the latest version from our changelog:
         // https://docs.fabric.io/android/changelog.html#fabric-gradle-plugin
         classpath 'io.fabric.tools:gradle:1.+'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -29,7 +34,10 @@ apply plugin: 'io.fabric'
 repositories {
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
+    maven { url 'https://raw.github.com/Raizlabs/maven-releases/master/releases' }
+    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
     google()
+    mavenCentral()
 }
 
 android {
@@ -246,20 +254,20 @@ dependencies {
     }
     mobileCompile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
-    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
+    kapt "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
     compile("com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
         exclude group: 'com.android.support', module: 'customtabs'
     })
     compile "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
-    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
     compile("com.android.support:mediarouter-v7:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
-    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
+    kapt "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
     tvCompile project(path: ':firetvcustomkeyboard')
@@ -268,16 +276,28 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     compile "com.jakewharton.threetenabp:threetenabp:$rootProject.ext.threetenBpVersion"
-    compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
     compile "org.jsoup:jsoup:$rootProject.ext.jsoupVersion"
     mobileCompile "com.facebook.fresco:fresco:$rootProject.ext.frescoVersion"
-    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile project(':exoplayer-library')
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
 
     compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
+
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version", {
+        exclude group: 'org.jetbrains', module: 'annotations'
+    })
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+kapt {
+    generateStubs = true
+    correctErrorTypes = true
+    arguments {
+        arg("stagDebug", "true")
+        arg("stagGeneratedPackageName", "com.vimeo.sample_kotlin.stag.generated")
+        arg("stagAssumeHungarianNotation", "false")
+    }
+}
