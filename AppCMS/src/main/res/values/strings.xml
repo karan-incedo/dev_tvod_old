@@ -567,6 +567,15 @@
 
     <string name="audio_fragment_tag_key">audio_fragment</string>
     <string name="media_type_playlist">PLAYLIST</string>
+
+
+    <!-- Notificaiton Channel -->
+    <string name="notification_channel">UAMP_Channel_ID</string>
+    <string name="notification_channel_description">Channel ID for UAMP</string>
+    <string name="label_pause">Pause</string>
+    <string name="label_play">Play</string>
+    <string name="label_previous">Previous</string>
+    <string name="label_next">Next</string>
 </resources>
 
 
