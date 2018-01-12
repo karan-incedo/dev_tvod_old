@@ -17,6 +17,8 @@ package com.viewlift.Audio.playback;
 
 import android.support.v4.media.MediaMetadataCompat;
 
+import com.google.android.exoplayer2.SimpleExoPlayer;
+
 
 /**
  * Interface representing either Local or Remote Playback. The {@link } works
@@ -89,7 +91,7 @@ public interface Playback {
          * Implementations can use this callback to update
          * playback state on the media sessions.
          */
-        void onPlaybackStatusChanged(int state);
+        void onPlaybackStatusChanged(int state, SimpleExoPlayer mExoPlayer);
 
         /**
          * @param error to be added to the PlaybackState

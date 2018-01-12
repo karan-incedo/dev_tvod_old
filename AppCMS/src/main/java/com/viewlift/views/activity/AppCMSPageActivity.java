@@ -1956,9 +1956,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             return;
                         }
                         selectNavItem(navigationTabTag.getPageId());
-                        MediaBrowserCompat.MediaItem item = MusicLibrary.getMediaItems().get(0);
-                        PlaybackManager.setCurrentMediaData(MusicLibrary.getMetadata(this,item.getMediaId()));
-                        MusicLibrary.onMediaItemSelected(item);
                         selectNavItem((NavBarItemView) v);
                         appCMSPresenter.showMainFragmentView(true);
                         if (navigationTabTag.getPageId().equals("Menu Screen")) {

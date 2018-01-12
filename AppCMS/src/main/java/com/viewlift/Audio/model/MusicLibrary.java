@@ -94,29 +94,9 @@ public class MusicLibrary {
     }
 
     public static MediaMetadataCompat getMetadata(Context ctx, String mediaId) {
-        MediaMetadataCompat metadataWithoutBitmap = music.get(mediaId);
-        Bitmap albumArt = getAlbumBitmap(ctx, mediaId);
+        MediaMetadataCompat metaDataForMediaId = music.get(mediaId);
 
-        // Since MediaMetadataCompat is immutable, we need to create a copy to set the album art.
-        // We don't set it initially on all items so that they don't take unnecessary memory.
-        MediaMetadataCompat.Builder builder = new MediaMetadataCompat.Builder();
-        for (String key :
-                new String[]{
-                        MediaMetadataCompat.METADATA_KEY_MEDIA_ID,
-                        MediaMetadataCompat.METADATA_KEY_ALBUM,
-                        MediaMetadataCompat.METADATA_KEY_ARTIST,
-                        MediaMetadataCompat.METADATA_KEY_GENRE,
-                        MediaMetadataCompat.METADATA_KEY_TITLE,
-                        CUSTOM_METADATA_TRACK_SOURCE,
-
-                }) {
-            builder.putString(key, metadataWithoutBitmap.getString(key));
-        }
-        builder.putLong(
-                MediaMetadataCompat.METADATA_KEY_DURATION,
-                metadataWithoutBitmap.getLong(MediaMetadataCompat.METADATA_KEY_DURATION));
-        builder.putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, albumArt);
-        return builder.build();
+        return metaDataForMediaId;
     }
 
     public static void createMediaMetadataCompat(

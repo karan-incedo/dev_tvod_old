@@ -83,7 +83,7 @@ public final class LocalPlayback implements Playback {
     private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
 
     // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
-    private boolean mExoPlayerNullIsStopped =  false;
+    private boolean mExoPlayerNullIsStopped = false;
     private MetadataUpdateListener mListener;
 
     private final IntentFilter mAudioNoisyIntentFilter =
@@ -192,7 +192,7 @@ public final class LocalPlayback implements Playback {
 
         if (mediaHasChanged || mExoPlayer == null) {
             releaseResources(false); // release everything except the player
-            MediaMetadataCompat track =item;
+            MediaMetadataCompat track = item;
 
 
             String source = track.getString(MusicLibrary.CUSTOM_METADATA_TRACK_SOURCE);
@@ -218,21 +218,7 @@ public final class LocalPlayback implements Playback {
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
 
-            // Produces DataSource instances through which media data is loaded.
-            DataSource.Factory dataSourceFactory =
-                    new DefaultDataSourceFactory(
-                            mContext, Util.getUserAgent(mContext, "uamp"), null);
-            // Produces Extractor instances for parsing the media data.
-            ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-            // The MediaSource represents the media to be played.
-            MediaSource mediaSource =
-                    new ExtractorMediaSource(
-                            Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
-
-            // Prepares media to play (happens on background thread) and triggers
-            // {@code onPlayerStateChanged} callback when the stream is ready to play.
-            mExoPlayer.prepare(mediaSource);
-
+            setUri(source);
             // If we are streaming from the internet, we want to hold a
             // Wifi lock, which prevents the Wifi radio from going to
             // sleep while the song is playing.
@@ -240,6 +226,23 @@ public final class LocalPlayback implements Playback {
         }
 
         configurePlayerState();
+    }
+
+    private void setUri(String source){
+        // Produces DataSource instances through which media data is loaded.
+        DataSource.Factory dataSourceFactory =
+                new DefaultDataSourceFactory(
+                        mContext, Util.getUserAgent(mContext, "uamp"), null);
+        // Produces Extractor instances for parsing the media data.
+        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+        // The MediaSource represents the media to be played.
+        MediaSource mediaSource =
+                new ExtractorMediaSource(
+                        Uri.parse(source), dataSourceFactory, extractorsFactory, null, null);
+
+        // Prepares media to play (happens on background thread) and triggers
+        // {@code onPlayerStateChanged} callback when the stream is ready to play.
+        mExoPlayer.prepare(mediaSource);
     }
 
     @Override
@@ -416,7 +419,8 @@ public final class LocalPlayback implements Playback {
                 case ExoPlayer.STATE_BUFFERING:
                 case ExoPlayer.STATE_READY:
                     if (mCallback != null) {
-                        mCallback.onPlaybackStatusChanged(getState());
+                        mCallback.onPlaybackStatusChanged(getState(), mExoPlayer);
+
                     }
                     break;
                 case ExoPlayer.STATE_ENDED:
@@ -444,7 +448,10 @@ public final class LocalPlayback implements Playback {
                 default:
                     what = "Unknown: " + error;
             }
-
+            long mCurrentPlayerPosition = mExoPlayer.getCurrentPosition();
+            MediaMetadataCompat track = AudioPlaylistHelper.getMetadata(mCurrentMediaId);
+            String source = track.getString(MusicLibrary.CUSTOM_METADATA_TRACK_SOURCE);
+            setUri(source);
             if (mCallback != null) {
                 mCallback.onError("ExoPlayer error " + what);
             }
@@ -454,7 +461,6 @@ public final class LocalPlayback implements Playback {
         public void onPositionDiscontinuity(int reason) {
 
         }
-
 
 
         @Override
@@ -477,6 +483,7 @@ public final class LocalPlayback implements Playback {
 
         }
     }
+
     public interface MetadataUpdateListener {
         void onMetadataChanged(MediaMetadataCompat metadata);
 

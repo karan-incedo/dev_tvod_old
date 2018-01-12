@@ -23,12 +23,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
-import com.viewlift.Audio.model.MusicLibrary;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 
 
 /**
@@ -168,16 +167,16 @@ public class PlaybackManager implements Playback.Callback {
     public void onCompletion() {
         {
 
-            MediaBrowserCompat.MediaItem item = MusicLibrary.getMediaItems().get(1);
-            PlaybackManager.setCurrentMediaData(MusicLibrary.getMetadata(mContext,item.getMediaId()));
-            MusicLibrary.onMediaItemSelected(item);
+//            MediaBrowserCompat.MediaItem item = MusicLibrary.getMediaItems().get(1);
+//            PlaybackManager.setCurrentMediaData(MusicLibrary.getMetadata(mContext,item.getMediaId()));
+//            MusicLibrary.onMediaItemSelected(item);
             // If skipping was not possible, we stop and release the resources:
-//            handleStopRequest(null);
+            handleStopRequest(null);
         }
     }
 
     @Override
-    public void onPlaybackStatusChanged(int state) {
+    public void onPlaybackStatusChanged(int state, SimpleExoPlayer mExoPlayer) {
         updatePlaybackState(null);
     }
 

@@ -85,6 +85,9 @@ import com.kiswe.kmsdkcorekit.reports.Report;
 import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
 import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Audio.model.MusicLibrary;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
+import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -4500,8 +4503,12 @@ public class AppCMSPresenter {
                                 + BaseView.isLandscape(currentActivity));
                         AppCMSPageAPI pageAPI;
                         if (appCMSAudioDetailResult != null) {
-                            pageAPI = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
-                            navigationPageData.put(this.pageId, pageAPI);
+                            AudioPlaylistHelper mAudioPlaylist= new AudioPlaylistHelper().getAudioPlaylistHelperInstance(AppCMSPresenter.this);
+                            mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+                            PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
+                            mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()));
+//                            pageAPI = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
+//                            navigationPageData.put(this.pageId, pageAPI);
 
                         } else {
                             Toast.makeText(currentContext, "Unable to fetch data", Toast.LENGTH_SHORT).show();

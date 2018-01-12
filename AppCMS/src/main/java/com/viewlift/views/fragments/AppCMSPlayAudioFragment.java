@@ -230,6 +230,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         MediaControllerCompat.setMediaController(getActivity(), mediaController);
         mediaController.registerCallback(mCallback);
         PlaybackStateCompat state = mediaController.getPlaybackState();
+
         updatePlaybackState(state);
         MediaMetadataCompat metadata = mediaController.getMetadata();
         if (metadata != null) {
