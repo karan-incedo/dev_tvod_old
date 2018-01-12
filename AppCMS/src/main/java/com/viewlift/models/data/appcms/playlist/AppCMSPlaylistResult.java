@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.audio.AudioGist;
 import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
@@ -16,9 +17,22 @@ import java.util.List;
 
 @UseStag
 public class AppCMSPlaylistResult {
-//    @SerializedName("id")
-//    @Expose
-//    int id;
+    @SerializedName("id")
+    @Expose
+    String id;
+
+
+    @SerializedName("gist")
+    @Expose
+    AudioGist gist;
+
+    public AudioGist getGist() {
+        return gist;
+    }
+
+    public void setGist(AudioGist gist) {
+        this.gist = gist;
+    }
 
     @SerializedName("audioList")
     @Expose
@@ -29,20 +43,17 @@ public class AppCMSPlaylistResult {
         return audioList;
     }
 
-//    public int getId() {
-//        return id;
-//    }
-
     public AppCMSPageAPI convertToAppCMSPageAPI(String Id) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
         List<ContentDatum> data = new ArrayList<>();
 
         ContentDatum contentDatum = new ContentDatum();
-        if (getAudioList() != null) {
-            contentDatum.setAudioList(this.getAudioList());
-            data.add(contentDatum);
-        }
+        contentDatum.setAudioList(this.audioList);
+        contentDatum.setAudioGist(this.gist);
+        contentDatum.setId(this.id);
+
+        data.add(contentDatum);
         module.setContentData(data);
         appCMSPageAPI.setId(Id);
         List<Module> moduleList = new ArrayList<>();
