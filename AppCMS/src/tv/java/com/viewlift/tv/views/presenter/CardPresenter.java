@@ -237,10 +237,18 @@ public class CardPresenter extends Presenter {
 
                                     imageView.setLayoutParams(bedgeParams);
 
-                                    String imageUrl = contentData.getGist().getBadgeImages()
-                                            .get_16x9() + "?impolicy=resize" +
-                                            "&w=" + badgeItemWidth +
-                                            "&h=" + badgeItemHeight;
+                                    String imageUrl;
+                                    if (badgeItemWidth > badgeItemHeight) {
+                                        imageUrl = contentData.getGist().getBadgeImages()
+                                                .get_16x9() + "?impolicy=resize" +
+                                                "&w=" + badgeItemWidth +
+                                                "&h=" + badgeItemHeight;
+                                    } else {
+                                        imageUrl = contentData.getGist().getBadgeImages()
+                                                .get_3x4() + "?impolicy=resize" +
+                                                "&w=" + badgeItemWidth +
+                                                "&h=" + badgeItemHeight;
+                                    }
                                     Glide.with(mContext)
                                             .load(imageUrl)
                                             .diskCacheStrategy(DiskCacheStrategy.SOURCE)
