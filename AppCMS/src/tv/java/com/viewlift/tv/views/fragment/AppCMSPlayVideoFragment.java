@@ -339,7 +339,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         }
                         if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
                             // tell the activity that the movie is finished
-                            onClosePlayerEvent.onMovieFinished();
+                            if (appCMSPresenter.isUserLoggedIn()
+                                    && appCMSPresenter.isUserSubscribed()) {
+                                onClosePlayerEvent.onMovieFinished();
+                            }
                         }
                         break;
                     default:
