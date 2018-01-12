@@ -208,6 +208,7 @@
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
     <string name="app_cms_page_watchlist_module_key2">AC Watchlist 02</string>
     <string name="app_cms_page_download_module_key">AC Downloads 01</string>
+    <string name="app_cms_page_playlist_module_key">AC PlaylistDetail 01</string>
     <string name="app_cms_page_download_module_key2">AC Downloads 02</string>
     <string name="app_cms_page_continue_watching_module_key">AC ContinueWatching 01</string>
     <string name="app_cms_user_management_download_settings_key">Download User Management</string>
@@ -560,5 +561,6 @@
     <string name="app_cms_action_playlistpage_key">Playlist Page</string>
     <!-- AppCMS Playlist API -->
     <string name="app_cms_playlist_api_url">%1$s/content/playlist?id=%2$s&amp;site=%3$s</string>
-
+    <!-- AppCMS Audio detail API -->
+    <string name="app_cms_audio_detail_api_url">%1$s/content/audio?site=%2$s&amp;id=%3$s</string>
 </resources>

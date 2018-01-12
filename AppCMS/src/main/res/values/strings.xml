@@ -567,6 +567,8 @@
 
     <string name="audio_fragment_tag_key">audio_fragment</string>
     <string name="media_type_playlist">PLAYLIST</string>
+    <string name="media_type_audio">AUDIO</string>
+    <string name="content_type_audio">AUDIO</string>
 
 
     <!-- Notificaiton Channel -->

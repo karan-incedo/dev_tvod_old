@@ -20,6 +20,8 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
+import com.viewlift.models.network.rest.AppCMSAudioDetailCall;
+import com.viewlift.models.network.rest.AppCMSAudioDetailRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
@@ -150,6 +152,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_SETTINGS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_action_playlistpage_key),
+                AppCMSUIKeyType.ANDROID_PLAYLIST_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_homescreen_key),
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_privacy_policy_key),
@@ -427,6 +431,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_module_key),
+                AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key2),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_continue_watching_module_key),
@@ -954,6 +960,11 @@ public class AppCMSUIModule {
     }
     @Provides
     @Singleton
+    public AppCMSAudioDetailRest providesAppCMSAudioDetailRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSAudioDetailRest.class);
+    }
+    @Provides
+    @Singleton
     public AppCMSHistoryRest providesAppCMSHistoryRest(Retrofit retrofit) {
         return retrofit.create(AppCMSHistoryRest.class);
     }
@@ -1130,6 +1141,11 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSPlaylistCall providesAppCMSPlaylistCall(AppCMSPlaylistRest appCMSPlaylistRest, Gson gson) {
         return new AppCMSPlaylistCall(appCMSPlaylistRest, gson);
+    }
+    @Provides
+    @Singleton
+    public AppCMSAudioDetailCall providesAppCMSAudioDetailCall(AppCMSAudioDetailRest appCMSAudioDetailRest, Gson gson) {
+        return new AppCMSAudioDetailCall(appCMSAudioDetailRest, gson);
     }
     @Provides
     @Singleton
