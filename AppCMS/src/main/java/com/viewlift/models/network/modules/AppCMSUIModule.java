@@ -732,6 +732,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.RAW_HTML_TITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_rawhtml_image_key),
                 AppCMSUIKeyType.RAW_HTML_IMAGE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_title_key),
+                AppCMSUIKeyType.PAGE_PLAYLIST_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_sub_title_key),
+                AppCMSUIKeyType.PAGE_PLAYLIST_SUB_TITLE);
     }
 
     private void createPageNameToActionMap(Context context) {
