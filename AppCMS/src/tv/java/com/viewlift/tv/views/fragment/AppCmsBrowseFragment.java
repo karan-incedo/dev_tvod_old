@@ -275,7 +275,11 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     private void showMoreContentIcon(){
         if(isPlayerComponentSelected && isFirstTime && mRowsAdapter != null && mRowsAdapter.size() > 1){
             isFirstTime = false;
-            getActivity().findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
+            if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                getActivity().findViewById(R.id.press_down_button).setVisibility(View.VISIBLE);
+            } else {
+                getActivity().findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
+            }
         }
         hideFooterControls();
     }

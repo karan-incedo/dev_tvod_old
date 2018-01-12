@@ -39,7 +39,19 @@ public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
     private Activity mContext;
     private BroadcastReceiver broadcastReceiver;
     private static int selectedSeasonIndex;
-    private SwitchSeasonsAdapter switchSeasonsAdapter;
+
+    public static int getSelectedSeasonIndex() {
+        return selectedSeasonIndex;
+    }
+
+    public static void setSelectedSeasonIndex(int selectedSeasonIndex) {
+        SwitchSeasonsDialogFragment.selectedSeasonIndex = selectedSeasonIndex;
+    }
+
+    public static SwitchSeasonsDialogFragment newInstance(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
+        mAppCMSSwitchSeasonBinder = appCMSSwitchSeasonBinder;
+        return new SwitchSeasonsDialogFragment();
+    }
 
     public SwitchSeasonsDialogFragment() {
         super();
@@ -109,14 +121,9 @@ public class SwitchSeasonsDialogFragment extends AbsDialogFragment {
         LinearLayoutManager layout = new LinearLayoutManager(mContext);
         layout.setOrientation(LinearLayoutManager.HORIZONTAL);
         rvSwitchSeasons.setLayoutManager(layout);
-        switchSeasonsAdapter = new SwitchSeasonsAdapter();
+        SwitchSeasonsAdapter switchSeasonsAdapter = new SwitchSeasonsAdapter();
         rvSwitchSeasons.setAdapter(switchSeasonsAdapter);
         return mView;
-    }
-
-    public static SwitchSeasonsDialogFragment newInstance(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder) {
-        mAppCMSSwitchSeasonBinder = appCMSSwitchSeasonBinder;
-        return new SwitchSeasonsDialogFragment();
     }
 
     private class SwitchSeasonsAdapter extends RecyclerView.Adapter<SwitchSeasonsViewHolder> {

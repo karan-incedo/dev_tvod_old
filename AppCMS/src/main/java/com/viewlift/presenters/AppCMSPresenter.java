@@ -206,7 +206,6 @@ import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
-import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -291,7 +290,6 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY_ACTION;
-import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
 /*
  * Created by viewlift on 5/3/17.
@@ -4359,13 +4357,12 @@ public class AppCMSPresenter {
      * @param binder    binder to share data
      * @param action1
      */
-    private void navigateToAutoplayPage(final String pageId,
-                                        final String pageTitle,
+    private void navigateToAutoplayPage(final String pageTitle,
                                         String url,
-                                        final AppCMSVideoPageBinder binder, Action1<Object> action1) {
+                                        final AppCMSVideoPageBinder binder,
+                                        Action1<Object> action1) {
 
         if (currentActivity != null) {
-            final AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 
             if (!binder.isOffline()) {
                 GetAppCMSVideoDetailAsyncTask.Params params =
@@ -4375,8 +4372,12 @@ public class AppCMSPresenter {
                         appCMSVideoDetail -> {
                             try {
                                 if (appCMSVideoDetail != null) {
-                                    binder.setContentData(appCMSVideoDetail.getRecords().get(0));
+                                    ContentDatum contentData = appCMSVideoDetail.getRecords().get(0);
+                                    contentData.setSeason(binder.getContentData().getSeason());
+                                    binder.setContentData(contentData);
                                     AppCMSPageAPI pageAPI = null;
+                                    String autoplayPageId = getAutoplayPageId(binder.getContentData().getGist().getMediaType());
+                                    final AppCMSPageUI appCMSPageUI = navigationPages.get(autoplayPageId);
                                     for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
                                         if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
                                                 jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
@@ -4390,9 +4391,9 @@ public class AppCMSPresenter {
                                         launchAutoplayActivity(currentActivity,
                                                 appCMSPageUI,
                                                 pageAPI,
-                                                pageId,
+                                                autoplayPageId,
                                                 pageTitle,
-                                                pageIdToPageNameMap.get(pageId),
+                                                pageIdToPageNameMap.get(autoplayPageId),
                                                 loadFromFile,
                                                 false,
                                                 true,
@@ -4415,6 +4416,7 @@ public class AppCMSPresenter {
                             }
                         }).execute(params);
             } else {
+                String pageId = getAutoplayPageId(binder.getContentData().getGist().getMediaType());
                 AppCMSPageAPI pageAPI = binder.getContentData().convertToAppCMSPageAPI(
                         currentActivity.getString(R.string.app_cms_page_autoplay_module_key_01));
                 if (pageAPI == null) {
@@ -10083,13 +10085,19 @@ public class AppCMSPresenter {
     }
 
 
-    private String getAutoplayPageId() {
+    private String getAutoplayPageId(String mediaType) {
 
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                return key;
+            if (mediaType != null && mediaType.equalsIgnoreCase("episodic")){
+                if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))){
+                    return key;
+                }
+            } else {
+                if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_port_key))) {
+                    return key;
+                }
             }
         }
         return null;
@@ -10542,7 +10550,9 @@ public class AppCMSPresenter {
      */
     public void openAutoPlayScreen(final AppCMSVideoPageBinder binder, Action1<Object> action1) {
         String url = null;
+        binder.setCurrentMovieId(binder.getContentData().getGist().getId());
         binder.setCurrentMovieName(binder.getContentData().getGist().getTitle());
+        binder.setCurrentMovieImageUrl(binder.getContentData().getGist().getVideoImageUrl());
         if (!binder.isOffline()) {
             final String filmId =
                     binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
@@ -10563,16 +10573,10 @@ public class AppCMSPresenter {
             binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
             binder.setContentData(contentDatum);
         }
-        String pageId = getAutoplayPageId();
-        if (!TextUtils.isEmpty(pageId)) {
-            navigateToAutoplayPage(pageId,
-                    currentActivity.getString(R.string.app_cms_page_autoplay_key),
-                    url,
-                    binder,
-                    action1);
-        } else {
-            //Log.e(TAG, "Can't find autoplay page ui in pageIdToPageNameMap");
-        }
+        navigateToAutoplayPage(currentActivity.getString(R.string.app_cms_page_autoplay_key),
+                url,
+                binder,
+                action1);
     }
 
     public void getRelatedMedia(String filmIds, final Action1<AppCMSVideoDetail> action1) {
@@ -10750,6 +10754,7 @@ public class AppCMSPresenter {
                 }
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
                 if (action.equalsIgnoreCase("lectureDetailPage")
+                        && contentDatum.getGist().getContentType() != null
                         && contentDatum.getGist().getContentType().equalsIgnoreCase("SERIES")) {
                     action = "showDetailPage";
                 }
@@ -11045,7 +11050,7 @@ public class AppCMSPresenter {
         boolean result = false;
 
 
-        if (!isNetworkConnected() && platformType == PlatformType.TV) {
+        if (!isNetworkConnected()) {
             RetryCallBinder retryCallBinder = getRetryCallBinder(contentDatum.getGist().getPermalink(), null,
                     contentDatum.getGist().getTitle(), null,
                     contentDatum, false,
@@ -11119,11 +11124,13 @@ public class AppCMSPresenter {
                                                         } else {
                                                             relatedVideoIds = relateVideoIds;
                                                         }
+                                                        ContentDatum episodeContentDatum = appCMSVideoDetail.getRecords().get(0);
+                                                        episodeContentDatum.setSeason(contentDatum.getSeason());
                                                         launchTVButtonSelectedAction(contentDatum.getGist().getId(),
                                                                 action,
                                                                 appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
                                                                 extraData,
-                                                                appCMSVideoDetail.getRecords().get(0),
+                                                                episodeContentDatum,
                                                                 false,
                                                                 currentlyPlayingIndex,
                                                                 relatedVideoIds);

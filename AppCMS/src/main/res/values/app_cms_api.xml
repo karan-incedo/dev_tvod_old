@@ -256,6 +256,8 @@
     <string name="app_cms_page_autoplay_module_key_01">AC AutoPlay 01</string>
     <string name="app_cms_page_autoplay_module_key_02">AC AutoPlay 02</string>
     <string name="app_cms_page_autoplay_module_key_03">AC AutoPlay 03</string>
+    <string name="app_cms_page_autoplay_landscape_module_key_01">AC AutoPlayLandscape 01</string>
+    <string name="app_cms_page_autoplay_portrait_module_key_01">AC AutoPlayPortrait 01</string>
 
     <string name="app_cms_page_download_setting_module_key">AC DownloadSettings 01</string>
     <string name="app_cms_page_api_thumbnail_url_key">thumbnail</string>
@@ -451,6 +453,7 @@
     <string name="app_cms_autoplay_play_button_key">playButtonAutoplay</string>
     <string name="app_cms_autoplay_cancel_button_key">cancelButton</string>
     <string name="app_cms_autoplay_playing_in_label_key">playInLabel</string>
+    <string name="app_cms_autoplay_countdown_cancelled_label_key">countdownCancelledLabel</string>
     <string name="app_cms_autoplay_timer_label_key">timerLabel</string>
 
     <string name="app_cms_download_started_message">%1$s has started downloading.</string>

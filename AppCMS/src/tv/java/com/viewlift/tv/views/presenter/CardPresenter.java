@@ -203,11 +203,11 @@ public class CardPresenter extends Presenter {
                             case PAGE_BEDGE_IMAGE_KEY:
                                 if (null != contentData.getGist().getBadgeImages() &&
                                         null != contentData.getGist().getBadgeImages().get_16x9()) {
-                                    Integer bedgeitemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
-                                    Integer bedgeitemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
+                                    Integer badgeItemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
+                                    Integer badgeItemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
                                     FrameLayout.LayoutParams bedgeParams = new FrameLayout.LayoutParams(
-                                            Utils.getViewXAxisAsPerScreen(mContext, bedgeitemWidth),
-                                            Utils.getViewYAxisAsPerScreen(mContext, bedgeitemHeight));
+                                            Utils.getViewXAxisAsPerScreen(mContext, badgeItemWidth),
+                                            Utils.getViewYAxisAsPerScreen(mContext, badgeItemHeight));
 
                                     bedgeParams.setMargins(
                                             Integer.valueOf(component.getLayout().getTv().getLeftMargin()),
@@ -217,8 +217,21 @@ public class CardPresenter extends Presenter {
 
                                     imageView.setLayoutParams(bedgeParams);
 
+                                    String imageUrl;
+                                    if (badgeItemWidth > badgeItemHeight) {
+                                        imageUrl = contentData.getGist().getBadgeImages()
+                                                .get_16x9() + "?impolicy=resize" +
+                                                "&w=" + badgeItemWidth +
+                                                "&h=" + badgeItemHeight;
+                                    } else {
+                                        imageUrl = contentData.getGist().getBadgeImages()
+                                                .get_3x4() + "?impolicy=resize" +
+                                                "&w=" + badgeItemWidth +
+                                                "&h=" + badgeItemHeight;
+                                    }
                                     Glide.with(mContext)
-                                            .load(contentData.getGist().getBadgeImages().get_16x9() + "?impolicy=resize&w=" + bedgeitemWidth + "&h=" + bedgeitemHeight).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                                            .load(imageUrl)
+                                            .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                                             .into(imageView);
                                     parentLayout.addView(imageView);
                                 }

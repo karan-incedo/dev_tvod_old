@@ -579,6 +579,10 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_module_key_03),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_landscape_module_key_01),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_autoplay_portrait_module_key_01),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_setting_module_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_SETTING_MODULE_KEY);
 
@@ -593,6 +597,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_finished_movie_title_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_FINISHED_MOVIE_TITLE_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_finished_movie_image_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_FINISHED_MOVIE_IMAGE_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.icon_image_key),AppCMSUIKeyType.PAGE_ICON_IMAGE_KEY);
 
@@ -622,6 +629,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_playing_in_label_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_PLAYING_IN_LABEL_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_countdown_cancelled_label_key),
+                AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_COUNTDOWN_CANCELLED_LABEL_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_autoplay_timer_label_key),
                 AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_TIMER_LABEL_KEY);

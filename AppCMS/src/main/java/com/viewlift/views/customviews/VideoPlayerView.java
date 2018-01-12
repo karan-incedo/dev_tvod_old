@@ -65,6 +65,7 @@ import com.viewlift.views.customviews.exoplayerview.AppCMSSimpleExoPlayerView;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
@@ -118,6 +119,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private PageView pageView;
 
     private RecyclerView listView;
+    private StreamingQualitySelector streamingQualitySelector;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -1030,4 +1032,17 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         return mToggleButton;
     }
 
+    public interface StreamingQualitySelector {
+        List<String> getAvailableStreamingQualities();
+        String getStreamingQualityUrl(String streamingQuality);
+        String getMpegResolutionFromUrl(String mpegUrl);
+    }
+
+    public StreamingQualitySelector getStreamingQualitySelector() {
+        return streamingQualitySelector;
+    }
+
+    public void setStreamingQualitySelector(StreamingQualitySelector streamingQualitySelector) {
+        this.streamingQualitySelector = streamingQualitySelector;
+    }
 }

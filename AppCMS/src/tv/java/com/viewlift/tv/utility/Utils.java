@@ -636,6 +636,21 @@ public class Utils {
     }
 
 
+    /**
+     * Used to open the Season switch dialog.
+     *
+     * @param appCMSSwitchSeasonBinder data
+     */
+    public static void showSwitchSeasonsDialog(AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder,
+                                               AppCMSPresenter appCMSPresenter) {
+        android.app.FragmentTransaction ft =
+                appCMSPresenter.getCurrentActivity().getFragmentManager().beginTransaction();
+        SwitchSeasonsDialogFragment switchSeasonsDialogFragment =
+                SwitchSeasonsDialogFragment.newInstance(appCMSSwitchSeasonBinder);
+        switchSeasonsDialogFragment.show(ft, DIALOG_FRAGMENT_TAG);
+
+    }
+
     @NonNull
     public static ClearDialogFragment getClearDialogFragment(Context context,
                                                        AppCMSPresenter appCMSPresenter,
