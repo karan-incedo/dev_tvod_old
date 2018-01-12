@@ -285,19 +285,6 @@ public class TVViewCreator {
                 });
             }
         } else {
-            if (context.getResources().getString(R.string.appcms_watchlist_module).equalsIgnoreCase(module.getView())) {
-             //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
-            }
-
-            if (context.getResources().getString(R.string.app_cms_page_history_module_key).equalsIgnoreCase(module.getView())) {
-              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
-            }
-
-           if ("AC RichText 01".equalsIgnoreCase(module.getView())) {
-              //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "ancillary_pages.json"), ModuleList.class);
-              // Toast.makeText(context,"reading file..",Toast.LENGTH_SHORT).show();
-            }
-
             moduleView = new TVModuleView<>(context, module);
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 

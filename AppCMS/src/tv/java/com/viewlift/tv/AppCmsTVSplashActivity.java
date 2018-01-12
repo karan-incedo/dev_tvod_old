@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -98,6 +99,43 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
 
     private void startLogoAnimation() {
         final ImageView logo = (ImageView) findViewById(R.id.splash_logo);
+        int logoWidth = logo.getWidth();
+        int logoHeight = logo.getHeight();
+
+        BitmapDrawable bd = (BitmapDrawable) this.getResources().getDrawable(R.drawable.app_logo);
+        int smallWidth = bd.getBitmap().getWidth();
+        int smallHeight = bd.getBitmap().getHeight();
+
+        float xScale = (float) (((smallWidth * 100) / logoWidth)) / 100;
+        float yScale = (float) (((smallHeight * 100) / logoHeight)) / 100;
+
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                ObjectAnimator translateX = ObjectAnimator.ofFloat(logo, "translationX",
+                        ((Resources.getSystem().getDisplayMetrics().widthPixels / 2) - smallWidth / 2 - getResources().getDimension(R.dimen.logo_margin)));
+                translateX.setDuration(1500);
+                translateX.start();
+
+                ObjectAnimator translateY = ObjectAnimator.ofFloat(logo, "translationY",
+                        ((Resources.getSystem().getDisplayMetrics().heightPixels / 2) - smallHeight / 2 - getResources().getDimension(R.dimen.logo_margin)));
+                translateY.setDuration(1500);
+                translateY.start();
+
+                ObjectAnimator anim = ObjectAnimator.ofFloat(logo, "scaleX", xScale);
+                anim.setDuration(1500); // duration 3 seconds
+                anim.start();
+
+                ObjectAnimator anim2 = ObjectAnimator.ofFloat(logo, "scaleY", yScale);
+                anim2.setDuration(1500); // duration 3 seconds
+                anim2.start();
+            }
+        });
+    }
+
+   /* private void startLogoAnimation() {
+        final ImageView logo = (ImageView) findViewById(R.id.splash_logo);
 
         new Handler().post(new Runnable() {
             @Override
@@ -125,7 +163,7 @@ public class AppCmsTVSplashActivity extends Activity implements AppCmsTvErrorFra
                 anim2.start();
             }
         });
-    }
+    }*/
 
     public void showErrorFragment(boolean shouldRegisterInternetReciever){
         CustomProgressBar.getInstance(this).dismissProgressDialog();
