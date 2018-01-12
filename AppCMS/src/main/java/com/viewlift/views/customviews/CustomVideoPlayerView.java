@@ -6,12 +6,14 @@ package com.viewlift.views.customviews;
 
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
@@ -698,10 +700,39 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         }
     }
 
+    class ForegroundObserver extends AsyncTask<Context, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Context... params) {
+            final Context context = params[0].getApplicationContext();
+            return isAppOnForeground(context);
+        }
+
+        private boolean isAppOnForeground(Context context) {
+            ActivityManager activityManager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            List<ActivityManager.RunningAppProcessInfo> appProcesses = activityManager.getRunningAppProcesses();
+            if (appProcesses == null) {
+                return false;
+            }
+            final String packageName = context.getPackageName();
+            for (ActivityManager.RunningAppProcessInfo appProcess : appProcesses) {
+                if (appProcess.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND && appProcess.processName.equals(packageName)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public void resumePlayerLastState() {
         if (null != getPlayer()) {
             if (isVideoPlaying) {
-                getPlayer().setPlayWhenReady(true);
+              try {
+                if(new ForegroundObserver().execute(mContext).get())
+                  getPlayer().setPlayWhenReady(true);
+              }catch (Exception ex){
+                ex.printStackTrace();
+              }
             } else {
                 getPlayer().setPlayWhenReady(false);
             }

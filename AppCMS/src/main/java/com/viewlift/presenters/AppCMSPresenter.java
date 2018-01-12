@@ -11573,7 +11573,7 @@ public class AppCMSPresenter {
 
         if (relativeLayoutPIP != null && currentActivity != null) {
             relativeLayoutPIP.removeAllViews();
-            if (videoPlayerView != null) {
+            if (videoPlayerView != null && videoPlayerViewParent != null) {
                 videoPlayerView.enableController();
                 if (videoPlayerView.getParent() != null) {
                     ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
