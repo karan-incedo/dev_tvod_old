@@ -16,34 +16,33 @@ import java.util.List;
 
 @UseStag
 public class AppCMSPlaylistResult {
+//    @SerializedName("id")
+//    @Expose
+//    int id;
 
     @SerializedName("audioList")
     @Expose
     List<AudioList> audioList = null;
 
-    @SerializedName("id")
-    @Expose
-    int id;
 
     public List<AudioList> getAudioList() {
         return audioList;
     }
 
-    public int getId() {
-        return id;
-    }
+//    public int getId() {
+//        return id;
+//    }
 
     public AppCMSPageAPI convertToAppCMSPageAPI(String Id) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
         List<ContentDatum> data = new ArrayList<>();
 
+        ContentDatum contentDatum = new ContentDatum();
         if (getAudioList() != null) {
-            for (AudioList records : getAudioList()) {
-                data.add(records.convertToContentDatum());
-            }
+            contentDatum.setAudioList(this.getAudioList());
+            data.add(contentDatum);
         }
-
         module.setContentData(data);
         appCMSPageAPI.setId(Id);
         List<Module> moduleList = new ArrayList<>();

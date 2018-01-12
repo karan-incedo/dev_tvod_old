@@ -332,9 +332,9 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView, Component childComponent, ContentDatum data,
                                       int clickPosition) {
-                        if(appCMSPresenter.isSelectedSubscriptionPlan()){
+                        if (appCMSPresenter.isSelectedSubscriptionPlan()) {
                             selectedPosition = clickPosition;
-                        }else{
+                        } else {
                             appCMSPresenter.setSelectedSubscriptionPlan(true);
                         }
                         for (int i = 0; i < planItemView.length; i++) {
@@ -374,7 +374,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data,int clickPosition) {
+                                      ContentDatum data, int clickPosition) {
                         if (isClickable) {
                             subcriptionPlanClick(collectionGridItemView, data);
 
@@ -391,7 +391,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data,int clickPosition) {
+                                      ContentDatum data, int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -418,21 +418,31 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (relatedVideoIds == null) {
                                     currentPlayingIndex = 0;
                                 }
-                                if (data.getGist() != null && data.getGist().getMediaType() != null
-                                        && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
-                                    appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), null, false);
-                                    return;
-                                }
+
+
                                 String contentType = "";
 
                                 if (data.getGist() != null && data.getGist().getContentType() != null) {
                                     contentType = data.getGist().getContentType();
                                 }
-
+                                /*get audio details on tray click item and play song*/
+                                if (data.getGist() != null &&
+                                        data.getGist().getMediaType() != null &&
+                                        data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                        data.getGist().getContentType() != null &&
+                                        data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+                                    appCMSPresenter.getAudioDetail(data.getGist().getId());
+                                    return;
+                                }
+                                /*Get playlist data and open playlist page*/
+                                if (data.getGist() != null && data.getGist().getMediaType() != null
+                                        && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
+                                    appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), null, false);
+                                    return;
+                                }
                                 if (action.contains(openOptionsAction)) {
                                     appCMSPresenter.launchButtonSelectedAction(permalink,
                                             openOptionsAction,
-
                                             title,
                                             null,
                                             data,
@@ -444,7 +454,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                 if (contentType.equals(episodicContentType)) {
                                     action = showAction;
                                 } else if (contentType.equals(fullLengthFeatureType)) {
-                                    action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
+                                    action = action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
                                 }
 
                                 if (data.getGist() == null ||
@@ -520,7 +530,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
                 viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
             itemView.setOnClickListener(v -> onClickHandler.click(itemView,
-                    component, data,position));
+                    component, data, position));
         }
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY ||
