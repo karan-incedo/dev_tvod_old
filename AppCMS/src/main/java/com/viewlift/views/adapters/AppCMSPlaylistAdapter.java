@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -189,35 +190,35 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     void bindView(CollectionGridItemView itemView,
                   final ContentDatum data, int position) throws IllegalArgumentException {
         if (onClickHandler == null) {
-
-            onClickHandler = new CollectionGridItemView.OnClickHandler() {
-                @Override
-                public void click(CollectionGridItemView collectionGridItemView,
-                                  Component childComponent,
-                                  ContentDatum data, int clickPosition) {
-                    if (isClickable) {
-                        if (data.getGist() != null) {
+            if (viewTypeKey == AppCMSUIKeyType.PAGE_PLAYLIST_MODULE_KEY) {
+                onClickHandler = new CollectionGridItemView.OnClickHandler() {
+                    @Override
+                    public void click(CollectionGridItemView collectionGridItemView,
+                                      Component childComponent,
+                                      ContentDatum data, int clickPosition) {
+                        if (isClickable) {
+                            if (data.getGist() != null) {
                           /*get audio details on tray click item and play song*/
-                            if (data.getGist() != null &&
-                                    data.getGist().getMediaType() != null &&
-                                    data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
-                                    data.getGist().getContentType() != null &&
-                                    data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                appCMSPresenter.getAudioDetail(data.getGist().getId());
-                                return;
-                            }
+                                if (data.getGist() != null &&
+                                        data.getGist().getMediaType() != null &&
+                                        data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                        data.getGist().getContentType() != null &&
+                                        data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+                                    appCMSPresenter.getAudioDetail(data.getGist().getId());
+                                    return;
+                                }
 
+                            }
                         }
                     }
-                }
 
-                @Override
-                public void play(Component childComponent, ContentDatum data) {
-                }
-            };
+                    @Override
+                    public void play(Component childComponent, ContentDatum data) {
+                    }
+                };
 
+            }
         }
-
         for (int i = 0; i < itemView.getNumberOfChildren(); i++) {
             itemView.bindChild(itemView.getContext(),
                     itemView.getChild(i),
@@ -271,23 +272,6 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     @Override
     public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
-    }
-
-    private List<String> getListOfUpcomingMovies(int position, Object downloadStatus) {
-        if (position + 1 == adapterData.size()) {
-            return Collections.emptyList();
-        }
-
-        List<String> contentDatumList = new ArrayList<>();
-        for (int i = position + 1; i < adapterData.size(); i++) {
-            ContentDatum contentDatum = adapterData.get(i);
-            if (contentDatum.getGist() != null &&
-                    contentDatum.getGist().getDownloadStatus().equals(downloadStatus)) {
-                contentDatumList.add(contentDatum.getGist().getId());
-            }
-        }
-
-        return contentDatumList;
     }
 
 

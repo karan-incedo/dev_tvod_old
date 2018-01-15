@@ -34,6 +34,8 @@ public class AudioList {
         gist.setDescription(this.gist.getDescription());
         gist.setRuntime(this.gist.getRuntime());
         gist.setImageGist(this.gist.getImageGist());
+        gist.setContentType(this.gist.getContentType());
+        gist.setMediaType(this.gist.getMediaType());
         contentDatum.setGist(gist);
         return contentDatum;
     }
