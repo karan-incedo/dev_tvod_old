@@ -44,6 +44,7 @@ public class PlaybackManager implements Playback.Callback {
     private MediaSessionCallback mMediaSessionCallback;
 
     Context mContext;
+
     public PlaybackManager(PlaybackServiceCallback serviceCallback, Resources resources,
 
                            Playback playback, Context applicationContext) {
@@ -51,7 +52,7 @@ public class PlaybackManager implements Playback.Callback {
         mResources = resources;
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
-        mContext=applicationContext;
+        mContext = applicationContext;
         mPlayback.setCallback(this);
     }
 
@@ -75,8 +76,9 @@ public class PlaybackManager implements Playback.Callback {
     }
 
     Activity mActivity;
-    public void setActivity(Activity mAct){
-        mActivity=mAct;
+
+    public void setActivity(Activity mAct) {
+        mActivity = mAct;
     }
 
     /**
@@ -166,12 +168,17 @@ public class PlaybackManager implements Playback.Callback {
     @Override
     public void onCompletion() {
         {
+            if (AudioPlaylistHelper.getPlaylist().size() >= AudioPlaylistHelper.indexAudioFromPlaylist) {
+                handleStopRequest(null);
+            } else {
+                AudioPlaylistHelper.getAudioPlaylistHelperInstance().autoPlayNextItemOnComplete();
+            }
 
 //            MediaBrowserCompat.MediaItem item = MusicLibrary.getMediaItems().get(1);
 //            PlaybackManager.setCurrentMediaData(MusicLibrary.getMetadata(mContext,item.getMediaId()));
 //            MusicLibrary.onMediaItemSelected(item);
             // If skipping was not possible, we stop and release the resources:
-            handleStopRequest(null);
+
         }
     }
 
@@ -182,6 +189,8 @@ public class PlaybackManager implements Playback.Callback {
 
     @Override
     public void onError(String error) {
+        handleStopRequest(null);
+
         updatePlaybackState(error);
     }
 
@@ -214,9 +223,7 @@ public class PlaybackManager implements Playback.Callback {
     private class MediaSessionCallback extends MediaSessionCompat.Callback {
         @Override
         public void onPlay() {
-//            if (mQueueManager.getCurrentMusic() == null) {
-//                mQueueManager.setRandomQueue();
-//            }
+
             handlePlayRequest();
         }
 

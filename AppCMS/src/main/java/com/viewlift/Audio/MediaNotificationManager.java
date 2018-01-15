@@ -326,7 +326,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         int playPauseButtonPosition = 0;
         // If skip to previous action is enabled
         if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
-            notificationBuilder.addAction(R.drawable.ic_skip_previous_white_24dp,
+            notificationBuilder.addAction(R.drawable.previous_track,
                     mService.getString(R.string.label_previous), mPreviousIntent);
 
             // If there is a "skip to previous" button, the play/pause button will
@@ -342,18 +342,18 @@ public class MediaNotificationManager extends BroadcastReceiver {
         final PendingIntent intent;
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             label = mService.getString(R.string.label_pause);
-            icon = R.drawable.uamp_ic_pause_white_24dp;
+            icon = R.drawable.pause_track;
             intent = mPauseIntent;
         } else {
             label = mService.getString(R.string.label_play);
-            icon = R.drawable.uamp_ic_play_arrow_white_24dp;
+            icon = R.drawable.play_track;
             intent = mPlayIntent;
         }
         notificationBuilder.addAction(new NotificationCompat.Action(icon, label, intent));
 
         // If skip to next action is enabled
         if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
-            notificationBuilder.addAction(R.drawable.ic_skip_next_white_24dp,
+            notificationBuilder.addAction(R.drawable.next_track,
                     mService.getString(R.string.label_next), mNextIntent);
         }
 

@@ -4484,6 +4484,7 @@ public class AppCMSPresenter {
     public void getAudioDetail(String pageId) {
         currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                 .PRESENTER_PAGE_LOADING_ACTION));
+        AudioPlaylistHelper.getAudioPlaylistHelperInstance().setAppCMSPresenter(AppCMSPresenter.this);
         getAudioContent(appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName(),
                 pageId,
@@ -4503,11 +4504,11 @@ public class AppCMSPresenter {
                                 + BaseView.isLandscape(currentActivity));
                         AppCMSPageAPI pageAPI;
                         if (appCMSAudioDetailResult != null) {
-                            AudioPlaylistHelper mAudioPlaylist= new AudioPlaylistHelper().getAudioPlaylistHelperInstance(AppCMSPresenter.this);
+                            AudioPlaylistHelper mAudioPlaylist= new AudioPlaylistHelper().getAudioPlaylistHelperInstance();
                             mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
                             PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
                             mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()));
-//                            pageAPI = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
+                            pageAPI = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
 //                            navigationPageData.put(this.pageId, pageAPI);
 
                         } else {
@@ -4546,6 +4547,8 @@ public class AppCMSPresenter {
                             cancelInternalEvents();
                             pushActionInternalEvents(this.pageId
                                     + BaseView.isLandscape(currentActivity));
+
+                            new AudioPlaylistHelper().getAudioPlaylistHelperInstance().setPlaylist(appCMSPlaylistResult.getAudioList());
                             AppCMSPageAPI pageAPI;
                             if (appCMSPlaylistResult != null) {
                                 pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(this.pageId);

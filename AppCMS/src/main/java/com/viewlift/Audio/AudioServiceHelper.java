@@ -146,6 +146,22 @@ public class AudioServiceHelper {
         }
     }
 
+    protected boolean isFullScreenPlayerEnable() {
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(mActivity);
+        if (mediaController == null ||
+                mediaController.getMetadata() == null ||
+                mediaController.getPlaybackState() == null) {
+            return false;
+        }
+        switch (mediaController.getPlaybackState().getState()) {
+            case PlaybackStateCompat.STATE_ERROR:
+            case PlaybackStateCompat.STATE_NONE:
+            case PlaybackStateCompat.STATE_STOPPED:
+                return false;
+            default:
+                return true;
+        }
+    }
 
     public void connectMediaBrowserServiceToLoadLibrary() {
         MediaBrowserCompat mediaBrowser = AudioServiceHelper.getAudioInstance().getMediaBrowser();//mMediaFragmentListener.getMediaBrowser();

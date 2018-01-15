@@ -173,6 +173,12 @@ public final class LocalPlayback implements Playback {
     }
 
     @Override
+    public long getTotalDuration() {
+        return mExoPlayer != null ? mExoPlayer.getDuration() : 0;
+
+    }
+
+    @Override
     public void updateLastKnownStreamPosition() {
         // Nothing to do. Position maintained by ExoPlayer.
     }
@@ -228,7 +234,7 @@ public final class LocalPlayback implements Playback {
         configurePlayerState();
     }
 
-    private void setUri(String source){
+    private void setUri(String source) {
         // Produces DataSource instances through which media data is loaded.
         DataSource.Factory dataSourceFactory =
                 new DefaultDataSourceFactory(
@@ -486,6 +492,11 @@ public final class LocalPlayback implements Playback {
 
     public interface MetadataUpdateListener {
         void onMetadataChanged(MediaMetadataCompat metadata);
+
+    }
+
+    public interface IupdateExoplayer {
+        void getDuration(long duration);
 
     }
 }

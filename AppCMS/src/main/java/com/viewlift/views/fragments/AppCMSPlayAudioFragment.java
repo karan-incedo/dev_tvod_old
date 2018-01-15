@@ -1,9 +1,12 @@
 package com.viewlift.views.fragments;
 
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -15,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaDescriptionCompat;
 import android.support.v4.media.MediaMetadataCompat;
@@ -27,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -36,6 +41,7 @@ import com.viewlift.Audio.AlbumArtCache;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
+import com.viewlift.views.customviews.BaseView;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -79,6 +85,9 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     ImageButton nextTrack;
     @BindView(R.id.playlist)
     ImageButton playlist;
+
+    @BindView(R.id.progressBarLoading)
+    ProgressBar progressBarLoading;
 
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
@@ -160,7 +169,9 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         mPauseDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.pause_track);
         mPlayDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.play_track);
 
-
+        if (!BaseView.isTablet(getActivity())) {
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
         seekAudio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -181,8 +192,23 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (savedInstanceState == null) {
             updateFromParams(getActivity().getIntent());
         }
+
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
+                mMessageReceiver, new IntentFilter("INTENT_KEY"));
         return rootView;
     }
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            long message = intent.getLongExtra("key", 0);
+            System.out.println("total duration-" + message);
+            // Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+
+//            getActivity().finish();
+        }
+    };
 
     @Override
     public void onClick(View view) {
@@ -299,6 +325,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         super.onDestroy();
         stopSeekbarUpdate();
         mExecutorService.shutdown();
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
     }
 
     private void fetchImageAsync(@NonNull MediaDescriptionCompat description) {
@@ -345,29 +372,30 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
-//                mLoading.setVisibility(INVISIBLE);
+                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
-                playPauseTrack.setImageDrawable(mPauseDrawable);
+                playPauseTrack.setBackground(mPauseDrawable);
 //                mControllers.setVisibility(VISIBLE);
                 scheduleSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
 //                mControllers.setVisibility(VISIBLE);
-//                mLoading.setVisibility(INVISIBLE);
+                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
-                playPauseTrack.setImageDrawable(mPlayDrawable);
+                playPauseTrack.setBackground(mPlayDrawable);
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
-//                mLoading.setVisibility(INVISIBLE);
+                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
-                playPauseTrack.setImageDrawable(mPlayDrawable);
+                playPauseTrack.setBackground(mPlayDrawable);
                 stopSeekbarUpdate();
+                getActivity().finish();
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
                 playPauseTrack.setVisibility(INVISIBLE);
-//                mLoading.setVisibility(VISIBLE);
+                progressBarLoading.setVisibility(VISIBLE);
 //                mLine3.setText(R.string.loading);
                 stopSeekbarUpdate();
                 break;

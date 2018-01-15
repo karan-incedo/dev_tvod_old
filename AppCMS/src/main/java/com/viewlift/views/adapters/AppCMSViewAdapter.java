@@ -14,10 +14,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.SubscriptionPlan;
+import com.viewlift.models.data.appcms.audio.AudioGist;
+import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -431,7 +434,13 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                                         data.getGist().getContentType() != null &&
                                         data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                    appCMSPresenter.getAudioDetail(data.getGist().getId());
+                                    List<AudioList> audioPlaylistId = new ArrayList<AudioList>();
+                                    AudioGist audioGist = new AudioGist();
+                                    audioGist.setId(data.getGist().getId());
+                                    audioPlaylistId.get(0).setGist(audioGist);
+
+                                    new AudioPlaylistHelper().getAudioPlaylistHelperInstance().setPlaylist(audioPlaylistId);
+                                    new AudioPlaylistHelper().getAudioPlaylistHelperInstance().getAudioDataFromPlaylistToPlay(data.getGist().getId());
                                     return;
                                 }
                                 /*Get playlist data and open playlist page*/

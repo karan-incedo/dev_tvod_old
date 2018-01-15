@@ -65,6 +65,7 @@ public interface Playback {
      * @return pos if currently playing an item
      */
     long getCurrentStreamPosition();
+    long getTotalDuration();
 
     /**
      * Queries the underlying stream and update the internal last known stream position.

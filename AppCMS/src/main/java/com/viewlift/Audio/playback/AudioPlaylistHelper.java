@@ -7,6 +7,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
+import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.ArrayList;
@@ -20,16 +21,16 @@ import java.util.TreeMap;
 public class AudioPlaylistHelper {
 
     private static final TreeMap<String, MediaMetadataCompat> music = new TreeMap<>();
-    private static ArrayList<String> audioPlaylistId = new ArrayList<String>();
+    private static List<AudioList> audioPlaylistId = new ArrayList<AudioList>();
     public static AudioPlaylistHelper audioPlaylistInstance;
     public static int indexAudioFromPlaylist = 0;
     public static String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
 
     private AppCMSPresenter appCmsPresenter;
 
-    public static AudioPlaylistHelper getAudioPlaylistHelperInstance(AppCMSPresenter appCmsPresenterInstance) {
+    public static AudioPlaylistHelper getAudioPlaylistHelperInstance() {
         if (audioPlaylistInstance == null) {
-            audioPlaylistInstance = new AudioPlaylistHelper(appCmsPresenterInstance);
+            audioPlaylistInstance = new AudioPlaylistHelper();
         }
         return audioPlaylistInstance;
     }
@@ -37,35 +38,57 @@ public class AudioPlaylistHelper {
     public AudioPlaylistHelper() {
     }
 
-    public AudioPlaylistHelper(AppCMSPresenter appCmsPresenterInstance) {
+    public void setAppCMSPresenter(AppCMSPresenter appCmsPresenterInstance) {
         appCmsPresenter = appCmsPresenterInstance;
     }
 
-    public static void setPlaylist(ArrayList<String> arrPlaylist) {
+    public static void setPlaylist(List<AudioList> arrPlaylist) {
         audioPlaylistId = arrPlaylist;
         indexAudioFromPlaylist = 0;
     }
 
-    public static ArrayList<String> getPlaylist() {
+    public static List<AudioList> getPlaylist() {
         return audioPlaylistId;
     }
 
-    public void getAudioDataFromPlaylistToPlay(String MediaId) {
+    public  void autoPlayNextItemOnComplete(){
+        if(audioPlaylistId.size()<indexAudioFromPlaylist){
+           String mediaId= audioPlaylistId.get(indexAudioFromPlaylist).getGist().getId();
+            getAudioDataFromPlaylistToPlay(mediaId);
+        }
+    }
+
+    public  void getAudioDataFromPlaylistToPlay(String MediaId) {
         indexAudioFromPlaylist++;
         appCmsPresenter.getAudioDetail(MediaId);
     }
 
     public static void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
         String mediaId = appCMSAudioDetailResult.getId();
-        String title = appCMSAudioDetailResult.getGist().getTitle();
-        String album = appCMSAudioDetailResult.getGist().getDescription();
-        String artist = appCMSAudioDetailResult.getCreditBlocks().get(0).getTitle();
+        String title = "";
+        String album = "", iconUrl = "", artist = "", source = "";
+        if (appCMSAudioDetailResult.getGist() != null) {
+            title = appCMSAudioDetailResult.getGist().getTitle();
+
+            if (appCMSAudioDetailResult.getGist().getDescription() != null)
+                album = appCMSAudioDetailResult.getGist().getDescription();
+
+            if (appCMSAudioDetailResult.getGist().getImageGist() != null && appCMSAudioDetailResult.getGist().getImageGist().get_16x9() != null)
+                iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_16x9();
+
+        }
+        if (appCMSAudioDetailResult.getCreditBlocks() != null && appCMSAudioDetailResult.getCreditBlocks().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getTitle() != null)
+            artist = appCMSAudioDetailResult.getCreditBlocks().get(0).getTitle();
+
+        if (appCMSAudioDetailResult.getStreamingInfo() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets() != null
+                && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl() != null)
+            source = appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl();
+
+        source = "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3";
         String genre = "";
-        String source = appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl();
-        String iconUrl = appCMSAudioDetailResult.getGist().getImageGist().get_16x9();
         int trackNumber = 0;
         int totalTrackCount = 0;
-        int duration = 27 * 1000; // ms
+        int duration = 102 * 1000; // ms
 
         music.put(
                 mediaId,
