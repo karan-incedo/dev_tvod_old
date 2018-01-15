@@ -306,4 +306,8 @@ public class Gist implements Serializable {
     public void setKisweEventId(String kisweEventId) {
         this.kisweEventId = kisweEventId;
     }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
 }
