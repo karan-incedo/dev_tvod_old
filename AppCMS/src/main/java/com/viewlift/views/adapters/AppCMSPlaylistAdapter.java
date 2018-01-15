@@ -197,29 +197,15 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                   ContentDatum data, int clickPosition) {
                     if (isClickable) {
                         if (data.getGist() != null) {
-                            //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
-                            String permalink = data.getGist().getPermalink();
-                            String action = null;
-                            if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
-                                action = childComponent.getAction();
+                          /*get audio details on tray click item and play song*/
+                            if (data.getGist() != null &&
+                                    data.getGist().getMediaType() != null &&
+                                    data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                    data.getGist().getContentType() != null &&
+                                    data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+                                appCMSPresenter.getAudioDetail(data.getGist().getId());
+                                return;
                             }
-                            String title = data.getGist().getTitle();
-
-                            @SuppressWarnings("MismatchedReadAndWriteOfArray")
-                            String[] extraData = new String[3];
-                            extraData[0] = permalink;
-                            extraData[2] = data.getGist().getId();
-                            //Log.d(TAG, "Launching " + permalink + ": " + action);
-                            List<String> relatedVideoIds = null;
-                            if (data.getContentDetails() != null &&
-                                    data.getContentDetails().getRelatedVideoIds() != null) {
-                                relatedVideoIds = data.getContentDetails().getRelatedVideoIds();
-                            }
-                            int currentPlayingIndex = -1;
-                            if (relatedVideoIds == null) {
-                                currentPlayingIndex = 0;
-                            }
-
 
                         }
                     }

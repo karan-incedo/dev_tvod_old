@@ -238,7 +238,7 @@ public class CollectionGridItemView extends BaseView {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                    childComponent, data,position));
+                    childComponent, data, position));
             boolean bringToFront = true;
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
@@ -300,6 +300,9 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (childViewHeight > 0 &&
                             childViewWidth > 0 &&
+                            data != null &&
+                            data.getGist() != null &&
+                            data.getGist().getVideoImageUrl() != null &&
                             !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
                             (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
                                     componentKey == AppCMSUIKeyType.PAGE_VIDEO_IMAGE_KEY)) {
@@ -320,7 +323,10 @@ public class CollectionGridItemView extends BaseView {
                         } catch (Exception e) {
                             //
                         }
-                    } else if (!TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
+                    } else if (data != null &&
+                            data.getGist() != null &&
+                            data.getGist().getVideoImageUrl() != null &&
+                            !TextUtils.isEmpty(data.getGist().getVideoImageUrl()) &&
                             componentKey == AppCMSUIKeyType.PAGE_CAROUSEL_IMAGE_KEY) {
                         bringToFront = false;
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
@@ -400,13 +406,28 @@ public class CollectionGridItemView extends BaseView {
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
-                    } else if (data.getGist().getImageGist() != null &&
+                    } else if (data.getGist() != null &&
+                            data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             data.getGist().getImageGist().get_3x4() != null &&
                             data.getGist().getBadgeImages().get_3x4() != null &&
                             componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getBadgeImages().get_3x4(),
+                                childViewWidth,
+                                childViewHeight);
+
+                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            Glide.with(context)
+                                    .load(imageUrl)
+                                    .override(childViewWidth, childViewHeight)
+                                    .into((ImageView) view);
+                        }
+                    } else if (data.getGist() != null &&
+                            data.getGist().getImageGist() != null &&
+                            data.getGist().getImageGist().get_16x9() != null) {
+                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                data.getGist().getImageGist().get_16x9(),
                                 childViewWidth,
                                 childViewHeight);
 
@@ -454,12 +475,12 @@ public class CollectionGridItemView extends BaseView {
                     }
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                            childComponent, data,position));
+                            childComponent, data, position));
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                 view.setOnClickListener(v ->
                         onClickHandler.click(CollectionGridItemView.this,
-                                childComponent, data,position));
+                                childComponent, data, position));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
@@ -474,7 +495,7 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }
-                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
+                    }  else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY) {
                         ((TextView) view).setText(appCMSPresenter.getDownloadedFileSize(data.getGist().getId()));
@@ -504,9 +525,11 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
-                        ((TextView) view).setText(data.getGist().getTitle());
-                        ((TextView) view).setSingleLine(true);
-                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        if (data.getGist() != null) {
+                            ((TextView) view).setText(data.getGist().getTitle());
+                            ((TextView) view).setSingleLine(true);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
@@ -701,7 +724,7 @@ public class CollectionGridItemView extends BaseView {
     public interface OnClickHandler {
         void click(CollectionGridItemView collectionGridItemView,
                    Component childComponent,
-                   ContentDatum data,int clickPosition);
+                   ContentDatum data, int clickPosition);
 
         void play(Component childComponent, ContentDatum data);
     }

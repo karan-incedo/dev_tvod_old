@@ -10,6 +10,7 @@ import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.audio.AudioGist;
+import com.viewlift.models.data.appcms.history.Record;
 import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
@@ -52,8 +53,14 @@ public class AppCMSPlaylistResult {
         contentDatum.setAudioList(this.audioList);
         contentDatum.setAudioGist(this.gist);
         contentDatum.setId(this.id);
-
         data.add(contentDatum);
+
+        if (getAudioList() != null) {
+            for (AudioList records : getAudioList()) {
+                data.add(records.convertToContentDatum());
+            }
+        }
+
         module.setContentData(data);
         appCMSPageAPI.setId(Id);
         List<Module> moduleList = new ArrayList<>();
