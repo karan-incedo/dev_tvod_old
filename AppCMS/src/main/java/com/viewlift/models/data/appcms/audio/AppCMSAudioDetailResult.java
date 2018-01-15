@@ -9,10 +9,8 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
-import com.viewlift.models.data.appcms.api.Gist;
-import com.viewlift.models.data.appcms.api.GistAudio;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.playlist.AudioList;
+import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
@@ -21,23 +19,12 @@ import java.util.List;
 @UseStag
 public class AppCMSAudioDetailResult {
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    @SerializedName("id")
-    @Expose
-    String id;
 
     @SerializedName("gist")
     @Expose
-    GistAudio gist;
+    AudioGist gist;
 
-    public GistAudio getGist() {
+    public AudioGist getGist() {
         return gist;
     }
 
@@ -62,13 +49,9 @@ public class AppCMSAudioDetailResult {
         Module module = new Module();
         List<ContentDatum> data = new ArrayList<>();
 
-        StreamingInfo streamingInfo = getStreamingInfo();
-        data.add(streamingInfo.convertToContentDatum());
-
         ContentDatum contentDatum = new ContentDatum();
-        contentDatum.setGistAudio(this.gist);
-//        data.add(contentDatum);
-//
+        contentDatum.setStreamingInfo(this.streamingInfo);
+        contentDatum.setAudioGist(this.gist);
         contentDatum.setCreditBlocks(this.creditBlocks);
         data.add(contentDatum);
 
