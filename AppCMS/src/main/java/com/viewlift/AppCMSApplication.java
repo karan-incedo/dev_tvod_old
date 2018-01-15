@@ -65,18 +65,22 @@ public class AppCMSApplication extends MultiDexApplication {
         };
 
         new Thread(() -> {
-            // NOTE: Replaced with Utils.getProperty()
-            //AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
-            AppsFlyerLib.getInstance().init(Utils.getProperty("AppsFlyerDevKey", getApplicationContext()), conversionDataListener);
+            try {
+                // NOTE: Replaced with Utils.getProperty()
+                //AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
+                AppsFlyerLib.getInstance().init(Utils.getProperty("AppsFlyerDevKey", getApplicationContext()), conversionDataListener);
 
-            Fabric.with(AppCMSApplication.this, new Crashlytics());
+                Fabric.with(AppCMSApplication.this, new Crashlytics());
 
-            // NOTE: Replaced with Utils.getProperty()
-            //Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
-            Apptentive.register(this, Utils.getProperty("ApptentiveApiKey", getApplicationContext()), Utils.getProperty("ApptentiveSignatureKey", getApplicationContext()));
+                // NOTE: Replaced with Utils.getProperty()
+                //Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
+//                Apptentive.register(this, Utils.getProperty("ApptentiveApiKey", getApplicationContext()), Utils.getProperty("ApptentiveSignatureKey", getApplicationContext()));
 
-            FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", getApplicationContext()));
-            FacebookSdk.sdkInitialize(getApplicationContext());
+                FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", getApplicationContext()));
+                FacebookSdk.sdkInitialize(getApplicationContext());
+            }catch(NullPointerException e){
+
+            }
         }).run();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent

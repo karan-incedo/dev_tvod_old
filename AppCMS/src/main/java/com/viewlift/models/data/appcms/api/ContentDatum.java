@@ -50,6 +50,9 @@ public class ContentDatum implements Serializable {
     @Expose
     Gist gist;
 
+
+    GistAudio gistAudio;
+
     @SerializedName("grade")
     @Expose
     String grade;
@@ -173,7 +176,13 @@ public class ContentDatum implements Serializable {
     public void setGist(Gist gist) {
         this.gist = gist;
     }
+    public Gist getGistAudio() {
+        return gist;
+    }
 
+    public void setGistAudio(GistAudio gist) {
+        this.gistAudio = gist;
+    }
     public String getGrade() {
         return grade;
     }

@@ -28,6 +28,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -66,6 +67,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -230,9 +233,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-
         setContentView(R.layout.activity_appcms_page);
-
         ButterKnife.bind(this);
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
@@ -515,6 +516,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 });
 
         appCMSPresenter.sendCloseOthersAction(null, false, false);
+        AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
 
 //        Log.d(TAG, "onCreate()");
     }
@@ -740,6 +742,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restartInternalEvents();
         }
         appCMSPresenter.setCancelAllLoads(false);
+        AudioServiceHelper.getAudioInstance().onStart();
+        AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter,this);
     }
 
     @Override
@@ -904,6 +908,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isUserLoggedIn()) {
             handleCloseAction(true);
         }
+        AudioServiceHelper.getAudioInstance().onStop();
+
     }
 
     @Override
@@ -1467,7 +1473,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (!(appCMSPageFragment instanceof AppCMSPageFragment) && appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
-          }
+            }
             if (appCMSPageFragment != null) {
                 fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));
@@ -1946,7 +1952,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                             return;
                         }
                         selectNavItem(navigationTabTag.getPageId());
-
                         selectNavItem((NavBarItemView) v);
                         appCMSPresenter.showMainFragmentView(true);
                         if (navigationTabTag.getPageId().equals("Menu Screen")) {

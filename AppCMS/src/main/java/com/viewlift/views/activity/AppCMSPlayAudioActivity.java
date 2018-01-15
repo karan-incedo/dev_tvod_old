@@ -80,7 +80,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
     }
 
-
     @Override
     public void onClick(View view) {
         if (view == activityBack) {
@@ -98,5 +97,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        finish();
     }
 }

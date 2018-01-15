@@ -85,6 +85,9 @@ import com.kiswe.kmsdkcorekit.reports.Report;
 import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
 import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Audio.model.MusicLibrary;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
+import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
 import com.viewlift.Utils;
 import com.viewlift.analytics.AppsFlyerUtils;
@@ -310,6 +313,8 @@ public class AppCMSPresenter {
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
     public static final String PRESENTER_UPDATE_LISTS_ACTION = "appcms_presenter_update_lists_action";
     public static final String PRESENTER_REFRESH_PAGE_DATA_ACTION = "appcms_presenter_refresh_page_data_action";
+    public static final String PRESENTER_AUDIO_LOADING_ACTION = "appcms_presenter_audio_loading_action";
+    public static final String PRESENTER_AUDIO_LOADING_STOP_ACTION = "appcms_presenter_audio_loading_stop_action";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -372,6 +377,7 @@ public class AppCMSPresenter {
     private static final String PREVIEW_LIVE_STATUS = "live_preview_status_pref_name";
     private static final String PREVIEW_LIVE_TIMER_VALUE = "live_preview_timer_pref_name";
     private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
+    private static final String AUDIO_SHUFFLED_SHARED_PREF_NAME = "audio_shuffled_sd_card_pref";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String FLOODLIGHT_STATUS_PREF_NAME = "floodlight_status_pref_key";
@@ -678,6 +684,7 @@ public class AppCMSPresenter {
     private boolean isTeamPAgeVisible = false;
     private final AppCMSPlaylistCall appCMSPlaylistCall;
     private final AppCMSAudioDetailCall appCMSAudioDetailCall;
+
     @Inject
     public AppCMSPresenter(Gson gson,
                            AppCMSPlaylistCall appCMSPlaylistCall,
@@ -4478,9 +4485,12 @@ public class AppCMSPresenter {
         }
     }
 
+
     public void getAudioDetail(String pageId) {
         currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                .PRESENTER_PAGE_LOADING_ACTION));
+                .PRESENTER_AUDIO_LOADING_ACTION));
+
+        AudioPlaylistHelper.getAudioPlaylistHelperInstance().setAppCMSPresenter(AppCMSPresenter.this, currentActivity);
         getAudioContent(appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName(),
                 pageId,
@@ -4495,25 +4505,31 @@ public class AppCMSPresenter {
                         false, null) {
                     @Override
                     public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
+
                         cancelInternalEvents();
                         pushActionInternalEvents(this.pageId
                                 + BaseView.isLandscape(currentActivity));
                         AppCMSPageAPI pageAPI;
                         if (appCMSAudioDetailResult != null) {
+                            AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getAudioPlaylistHelperInstance();
+                            mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+                            PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
+                            mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()));
                             pageAPI = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
-                            navigationPageData.put(this.pageId, pageAPI);
+//                            navigationPageData.put(this.pageId, pageAPI);
 
                         } else {
                             Toast.makeText(currentContext, "Unable to fetch data", Toast.LENGTH_SHORT).show();
                         }
 
                         currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                .PRESENTER_AUDIO_LOADING_STOP_ACTION));
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                 .PRESENTER_STOP_PAGE_LOADING_ACTION));
                     }
                 });
-
-
     }
+
 
     public void navigateToPlaylistPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
@@ -4536,9 +4552,15 @@ public class AppCMSPresenter {
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
+                            //create playlist library
+                            if (appCMSPlaylistResult.getAudioList() != null && appCMSPlaylistResult.getAudioList().size() > 0) {
+                                AudioPlaylistHelper.getAudioPlaylistHelperInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(appCMSPlaylistResult.getAudioList()));
+                            }
+
                             cancelInternalEvents();
                             pushActionInternalEvents(this.pageId
                                     + BaseView.isLandscape(currentActivity));
+
                             AppCMSPageAPI pageAPI;
                             if (appCMSPlaylistResult != null) {
                                 pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(this.pageId);
@@ -4638,7 +4660,7 @@ public class AppCMSPresenter {
 
     private void getPlaylistPageContent(final String apiBaseUrl,
                                         final String siteId,
-                                         String pageId,
+                                        String pageId,
                                         final AppCMSPlaylistAPIAction playlist) {
         if (currentActivity != null) {
             try {
@@ -4653,7 +4675,7 @@ public class AppCMSPresenter {
                                         apiBaseUrl,
                                         pageId,
                                         siteId
-                                        ),
+                                ),
                                 playlist);
                     } catch (IOException e) {
                     }
@@ -5189,7 +5211,8 @@ public class AppCMSPresenter {
 
     /**
      * this dialog is use for showing a message with OK button in case of TV.
-     *  @param message
+     *
+     * @param message
      * @param headerTitle
      * @param shouldNavigateToLogin
      */
@@ -5994,8 +6017,24 @@ public class AppCMSPresenter {
         }
     }
 
+    public boolean getAudioShuffledPreference() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(AUDIO_SHUFFLED_SHARED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(AUDIO_SHUFFLED_SHARED_PREF_NAME, false);
+        }
+        return false;
+    }
+
+    public void setAudioShuffledPreference(boolean isAudioShuffledOn) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(AUDIO_SHUFFLED_SHARED_PREF_NAME, 0);
+            sharedPrefs.edit().putBoolean(AUDIO_SHUFFLED_SHARED_PREF_NAME, isAudioShuffledOn).apply();
+        }
+    }
+
     /**
      * Get the total remaining free time of the user.
+     *
      * @return total remaining time in milli seconds
      */
     public long getUserFreePlayTimePreference() {
@@ -6008,6 +6047,7 @@ public class AppCMSPresenter {
 
     /**
      * Set the total remaining free time of the user.
+     *
      * @param userFreePlayTime in milli seconds
      */
     public void setUserFreePlayTimePreference(long userFreePlayTime) {
@@ -8896,7 +8936,7 @@ public class AppCMSPresenter {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
                                             getPlayerLruCache().evictAll();
-                                        }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                                        } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -8912,7 +8952,7 @@ public class AppCMSPresenter {
                                                     false,
                                                     false);
 
-                                        }  else if (getLaunchType() == LaunchType.HOME) {
+                                        } else if (getLaunchType() == LaunchType.HOME) {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
 
@@ -8985,7 +9025,7 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(updateSubscription);
                                 getPlayerLruCache().evictAll();
 
-                            }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
+                            } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
                                 Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                 currentActivity.sendBroadcast(myProfileIntent);
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -10224,6 +10264,7 @@ public class AppCMSPresenter {
         }
         return -1;
     }
+
     private int getPlaylistPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
@@ -10688,7 +10729,7 @@ public class AppCMSPresenter {
     public void playNextVideo(AppCMSVideoPageBinder binder,
                               int currentlyPlayingIndex,
                               long watchedTime) {
-       // sendCloseOthersAction(null, true, false);
+        // sendCloseOthersAction(null, true, false);
         isVideoPlayerStarted = false;
         if (!binder.isOffline()) {
             if (platformType.equals(PlatformType.ANDROID)) {
@@ -10846,7 +10887,7 @@ public class AppCMSPresenter {
                                     && !contentDatum.getStreamingInfo().getIsLiveStream();
 
                             adsUrl = getAdsUrl(pagePath);
-                            if(adsUrl == null) {
+                            if (adsUrl == null) {
                                 requestAds = false;
                             }
                             String backgroundColor = appCMSMain.getBrand()
@@ -11095,6 +11136,7 @@ public class AppCMSPresenter {
             return TemplateType.SPORTS;
         }
     }
+
     public boolean isRemovableSDCardAvailable() {
         return currentActivity != null && getStorageDirectories(currentActivity).length >= 1;
     }
@@ -12473,6 +12515,7 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
+
     private abstract static class AppCMSPlaylistAPIAction implements Action1<AppCMSPlaylistResult> {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;
@@ -12507,6 +12550,7 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
+
     private abstract static class AppCMSAudioDetailAPIAction implements Action1<AppCMSAudioDetailResult> {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;
@@ -12541,6 +12585,7 @@ public class AppCMSPresenter {
             this.searchQuery = searchQuery;
         }
     }
+
     private abstract static class AppCMSHistoryAPIAction implements Action1<AppCMSHistoryResult> {
         final boolean appbarPresent;
         final boolean fullscreenEnabled;

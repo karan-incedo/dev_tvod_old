@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/app_cms_account_title_textsize"
+    android:background="#000000"
+    android:orientation="vertical"
+   >
+
+    <LinearLayout
+        android:id="@+id/ll_upper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:orientation="horizontal">
+
+        <View
+            android:id="@+id/view_Sep"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorAccent"
+            android:orientation="horizontal">
+
+        </View>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/ll_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:id="@+id/content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_alignParentStart="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="playing song"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#ffffff"
+                tools:text=" " />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/play_pause"
+            android:layout_width="@dimen/app_cms_audio_play_width"
+            android:layout_height="@dimen/app_cms_audio_play_height"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="playpause"
+            android:layout_alignParentRight="true"
+            android:padding="8dp"
+            android:src="@drawable/play_track"
+            android:tint="#ffffff"
+            android:tintMode="src_in" />
+    </RelativeLayout>
+</LinearLayout>

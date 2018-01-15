@@ -20,10 +20,21 @@ import java.util.List;
 public class AppCMSAudioDetailResult {
 
 
+
+    @SerializedName("id")
+    @Expose
+    String  id;
+
     @SerializedName("gist")
     @Expose
     AudioGist gist;
+    public String getId() {
+        return id;
+    }
 
+    public void setId(String id) {
+        this.id = id;
+    }
     public AudioGist getGist() {
         return gist;
     }

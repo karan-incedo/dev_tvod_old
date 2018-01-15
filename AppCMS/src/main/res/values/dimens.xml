@@ -110,4 +110,9 @@
     <dimen name="chromecast_default_height">28dp</dimen>
     <dimen name="chromecast_default_padding_end">4dp</dimen>
     <dimen name="chromecast_default_padding_top">4dp</dimen>
+
+
+    <dimen name="app_cms_audio_play_width">50dp</dimen>
+    <dimen name="app_cms_audio_play_height">65dp</dimen>
+    <dimen name="app_cms_audio_play_control_height">70dp</dimen>
 </resources>
