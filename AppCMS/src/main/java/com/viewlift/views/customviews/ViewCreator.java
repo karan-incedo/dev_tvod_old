@@ -1167,9 +1167,14 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-
+                if (moduleInfo.getBlockName().contains("playlistDetail01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "playlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-
+                }
             } catch (Exception e) {
 
             }
