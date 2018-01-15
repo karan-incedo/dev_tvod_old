@@ -51,14 +51,14 @@
             },
             "tabletLandscape": {
               "yAxis": 22,
-              "xAxis": 93,
+              "xAxis": 2,
               "maximumWidth": 250,
               "fontSize": 18,
               "height": 24
             },
             "tabletPortrait": {
               "yAxis": 22,
-              "xAxis": 93,
+              "xAxis": 2,
               "maximumWidth": 250,
               "fontSize": 18,
               "height": 24
@@ -83,14 +83,14 @@
             },
             "tabletLandscape": {
               "yAxis": 40,
-              "xAxis": 93,
+              "xAxis": 2,
               "maximumWidth": 115,
               "fontSize": 12,
               "height": 17
             },
             "tabletPortrait": {
               "yAxis": 40,
-              "xAxis": 93,
+              "xAxis": 2,
               "maximumWidth": 115,
               "fontSize": 12,
               "height": 17
@@ -108,8 +108,8 @@
             "mobile": {
               "yAxis": 22,
               "xAxis": 270,
-              "width": 28,
-              "height": 28
+              "width": 27,
+              "height": 27
             },
             "tabletLandscape": {
               "yAxis": 22,
@@ -132,9 +132,9 @@
           "layout": {
             "mobile": {
               "yAxis": 22,
-              "xAxis": 300,
-              "width": 28,
-              "height": 28
+              "xAxis": 310,
+              "width": 27,
+              "height": 27
             },
             "tabletLandscape": {
               "yAxis": 22,
@@ -205,7 +205,7 @@
         {
           "layout": {
             "mobile": {
-              "gridHeight": 50,
+              "gridHeight": 90,
               "leftMargin": 0,
               "topMargin": 9.59,
               "rightMargin": 0,
@@ -214,14 +214,14 @@
             "tabletLandscape": {
               "gridHeight": 92,
               "leftMargin": 0,
-              "topMargin": 8.59,
+              "topMargin": 6.5,
               "rightMargin": 0,
               "bottomMargin": 7.81
             },
             "tabletPortrait": {
               "gridHeight": 92,
               "leftMargin": 0,
-              "topMargin": 7.59,
+              "topMargin": 6,
               "rightMargin": 0,
               "bottomMargin": 5.86
             }
@@ -234,19 +234,19 @@
                   "leftMargin": 2.67,
                   "topMargin": 0,
                   "width": 56,
-                  "height": 56
+                  "height": 80
                 },
                 "tabletLandscape": {
-                  "leftMargin": 0.98,
-                  "topMargin": 10.87,
+                  "leftMargin": 2.67,
+                  "topMargin": 0,
                   "width": 56,
-                  "height": 56
+                  "height": 80
                 },
                 "tabletPortrait": {
-                  "leftMargin": 1.3,
-                  "topMargin": 10.87,
+                  "leftMargin": 2.67,
+                  "topMargin": 0,
                   "width": 56,
-                  "height": 56
+                  "height": 80
                 }
               },
               "type": "image",
@@ -255,25 +255,25 @@
             {
               "layout": {
                 "mobile": {
-                  "leftMargin": 22.13,
-                  "topMargin": 0,
+                  "leftMargin": 64,
+                  "topMargin": 3.5,
                   "rightMargin": 14.93,
                   "fontSize": 16,
                   "height": 22
                 },
                 "tabletLandscape": {
-                  "leftMargin": 8.96,
-                  "topMargin": 11.96,
-                  "rightMargin": 6.35,
-                  "fontSize": 14,
-                  "height": 19
+                  "leftMargin": 64,
+                  "topMargin": 2.7,
+                  "rightMargin": 14.93,
+                  "fontSize": 16,
+                  "height": 22
                 },
                 "tabletPortrait": {
-                  "leftMargin": 10.96,
-                  "topMargin": 11.96,
-                  "rightMargin": 8.46,
-                  "fontSize": 14,
-                  "height": 19
+                  "leftMargin": 64,
+                  "topMargin": 2.5,
+                  "rightMargin": 14.93,
+                  "fontSize": 16,
+                  "height": 22
                 }
               },
               "fontFamily": "OpenSans",
@@ -286,55 +286,52 @@
             {
               "layout": {
                 "mobile": {
-                  "leftMargin": 22.13,
-                  "topMargin": 22,
+                  "leftMargin": 64,
+                  "topMargin": 5.5,
                   "rightMargin": 19.93,
                   "fontSize": 15,
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "leftMargin": 8.96,
-                  "topMargin": 34.78,
-                  "rightMargin": 14.46,
+                  "leftMargin": 64,
+                  "topMargin": 4.7,
+                  "rightMargin": 19.93,
                   "fontSize": 15,
-                  "height": 45
+                  "height": 20
                 },
                 "tabletPortrait": {
-                  "leftMargin": 10.96,
-                  "topMargin": 34.78,
-                  "rightMargin": 14.46,
+                  "leftMargin": 64,
+                  "topMargin": 4.5,
+                  "rightMargin": 19.93,
                   "fontSize": 15,
-                  "height": 45
+                  "height": 20
                 }
               },
               "fontFamily": "OpenSans",
               "textAlignment": "left",
               "type": "label",
               "textColor": "#ffffff",
-              "key": "description"
+              "key": "audioArtistName"
             },
             {
               "layout": {
                 "mobile": {
-                  "topMargin": 0,
-                  "rightMargin": 14.4,
-                  "bottomMargin": 32.13,
-                  "width": 18,
-                  "height": 26
+                  "topMargin": 4,
+                  "rightMargin": 20,
+                  "width": 20,
+                  "height": 20
                 },
                 "tabletLandscape": {
-                  "topMargin": 33.7,
-                  "rightMargin": 8.81,
-                  "bottomMargin": 35.87,
-                  "width": 25,
-                  "height": 26
+                  "topMargin": 4,
+                  "rightMargin": 20,
+                  "width": 20,
+                  "height": 20
                 },
                 "tabletPortrait": {
-                  "topMargin": 33.7,
-                  "rightMargin": 8.81,
-                  "bottomMargin": 35.87,
-                  "width": 25,
-                  "height": 26
+                  "topMargin": 4,
+                  "rightMargin": 20,
+                  "width": 20,
+                  "height": 20
                 }
               },
               "action": "download",
@@ -344,26 +341,23 @@
             {
               "layout": {
                 "mobile": {
-                  "topMargin": 0,
-                  "rightMargin": 1.1,
-                  "bottomMargin": 39.13,
-                  "width": 48,
+                  "topMargin": 4,
+                  "rightMargin": 1.6,
+                  "width": 15,
                   "fontSize": 12,
                   "height": 19
                 },
                 "tabletLandscape": {
-                  "topMargin": 36.96,
-                  "rightMargin": 1.82,
-                  "bottomMargin": 39.13,
-                  "width": 48,
+                  "topMargin": 4,
+                  "rightMargin": 1.6,
+                  "width": 15,
                   "fontSize": 12,
                   "height": 19
                 },
                 "tabletPortrait": {
-                  "topMargin": 34.96,
-                  "rightMargin": 1.82,
-                  "bottomMargin": 39.13,
-                  "width": 48,
+                  "topMargin": 4,
+                  "rightMargin": 1.6,
+                  "width": 15,
                   "fontSize": 12,
                   "height": 19
                 }
@@ -372,25 +366,25 @@
               "textAlignment": "left",
               "type": "label",
               "textColor": "#ffffff",
-              "key": "duration"
+              "key": "audioDuration"
             },
             {
               "layout": {
                 "mobile": {
                   "leftMargin": 0,
-                  "topMargin": 0,
+                  "yAxis": 75,
                   "rightMargin": 0,
                   "height": 1
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
-                  "topMargin": 0,
+                  "yAxis": 78,
                   "rightMargin": 0,
                   "height": 1
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
-                  "topMargin": 0,
+                  "yAxis": 75,
                   "rightMargin": 0,
                   "height": 1
                 }

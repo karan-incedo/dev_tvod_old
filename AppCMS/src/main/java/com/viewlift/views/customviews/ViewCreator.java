@@ -1640,7 +1640,7 @@ public class ViewCreator {
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.VERTICAL,
                                     false));
-                        moduleAPI.getContentData().remove(0);
+
                     AppCMSPlaylistAdapter appCMSPlaylistAdapter = new AppCMSPlaylistAdapter(context,
                             this,
                             appCMSPresenter,
@@ -2196,10 +2196,23 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0).getGist() != null) {
                             String userId = appCMSPresenter.getLoggedInUser();
                             appCMSPresenter.getUserVideoDownloadStatus(
-                                    moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                                    new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView,
+                                            appCMSPresenter,
                                             moduleAPI.getContentData().get(0), userId), userId);
                         }
-
+                        /*this is for download playlist*/
+//                        if (!gridElement &&
+//                                moduleAPI != null &&
+//                                moduleAPI.getContentData() != null &&
+//                                !moduleAPI.getContentData().isEmpty() &&
+//                                moduleAPI.getContentData().get(0) != null &&
+//                                moduleAPI.getContentData().get(0).getAudioGist() != null) {
+//                            String userId = appCMSPresenter.getLoggedInUser();
+//                            appCMSPresenter.getUserVideoDownloadStatus(
+//                                    moduleAPI.getContentData().get(0).getAudioGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
+//                                            moduleAPI.getContentData().get(0), userId), userId);
+//                        }
                         if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
                                 appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                             componentViewResult.componentView.setVisibility(View.VISIBLE);
@@ -2211,7 +2224,7 @@ public class ViewCreator {
                     case PAGE_ADD_TO_WATCHLIST_KEY:
                         ((ImageButton) componentViewResult.componentView)
                                 .setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
+                        componentViewResult.componentView.setBackgroundResource(R.drawable.add_to_watchlist);
 
                         if (moduleAPI != null &&
                                 moduleAPI.getContentData() != null &&
@@ -2223,6 +2236,18 @@ public class ViewCreator {
                                     new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
                                             .get(0).getGist().getId()));
                         }
+                        /*this is playlist audio watchlist*/
+//                        if (!gridElement &&
+//                                moduleAPI != null &&
+//                                moduleAPI.getContentData() != null &&
+//                                !moduleAPI.getContentData().isEmpty() &&
+//                                moduleAPI.getContentData().get(0) != null &&
+//                                moduleAPI.getContentData().get(0).getAudioGist() != null) {
+//                            appCMSPresenter.getUserVideoStatus(
+//                                    moduleAPI.getContentData().get(0).getAudioGist().getId(),
+//                                    new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
+//                                            .get(0).getAudioGist().getId()));
+//                        }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
                         break;

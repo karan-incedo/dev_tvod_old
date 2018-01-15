@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -96,6 +97,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         this.receivers = new ArrayList<>();
 
         if (moduleAPI != null && moduleAPI.getContentData() != null) {
+            /*removing 1st data in the list since it contains playlist GIST*/
+            if (moduleAPI.getContentData().get(0).getGist() == null) {
+                moduleAPI.getContentData().remove(0);
+            }
             this.adapterData = moduleAPI.getContentData();
         } else {
             this.adapterData = new ArrayList<>();
@@ -139,7 +144,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 this.componentViewType,
                 false,
                 false);
-
+        view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return new ViewHolder(view);
     }
 
