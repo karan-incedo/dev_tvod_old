@@ -9,6 +9,8 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,11 +39,15 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AlbumArtCache;
 import com.viewlift.Audio.MusicService;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
+import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -111,6 +117,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     private ScheduledFuture<?> mScheduleFuture;
     private PlaybackStateCompat mLastPlaybackState;
 
+    private AppCMSPresenter appCMSPresenter;
+
     public static AppCMSPlayAudioFragment newInstance(Context context) {
         AppCMSPlayAudioFragment appCMSPlayAudioFragment = new AppCMSPlayAudioFragment();
         Bundle args = new Bundle();
@@ -169,6 +177,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         mPauseDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.pause_track);
         mPlayDrawable = ContextCompat.getDrawable(getActivity(), R.drawable.play_track);
 
+        appCMSPresenter = ((AppCMSApplication) getActivity().getApplication()).
+                getAppCMSPresenterComponent().appCMSPresenter();
         if (!BaseView.isTablet(getActivity())) {
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
@@ -192,30 +202,77 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (savedInstanceState == null) {
             updateFromParams(getActivity().getIntent());
         }
+        updataeShuffleState();
+//
+//        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
+//                mMessageReceiver, new IntentFilter("INTENT_KEY"));
 
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(
-                mMessageReceiver, new IntentFilter("INTENT_KEY"));
+        getActivity().registerReceiver(mMessageReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_AUDIO_LOADING_ACTION));
+
+        getActivity().registerReceiver(mMessageReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_AUDIO_LOADING_STOP_ACTION));
         return rootView;
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            // Get extra data included in the Intent
-            long message = intent.getLongExtra("key", 0);
-            System.out.println("total duration-" + message);
-            // Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            if (intent.getAction().equals(AppCMSPresenter.PRESENTER_AUDIO_LOADING_ACTION)) {
+                progressBarLoading.setVisibility(VISIBLE);
 
-//            getActivity().finish();
+            }
+            if (intent.getAction().equals(AppCMSPresenter.PRESENTER_AUDIO_LOADING_STOP_ACTION)) {
+                progressBarLoading.setVisibility(INVISIBLE);
+
+            }
+            // Get extra data included in the Intent
+
         }
     };
 
+    private void updataeShuffleState() {
+        if (appCMSPresenter.getAudioShuffledPreference()) {
+            int tintColor = Color.parseColor(ViewCreator.getColor(getActivity(),
+                    appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
+//            shuffle.getBackground().setTint(tintColor);
+            applyTintToDrawable(shuffle.getDrawable(),tintColor);
+        } else {
+
+            int tintColor = (getActivity().getResources().getColor(android.R.color.darker_gray));
+            applyTintToDrawable(shuffle.getDrawable(),tintColor);
+
+//            shuffle.getDrawable().clearColorFilter();
+//            shuffle.setImageDrawable(null);
+//            shuffle.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.shuffle));
+
+//            applyTintToDrawable(shuffle.getDrawable(),getActivity().getResources().getColor(R.color.transparent));
+
+//            shuffle.getBackground().setTint(getActivity().getResources().getColor(R.color.transparent));
+        }
+    }
+    private void applyTintToDrawable(@Nullable Drawable drawable, int color) {
+        if (drawable != null) {
+            drawable.setTint(color);
+            drawable.setTintMode(PorterDuff.Mode.MULTIPLY);
+        }
+    }
     @Override
     public void onClick(View view) {
         if (view == shuffle) {
+            if (appCMSPresenter.getAudioShuffledPreference()) {
+                appCMSPresenter.setAudioShuffledPreference(false);
+                AudioPlaylistHelper.getAudioPlaylistHelperInstance().undoShufflePlaylist();
+            } else {
+                appCMSPresenter.setAudioShuffledPreference(true);
+                AudioPlaylistHelper.getAudioPlaylistHelperInstance().doShufflePlaylist();
+            }
+            updataeShuffleState();
         }
+
         if (view == previousTrack) {
             MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+            controls.pause();
             controls.skipToPrevious();
         }
         if (view == playPauseTrack) {
@@ -239,6 +296,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
         if (view == nextTrack) {
             MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
+            controls.pause();
             controls.skipToNext();
         }
         if (view == playlist) {
@@ -325,7 +383,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         super.onDestroy();
         stopSeekbarUpdate();
         mExecutorService.shutdown();
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mMessageReceiver);
+        getActivity().unregisterReceiver(mMessageReceiver);
     }
 
     private void fetchImageAsync(@NonNull MediaDescriptionCompat description) {

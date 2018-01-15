@@ -23,6 +23,8 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 
+import com.viewlift.models.data.appcms.playlist.AudioList;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -140,16 +142,13 @@ public class MusicLibrary {
                         .build());
     }
 
-    static Activity mActivity;
 
-    public static void setAct(Activity mActiv) {
-        mActivity = mActiv;
-    }
 
-    public static void onMediaItemSelected(MediaBrowserCompat.MediaItem item) {
-        if (item.isPlayable()) {
-            MediaControllerCompat.getMediaController(mActivity).getTransportControls()
-                    .playFromMediaId(item.getMediaId(), null);
+    public static List<String> createPlaylistByIDList(List<AudioList> audioList) {
+        List<String> audioPlaylistId = new ArrayList<String>();
+        for (AudioList audioData : audioList) {
+            audioPlaylistId.add(audioData.getGist().getId());
         }
+        return audioPlaylistId;
     }
 }

@@ -203,7 +203,6 @@ public class PlaybackControlsFragment extends Fragment {
 
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
-
                 mPlayPause.setVisibility(VISIBLE);
                 break;
             case PlaybackStateCompat.STATE_NONE:

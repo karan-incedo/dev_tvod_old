@@ -192,6 +192,8 @@ public final class LocalPlayback implements Playback {
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
+            AudioPlaylistHelper.getAudioPlaylistHelperInstance().setCurrentMediaId(mCurrentMediaId);
+
         }
 
         mListener.onMetadataChanged(item);

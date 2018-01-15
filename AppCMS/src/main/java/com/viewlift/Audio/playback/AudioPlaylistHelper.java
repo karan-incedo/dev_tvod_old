@@ -1,16 +1,20 @@
 package com.viewlift.Audio.playback;
 
-import android.content.Context;
+import android.app.Activity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
+import android.text.TextUtils;
+import android.widget.Toast;
 
-import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
-import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.viewlift.presenters.AppCMSPresenter;
 
+import net.nightwhistler.htmlspanner.TextUtil;
+
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -21,11 +25,15 @@ import java.util.TreeMap;
 public class AudioPlaylistHelper {
 
     private static final TreeMap<String, MediaMetadataCompat> music = new TreeMap<>();
-    private static List<AudioList> audioPlaylistId = new ArrayList<AudioList>();
+    private static List<String> audioPlaylistId = new ArrayList<String>();
+    private static List<String> copyOfAudioPlaylistID = new ArrayList<String>();
+
     public static AudioPlaylistHelper audioPlaylistInstance;
     public static int indexAudioFromPlaylist = 0;
     public static String CUSTOM_METADATA_TRACK_SOURCE = "__SOURCE__";
+    String mCurrentMusicId = "";
 
+    Activity mAct;
     private AppCMSPresenter appCmsPresenter;
 
     public static AudioPlaylistHelper getAudioPlaylistHelperInstance() {
@@ -35,32 +43,78 @@ public class AudioPlaylistHelper {
         return audioPlaylistInstance;
     }
 
-    public AudioPlaylistHelper() {
-    }
-
-    public void setAppCMSPresenter(AppCMSPresenter appCmsPresenterInstance) {
+    public void setAppCMSPresenter(AppCMSPresenter appCmsPresenterInstance, Activity mActivity) {
         appCmsPresenter = appCmsPresenterInstance;
+        mAct = mActivity;
     }
 
-    public static void setPlaylist(List<AudioList> arrPlaylist) {
+    public void setPlaylist(List<String> arrPlaylist) {
         audioPlaylistId = arrPlaylist;
-        indexAudioFromPlaylist = 0;
-    }
-
-    public static List<AudioList> getPlaylist() {
-        return audioPlaylistId;
-    }
-
-    public  void autoPlayNextItemOnComplete(){
-        if(audioPlaylistId.size()<indexAudioFromPlaylist){
-           String mediaId= audioPlaylistId.get(indexAudioFromPlaylist).getGist().getId();
-            getAudioDataFromPlaylistToPlay(mediaId);
+        if (appCmsPresenter.getAudioShuffledPreference()) {
+            doShufflePlaylist();
+        } else {
+            indexAudioFromPlaylist = 0;
         }
     }
 
-    public  void getAudioDataFromPlaylistToPlay(String MediaId) {
+    public static List<String> getPlaylist() {
+        return audioPlaylistId;
+    }
+
+    public void doShufflePlaylist() {
+        copyOfAudioPlaylistID.clear();
+        copyOfAudioPlaylistID.addAll(audioPlaylistId);
+        Collections.shuffle(audioPlaylistId);
+
+        //reset current Media Id
+        if (getCurrentMediaId() != null && TextUtils.isEmpty(getCurrentMediaId())) {
+            indexAudioFromPlaylist = audioPlaylistId.indexOf(getCurrentMediaId());
+        } else {
+            indexAudioFromPlaylist = 0;
+        }
+    }
+
+    public void undoShufflePlaylist() {
+        copyOfAudioPlaylistID.clear();
+        audioPlaylistId.addAll(copyOfAudioPlaylistID);
+
+        //reset current Media Id
+        indexAudioFromPlaylist = audioPlaylistId.indexOf(getCurrentMediaId());
+
+    }
+
+    public void autoPlayNextItemFromPLaylist() {
         indexAudioFromPlaylist++;
-        appCmsPresenter.getAudioDetail(MediaId);
+        if (audioPlaylistId.size() > indexAudioFromPlaylist) {
+            String mediaId = audioPlaylistId.get(indexAudioFromPlaylist);
+            appCmsPresenter.getAudioDetail(mediaId);
+        }
+    }
+
+    // play audio on click on item so set index position as per sequence of
+    public void playAudioOnClick(String mediaId) {
+        indexAudioFromPlaylist = audioPlaylistId.indexOf(mediaId);
+        appCmsPresenter.getAudioDetail(mediaId);
+    }
+
+    public void skipToNextItem() {
+        indexAudioFromPlaylist++;
+        if (audioPlaylistId.size() > indexAudioFromPlaylist) {
+            String mediaId = audioPlaylistId.get(indexAudioFromPlaylist);
+            appCmsPresenter.getAudioDetail(mediaId);
+        } else {
+            Toast.makeText(mAct, "No next item avilable in playlist", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void skipToPreviousItem() {
+        indexAudioFromPlaylist--;
+        if ((audioPlaylistId.size() > indexAudioFromPlaylist) && indexAudioFromPlaylist >= 0) {
+            String mediaId = audioPlaylistId.get(indexAudioFromPlaylist);
+            appCmsPresenter.getAudioDetail(mediaId);
+        } else {
+            Toast.makeText(mAct, "No previous item avilable in playlist", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public static void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
@@ -124,5 +178,13 @@ public class AudioPlaylistHelper {
             MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls()
                     .playFromMediaId(item.getMediaId(), null);
         }
+    }
+
+    public void setCurrentMediaId(String mediaId) {
+        mCurrentMusicId = mediaId;
+    }
+
+    public String getCurrentMediaId() {
+        return mCurrentMusicId;
     }
 }

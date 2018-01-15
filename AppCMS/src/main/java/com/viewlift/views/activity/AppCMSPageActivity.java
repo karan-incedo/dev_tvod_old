@@ -68,7 +68,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
-import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
@@ -234,10 +233,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (!BaseView.isTablet(this)) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
-
         setContentView(R.layout.activity_appcms_page);
-        MusicLibrary.setAct(this);
-        updateMetaDataContent();
         ButterKnife.bind(this);
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
@@ -747,7 +743,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
         appCMSPresenter.setCancelAllLoads(false);
         AudioServiceHelper.getAudioInstance().onStart();
-
+        AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter,this);
     }
 
     @Override
@@ -1477,7 +1473,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             if (!(appCMSPageFragment instanceof AppCMSPageFragment) && appCMSPresenter.videoPlayerView != null) {
                 appCMSPresenter.videoPlayerView.pausePlayer();
-          }
+            }
             if (appCMSPageFragment != null) {
                 fragmentTransaction.replace(R.id.app_cms_fragment, appCMSPageFragment,
                         appCMSBinder.getPageId() + BaseView.isLandscape(this));
@@ -2580,44 +2576,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
 
         }
-    }
-
-
-    private void updateMetaDataContent() {
-
-
-        MusicLibrary.createMediaMetadataCompat("1",
-                "Playlist 1/ item 1",
-                "Playlist 1/ item 1",
-                "The 126ers",
-                "Youtube Audio Library Rock 2",
-                102,
-                2,
-                R.drawable.cast_album_art_placeholder,
-                "album_youtube_audio_library_rock_2", 2, "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3", 2, "http://storage.googleapis.com/automotive-media/album_art_2.jpg");
-
-
-        MusicLibrary.createMediaMetadataCompat("2",
-                "Playlist 1/ item 2",
-                "Playlist 1/ item 2",
-                "The 126ers",
-                "Youtube Audio Library Rock 2",
-                102,
-                2,
-                R.drawable.cast_album_art_placeholder,
-                "album_youtube_audio_library_rock_2", 2, "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3", 2, "http://storage.googleapis.com/automotive-media/album_art_2.jpg");
-
-
-        MusicLibrary.createMediaMetadataCompat("2",
-                "Playlist 1/ item 3",
-                "Playlist 1/ item 3",
-                "The 126ers",
-                "Youtube Audio Library Rock 2",
-                102,
-                2,
-                R.drawable.cast_album_art_placeholder,
-                "album_youtube_audio_library_rock_2", 2, "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3", 2, "http://storage.googleapis.com/automotive-media/album_art_2.jpg");
-
     }
 
 }

@@ -10,8 +10,10 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 import java.util.List;
 
@@ -28,6 +30,9 @@ public class AudioServiceHelper {
             audioHelper = new AudioServiceHelper();
         }
         return audioHelper;
+    }
+    public void createAudioPlaylistInstance(AppCMSPresenter appCMSPresenter,Activity mActivity){
+        AudioPlaylistHelper .getAudioPlaylistHelperInstance().setAppCMSPresenter(appCMSPresenter,mActivity);
     }
 
     public void createMediaBrowserService(Activity mActivity) {

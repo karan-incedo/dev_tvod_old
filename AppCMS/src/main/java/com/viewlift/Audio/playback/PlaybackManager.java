@@ -70,6 +70,7 @@ public class PlaybackManager implements Playback.Callback {
     public void handlePlayRequest() {
         MediaMetadataCompat currentMusic = getCurrentMediaData();
         if (currentMusic != null) {
+
             mServiceCallback.onPlaybackStart();
             mPlayback.play(currentMusic);
         }
@@ -168,16 +169,11 @@ public class PlaybackManager implements Playback.Callback {
     @Override
     public void onCompletion() {
         {
-            if (AudioPlaylistHelper.getPlaylist().size() >= AudioPlaylistHelper.indexAudioFromPlaylist) {
+            if (AudioPlaylistHelper.getPlaylist().size() <= AudioPlaylistHelper.indexAudioFromPlaylist+1) {
                 handleStopRequest(null);
             } else {
-                AudioPlaylistHelper.getAudioPlaylistHelperInstance().autoPlayNextItemOnComplete();
+                AudioPlaylistHelper.getAudioPlaylistHelperInstance().autoPlayNextItemFromPLaylist();
             }
-
-//            MediaBrowserCompat.MediaItem item = MusicLibrary.getMediaItems().get(1);
-//            PlaybackManager.setCurrentMediaData(MusicLibrary.getMetadata(mContext,item.getMediaId()));
-//            MusicLibrary.onMediaItemSelected(item);
-            // If skipping was not possible, we stop and release the resources:
 
         }
     }
@@ -256,57 +252,20 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-//            if (mQueueManager.skipQueuePosition(1)) {
-//                handlePlayRequest();
-//            } else {
-//                handleStopRequest("Cannot skip");
-//            }
-//            mQueueManager.updateMetadata();
+            AudioPlaylistHelper.getAudioPlaylistHelperInstance().skipToNextItem();
         }
 
         @Override
         public void onSkipToPrevious() {
-//            if (mQueueManager.skipQueuePosition(-1)) {
-//                handlePlayRequest();
-//            } else {
-//                handleStopRequest("Cannot skip");
-//            }
-//            mQueueManager.updateMetadata();
+            AudioPlaylistHelper.getAudioPlaylistHelperInstance().skipToPreviousItem();
+
         }
 
         @Override
         public void onCustomAction(@NonNull String action, Bundle extras) {
-//            if (CUSTOM_ACTION_THUMBS_UP.equals(action)) {
-//                LogHelper.i(TAG, "onCustomAction: favorite for current track");
-//                MediaSessionCompat.QueueItem currentMusic = mQueueManager.getCurrentMusic();
-//                if (currentMusic != null) {
-//                    String mediaId = currentMusic.getDescription().getMediaId();
-//                    if (mediaId != null) {
-//                        String musicId = MediaIDHelper.extractMusicIDFromMediaID(mediaId);
-//                        mMusicProvider.setFavorite(musicId, !mMusicProvider.isFavorite(musicId));
-//                    }
-//                }
-//                // playback state needs to be updated because the "Favorite" icon on the
-//                // custom action will change to reflect the new favorite state.
-//                updatePlaybackState(null);
-//            } else {
-//                LogHelper.e(TAG, "Unsupported action: ", action);
-//            }
+
         }
 
-        /**
-         * Handle free and contextual searches.
-         * <p/>
-         * All voice searches on Android Auto are sent to this method through a connected
-         * {@link android.support.v4.media.session.MediaControllerCompat}.
-         * <p/>
-         * Threads and async handling:
-         * Search, as a potentially slow operation, should run in another thread.
-         * <p/>
-         * Since this method runs on the main thread, most apps with non-trivial metadata
-         * should defer the actual search to another thread (for example, by using
-         * an {@link AsyncTask} as we do here).
-         **/
         @Override
         public void onPlayFromSearch(final String query, final Bundle extras) {
 

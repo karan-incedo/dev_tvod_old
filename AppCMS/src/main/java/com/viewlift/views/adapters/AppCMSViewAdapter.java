@@ -2,6 +2,7 @@ package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
@@ -18,9 +19,6 @@ import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.api.SubscriptionPlan;
-import com.viewlift.models.data.appcms.audio.AudioGist;
-import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -434,21 +432,22 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                                         data.getGist().getContentType() != null &&
                                         data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                    List<AudioList> audioPlaylistId = new ArrayList<AudioList>();
-                                    AudioGist audioGist = new AudioGist();
-                                    audioGist.setId(data.getGist().getId());
-                                    audioPlaylistId.get(0).setGist(audioGist);
-
-                                    new AudioPlaylistHelper().getAudioPlaylistHelperInstance().setPlaylist(audioPlaylistId);
-                                    new AudioPlaylistHelper().getAudioPlaylistHelperInstance().getAudioDataFromPlaylistToPlay(data.getGist().getId());
+                                    List<String> audioPlaylistId = new ArrayList<String>();
+                                    audioPlaylistId.add(data.getGist().getId());
+                                    AudioPlaylistHelper.getAudioPlaylistHelperInstance().setPlaylist(audioPlaylistId);
+                                    appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                                            .PRESENTER_PAGE_LOADING_ACTION));
+                                    AudioPlaylistHelper.getAudioPlaylistHelperInstance().playAudioOnClick(data.getGist().getId());
                                     return;
                                 }
+
                                 /*Get playlist data and open playlist page*/
                                 if (data.getGist() != null && data.getGist().getMediaType() != null
                                         && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_playlist).toLowerCase())) {
                                     appCMSPresenter.navigateToPlaylistPage(data.getGist().getId(), data.getGist().getTitle(), null, false);
                                     return;
                                 }
+
                                 if (action.contains(openOptionsAction)) {
                                     appCMSPresenter.launchButtonSelectedAction(permalink,
                                             openOptionsAction,
