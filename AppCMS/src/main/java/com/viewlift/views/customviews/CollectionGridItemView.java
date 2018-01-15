@@ -495,7 +495,7 @@ public class CollectionGridItemView extends BaseView {
                         } else {
                             ViewCreator.setViewWithSubtitle(getContext(), data, view);
                         }
-                    }  else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY) {
                         ((TextView) view).setText(appCMSPresenter.getDownloadedFileSize(data.getGist().getId()));
@@ -518,6 +518,17 @@ public class CollectionGridItemView extends BaseView {
                                     .append(" ")
                                     .append(context.getString(R.string.mins_abbreviation));
 
+                            ((TextView) view).setText(runtimeText);
+                        }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
+                        final int SECONDS_PER_MINS = 60;
+                        if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
+                            StringBuilder runtimeText = new StringBuilder()
+                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS);
+                            ((TextView) view).setText(runtimeText);
+                        } else {
+                            StringBuilder runtimeText = new StringBuilder()
+                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS);
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
@@ -550,6 +561,8 @@ public class CollectionGridItemView extends BaseView {
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
                         }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
+                        ((TextView) view).setText(data.getGist().getDescription());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
                         ((TextView) view).setText(data.getGist().getDescription());
                         try {

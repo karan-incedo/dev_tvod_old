@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,8 +30,11 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static com.viewlift.models.data.appcms.downloads.DownloadStatus.STATUS_RUNNING;
 
 /*
  * Created by viewlift on 5/5/17.
@@ -88,6 +93,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         this.receivers = new ArrayList<>();
 
         if (moduleAPI != null && moduleAPI.getContentData() != null) {
+            /*removing 1st data in the list since it contains playlist GIST*/
+            if (moduleAPI.getContentData().get(0).getGist() == null) {
+                moduleAPI.getContentData().remove(0);
+            }
             this.adapterData = moduleAPI.getContentData();
         } else {
             this.adapterData = new ArrayList<>();
@@ -131,7 +140,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 this.componentViewType,
                 false,
                 false);
-
+        view.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return new ViewHolder(view);
     }
 
@@ -196,9 +205,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                         data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                                         data.getGist().getContentType() != null &&
                                         data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                    appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
-                                            .PRESENTER_AUDIO_LOADING_ACTION));
-                                    AudioPlaylistHelper.getAudioPlaylistHelperInstance().playAudioOnClick(data.getGist().getId());
+                                    appCMSPresenter.getAudioDetail(data.getGist().getId());
                                     return;
                                 }
 
