@@ -720,6 +720,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_duration_key),
                 AppCMSUIKeyType.PAGE_HISTORY_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_audio_duration_key),
+                AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_watched_time_key),
                 AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_delete_download_key),
@@ -736,6 +738,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PLAYLIST_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_sub_title_key),
                 AppCMSUIKeyType.PAGE_PLAYLIST_SUB_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_audio_artist_key),
+                AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE);
     }
 
     private void createPageNameToActionMap(Context context) {
