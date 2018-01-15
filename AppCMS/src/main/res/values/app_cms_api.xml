@@ -565,4 +565,6 @@
     <string name="app_cms_audio_detail_api_url">%1$s/content/audio?site=%2$s&amp;id=%3$s</string>
     <string name="app_cms_page_playlist_title_key">playlistTitle</string>
     <string name="app_cms_page_playlist_sub_title_key">playlistSubTitle</string>
+    <string name="app_cms_page_playlist_audio_duration_key">audioDuration</string>
+    <string name="app_cms_page_playlist_audio_artist_key">audioArtistName</string>
 </resources>
