@@ -69,6 +69,14 @@ public class GetAppCMSAPIAsyncTask {
                                     currentParams.modules);
                         } catch (IOException e) {
                             //Log.e(TAG, "DialogType retrieving page API data: " + e.getMessage());
+                        } catch (OutOfMemoryError e) {
+                            try {
+                                System.gc();
+                                Thread.sleep(1000);
+                                execute(params);
+                            } catch (Exception e1) {
+
+                            }
                         }
                     }
                     return null;
