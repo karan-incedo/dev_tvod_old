@@ -2,6 +2,7 @@ package com.viewlift.views.fragments;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -10,6 +11,8 @@ import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +21,10 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
@@ -33,6 +37,9 @@ import com.viewlift.views.components.DaggerAppCMSViewComponent;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.modules.AppCMSPageViewModule;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 
@@ -155,6 +162,10 @@ public class AutoplayFragment extends Fragment {
                 if (URLUtil.isFileUrl(binder.getContentData().getGist().getVideoImageUrl())) {
                     loadImageFromLocalSystem = true;
                     imageURI = Uri.parse(binder.getContentData().getGist().getVideoImageUrl());
+                } else if (binder.getContentData().getGist().getImageGist() != null &&
+                        !TextUtils.isEmpty(binder.getContentData().getGist().getImageGist().get_16x9())) {
+                    loadImageFromLocalSystem = false;
+                    imageUrl = binder.getContentData().getGist().getImageGist().get_16x9();
                 } else {
                     loadImageFromLocalSystem = false;
                     imageUrl = binder.getContentData().getGist().getVideoImageUrl();
@@ -163,6 +174,10 @@ public class AutoplayFragment extends Fragment {
                 if (URLUtil.isFileUrl(binder.getContentData().getGist().getPosterImageUrl())) {
                     loadImageFromLocalSystem = true;
                     imageURI = Uri.parse(binder.getContentData().getGist().getPosterImageUrl());
+                } else if (binder.getContentData().getGist().getImageGist() != null &&
+                        !TextUtils.isEmpty(binder.getContentData().getGist().getImageGist().get_16x9())) {
+                    loadImageFromLocalSystem = false;
+                    imageUrl = binder.getContentData().getGist().getImageGist().get_16x9();
                 } else {
                     loadImageFromLocalSystem = false;
                     imageUrl = binder.getContentData().getGist().getPosterImageUrl();
@@ -171,132 +186,28 @@ public class AutoplayFragment extends Fragment {
 
             if (loadImageFromLocalSystem) {
                 RequestOptions requestOptions = new RequestOptions()
-                        .transform(new BlurTransformation(getContext()));
+                        .transform(new AutoplayBlurTransformation(getContext(), imageURI.toString()));
                 Glide.with(getContext()).load(imageURI)
                         .apply(requestOptions)
-                        .into(new Target<Drawable>() {
-
-                            @Override
-                            public void onStart() {
-
-                            }
-
-                            @Override
-                            public void onStop() {
-
-                            }
-
-                            @Override
-                            public void onDestroy() {
-
-                            }
-
-                            @Override
-                            public void onLoadStarted(@Nullable Drawable placeholder) {
-
-                            }
-
-                            @Override
-                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-
-                            }
-
+                        .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                                 if (isAdded() && isVisible()) {
                                     pageView.setBackground(resource);
                                 }
-                            }
-
-                            @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                            }
-
-                            @Override
-                            public void getSize(@NonNull SizeReadyCallback cb) {
-
-                            }
-
-                            @Override
-                            public void removeCallback(@NonNull SizeReadyCallback cb) {
-
-                            }
-
-                            @Override
-                            public void setRequest(@Nullable Request request) {
-
-                            }
-
-                            @Nullable
-                            @Override
-                            public Request getRequest() {
-                                return null;
                             }
                         });
             } else {
                 RequestOptions requestOptions = new RequestOptions()
-                        .transform(new BlurTransformation(getContext()));
+                        .transform(new AutoplayBlurTransformation(getContext(), imageUrl));
                 Glide.with(getContext()).load(imageUrl)
                         .apply(requestOptions)
-                        .into(new Target<Drawable>() {
-
-                            @Override
-                            public void onStart() {
-
-                            }
-
-                            @Override
-                            public void onStop() {
-
-                            }
-
-                            @Override
-                            public void onDestroy() {
-
-                            }
-
-                            @Override
-                            public void onLoadStarted(@Nullable Drawable placeholder) {
-
-                            }
-
-                            @Override
-                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
-
-                            }
-
+                        .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                                 if (isAdded() && isVisible()) {
                                     pageView.setBackground(resource);
                                 }
-                            }
-
-                            @Override
-                            public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                            }
-
-                            @Override
-                            public void getSize(@NonNull SizeReadyCallback cb) {
-
-                            }
-
-                            @Override
-                            public void removeCallback(@NonNull SizeReadyCallback cb) {
-
-                            }
-
-                            @Override
-                            public void setRequest(@Nullable Request request) {
-
-                            }
-
-                            @Nullable
-                            @Override
-                            public Request getRequest() {
-                                return null;
                             }
                         });
             }
@@ -428,5 +339,40 @@ public class AutoplayFragment extends Fragment {
         void onCountdownFinished();
 
         void cancelCountdown();
+    }
+
+    private static class AutoplayBlurTransformation extends BlurTransformation {
+        private final String ID;
+
+        public AutoplayBlurTransformation(Context context, String imageUrl) {
+            super(context);
+            this.ID = imageUrl;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof AutoplayBlurTransformation;
+        }
+
+        @Override
+        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+            try {
+                byte[] ID_BYTES = ID.getBytes(STRING_CHARSET_NAME);
+                messageDigest.update(ID_BYTES);
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG, "Could not update disk cache key: " + e.getMessage());
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return ID.hashCode();
+        }
+
+        @NonNull
+        @Override
+        public Resource<Bitmap> transform(@NonNull Context context, @NonNull Resource<Bitmap> resource, int outWidth, int outHeight) {
+            return super.transform(resource, outWidth, outHeight);
+        }
     }
 }

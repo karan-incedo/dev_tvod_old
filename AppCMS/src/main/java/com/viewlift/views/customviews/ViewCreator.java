@@ -3639,38 +3639,44 @@ public class ViewCreator {
                         if (moduleAPI != null && moduleAPI.getContentData() != null &&
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
-                                moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                moduleAPI.getContentData().get(0).getGist() != null) {
                             int viewWidth = (int) BaseView.getViewWidth(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             int viewHeight = (int) BaseView.getViewHeight(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                            if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                        moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
-                                    Glide.with(context)
-//                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .apply(new RequestOptions().override(viewWidth, viewHeight))
-                                            .into((ImageView) componentViewResult.componentView);
-                                }
-                            } else if (viewWidth > 0) {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
-                                    Glide.with(context)
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
-                                            .into((ImageView) componentViewResult.componentView);
-                                }
-                            } else {
-                                if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
-                                    Glide.with(context)
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .into((ImageView) componentViewResult.componentView);
+                            String imageUrl = "";
+                            if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                imageUrl = moduleAPI.getContentData().get(0).getGist().getVideoImageUrl();
+                            } else if (moduleAPI.getContentData().get(0).getGist().getImageGist() != null &&
+                                    !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getImageGist().get_16x9())) {
+                                imageUrl = moduleAPI.getContentData().get(0).getGist().getImageGist().get_16x9();
+                            }
+                            if (!TextUtils.isEmpty(imageUrl)) {
+                                if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
+                                    if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                            imageUrl)) {
+                                        Glide.with(context)
+                                                .load(imageUrl)
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight))
+                                                .into((ImageView) componentViewResult.componentView);
+                                    }
+                                } else if (viewWidth > 0) {
+                                    if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                            imageUrl)) {
+                                        Glide.with(context)
+                                                .load(imageUrl)
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
+                                                .into((ImageView) componentViewResult.componentView);
+                                    }
+                                } else {
+                                    if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                            imageUrl)) {
+                                        Glide.with(context)
+                                                .load(imageUrl)
+                                                .into((ImageView) componentViewResult.componentView);
+                                    }
                                 }
                             }
                             componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
