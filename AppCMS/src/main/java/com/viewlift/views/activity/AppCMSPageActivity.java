@@ -69,6 +69,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
@@ -176,6 +177,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private Map<String, AppCMSBinder> appCMSBinderMap;
     private BroadcastReceiver presenterActionReceiver;
     private BroadcastReceiver presenterCloseActionReceiver;
+    private BroadcastReceiver processDeeplinkReceiver;
     private BroadcastReceiver networkConnectedReceiver;
     private BroadcastReceiver wifiConnectedReceiver;
     private BroadcastReceiver downloadReceiver;
@@ -279,10 +281,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 //                    Log.d(TAG, "Nav item - Received broadcast to select navigation item with page Id: " +
 //                            intent.getStringExtra(getString(R.string.navigation_item_key)));
                     selectNavItem(intent.getStringExtra(getString(R.string.navigation_item_key)));
-                } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION)) {
-                    if (intent.getData() != null) {
-                        processDeepLink(intent.getData());
-                    }
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_UPDATE_HISTORY_ACTION)) {
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION)) {
@@ -298,6 +296,40 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        processDeeplinkReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getPackageName()) != null &&
+                        !intent.getStringExtra(Utils.getProperty("AppPackageName", AppCMSPageActivity.this)).equals(getPackageName())) {
+                    return;
+                }
+
+                if (intent == null ||
+                        intent.getStringExtra(getPackageName()) == null) {
+                    return;
+                }
+
+                String deeplinkUrl = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
+                if (!TextUtils.isEmpty(deeplinkUrl)) {
+                    if (!isActive) {
+                        if (appCMSPresenter.getCurrentActivity() != null) {
+                            try {
+                                Intent appCMSIntent = new Intent(appCMSPresenter.getCurrentActivity(),
+                                        AppCMSPageActivity.class);
+                                appCMSIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                appCMSIntent.putExtra(getString(R.string.deeplink_uri_extra_key), deeplinkUrl);
+                                appCMSPresenter.getCurrentActivity().startActivity(appCMSIntent);
+                            } catch (Exception e) {
+
+                            }
+                        }
+                    } else {
+                        processDeepLink(Uri.parse(deeplinkUrl));
+                    }
+                }
+            }
+        };
         presenterCloseActionReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -438,6 +470,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_UPDATE_LISTS_ACTION));
         registerReceiver(refreshPageDataReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
+        registerReceiver(processDeeplinkReceiver,
+                new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
+
 
         resumeInternalEvents = false;
 
@@ -796,6 +831,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } catch (Exception e) {
 
         }
+        if (pendingDeeplinkUri != null) {
+            processDeepLink(pendingDeeplinkUri);
+            pendingDeeplinkUri = null;
+        }
     }
 
     private void refreshPageData() {
@@ -868,6 +907,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 false);
                     }
                 }
+
+                String deeplinkUri = intent.getStringExtra(getString(R.string.deeplink_uri_extra_key));
+                if (!TextUtils.isEmpty(deeplinkUri)) {
+                    pendingDeeplinkUri = Uri.parse(deeplinkUri);
+                }
             }
         } catch (Exception e) {
             //
@@ -912,6 +956,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             unregisterReceiver(downloadReceiver);
             unregisterReceiver(notifyUpdateListsReceiver);
             unregisterReceiver(refreshPageDataReceiver);
+            unregisterReceiver(processDeeplinkReceiver);
             unregisterReceiver(presenterCloseActionReceiver);
         } catch (IllegalArgumentException e) {
 //            Log.e(TAG, "receiver not regiestered " + e.getMessage());
@@ -2224,6 +2269,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
         getSupportFragmentManager().removeOnBackStackChangedListener(this);
+        if (updatedAppCMSBinder != null && updatedAppCMSBinder.getSearchQuery() != null) {
+            //Log.d(TAG, "Successfully loaded page " + appCMSBinder.getPageName());
+            //Log.d(TAG, "Processing search query for deeplink " +
+//                    appCMSBinder.getSearchQuery().toString());
+            appCMSPresenter.sendDeepLinkAction(updatedAppCMSBinder.getSearchQuery());
+            updatedAppCMSBinder.clearSearchQuery();
+        }
     }
 
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {

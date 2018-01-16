@@ -1,8 +1,7 @@
-#Tue Jan 16 14:55:06 IST 2018
+#Fri Jan 12 16:41:00 IST 2018
 ApptentiveSignatureKey=d196feabafb604e3852752548638e9fd
 GcmSender=525148171038
 AppTitle=Monumental Sports Network
-HostNameSuffix=*.monumentalsportsnetwork.com
 UAirshipDevelopmentAppKey=daf6iGYnT1eC5Fb2Hkw1ug
 AppName=Monumental Sports Network
 AppPackageName=com.mse.monumentalnetworks
@@ -20,6 +19,7 @@ FeatureGraphicUrl=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8b
 JsonKeyFile=https\://s3.amazonaws.com/appcms-config/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources/playstore/googleplay_android.json
 AppsFlyerDevKey=00000000000
 HostName=www.monumentalsportsnetwork.com
+HostNameSuffix=*.monumentalsportsnetwork.com
 PromoVideoUrl=https\://www.youtube.com/watch?v\=PDhVJfEFxik
 AppResourcesPath=https\://appcms.viewlift.com/be98b78d-605d-42fb-a8ba-80b10dafa733/_temp/build/fireTv/resources
 AppsFlyerProdKey=00000000000

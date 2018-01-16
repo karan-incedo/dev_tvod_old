@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.mse.monumentalnetworks'
-def final customApplicationId = 'Monumental Sports Network'
-def final hostName = "www.monumentalsportsnetwork.com"
+def final packageName = 'com.mll.laxsportsnetwork'
+def final customApplicationId = 'Lax Sports Network'
+def final hostName = "lax.viewlift.com"
 
 
 def final appVersionName = "2.0.62"

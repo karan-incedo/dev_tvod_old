@@ -52,6 +52,7 @@ android {
     def packageName
     def customApplicationId
     def hostName
+    def hostNameSuffix
     def appVersionCode
     def appVersionName
     //def minsdkversion
@@ -67,6 +68,7 @@ android {
         packageName = versionProps['AppPackageName'].toString()
         customApplicationId = versionProps['AppName'].toString()
         hostName = versionProps['HostName'].toString()
+        hostNameSuffix = versionProps['HostNameSuffix'].toString()
         appVersionCode = versionProps['AppVersionCode'].toInteger()
         appVersionName = versionProps['AppVersionName'].toString()
         //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
@@ -75,6 +77,7 @@ android {
         versionProps['AppPackageName'] = packageName.toString()
         versionProps['AppName'] = customApplicationId.toString()
         versionProps['HostName'] = hostName.toString()
+        versionProps['HostNameSuffix'] = hostNameSuffix.toString()
         versionProps['AppVersionCode'] = appVersionCode.toString()
         versionProps['AppVersionName'] = appVersionName.toString()
         //versionProps['MIN_SDK_VERSION'] = minsdkversion.toString()
@@ -169,6 +172,7 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
@@ -181,6 +185,7 @@ android {
             resValue "string", "app_name", "${customApplicationId}"
             resValue "string", "app_cms_search_provider", "${packageName}.provider"
             resValue "string", "app_cms_app_host_name", "${hostName}"
+            resValue "string", "app_cms_app_host_name_suffix", "${hostNameSuffix}"
             resValue "string", "app_cms_app_version", "${appVersionName}"
             buildConfigField "String", "AUTHORITY", "\"${packageName}.provider\""
         }
