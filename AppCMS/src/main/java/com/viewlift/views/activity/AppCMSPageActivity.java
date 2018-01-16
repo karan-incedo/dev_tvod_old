@@ -1095,7 +1095,11 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 if (shouldRefresh) {
                     refreshPageData();
                 } else {
-                    pageLoading(false);
+                    if (!appCMSBinderStack.isEmpty() &&
+                            appCMSBinderMap.get(appCMSBinderStack.peek()) != null &&
+                            appCMSBinderMap.get(appCMSBinderStack.peek()).getAppCMSPageAPI() != null) {
+                        pageLoading(false);
+                    }
                 }
             }
         }, true, 0, 0);
@@ -1710,7 +1714,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
         //Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
 
-        pageLoading(false);
+//        pageLoading(false);
 
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
         createFragment(appCMSBinder);
