@@ -14,6 +14,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.percent.PercentRelativeLayout;
 import android.text.TextUtils;
@@ -225,7 +226,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
             freeContent = args.getBoolean(getString(R.string.free_content_key));
-            Log.d(TAG, "ANAS: free " + freeContent);
         }
 
         appCMSPresenter =
@@ -1181,13 +1181,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                 (LinearLayout) rootView.findViewById(R.id.app_cms_content_rating_info_container);
 
         contentRatingHeaderView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_header_view);
-        setTypeFace(mContext, contentRatingHeaderView, getString(R.string.helvaticaneu_bold));
 
         contentRatingTitleHeader = (TextView) rootView.findViewById(R.id.app_cms_content_rating_title_header);
-        setTypeFace(mContext, contentRatingTitleHeader, getString(R.string.helvaticaneu_italic));
 
         contentRatingDiscretionView = (TextView) rootView.findViewById(R.id.app_cms_content_rating_viewer_discretion);
-        setTypeFace(mContext, contentRatingDiscretionView, getString(R.string.helvaticaneu_bold));
 
         progressBar = (ProgressBar) rootView.findViewById(R.id.app_cms_content_rating_progress_bar);
 
@@ -1215,7 +1212,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             videoPlayerMainContainer.setVisibility(View.GONE);
             contentRatingMainContainer.setVisibility(View.VISIBLE);
             contentRatingTitleHeader.setText(getString(R.string.content_rating_description_placeholder, parentalRating));
-            startCountdown();
+            new Handler().post(this::startCountdown);
         } else {
             contentRatingMainContainer.setVisibility(View.GONE);
             videoPlayerMainContainer.setVisibility(View.VISIBLE);
