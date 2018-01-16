@@ -854,7 +854,13 @@ public class AppCMSPresenter {
     public void unsetCurrentActivity(Activity closedActivity) {
         if (currentActivity == closedActivity) {
             currentActivity = null;
-            this.realmController.closeRealm();
+            if (this.realmController != null) {
+                try {
+                    this.realmController.closeRealm();
+                } catch (Exception e) {
+
+                }
+            }
         }
     }
 
@@ -1803,7 +1809,8 @@ public class AppCMSPresenter {
                             getPageIdContent(apiUrl,
                                     pagePath,
                                     null,
-                                    appCMSPageUI.getCaching() != null &&
+                                    appCMSPageUI != null &&
+                                            appCMSPageUI.getCaching() != null &&
                                             !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                                             appCMSPageUI.getCaching().isEnabled(),
                                     new AppCMSPageAPIAction(appbarPresent,
@@ -3683,17 +3690,31 @@ public class AppCMSPresenter {
 
     @UiThread
     public boolean isVideoDownloaded(String videoId) {
-        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
-                getLoggedInUser());
-        return downloadVideoRealm != null &&
-                downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
-                downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED;
+        if (realmController != null) {
+            try {
+                DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
+                        getLoggedInUser());
+                return downloadVideoRealm != null &&
+                        downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId) &&
+                        downloadVideoRealm.getDownloadStatus() == DownloadStatus.STATUS_COMPLETED;
+            } catch (Exception e) {
+
+            }
+        }
+        return false;
     }
 
     @UiThread
     private boolean isVideoDownloadedByOtherUser(String videoId) {
-        DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(videoId);
-        return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
+        if (realmController != null) {
+            try {
+                DownloadVideoRealm downloadVideoRealm = realmController.getDownloadById(videoId);
+                return downloadVideoRealm != null && downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId);
+            } catch (Exception e) {
+
+            }
+        }
+        return false;
     }
 
     @UiThread
@@ -8753,14 +8774,16 @@ public class AppCMSPresenter {
                     endPoint,
                     siteId,
                     getPageId(appCMSPageUI),
-                    appCMSPageUI.getCaching() != null &&
+                    appCMSPageUI != null &&
+                            appCMSPageUI.getCaching() != null &&
                             !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                             appCMSPageUI.getCaching().isEnabled());
             getPageViewLruCache().remove(pageId);
             getPageIdContent(apiUrl,
                     getPageId(appCMSPageUI),
                     modules,
-                    appCMSPageUI.getCaching() != null &&
+                    appCMSPageUI != null &&
+                            appCMSPageUI.getCaching() != null &&
                             !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                             appCMSPageUI.getCaching().isEnabled(),
                     appCMSPageAPIReadyAction);
@@ -10563,14 +10586,16 @@ public class AppCMSPresenter {
                         pageIdToPageAPIUrlMap.get(pageId),
                         appCMSSite.getGist().getSiteInternalName(),
                         pageId,
-                        appCMSPageUI.getCaching() != null &&
+                        appCMSPageUI != null &&
+                                appCMSPageUI.getCaching() != null &&
                                 !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                                 appCMSPageUI.getCaching().isEnabled());
 
                 getPageIdContent(apiUrl,
                         pageId,
                         null,
-                        appCMSPageUI.getCaching() != null &&
+                        appCMSPageUI != null &&
+                                appCMSPageUI.getCaching() != null &&
                                 !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                                 appCMSPageUI.getCaching().isEnabled(),
                         new AppCMSPageAPIAction(true,
@@ -11098,14 +11123,16 @@ public class AppCMSPresenter {
                         actionToPageAPIUrlMap.get(action),
                         appCMSSite.getGist().getSiteInternalName(),
                         pagePath,
-                        appCMSPageUI.getCaching() != null &&
+                        appCMSPageUI != null &&
+                                appCMSPageUI.getCaching() != null &&
                                 !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                                 appCMSPageUI.getCaching().isEnabled());
 
                 getPageIdContent(apiUrl,
                         pagePath,
                         null,
-                        appCMSPageUI.getCaching() != null &&
+                        appCMSPageUI != null &&
+                                appCMSPageUI.getCaching() != null &&
                                 !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                                 appCMSPageUI.getCaching().isEnabled(),
                         new AppCMSPageAPIAction(appbarPresent,
