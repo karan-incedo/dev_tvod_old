@@ -433,6 +433,8 @@ public class CollectionGridItemView extends BaseView {
                             updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
                         }
 
+                        view.setTag(data.getGist().getId());
+
                         updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) view);
 
                         appCMSPresenter.getUserVideoDownloadStatus(

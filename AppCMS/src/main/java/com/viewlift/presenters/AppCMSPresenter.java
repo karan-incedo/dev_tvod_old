@@ -1788,7 +1788,8 @@ public class AppCMSPresenter {
                                 endPoint,
                                 siteId,
                                 pagePath,
-                                appCMSPageUI.getCaching() != null &&
+                                appCMSPageUI != null &&
+                                        appCMSPageUI.getCaching() != null &&
                                         !appCMSPageUI.getCaching().shouldOverrideCaching() &&
                                         appCMSPageUI.getCaching().isEnabled());
 
@@ -12000,7 +12001,11 @@ public class AppCMSPresenter {
                         if (onRunOnUIThread != null && appCMSPresenter.runUpdateDownloadIconTimer)
                             onRunOnUIThread.runOnUiThread(() -> {
                                 try {
-                                    circularImageBar(imageView, downloadPercent);
+                                    if (imageView.getTag() != null &&
+                                            imageView.getTag() instanceof String &&
+                                            ((String) imageView.getTag()).equals(filmIdLocal)) {
+                                        circularImageBar(imageView, downloadPercent);
+                                    }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Error rendering circular image bar");
                                 }
