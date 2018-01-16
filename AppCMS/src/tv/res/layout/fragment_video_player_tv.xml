@@ -3,24 +3,36 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/app_cms_video_player_info_container"
+    <include
+        layout="@layout/content_rating_warning_layout"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:orientation="vertical"
-        android:gravity="center_vertical"
-        android:background="@color/appcms_shadow_color">
-        <Button
-            android:id="@+id/app_cms_video_player_done_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/done"
-            android:textColor="@color/colorAccent"
-            android:background="@android:color/transparent"
-            android:focusable="false"
-            android:visibility="gone"/>
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <RelativeLayout
+        android:id="@+id/app_cms_video_player_main_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/app_cms_video_player_info_container"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:background="@color/appcms_shadow_color">
+
+            <Button
+                android:id="@+id/app_cms_video_player_done_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/done"
+                android:textColor="@color/colorAccent"
+                android:background="@android:color/transparent"
+                android:focusable="false"
+                android:visibility="gone" />
 
         <com.viewlift.views.customviews.AlwaysSelectedTextView
             android:id="@+id/app_cms_video_player_title_view"
@@ -72,7 +84,6 @@
                 android:layout_below="@id/progress_bar"
                 />
         </LinearLayout>
-
+        </RelativeLayout>
     </RelativeLayout>
-
 </RelativeLayout>

@@ -304,7 +304,7 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                         binder.getContentData().getGist().getRuntime(),
                         null,
                         closedCaptionUrl,
-                        null,
+                        binder.getContentData().getParentalRating(),
                         freeContent);
         fragmentTransaction.add(R.id.app_cms_play_video_page_container,
                 appCMSPlayVideoFragment,
