@@ -1133,6 +1133,14 @@ public class AppCMSPresenter {
         }
     }
 
+    public boolean shouldDisplaySubscriptionCancelButton() {
+        if (currentActivity != null) {
+            return currentActivity.getResources().getBoolean(R.bool.display_cancel_subscription_button);
+        }
+
+        return true;
+    }
+
     public void updateWatchedTime(String filmId, long watchedTime) {
         if (getLoggedInUser() != null && appCMSSite != null && appCMSMain != null) {
             UpdateHistoryRequest updateHistoryRequest = new UpdateHistoryRequest();

@@ -1252,7 +1252,8 @@ public class ViewCreator {
                                                                 }
                                                             }
                                                         } else if (settingsComponentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                                                            if (appCMSPresenter.isUserSubscribed()) {
+                                                            if (appCMSPresenter.shouldDisplaySubscriptionCancelButton() &&
+                                                                    appCMSPresenter.isUserSubscribed()) {
                                                                 //Log.d(TAG, "checkForExistingSubscription() - 647");
                                                                 appCMSPresenter.checkForExistingSubscription(false);
 
@@ -3052,7 +3053,8 @@ public class ViewCreator {
                         }
 
                         if (componentKey == AppCMSUIKeyType.PAGE_SETTINGS_CANCEL_PLAN_PROFILE_KEY) {
-                            if (appCMSPresenter.isUserSubscribed() &&
+                            if (appCMSPresenter.shouldDisplaySubscriptionCancelButton() &&
+                                    appCMSPresenter.isUserSubscribed() &&
                                     !appCMSPresenter.isExistingGooglePlaySubscriptionSuspended() &&
                                     appCMSPresenter.isSubscriptionCompleted()) {
                                 componentViewResult.componentView.setVisibility(View.VISIBLE);
@@ -4770,6 +4772,7 @@ public class ViewCreator {
 
                     case STATUS_SUCCESSFUL:
                         imageButton.setImageResource(R.drawable.ic_downloaded);
+                        imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                         imageButton.setOnClickListener(null);
                         if (appCMSPresenter.downloadTaskRunning(contentDatum.getGist().getId())) {
                             appCMSPresenter.setDownloadInProgress(false);
@@ -4781,6 +4784,7 @@ public class ViewCreator {
                     case STATUS_INTERRUPTED:
                         appCMSPresenter.setDownloadInProgress(false);
                         imageButton.setImageResource(android.R.drawable.stat_sys_warning);
+                        imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                         imageButton.setOnClickListener(null);
                         break;
 
@@ -4793,7 +4797,7 @@ public class ViewCreator {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                         UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                 imageButton.setImageResource(R.drawable.ic_download);
-                imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.setOnClickListener(addClickListener);
