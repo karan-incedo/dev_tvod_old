@@ -298,7 +298,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .fitCenter();
+                                        .centerCrop();
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -322,11 +322,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight);
-                                if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
-                                    requestOptions.centerCrop();
-                                } else {
-                                    requestOptions.fitCenter();
-                                }
+                                requestOptions.centerCrop();
 
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -387,7 +383,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .fitCenter();
+                                        .centerCrop();
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -403,7 +399,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .fitCenter();
+                                        .centerCrop();
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
