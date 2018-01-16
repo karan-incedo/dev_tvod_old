@@ -62,7 +62,7 @@ public class CollectionGridItemView extends BaseView {
     private static final String TAG = "CollectionItemView";
 
     private final Layout parentLayout;
-    private final boolean userParentLayout;
+    private final boolean useParentLayout;
     private final Component component;
     protected int defaultWidth;
     protected int defaultHeight;
@@ -83,7 +83,7 @@ public class CollectionGridItemView extends BaseView {
                                   boolean createRoundedCorners) {
         super(context);
         this.parentLayout = parentLayout;
-        this.userParentLayout = useParentLayout;
+        this.useParentLayout = useParentLayout;
         this.component = component;
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
@@ -107,20 +107,20 @@ public class CollectionGridItemView extends BaseView {
                         defaultHeight));
 
         FrameLayout.LayoutParams layoutParams;
-        int paddingRight = 0;
+        int paddingHorizontal = 0;
+        int paddingVertical = 0;
         if (component.getStyles() != null) {
-            paddingRight = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
-            setPadding(0, 0, paddingRight, 0);
+            paddingHorizontal = (int) convertHorizontalValue(getContext(), component.getStyles().getPadding());
+            paddingVertical = (int) convertVerticalValue(getContext(), component.getStyles().getPadding());
+            setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
         } else if (getTrayPadding(getContext(), component.getLayout()) != -1.0f) {
             int trayPadding = (int) getTrayPadding(getContext(), component.getLayout());
-            paddingRight = (int) convertHorizontalValue(getContext(), trayPadding);
-            setPadding(0, 0, paddingRight, 0);
+            paddingHorizontal = (int) convertHorizontalValue(getContext(), trayPadding);
+            paddingVertical = (int) convertVerticalValue(getContext(), trayPadding);
+            setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
         }
-        int horizontalMargin = paddingRight;
-        int verticalMargin = (int) convertVerticalValue(getContext(), getVerticalMargin(getContext(), parentLayout, height, 0));
-        if (verticalMargin < 0) {
-            verticalMargin = (int) convertVerticalValue(getContext(), getYAxis(getContext(), getLayout(), 0));
-        }
+        int horizontalMargin = paddingHorizontal;
+        int verticalMargin = 0;
         MarginLayoutParams marginLayoutParams = new MarginLayoutParams(width, height);
         marginLayoutParams.setMargins(horizontalMargin,
                 verticalMargin,
@@ -263,7 +263,7 @@ public class CollectionGridItemView extends BaseView {
                             childComponent.getLayout(),
                             getViewHeight(getContext(), component.getLayout(), ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                    if (userParentLayout) {
+                    if (useParentLayout) {
                         childViewWidth = (int) getGridWidth(getContext(),
                                 parentLayout,
                                 (int) getViewWidth(getContext(),
