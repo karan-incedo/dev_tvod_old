@@ -1714,7 +1714,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private void createScreenFromAppCMSBinder(final AppCMSBinder appCMSBinder) {
         //Log.d(TAG, "Handling new AppCMSBinder: " + appCMSBinder.getPageName());
 
-//        pageLoading(false);
+        pageLoading(false);
 
         handleOrientation(getResources().getConfiguration().orientation, appCMSBinder);
         createFragment(appCMSBinder);
