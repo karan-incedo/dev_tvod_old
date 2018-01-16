@@ -589,12 +589,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     public int getMpegResolutionIndexFromUrl(String mpegUrl) {
         if (!TextUtils.isEmpty(mpegUrl)) {
             List<String> availableStreamingQualities = getAvailableStreamingQualities();
-            for (int i = 0; i < availableStreamingQualities.size(); i++) {
-                String availableStreamingQuality = availableStreamingQualities.get(i);
-                if (!TextUtils.isEmpty(availableStreamingQuality)) {
-                    if (availableStreamingFormats.get(availableStreamingQuality) != null &&
-                            availableStreamingFormats.get(availableStreamingQuality).equals(mpegUrl)) {
-                        return i;
+            if (availableStreamingQualities != null) {
+                for (int i = 0; i < availableStreamingQualities.size(); i++) {
+                    String availableStreamingQuality = availableStreamingQualities.get(i);
+                    if (!TextUtils.isEmpty(availableStreamingQuality)) {
+                        if (availableStreamingFormats.get(availableStreamingQuality) != null &&
+                                availableStreamingFormats.get(availableStreamingQuality).equals(mpegUrl)) {
+                            return i;
+                        }
                     }
                 }
             }

@@ -524,8 +524,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 listViewAdapter.setItemClickListener(v -> {
                     try {
                         long currentPosition = getCurrentPosition();
-                        setUri(Uri.parse(streamingQualitySelector.getStreamingQualityUrl(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()))),
-                                closedCaptionUri);
+                        if (listViewAdapter.selectedIndex != listViewAdapter.getDownloadQualityPosition()) {
+                            setUri(Uri.parse(streamingQualitySelector.getStreamingQualityUrl(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()))),
+                                    closedCaptionUri);
+                        }
                         setCurrentPosition(currentPosition);
                         currentStreamingQualitySelector.setText(availableStreamingQualities.get(listViewAdapter.getDownloadQualityPosition()));
                         dialog.hide();
@@ -543,15 +545,20 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void setSelectedStreamingQualityIndex() {
         if (streamingQualitySelector != null && listViewAdapter != null) {
+            int currentIndex = -1;
+            int updatedIndex = -1;
             try {
-                List<String> availableStreamingQualities = streamingQualitySelector.getAvailableStreamingQualities();
-                if (availableStreamingQualities != null && 1 < availableStreamingQualities.size()) {
-                    listViewAdapter.setSelectedIndex(streamingQualitySelector.getMpegResolutionIndexFromUrl(uri.toString()));
+                currentIndex = listViewAdapter.selectedIndex;
+                updatedIndex = streamingQualitySelector.getMpegResolutionIndexFromUrl(uri.toString());
+                if (updatedIndex != -1) {
+                    listViewAdapter.setSelectedIndex(updatedIndex);
                 }
             } catch (Exception e) {
                 listViewAdapter.setSelectedIndex(0);
             }
-            listViewAdapter.notifyDataSetChanged();
+            if (updatedIndex != -1 && currentIndex != -1 && updatedIndex != currentIndex) {
+                listViewAdapter.notifyDataSetChanged();
+            }
         }
     }
 
