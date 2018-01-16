@@ -66,4 +66,6 @@
     <string name="ua_user_subscription_end_date_group">subscription_end_date</string>
     <string name="ua_user_subscription_plan_group">plan_name</string>
     <integer name="ua_days_before_subscription_end_notification_tag">7</integer>
+
+    <bool name="display_cancel_subscription_button">false</bool>
 </resources>
