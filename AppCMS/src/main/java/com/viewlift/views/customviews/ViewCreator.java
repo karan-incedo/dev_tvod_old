@@ -3477,6 +3477,7 @@ public class ViewCreator {
                                         !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                     String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                     ((TextView) componentViewResult.componentView).setText(parentalRating);
+                                    componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                     ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
 
                                     if (parentalRating.length() > 2) {
