@@ -460,8 +460,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             if (!binder.isOffline()) {
                 if (!binder.isTrailer()
                         && relateVideoIds != null
-                        && currentlyPlayingIndex < relateVideoIds.size() - 1) {
-                    binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
+                        && currentlyPlayingIndex + 1 < relateVideoIds.size()) {
                     appCMSPresenter.openAutoPlayScreen(binder, o -> {
                         //
                     });
@@ -470,7 +469,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
             } else {
                 if (binder.getRelateVideoIds() != null
-                        && currentlyPlayingIndex < relateVideoIds.size() - 1) {
+                        && currentlyPlayingIndex < relateVideoIds.size()) {
                     appCMSPresenter.openAutoPlayScreen(binder, o -> {
                         //
                     });

@@ -88,7 +88,7 @@ public class AutoplayActivity
 
         binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
         appCMSPresenter.playNextVideo(binder,
-                binder.getCurrentPlayingVideoIndex() + 1,
+                binder.getCurrentPlayingVideoIndex(),
                 binder.getContentData().getGist().getWatchedTime());
         finish();
     }
