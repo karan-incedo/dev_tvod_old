@@ -15,6 +15,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
@@ -28,7 +29,10 @@ public class FrescoImageLoader implements ImageLoader {
     private GradientPostProcessor gradientPostProcessor;
 
     public FrescoImageLoader(Context context) {
-        Fresco.initialize(context);
+        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(context)
+                .setDownsampleEnabled(true)
+            .build();
+        Fresco.initialize(context, config);
         this.gradientPostProcessor = new GradientPostProcessor();
     }
 
