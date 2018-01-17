@@ -9,7 +9,6 @@ import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
 import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
-import com.squareup.leakcanary.LeakCanary;
 import com.viewlift.mobile.imageutils.FrescoImageLoader;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
@@ -41,13 +40,6 @@ public class AppCMSApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
 
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        LeakCanary.install(this);
-
         openActivities = 0;
 
         new Thread(() -> {
@@ -77,6 +69,7 @@ public class AppCMSApplication extends MultiDexApplication {
             Fabric.with(AppCMSApplication.this, new Crashlytics());
             Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key),
                     getString(R.string.app_cms_apptentive_signature_key));
+
             ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
 
             appCMSPresenterComponent = DaggerAppCMSPresenterComponent
