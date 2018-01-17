@@ -272,7 +272,8 @@ public class SubscriptionMetaDataView extends LinearLayout {
                             Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.tickicon);
                             rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
                             ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);
-                        } else {
+                        } else if (!TextUtils.isEmpty(featureDetail.getValue()) &&
+                                featureDetail.getValue().equalsIgnoreCase("false")){
                             Drawable rightImage = ContextCompat.getDrawable(context, R.drawable.crossicon);
                             rightImage.setBounds(0, 0, rightImage.getIntrinsicWidth(), rightImage.getIntrinsicHeight());
                             ((TextView) componentView).setCompoundDrawables(null, null, rightImage, null);

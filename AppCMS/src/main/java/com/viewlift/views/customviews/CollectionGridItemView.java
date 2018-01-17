@@ -10,12 +10,14 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -27,9 +29,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.Transformation;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation;
+import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -38,6 +42,8 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.utilities.ImageUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -236,6 +242,13 @@ public class CollectionGridItemView extends BaseView {
                           int themeColor,
                           AppCMSPresenter appCMSPresenter, int position) {
         final Component childComponent = matchComponentToView(view);
+
+        AppCMSUIKeyType moduleType = jsonValueKeyMap.get(componentViewType);
+
+        if (moduleType == null) {
+            moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        }
+
         if (childComponent != null) {
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                     childComponent, data,position));
@@ -289,10 +302,12 @@ public class CollectionGridItemView extends BaseView {
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop();
                                 Glide.with(context)
                                         .load(imageUrl)
-                                        .override(childViewWidth, childViewHeight)
-                                        .centerCrop()
+                                        .apply(requestOptions)
                                         .into((ImageView) view);
                             }
                         } catch (Exception e) {
@@ -311,10 +326,13 @@ public class CollectionGridItemView extends BaseView {
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .override(childViewWidth, childViewHeight);
+                                requestOptions.centerCrop();
+
                                 Glide.with(context)
                                         .load(imageUrl)
-                                        .override(childViewWidth, childViewHeight)
-                                        .centerCrop()
+                                        .apply(requestOptions)
                                         .into((ImageView) view);
                             }
                         } catch (Exception e) {
@@ -337,64 +355,19 @@ public class CollectionGridItemView extends BaseView {
                                     imageUrl,
                                     imageWidth,
                                     imageHeight)) {
+
+                                Transformation gradientTransform = new GradientTransformation(imageWidth,
+                                        imageHeight,
+                                        appCMSPresenter,
+                                        imageUrl);
+
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .transform(gradientTransform)
+                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+
                                 Glide.with(context)
                                         .load(imageUrl)
-                                        .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                        .transform(new BitmapTransformation(context) {
-                                            @Override
-                                            public String getId() {
-                                                return imageUrl;
-                                            }
-
-                                            @Override
-                                            protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
-                                                                       int outWidth, int outHeight) {
-                                                int width = toTransform.getWidth();
-                                                int height = toTransform.getHeight();
-
-                                                boolean scaleImageUp = false;
-
-                                                Bitmap sourceWithGradient;
-                                                if (width < imageWidth &&
-                                                        height < imageHeight) {
-                                                    scaleImageUp = true;
-                                                    float widthToHeightRatio =
-                                                            (float) width / (float) height;
-                                                    width = (int) (imageHeight * widthToHeightRatio);
-                                                    height = imageHeight;
-                                                    sourceWithGradient =
-                                                            Bitmap.createScaledBitmap(toTransform,
-                                                                    width,
-                                                                    height,
-                                                                    false);
-                                                } else {
-                                                    sourceWithGradient =
-                                                            Bitmap.createBitmap(width,
-                                                                    height,
-                                                                    Bitmap.Config.ARGB_8888);
-                                                }
-
-                                                Canvas canvas = new Canvas(sourceWithGradient);
-                                                if (!scaleImageUp) {
-                                                    canvas.drawBitmap(toTransform, 0, 0, null);
-                                                }
-
-                                                Paint paint = new Paint();
-                                                LinearGradient shader = new LinearGradient(0,
-                                                        0,
-                                                        0,
-                                                        height,
-                                                        0xFFFFFFFF,
-                                                        0xFF000000,
-                                                        Shader.TileMode.CLAMP);
-                                                paint.setShader(shader);
-                                                paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
-                                                canvas.drawRect(0, 0, width, height, paint);
-                                                toTransform.recycle();
-                                                paint = null;
-                                                return sourceWithGradient;
-                                            }
-                                        })
+                                        .apply(requestOptions)
                                         .into((ImageView) view);
                             }
                         } catch (IllegalArgumentException e) {
@@ -402,22 +375,54 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
-                            data.getGist().getImageGist().get_3x4() != null &&
-                            data.getGist().getBadgeImages().get_3x4() != null &&
-                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
-                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getBadgeImages().get_3x4(),
-                                childViewWidth,
-                                childViewHeight);
+                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
+                            0 < childViewWidth &&
+                            0 < childViewHeight) {
+                        if (childViewWidth < childViewHeight &&
+                                data.getGist().getImageGist().get_3x4() != null &&
+                                data.getGist().getBadgeImages().get_3x4() != null) {
+                            final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getBadgeImages().get_3x4(),
+                                    childViewWidth,
+                                    childViewHeight);
 
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(childViewWidth, childViewHeight)
-                                    .into((ImageView) view);
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop();
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .apply(requestOptions)
+                                        .into((ImageView) view);
+                            }
+                        } else if (data.getGist().getImageGist().get_16x9() != null &&
+                                data.getGist().getBadgeImages().get_16x9() != null) {
+                            final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
+                                    data.getGist().getBadgeImages().get_16x9(),
+                                    childViewWidth,
+                                    childViewHeight);
+
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                                RequestOptions requestOptions = new RequestOptions()
+                                        .override(childViewWidth, childViewHeight)
+                                        .centerCrop();
+                                Glide.with(context)
+                                        .load(imageUrl)
+                                        .apply(requestOptions)
+                                        .into((ImageView) view);
+                            }
                         }
+                        view.setVisibility(VISIBLE);
+                        bringToFront = true;
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                        view.setVisibility(GONE);
+                        bringToFront = false;
                     }
-                    bringToFront = false;
+
+                    if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+                        view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                                childComponent, data,position));
+                    }
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
@@ -444,6 +449,8 @@ public class CollectionGridItemView extends BaseView {
                                     data, userId);
                             updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
                         }
+
+                        view.setTag(data.getGist().getId());
 
                         updateDownloadImageIconAction.updateDownloadImageButton((ImageButton) view);
 
@@ -754,4 +761,90 @@ public class CollectionGridItemView extends BaseView {
         return childItems;
     }
 
+    private static class GradientTransformation extends BitmapTransformation {
+        private final String ID;
+
+        private int imageWidth, imageHeight;
+        private AppCMSPresenter appCMSPresenter;
+        private String imageUrl;
+
+        public GradientTransformation(int imageWidth,
+                                      int imageHeight,
+                                      AppCMSPresenter appCMSPresenter,
+                                      String imageUrl) {
+            this.imageWidth = imageWidth;
+            this.imageHeight = imageHeight;
+            this.appCMSPresenter = appCMSPresenter;
+            this.imageUrl = imageUrl;
+            this.ID = imageUrl;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof GradientTransformation;
+        }
+
+        @Override
+        public void updateDiskCacheKey(@NonNull MessageDigest messageDigest) {
+            try {
+                byte[] ID_BYTES = ID.getBytes(STRING_CHARSET_NAME);
+                messageDigest.update(ID_BYTES);
+            } catch (UnsupportedEncodingException e) {
+                Log.e(TAG, "Could not update disk cache key: " + e.getMessage());
+            }
+        }
+
+        @Override
+        protected Bitmap transform(BitmapPool pool, Bitmap toTransform,
+                                   int outWidth, int outHeight) {
+            int width = toTransform.getWidth();
+            int height = toTransform.getHeight();
+
+            boolean scaleImageUp = false;
+
+            Bitmap sourceWithGradient;
+            if (width < imageWidth &&
+                    height < imageHeight) {
+                scaleImageUp = true;
+                float widthToHeightRatio =
+                        (float) width / (float) height;
+                width = (int) (imageHeight * widthToHeightRatio);
+                height = imageHeight;
+                sourceWithGradient =
+                        Bitmap.createScaledBitmap(toTransform,
+                                width,
+                                height,
+                                false);
+            } else {
+                sourceWithGradient =
+                        Bitmap.createBitmap(width,
+                                height,
+                                Bitmap.Config.ARGB_8888);
+            }
+
+            Canvas canvas = new Canvas(sourceWithGradient);
+            if (!scaleImageUp) {
+                canvas.drawBitmap(toTransform, 0, 0, null);
+            }
+
+            Paint paint = new Paint();
+            LinearGradient shader = new LinearGradient(0,
+                    0,
+                    0,
+                    height,
+                    0xFFFFFFFF,
+                    0xFF000000,
+                    Shader.TileMode.CLAMP);
+            paint.setShader(shader);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.MULTIPLY));
+            canvas.drawRect(0, 0, width, height, paint);
+            paint = null;
+            return sourceWithGradient;
+        }
+
+        @Override
+        public int hashCode() {
+            return ID.hashCode();
+        }
+    }
 }

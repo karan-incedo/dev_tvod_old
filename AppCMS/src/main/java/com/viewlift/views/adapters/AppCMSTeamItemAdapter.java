@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.Navigation;
@@ -82,9 +83,12 @@ public class AppCMSTeamItemAdapter extends RecyclerView.Adapter<AppCMSTeamItemAd
             holder.navItemLabel.setText(navigationItem.getTitle());
 
             if (navigationItem.getIcon().contains("http://") || navigationItem.getIcon().contains("https://")) {
+                RequestOptions requestOptions = new RequestOptions()
+                        .override(100, 100)
+                        .centerCrop();
                 Glide.with(holder.itemView.getContext())
                         .load(navigationItem.getIcon())
-                        .override(100, 100)
+                        .apply(requestOptions)
                         .into((ImageView) holder.navItemLogo);
                 holder.navItemLogo.setVisibility(View.VISIBLE);
             } else {

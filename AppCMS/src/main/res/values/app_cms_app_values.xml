@@ -32,6 +32,10 @@
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
 
+    <!--AutoPlay Timer: add an extra 2000 millis because it takes roughly 2 seconds to load-->
+    <string name="app_cms_autoplay_countdown_timer">13000</string>
+
+
     <string name="search_films">Search films</string>
     <string name="search_videos">Search videos</string>
 

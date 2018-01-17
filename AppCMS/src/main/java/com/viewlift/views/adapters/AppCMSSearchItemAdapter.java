@@ -2,6 +2,9 @@ package com.viewlift.views.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -14,6 +17,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
@@ -150,19 +155,19 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
                     imageWidth,
                     imageHeight);
             Glide.with(viewHolder.view.getContext())
-
                     .load(imageUrl)
-                    .asBitmap()
-                    .listener(new RequestListener<String, Bitmap>() {
+                    .listener(new RequestListener<Drawable>() {
+
                         @Override
-                        public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
                             return false;
                         }
 
                         @Override
-                        public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                             if (appCMSPresenter.getIsMoreOptionsAvailable()) {
-                                Bitmap bitmap = resource;
+                                //Bitmap bitmap = resource;
+                                Bitmap bitmap = ((BitmapDrawable)resource).getBitmap();
                                 viewHolder.filmThumbnail.setLayoutParams(new FrameLayout.LayoutParams(bitmap.getWidth(), bitmap.getHeight()));
                                 viewHolder.filmThumbnail.setImageBitmap(bitmap);
 
@@ -174,9 +179,11 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
 
                                 viewHolder.gridOptions.setVisibility(View.VISIBLE);
                             }
-
                             return false;
                         }
+
+
+
                     })
                     .into(viewHolder.filmThumbnail);
 

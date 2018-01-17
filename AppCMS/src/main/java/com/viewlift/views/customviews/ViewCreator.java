@@ -37,6 +37,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
@@ -670,6 +671,9 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty()) {
                                             int viewWidth = view.getWidth();
                                             int viewHeight = view.getHeight();
+                                            RequestOptions requestOptions = new RequestOptions()
+                                                    .override(viewWidth, viewHeight)
+                                                    .centerCrop();
                                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                                 String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                                         moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
@@ -677,7 +681,7 @@ public class ViewCreator {
                                                         viewHeight);
                                                 Glide.with(context)
                                                         .load(imageUrl)
-                                                        .override(viewWidth, viewHeight)
+                                                        .apply(requestOptions)
                                                         .into((ImageView) view);
                                             } else if (viewWidth > 0 && viewHeight > 0) {
                                                 String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -686,13 +690,15 @@ public class ViewCreator {
                                                         viewHeight);
                                                 Glide.with(context)
                                                         .load(videoImageUrl)
-                                                        .override(viewWidth, viewHeight)
+                                                        .apply(requestOptions)
                                                         .into((ImageView) view);
                                             } else if (viewHeight > 0) {
+                                                RequestOptions requestOptionsOriginal = new RequestOptions()
+                                                        .override(Target.SIZE_ORIGINAL, viewHeight)
+                                                        .centerCrop();
                                                 Glide.with(context)
                                                         .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                                        .override(Target.SIZE_ORIGINAL, viewHeight)
-                                                        .centerCrop()
+                                                        .apply(requestOptionsOriginal)
                                                         .into((ImageView) view);
                                             } else {
                                                 Glide.with(context)
@@ -3012,21 +3018,24 @@ public class ViewCreator {
                                 !moduleAPI.getContentData().isEmpty() &&
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) &&
-                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()) ||
+                                !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()))) {
                             int viewWidth = (int) BaseView.getViewWidth(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
                             int viewHeight = (int) BaseView.getViewHeight(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
+                            RequestOptions requestOptions = new RequestOptions()
+                                    .override(viewWidth, viewHeight)
+                                    .centerCrop();
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth &&
                                     moduleAPI.getContentData().get(0).getGist().getPosterImageUrl() !=null) {
                                 if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                         moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
-                                            .override(viewWidth, viewHeight)
+                                            .apply(requestOptions)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else if (viewWidth > 0 &&
@@ -3035,8 +3044,7 @@ public class ViewCreator {
                                         moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
                                             .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .override(viewWidth, viewHeight)
-                                            .centerCrop()
+                                            .apply(requestOptions)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else {
@@ -3104,6 +3112,9 @@ public class ViewCreator {
                             int viewHeight = (int) BaseView.getViewHeight(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
+                            RequestOptions requestOptions = new RequestOptions()
+                                    .override(viewWidth, viewHeight)
+                                    .centerCrop();
                             if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                 String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                         moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
@@ -3111,7 +3122,7 @@ public class ViewCreator {
                                         viewHeight);
                                 Glide.with(context)
                                         .load(imageUrl)
-                                        .override(viewWidth, viewHeight)
+                                        .apply(requestOptions)
                                         .into((ImageView) componentViewResult.componentView);
                             } else if (viewWidth > 0) {
                                 String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
@@ -3120,12 +3131,13 @@ public class ViewCreator {
                                         viewHeight);
                                 Glide.with(context)
                                         .load(videoImageUrl)
-                                        .override(viewWidth, viewHeight)
+                                        .apply(requestOptions)
                                         .into((ImageView) componentViewResult.componentView);
                             } else {
+                                requestOptions.fitCenter();
                                 Glide.with(context)
                                         .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                        .fitCenter()
+                                        .apply(requestOptions)
                                         .into((ImageView) componentViewResult.componentView);
                             }
                             componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
@@ -4145,19 +4157,21 @@ public class ViewCreator {
         int viewHeight = (int) BaseView.getViewHeight(context,
                 component.getLayout(),
                 ViewGroup.LayoutParams.WRAP_CONTENT);
+        RequestOptions requestOptions = new RequestOptions()
+                .override(viewWidth, viewHeight)
+                .centerCrop();
         if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
             if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl)) {
                 Glide.with(context)
                         .load(imgUrl)
-                        .override(viewWidth, viewHeight)
+                        .apply(requestOptions)
                         .into((ImageView) componentViewResult.componentView);
             }
         } else if (viewWidth > 0) {
             if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, imgUrl)) {
                 Glide.with(context)
                         .load(imgUrl)
-                        .override(viewWidth, viewHeight)
-                        .centerCrop()
+                        .apply(requestOptions)
                         .into((ImageView) componentViewResult.componentView);
             }
         } else {
