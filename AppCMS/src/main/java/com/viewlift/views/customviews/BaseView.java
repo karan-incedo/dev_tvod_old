@@ -947,6 +947,7 @@ public abstract class BaseView extends FrameLayout {
                     if (isTablet(getContext())) {
                         lm -= viewWidth * 0.7;
                     }
+                    viewWidth = viewHeight;
                     break;
 
                 case PAGE_PLAN_TITLE_KEY:
@@ -970,7 +971,7 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_VIDEO_AGE_LABEL_KEY:
                     viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
-                    view.setPadding(16, 0, 16, 0);
+                    view.setPadding(4, 0, 4, 0);
                     break;
 
                 default:
