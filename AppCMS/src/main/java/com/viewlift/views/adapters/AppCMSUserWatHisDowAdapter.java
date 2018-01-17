@@ -314,7 +314,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
     private void deleteDownloadVideo(final ContentDatum contentDatum, int position) {
         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
-                appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message),
+                appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message,(appCMSPresenter.isSportsTemplate()?"video":"film")),
                 true, () ->
                         appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
                                 userVideoDownloadStatus -> {

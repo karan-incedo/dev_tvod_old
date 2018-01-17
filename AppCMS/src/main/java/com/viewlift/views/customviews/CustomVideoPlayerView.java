@@ -859,6 +859,23 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
 
 
     private void createPreviewMessageView() {
+        int buttonColor, textColor;
+        if (appCMSPresenter.getAppCMSMain() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBackgroundColor() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() != null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() != null) {
+            buttonColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+            textColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+
+        } else {
+
+            buttonColor = Color.parseColor(String.valueOf(R.color.colorAccent));
+            textColor = Color.parseColor("#ffffff");
+        }
+
         customPreviewContainer = new LinearLayout(mContext);
         customPreviewContainer.setOrientation(LinearLayout.VERTICAL);
         customPreviewContainer.setGravity(Gravity.CENTER);
@@ -887,14 +904,14 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         previewBtnsLayout.setGravity(Gravity.CENTER);
 
         btnStartFreeTrial = new Button(mContext);
-        btnStartFreeTrial.setBackgroundColor(Color.parseColor(appCMSPresenter.getTabBarUIFooterModule().getTabSeparator_color()));
+        btnStartFreeTrial.setBackgroundColor(buttonColor);
         if (appCMSPresenter.getAppCMSAndroid() != null && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent() != null
                 && appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getSubscriptionButtonText() != null) {
             btnStartFreeTrial.setText(appCMSPresenter.getAppCMSAndroid().getSubscriptionFlowContent().getSubscriptionButtonText());
         } else {
             btnStartFreeTrial.setText(getResources().getString(R.string.app_cms_start_free_trial));
         }
-        btnStartFreeTrial.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+        btnStartFreeTrial.setTextColor(textColor);
         btnStartFreeTrial.setPadding(10, 10, 10, 10);
         btnStartFreeTrial.setLayoutParams(buttonParams);
 
@@ -915,8 +932,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         } else {
             btnLogin.setText(getResources().getString(R.string.app_cms_login));
         }
-        btnLogin.setBackgroundColor(Color.parseColor(appCMSPresenter.getTabBarUIFooterModule().getTabSeparator_color()));
-        btnLogin.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
+        btnLogin.setBackgroundColor(buttonColor);
+        btnLogin.setTextColor(textColor);
         btnLogin.setPadding(10, 10, 10, 10);
         btnLogin.setGravity(Gravity.CENTER);
         btnLogin.setLayoutParams(buttonParams);

@@ -142,15 +142,42 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     if (id != null) {
                         appCMSPresenter.refreshVideoData(id,
                                 updatedContentDatum -> {
-                                    try {
-                                        binder.setContentData(updatedContentDatum);
-                                    } catch (Exception e) {
-
+                                    if (updatedContentDatum != null) {
+                                        try {
+                                            binder.setContentData(updatedContentDatum);
+                                            launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls,
+                                                    finalFontColor1, defaultVideoResolution, intent,
+                                                    appCMSPlayVideoPageContainer, null);
+                                        } catch (Exception e) {
+                                            //
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                                    getString(R.string.app_cms_video_not_available_errot_message),
+                                                    false,
+                                                    this::finish,
+                                                    null);
+                                        }
+                                    } else {
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                                getString(R.string.app_cms_video_not_available_errot_message),
+                                                false,
+                                                this::finish,
+                                                null);
                                     }
-                                    launchVideoPlayer(updatedContentDatum.getGist(), extra, useHls, finalFontColor1, defaultVideoResolution, intent, appCMSPlayVideoPageContainer, null);
                                 });
+                    } else {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                getString(R.string.app_cms_video_not_available_errot_message),
+                                false,
+                                this::finish,
+                                null);
                     }
                 }
+            } else {
+                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                        getString(R.string.app_cms_video_not_available_errot_message),
+                        false,
+                        this::finish,
+                        null);
             }
         } catch (ClassCastException e) {
             //Log.e(TAG, e.getMessage());
@@ -159,6 +186,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         handoffReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.package_name)) != null &&
+                        !intent.getStringExtra(getString(R.string.package_name)).equals(getPackageName())) {
+                    return;
+                }
                 String sendingPage = intent.getStringExtra(getString(R.string.app_cms_closing_page_name));
                 if (intent.getBooleanExtra(getString(R.string.close_self_key), true) &&
                         (sendingPage == null || getString(R.string.app_cms_video_page_tag).equals(sendingPage))) {
@@ -172,6 +204,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         networkConnectedReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                if (intent != null &&
+                        intent.getStringExtra(getString(R.string.package_name)) != null &&
+                        !intent.getStringExtra(getString(R.string.package_name)).equals(getPackageName())) {
+                    return;
+                }
                 NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
                 try {
                     if (((binder != null &&
@@ -351,6 +388,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
             fragmentTransaction.commit();
         } catch (Exception e) {
+            //
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                    getString(R.string.app_cms_video_not_available_errot_message),
+                    false,
+                    this::finish,
+                    null);
         }
     }
 
@@ -406,23 +449,19 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             if (!binder.isOffline()) {
                 if (!binder.isTrailer()
                         && relateVideoIds != null
-                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
+                        && currentlyPlayingIndex < relateVideoIds.size() - 1) {
                     binder.setCurrentPlayingVideoIndex(currentlyPlayingIndex);
-                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
-                        @Override
-                        public void call(Object o) {
-                        }
+                    appCMSPresenter.openAutoPlayScreen(binder, o -> {
+                        //
                     });
                 } else {
                     closePlayer();
                 }
             } else {
                 if (binder.getRelateVideoIds() != null
-                        && currentlyPlayingIndex != relateVideoIds.size() - 1) {
-                    appCMSPresenter.openAutoPlayScreen(binder, new Action1<Object>() {
-                        @Override
-                        public void call(Object o) {
-                        }
+                        && currentlyPlayingIndex < relateVideoIds.size() - 1) {
+                    appCMSPresenter.openAutoPlayScreen(binder, o -> {
+                        //
                     });
                 } else {
                     closePlayer();

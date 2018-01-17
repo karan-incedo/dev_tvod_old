@@ -295,16 +295,16 @@
     <string name="app_cms_download_setting_listener_key">app_cms_download_setting_listener_key</string>
 
     <string name="app_cms_delete_history_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_history_item_message">In order to add a film back to your history, You will need to rewatch it.</string>
-    <string name="app_cms_delete_all_history_items_message">In order to add films back to your history, You will need to rewatch them.</string>
+    <string name="app_cms_delete_one_history_item_message">In order to add a %1$s back to your history, You will need to rewatch it.</string>
+    <string name="app_cms_delete_all_history_items_message">In order to add %1$s back to your history, You will need to rewatch them.</string>
 
     <string name="app_cms_delete_watchlist_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_watchlist_item_message">In order to add a film back to your watchlist, You will need to re-add it.</string>
-    <string name="app_cms_delete_all_watchlist_items_message">In order to add films back to your watchlist, You will need to re-add them.</string>
+    <string name="app_cms_delete_one_watchlist_item_message">In order to add a %1$s back to your watchlist, You will need to re-add it.</string>
+    <string name="app_cms_delete_all_watchlist_items_message">In order to add %1$s back to your watchlist, You will need to re-add them.</string>
 
     <string name="app_cms_delete_download_alert_title">Are you Sure?</string>
-    <string name="app_cms_delete_one_download_item_message">In order to add a film back to your download list, You will need to re-download it.</string>
-    <string name="app_cms_delete_all_download_items_message">In order to add films back to your download list, You will need to re-download them.</string>
+    <string name="app_cms_delete_one_download_item_message">In order to add a %1$s back to your download list, You will need to re-download it.</string>
+    <string name="app_cms_delete_all_download_items_message">In order to add %1$s back to your download list, You will need to re-download them.</string>
 
     <string name="app_cms_subscription_title">Subscription</string>
     <string name="app_cms_subscription_required_title">Subscription Required</string>
@@ -499,6 +499,12 @@
     <string name="thrid_party_login_intent_extra_key">3rdpartylogin</string>
 
     <string name="deeplink_uri_extra_key">deeplink_uri</string>
+    <string name="app_cms_download_over_cellular_disabled_error_title">Download Over Cellular Disabled</string>
+    <string name="app_cms_download_over_cellular_disabled_error_message">You are currently using a cellular only network.  Please navigate to the User Settings page and enable downloading over cellular to continue.</string>
+    <string name="app_cms_package_name_key">app_cms_package_name</string>
+    <string name="exit_fullscreen_relaunch_page_extra_key">exit_fullscreen_relaunch_page_extra</string>
+    <string name="app_cms_video_not_available_errot_title">Video Not Available</string>
+    <string name="app_cms_video_not_available_errot_message">Could not load the video.  Please try again later.</string>
 
     <string name="app_cms_subscribe_text_message">This video is only available to Monumental Sports Network subscribers</string>
     <string name="visit_website_msg">Please visit our website to start your subscription.</string>

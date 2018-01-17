@@ -370,6 +370,9 @@ public class AppCMSPresenter {
     private static final String PREVIEW_LIVE_STATUS = "live_preview_status_pref_name";
     private static final String PREVIEW_LIVE_TIMER_VALUE = "live_preview_timer_pref_name";
     private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
+    private static final String DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME = "download_over_cellular_enabled_pref_name";
+    private static final String ACTIVE_NETWORK_TYPE_PREF_NAME = "active_network_type_pref_name";
+
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String FLOODLIGHT_STATUS_PREF_NAME = "floodlight_status_pref_key";
@@ -2823,7 +2826,7 @@ public class AppCMSPresenter {
     }
 
     public void restrictPortraitOnly() {
-        if (currentActivity != null) {
+        if (currentActivity != null && !(currentActivity instanceof AppCMSPlayVideoActivity)) {
             currentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         }
     }
@@ -3194,6 +3197,15 @@ public class AppCMSPresenter {
 
     public void editDownload(final ContentDatum contentDatum,
                              final Action1<UserVideoDownloadStatus> resultAction1, boolean add) {
+        if (!getDownloadOverCellularEnabled() && getActiveNetworkType() == ConnectivityManager.TYPE_MOBILE) {
+            showDialog(DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                    currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_message),
+                    false,
+                    null,
+                    null);
+            return;
+        }
+
         downloadContentDatumAfterPermissionGranted = null;
         downloadResultActionAfterPermissionGranted = null;
 
@@ -3838,7 +3850,7 @@ public class AppCMSPresenter {
                     appCMSDeleteHistoryResult -> {
                         try {
                             showDialog(DialogType.DELETE_ONE_HISTORY_ITEM,
-                                    currentActivity.getString(R.string.app_cms_delete_one_history_item_message),
+                                    currentActivity.getString(R.string.app_cms_delete_one_history_item_message,(isSportsTemplate()?"video":"film")),
                                     true,
                                     () -> {
                                         try {
@@ -3933,6 +3945,14 @@ public class AppCMSPresenter {
 
     public boolean isExternalStorageAvailable() {
         return getStorageDirectories(currentActivity).length > 0;
+    }
+
+    public boolean downloadsAvailableForApp() {
+        if (appCMSMain != null &&
+                appCMSMain.getFeatures() != null) {
+            return appCMSMain.getFeatures().isMobileAppDownloads();
+        }
+        return false;
     }
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
@@ -4182,7 +4202,7 @@ public class AppCMSPresenter {
     public void clearHistory(final Action1<AppCMSDeleteHistoryResult> resultAction1) {
         try {
             showDialog(DialogType.DELETE_ALL_HISTORY_ITEMS,
-                    currentActivity.getString(R.string.app_cms_delete_all_history_items_message),
+                    currentActivity.getString(R.string.app_cms_delete_all_history_items_message,(isSportsTemplate()?"videos":"films")),
                     true,
                     () -> makeClearHistoryRequest(resultAction1),
                     null);
@@ -5463,9 +5483,17 @@ public class AppCMSPresenter {
                 refreshIdentity(getRefreshToken(),
                         () -> {
                             try {
+                                String authToken = getAuthToken();
+                                try {
+                                    if ((!isUserLoggedIn() && usedCachedAPI)) {
+                                        authToken = getCachedUserToken();
+                                    }
+                                } catch (Exception e) {
+
+                                }
                                 GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
                                         .urlWithContent(urlWithContent)
-                                        .authToken(getAuthToken())
+                                        .authToken(authToken)
                                         .pageId(pageId)
                                         .loadFromFile(platformType != PlatformType.TV && appCMSMain.shouldLoadFromFile())
                                         .appCMSPageAPILruCache(getPageAPILruCache())
@@ -5479,9 +5507,17 @@ public class AppCMSPresenter {
                             }
                         });
             } else {
+                String authToken = getAuthToken();
+                try {
+                    if (!isUserLoggedIn() && usedCachedAPI) {
+                        authToken = getCachedUserToken();
+                    }
+                } catch (Exception e) {
+
+                }
                 GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
                         .urlWithContent(urlWithContent)
-                        .authToken(getAuthToken())
+                        .authToken(authToken)
                         .pageId(pageId)
                         .loadFromFile(platformType != PlatformType.TV && appCMSMain.shouldLoadFromFile())
                         .appCMSPageAPILruCache(getPageAPILruCache())
@@ -5670,6 +5706,38 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public boolean setDownloadOverCellularEnabled(boolean downloadOverCellularEnabled) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME, downloadOverCellularEnabled).commit();
+        }
+        return false;
+    }
+
+    public boolean getDownloadOverCellularEnabled() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME, false);
+        }
+        return false;
+    }
+
+    public boolean setActiveNetworkType(int activeNetworkType) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_NETWORK_TYPE_PREF_NAME, 0);
+            return sharedPrefs.edit().putInt(ACTIVE_NETWORK_TYPE_PREF_NAME, activeNetworkType).commit();
+        }
+        return false;
+    }
+
+    public int getActiveNetworkType() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_NETWORK_TYPE_PREF_NAME, 0);
+            return sharedPrefs.getInt(ACTIVE_NETWORK_TYPE_PREF_NAME, ConnectivityManager.TYPE_MOBILE);
+        }
+        return ConnectivityManager.TYPE_MOBILE;
+    }
+
     public boolean setCastOverLay() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(CASTING_OVERLAY_PREF_NAME, 0);
@@ -5711,6 +5779,10 @@ public class AppCMSPresenter {
                     setLoggedInTime();
         }
         return false;
+    }
+
+    private String getCachedUserToken() {
+        return cachedAPIUserToken;
     }
 
     private String getAnonymousUserToken() {
@@ -7478,6 +7550,16 @@ public class AppCMSPresenter {
                     message = optionalMessage;
                     break;
 
+                case DOWNLOAD_VIA_MOBILE_DISABLED:
+                    title = currentActivity.getString(R.string.app_cms_download_over_cellular_disabled_error_title);
+                    message = optionalMessage;
+                    break;
+
+                case VIDEO_NOT_AVAILABLE:
+                    title = currentActivity.getString(R.string.app_cms_video_not_available_errot_title);
+                    message = optionalMessage;
+                    break;
+
                 default:
                     title = currentActivity.getString(R.string.app_cms_network_connectivity_error_title);
                     if (optionalMessage != null) {
@@ -8968,6 +9050,11 @@ public class AppCMSPresenter {
 
     public void setCurrentContext(Context context) {
         this.currentContext = context;
+        try {
+            this.cachedAPIUserToken = context.getString(R.string.app_cms_cached_api_user_token);
+        } catch (Exception e) {
+
+        }
     }
 
     private Bundle getPageActivityBundle(Activity activity,
@@ -11995,7 +12082,9 @@ public class AppCMSPresenter {
         SD_CARD_NOT_AVAILABLE,
         UNKNOWN_SUBSCRIPTION_FOR_UPGRADE,
         UNKNOWN_SUBSCRIPTION_FOR_CANCEL,
-        SIGN_OUT
+        SIGN_OUT,
+        DOWNLOAD_VIA_MOBILE_DISABLED,
+        VIDEO_NOT_AVAILABLE
     }
 
     public enum RETRY_TYPE {
