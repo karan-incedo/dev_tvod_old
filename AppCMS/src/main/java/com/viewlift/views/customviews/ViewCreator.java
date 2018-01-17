@@ -3020,16 +3020,17 @@ public class ViewCreator {
                             int viewHeight = (int) BaseView.getViewHeight(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                            if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
+                            if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth &&
+                                    moduleAPI.getContentData().get(0).getGist().getPosterImageUrl() !=null) {
                                 if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                         moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())) {
                                     Glide.with(context)
-//                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                            .load(moduleAPI.getContentData().get(0).getGist().getPosterImageUrl())
                                             .override(viewWidth, viewHeight)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
-                            } else if (viewWidth > 0) {
+                            } else if (viewWidth > 0 &&
+                                    moduleAPI.getContentData().get(0).getGist().getVideoImageUrl() != null) {
                                 if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                         moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)
@@ -3039,10 +3040,13 @@ public class ViewCreator {
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             } else {
+                                String imageURL=moduleAPI.getContentData().get(0).getGist().getPosterImageUrl()!=null ?
+                                        moduleAPI.getContentData().get(0).getGist().getPosterImageUrl():
+                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl();
                                 if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                        moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                        imageURL)) {
                                     Glide.with(context)
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                            .load(imageURL)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
                             }
