@@ -4380,7 +4380,9 @@ public class AppCMSPresenter {
                                     for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
                                         if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
                                                 jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
-                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03)) {
+                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03) ||
+                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY) ||
+                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY)) {
                                             pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(autoplayPageId,
                                                     moduleList.getType());
                                             break;
