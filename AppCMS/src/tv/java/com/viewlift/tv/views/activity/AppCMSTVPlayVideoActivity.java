@@ -86,9 +86,8 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             if (binder != null
                     && binder.getContentData() != null
                     && binder.getContentData().getGist() != null) {
-                String id = binder.getContentData().getGist().getId();
                 if (binder.isTrailer()) {
-                    id = null;
+                    String id = null;
                     if (binder.getContentData() != null &&
                             binder.getContentData().getContentDetails() != null &&
                             binder.getContentData().getContentDetails().getTrailers() != null &&
@@ -102,18 +101,19 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                             binder.getContentData().getShowDetails().getTrailers().get(0).getId() != null) {
                         id = binder.getContentData().getShowDetails().getTrailers().get(0).getId();
                     }
+                    if (id != null) {
+                        appCMSPresenter.refreshVideoData(id,
+                                updatedContentDatum -> {
+                                    try {
+                                        binder.setContentData(updatedContentDatum);
+                                    } catch (Exception e) {
+                                        //
+                                    }
+                                    launchVideoPlayer(updatedContentDatum.getGist());
+                                });
+                    }
                 }
-                if (id != null) {
-                    appCMSPresenter.refreshVideoData(id,
-                            updatedContentDatum -> {
-                                try {
-                                    binder.setContentData(updatedContentDatum);
-                                } catch (Exception e) {
-                                    //
-                                }
-                                launchVideoPlayer(updatedContentDatum.getGist());
-                            });
-                }
+                launchVideoPlayer(binder.getContentData().getGist());
             }
         } catch (ClassCastException e) {
             e.printStackTrace();
