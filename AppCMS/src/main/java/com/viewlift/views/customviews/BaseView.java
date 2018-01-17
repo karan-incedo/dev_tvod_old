@@ -963,6 +963,15 @@ public abstract class BaseView extends FrameLayout {
                     lm += convertDpToPixel(8, getContext());
                     break;
 
+                case PAGE_THUMBNAIL_TITLE_KEY:
+                    tm = 0;
+                    gravity = Gravity.START | Gravity.BOTTOM;
+                    break;
+
+                case PAGE_VIDEO_AGE_LABEL_KEY:
+                    viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    break;
+
                 default:
                     break;
             }
@@ -986,6 +995,15 @@ public abstract class BaseView extends FrameLayout {
                         if (ViewCreator.playerViewFullScreenEnabled()) {
                             viewWidth = viewHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
                         }
+                    }
+                }
+            } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_IMAGE_KEY ||
+                    componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                if (0 < viewWidth && 0 < viewHeight) {
+                    if (viewWidth < viewHeight) {
+                        viewHeight = (int) ((float) viewWidth * 4.0f / 3.0f);
+                    } else {
+                        viewHeight = (int) ((float) viewWidth * 9.0f / 16.0f);
                     }
                 }
             }
