@@ -417,6 +417,7 @@ public class TVViewCreator {
                     case PAGE_TRAY_TITLE_KEY:
                         if (moduleData != null
                                 && moduleData.getContentData() != null
+                                && !moduleData.getContentData().isEmpty()
                                 && moduleData.getContentData().get(0) != null
                                 && moduleData.getContentData().get(0).getGist() != null
                                 && moduleData.getContentData().get(0).getGist().getContentType() != null
@@ -1695,6 +1696,9 @@ public class TVViewCreator {
                         case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
                             if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
                                 TextView tv = (TextView) componentViewResult.componentView;
+                                tv.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                                tv.setSelected(true);
+                                tv.setSingleLine();
                                 if (appCMSPresenter.getActiveSubscriptionStatus() == null
                                         || appCMSPresenter.getActiveSubscriptionPlanName() == null) {
                                     appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
@@ -2299,12 +2303,11 @@ public class TVViewCreator {
                 return new Module();
             }
 
-            if (module != null && (jsonValueKeyMap.get(module.getView())
-                    == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01 ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03  ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY  ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY )) {
+            if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01
+                    || jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02
+                    || jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03
+                    || jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY
+                    || jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }
@@ -2316,9 +2319,9 @@ public class TVViewCreator {
                 }
             }
 
-            if (module.getId().equalsIgnoreCase("d3de2b27-0e90-492e-974a-54fcc220a638")){
+            /*if (module.getId().equalsIgnoreCase("d3de2b27-0e90-492e-974a-54fcc220a638")){
                 return appCMSPageAPI.getModules().get(1);
-            }
+            }*/
         }
         return null;
     }
