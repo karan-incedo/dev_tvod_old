@@ -3648,7 +3648,7 @@ public class ViewCreator {
                             int viewHeight = (int) BaseView.getViewHeight(context,
                                     component.getLayout(),
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                            String imageUrl = "";
+                            String imageUrl = null;
                             if (!TextUtils.isEmpty(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                 imageUrl = moduleAPI.getContentData().get(0).getGist().getVideoImageUrl();
                             } else if (moduleAPI.getContentData().get(0).getGist().getImageGist() != null &&
