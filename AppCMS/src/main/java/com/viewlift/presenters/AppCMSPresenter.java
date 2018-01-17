@@ -3281,25 +3281,28 @@ public class AppCMSPresenter {
     }
 
     private long getRemainingDownloadSize() {
-        List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
-        long bytesRemainDownload = 0L;
-        for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
+        if (getRealmController() != null) {
+            List<DownloadVideoRealm> remainDownloads = getRealmController().getAllUnfinishedDownloades(getLoggedInUser());
+            long bytesRemainDownload = 0L;
+            for (DownloadVideoRealm downloadVideoRealm : remainDownloads) {
 
-            DownloadManager.Query query = new DownloadManager.Query();
-            query.setFilterById(downloadVideoRealm.getVideoId_DM());
-            Cursor c = downloadManager.query(query);
-            if (c != null) {
-                if (c.moveToFirst()) {
-                    long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                    long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                    totalSize -= downloaded;
-                    bytesRemainDownload += totalSize;
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(downloadVideoRealm.getVideoId_DM());
+                Cursor c = downloadManager.query(query);
+                if (c != null) {
+                    if (c.moveToFirst()) {
+                        long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                        long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                        totalSize -= downloaded;
+                        bytesRemainDownload += totalSize;
+                    }
+                    c.close();
                 }
-                c.close();
-            }
 
+            }
+            return bytesRemainDownload / (1024L * 1024L);
         }
-        return bytesRemainDownload / (1024L * 1024L);
+        return 0L;
     }
 
     private long getMegabytesAvailable() {
