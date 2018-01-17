@@ -85,6 +85,8 @@
     native <methods>;
 }
 
+-keep class com.facebook.imagepipeline.** { *; }
+
 -keep class com.google.** { *;}
 -keep interface com.google.** { *;}
 -keep class android.support.** { *; }
