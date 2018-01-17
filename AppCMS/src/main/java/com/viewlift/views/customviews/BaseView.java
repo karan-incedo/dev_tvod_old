@@ -970,6 +970,7 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_VIDEO_AGE_LABEL_KEY:
                     viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    view.setPadding(16, 0, 16, 0);
                     break;
 
                 default:

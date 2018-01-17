@@ -955,7 +955,6 @@ public class ViewCreator {
                                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                             String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                             ((TextView) view).setText(parentalRating);
-                                            componentViewResult.componentView.setPadding(4, 0, 4, 0);
                                             componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                             ((TextView) view).setGravity(Gravity.CENTER);
                                             applyBorderToComponent(context,
@@ -3461,7 +3460,6 @@ public class ViewCreator {
                                     String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                     ((TextView) componentViewResult.componentView).setText(parentalRating);
                                     componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                                    componentViewResult.componentView.setPadding(4, 0, 4, 0);
                                     ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
 
                                     if (parentalRating.length() > 2) {
