@@ -1242,10 +1242,12 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
             @Override
             public void onFinish() {
-                contentRatingMainContainer.setVisibility(View.GONE);
-                videoPlayerMainContainer.setVisibility(View.VISIBLE);
-                preparePlayer();
-                startEntitlementCheckTimer();
+                if (isVisible() && isAdded()) {
+                    contentRatingMainContainer.setVisibility(View.GONE);
+                    videoPlayerMainContainer.setVisibility(View.VISIBLE);
+                    preparePlayer();
+                    startEntitlementCheckTimer();
+                }
             }
         }.start();
     }
