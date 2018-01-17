@@ -921,6 +921,7 @@ public class AppCMSPresenter {
     }
 
     public SubscriptionFlowContent getSubscriptionFlowContent() {
+        subscriptionFlowContent= getAppCMSAndroid().getSubscriptionFlowContent();
         return subscriptionFlowContent;
     }
 
@@ -7058,13 +7059,14 @@ public class AppCMSPresenter {
                     title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
 
-                    if (isSportsTemplate()) {
+                    if (isSportsTemplate() &&
+                            dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
 
                         message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
-                        if (subscriptionFlowContent != null &&
-                                subscriptionFlowContent.getOverlayMessage() != null &&
-                                !TextUtils.isEmpty(subscriptionFlowContent.getOverlayMessage())) {
-                            message = subscriptionFlowContent.getOverlayMessage();
+                        if (getSubscriptionFlowContent() != null &&
+                                getSubscriptionFlowContent().getOverlayMessage() != null &&
+                                !TextUtils.isEmpty(getSubscriptionFlowContent().getOverlayMessage())) {
+                            message = getSubscriptionFlowContent().getOverlayMessage();
                         }
 
                     }
