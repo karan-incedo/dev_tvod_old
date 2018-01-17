@@ -955,6 +955,7 @@ public class ViewCreator {
                                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                             String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                             ((TextView) view).setText(parentalRating);
+                                            ((TextView) view).setSingleLine(true);
                                             componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                             ((TextView) view).setGravity(Gravity.CENTER);
                                             applyBorderToComponent(context,
@@ -3459,6 +3460,7 @@ public class ViewCreator {
                                         !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                     String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                     ((TextView) componentViewResult.componentView).setText(parentalRating);
+                                    ((TextView) componentViewResult.componentView).setSingleLine(true);
                                     componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                     ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
 
@@ -4761,7 +4763,7 @@ public class ViewCreator {
                         break;
 
                     case STATUS_SUCCESSFUL:
-                        imageButton.setImageResource(R.drawable.ic_downloaded);
+                        imageButton.setImageResource(R.drawable.ic_downloaded_big);
                         imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                         imageButton.setOnClickListener(null);
                         if (appCMSPresenter.downloadTaskRunning(contentDatum.getGist().getId())) {
@@ -4786,7 +4788,7 @@ public class ViewCreator {
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                         UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
-                imageButton.setImageResource(R.drawable.ic_download);
+                imageButton.setImageResource(R.drawable.ic_download_big);
                 imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
