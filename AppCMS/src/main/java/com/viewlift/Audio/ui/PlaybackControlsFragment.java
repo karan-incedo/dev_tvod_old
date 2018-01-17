@@ -47,14 +47,10 @@ import static android.view.View.VISIBLE;
  */
 public class PlaybackControlsFragment extends Fragment {
 
-    private static final long PROGRESS_UPDATE_INTERNAL = 1000;
-    private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
 
     private ImageButton mPlayPause;
     private TextView mTitle;
-//    private TextView mSubtitle;
-//    private TextView mExtraInfo;
-//    private ImageView mAlbumArt;
+
     private String mArtUrl;
     private final ScheduledExecutorService mExecutorService =
             Executors.newSingleThreadScheduledExecutor();
@@ -91,9 +87,6 @@ public class PlaybackControlsFragment extends Fragment {
         mPlayPause.setOnClickListener(mButtonListener);
 
         mTitle = (TextView) rootView.findViewById(R.id.title);
-//        mSubtitle = (TextView) rootView.findViewById(R.id.artist);
-//        mExtraInfo = (TextView) rootView.findViewById(R.id.extra_info);
-//        mAlbumArt = (ImageView) rootView.findViewById(R.id.album_art);
         rootView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -103,7 +96,7 @@ public class PlaybackControlsFragment extends Fragment {
                 MediaMetadataCompat metadata = controller.getMetadata();
                 if (metadata != null) {
                     intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                        metadata.getDescription());
+                            metadata.getDescription());
                 }
                 startActivity(intent);
             }
@@ -111,9 +104,6 @@ public class PlaybackControlsFragment extends Fragment {
 
         return rootView;
     }
-    private PlaybackStateCompat mLastPlaybackState;
-
-
 
     @Override
     public void onStart() {
@@ -144,7 +134,7 @@ public class PlaybackControlsFragment extends Fragment {
 
     private void onMetadataChanged(MediaMetadataCompat metadata) {
         if (getActivity() == null) {
-          return;
+            return;
         }
         if (metadata == null) {
             return;
@@ -158,7 +148,7 @@ public class PlaybackControlsFragment extends Fragment {
     private void onPlaybackStateChanged(PlaybackStateCompat state) {
         if (getActivity() == null) {
             //(TAG, "onPlaybackStateChanged called when getActivity null," +
-              //      "this should not happen if the callback was properly unregistered. Ignoring.");
+            //      "this should not happen if the callback was properly unregistered. Ignoring.");
             return;
         }
         if (state == null) {
@@ -189,7 +179,6 @@ public class PlaybackControlsFragment extends Fragment {
         if (state == null) {
             return;
         }
-        mLastPlaybackState = state;
         MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(getActivity());
         if (controllerCompat != null && controllerCompat.getExtras() != null) {
             String castName = controllerCompat.getExtras().getString(MusicService.EXTRA_CONNECTED_CAST);

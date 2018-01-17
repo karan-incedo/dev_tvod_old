@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,11 +29,8 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.ViewCreator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import static com.viewlift.models.data.appcms.downloads.DownloadStatus.STATUS_RUNNING;
 
 /*
  * Created by viewlift on 5/5/17.
@@ -205,7 +201,13 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                         data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
                                         data.getGist().getContentType() != null &&
                                         data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                    appCMSPresenter.getAudioDetail(data.getGist().getId());
+                                    appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                                            .PRESENTER_PAGE_LOADING_ACTION));
+                                    // on click from playlist adapter .Get playlist from temp list and set into current playlist
+                                    if (AudioPlaylistHelper.getInstance().getTempPlaylist() != null && AudioPlaylistHelper.getInstance().getTempPlaylist().size() > 0) {
+                                        AudioPlaylistHelper.getInstance().setPlaylist(AudioPlaylistHelper.getInstance().getTempPlaylist());
+                                    }
+                                    AudioPlaylistHelper.getInstance().playAudioOnClick(data.getGist().getId(), 0);
                                     return;
                                 }
 

@@ -32,7 +32,7 @@ public class AudioServiceHelper {
         return audioHelper;
     }
     public void createAudioPlaylistInstance(AppCMSPresenter appCMSPresenter,Activity mActivity){
-        AudioPlaylistHelper .getAudioPlaylistHelperInstance().setAppCMSPresenter(appCMSPresenter,mActivity);
+        AudioPlaylistHelper .getInstance().setAppCMSPresenter(appCMSPresenter,mActivity);
     }
 
     public void createMediaBrowserService(Activity mActivity) {

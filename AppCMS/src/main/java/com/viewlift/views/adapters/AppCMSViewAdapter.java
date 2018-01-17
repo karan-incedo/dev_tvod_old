@@ -434,10 +434,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                         data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
                                     List<String> audioPlaylistId = new ArrayList<String>();
                                     audioPlaylistId.add(data.getGist().getId());
-                                    AudioPlaylistHelper.getAudioPlaylistHelperInstance().setPlaylist(audioPlaylistId);
+                                    audioPlaylistId.add("a476fbd5-260b-4230-9f56-a452fbd37bd7");
+
+                                    AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
                                     appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
                                             .PRESENTER_PAGE_LOADING_ACTION));
-                                    AudioPlaylistHelper.getAudioPlaylistHelperInstance().playAudioOnClick(data.getGist().getId());
+                                    AudioPlaylistHelper.getInstance().playAudioOnClick(data.getGist().getId(),0);
                                     return;
                                 }
 

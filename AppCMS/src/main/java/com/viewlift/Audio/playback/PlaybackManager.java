@@ -19,10 +19,10 @@ package com.viewlift.Audio.playback;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
@@ -35,18 +35,16 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
  */
 public class PlaybackManager implements Playback.Callback {
 
-    // Action to thumbs up a media item
-    private static final String CUSTOM_ACTION_THUMBS_UP = "com.example.android.uamp.THUMBS_UP";
-
+    Activity mActivity;
     private Resources mResources;
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
-
+    public static String mCurrentMusicId;
+    public static MediaMetadataCompat mCurrentMediaMetaData;
     Context mContext;
 
     public PlaybackManager(PlaybackServiceCallback serviceCallback, Resources resources,
-
                            Playback playback, Context applicationContext) {
         mServiceCallback = serviceCallback;
         mResources = resources;
@@ -66,17 +64,17 @@ public class PlaybackManager implements Playback.Callback {
 
     /**
      * Handle a request to play music
+     *
+     * @param currentPosition
      */
-    public void handlePlayRequest() {
+    public void handlePlayRequest(long currentPosition) {
         MediaMetadataCompat currentMusic = getCurrentMediaData();
         if (currentMusic != null) {
 
             mServiceCallback.onPlaybackStart();
-            mPlayback.play(currentMusic);
+            mPlayback.play(currentMusic, currentPosition);
         }
     }
-
-    Activity mActivity;
 
     public void setActivity(Activity mAct) {
         mActivity = mAct;
@@ -103,6 +101,7 @@ public class PlaybackManager implements Playback.Callback {
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
+        AudioPlaylistHelper.getInstance().setCurrentMediaId(null);
     }
 
 
@@ -132,12 +131,6 @@ public class PlaybackManager implements Playback.Callback {
         }
         //noinspection ResourceType
         stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
-
-        // Set the activeQueueItemId if the current index is valid.
-//        MediaMetadataCompat currentMusic = getCurrentMediaData();
-//        if (currentMusic != null) {
-//            stateBuilder.setActiveQueueItemId(currentMusic.getQueueId());
-//        }
 
         mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
 
@@ -169,18 +162,24 @@ public class PlaybackManager implements Playback.Callback {
     @Override
     public void onCompletion() {
         {
-            if (AudioPlaylistHelper.getPlaylist().size() <= AudioPlaylistHelper.indexAudioFromPlaylist+1) {
+            if (AudioPlaylistHelper.getPlaylist().size() <= AudioPlaylistHelper.indexAudioFromPlaylist + 1) {
                 handleStopRequest(null);
             } else {
-                AudioPlaylistHelper.getAudioPlaylistHelperInstance().autoPlayNextItemFromPLaylist();
+                AudioPlaylistHelper.getInstance().autoPlayNextItemFromPLaylist(callBackPlaylistHelper);
             }
 
         }
     }
 
+    SimpleExoPlayer mExoPlayer;
+
     @Override
-    public void onPlaybackStatusChanged(int state, SimpleExoPlayer mExoPlayer) {
+    public void onPlaybackStatusChanged(int state, SimpleExoPlayer mExoPlayerInstance) {
         updatePlaybackState(null);
+        mExoPlayer = mExoPlayerInstance;
+        if (mExoPlayer != null) {
+            AudioPlaylistHelper.getInstance().setDuration(mExoPlayer.getDuration());
+        }
     }
 
     @Override
@@ -190,14 +189,6 @@ public class PlaybackManager implements Playback.Callback {
         updatePlaybackState(error);
     }
 
-//    @Override
-//    public void setCurrentMediaId(String mediaId) {
-//        LogHelper.d(TAG, "setCurrentMediaId", mediaId);
-//        mQueueManager.setQueueFromMusic(mediaId);
-//    }
-
-    public static String mCurrentMusicId;
-    public static MediaMetadataCompat mCurrentMediaMetaData;
 
     public static void setCurrentMediaData(MediaMetadataCompat mediaMetaData) {
         mCurrentMediaMetaData = mediaMetaData;
@@ -220,13 +211,12 @@ public class PlaybackManager implements Playback.Callback {
         @Override
         public void onPlay() {
 
-            handlePlayRequest();
+            handlePlayRequest(0);
         }
 
         @Override
         public void onSkipToQueueItem(long queueId) {
-//            mQueueManager.setCurrentQueueItem(queueId);
-//            mQueueManager.updateMetadata();
+
         }
 
         @Override
@@ -236,8 +226,12 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
+            long currentPosition = 0;
+            if (extras != null) {
+                currentPosition = extras.getLong("CURRENT_POSITION");
+            }
             setCurrentMediaId(mediaId);
-            handlePlayRequest();
+            handlePlayRequest(currentPosition);
         }
 
         @Override
@@ -252,12 +246,12 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onSkipToNext() {
-            AudioPlaylistHelper.getAudioPlaylistHelperInstance().skipToNextItem();
+            AudioPlaylistHelper.getInstance().skipToNextItem(callBackPlaylistHelper);
         }
 
         @Override
         public void onSkipToPrevious() {
-            AudioPlaylistHelper.getAudioPlaylistHelperInstance().skipToPreviousItem();
+            AudioPlaylistHelper.getInstance().skipToPreviousItem(callBackPlaylistHelper);
 
         }
 
@@ -270,8 +264,29 @@ public class PlaybackManager implements Playback.Callback {
         public void onPlayFromSearch(final String query, final Bundle extras) {
 
         }
+
+        @Override
+        public void onPrepare() {
+            AudioPlaylistHelper.getInstance().setDuration(mExoPlayer.getDuration());
+
+            super.onPrepare();
+        }
     }
 
+
+    private void playMediaData(String mediaId, long currentPosition) {
+        setCurrentMediaId(mediaId);
+        handlePlayRequest(currentPosition);
+    }
+
+    AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper = new AudioPlaylistHelper.IPlaybackCall() {
+        @Override
+        public void onPlaybackStart(MediaBrowserCompat.MediaItem item, long mCurrentPlayerPosition) {
+
+            playMediaData(item.getMediaId(), mCurrentPlayerPosition);
+        }
+
+    };
 
     public interface PlaybackServiceCallback {
         void onPlaybackStart();
@@ -282,4 +297,5 @@ public class PlaybackManager implements Playback.Callback {
 
         void onPlaybackStateUpdated(PlaybackStateCompat newState);
     }
+
 }
