@@ -9,17 +9,26 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Shader;
 import android.net.Uri;
+import android.view.Gravity;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.imagepipeline.listener.RequestListener;
+import com.facebook.imagepipeline.listener.RequestLoggingListener;
 import com.facebook.imagepipeline.request.BasePostprocessor;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.viewlift.views.utilities.ImageLoader;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by viewlift on 11/6/17.
@@ -29,10 +38,18 @@ public class FrescoImageLoader implements ImageLoader {
     private GradientPostProcessor gradientPostProcessor;
 
     public FrescoImageLoader(Context context) {
+        Set<RequestListener> requestListeners = new HashSet<>();
+        requestListeners.add(new RequestLoggingListener());
         ImagePipelineConfig config = ImagePipelineConfig.newBuilder(context)
+                // other setters
                 .setDownsampleEnabled(true)
-            .build();
+                .setRequestListeners(requestListeners)
+                .build();
         Fresco.initialize(context, config);
+        FLog.setMinimumLoggingLevel(FLog.VERBOSE);
+
+        Fresco.initialize(context, config);
+
         this.gradientPostProcessor = new GradientPostProcessor();
     }
 
@@ -44,6 +61,7 @@ public class FrescoImageLoader implements ImageLoader {
     @Override
     public void loadImage(ImageView view, String url) {
         if (view instanceof SimpleDraweeView) {
+            ((SimpleDraweeView) view).getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_BOTTOM_START);
             ((SimpleDraweeView) view).setImageURI(url);
         }
     }
@@ -53,6 +71,7 @@ public class FrescoImageLoader implements ImageLoader {
                                             String url,
                                             int imageWidth,
                                             int imageHeight) {
+        imageWidth = (int) ((float) imageHeight * 16.0f / 9.0f);
         gradientPostProcessor.imageWidth = imageWidth;
         gradientPostProcessor.imageHeight = imageHeight;
         ImageRequest imageRequest = ImageRequestBuilder.newBuilderWithSource(Uri.parse(url))
@@ -62,9 +81,11 @@ public class FrescoImageLoader implements ImageLoader {
         DraweeController draweeController = Fresco.newDraweeControllerBuilder()
                 .setImageRequest(imageRequest)
                 .build();
+        ((SimpleDraweeView) view).getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
+        ((SimpleDraweeView) view).setController(draweeController);
         view.getLayoutParams().width = imageWidth;
         view.getLayoutParams().height = imageHeight;
-        ((SimpleDraweeView) view).setController(draweeController);
+        ((FrameLayout.LayoutParams) view.getLayoutParams()).gravity = Gravity.CENTER;
     }
 
     private static class GradientPostProcessor extends BasePostprocessor {
