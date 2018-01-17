@@ -955,28 +955,8 @@ public class ViewCreator {
                                                 !TextUtils.isEmpty(moduleAPI.getContentData().get(0).getParentalRating())) {
                                             String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                             ((TextView) view).setText(parentalRating);
-                                            boolean resizeText = parentalRating.length() > 2;
-                                            if (component.getFontSize() > 0) {
-                                                int fontSize = component.getFontSize();
-                                                if (resizeText) {
-                                                    if (BaseView.isTablet(context)) {
-                                                        fontSize = (int) (0.6 * fontSize);
-                                                    } else {
-                                                        fontSize = (int) (0.8 * fontSize);
-                                                    }
-                                                }
-                                                ((TextView) view).setTextSize(fontSize);
-                                            } else if (BaseView.getFontSize(context, component.getLayout()) > 0) {
-                                                int fontSize = (int) BaseView.getFontSize(context, component.getLayout());
-                                                if (resizeText) {
-                                                    if (BaseView.isTablet(context)) {
-                                                        fontSize = (int) (0.6 * fontSize);
-                                                    } else {
-                                                        fontSize = (int) (0.8 * fontSize);
-                                                    }
-                                                }
-                                                ((TextView) view).setTextSize(fontSize);
-                                            }
+                                            componentViewResult.componentView.setPadding(4, 0, 4, 0);
+                                            componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
                                             ((TextView) view).setGravity(Gravity.CENTER);
                                             applyBorderToComponent(context,
                                                     view,
@@ -2090,6 +2070,7 @@ public class ViewCreator {
                     }
                 } else {
                     componentViewResult.componentView = new RecyclerView(context);
+
                     AppCMSViewAdapter appCMSViewAdapter;
 
                     if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
@@ -3480,6 +3461,7 @@ public class ViewCreator {
                                     String parentalRating = moduleAPI.getContentData().get(0).getParentalRating();
                                     ((TextView) componentViewResult.componentView).setText(parentalRating);
                                     componentViewResult.componentView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                                    componentViewResult.componentView.setPadding(4, 0, 4, 0);
                                     ((TextView) componentViewResult.componentView).setGravity(Gravity.CENTER);
 
                                     if (parentalRating.length() > 2) {
@@ -3800,23 +3782,33 @@ public class ViewCreator {
                                             moduleAPI.getContentData().get(0).getGist().getPosterImageUrl(),
                                             viewWidth,
                                             viewHeight);
-                                    Glide.with(context)
-                                            .load(imageUrl)
-                                            .apply(new RequestOptions().override(viewWidth, viewHeight))
-                                            .into((ImageView) componentViewResult.componentView);
+                                    if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                            imageUrl)) {
+                                        Glide.with(context)
+                                                .load(imageUrl)
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight))
+                                                .into((ImageView) componentViewResult.componentView);
+                                    }
                                 } else if (viewWidth > 0) {
                                     String videoImageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                             moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
                                             viewWidth,
                                             viewHeight);
-                                    Glide.with(context)
-                                            .load(videoImageUrl)
-                                            .apply(new RequestOptions().override(viewWidth, viewHeight))                                            .into((ImageView) componentViewResult.componentView);
+                                    if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                            videoImageUrl)) {
+                                        Glide.with(context)
+                                                .load(videoImageUrl)
+                                                .apply(new RequestOptions().override(viewWidth, viewHeight))
+                                                .into((ImageView) componentViewResult.componentView);
+                                    }
                                 } else {
-                                    Glide.with(context)
-                                            .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
-                                            .apply(new RequestOptions().fitCenter())
-                                            .into((ImageView) componentViewResult.componentView);
+                                    if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                            moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                        Glide.with(context)
+                                                .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                                                .apply(new RequestOptions().fitCenter())
+                                                .into((ImageView) componentViewResult.componentView);
+                                    }
                                 }
 
                                 componentViewResult.useWidthOfScreen = !BaseView.isLandscape(context);
