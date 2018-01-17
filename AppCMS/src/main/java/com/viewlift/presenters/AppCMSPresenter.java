@@ -315,15 +315,15 @@ public class AppCMSPresenter {
     public static final int RC_GOOGLE_SIGN_IN = 1001;
     public static final int ADD_GOOGLE_ACCOUNT_TO_DEVICE_REQUEST_CODE = 5555;
     public static final int CC_AVENUE_REQUEST_CODE = 1;
-    public static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
-    public static final String PRESENTER_CLEAR_DIALOG_ACTION = "appcms_presenter_clear_dialog_action";
-    public static final String SEARCH_ACTION = "SEARCH_ACTION";
-    public static final String UPDATE_SUBSCRIPTION = "UPDATE_SUBSCRIPTION";
-    public static final String CLOSE_DIALOG_ACTION = "CLOSE_DIALOG_ACTION";
-    public static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
-    public static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
-    public static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
-    public static final int PLAYER_REQUEST_CODE = 1111;
+    private static final String PRESENTER_DIALOG_ACTION = "appcms_presenter_dialog_action";
+    private static final String PRESENTER_CLEAR_DIALOG_ACTION = "appcms_presenter_clear_dialog_action";
+    private static final String SEARCH_ACTION = "SEARCH_ACTION";
+    private static final String UPDATE_SUBSCRIPTION = "UPDATE_SUBSCRIPTION";
+    private static final String CLOSE_DIALOG_ACTION = "CLOSE_DIALOG_ACTION";
+    private static final String ERROR_DIALOG_ACTION = "appcms_error_dialog_action";
+    private static final String ACTION_LOGO_ANIMATION = "appcms_logo_animation";
+    private static final String ACTION_RESET_PASSWORD = "appcms_reset_password_action";
+    private static final int PLAYER_REQUEST_CODE = 1111;
     private static final String TAG = "AppCMSPresenter";
     private static final String LOGIN_SHARED_PREF_NAME = "login_pref";
     private static final String MINI_PLAYER_PREF_NAME = "mini_player_pref";
@@ -2565,21 +2565,35 @@ public class AppCMSPresenter {
                         } else {
                             setSelectedSubscriptionPlan(true);
                             if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_USER_CANCELED) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response was cancelled by user", false, null, null);
+                                showDialog(DialogType.SUBSCRIBE,
+                                        "Billing response was cancelled by user",
+                                        false, null, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response is unavailable", false, null, null);
+                                showDialog(DialogType.SUBSCRIBE,
+                                        "Billing response is unavailable",
+                                        false, null, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_BILLING_UNAVAILABLE) {
                                 addGoogleAccountToDevice();
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ITEM_UNAVAILABLE) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response result item is unavailable", false, null, null);
+                                showDialog(DialogType.SUBSCRIBE,
+                                        "Billing response result item is unavailable",
+                                        false, null, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response result developer error", false, null, null);
+                                showDialog(DialogType.SUBSCRIBE,
+                                        "Billing response result developer error",
+                                        false, null, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ERROR) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response result error", false, null, null);
+                                showDialog(DialogType.SUBSCRIBE,
+                                        "Billing response result error",
+                                        false, null, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ITEM_ALREADY_OWNED) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response item already purchased", false, null, null);
+                                showDialog(DialogType.SUBSCRIBE,
+                                        "Billing response item already purchased",
+                                        false, null, null);
                             } else if (resultCode == IabHelper.BILLING_RESPONSE_RESULT_ITEM_NOT_OWNED) {
-                                showDialog(DialogType.SUBSCRIBE, "Billing response item not owned", false, null, null);
+                                showDialog(DialogType.SUBSCRIBE,
+                                        "Billing response item not owned",
+                                        false, null, null);
                             }
                         }
                     }
