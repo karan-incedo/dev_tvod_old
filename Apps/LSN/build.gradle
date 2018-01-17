@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'realm-android'
 
-def final packageName = 'com.mll.laxsportsnetwork'
-def final customApplicationId = 'Lax Sports Network'
-def final hostName = "lax.viewlift.com"
+//def final packageName = 'com.viewlift.hoichoi'
+//def final customApplicationId = 'Hoichoi'
+//def final hostName = "www.hoichoi.tv"
+//def final appVersionName = "2.1.23"
 
 
-def final appVersionName = "2.0.62"
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -46,12 +46,52 @@ repositories {
 }
 
 android {
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    def packageName
+    def customApplicationId
+    def hostName
+    def hostNameSuffix
+    def appVersionCode
+    def appVersionName
+    //def minsdkversion
+    //def targetsdkversion
+
+    def versionPropsFile = file('src/main/assets/version.properties')
+
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
+
+        versionProps.load(new FileInputStream(versionPropsFile))
+
+        packageName = versionProps['AppPackageName'].toString()
+        customApplicationId = versionProps['AppName'].toString()
+        hostName = versionProps['HostName'].toString()
+        hostNameSuffix = versionProps['HostNameSuffix'].toString()
+        appVersionCode = versionProps['AppVersionCode'].toInteger()
+        appVersionName = versionProps['AppVersionName'].toString()
+        //minsdkversion = versionProps['MIN_SDK_VERSION'].toInteger()
+        //targetsdkversion = versionProps['TARGET_SDK_VERSION'].toInteger()
+
+        versionProps['AppPackageName'] = packageName.toString()
+        versionProps['AppName'] = customApplicationId.toString()
+        versionProps['HostName'] = hostName.toString()
+        versionProps['HostNameSuffix'] = hostNameSuffix.toString()
+        versionProps['AppVersionCode'] = appVersionCode.toString()
+        versionProps['AppVersionName'] = appVersionName.toString()
+        //versionProps['MIN_SDK_VERSION'] = minsdkversion.toString()
+        //versionProps['TARGET_SDK_VERSION'] = targetsdkversion.toString()
+
+        versionProps.store(versionPropsFile.newWriter(), null)
+    } else {
+        throw new GradleException("Could not read version.properties!")
+    }
     defaultConfig {
         applicationId packageName
         minSdkVersion 21
-        targetSdkVersion 26
-        versionCode 78
+        targetSdkVersion 27
+        versionCode appVersionCode
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         renderscriptTargetApi 26
@@ -70,11 +110,12 @@ android {
             }
         }
         tv {
-
             minSdkVersion 21
             compileSdkVersion 26
-            versionCode 3010010
-            versionName "1.0.18"
+            targetSdkVersion 26
+            buildToolsVersion '26.0.2'
+            versionCode appVersionCode
+            versionName appVersionName
             dimension = "green"
             aaptOptions {
                 cruncherEnabled = false
@@ -101,6 +142,17 @@ android {
             java.srcDirs = ['src/mobile/java']
             res.srcDirs = ['src/mobile/res']
             manifest.srcFile 'src/mobile/AndroidManifest.xml'
+
+            androidTest {
+                // If all the files for a source set are located under a single root
+                // directory, you can specify that directory using the setRoot property.
+                // When gathering sources for the source set, Gradle looks only in locations
+                // relative to the root directory you specify. For example, after applying the
+                // configuration below for the androidTest source set, Gradle looks for Java
+                // sources only in the src/tests/java/ directory.
+                setRoot 'src/androidTestMobile/java'
+            }
+            assets.srcDirs = ['src/mobile/assets', 'src/mobile/assets/']
         }
         tv {
             java.srcDirs = ['src/tv/java']
@@ -108,6 +160,9 @@ android {
             manifest.srcFile 'src/tv/AndroidManifest.xml'
         }
     }
+
+
+
     buildTypes {
         debug {
             multiDexEnabled true
@@ -153,12 +208,14 @@ android {
         exclude 'third_party/java_src/error_prone/project/annotations/Annotations.gwt.xml'
     }
     compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
     }
     dexOptions {
-
+        incremental true
         javaMaxHeapSize "4g"
+        preDexLibraries = false
+        additionalParameters = ["--set-max-idx-number=55000"]
     }
 }
 afterEvaluate {
@@ -175,14 +232,33 @@ afterEvaluate {
     }
 }
 
+
+configurations.tvCompile {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '25.4.0'
+            }
+        }
+    }
+}
+
+
 dependencies {
-
-
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile "junit:junit:$rootProject.ext.junitVersion"
     testCompile "org.mockito:mockito-core:$rootProject.ext.mockitoVersion"
     androidTestCompile("com.android.support.test.espresso:espresso-core:$rootProject.ext.espressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.0') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'recyclerview-v7'
+    }
+    androidTestCompile("tools.fastlane:screengrab:1.0.3", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestCompile "com.google.dexmaker:dexmaker:$rootProject.ext.dexmakerVersion"
@@ -244,7 +320,7 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
     tvCompile "com.android.support:leanback-v17:$rootProject.ext.androidsupportVersion"
     tvCompile "com.android.support.constraint:constraint-layout:$rootProject.ext.androidsupportconstraintVersion"
-    tvCompile 'com.github.bumptech.glide:glide:3.8.0'
+    tvCompile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     compile "com.github.bumptech.glide:glide:$rootProject.ext.glideVersion"
     compile "com.android.support:customtabs:$rootProject.ext.androidsupportVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
@@ -255,7 +331,6 @@ dependencies {
     compile "com.squareup.retrofit2:converter-gson:$rootProject.ext.retrofit2Version"
     compile "io.reactivex:rxandroid:$rootProject.ext.rxandroidVersion"
     compile "io.reactivex:rxjava:$rootProject.ext.rxjavaVersion"
-    compile "com.android.support:multidex:1.0.1"
     compile "com.google.ads.interactivemedia.v3:interactivemedia:$rootProject.ext.googleAdsInteractiveMediaV3"
     compile "com.google.android.gms:play-services-ads:$rootProject.ext.googlePlayServicesVersion"
     compile "com.google.android.gms:play-services-analytics:$rootProject.ext.googlePlayServicesVersion"
@@ -297,8 +372,7 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-    mobileCompile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
-
+    compile 'com.kiswe.kmsdkcorekit:kmplayer:2.1.000024'
 }
 
 apply plugin: 'com.google.gms.google-services'
