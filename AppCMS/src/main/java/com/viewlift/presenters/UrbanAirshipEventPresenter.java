@@ -269,7 +269,7 @@ public class UrbanAirshipEventPresenter {
 
         Map<String, List<String>> uaAdd = new HashMap<>();
         List<String> uaAddList = new ArrayList<>();
-        uaAddList.add(getZonedDateTimeYYMMDD(subscriptionPlan));
+        uaAddList.add(subscriptionPlan);
         uaAdd.put(subscriptionPlanGroup, uaAddList);
         uaNamedUserRequest.setUaAdd(uaAdd);
         try {
