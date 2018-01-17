@@ -1125,8 +1125,10 @@ public class AppCMSPresenter {
         if (getLoggedInUser() != null) {
             if (currentActivity != null) {
                 currentActivity.runOnUiThread(() -> {
-                    for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
-                        updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                    if (realmController != null) {
+                        for (DownloadVideoRealm downloadVideoRealm : realmController.getAllUnSyncedWithServer(getLoggedInUser())) {
+                            updateWatchedTime(downloadVideoRealm.getVideoId(), downloadVideoRealm.getWatchedTime());
+                        }
                     }
                 });
             }
@@ -12036,9 +12038,10 @@ public class AppCMSPresenter {
                         if (onRunOnUIThread != null && appCMSPresenter.runUpdateDownloadIconTimer)
                             onRunOnUIThread.runOnUiThread(() -> {
                                 try {
-                                    if (imageView.getTag() != null &&
+                                    if ((imageView.getTag() == null) ||
+                                            (imageView.getTag() != null &&
                                             imageView.getTag() instanceof String &&
-                                            ((String) imageView.getTag()).equals(filmIdLocal)) {
+                                            ((String) imageView.getTag()).equals(filmIdLocal))) {
                                         circularImageBar(imageView, downloadPercent);
                                     }
                                 } catch (Exception e) {
