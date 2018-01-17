@@ -4462,16 +4462,16 @@ public class AppCMSPresenter {
                                  final String siteId,
                                  String pageId,
                                  final AppCMSAudioDetailAPIAction audiDetail) {
-        if (currentActivity != null) {
+        if (currentContext != null) {
             try {
-                String url = currentActivity.getString(R.string.app_cms_refresh_identity_api_url,
+                String url = currentContext.getString(R.string.app_cms_refresh_identity_api_url,
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
 
                 appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
                     try {
                         appCMSAudioDetailCall.call(
-                                currentActivity.getString(R.string.app_cms_audio_detail_api_url,
+                                currentContext.getString(R.string.app_cms_audio_detail_api_url,
                                         apiBaseUrl,
                                         siteId,
                                         pageId),
@@ -4486,11 +4486,14 @@ public class AppCMSPresenter {
     }
 
 
-    public void getAudioDetail(String pageId) {
-        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                .PRESENTER_AUDIO_LOADING_ACTION));
+    public void getAudioDetail(String pageId, long mCurrentPlayerPosition, AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper) {
+        if (currentActivity != null) {
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                    .PRESENTER_AUDIO_LOADING_ACTION));
+        }
 
-        AudioPlaylistHelper.getAudioPlaylistHelperInstance().setAppCMSPresenter(AppCMSPresenter.this, currentActivity);
+
+//        AudioPlaylistHelper.getInstance().setAppCMSPresenter(AppCMSPresenter.this, currentActivity);
         getAudioContent(appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName(),
                 pageId,
@@ -4507,25 +4510,33 @@ public class AppCMSPresenter {
                     public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
 
                         cancelInternalEvents();
-                        pushActionInternalEvents(this.pageId
-                                + BaseView.isLandscape(currentActivity));
+                        if(currentActivity!=null){
+                            pushActionInternalEvents(this.pageId
+                                    + BaseView.isLandscape(currentActivity));
+                        }
+
                         AppCMSPageAPI pageAPI;
                         if (appCMSAudioDetailResult != null) {
-                            AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getAudioPlaylistHelperInstance();
+                            AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
                             mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
                             PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
-                            mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()));
+                            if(callBackPlaylistHelper!=null){
+                                callBackPlaylistHelper.onPlaybackStart(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()),mCurrentPlayerPosition);
+                            }else if(currentActivity !=null){
+                                mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                            }
                             pageAPI = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
-//                            navigationPageData.put(this.pageId, pageAPI);
 
                         } else {
                             Toast.makeText(currentContext, "Unable to fetch data", Toast.LENGTH_SHORT).show();
                         }
 
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                                .PRESENTER_AUDIO_LOADING_STOP_ACTION));
-                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                                .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        if (currentActivity != null) {
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                    .PRESENTER_AUDIO_LOADING_STOP_ACTION));
+                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                                    .PRESENTER_STOP_PAGE_LOADING_ACTION));
+                        }
                     }
                 });
     }
@@ -4552,9 +4563,9 @@ public class AppCMSPresenter {
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
-                            //create playlist library
+                            //on browsinfany play list .set this playlist in temporaray listing of playlist .so that it could not effect on currently playing listing
                             if (appCMSPlaylistResult.getAudioList() != null && appCMSPlaylistResult.getAudioList().size() > 0) {
-                                AudioPlaylistHelper.getAudioPlaylistHelperInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(appCMSPlaylistResult.getAudioList()));
+                                AudioPlaylistHelper.getInstance().setTempPlaylist(MusicLibrary.createPlaylistByIDList(appCMSPlaylistResult.getAudioList()));
                             }
 
                             cancelInternalEvents();

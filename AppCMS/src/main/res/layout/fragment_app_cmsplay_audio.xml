@@ -128,8 +128,8 @@
                 android:layout_toEndOf="@+id/start_time"
                 android:layout_toStartOf="@+id/end_time"
                 android:max="100"
-                android:maxHeight="9dp"
-                android:minHeight="9dp"
+                android:maxHeight="5dp"
+                android:minHeight="5dp"
                 android:progress="50"
                 android:progressDrawable="@drawable/seekbar_style"
                 android:thumb="@drawable/seekbar_thumb_style" />

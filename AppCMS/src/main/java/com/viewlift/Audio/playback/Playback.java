@@ -72,7 +72,7 @@ public interface Playback {
      */
     void updateLastKnownStreamPosition();
 
-    void play(MediaMetadataCompat item);
+    void play(MediaMetadataCompat item, long currentPosition);
 
     void pause();
 

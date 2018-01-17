@@ -83,7 +83,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     public void onCreate() {
         super.onCreate();
 
-        LocalPlayback playback = new LocalPlayback(this,new LocalPlayback.MetadataUpdateListener() {
+        LocalPlayback playback = new LocalPlayback(this, new LocalPlayback.MetadataUpdateListener() {
             @Override
             public void onMetadataChanged(MediaMetadataCompat metadata) {
                 mSession.setMetadata(metadata);
@@ -91,15 +91,18 @@ public class MusicService extends MediaBrowserServiceCompat implements
         });
 
         mPlaybackManager = new PlaybackManager(this, getResources(),
-                playback,getApplicationContext());
+                playback, getApplicationContext());
 
 
         // Start a new MediaSession
         mSession = new MediaSessionCompat(this, "MusicService");
         setSessionToken(mSession.getSessionToken());
         mSession.setCallback(mPlaybackManager.getMediaSessionCallback());
-        mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
-                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+        mSession.setFlags(
+                MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS |
+                        MediaSessionCompat.FLAG_HANDLES_QUEUE_COMMANDS |
+                        MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
 
         Context context = getApplicationContext();
 
@@ -120,8 +123,10 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
     /**
      * (non-Javadoc)
+     *
      * @see android.app.Service#onStartCommand(Intent, int, int)
      */
+
     @Override
     public int onStartCommand(Intent startIntent, int flags, int startId) {
         if (startIntent != null) {
@@ -157,6 +162,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
     /**
      * (non-Javadoc)
+     *
      * @see android.app.Service#onDestroy()
      */
     @Override
@@ -237,7 +243,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
             public void onReceive(Context context, Intent intent) {
                 String connectionEvent = intent.getStringExtra(CarHelper.MEDIA_CONNECTION_STATUS);
                 mIsConnectedToCar = CarHelper.MEDIA_CONNECTED.equals(connectionEvent);
-                           }
+            }
         };
         registerReceiver(mCarConnectionReceiver, filter);
     }

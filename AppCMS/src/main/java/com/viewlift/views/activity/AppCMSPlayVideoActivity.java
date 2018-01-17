@@ -22,6 +22,7 @@ import android.widget.FrameLayout;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
+import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.casting.CastingUtils;
 import com.viewlift.models.data.appcms.api.AppCMSSignedURLResult;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -62,6 +63,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private String contentRating;
     private long videoRunTime;
     private FrameLayout appCMSPlayVideoPageContainer;
+    private CastServiceProvider castProvider;
 
 
     @Override

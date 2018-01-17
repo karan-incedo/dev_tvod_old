@@ -40,6 +40,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
+import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 
 
@@ -50,17 +51,17 @@ import com.viewlift.views.activity.AppCMSPageActivity;
  */
 public class MediaNotificationManager extends BroadcastReceiver {
 
-    private static final String CHANNEL_ID = "com.example.android.uamp.MUSIC_CHANNEL_ID";
+    private static final String CHANNEL_ID = "com.viewlift.Audio.MUSIC_CHANNEL_ID";
 
     private static final int NOTIFICATION_ID = 412;
     private static final int REQUEST_CODE = 100;
 
-    public static final String ACTION_PAUSE = "com.example.android.uamp.pause";
-    public static final String ACTION_PLAY = "com.example.android.uamp.play";
-    public static final String ACTION_PREV = "com.example.android.uamp.prev";
-    public static final String ACTION_NEXT = "com.example.android.uamp.next";
-    public static final String ACTION_STOP = "com.example.android.uamp.stop";
-    public static final String ACTION_STOP_CASTING = "com.example.android.uamp.stop_cast";
+    public static final String ACTION_PAUSE = "com.viewlift.Audio.pause";
+    public static final String ACTION_PLAY = "com.viewlift.Audio.play";
+    public static final String ACTION_PREV = "com.viewlift.Audio.prev";
+    public static final String ACTION_NEXT = "com.viewlift.Audio.next";
+    public static final String ACTION_STOP = "com.viewlift.Audio.stop";
+    public static final String ACTION_STOP_CASTING = "com.viewlift.Audio.stop_cast";
 
     private final MusicService mService;
     private MediaSessionCompat.Token mSessionToken;
@@ -209,7 +210,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private PendingIntent createContentIntent(MediaDescriptionCompat description) {
-        Intent openUI = new Intent(mService, AppCMSPageActivity.class);
+        Intent openUI = new Intent(mService, AppCMSLaunchActivity.class);
         openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 //        openUI.putExtra(AppCMSPageActivity.EXTRA_START_FULLSCREEN, true);
 //        if (description != null) {
@@ -294,7 +295,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                         .setMediaSession(mSessionToken))
                 .setDeleteIntent(mStopIntent)
                 .setColor(mNotificationColor)
-                .setSmallIcon(R.drawable.ic_notification)
+                .setSmallIcon(R.drawable.logo)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(createContentIntent(description))
@@ -349,6 +350,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             icon = R.drawable.play_track;
             intent = mPlayIntent;
         }
+
         notificationBuilder.addAction(new NotificationCompat.Action(icon, label, intent));
 
         // If skip to next action is enabled
@@ -395,7 +397,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
             NotificationChannel notificationChannel =
                     new NotificationChannel(CHANNEL_ID,
                             mService.getString(R.string.notification_channel),
-                            NotificationManager.IMPORTANCE_LOW);
+                            NotificationManager.IMPORTANCE_HIGH);
 
             notificationChannel.setDescription(
                     mService.getString(R.string.notification_channel_description));
@@ -404,3 +406,4 @@ public class MediaNotificationManager extends BroadcastReceiver {
         }
     }
 }
+

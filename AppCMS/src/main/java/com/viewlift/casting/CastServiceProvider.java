@@ -526,7 +526,9 @@ public class CastServiceProvider {
                                 }
                             });
                 }
-            } else {
+            } else
+
+                {
                 try {
                     castDisconnectDialog = new CastDisconnectDialog(mActivity);
 
