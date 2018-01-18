@@ -867,6 +867,7 @@ public class ViewCreator {
                                             appCMSPresenter.getUserVideoDownloadStatus(
                                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
                                                             moduleAPI.getContentData().get(0), userId), userId);
+                                            view.setTag(moduleAPI.getContentData().get(0).getGist().getId());
 
                                         }
 
@@ -2527,6 +2528,7 @@ public class ViewCreator {
                             appCMSPresenter.getUserVideoDownloadStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
                                             moduleAPI.getContentData().get(0), userId), userId);
+                            componentViewResult.componentView.setTag(moduleAPI.getContentData().get(0).getGist().getId());
                         }
 
                         if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
@@ -4757,6 +4759,7 @@ public class ViewCreator {
 
                     case STATUS_RUNNING:
                         appCMSPresenter.setDownloadInProgress(true);
+                        imageButton.setImageResource(0);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
                         imageButton.setOnClickListener(null);
