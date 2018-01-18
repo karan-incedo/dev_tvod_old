@@ -96,7 +96,7 @@ public class AudioPlaylistHelper {
         indexAudioFromPlaylist++;
         if (currentAudioPlaylist.size() > indexAudioFromPlaylist) {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper,true);
         }
     }
 
@@ -109,14 +109,14 @@ public class AudioPlaylistHelper {
     // play audio on click on item so set index position as per sequence of
     public void playAudioOnClick(String mediaId, long currentPosition) {
         indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
-        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null);
+        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null,true);
     }
 
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist + 1) && indexAudioFromPlaylist + 1 >= 0) {
             indexAudioFromPlaylist++;
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper);
+            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper,true);
 
         } else {
             Toast.makeText(context, "No next item avilable in playlist", Toast.LENGTH_SHORT).show();
@@ -127,7 +127,7 @@ public class AudioPlaylistHelper {
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist - 1) && indexAudioFromPlaylist - 1 >= 0) {
             indexAudioFromPlaylist--;
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper);
+            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper,true);
         } else {
             Toast.makeText(context, "No previous item avilable in playlist", Toast.LENGTH_SHORT).show();
         }
