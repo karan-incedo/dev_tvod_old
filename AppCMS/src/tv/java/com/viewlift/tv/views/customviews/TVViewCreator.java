@@ -1705,8 +1705,13 @@ public class TVViewCreator {
                                         try {
                                             if (appCMSUserSubscriptionPlanResult != null) {
                                                 String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED")) {
+                                                    String planName = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName();
+                                                    appCMSPresenter.setActiveSubscriptionStatus(subscriptionStatus);
+                                                    appCMSPresenter.setActiveSubscriptionPlanName(planName);
+                                                    appCMSPresenter.setActiveSubscriptionPlatform(appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform());
+                                                    tv.setText(planName.substring(0, planName.length() - 14));
+                                                } else if (subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
                                                     String planName = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName();
                                                     appCMSPresenter.setActiveSubscriptionStatus(subscriptionStatus);
                                                     appCMSPresenter.setActiveSubscriptionPlanName(planName);
@@ -1723,12 +1728,19 @@ public class TVViewCreator {
                                         }
                                     });
                                 } else {
-                                    String activeSubscriptionStatus = appCMSPresenter.getActiveSubscriptionStatus();
-                                    if (activeSubscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                            activeSubscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                        tv.setText(appCMSPresenter.getActiveSubscriptionPlanName());
-                                    } else {
-                                        tv.setText(context.getString(R.string.no_active_subscription));
+                                    try {
+                                        String activeSubscriptionStatus = appCMSPresenter.getActiveSubscriptionStatus();
+                                        if (activeSubscriptionStatus.equalsIgnoreCase("COMPLETED")) {
+                                            String planName = appCMSPresenter.getActiveSubscriptionPlanName();
+                                            tv.setText(planName);
+                                        } else if (activeSubscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                            String planName = appCMSPresenter.getActiveSubscriptionPlanName();
+                                            tv.setText(planName.substring(0, planName.length() - 14));
+                                        } else {
+                                            tv.setText(context.getString(R.string.no_active_subscription));
+                                        }
+                                    } catch (Exception e) {
+
                                     }
                                 }
                             }
