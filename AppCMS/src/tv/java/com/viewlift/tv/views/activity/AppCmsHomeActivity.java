@@ -961,7 +961,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         distanceFromStackTop = appCMSBinderStack.search(tag);
 
         //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
-        if (0 < distanceFromStackTop) {
+        /*if (0 < distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
                 //Log.d(TAG, "Popping stack to get to page item");
                 try {
@@ -970,7 +970,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     //Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
             }
-        }
+        }*/
         showInfoIcon(tag);
         appCMSBinderStack.push(tag);
         selectNavItem(tag);
