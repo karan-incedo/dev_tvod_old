@@ -332,7 +332,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
     }
 
     private void playVideos(int currentIndex, ContentDatum contentDatum) {
-        customPreviewContainer.setVisibility(View.GONE);
+        customPreviewContainer.setVisibility(View.INVISIBLE);
         hideRestrictedMessage();
         if (contentDatum != null &&
                 contentDatum.getGist() != null &&
@@ -525,7 +525,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         customPreviewContainer.post(new Runnable() {
             @Override
             public void run() {
-                customPreviewContainer.setVisibility(View.GONE);
+                customPreviewContainer.setVisibility(View.INVISIBLE);
 
             }
         });
