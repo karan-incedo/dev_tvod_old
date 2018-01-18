@@ -3905,7 +3905,7 @@ public class AppCMSPresenter {
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
         try {
             showDialog(DialogType.DELETE_ALL_WATCHLIST_ITEMS,
-                    currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
+                    currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message,(isSportsTemplate()?"videos":"films")),
                     true,
                     () -> makeClearWatchlistRequest(resultAction1),
                     null);
