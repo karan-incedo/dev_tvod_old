@@ -412,7 +412,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
 
                             if (action.contains(deleteSingleItemDownloadAction)) {
                                 /*delete a single downloaded video*/
-                                deleteDownloadVideo(data, position);
+                                deleteDownloadVideo(data, clickPosition);
                             }
                             if (action.contains(deleteSingleItemWatchlistAction)) {
                                 /*delete video from user watchlist*/
@@ -446,7 +446,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (action.contains(videoAction)) {
                                 if (viewTypeKey == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                     /*play movie if already downloaded*/
-                                    playDownloaded(data, position);
+                                    playDownloaded(data, clickPosition);
                                 } else {
                                     /*play movie from web URL*/
                                     appCMSPresenter.launchVideoPlayer(data,
@@ -459,7 +459,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                             if (action.contains(trayAction)) {
                                 if (viewTypeKey == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                     /*play movie if already downloaded*/
-                                    playDownloaded(data, position);
+                                    playDownloaded(data, clickPosition);
                                     return;
                                 }
                                 /*open video detail page*/
@@ -581,7 +581,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     }
 
     private List<String> getListOfUpcomingMovies(int position, Object downloadStatus) {
-        if (position + 1 == adapterData.size()) {
+        if (position + 1 >= adapterData.size()) {
             return Collections.emptyList();
         }
 
