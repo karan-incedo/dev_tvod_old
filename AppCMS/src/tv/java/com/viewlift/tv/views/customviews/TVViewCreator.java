@@ -293,7 +293,7 @@ public class TVViewCreator {
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
-                    && "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
+                    || "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
                     TextView textView = new TextView(context);
@@ -307,7 +307,8 @@ public class TVViewCreator {
                     return moduleView;
                 }
 
-                if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
+                if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
+                        || "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
                     final TVPageView finalPageView = pageView;
                     if (null != moduleAPI.getContentData()
                             && null != moduleAPI.getContentData().get(0)
