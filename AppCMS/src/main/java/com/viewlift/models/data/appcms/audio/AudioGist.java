@@ -63,10 +63,6 @@ public class AudioGist implements Serializable {
     BadgeImages badgeImages;
 
 
-    @SerializedName("updateDate")
-    @Expose
-    long updateDate;
-
     @SerializedName("primaryCategory")
     @Expose
     PrimaryCategory primaryCategory;
@@ -195,15 +191,6 @@ public class AudioGist implements Serializable {
 
     public void setBadgeImages(BadgeImages badgeImages) {
         this.badgeImages = badgeImages;
-    }
-
-
-    public long getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(long updateDate) {
-        this.updateDate = updateDate;
     }
 
     public PrimaryCategory getPrimaryCategory() {
