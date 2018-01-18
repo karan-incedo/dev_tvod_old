@@ -740,6 +740,11 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PLAYLIST_SUB_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_audio_artist_key),
                 AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_audio_download_button_key),
+                AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_download_button_key),
+                AppCMSUIKeyType.PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY);
+
     }
 
     private void createPageNameToActionMap(Context context) {

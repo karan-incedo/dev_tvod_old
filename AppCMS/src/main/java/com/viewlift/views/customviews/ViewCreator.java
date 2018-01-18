@@ -1548,6 +1548,8 @@ public class ViewCreator {
         return collectionGridItemView;
     }
 
+    AppCMSPlaylistAdapter appCMSPlaylistAdapter;
+
     @SuppressWarnings({"StringBufferReplaceableByString", "ConstantConditions"})
     void createComponentView(final Context context,
                              final Component component,
@@ -1640,8 +1642,14 @@ public class ViewCreator {
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.VERTICAL,
                                     false));
-
-                    AppCMSPlaylistAdapter appCMSPlaylistAdapter = new AppCMSPlaylistAdapter(context,
+                    Module tempModuleAPI = new Module();
+                    tempModuleAPI.setContentData(new ArrayList<>());
+                    tempModuleAPI.getContentData().addAll(moduleAPI.getContentData());
+            /*removing 1st data in the list since it contains playlist GIST*/
+                    if (tempModuleAPI.getContentData().get(0).getGist() == null) {
+                        tempModuleAPI.getContentData().remove(0);
+                    }
+                    appCMSPlaylistAdapter = new AppCMSPlaylistAdapter(context,
                             this,
                             appCMSPresenter,
                             settings,
@@ -1649,7 +1657,7 @@ public class ViewCreator {
                             false,
                             component,
                             jsonValueKeyMap,
-                            moduleAPI,
+                            tempModuleAPI,
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,
@@ -2008,7 +2016,10 @@ public class ViewCreator {
 
             case PAGE_BUTTON_KEY:
                 if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY ||
-                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
+                        componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY
+                        ) {
                     componentViewResult.componentView = new ResponsiveButton(context);
                 } else if (componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY &&
@@ -2184,7 +2195,36 @@ public class ViewCreator {
                             }
                         });
                         break;
+                    case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setBackgroundResource(R.drawable.ic_download);
+                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (!appCMSPresenter.isUserLoggedIn()) {
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                            () -> {
+                                                appCMSPresenter.setAfterLoginAction(() -> {
 
+                                                });
+                                            });
+                                } else if (!appCMSPresenter.isUserSubscribed()) {
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                            () -> {
+                                                appCMSPresenter.setAfterLoginAction(() -> {
+
+                                                });
+                                            });
+                                } else {
+                                    appCMSPlaylistAdapter.startDownloadPlaylist();
+                                }
+                            }
+                        });
+                        break;
+                    case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
+                        ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                        componentViewResult.componentView.setBackgroundResource(R.drawable.ic_download);
+                        break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
                         componentViewResult.componentView.setBackgroundResource(android.R.color.transparent);
@@ -2201,18 +2241,7 @@ public class ViewCreator {
                                             appCMSPresenter,
                                             moduleAPI.getContentData().get(0), userId), userId);
                         }
-                        /*this is for download playlist*/
-//                        if (!gridElement &&
-//                                moduleAPI != null &&
-//                                moduleAPI.getContentData() != null &&
-//                                !moduleAPI.getContentData().isEmpty() &&
-//                                moduleAPI.getContentData().get(0) != null &&
-//                                moduleAPI.getContentData().get(0).getAudioGist() != null) {
-//                            String userId = appCMSPresenter.getLoggedInUser();
-//                            appCMSPresenter.getUserVideoDownloadStatus(
-//                                    moduleAPI.getContentData().get(0).getAudioGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
-//                                            moduleAPI.getContentData().get(0), userId), userId);
-//                        }
+
                         if (appCMSPresenter.getAppCMSMain().getFeatures() != null &&
                                 appCMSPresenter.getAppCMSMain().getFeatures().isMobileAppDownloads()) {
                             componentViewResult.componentView.setVisibility(View.VISIBLE);
@@ -2236,18 +2265,6 @@ public class ViewCreator {
                                     new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
                                             .get(0).getGist().getId()));
                         }
-                        /*this is playlist audio watchlist*/
-//                        if (!gridElement &&
-//                                moduleAPI != null &&
-//                                moduleAPI.getContentData() != null &&
-//                                !moduleAPI.getContentData().isEmpty() &&
-//                                moduleAPI.getContentData().get(0) != null &&
-//                                moduleAPI.getContentData().get(0).getAudioGist() != null) {
-//                            appCMSPresenter.getUserVideoStatus(
-//                                    moduleAPI.getContentData().get(0).getAudioGist().getId(),
-//                                    new UpdateImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter, moduleAPI.getContentData()
-//                                            .get(0).getAudioGist().getId()));
-//                        }
                         componentViewResult.componentView.setVisibility(View.VISIBLE);
 
                         break;
