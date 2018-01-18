@@ -272,9 +272,12 @@ public class CardPresenter extends Presenter {
                             tvTitle.setText(stringBuilder);
                             tvTitle.setTextSize(component.getFontSize());
                         } else {
+                            Integer height = component.getLayout().getTv().getHeight() != null
+                                    ? Integer.valueOf(component.getLayout().getTv().getHeight())
+                                    : 0;
                             layoutParams = new FrameLayout.LayoutParams(
                                     FrameLayout.LayoutParams.MATCH_PARENT,
-                                    Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getHeight())));
+                                    Utils.getViewYAxisAsPerScreen(mContext, height));
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                             tvTitle.setText(contentData.getGist().getTitle());
                         }
