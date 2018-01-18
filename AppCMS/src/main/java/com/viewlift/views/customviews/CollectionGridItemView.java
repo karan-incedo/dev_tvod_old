@@ -451,7 +451,10 @@ public class CollectionGridItemView extends BaseView {
                     viewsToUpdateOnClickEvent.add(view);
                 }
 
-                if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
+                if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
+                    view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                            childComponent, data, position));
+                } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
                     String userId = appCMSPresenter.getLoggedInUser();
 
                     try {
