@@ -3415,12 +3415,21 @@ public class AppCMSPresenter {
             if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
                 createLocalCopyForUser(contentDatum, resultAction1);
             } else if (getMegabytesAvailable() > file_size) {
+                boolean existingDownloadOrInProgress = false;
                 try {
-                    startDownload(contentDatum,
-                            resultAction1);
-//                        startNextDownload = false;
+                    DownloadVideoRealm existingVideoDownload =
+                            realmController.getDownloadById(contentDatum.getGist().getId());
+                    existingDownloadOrInProgress = existingVideoDownload != null;
                 } catch (Exception e) {
 
+                }
+
+                if (!existingDownloadOrInProgress) {
+                    try {
+                        startDownload(contentDatum, resultAction1);
+                    } catch (Exception e) {
+
+                    }
                 }
             } else {
                 currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
@@ -10942,7 +10951,6 @@ public class AppCMSPresenter {
                     binder.getRelateVideoIds().get(
                             binder.getCurrentPlayingVideoIndex() + 1))
                     .convertToContentDatum(getLoggedInUser());
-            binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
             binder.setContentData(contentDatum);
         }
         String pageId = getAutoplayPageId();
