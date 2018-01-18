@@ -133,8 +133,8 @@
             "mobile": {
               "yAxis": 22,
               "xAxis": 310,
-              "width": 27,
-              "height": 27
+              "width": 25,
+              "height": 25
             },
             "tabletLandscape": {
               "yAxis": 22,
@@ -151,7 +151,7 @@
           },
           "action": "download",
           "type": "button",
-          "key": "downloadButton"
+          "key": "downloadButtonPlaylist"
         },
         {
           "layout": {
@@ -334,9 +334,9 @@
                   "height": 20
                 }
               },
-              "action": "download",
+              "action": "downloadAudio",
               "type": "button",
-              "key": "downloadButton"
+              "key": "downloadButtonAudio"
             },
             {
               "layout": {
