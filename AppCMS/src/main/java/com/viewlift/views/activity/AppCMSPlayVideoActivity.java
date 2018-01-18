@@ -471,7 +471,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
             } else {
                 if (binder.getRelateVideoIds() != null
-                        && currentlyPlayingIndex < relateVideoIds.size()) {
+                        && currentlyPlayingIndex + 1 < relateVideoIds.size()) {
                     appCMSPresenter.openAutoPlayScreen(binder, o -> {
                         //
                     });
