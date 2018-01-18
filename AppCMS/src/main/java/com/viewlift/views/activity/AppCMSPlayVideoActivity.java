@@ -36,6 +36,7 @@ import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private long videoRunTime;
     private FrameLayout appCMSPlayVideoPageContainer;
 
-    private Map<String, String> availableStreamingFormats;
+    private Map<String, String> availableStreamingQualityMap;
+    private List<String> availableStreamingQualities;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -556,16 +558,16 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     @Override
     public List<String> getAvailableStreamingQualities() {
-        if (availableStreamingFormats != null) {
-            return new ArrayList<>(availableStreamingFormats.keySet());
+        if (availableStreamingQualities != null) {
+            return availableStreamingQualities;
         }
         return new ArrayList<>();
     }
 
     @Override
     public String getStreamingQualityUrl(String streamingQuality) {
-        if (availableStreamingFormats != null && availableStreamingFormats.containsKey(streamingQuality)) {
-            return availableStreamingFormats.get(streamingQuality);
+        if (availableStreamingQualityMap != null && availableStreamingQualityMap.containsKey(streamingQuality)) {
+            return availableStreamingQualityMap.get(streamingQuality);
         }
         return null;
     }
@@ -587,13 +589,18 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     @Override
     public int getMpegResolutionIndexFromUrl(String mpegUrl) {
         if (!TextUtils.isEmpty(mpegUrl)) {
+            String mpegUrlWithoutCdn = mpegUrl;
+            int mp4Index = mpegUrl.indexOf(".mp4");
+            if (0 <= mp4Index) {
+                mpegUrlWithoutCdn = mpegUrl.substring(0, mp4Index);
+            }
             List<String> availableStreamingQualities = getAvailableStreamingQualities();
             if (availableStreamingQualities != null) {
                 for (int i = 0; i < availableStreamingQualities.size(); i++) {
                     String availableStreamingQuality = availableStreamingQualities.get(i);
                     if (!TextUtils.isEmpty(availableStreamingQuality)) {
-                        if (availableStreamingFormats.get(availableStreamingQuality) != null &&
-                                availableStreamingFormats.get(availableStreamingQuality).equals(mpegUrl)) {
+                        if (availableStreamingQualityMap.get(availableStreamingQuality) != null &&
+                                availableStreamingQualityMap.get(availableStreamingQuality).contains(mpegUrlWithoutCdn)) {
                             return i;
                         }
                     }
@@ -605,8 +612,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     }
 
     private void initializeStreamingQualityValues(VideoAssets videoAssets) {
-        if (availableStreamingFormats == null) {
-            availableStreamingFormats = new HashMap<>();
+        if (availableStreamingQualityMap == null) {
+            availableStreamingQualityMap = new HashMap<>();
+        }
+        if (availableStreamingQualities == null) {
+            availableStreamingQualities = new ArrayList<>();
         }
         if (videoAssets != null && videoAssets.getMpeg() != null) {
             List<Mpeg> availableMpegs = videoAssets.getMpeg();
@@ -623,9 +633,30 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     }
                 }
                 if (!TextUtils.isEmpty(resolution)) {
-                    availableStreamingFormats.put(resolution, availableMpeg.getUrl());
+                    availableStreamingQualities.add(resolution);
+                    StringBuilder sb = new StringBuilder(resolution);
+                    sb.append("p");
+                    availableStreamingQualityMap.put(sb.toString(), availableMpeg.getUrl());
                 }
             }
+        }
+
+        Collections.sort(availableStreamingQualities, (q1, q2) -> {
+            int i1 = Integer.valueOf(q1);
+            int i2 = Integer.valueOf(q2);
+            if (i2 < i1) {
+                return -1;
+            } else if (i1 == i2) {
+                return 0;
+            } else {
+                return 1;
+            }
+        });
+        int numStreamingQualities = availableStreamingQualities.size();
+        for (int i = 0; i < numStreamingQualities; i++) {
+            StringBuilder sb = new StringBuilder(availableStreamingQualities.get(i));
+            sb.append("p");
+            availableStreamingQualities.set(i, sb.toString());
         }
     }
 }

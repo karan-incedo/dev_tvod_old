@@ -1169,24 +1169,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             super(context, items);
             this.appCMSPresenter = appCMSPresenter;
             this.availableStreamingQualities = items;
-            if (items != null) {
-                Collections.sort(items, (o1, o2) -> {
-                    try {
-                        int v1 = Integer.parseInt(o1);
-                        int v2 = Integer.parseInt(o2);
-                        if (v1 < v1) {
-                            return -1;
-                        } else if (v1 == v2) {
-                            return 0;
-                        } else {
-                            return 1;
-                        }
-                    } catch (Exception e) {
-
-                    }
-                    return -1;
-                });
-            }
         }
 
         @Override
