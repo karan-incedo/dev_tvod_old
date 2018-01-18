@@ -513,7 +513,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         }
 
         List<String> contentDatumList = new ArrayList<>();
-        for (int i = position + 1; i < adapterData.size(); i++) {
+        for (int i = position; i < adapterData.size(); i++) {
             ContentDatum contentDatum = adapterData.get(i);
             if (contentDatum.getGist() != null &&
                     contentDatum.getGist().getDownloadStatus().equals(downloadStatus)) {
@@ -579,7 +579,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         extraData,
                         data,
                         false,
-                        -1,
+                        0,
                         relatedVideoIds)) {
             //Log.e(TAG, "Could not launch action: " +
 //                    " permalink: " +
@@ -868,7 +868,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 extraData,
                 data,
                 false,
-                -1,
+                0,
                 relatedVideos)) {
             //Log.e(TAG, "Could not launch action: " +
 //                    " permalink: " +
