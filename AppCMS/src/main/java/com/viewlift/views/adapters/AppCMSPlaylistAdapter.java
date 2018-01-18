@@ -6,15 +6,18 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -64,6 +67,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     private String moduleId;
     RecyclerView mRecyclerView;
+    String downloadAudioAction;
+    CollectionGridItemView[] allViews;
 
     public AppCMSPlaylistAdapter(Context context,
                                  ViewCreator viewCreator,
@@ -87,13 +92,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         this.jsonValueKeyMap = jsonValueKeyMap;
         this.moduleAPI = moduleAPI;
         this.receivers = new ArrayList<>();
-
+        this.downloadAudioAction = getDownloadAudioAction(context);
         if (moduleAPI != null && moduleAPI.getContentData() != null) {
-            /*removing 1st data in the list since it contains playlist GIST*/
-            if (moduleAPI.getContentData().get(0).getGist() == null) {
-                moduleAPI.getContentData().remove(0);
-            }
             this.adapterData = moduleAPI.getContentData();
+            allViews = new CollectionGridItemView[this.adapterData.size()];
         } else {
             this.adapterData = new ArrayList<>();
         }
@@ -149,6 +151,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                     ((TextView) holder.componentView.getChild(i)).setText("");
                 }
             }
+            allViews[position] = holder.componentView;
             bindView(holder.componentView, adapterData.get(position), position);
         }
     }
@@ -195,20 +198,65 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                       ContentDatum data, int clickPosition) {
                         if (isClickable) {
                             if (data.getGist() != null) {
-                          /*get audio details on tray click item and play song*/
-                                if (data.getGist() != null &&
-                                        data.getGist().getMediaType() != null &&
-                                        data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
-                                        data.getGist().getContentType() != null &&
-                                        data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
-                                    appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
-                                            .PRESENTER_PAGE_LOADING_ACTION));
-                                    // on click from playlist adapter .Get playlist from temp list and set into current playlist
-                                    if (AudioPlaylistHelper.getInstance().getTempPlaylist() != null && AudioPlaylistHelper.getInstance().getTempPlaylist().size() > 0) {
-                                        AudioPlaylistHelper.getInstance().setPlaylist(AudioPlaylistHelper.getInstance().getTempPlaylist());
+                                String action = null;
+                                if (childComponent != null && !TextUtils.isEmpty(childComponent.getAction())) {
+                                    action = childComponent.getAction();
+                                }
+                                if (action != null && action.contains(downloadAudioAction)) {
+                                    ImageButton download = null;
+                                    for (int i = 0; i < collectionGridItemView.getChildItems().size(); i++) {
+                                        CollectionGridItemView.ItemContainer itemContainer = collectionGridItemView.getChildItems().get(i);
+                                        if (itemContainer.getComponent().getKey() != null) {
+                                            if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_video_download_button_key))) {
+                                                download = (ImageButton) itemContainer.getChildView();
+                                            }
+                                        }
                                     }
-                                    AudioPlaylistHelper.getInstance().playAudioOnClick(data.getGist().getId(), 0);
-                                    return;
+                                    if (!appCMSPresenter.isUserLoggedIn()) {
+                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                                () -> {
+                                                    appCMSPresenter.setAfterLoginAction(() -> {
+
+                                                    });
+                                                });
+                                    } else if (!appCMSPresenter.isUserSubscribed()) {
+                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                                () -> {
+                                                    appCMSPresenter.setAfterLoginAction(() -> {
+
+                                                    });
+                                                });
+                                    } else {
+                                        AppCMSPageAPI audioResult = appCMSPresenter.getAudioDetail(data.getGist().getId(),
+                                                0, null, false);
+                                        if (audioResult != null &&
+                                                audioResult.getModules() != null &&
+                                                audioResult.getModules().get(0) != null &&
+                                                audioResult.getModules().get(0).getContentData() != null &&
+                                                !audioResult.getModules().get(0).getContentData().isEmpty() &&
+                                                audioResult.getModules().get(0).getContentData().get(0) != null &&
+                                                audioResult.getModules().get(0).getContentData().get(0).getGist() != null) {
+                                            appCMSPresenter.updateDownloadImageAndStartDownloadProcess(audioResult.getModules().get(0).getContentData().get(0), download);
+
+                                        }
+                                    }
+                                }
+                                if (action == null) {
+                          /*get audio details on tray click item and play song*/
+                                    if (data.getGist() != null &&
+                                            data.getGist().getMediaType() != null &&
+                                            data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.media_type_audio).toLowerCase()) &&
+                                            data.getGist().getContentType() != null &&
+                                            data.getGist().getContentType().toLowerCase().contains(itemView.getContext().getString(R.string.content_type_audio).toLowerCase())) {
+                                        appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                                                .PRESENTER_PAGE_LOADING_ACTION));
+                                        // on click from playlist adapter .Get playlist from temp list and set into current playlist
+                                        if (AudioPlaylistHelper.getInstance().getTempPlaylist() != null && AudioPlaylistHelper.getInstance().getTempPlaylist().size() > 0) {
+                                            AudioPlaylistHelper.getInstance().setPlaylist(AudioPlaylistHelper.getInstance().getTempPlaylist());
+                                        }
+                                        AudioPlaylistHelper.getInstance().playAudioOnClick(data.getGist().getId(), 0);
+                                        return;
+                                    }
                                 }
 
                             }
@@ -281,5 +329,25 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     @Override
     public void setClickable(boolean clickable) {
         isClickable = clickable;
+    }
+
+    private String getDownloadAudioAction(Context context) {
+        return context.getString(R.string.app_cms_download_audio_action);
+    }
+
+    public void startDownloadPlaylist() {
+        for (int i = 0; i < allViews.length; i++) {
+            ImageButton download = null;
+            for (int j = 0; j < allViews[i].getChildItems().size(); j++) {
+                CollectionGridItemView.ItemContainer itemContainer = allViews[i].getChildItems().get(j);
+                if (itemContainer.getComponent().getKey() != null) {
+                    if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_video_download_button_key))) {
+                        download = (ImageButton) itemContainer.getChildView();
+                        download.performClick();
+                    }
+                }
+            }
+
+        }
     }
 }
