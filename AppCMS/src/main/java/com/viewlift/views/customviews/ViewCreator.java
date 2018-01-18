@@ -1574,7 +1574,7 @@ public class ViewCreator {
                         jsonValueKeyMap,
                         appCMSPresenter);
 
-                if (moduleAPI == null) {
+                if (moduleAPI == null && childView != null) {
                     childView.setVisibility(View.GONE);
                 }
             }
