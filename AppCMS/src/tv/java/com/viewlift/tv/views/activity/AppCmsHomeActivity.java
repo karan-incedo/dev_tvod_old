@@ -327,6 +327,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
         if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
             getFragmentManager().popBackStack();
+            appCMSBinderStack.pop();
         }
 
         appCMSPresenter.sendGaScreen(updatedAppCMSBinder.getScreenName());
@@ -671,7 +672,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     @Override
     public void onBackPressed() {
 
-        if(appCMSPresenter.isFullScreenVisible){
+        if(AppCMSPresenter.isFullScreenVisible){
             appCMSPresenter.tvVideoPlayerView.getPlayerView().hideController();
             appCMSPresenter.tvVideoPlayerView.getPlayerView().setUseController(false);
             appCMSPresenter.exitFullScreenTVPlayer();
