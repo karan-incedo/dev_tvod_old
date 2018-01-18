@@ -589,14 +589,14 @@ public class AppCMSPlayVideoFragment extends Fragment
                 }
 
                 //if user is not subscribe or ot login than on seek to end dont open autoplay screen# fix for SVFA-2403
-                if (appCMSPresenter.isAppSVOD() &&
+                /*if (appCMSPresenter.isAppSVOD() &&
                         !isTrailer &&
                         !freeContent &&
                         !appCMSPresenter.isUserSubscribed() && !entitlementCheckCancelled && (userIdentityObj == null || !userIdentityObj.isSubscribed())) {
                     showEntitlementDialog = true;
-                }
+                }*/
 
-                if (onClosePlayerEvent != null && playerState.isPlayWhenReady() && !showEntitlementDialog) {
+                if (onClosePlayerEvent != null && playerState.isPlayWhenReady()/* && !showEntitlementDialog*/) {
 
                     // tell the activity that the movie is finished
                     onClosePlayerEvent.onMovieFinished();
