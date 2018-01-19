@@ -90,7 +90,6 @@ import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 
 import org.jsoup.Jsoup;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -249,9 +248,12 @@ public class TVViewCreator {
               //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
                 isGrid = true;
             }
-            if (module.getBlockName().equalsIgnoreCase("tray04")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
+            /*if (module.getBlockName().equalsIgnoreCase("tray01")) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
             }
+            if (module.getBlockName().equalsIgnoreCase("tray02")) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
+            }*/
 
             for (Component component : module.getComponents()) {
                 createTrayModule(context, component, module.getLayout(), module, moduleAPI,
@@ -259,7 +261,7 @@ public class TVViewCreator {
             }
             return null;
         } else if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())){
-//            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+            //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             moduleView = new ShowDetailModuleView(
                     context,
                     module,
@@ -510,12 +512,10 @@ public class TVViewCreator {
                         List<Component> components = component.getComponents();
                         List<ContentDatum> episodes = moduleData.getContentData().get(0).getSeason().get(0).getEpisodes();
                         for (int i = 0; i < episodes.size(); i++) {
-                            List<String> relatedVids = new ArrayList<>();
-                            for (int j = i + 1; j < episodes.size(); j++) {
-                                ContentDatum contentDatum = episodes.get(j);
-                                relatedVids.add(contentDatum.getGist().getId());
-
-                            }
+                            List<String> relatedVids = Utils.getRelatedVideosInShow(
+                                    moduleData.getContentData().get(0).getSeason(),
+                                    0,
+                                    i);
                             ContentDatum contentDatum = episodes.get(i);
                             contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
                             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
@@ -2420,10 +2420,10 @@ public class TVViewCreator {
                 moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes() != null &&
                 moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0) != null) {
 
-            List<String> relatedVideosIds = new ArrayList<>();
-            for (ContentDatum episode : moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes()) {
-                relatedVideosIds.add(episode.getGist().getId());
-            }
+            List<String> relatedVideosIds = Utils.getRelatedVideosInShow(
+                    moduleAPI.getContentData().get(0).getSeason(),
+                    0,
+                    -1);
 
             ContentDatum contentDatum = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0);
             contentDatum.setSeason(moduleAPI.getContentData().get(0).getSeason());

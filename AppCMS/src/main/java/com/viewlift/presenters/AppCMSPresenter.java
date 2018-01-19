@@ -11121,7 +11121,7 @@ public class AppCMSPresenter {
                                                     if (!TextUtils.isEmpty(extraData[1])) {
 
                                                         List<String> relatedVideoIds;
-                                                        if (relateVideoIds == null) {
+                                                        if (relateVideoIds == null || relateVideoIds.size() == 0) {
                                                             relatedVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
                                                         } else {
                                                             relatedVideoIds = relateVideoIds;

@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
@@ -35,6 +36,8 @@ import com.viewlift.tv.views.fragment.SwitchSeasonsDialogFragment;
 import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -746,6 +749,22 @@ public class Utils {
         timeInString.append(Long.toString(seconds));
 //        }
         return timeInString.toString();
+    }
+
+    public static List<String> getRelatedVideosInShow(List<Season_> season, int showNumber, int episodeNumber) {
+        List<String> relatedVids = new ArrayList<>();
+        for (int i = showNumber; i < season.size(); i ++) {
+            if (i == showNumber) {
+                for (int j = episodeNumber + 1; j < season.get(i).getEpisodes().size(); j++) {
+                    relatedVids.add(season.get(i).getEpisodes().get(j).getGist().getId());
+                }
+            } else {
+                for (int j = 0; j < season.get(i).getEpisodes().size(); j++) {
+                    relatedVids.add(season.get(i).getEpisodes().get(j).getGist().getId());
+                }
+            }
+        }
+        return relatedVids;
     }
 
 }

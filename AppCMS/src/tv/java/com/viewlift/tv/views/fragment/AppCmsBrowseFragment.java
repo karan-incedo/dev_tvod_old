@@ -123,7 +123,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                 clickedTime = System.currentTimeMillis();
                 if (null != rowData.contentData.getGist().getContentType() &&
                         rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
-                    appCMSPresenter.launchButtonSelectedAction(rowData.contentData.getGist().getPermalink(),
+                    appCMSPresenter.launchTVButtonSelectedAction(
+                            rowData.contentData.getGist().getPermalink(),
                             "showDetailPage",
                             rowData.contentData.getGist().getTitle(),
                             null,
