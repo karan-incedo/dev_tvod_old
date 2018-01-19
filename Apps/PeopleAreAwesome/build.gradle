@@ -7,7 +7,7 @@ def final hostName = "www.peopleareawesome.com"
 def final hostNameSuffix = "*.peopleareawesome.com"
 
 
-def final appVersionName = "0.0.3"
+def final appVersionName = "1.0.3"
 
 buildscript {
     repositories {
