@@ -5,7 +5,10 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -19,11 +22,13 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
+import com.viewlift.views.customviews.CustomTypefaceSpan;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -271,6 +276,24 @@ public class CardPresenter extends Presenter {
                             }
                             tvTitle.setText(stringBuilder);
                             tvTitle.setTextSize(component.getFontSize());
+                        } else if (componentKey.equals(AppCMSUIKeyType.PAGE_EPISODE_THUMBNAIL_TITLE_KEY)) {
+                            Integer height = component.getLayout().getTv().getHeight() != null
+                                    ? Integer.valueOf(component.getLayout().getTv().getHeight())
+                                    : 0;
+                            layoutParams = new FrameLayout.LayoutParams(
+                                    FrameLayout.LayoutParams.MATCH_PARENT,
+                                    Utils.getViewYAxisAsPerScreen(mContext, height));
+                            tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+
+                            int episodeNumber = getEpisodeNumber(contentData,
+                                    contentData.getGist().getId());
+                            String text = contentData.getGist().getTitle();
+                            SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
+                            spannableStringBuilder.append(" ").append(text);
+                            Typeface font = Typeface.createFromAsset(mContext.getResources().getAssets(), "fonts/OpenSans-ExtraBold.ttf");
+                            spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                            tvTitle.setText(spannableStringBuilder);
                         } else {
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
@@ -374,5 +397,22 @@ public class CardPresenter extends Presenter {
         }
         return face;
     }
+    private int getEpisodeNumber(ContentDatum mainContentData, String id) {
+        int returnVal = 0;
+        if (mainContentData.getSeason() != null) {
+            for (int seasonNumber = 0; seasonNumber < mainContentData.getSeason().size(); seasonNumber++) {
+                Season_ season = mainContentData.getSeason().get(seasonNumber);
+                for (int episodeNumber = 0; episodeNumber < season.getEpisodes().size(); episodeNumber++) {
+                    ContentDatum contentDatum = season.getEpisodes().get(episodeNumber);
+                    if (contentDatum.getGist().getId().equalsIgnoreCase(id)) {
+                        returnVal = episodeNumber + 1;
+                        break;
+                    }
+                }
+                if (returnVal > 0) break;
+            }
+        }
 
+        return returnVal;
+    }
 }

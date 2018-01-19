@@ -309,7 +309,7 @@
               "type": "label",
               "textColor": "#ffffff",
               "fontWeight": "Semibold",
-              "key": "thumbnailTitle"
+              "key": "episodeThumbnailTitle"
             }
           ],
           "type": "collectionGrid",
