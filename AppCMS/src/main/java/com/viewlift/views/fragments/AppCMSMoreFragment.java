@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -62,6 +63,7 @@ public class AppCMSMoreFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_more, container, false);
 
         ButterKnife.bind(this, view);
@@ -142,6 +144,9 @@ public class AppCMSMoreFragment extends DialogFragment {
         if (dialog != null) {
             Window window = dialog.getWindow();
             window.setBackgroundDrawable(new ColorDrawable(bgColor));
+            WindowManager.LayoutParams windowParams = window.getAttributes();
+            windowParams.alpha = 0.6f;
+            window.setAttributes(windowParams);
         }
     }
 

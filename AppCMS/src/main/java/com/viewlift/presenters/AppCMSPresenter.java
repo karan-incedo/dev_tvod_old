@@ -7075,10 +7075,12 @@ public class AppCMSPresenter {
                         AppCMSMoreFragment.newInstance(currentActivity,
                                 title,
                                 fullText);
-                transaction.add(R.id.app_cms_addon_fragment,
-                        appCMSMoreFragment,
-                        currentActivity.getString(R.string.app_cms_more_page_tag)).commit();
-                showAddOnFragment(true, 0.2f);
+               // transaction.add(R.id.app_cms_addon_fragment,
+                //        appCMSMoreFragment,
+                //        currentActivity.getString(R.string.app_cms_more_page_tag)).commit();
+                appCMSMoreFragment.show(transaction,"AppCMSMoreFragment");
+//                appCMSMoreFragment.
+//                showAddOnFragment(true, 0.2f);
                 setNavItemToCurrentAction(currentActivity);
             }
         } else if (platformType == PlatformType.TV) {
