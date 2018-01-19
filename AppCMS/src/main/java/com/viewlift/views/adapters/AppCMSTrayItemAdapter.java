@@ -871,7 +871,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         if ((isDownload) && (contentDatum.getGist() != null)) {
             //Log.d(TAG, "Deleting download item: " + contentDatum.getGist().getTitle());
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
-                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message,(appCMSPresenter.isSportsTemplate()?"videos":"films")),
+                    appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message,(appCMSPresenter.isSportsTemplate()?"video":"film")),
                     true, () ->
                             appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
                                     userVideoDownloadStatus -> {

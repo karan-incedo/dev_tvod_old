@@ -3038,8 +3038,8 @@ public class ViewCreator {
                                             .apply(requestOptions)
                                             .into((ImageView) componentViewResult.componentView);
                                 }
-                            } else if (viewWidth > 0 &&
-                                    moduleAPI.getContentData().get(0).getGist().getVideoImageUrl() != null) {
+                            } else if (viewWidth > 0 && viewWidth > viewHeight &&
+                                    moduleAPI.getContentData().get(0).getGist().getVideoImageUrl() !=null) {
                                 if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                         moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
                                     Glide.with(context)

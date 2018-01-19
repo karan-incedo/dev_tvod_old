@@ -165,7 +165,9 @@ public class AutoplayFragment extends Fragment {
             } else {
                 if (URLUtil.isFileUrl(binder.getContentData().getGist().getPosterImageUrl())) {
                     loadImageFromLocalSystem = true;
-                    imageURI = Uri.parse(binder.getContentData().getGist().getPosterImageUrl());
+                    imageURI = Uri.parse(binder.getContentData().getGist().getPosterImageUrl().length()>10?
+                            binder.getContentData().getGist().getPosterImageUrl():
+                            binder.getContentData().getGist().getVideoImageUrl());
                 } else if (binder.getContentData().getGist().getImageGist() != null &&
                         !TextUtils.isEmpty(binder.getContentData().getGist().getImageGist().get_16x9())) {
                     loadImageFromLocalSystem = false;

@@ -3889,7 +3889,7 @@ public class AppCMSPresenter {
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1) {
         showDialog(DialogType.DELETE_ALL_DOWNLOAD_ITEMS,
-                currentActivity.getString(R.string.app_cms_delete_all_download_items_message),
+                currentActivity.getString(R.string.app_cms_delete_all_download_items_message,(isSportsTemplate()?"videos":"films")),
                 true, () -> {
                     for (DownloadVideoRealm downloadVideoRealm :
                             realmController.getDownloadesByUserId(getLoggedInUser())) {
@@ -3905,7 +3905,7 @@ public class AppCMSPresenter {
     public void clearWatchlist(final Action1<AppCMSAddToWatchlistResult> resultAction1) {
         try {
             showDialog(DialogType.DELETE_ALL_WATCHLIST_ITEMS,
-                    currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message),
+                    currentActivity.getString(R.string.app_cms_delete_all_watchlist_items_message,(isSportsTemplate()?"videos":"films")),
                     true,
                     () -> makeClearWatchlistRequest(resultAction1),
                     null);
@@ -10658,6 +10658,7 @@ public class AppCMSPresenter {
         if (!binder.isOffline()) {
             final String filmId =
                     binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
+            binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
             if (currentActivity != null &&
                     !loadingPage && appCMSMain != null &&
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
