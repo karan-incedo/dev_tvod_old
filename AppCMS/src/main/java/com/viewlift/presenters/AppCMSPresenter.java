@@ -10656,6 +10656,7 @@ public class AppCMSPresenter {
         if (!binder.isOffline()) {
             final String filmId =
                     binder.getRelateVideoIds().get(binder.getCurrentPlayingVideoIndex() + 1);
+            binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
             if (currentActivity != null &&
                     !loadingPage && appCMSMain != null &&
                     !TextUtils.isEmpty(appCMSMain.getApiBaseUrl()) &&
