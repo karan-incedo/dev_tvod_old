@@ -131,7 +131,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
         registerReceiver(handoffReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
 
-        appCMSSearchView.setQueryHint(getString(R.string.search_films));
+        appCMSSearchView.setQueryHint(appCMSPresenter.isSportsTemplate()?getString(R.string.search_videos):getString(R.string.search_films));
         //noinspection ConstantConditions
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);

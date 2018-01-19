@@ -3889,7 +3889,7 @@ public class AppCMSPresenter {
 
     public void clearDownload(final Action1<UserVideoDownloadStatus> resultAction1) {
         showDialog(DialogType.DELETE_ALL_DOWNLOAD_ITEMS,
-                currentActivity.getString(R.string.app_cms_delete_all_download_items_message),
+                currentActivity.getString(R.string.app_cms_delete_all_download_items_message,(isSportsTemplate()?"videos":"films")),
                 true, () -> {
                     for (DownloadVideoRealm downloadVideoRealm :
                             realmController.getDownloadesByUserId(getLoggedInUser())) {

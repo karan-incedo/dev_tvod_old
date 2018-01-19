@@ -87,7 +87,8 @@ public class AppCMSSearchFragment extends DialogFragment {
                 searchManager.getSearchableInfo(getActivity().getComponentName()),
                 true);
 
-        appCMSSearchView.setQueryHint(getString(R.string.search_films));
+
+        appCMSSearchView.setQueryHint(appCMSPresenter.isSportsTemplate()?getString(R.string.search_videos):getString(R.string.search_films));
         appCMSSearchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
         appCMSSearchView.setSuggestionsAdapter(searchSuggestionsAdapter);
         appCMSSearchView.setIconifiedByDefault(false);
