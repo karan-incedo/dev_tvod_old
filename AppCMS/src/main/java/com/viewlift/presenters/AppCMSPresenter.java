@@ -3967,7 +3967,7 @@ public class AppCMSPresenter {
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
-        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+        if (currentActivity != null && !TextUtils.isEmpty(pageId) && downloadsAvailableForApp()) {
             for (Fragment fragment : ((FragmentActivity) currentActivity).getSupportFragmentManager().getFragments()) {
                 if (fragment instanceof AppCMSMoreFragment) {
                     ((AppCMSMoreFragment) fragment).sendDismissAction();
