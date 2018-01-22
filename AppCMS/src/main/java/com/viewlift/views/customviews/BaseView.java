@@ -1141,17 +1141,21 @@ public abstract class BaseView extends FrameLayout {
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
-            if (jsonValueKeyMap.get(viewType) != null &&
-                    (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
-                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY)) {
-                int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
-                int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
-                int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
-                if (thumbnailHeight < thumbnailWidth) {
-                    heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
-                }
+            if (jsonValueKeyMap.get(viewType) != null) {
+                if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
+                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY) {
+                    int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
+                    int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
+                    int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
+                    if (thumbnailHeight < thumbnailWidth) {
+                        heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
+                    }
 
-                tm = heightByRatio - viewHeight;
+                    tm = heightByRatio - viewHeight;
+                } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
+                    viewWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
+                    gravity = Gravity.CENTER_HORIZONTAL;
+                }
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
             if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
