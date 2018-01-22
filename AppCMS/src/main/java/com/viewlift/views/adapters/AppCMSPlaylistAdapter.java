@@ -207,39 +207,12 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                     for (int i = 0; i < collectionGridItemView.getChildItems().size(); i++) {
                                         CollectionGridItemView.ItemContainer itemContainer = collectionGridItemView.getChildItems().get(i);
                                         if (itemContainer.getComponent().getKey() != null) {
-                                            if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_video_download_button_key))) {
+                                            if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
                                                 download = (ImageButton) itemContainer.getChildView();
                                             }
                                         }
                                     }
-                                    if (!appCMSPresenter.isUserLoggedIn()) {
-                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
-                                                () -> {
-                                                    appCMSPresenter.setAfterLoginAction(() -> {
-
-                                                    });
-                                                });
-                                    } else if (!appCMSPresenter.isUserSubscribed()) {
-                                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                                                () -> {
-                                                    appCMSPresenter.setAfterLoginAction(() -> {
-
-                                                    });
-                                                });
-                                    } else {
-                                        AppCMSPageAPI audioResult = appCMSPresenter.getAudioDetail(data.getGist().getId(),
-                                                0, null, false);
-                                        if (audioResult != null &&
-                                                audioResult.getModules() != null &&
-                                                audioResult.getModules().get(0) != null &&
-                                                audioResult.getModules().get(0).getContentData() != null &&
-                                                !audioResult.getModules().get(0).getContentData().isEmpty() &&
-                                                audioResult.getModules().get(0).getContentData().get(0) != null &&
-                                                audioResult.getModules().get(0).getContentData().get(0).getGist() != null) {
-                                            appCMSPresenter.updateDownloadImageAndStartDownloadProcess(audioResult.getModules().get(0).getContentData().get(0), download);
-
-                                        }
-                                    }
+                                    audioDownload(download, data);
                                 }
                                 if (action == null) {
                           /*get audio details on tray click item and play song*/
@@ -341,13 +314,33 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
             for (int j = 0; j < allViews[i].getChildItems().size(); j++) {
                 CollectionGridItemView.ItemContainer itemContainer = allViews[i].getChildItems().get(j);
                 if (itemContainer.getComponent().getKey() != null) {
-                    if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_video_download_button_key))) {
+                    if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
                         download = (ImageButton) itemContainer.getChildView();
-                        download.performClick();
+                        audioDownload(download, adapterData.get(i));
                     }
                 }
             }
+        }
+    }
 
+    void audioDownload(ImageButton download, ContentDatum data) {
+        if (!appCMSPresenter.isUserLoggedIn()) {
+            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                    () -> {
+                        appCMSPresenter.setAfterLoginAction(() -> {
+
+                        });
+                    });
+        } else if (!appCMSPresenter.isUserSubscribed()) {
+            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                    () -> {
+                        appCMSPresenter.setAfterLoginAction(() -> {
+
+                        });
+                    });
+        } else {
+            appCMSPresenter.getAudioDetail(data.getGist().getId(),
+                    0, null, false, download);
         }
     }
 }

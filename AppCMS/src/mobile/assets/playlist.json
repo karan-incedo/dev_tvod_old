@@ -107,7 +107,7 @@
           "layout": {
             "mobile": {
               "yAxis": 22,
-              "xAxis": 270,
+              "xAxis": 268,
               "width": 27,
               "height": 27
             },
@@ -317,7 +317,7 @@
               "layout": {
                 "mobile": {
                   "topMargin": 4,
-                  "rightMargin": 20,
+                  "rightMargin": 39,
                   "width": 20,
                   "height": 20
                 },
@@ -343,7 +343,7 @@
                 "mobile": {
                   "topMargin": 4,
                   "rightMargin": 1.6,
-                  "width": 15,
+                  "width": 35,
                   "fontSize": 12,
                   "height": 19
                 },

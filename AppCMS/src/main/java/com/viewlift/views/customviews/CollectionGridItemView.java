@@ -44,7 +44,6 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -524,16 +523,8 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
-                        final int SECONDS_PER_MINS = 60;
-                        if ((data.getGist().getRuntime() / SECONDS_PER_MINS) < 2) {
-                            StringBuilder runtimeText = new StringBuilder()
-                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS);
-                            ((TextView) view).setText(runtimeText);
-                        } else {
-                            StringBuilder runtimeText = new StringBuilder()
-                                    .append(data.getGist().getRuntime() / SECONDS_PER_MINS);
-                            ((TextView) view).setText(runtimeText);
-                        }
+                        String time = appCMSPresenter.audioDuration((int) data.getGist().getRuntime());
+                        ((TextView) view).setText(time);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);

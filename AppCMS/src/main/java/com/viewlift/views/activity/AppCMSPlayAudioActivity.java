@@ -14,7 +14,8 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.fragments.AppCMSPlayAudioFragment;
@@ -91,6 +92,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     @Override
     public void onClick(View view) {
         if (view == casting) {
+
         }
         if (view == addToPlaylist) {
         }
@@ -110,23 +112,32 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
                             });
                         });
             } else {
-                AppCMSPageAPI audioResult = appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
-                        0, null, false);
-                if (audioResult != null &&
-                        audioResult.getModules() != null &&
-                        audioResult.getModules().get(0) != null &&
-                        audioResult.getModules().get(0).getContentData() != null &&
-                        !audioResult.getModules().get(0).getContentData().isEmpty() &&
-                        audioResult.getModules().get(0).getContentData().get(0) != null &&
-                        audioResult.getModules().get(0).getContentData().get(0).getGist() != null) {
-                    appCMSPresenter.updateDownloadImageAndStartDownloadProcess(audioResult.getModules().get(0).getContentData().get(0), downloadAudio);
-
-                }
-
+                appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
+                        0, null, false, downloadAudio);
             }
         }
         if (view == shareAudio) {
-            shareAction(audioData);
+            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+            ContentDatum currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+            if (appCMSMain != null &&
+                    currentAudio != null &&
+                    currentAudio.getAudioGist() != null &&
+                    currentAudio.getAudioGist().getTitle() != null &&
+                    currentAudio.getAudioGist().getPermalink() != null) {
+                StringBuilder audioUrl = new StringBuilder();
+                audioUrl.append(appCMSMain.getDomainName());
+                audioUrl.append(currentAudio.getAudioGist().getPermalink());
+                String[] extraData = new String[1];
+                extraData[0] = audioUrl.toString();
+                appCMSPresenter.launchButtonSelectedAction(currentAudio.getAudioGist().getPermalink(),
+                        getString(R.string.app_cms_action_share_key),
+                        currentAudio.getAudioGist().getTitle(),
+                        extraData,
+                        currentAudio,
+                        false,
+                        0,
+                        null);
+            }
         }
     }
 
@@ -136,17 +147,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         finish();
     }
 
-    private void shareAction(String shareData) {
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, shareData);
-        sendIntent.setType(getString(R.string.text_plain_mime_type));
-        Intent chooserIntent = Intent.createChooser(sendIntent,
-                getResources().getText(R.string.send_to));
-        chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(chooserIntent);
-
-    }
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {

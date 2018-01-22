@@ -1644,10 +1644,12 @@ public class ViewCreator {
                                     false));
                     Module tempModuleAPI = new Module();
                     tempModuleAPI.setContentData(new ArrayList<>());
-                    tempModuleAPI.getContentData().addAll(moduleAPI.getContentData());
+                    if (moduleAPI.getContentData() != null) {
+                        tempModuleAPI.getContentData().addAll(moduleAPI.getContentData());
             /*removing 1st data in the list since it contains playlist GIST*/
-                    if (tempModuleAPI.getContentData().get(0).getGist() == null) {
-                        tempModuleAPI.getContentData().remove(0);
+                        if (tempModuleAPI.getContentData().get(0).getGist() == null) {
+                            tempModuleAPI.getContentData().remove(0);
+                        }
                     }
                     appCMSPlaylistAdapter = new AppCMSPlaylistAdapter(context,
                             this,
@@ -2459,6 +2461,28 @@ public class ViewCreator {
 //                                            " film URL: " +
 //                                            filmUrl.toString());
                                 }
+                            }
+                            if (appCMSMain != null &&
+                                    moduleAPI != null &&
+                                    moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getAudioGist() != null &&
+                                    moduleAPI.getContentData().get(0).getAudioGist().getTitle() != null &&
+                                    moduleAPI.getContentData().get(0).getAudioGist().getPermalink() != null) {
+                                StringBuilder playlistUrl = new StringBuilder();
+                                playlistUrl.append(appCMSMain.getDomainName());
+                                playlistUrl.append(moduleAPI.getContentData().get(0).getAudioGist().getPermalink());
+                                String[] extraData = new String[1];
+                                extraData[0] = playlistUrl.toString();
+                                appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getAudioGist().getPermalink(),
+                                        component.getAction(),
+                                        moduleAPI.getContentData().get(0).getAudioGist().getTitle(),
+                                        extraData,
+                                        moduleAPI.getContentData().get(0),
+                                        false,
+                                        0,
+                                        null);
                             }
                         });
                         break;
