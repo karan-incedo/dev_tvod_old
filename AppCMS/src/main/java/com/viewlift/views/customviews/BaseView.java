@@ -351,6 +351,33 @@ public abstract class BaseView extends FrameLayout {
         return defaultWidth;
     }
 
+    public static float getThumbnailWidth(Context context, Layout layout, float defaultWidth) {
+        if (context != null && layout != null) {
+            if (isTablet(context)) {
+                if (isLandscape(context)) {
+                    TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                    float width = getThumbnailWidth(tabletLandscape);
+                    if (width != -1.0f) {
+                        return DEVICE_WIDTH * (width / STANDARD_TABLET_HEIGHT_PX);
+                    }
+                } else {
+                    TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                    float width = getThumbnailWidth(tabletPortrait);
+                    if (width != -1.0f) {
+                        return DEVICE_WIDTH * (width / STANDARD_TABLET_WIDTH_PX);
+                    }
+                }
+            } else {
+                Mobile mobile = layout.getMobile();
+                float width = getThumbnailWidth(mobile);
+                if (width != -1.0f) {
+                    return DEVICE_WIDTH * (width / STANDARD_MOBILE_WIDTH_PX);
+                }
+            }
+        }
+        return defaultWidth;
+    }
+
     public static float getViewMaximumWidth(Context context, Layout layout, float defaultMaximumWidth) {
         if (context != null && layout != null) {
             if (isTablet(context)) {
@@ -373,6 +400,33 @@ public abstract class BaseView extends FrameLayout {
             }
         }
         return defaultMaximumWidth;
+    }
+
+    public static float getThumbnailHeight(Context context, Layout layout, float defaultHeight) {
+        if (context != null && layout != null) {
+            if (isTablet(context)) {
+                if (isLandscape(context)) {
+                    TabletLandscape tabletLandscape = layout.getTabletLandscape();
+                    float height = getThumbnailHeight(tabletLandscape);
+                    if (height >= 0.0f) {
+                        return DEVICE_HEIGHT * (height / STANDARD_TABLET_WIDTH_PX);
+                    }
+                } else {
+                    TabletPortrait tabletPortrait = layout.getTabletPortrait();
+                    float height = getThumbnailHeight(tabletPortrait);
+                    if (height >= 0.0f) {
+                        return DEVICE_HEIGHT * (height / STANDARD_TABLET_HEIGHT_PX);
+                    }
+                }
+            } else {
+                Mobile mobile = layout.getMobile();
+                float height = getThumbnailHeight(mobile);
+                if (height >= 0.0f) {
+                    return DEVICE_HEIGHT * (height / STANDARD_MOBILE_HEIGHT_PX);
+                }
+            }
+        }
+        return defaultHeight;
     }
 
     public static float getViewHeight(Context context, Layout layout, float defaultHeight) {
@@ -491,6 +545,15 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
+    protected static float getThumbnailWidth(TabletLandscape tabletLandscape) {
+        if (tabletLandscape != null) {
+            if (tabletLandscape.getThumbnailWidth() != 0f) {
+                return tabletLandscape.getThumbnailWidth();
+            }
+        }
+        return -1.0f;
+    }
+
     private static float getViewMaximumWidth(TabletLandscape tabletLandscape) {
         if (tabletLandscape != null) {
             if (tabletLandscape.getMaximumWidth() != 0f) {
@@ -509,10 +572,28 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
+    protected static float getThumbnailHeight(TabletLandscape tabletLandscape) {
+        if (tabletLandscape != null) {
+            if (tabletLandscape.getThumbnailHeight() != 0f) {
+                return tabletLandscape.getThumbnailHeight();
+            }
+        }
+        return -1.0f;
+    }
+
     protected static float getViewWidth(TabletPortrait tabletPortrait) {
         if (tabletPortrait != null) {
             if (tabletPortrait.getWidth() != 0f) {
                 return tabletPortrait.getWidth();
+            }
+        }
+        return -1.0f;
+    }
+
+    protected static float getThumbnailWidth(TabletPortrait tabletPortrait) {
+        if (tabletPortrait != null) {
+            if (tabletPortrait.getThumbnailWidth() != 0f) {
+                return tabletPortrait.getThumbnailWidth();
             }
         }
         return -1.0f;
@@ -536,10 +617,28 @@ public abstract class BaseView extends FrameLayout {
         return -1.0f;
     }
 
+    protected static float getThumbnailHeight(TabletPortrait tabletPortrait) {
+        if (tabletPortrait != null) {
+            if (tabletPortrait.getThumbnailHeight() != 0f) {
+                return tabletPortrait.getThumbnailHeight();
+            }
+        }
+        return -1.0f;
+    }
+
     protected static float getViewWidth(Mobile mobile) {
         if (mobile != null) {
             if (mobile.getWidth() != 0f) {
                 return mobile.getWidth();
+            }
+        }
+        return -1.0f;
+    }
+
+    protected static float getThumbnailWidth(Mobile mobile) {
+        if (mobile != null) {
+            if (mobile.getThumbnailWidth() != 0f) {
+                return mobile.getThumbnailWidth();
             }
         }
         return -1.0f;
@@ -558,6 +657,15 @@ public abstract class BaseView extends FrameLayout {
         if (mobile != null) {
             if (mobile.getHeight() != 0f) {
                 return mobile.getHeight();
+            }
+        }
+        return -1.0f;
+    }
+
+    protected static float getThumbnailHeight(Mobile mobile) {
+        if (mobile != null) {
+            if (mobile.getThumbnailHeight() != 0f) {
+                return mobile.getThumbnailHeight();
             }
         }
         return -1.0f;
@@ -965,8 +1073,15 @@ public abstract class BaseView extends FrameLayout {
                     break;
 
                 case PAGE_THUMBNAIL_TITLE_KEY:
-                    tm = 0;
-                    gravity = Gravity.START | Gravity.BOTTOM;
+                    int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
+                    int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
+                    if (thumbnailHeight < thumbnailWidth) {
+                        int heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
+                        tm = heightByRatio + 4;
+                    } else {
+                        int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
+                        tm = heightByRatio + 4;
+                    }
                     break;
 
                 case PAGE_VIDEO_AGE_LABEL_KEY:
@@ -983,6 +1098,19 @@ public abstract class BaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
+        } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
+            if (jsonValueKeyMap.get(viewType) != null &&
+                    (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
+                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY)) {
+                int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
+                int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
+                int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
+                if (thumbnailHeight < thumbnailWidth) {
+                    heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
+                }
+
+                tm = heightByRatio - viewHeight;
+            }
         } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY) {
             if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
                 viewWidth = ViewGroup.LayoutParams.WRAP_CONTENT;

@@ -69,6 +69,14 @@ public class TabletLandscape implements Serializable {
     @Expose
     float maximumWidth;
 
+    @SerializedName("thumbnailWidth")
+    @Expose
+    int thumbnailWidth;
+
+    @SerializedName("thumbnailHeight")
+    @Expose
+    int thumbnailHeight;
+
     private float savedWidth;
 
     public float getYAxis() {
@@ -213,5 +221,21 @@ public class TabletLandscape implements Serializable {
 
     public void setSavedWidth(float savedWidth) {
         this.savedWidth = savedWidth;
+    }
+
+    public int getThumbnailWidth() {
+        return thumbnailWidth;
+    }
+
+    public void setThumbnailWidth(int thumbnailWidth) {
+        this.thumbnailWidth = thumbnailWidth;
+    }
+
+    public int getThumbnailHeight() {
+        return thumbnailHeight;
+    }
+
+    public void setThumbnailHeight(int thumbnailHeight) {
+        this.thumbnailHeight = thumbnailHeight;
     }
 }
