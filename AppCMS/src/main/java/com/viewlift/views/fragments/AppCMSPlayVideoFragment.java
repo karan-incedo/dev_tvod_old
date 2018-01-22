@@ -499,7 +499,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                     .getBrand().getCta().getPrimary().getBackgroundColor()));
         } catch (Exception e) {
 //                //Log.w(TAG, "Failed to set color for loader: " + e.getMessage());
-            videoLoadingProgressBar.getIndeterminateDrawable().setTint(ContextCompat.getColor(this, R.color.colorAccent));
+            videoLoadingProgressBar.getIndeterminateDrawable().setTint(ContextCompat.getColor(getContext(), R.color.colorAccent));
         }
 
         boolean allowFreePlay = !appCMSPresenter.isAppSVOD() || isTrailer || freeContent;
