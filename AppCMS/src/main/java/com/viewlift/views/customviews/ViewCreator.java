@@ -350,8 +350,6 @@ public class ViewCreator {
         if (videoPlayerView == null) {
             videoPlayerView = new VideoPlayerView(context, presenter);
             videoPlayerView.init(context);
-            videoPlayerView.applyTimeBarColor(Color.parseColor(ViewCreator.getColor(context,
-                    presenter.getAppCtaBackgroundColor())));
         } else if (videoPlayerView.getParent() != null &&
                 videoPlayerView.getParent() instanceof ViewGroup) {
             ((ViewGroup) videoPlayerView.getParent()).removeView(videoPlayerView);
