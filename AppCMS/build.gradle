@@ -1,7 +1,5 @@
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply plugin: 'realm-android'
-apply plugin: 'kotlin-kapt'
 
 def final packageName = 'com.viewlift.hoichoi'
 def final customApplicationId = 'Hoichoi'
@@ -12,7 +10,6 @@ def final hostNameSuffix = "*.hoichoi.tv"
 def final appVersionName = "2.1.59"
 
 buildscript {
-    ext.kotlin_version = '1.2.10'
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         google()
@@ -26,7 +23,6 @@ buildscript {
         // We recommend changing it to the latest version from our changelog:
         // https://docs.fabric.io/android/changelog.html#fabric-gradle-plugin
         classpath 'io.fabric.tools:gradle:1.+'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -147,51 +143,7 @@ android {
     }
 
     dexOptions {
-        incremental true
         javaMaxHeapSize "4g"
-    }
-
-    splits {
-        abi {
-            enable true
-            reset()
-            include 'x86', 'x86_64', 'arm64-v8a', 'armeabi-v7a', 'armeabi', "mips"
-            universalApk true
-        }
-    }
-}
-
-ext.abiCodes = ['x86':1, 'x86_64':2, 'arm64-v8a':3, 'armeabi-v7a':4, 'armeabi':5, 'mips':6]
-
-import com.android.build.OutputFile
-
-// For each APK output variant, override versionCode with a combination of
-// ext.abiCodes * 1000 + variant.versionCode. In this example, variant.versionCode
-// is equal to defaultConfig.versionCode. If you configure product flavors that
-// define their own versionCode, variant.versionCode uses that value instead.
-android.applicationVariants.all { variant ->
-
-    // Assigns a different version code for each output APK
-    // other than the universal APK.
-    variant.outputs.each { output ->
-
-        // Stores the value of ext.abiCodes that is associated with the ABI for this variant.
-        def baseAbiVersionCode =
-                // Determines the ABI for this variant and returns the mapped value.
-                project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
-
-        // Because abiCodes.get() returns null for ABIs that are not mapped by ext.abiCodes,
-        // the following code does not override the version code for universal APKs.
-        // However, because we want universal APKs to have the lowest version code,
-        // this outcome is desirable.
-        if (baseAbiVersionCode != null) {
-
-            // Assigns the new version code to versionCodeOverride, which changes the version code
-            // for only the output APK, not for the variant itself. Skipping this step simply
-            // causes Gradle to use the value of variant.versionCode for the APK.
-            output.versionCodeOverride =
-                    baseAbiVersionCode * 1000 + variant.versionCode
-        }
     }
 }
 
@@ -297,20 +249,20 @@ dependencies {
     }
     mobileCompile "com.urbanairship.android:urbanairship-sdk:$rootProject.ext.urbanAirshipVersion"
     compile "com.jakewharton:butterknife:$rootProject.ext.butterknifeVersion"
-    kapt "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$rootProject.ext.butterknifeVersion"
     compile("com.facebook.android:facebook-android-sdk:$rootProject.ext.facebookSdkVersion", {
         exclude group: 'com.android.support', module: 'customtabs'
     })
     compile "com.apptentive:apptentive-android:$rootProject.ext.apptentiveVersion"
     provided "javax.annotation:jsr250-api:$rootProject.ext.jsr250_apiVersion"
-    kapt "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
     compile("com.android.support:mediarouter-v7:$rootProject.ext.androidsupportVersion", {
         exclude group: 'com.android.support', module: 'design'
         exclude group: 'com.android.support', module: 'support-vector-drawable'
     })
     implementation "com.google.android.gms:play-services-cast-framework:$rootProject.ext.googlePlayServicesVersion"
     compile "com.vimeo.stag:stag-library:$rootProject.ext.stagVersion"
-    kapt "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
+    annotationProcessor "com.vimeo.stag:stag-library-compiler:$rootProject.ext.stagVersion"
     compile "com.appsflyer:af-android-sdk:$rootProject.ext.appsFlyerVersion"
     compile "com.google.android.gms:play-services-tagmanager:$rootProject.ext.googlePlayServicesVersion"
     tvCompile project(path: ':firetvcustomkeyboard')
@@ -327,20 +279,6 @@ dependencies {
     compile project(path: ':exoplayer-extension-vp9')
 
     compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
-
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version", {
-        exclude group: 'org.jetbrains', module: 'annotations'
-    })
 }
 
 apply plugin: 'com.google.gms.google-services'
-
-kapt {
-    generateStubs = true
-    correctErrorTypes = true
-    arguments {
-        arg("stagDebug", "true")
-        arg("stagGeneratedPackageName", "com.vimeo.sample_kotlin.stag.generated")
-        arg("stagAssumeHungarianNotation", "false")
-    }
-}
