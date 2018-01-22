@@ -1280,6 +1280,26 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public String getAppCtaTextColor() {
+        if (appCMSMain != null) {
+            return appCMSMain.getBrand()
+                    .getCta()
+                    .getPrimary()
+                    .getTextColor();
+        }
+        return null;
+    }
+
+    public String getAppCtaBackgroundColor() {
+        if (appCMSMain != null) {
+            return appCMSMain.getBrand()
+                    .getCta()
+                    .getPrimary()
+                    .getBackgroundColor();
+        }
+        return null;
+    }
+
     public String getAppAdsURL(String pagePath) {
         if (currentActivity != null && appCMSAndroid != null) {
             Date now = new Date();
