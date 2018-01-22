@@ -294,7 +294,7 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, false)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop();
@@ -318,7 +318,7 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, false)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight);
                                 requestOptions.centerCrop();
@@ -379,7 +379,7 @@ public class CollectionGridItemView extends BaseView {
                                     childViewWidth,
                                     childViewHeight);
 
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, false)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop();
@@ -395,7 +395,7 @@ public class CollectionGridItemView extends BaseView {
                                     childViewWidth,
                                     childViewHeight);
 
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, false)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop();

@@ -3652,7 +3652,8 @@ public class ViewCreator {
                             if (!TextUtils.isEmpty(imageUrl)) {
                                 if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                            imageUrl)) {
+                                            imageUrl,
+                                            true)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
                                                 .apply(new RequestOptions().override(viewWidth, viewHeight))
@@ -3660,7 +3661,8 @@ public class ViewCreator {
                                     }
                                 } else if (viewWidth > 0) {
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                            imageUrl)) {
+                                            imageUrl,
+                                            true)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
                                                 .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
@@ -3668,7 +3670,8 @@ public class ViewCreator {
                                     }
                                 } else {
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                            imageUrl)) {
+                                            imageUrl,
+                                            true)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
                                                 .into((ImageView) componentViewResult.componentView);
@@ -3795,7 +3798,8 @@ public class ViewCreator {
                                             viewWidth,
                                             viewHeight);
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                            imageUrl)) {
+                                            imageUrl,
+                                            true)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
                                                 .apply(new RequestOptions().override(viewWidth, viewHeight))
@@ -3807,7 +3811,8 @@ public class ViewCreator {
                                             viewWidth,
                                             viewHeight);
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                            videoImageUrl)) {
+                                            videoImageUrl,
+                                            true)) {
                                         Glide.with(context)
                                                 .load(videoImageUrl)
                                                 .apply(new RequestOptions().override(viewWidth, viewHeight))
@@ -3815,7 +3820,8 @@ public class ViewCreator {
                                     }
                                 } else {
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
-                                            moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())) {
+                                            moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
+                                            true)) {
                                         Glide.with(context)
                                                 .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                                 .apply(new RequestOptions().fitCenter())
@@ -3880,7 +3886,9 @@ public class ViewCreator {
 
                     default:
                         if (!TextUtils.isEmpty(component.getImageName())) {
-                            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView, component.getImageName())) {
+                            if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
+                                    component.getImageName(),
+                                    true)) {
                                 Glide.with(context)
                                         .load(component.getImageName())
                                         .into((ImageView) componentViewResult.componentView);

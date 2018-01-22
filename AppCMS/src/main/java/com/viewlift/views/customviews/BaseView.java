@@ -947,23 +947,6 @@ public abstract class BaseView extends FrameLayout {
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
 
-            if (isTablet(getContext())) {
-                if (isLandscape(getContext())) {
-                    rm = Math.round(DEVICE_HEIGHT * (childComponent.getLayout().getTabletLandscape().getRightMargin() /
-                            STANDARD_MOBILE_WIDTH_PX));
-                } else {
-                    rm = Math.round(DEVICE_WIDTH * (childComponent.getLayout().getTabletPortrait().getRightMargin() /
-                            STANDARD_MOBILE_WIDTH_PX));
-                }
-            } else {
-                rm = Math.round(DEVICE_WIDTH * (childComponent.getLayout().getMobile().getRightMargin() /
-                        STANDARD_MOBILE_WIDTH_PX));
-            }
-
-            if (0 < lm && 0 < rm) {
-                viewWidth = measuredWidth - rm - lm;
-            }
-
             if (viewWidth < 0) {
                 viewWidth = LayoutParams.MATCH_PARENT;
             }
@@ -1106,6 +1089,25 @@ public abstract class BaseView extends FrameLayout {
 
                 case PAGE_PLAN_PRICEINFO_KEY:
                     lm += convertDpToPixel(8, getContext());
+                    break;
+
+                case PAGE_SETTINGS_PLAN_VALUE_KEY:
+                    if (isTablet(getContext())) {
+                        if (isLandscape(getContext())) {
+                            rm = Math.round(DEVICE_HEIGHT * (childComponent.getLayout().getTabletLandscape().getRightMargin() /
+                                    STANDARD_MOBILE_WIDTH_PX));
+                        } else {
+                            rm = Math.round(DEVICE_WIDTH * (childComponent.getLayout().getTabletPortrait().getRightMargin() /
+                                    STANDARD_MOBILE_WIDTH_PX));
+                        }
+                    } else {
+                        rm = Math.round(DEVICE_WIDTH * (childComponent.getLayout().getMobile().getRightMargin() /
+                                STANDARD_MOBILE_WIDTH_PX));
+                    }
+
+                    if (0 < lm && 0 < rm) {
+                        viewWidth = measuredWidth - rm - lm;
+                    }
                     break;
 
                 case PAGE_THUMBNAIL_TITLE_KEY:

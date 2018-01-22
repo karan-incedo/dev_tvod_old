@@ -9,7 +9,7 @@ import android.widget.ImageView;
 
 public interface ImageLoader {
     ImageView createImageView(Context context);
-    void loadImage(ImageView view, String url);
+    void loadImage(ImageView view, String url, boolean shouldCenter);
     void loadImageWithLinearGradient(ImageView view,
                                      String url,
                                      int imageWidth,

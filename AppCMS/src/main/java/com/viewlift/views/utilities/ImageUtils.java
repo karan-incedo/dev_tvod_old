@@ -22,9 +22,10 @@ public class ImageUtils {
     }
 
     public static boolean loadImage(ImageView view,
-                                 String url) {
+                                    String url,
+                                    boolean shouldCenter) {
         if (registeredImageLoader != null) {
-            registeredImageLoader.loadImage(view, url);
+            registeredImageLoader.loadImage(view, url, shouldCenter);
             return true;
         }
         return false;
