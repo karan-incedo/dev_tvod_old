@@ -4508,11 +4508,10 @@ public class AppCMSPresenter {
         }
     }
 
-    AppCMSPageAPI audioApiDetail;
 
-    public AppCMSPageAPI getAudioDetail(String audioId, long mCurrentPlayerPosition,
-                                        AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
-            , Boolean playAudio) {
+    public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
+                               AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
+            , Boolean playAudio, ImageButton download) {
         if (currentActivity != null) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_AUDIO_LOADING_ACTION));
@@ -4536,6 +4535,8 @@ public class AppCMSPresenter {
                     public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
 
                         if (appCMSAudioDetailResult != null) {
+                            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
+                            /*check to play audio*/
                             if (playAudio) {
                                 AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
                                 mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
@@ -4545,8 +4546,20 @@ public class AppCMSPresenter {
                                 } else if (currentActivity != null) {
                                     mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 }
+                                AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
                             }
-                            audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
+                            /*check to download audio after getting audio URL*/
+                            if (download != null && !playAudio) {
+                                if (audioApiDetail != null &&
+                                        audioApiDetail.getModules() != null &&
+                                        audioApiDetail.getModules().get(0) != null &&
+                                        audioApiDetail.getModules().get(0).getContentData() != null &&
+                                        !audioApiDetail.getModules().get(0).getContentData().isEmpty() &&
+                                        audioApiDetail.getModules().get(0).getContentData().get(0) != null &&
+                                        audioApiDetail.getModules().get(0).getContentData().get(0).getGist() != null) {
+                                    updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download);
+                                }
+                            }
 
                         } else {
                             Toast.makeText(currentContext, "Unable to fetch data", Toast.LENGTH_SHORT).show();
@@ -4560,7 +4573,6 @@ public class AppCMSPresenter {
                         }
                     }
                 });
-        return audioApiDetail;
     }
 
 
@@ -4591,12 +4603,14 @@ public class AppCMSPresenter {
 
                             AppCMSPageAPI pageAPI;
                             if (appCMSPlaylistResult != null) {
+                                pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(this.pageId);
                                 //on browsinfany play list .set this playlist in temporaray listing of playlist .so that it could not effect on currently playing listing
                                 if (appCMSPlaylistResult.getAudioList() != null &&
                                         appCMSPlaylistResult.getAudioList().size() > 0) {
                                     AudioPlaylistHelper.getInstance().setTempPlaylist(MusicLibrary.createPlaylistByIDList(appCMSPlaylistResult.getAudioList()));
+
                                 }
-                                pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(this.pageId);
+
                             } else {
                                 pageAPI = new AppCMSPageAPI();
                                 pageAPI.setId(this.pageId);
@@ -12865,49 +12879,49 @@ public class AppCMSPresenter {
             this.userId = userId;
 
             addClickListener = v -> {
-//                if (!appCMSPresenter.isNetworkConnected()) {
-//                    if (!appCMSPresenter.isUserLoggedIn()) {
-//                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
-//                                appCMSPresenter::launchBlankPage,
-//                                null);
-//                        return;
-//                    }
-//                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
-//                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
-//                            true,
-//                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
-//                                    null, null, false),
-//                            null);
-//                    return;
-//                }
-//                if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
-//                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                if (!appCMSPresenter.isNetworkConnected()) {
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                appCMSPresenter::launchBlankPage,
+                                null);
+                        return;
+                    }
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                            true,
+                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                    null, null, false),
+                            null);
+                    return;
+                }
+                if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
+                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
                 appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
-//                } else {
-//                    if (appCMSPresenter.isAppSVOD()) {
-//                        if (appCMSPresenter.isUserLoggedIn()) {
-//                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-//                                    () -> {
-//                                        appCMSPresenter.setAfterLoginAction(() -> {
-//
-//                                        });
-//                                    });
-//                        } else {
-//                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
-//                                    () -> {
-//                                        appCMSPresenter.setAfterLoginAction(() -> {
-//
-//                                        });
-//                                    });
-//                        }
-//                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-//                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
-//                                () -> {
-//
-//                                });
-//                    }
-//                }
-//                imageButton.setOnClickListener(null);
+                } else {
+                    if (appCMSPresenter.isAppSVOD()) {
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+
+                                        });
+                                    });
+                        } else {
+                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                    () -> {
+                                        appCMSPresenter.setAfterLoginAction(() -> {
+
+                                        });
+                                    });
+                        }
+                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                () -> {
+
+                                });
+                    }
+                }
+                imageButton.setOnClickListener(null);
             };
         }
 
@@ -12972,6 +12986,32 @@ public class AppCMSPresenter {
         public void updateDownloadImageButton(ImageButton imageButton) {
             this.imageButton = imageButton;
         }
+    }
+
+    public String audioDuration(int totalSeconds) {
+
+        final int MINUTES_IN_AN_HOUR = 60;
+        final int SECONDS_IN_A_MINUTE = 60;
+
+        int seconds = totalSeconds % SECONDS_IN_A_MINUTE;
+        int totalMinutes = totalSeconds / SECONDS_IN_A_MINUTE;
+        int minutes = totalMinutes % MINUTES_IN_AN_HOUR;
+//        int hours = totalMinutes / MINUTES_IN_AN_HOUR;
+
+//        return hours + " hours " + minutes + " minutes " + seconds + " seconds";
+        String min = "";
+        String sec = "";
+        if (minutes < 10) {
+            min = min + "0" + minutes;
+        } else {
+            min = min + minutes;
+        }
+        if (seconds < 10) {
+            sec = sec + "0" + seconds;
+        } else {
+            sec = sec + seconds;
+        }
+        return min + ":" + sec;
     }
 
 }
