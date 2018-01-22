@@ -120,6 +120,22 @@ public abstract class BaseView extends FrameLayout {
         return 0.0f;
     }
 
+    public static float getScaledHorizontalValue(Context context, float value) {
+        if (context != null) {
+            if (isTablet(context)) {
+                if (isLandscape(context)) {
+                    return DEVICE_WIDTH * (value / STANDARD_TABLET_HEIGHT_PX);
+                } else {
+                    return DEVICE_WIDTH * (value / STANDARD_TABLET_WIDTH_PX);
+                }
+            } else {
+                return DEVICE_WIDTH * (value / STANDARD_MOBILE_WIDTH_PX);
+            }
+        }
+
+        return -1.0f;
+    }
+
     public static float getHorizontalMargin(Context context, Layout layout) {
         if (context != null && layout != null) {
             if (isTablet(context)) {
@@ -710,6 +726,7 @@ public abstract class BaseView extends FrameLayout {
 
         int lm = 0, tm = 0, rm = 0, bm = 0;
         int deviceHeight = getContext().getResources().getDisplayMetrics().heightPixels;
+        int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
         int viewWidth = (int) getViewWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
         int viewHeight = (int) getViewHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
         int parentViewWidth = (int) getViewWidth(getContext(),
@@ -720,6 +737,7 @@ public abstract class BaseView extends FrameLayout {
                 parentView.getMeasuredHeight());
         int maxViewWidth = (int) getViewMaximumWidth(getContext(), layout, -1);
         int measuredHeight = parentViewHeight != 0 ? parentViewHeight : deviceHeight;
+        int measuredWidth = parentViewWidth != 0 ? parentViewWidth : deviceWidth;
         int gravity = Gravity.NO_GRAVITY;
 
         if (isTablet(getContext())) {
@@ -928,6 +946,24 @@ public abstract class BaseView extends FrameLayout {
 
         if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY ||
                 componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
+
+            if (isTablet(getContext())) {
+                if (isLandscape(getContext())) {
+                    rm = Math.round(DEVICE_HEIGHT * (childComponent.getLayout().getTabletLandscape().getRightMargin() /
+                            STANDARD_MOBILE_WIDTH_PX));
+                } else {
+                    rm = Math.round(DEVICE_WIDTH * (childComponent.getLayout().getTabletPortrait().getRightMargin() /
+                            STANDARD_MOBILE_WIDTH_PX));
+                }
+            } else {
+                rm = Math.round(DEVICE_WIDTH * (childComponent.getLayout().getMobile().getRightMargin() /
+                        STANDARD_MOBILE_WIDTH_PX));
+            }
+
+            if (0 < lm && 0 < rm) {
+                viewWidth = measuredWidth - rm - lm;
+            }
+
             if (viewWidth < 0) {
                 viewWidth = LayoutParams.MATCH_PARENT;
             }

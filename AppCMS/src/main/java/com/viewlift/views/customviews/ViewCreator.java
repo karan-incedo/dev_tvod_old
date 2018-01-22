@@ -3520,6 +3520,8 @@ public class ViewCreator {
                                 } else if (!appCMSPresenter.isUserSubscribed()) {
                                     ((TextView) componentViewResult.componentView).setText(context.getString(R.string.subscription_unsubscribed_plan_value));
                                 }
+                                ((TextView) componentViewResult.componentView).setSingleLine();
+                                ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
                                 break;
 
                             case PAGE_SETTINGS_PLAN_PROCESSOR_TITLE_KEY:
