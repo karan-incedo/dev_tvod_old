@@ -10,10 +10,11 @@ import java.util.ArrayList;
  * Created by sandeep.singh on 8/21/2017.
  */
 
-
+@UseStag
 public class AppCMSBeaconRequest {
 
-    private ArrayList<BeaconRequest> beaconRequest;
+    @Expose
+    ArrayList<BeaconRequest> beaconRequest;
 
     public ArrayList<BeaconRequest> getBeaconRequest() {
         return beaconRequest;
