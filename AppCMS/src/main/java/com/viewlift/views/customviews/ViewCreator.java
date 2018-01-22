@@ -863,10 +863,14 @@ public class ViewCreator {
                                                 !moduleAPI.getContentData().isEmpty() &&
                                                 moduleAPI.getContentData().get(0).getGist() != null &&
                                                 moduleAPI.getContentData().get(0).getGist().getId() != null) {
+                                            int radiusDifference = 5;
+                                            if (BaseView.isTablet(context)) {
+                                                radiusDifference = 2;
+                                            }
                                             String userId = appCMSPresenter.getLoggedInUser();
                                             appCMSPresenter.getUserVideoDownloadStatus(
                                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                                            moduleAPI.getContentData().get(0), userId), userId);
+                                                            moduleAPI.getContentData().get(0), userId, radiusDifference), userId);
                                             view.setTag(moduleAPI.getContentData().get(0).getGist().getId());
 
                                         }
@@ -2525,9 +2529,13 @@ public class ViewCreator {
                                 moduleAPI.getContentData().get(0) != null &&
                                 moduleAPI.getContentData().get(0).getGist() != null) {
                             String userId = appCMSPresenter.getLoggedInUser();
+                            int radiusDifference = 5;
+                            if (BaseView.isTablet(context)) {
+                                radiusDifference = 2;
+                            }
                             appCMSPresenter.getUserVideoDownloadStatus(
                                     moduleAPI.getContentData().get(0).getGist().getId(), new UpdateDownloadImageIconAction((ImageButton) componentViewResult.componentView, appCMSPresenter,
-                                            moduleAPI.getContentData().get(0), userId), userId);
+                                            moduleAPI.getContentData().get(0), userId, radiusDifference), userId);
                             componentViewResult.componentView.setTag(moduleAPI.getContentData().get(0).getGist().getId());
                         }
 
@@ -4677,13 +4685,15 @@ public class ViewCreator {
         private final String userId;
         private ImageButton imageButton;
         private View.OnClickListener addClickListener;
+        private final int radiusDifference;
 
         UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                      ContentDatum contentDatum, String userId) {
+                                      ContentDatum contentDatum, String userId, int radiusDifference) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
             this.userId = userId;
+            this.radiusDifference = radiusDifference;
 
             addClickListener = v -> {
                 if (!appCMSPresenter.isNetworkConnected()) {
@@ -4753,7 +4763,7 @@ public class ViewCreator {
                     case STATUS_PENDING:
                         appCMSPresenter.setDownloadInProgress(false);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference);
                         imageButton.setOnClickListener(null);
                         break;
 
@@ -4761,7 +4771,7 @@ public class ViewCreator {
                         appCMSPresenter.setDownloadInProgress(true);
                         imageButton.setImageResource(0);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference);
                         imageButton.setOnClickListener(null);
                         break;
 
@@ -4790,7 +4800,7 @@ public class ViewCreator {
 
             } else {
                 appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
-                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference);
                 imageButton.setImageResource(R.drawable.ic_download_big);
                 imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());

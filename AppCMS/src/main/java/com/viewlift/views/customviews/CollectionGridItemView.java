@@ -434,11 +434,13 @@ public class CollectionGridItemView extends BaseView {
                         Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
                                 appCMSPresenter.getUpdateDownloadImageIconActionMap();
 
+                        int radiusDifference = 5;
+
                         ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
                                 updateDownloadImageIconActionMap.get(data.getGist().getId());
                         if (updateDownloadImageIconAction == null) {
                             updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                    data, userId);
+                                    data, userId, radiusDifference);
                             updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
                         }
 

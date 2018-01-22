@@ -3910,7 +3910,8 @@ public class AppCMSPresenter {
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
                                                      final Action1<UserVideoDownloadStatus> responseAction,
-                                                     String userId, boolean isFromDownload) {
+                                                     String userId, boolean isFromDownload,
+                                                     int radiusDifference) {
         if (!isFromDownload) {
             cancelDownloadIconTimerTask(filmId);
         }
@@ -3932,7 +3933,8 @@ public class AppCMSPresenter {
                     this,
                     imageView,
                     responseAction,
-                    updateDownloadIconTimer);
+                    updateDownloadIconTimer,
+                    radiusDifference);
 
             downloadProgressTimerList.add(downloadTimerTask);
 
@@ -12008,6 +12010,7 @@ public class AppCMSPresenter {
         final ImageView imageView;
         final Action1<UserVideoDownloadStatus> responseAction;
         final Timer timer;
+        final int radiusDifference;
 
         public DownloadTimerTask(String filmId,
                                  long videoId,
@@ -12016,7 +12019,8 @@ public class AppCMSPresenter {
                                  AppCMSPresenter appCMSPresenter,
                                  ImageView imageView,
                                  Action1<UserVideoDownloadStatus> responseAction,
-                                 Timer timer) {
+                                 Timer timer,
+                                 int radiusDifference) {
             this.filmIdLocal = filmId;
             this.videoId = videoId;
             this.onRunOnUIThread = onRunOnUIThread;
@@ -12025,6 +12029,7 @@ public class AppCMSPresenter {
             this.imageView = imageView;
             this.responseAction = responseAction;
             this.timer = timer;
+            this.radiusDifference = radiusDifference;
         }
 
         @Override
@@ -12052,8 +12057,12 @@ public class AppCMSPresenter {
                                     if ((imageView.getTag() == null) ||
                                             (imageView.getTag() != null &&
                                             imageView.getTag() instanceof String &&
-                                            ((String) imageView.getTag()).equals(filmIdLocal))) {
-                                        circularImageBar(imageView, downloadPercent);
+                                            imageView.getTag().equals(filmIdLocal))) {
+//                                        int radiusDifference = 5;
+//                                        if (isTablet) {
+//                                            radiusDifference = 2;
+//                                        }
+                                        circularImageBar(imageView, downloadPercent, radiusDifference);
                                     }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Error rendering circular image bar");
@@ -12099,7 +12108,7 @@ public class AppCMSPresenter {
             }
         }
 
-        private void circularImageBar(ImageView iv2, int i) {
+        private void circularImageBar(ImageView iv2, int i, int radiusDifference) {
             if (appCMSPresenter.runUpdateDownloadIconTimer) {
                 Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(b);
@@ -12108,11 +12117,14 @@ public class AppCMSPresenter {
                 paint.setColor(Color.DKGRAY);
                 paint.setStrokeWidth(iv2.getWidth() / 10);
                 paint.setStyle(Paint.Style.STROKE);
-                if (isTablet) {
-                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
-                } else {
-                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
-                }
+
+                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - radiusDifference, paint);// Fix SVFA-1561 changed  -2 to -7
+
+//                if (isTablet) {
+//                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);
+//                } else {
+//                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
+//                }
 
                 int tintColor = Color.parseColor((appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
                 paint.setColor(tintColor);
