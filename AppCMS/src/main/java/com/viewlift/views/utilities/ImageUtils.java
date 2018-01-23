@@ -23,9 +23,9 @@ public class ImageUtils {
 
     public static boolean loadImage(ImageView view,
                                     String url,
-                                    boolean shouldCenter) {
+                                    ImageLoader.ScaleType scaleType) {
         if (registeredImageLoader != null) {
-            registeredImageLoader.loadImage(view, url, shouldCenter);
+            registeredImageLoader.loadImage(view, url, scaleType);
             return true;
         }
         return false;

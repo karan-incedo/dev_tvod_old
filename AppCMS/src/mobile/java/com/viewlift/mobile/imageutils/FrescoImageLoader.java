@@ -59,13 +59,22 @@ public class FrescoImageLoader implements ImageLoader {
     }
 
     @Override
-    public void loadImage(ImageView view, String url, boolean shouldCenter) {
+    public void loadImage(ImageView view, String url, ImageLoader.ScaleType scaleType) {
         if (view instanceof SimpleDraweeView) {
-            if (shouldCenter) {
-                ((SimpleDraweeView) view).getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP);
-            } else {
-                ((SimpleDraweeView) view).getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_BOTTOM_START);
+            switch (scaleType) {
+                case CENTER:
+                    ((SimpleDraweeView) view).getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP);
+
+                    break;
+                case START:
+                    ((SimpleDraweeView) view).getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_START);
+                    break;
+                case END:
+                    ((SimpleDraweeView) view).getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_BOTTOM_START);
+                    break;
+                default:
             }
+
             ((SimpleDraweeView) view).setImageURI(url);
         }
     }

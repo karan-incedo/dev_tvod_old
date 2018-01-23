@@ -40,6 +40,7 @@ import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
 import java.io.UnsupportedEncodingException;
@@ -294,7 +295,7 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, false)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop();
@@ -318,7 +319,7 @@ public class CollectionGridItemView extends BaseView {
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, false)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight);
                                 requestOptions.centerCrop();
@@ -379,7 +380,7 @@ public class CollectionGridItemView extends BaseView {
                                     childViewWidth,
                                     childViewHeight);
 
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, false)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop();
@@ -395,7 +396,7 @@ public class CollectionGridItemView extends BaseView {
                                     childViewWidth,
                                     childViewHeight);
 
-                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, false)) {
+                            if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
                                         .centerCrop();

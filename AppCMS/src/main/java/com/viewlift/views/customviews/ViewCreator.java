@@ -80,6 +80,7 @@ import com.viewlift.views.adapters.AppCMSTrayItemAdapter;
 import com.viewlift.views.adapters.AppCMSTraySeasonItemAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
+import com.viewlift.views.utilities.ImageLoader;
 import com.viewlift.views.utilities.ImageUtils;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
@@ -3629,8 +3630,7 @@ public class ViewCreator {
 
                 break;
 
-            case PAGE_IMAGE_KEY:
-                componentViewResult.componentView = ImageUtils.createImageView(context);
+            case PAGE_IMAGE_KEY:componentViewResult.componentView = ImageUtils.createImageView(context);
 
                 if (componentViewResult.componentView == null) {
                     componentViewResult.componentView = new ImageView(context);
@@ -3659,7 +3659,7 @@ public class ViewCreator {
                                 if (viewHeight > 0 && viewWidth > 0 && viewHeight > viewWidth) {
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                             imageUrl,
-                                            true)) {
+                                            ImageLoader.ScaleType.START)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
                                                 .apply(new RequestOptions().override(viewWidth, viewHeight))
@@ -3668,7 +3668,7 @@ public class ViewCreator {
                                 } else if (viewWidth > 0) {
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                             imageUrl,
-                                            true)) {
+                                            ImageLoader.ScaleType.START)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
                                                 .apply(new RequestOptions().override(viewWidth, viewHeight).centerCrop())
@@ -3677,7 +3677,7 @@ public class ViewCreator {
                                 } else {
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                             imageUrl,
-                                            true)) {
+                                            ImageLoader.ScaleType.START)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
                                                 .into((ImageView) componentViewResult.componentView);
@@ -3805,7 +3805,7 @@ public class ViewCreator {
                                             viewHeight);
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                             imageUrl,
-                                            true)) {
+                                            ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(imageUrl)
                                                 .apply(new RequestOptions().override(viewWidth, viewHeight))
@@ -3818,7 +3818,7 @@ public class ViewCreator {
                                             viewHeight);
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                             videoImageUrl,
-                                            true)) {
+                                            ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(videoImageUrl)
                                                 .apply(new RequestOptions().override(viewWidth, viewHeight))
@@ -3827,7 +3827,7 @@ public class ViewCreator {
                                 } else {
                                     if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                             moduleAPI.getContentData().get(0).getGist().getVideoImageUrl(),
-                                            true)) {
+                                            ImageLoader.ScaleType.CENTER)) {
                                         Glide.with(context)
                                                 .load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
                                                 .apply(new RequestOptions().fitCenter())
@@ -3894,7 +3894,7 @@ public class ViewCreator {
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             if (!ImageUtils.loadImage((ImageView) componentViewResult.componentView,
                                     component.getImageName(),
-                                    true)) {
+                                    ImageLoader.ScaleType.CENTER)) {
                                 Glide.with(context)
                                         .load(component.getImageName())
                                         .into((ImageView) componentViewResult.componentView);
