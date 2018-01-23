@@ -2199,7 +2199,8 @@ public class ViewCreator {
                         break;
                     case PAGE_PLAYLIST_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setBackgroundResource(R.drawable.ic_download);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
+                        ((ImageButton) componentViewResult.componentView).setBackgroundColor(android.R.color.transparent);
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -2225,7 +2226,8 @@ public class ViewCreator {
                         break;
                     case PAGE_AUDIO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                        componentViewResult.componentView.setBackgroundResource(R.drawable.ic_download);
+                        ((ImageButton) componentViewResult.componentView).setImageResource(R.drawable.ic_download);
+                        ((ImageButton) componentViewResult.componentView).setBackgroundColor(android.R.color.transparent);
                         break;
                     case PAGE_VIDEO_DOWNLOAD_BUTTON_KEY:
                         ((ImageButton) componentViewResult.componentView).setScaleType(ImageView.ScaleType.CENTER_INSIDE);

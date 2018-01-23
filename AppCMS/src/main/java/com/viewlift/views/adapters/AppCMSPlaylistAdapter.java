@@ -4,20 +4,15 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
-import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -146,21 +141,10 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && position < adapterData.size()) {
-            for (int i = 0; i < holder.componentView.getNumberOfChildren(); i++) {
-                if (holder.componentView.getChild(i) instanceof TextView) {
-                    ((TextView) holder.componentView.getChild(i)).setText("");
-                }
-            }
             allViews[position] = holder.componentView;
+//            downloadView(adapterData.get(position), holder.componentView);
             bindView(holder.componentView, adapterData.get(position), position);
         }
-    }
-
-
-    private void loadImage(Context context, String url, ImageView imageView) {
-        Glide.with(context)
-                .load(Uri.decode(url))
-                .into(imageView);
     }
 
     @Override
@@ -212,7 +196,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                             }
                                         }
                                     }
-                                    audioDownload(download, data);
+                                    audioDownload(download, data, false);
                                 }
                                 if (action == null) {
                           /*get audio details on tray click item and play song*/
@@ -310,37 +294,22 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     public void startDownloadPlaylist() {
         for (int i = 0; i < allViews.length; i++) {
-            ImageButton download = null;
             for (int j = 0; j < allViews[i].getChildItems().size(); j++) {
                 CollectionGridItemView.ItemContainer itemContainer = allViews[i].getChildItems().get(j);
                 if (itemContainer.getComponent().getKey() != null) {
                     if (itemContainer.getComponent().getKey().contains(mContext.getString(R.string.app_cms_page_audio_download_button_key))) {
-                        download = (ImageButton) itemContainer.getChildView();
-                        audioDownload(download, adapterData.get(i));
+                        ImageButton download = (ImageButton) itemContainer.getChildView();
+                        audioDownload(download, adapterData.get(i), true);
                     }
                 }
             }
         }
     }
 
-    void audioDownload(ImageButton download, ContentDatum data) {
-        if (!appCMSPresenter.isUserLoggedIn()) {
-            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
-                    () -> {
-                        appCMSPresenter.setAfterLoginAction(() -> {
-
-                        });
-                    });
-        } else if (!appCMSPresenter.isUserSubscribed()) {
-            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                    () -> {
-                        appCMSPresenter.setAfterLoginAction(() -> {
-
-                        });
-                    });
-        } else {
-            appCMSPresenter.getAudioDetail(data.getGist().getId(),
-                    0, null, false, download);
-        }
+    void audioDownload(ImageButton download, ContentDatum data, Boolean playlistDownload) {
+        appCMSPresenter.getAudioDetail(data.getGist().getId(),
+                0, null, false, download, playlistDownload);
     }
+
+
 }
