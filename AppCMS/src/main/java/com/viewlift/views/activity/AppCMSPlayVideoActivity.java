@@ -600,6 +600,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 for (int i = 0; i < availableStreamingQualities.size(); i++) {
                     String availableStreamingQuality = availableStreamingQualities.get(i);
                     if (!TextUtils.isEmpty(availableStreamingQuality)) {
+
                         if (availableStreamingQualityMap.get(availableStreamingQuality) != null &&
                                 availableStreamingQualityMap.get(availableStreamingQuality).contains(mpegUrlWithoutCdn)) {
                             return i;
@@ -625,8 +626,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             for (int i = 0; i < numAvailableMpegs; i++) {
                 Mpeg availableMpeg = availableMpegs.get(i);
                 String resolution = null;
-                if (availableMpeg.getBitrate() != 0) {
-                    resolution = String.valueOf(availableMpeg.getBitrate());
+                if (!TextUtils.isEmpty(availableMpeg.getRenditionValue())) {
+                    resolution = availableMpeg.getRenditionValue().replace("_", "");
                 } else {
                     String mpegUrl = availableMpeg.getUrl();
                     if (!TextUtils.isEmpty(mpegUrl)) {
@@ -635,16 +636,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
                 if (!TextUtils.isEmpty(resolution)) {
                     availableStreamingQualities.add(resolution);
-                    StringBuilder sb = new StringBuilder(resolution);
-                    sb.append("p");
-                    availableStreamingQualityMap.put(sb.toString(), availableMpeg.getUrl());
+                    availableStreamingQualityMap.put(resolution, availableMpeg.getUrl());
                 }
             }
         }
 
         Collections.sort(availableStreamingQualities, (q1, q2) -> {
-            int i1 = Integer.valueOf(q1);
-            int i2 = Integer.valueOf(q2);
+            int i1 = Integer.valueOf(q1.replace("p", ""));
+            int i2 = Integer.valueOf(q2.replace("p", ""));
             if (i2 < i1) {
                 return -1;
             } else if (i1 == i2) {
@@ -655,9 +654,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         });
         int numStreamingQualities = availableStreamingQualities.size();
         for (int i = 0; i < numStreamingQualities; i++) {
-            StringBuilder sb = new StringBuilder(availableStreamingQualities.get(i));
-            sb.append("p");
-            availableStreamingQualities.set(i, sb.toString());
+            availableStreamingQualities.set(i, availableStreamingQualities.get(i));
         }
     }
 }
