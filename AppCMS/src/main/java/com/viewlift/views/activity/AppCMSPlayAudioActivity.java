@@ -1,6 +1,5 @@
 package com.viewlift.views.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -71,6 +70,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
+        appCMSPresenter.updateDownloadImageAndStartDownloadProcess(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData(), downloadAudio,false);
+
     }
 
     private void launchAudioPlayer() {
@@ -97,24 +98,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         if (view == addToPlaylist) {
         }
         if (view == downloadAudio) {
-            if (!appCMSPresenter.isUserLoggedIn()) {
-                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
-                        () -> {
-                            appCMSPresenter.setAfterLoginAction(() -> {
-
-                            });
-                        });
-            } else if (!appCMSPresenter.isUserSubscribed()) {
-                appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                        () -> {
-                            appCMSPresenter.setAfterLoginAction(() -> {
-
-                            });
-                        });
-            } else {
-                appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
-                        0, null, false, downloadAudio);
-            }
+            appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
+                    0, null, false, downloadAudio,false);
         }
         if (view == shareAudio) {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();

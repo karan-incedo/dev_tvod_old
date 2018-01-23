@@ -4511,7 +4511,7 @@ public class AppCMSPresenter {
 
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
-            , Boolean playAudio, ImageButton download) {
+            , Boolean playAudio, ImageButton download, Boolean playlistDownload) {
         if (currentActivity != null) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_AUDIO_LOADING_ACTION));
@@ -4557,7 +4557,7 @@ public class AppCMSPresenter {
                                         !audioApiDetail.getModules().get(0).getContentData().isEmpty() &&
                                         audioApiDetail.getModules().get(0).getContentData().get(0) != null &&
                                         audioApiDetail.getModules().get(0).getContentData().get(0).getGist() != null) {
-                                    updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download);
+                                    updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDownload);
                                 }
                             }
 
@@ -12852,13 +12852,14 @@ public class AppCMSPresenter {
         isFullScreenVisible = false;
     }
 
-    public void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView) {
+    public void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView,
+                                                           Boolean playlistDownload) {
         String userId = getLoggedInUser();
         getUserVideoDownloadStatus(
                 contentDatum.getGist().getId(),
                 new UpdateDownloadImageIconAction(downloadView,
                         this,
-                        contentDatum, userId), userId);
+                        contentDatum, userId, playlistDownload), userId);
     }
 
     /**
@@ -12869,13 +12870,15 @@ public class AppCMSPresenter {
         private final ContentDatum contentDatum;
         private final String userId;
         private ImageButton imageButton;
+        private Boolean playlistDownload;
         private View.OnClickListener addClickListener;
 
         UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
-                                      ContentDatum contentDatum, String userId) {
+                                      ContentDatum contentDatum, String userId, boolean playlistDownload) {
             this.imageButton = imageButton;
             this.appCMSPresenter = presenter;
             this.contentDatum = contentDatum;
+            this.playlistDownload = playlistDownload;
             this.userId = userId;
 
             addClickListener = v -> {
@@ -12894,35 +12897,30 @@ public class AppCMSPresenter {
                             null);
                     return;
                 }
-                if ((appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserSubscribed()) ||
-                        !appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-                appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                if ((appCMSPresenter.isUserSubscribed()) &&
+                        appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
                 } else {
-                    if (appCMSPresenter.isAppSVOD()) {
-                        if (appCMSPresenter.isUserLoggedIn()) {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-                                    () -> {
-                                        appCMSPresenter.setAfterLoginAction(() -> {
-
-                                        });
-                                    });
-                        } else {
-                            appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
-                                    () -> {
-                                        appCMSPresenter.setAfterLoginAction(() -> {
-
-                                        });
-                                    });
-                        }
-                    } else if (!(appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn())) {
-                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                    if (appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
                                 () -> {
+                                    appCMSPresenter.setAfterLoginAction(() -> {
 
+                                    });
+                                });
+                    } else {
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                () -> {
+                                    appCMSPresenter.setAfterLoginAction(() -> {
+
+                                    });
                                 });
                     }
                 }
-                imageButton.setOnClickListener(null);
-            };
+//                imageButton.setOnClickListener(null);
+            }
+
+            ;
         }
 
         @Override
@@ -12980,12 +12978,16 @@ public class AppCMSPresenter {
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.setOnClickListener(addClickListener);
+                if (playlistDownload) {
+                    addClickListener.onClick(imageButton);
+                }
             }
         }
 
         public void updateDownloadImageButton(ImageButton imageButton) {
             this.imageButton = imageButton;
         }
+
     }
 
     public String audioDuration(int totalSeconds) {
