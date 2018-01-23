@@ -216,6 +216,8 @@ import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSTrayMenuDialogFragment;
 
+import net.nightwhistler.htmlspanner.TextUtil;
+
 import org.jsoup.Jsoup;
 import org.threeten.bp.Duration;
 import org.threeten.bp.Instant;
@@ -3466,12 +3468,6 @@ public class AppCMSPresenter {
                                   ContentDatum contentDatum,
                                   String downloadURL) {
         DownloadVideoRealm downloadVideoRealm = new DownloadVideoRealm();
-        try {
-            downloadVideoRealm.setVideoIdDB(getStreamingId(downloadVideoRealm.getVideoTitle()));
-        } catch (Exception e) {
-            //Log.e(TAG, e.getMessage());
-            downloadVideoRealm.setVideoIdDB(downloadVideoRealm.getVideoId() + getCurrentTimeStamp());
-        }
         if (contentDatum != null && contentDatum.getGist() != null) {
             downloadVideoRealm.setVideoThumbId_DM(thumbEnqueueId);
             downloadVideoRealm.setPosterThumbId_DM(posterEnqueueId);
@@ -3488,6 +3484,18 @@ public class AppCMSPresenter {
             if (contentDatum.getGist().getDescription() != null) {
                 downloadVideoRealm.setVideoDescription(contentDatum.getGist().getDescription());
             }
+
+            try {
+                if (!TextUtils.isEmpty(downloadVideoRealm.getVideoTitle())) {
+                    downloadVideoRealm.setVideoIdDB(getStreamingId(downloadVideoRealm.getVideoTitle()));
+                } else if (!TextUtils.isEmpty(contentDatum.getGist().getId())) {
+                    downloadVideoRealm.setVideoIdDB(contentDatum.getGist().getId() + getCurrentTimeStamp());
+                }
+            } catch (Exception e) {
+                //Log.e(TAG, e.getMessage());
+                downloadVideoRealm.setVideoIdDB(downloadVideoRealm.getVideoId() + getCurrentTimeStamp());
+            }
+
             downloadVideoRealm.setLocalURI(downloadedMediaLocalURI(enqueueId));
 
             if (ccEnqueueId != 0 && contentDatum.getGist().getId() != null) {
