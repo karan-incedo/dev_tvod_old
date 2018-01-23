@@ -8726,8 +8726,18 @@ public class AppCMSPresenter {
                                                         setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
                                                         //if (useCCAvenue() && !isSubscriptionCompleted()) {
                                                         if (!isSubscriptionCompleted()) {
-                                                            setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
-                                                                    appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                            StringBuilder sb = new StringBuilder("Scheduled to be cancelled by ");
+                                                            String subscriptionEndDate = appCMSSubscriptionPlanResult
+                                                                    .getSubscriptionInfo()
+                                                                    .getSubscriptionEndDate();
+                                                            int timeStampIndex = subscriptionEndDate
+                                                                    .indexOf("T");
+                                                            if (0 <= timeStampIndex) {
+                                                                sb.append(subscriptionEndDate.substring(0, timeStampIndex));
+                                                            } else {
+                                                                sb.append(subscriptionEndDate);
+                                                            }
+                                                            setActiveSubscriptionPlanName(sb.toString());
                                                         }
                                                         //}
                                                     }
