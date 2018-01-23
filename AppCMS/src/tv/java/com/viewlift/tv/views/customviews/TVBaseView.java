@@ -79,10 +79,6 @@ public abstract class TVBaseView extends FrameLayout {
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
-//        boolean appendFirstSep = minutes > 0
-//                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
-//        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
-//                && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
 

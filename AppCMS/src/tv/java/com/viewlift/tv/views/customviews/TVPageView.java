@@ -9,12 +9,17 @@ import android.widget.LinearLayout;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
+import com.viewlift.views.adapters.AppCMSBaseAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ListWithAdapter;
+import com.viewlift.views.customviews.ModuleView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
 
@@ -25,12 +30,14 @@ import javax.inject.Inject;
 public class TVPageView extends FrameLayout {
     private final AppCMSPageUI appCMSPageUI;
     private LinearLayout childrenContainer;
-    // private List<AppCMSViewAdapter.ListWithAdapter> adapterList;
+    private Map<String, TVModuleView> moduleViewMap;
+    private CopyOnWriteArrayList adapterList;
 
     @Inject
     public TVPageView(Context context, AppCMSPageUI appCMSPageUI) {
         super(context);
         this.appCMSPageUI = appCMSPageUI;
+        this.moduleViewMap = new HashMap<>();
         init();
     }
 
@@ -43,33 +50,37 @@ public class TVPageView extends FrameLayout {
                         LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
       //  createChildrenContainer();
-       // adapterList = new ArrayList<>();
+        adapterList = new CopyOnWriteArrayList<>();
     }
 
     public void addListWithAdapter(ListWithAdapter listWithAdapter) {
-       // adapterList.add(listWithAdapter);
+        adapterList.add(listWithAdapter);
+    }
+
+    public void clearExistingViewLists() {
+        moduleViewMap.clear();
+        adapterList.clear();
+    }
+
+    public void addModuleViewWithModuleId(String moduleId, TVModuleView moduleView) {
+        moduleViewMap.put(moduleId, moduleView);
+    }
+
+    public TVModuleView getModuleViewWithModuleId(String moduleId) {
+        if (moduleViewMap.containsKey(moduleId)) {
+            return moduleViewMap.get(moduleId);
+        }
+        return null;
     }
 
     public void notifyAdaptersOfUpdate() {
-       /* for (AppCMSViewAdapter.ListWithAdapter listWithAdapter : adapterList) {
-            if (listWithAdapter.getAdapter() instanceof AppCMSViewAdapter) {
-                ((AppCMSViewAdapter) listWithAdapter.getAdapter()).resetData(listWithAdapter.getListView());
+       /* for (ListWithAdapter listWithAdapter : adapterList) {
+            if (listWithAdapter.getAdapter() instanceof AppCMSBaseAdapter) {
+                ((AppCMSBaseAdapter) listWithAdapter.getAdapter())
+                        .resetData(listWithAdapter.getListView());
             }
         }*/
     }
-/*
-
-    @Override
-    protected Component getChildComponent(int index) {
-        return null;
-    }
-
-    @Override
-    protected Layout getLayout() {
-        return null;
-    }
-*/
-
 /*
     @Override
 */
@@ -80,14 +91,6 @@ public class TVPageView extends FrameLayout {
                         LayoutParams.MATCH_PARENT);
         childrenContainer.setLayoutParams(childContainerLayoutParams);
         ((LinearLayout) childrenContainer).setOrientation(LinearLayout.VERTICAL);
-/*
-        NestedScrollView nestedScrollView = new NestedScrollView(getContext());
-        LayoutParams nestedScrollViewLayoutParams =
-                new LayoutParams(LayoutParams.MATCH_PARENT,
-                        LayoutParams.MATCH_PARENT);
-        nestedScrollView.setLayoutParams(nestedScrollViewLayoutParams);
-        nestedScrollView.addView(childrenContainer);
-        addView(nestedScrollView);*/
         addView(childrenContainer);
         return childrenContainer;
     }

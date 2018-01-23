@@ -48,7 +48,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -89,6 +88,8 @@ import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.StarRating;
 import com.viewlift.views.customviews.ViewCreatorMultiLineLayoutListener;
 import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
+
+import net.nightwhistler.htmlspanner.TextUtil;
 
 import org.jsoup.Jsoup;
 
@@ -196,6 +197,7 @@ public class TVViewCreator {
                         isFromLoginDialog);
                 if (childView != null) {
                     childrenContainer.addView(childView);
+                    pageView.addModuleViewWithModuleId(module.getId() , (TVModuleView) childView);
                 }
             }
 
@@ -223,7 +225,6 @@ public class TVViewCreator {
     }
 
     TVModuleView moduleView = null;
-
     public View createModuleView(final Context context,
                                  ModuleList module,
                                  final Module moduleAPI,
@@ -352,8 +353,8 @@ public class TVViewCreator {
                     View componentView = componentViewResult.componentView;
                     if (componentView != null && moduleView != null) {
                         childrenContainer.addView(componentView);
+                        moduleView.addChildComponentAndView(componentView , component);
                         moduleView.setComponentHasView(i, true);
-
                         moduleView.setViewMarginsFromComponent(component,
                                 componentView,
                                 moduleView.getLayout(),
@@ -419,6 +420,7 @@ public class TVViewCreator {
                     case PAGE_TRAY_TITLE_KEY:
                         if (moduleData != null
                                 && moduleData.getContentData() != null
+                                &&  moduleData.getContentData().size() > 0
                                 && moduleData.getContentData().get(0) != null
                                 && moduleData.getContentData().get(0).getGist() != null
                                 && moduleData.getContentData().get(0).getGist().getContentType() != null
@@ -863,6 +865,7 @@ public class TVViewCreator {
                                                     appCMSAddToWatchlistResult -> {
                                                         //Log.d(TAG, "appCMSAddToWatchlistResult");
                                                         queued[0] = !queued[0];
+                                                        appCMSPresenter.sendUpdateWatchListAction();
                                                         if (queued[0]) {
                                                             btn.setText(context.getString(R.string.remove_from_watchlist));
                                                         } else {
@@ -935,6 +938,10 @@ public class TVViewCreator {
                                                 if(userVideoStatusResponse.getWatchedTime() > 0){
                                                     startWatchingButton.setText(context.getString(R.string.resume_watching));
                                                 }
+                                                if(userVideoStatusResponse.getWatchedPercentage() >= 98){
+                                                    startWatchingButton
+                                                            .setText(appCMSPresenter.getCurrentActivity().getString(R.string.start_watching));
+                                                }
                                             }
                                         });
 
@@ -964,6 +971,10 @@ public class TVViewCreator {
                                             );
                                             if(userVideoStatusResponse.getWatchedTime() > 0){
                                                 startWatchingButton.setText(context.getString(R.string.resume_watching));
+                                            }
+                                            if(userVideoStatusResponse.getWatchedPercentage() >= 98){
+                                                startWatchingButton
+                                                        .setText(appCMSPresenter.getCurrentActivity().getString(R.string.start_watching));
                                             }
                                         }
                                     });
@@ -1387,7 +1398,10 @@ public class TVViewCreator {
 
                         case CONTACT_US_PHONE_LABEL:
                             if (!TextUtils.isEmpty(component.getText())) {
-                                String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
+                                String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
+                                if(TextUtils.isEmpty(phone)){
+                                    phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
+                                }
                                 if (!TextUtils.isEmpty(phone)) {
                                     ((TextView) componentViewResult.componentView).setText(component.getText() + " "
                                             + phone);
@@ -1533,9 +1547,20 @@ public class TVViewCreator {
                         case PAGE_VIDEO_SUBTITLE_KEY:
                             if (moduleAPI.getContentData() != null
                                     && moduleAPI.getContentData().get(0) != null) {
-                                setViewWithSubtitle(context,
-                                        moduleAPI.getContentData().get(0),
-                                        componentViewResult.componentView);
+
+                                if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS) {
+                                    String text = Utils.convertSecondsToTime(moduleAPI.getContentData().get(0).getGist().getRuntime());
+                                    String publishDate = appCMSPresenter.getDateFormat(moduleAPI.getContentData().get(0).getGist().getPublishDate(), "MMMM dd, yyyy");
+                                    if(null != publishDate) {
+                                        text = text + " | " + publishDate;
+                                    }
+                                    ((TextView) componentViewResult.componentView).setText(text.toString());
+                                    componentViewResult.componentView.setAlpha(0.6f);
+                                }else {
+                                    setViewWithSubtitle(context,
+                                            moduleAPI.getContentData().get(0),
+                                            componentViewResult.componentView);
+                                }
                             }
                             componentViewResult.componentView.setFocusable(false);
                             componentViewResult.componentView.setTag("SUBTITLE");
@@ -1985,7 +2010,10 @@ public class TVViewCreator {
                         break;
 
                     case CONTACT_US_PHONE_IMAGE:
-                        String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
+                        String phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhoneNumber();
+                        if(TextUtils.isEmpty(phone)){
+                            phone = appCMSPresenter.getAppCMSMain().getCustomerService().getPhone();
+                        }
                         if (!TextUtils.isEmpty(phone)) {
                             componentViewResult.componentView.setBackgroundResource(R.drawable.call_icon);
                         } else {
@@ -2485,6 +2513,70 @@ public class TVViewCreator {
             }
 
         }, 300);
+
+    }
+
+
+    public <T> void refreshPageView(TVPageView pageView,
+                                    AppCMSPageUI appCMSPageUI,
+                                    AppCMSPageAPI appCMSPageAPI,
+                                    Map<String, AppCMSUIKeyType> jsonValueKeyMap,
+                                    AppCMSPresenter appCMSPresenter, List<T> ts) {
+        if (appCMSPageUI == null) {
+            return;
+        }
+
+        for (ModuleList moduleInfo : appCMSPageUI.getModuleList()){
+            ModuleList module = moduleInfo;
+            try {
+                if (!ts.contains(moduleInfo.getView())) {
+                    if (module.getBlockName().contains("videoPlayerInfo")) {
+                        Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
+                        TVModuleView moduleView = pageView.getModuleViewWithModuleId(module.getId());
+                        List<TVModuleView.ChildComponentAndView> childComponentAndViews = moduleView.getChildViewList();
+
+                        if(null != childComponentAndViews && childComponentAndViews.size() >0 ){
+                            for(TVModuleView.ChildComponentAndView childComponentAndView : childComponentAndViews){
+                                AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponentAndView.component.getKey());
+                                if (componentKey == null) {
+                                    componentKey = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                                }
+                               switch (componentKey){
+                                   case PAGE_START_WATCHING_BUTTON_KEY:
+                                       if (appCMSPresenter.isUserLoggedIn()) {
+                                           if (null != moduleAPI && null != moduleAPI.getContentData()
+                                                   && moduleAPI.getContentData().size() > 0) {
+                                               appCMSPresenter.getUserVideoStatus(
+                                                       moduleAPI.getContentData().get(0).getGist().getId(),
+                                                       userVideoStatusResponse -> {
+                                                           if (null != userVideoStatusResponse) {
+                                                               Log.d(TAG, "time = " + userVideoStatusResponse.getWatchedTime()
+                                                               );
+
+                                                               if (userVideoStatusResponse.getWatchedTime() > 0) {
+                                                                   ((Button)childComponentAndView.childView)
+                                                                           .setText(appCMSPresenter.getCurrentActivity().getString(R.string.resume_watching));
+
+                                                                   if(userVideoStatusResponse.getWatchedPercentage() >= 98){
+                                                                       ((Button)childComponentAndView.childView)
+                                                                               .setText(appCMSPresenter.getCurrentActivity().getString(R.string.start_watching));
+                                                                   }
+                                                               }
+                                                           }
+                                                       });
+                                           }
+                                       }
+
+                                       break;
+                               }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
     }
 

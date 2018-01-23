@@ -2,6 +2,7 @@ package com.viewlift.tv.views.customviews;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
@@ -11,6 +12,9 @@ import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleWithComponents;
 import com.viewlift.tv.utility.Utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Created by viewlift on 5/17/17.
@@ -19,12 +23,14 @@ import com.viewlift.tv.utility.Utils;
 public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
     private static final String TAG = "ModuleView";
     protected boolean[] componentHasViewList;
+    List<ChildComponentAndView> childView;
 
     private final T module;
 
     public TVModuleView(Context context, T module) {
         super(context);
         this.module = module;
+        this.childView = new ArrayList<>();
         init();
     }
 
@@ -60,7 +66,6 @@ public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
         componentHasViewList = new boolean[size];
     }
 
-
     @Override
     protected Component getChildComponent(int index) {
         if (module.getComponents() != null &&
@@ -90,7 +95,6 @@ public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
         return childrenContainer;
     }
 
-
     public ViewGroup getChildrenContainer() {
         if (childrenContainer == null) {
             return createChildrenContainer();
@@ -98,5 +102,20 @@ public class TVModuleView<T extends ModuleWithComponents> extends TVBaseView {
         return childrenContainer;
     }
 
+    public List<ChildComponentAndView> getChildViewList(){
+        return childView;
+    }
+
+    public void addChildComponentAndView(View componentView, Component component) {
+        ChildComponentAndView childComponentAndView = new ChildComponentAndView();
+        childComponentAndView.childView = componentView;
+        childComponentAndView.component = component;
+        childView.add(childComponentAndView);
+    }
+
+    public static class ChildComponentAndView {
+        Component component;
+        View childView;
+    }
 
 }

@@ -211,7 +211,6 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
         String closedCaptionUrl = null;
         title = gist.getTitle();
         String fontColor = binder.getFontColor();
-        title = "";
         boolean useHls = getResources().getBoolean(R.bool.use_hls);
         String defaultVideoResolution = getString(R.string.default_video_resolution);
         if (binder.getContentData() != null &&

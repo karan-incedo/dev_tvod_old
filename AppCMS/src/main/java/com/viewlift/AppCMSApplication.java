@@ -73,7 +73,9 @@ public class AppCMSApplication extends MultiDexApplication {
 
             // NOTE: Replaced with Utils.getProperty()
             //Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
-            Apptentive.register(this, Utils.getProperty("ApptentiveApiKey", getApplicationContext()), Utils.getProperty("ApptentiveSignatureKey", getApplicationContext()));
+            Apptentive.register(this,
+                    Utils.getProperty("ApptentiveApiKey", getApplicationContext()),
+                    Utils.getProperty("ApptentiveSignatureKey", getApplicationContext()));
 
             FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", getApplicationContext()));
             FacebookSdk.sdkInitialize(getApplicationContext());

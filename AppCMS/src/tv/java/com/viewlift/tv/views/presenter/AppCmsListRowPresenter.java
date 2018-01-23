@@ -119,7 +119,7 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 listRowParam.width = listRowWidth;//Utils.getViewXAxisAsPerScreen(mContext , 1590);
                 listRowView.setLayoutParams(listRowParam);
 
-                horizontalGrLayoutParams.setMargins(Utils.getViewXAxisAsPerScreen(mContext , 370), 0 , 0,0);
+                horizontalGrLayoutParams.setMargins(100/*Utils.getViewXAxisAsPerScreen(mContext , 370)*/, 0 , 0,0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
 
                 return;

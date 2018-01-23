@@ -621,8 +621,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                         }
                                 );
                         } else {
-
-
                             if(!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
                                 appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
                                 ClearDialogFragment newFragment = Utils.getClearDialogFragment(
@@ -714,7 +712,7 @@ public class AppCmsSubNavigationFragment extends Fragment {
                             });
                         }
                     } else if (navigationSubItem.title.toUpperCase().contains("CONTACT")) {
-                        navigationVisibilityListener.showSubNavigation(false, false);
+                        //navigationVisibilityListener.showSubNavigation(false, false);
                         appCMSPresenter.navigateToTVPage(
                                 navigationSubItem.pageId,
                                 navigationSubItem.title,
@@ -768,6 +766,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 iconResId = R.drawable.st_settings_icon_signout;
             }else if (icon.equalsIgnoreCase(getString(R.string.st_about_us_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_about_us;
+            }else if (icon.equalsIgnoreCase(getString(R.string.st_privacy_policy_icon_key))) {
+                iconResId = R.drawable.st_setting_icon_privacy_policy;
             }
             return iconResId;
         }
