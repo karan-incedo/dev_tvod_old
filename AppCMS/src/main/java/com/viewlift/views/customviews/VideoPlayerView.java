@@ -77,7 +77,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSDownloadRadioAdapter;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1124,7 +1123,8 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         @Override
         public int read(byte[] buffer, int offset, int readLength) throws IOException {
             int result = 0;
-            if (dataSource instanceof FileDataSource) {
+            if (dataSource instanceof FileDataSource &&
+                    !dataSource.getUri().toString().toLowerCase().contains("srt")) {
                 try {
                     long bytesRead = ((FileDataSource) dataSource).getBytesRead();
                     result = dataSource.read(buffer, offset, readLength);

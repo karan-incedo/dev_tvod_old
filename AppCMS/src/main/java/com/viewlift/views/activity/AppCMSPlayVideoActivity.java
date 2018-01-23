@@ -165,14 +165,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                                     appCMSPlayVideoPageContainer, null);
                                         } catch (Exception e) {
                                             //
-                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                                                     getString(R.string.app_cms_video_not_available_errot_message),
                                                     false,
                                                     this::finish,
                                                     null);
                                         }
                                     } else {
-                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                                                 getString(R.string.app_cms_video_not_available_errot_message),
                                                 false,
                                                 this::finish,
@@ -180,7 +180,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                     }
                                 });
                     } else {
-                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                                 getString(R.string.app_cms_video_not_available_errot_message),
                                 false,
                                 this::finish,
@@ -188,7 +188,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                     }
                 }
             } else {
-                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+                appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                         getString(R.string.app_cms_video_not_available_errot_message),
                         false,
                         this::finish,
@@ -327,11 +327,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 && binder.getContentData().getContentDetails().getClosedCaptions() != null
                 && !binder.getContentData().getContentDetails().getClosedCaptions().isEmpty()) {
             for (ClosedCaptions cc : binder.getContentData().getContentDetails().getClosedCaptions()) {
-                if (cc.getUrl() != null &&
-                        !cc.getUrl().equalsIgnoreCase(getString(R.string.download_file_prefix)) &&
-                        cc.getFormat() != null &&
-                        cc.getFormat().equalsIgnoreCase("SRT")) {
-                    closedCaptionUrl = cc.getUrl();
+                if (cc.getUrl() != null) {
+                    if ((cc.getFormat() != null &&
+                            cc.getFormat().equalsIgnoreCase("srt")) ||
+                            cc.getUrl().toLowerCase().contains("srt")) {
+                        closedCaptionUrl = cc.getUrl();
+                    }
                 }
             }
         }
@@ -402,7 +403,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             fragmentTransaction.commit();
         } catch (Exception e) {
             //
-            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DOWNLOAD_VIA_MOBILE_DISABLED,
+            appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
                     getString(R.string.app_cms_video_not_available_errot_message),
                     false,
                     this::finish,
