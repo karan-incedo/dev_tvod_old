@@ -1143,7 +1143,7 @@ public abstract class BaseView extends FrameLayout {
         } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
             if (jsonValueKeyMap.get(viewType) != null) {
                 if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY ||
-                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_API_SHOWDETAIL_MODULE_KEY) {
+                        jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                     int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                     int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
                     int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
