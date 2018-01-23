@@ -484,29 +484,30 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                                 //
                             }
                         }
-
-                        if (!TextUtils.isEmpty(mStreamId) && !sentBeaconFirstFrame) {
-                            mStopBufferMilliSec = new Date().getTime();
-                            ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                            appCMSPresenter.sendBeaconMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    videoPlayerView.getCurrentPosition(),
-                                    false,
-                                    AppCMSPresenter.BeaconEvent.FIRST_FRAME,
-                                    "Video",
-                                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                                    String.valueOf(videoPlayerView.getVideoHeight()),
-                                    String.valueOf(videoPlayerView.getVideoWidth()),
-                                    mStreamId,
-                                    ttfirstframe,
-                                    0,
-                                    isVideoDownloaded);
-                            sentBeaconFirstFrame = true;
-
-                        }
                     }
                 }
+
+                if (!TextUtils.isEmpty(mStreamId) && !sentBeaconFirstFrame) {
+                    mStopBufferMilliSec = new Date().getTime();
+                    ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                    appCMSPresenter.sendBeaconMessage(filmId,
+                            permaLink,
+                            parentScreenName,
+                            videoPlayerView.getCurrentPosition(),
+                            false,
+                            AppCMSPresenter.BeaconEvent.FIRST_FRAME,
+                            "Video",
+                            videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                            String.valueOf(videoPlayerView.getVideoHeight()),
+                            String.valueOf(videoPlayerView.getVideoWidth()),
+                            mStreamId,
+                            ttfirstframe,
+                            0,
+                            isVideoDownloaded);
+                    sentBeaconFirstFrame = true;
+
+                }
+
             } else if (playerState.getPlaybackState() == Player.STATE_ENDED) {
                 //Log.d(TAG, "Video ended");
                 if (shouldRequestAds && adsLoader != null) {
@@ -985,24 +986,6 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
         }
         if (appCMSPresenter != null) {
             mStopBufferMilliSec = new Date().getTime();
-            ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-            if (!TextUtils.isEmpty(mStreamId) && !sentBeaconFirstFrame) {
-                appCMSPresenter.sendBeaconMessage(filmId,
-                        permaLink,
-                        parentScreenName,
-                        videoPlayerView.getCurrentPosition(),
-                        false,
-                        AppCMSPresenter.BeaconEvent.FIRST_FRAME,
-                        "Video",
-                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                        String.valueOf(videoPlayerView.getVideoHeight()),
-                        String.valueOf(videoPlayerView.getVideoWidth()),
-                        mStreamId,
-                        ttfirstframe,
-                        0,
-                        isVideoDownloaded);
-                sentBeaconFirstFrame = true;
-            }
         }
         if (beaconPing != null && !beaconPing.isAlive()) {
             beaconPing.start();
