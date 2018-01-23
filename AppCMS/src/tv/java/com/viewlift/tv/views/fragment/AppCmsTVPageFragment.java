@@ -20,6 +20,7 @@ import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
+import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.component.AppCMSTVViewComponent;
 import com.viewlift.tv.views.component.DaggerAppCMSTVViewComponent;
 import com.viewlift.tv.views.customviews.AppCMSTVTrayAdapter;
@@ -291,11 +292,10 @@ public class AppCmsTVPageFragment extends Fragment {
                 ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
                 List<ContentDatum> episodes = appCMSSwitchSeasonBinder.getSeasonList().get(appCMSSwitchSeasonBinder.getSelectedSeasonIndex()).getEpisodes();
                 for (int i = 0; i < episodes.size(); i++) {
-                    List<String> relatedVids = new ArrayList<>();
-                    for (int j = i + 1; j < episodes.size(); j++) {
-                        ContentDatum contentDatum = episodes.get(j);
-                        relatedVids.add(contentDatum.getGist().getId());
-                    }
+                    List<String> relatedVids = Utils.getRelatedVideosInShow(
+                            appCMSSwitchSeasonBinder.getSeasonList(),
+                            appCMSSwitchSeasonBinder.getSelectedSeasonIndex(),
+                            i);
                     ContentDatum contentDatum = episodes.get(i);
                     contentDatum.setSeason(appCMSSwitchSeasonBinder.getSeasonList());
                     BrowseFragmentRowData rowData = new BrowseFragmentRowData();

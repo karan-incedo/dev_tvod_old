@@ -218,7 +218,7 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                     SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
                     spannableStringBuilder.append(" ").append(text);
                     spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 5, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     upNextMovieTitle.setText(spannableStringBuilder);
                 }
             }

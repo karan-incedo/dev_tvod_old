@@ -350,6 +350,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
         if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
             getFragmentManager().popBackStack();
+            appCMSBinderStack.pop();
         }
 
         appCMSPresenter.sendGaScreen(updatedAppCMSBinder.getScreenName());
@@ -886,13 +887,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             }
 
             if (isNavigationVisible()) {
-                Log.d(TAG, "NITS Navigation is visible so hide it and  resume Player.........");
                 showNavigation(false);
                 if (null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView() && !isSubNavigationVisible()) {
                     browseFragment.getCustomVideoVideoPlayerView().resumePlayer();
                 }
             } else {
-                Log.d(TAG, "NITS Navigation is not visible so show it and  pause the Player.........");
                 if (null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView()) {
                     browseFragment.getCustomVideoVideoPlayerView().pausePlayer();
                 }
@@ -990,7 +989,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         distanceFromStackTop = appCMSBinderStack.search(tag);
 
         //Log.d(TAG, "Page distance from top: " + distanceFromStackTop);
-        if (0 < distanceFromStackTop) {
+        /*if (0 < distanceFromStackTop) {
             for (int i = 0; i < distanceFromStackTop; i++) {
                 //Log.d(TAG, "Popping stack to get to page item");
                 try {
@@ -999,7 +998,7 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     //Log.e(TAG, "Error popping back stack: " + e.getMessage());
                 }
             }
-        }
+        }*/
         showInfoIcon(tag);
         appCMSBinderStack.push(tag);
         selectNavItem(tag);
@@ -1057,8 +1056,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 appCMSSite.getGist().getSiteInternalName(),
                                 appCMSBinder.getPagePath());
 
-                        Log.d(TAG, "NITS urls = " + apiUrl);
-
                         //appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
@@ -1071,7 +1068,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                                 for (int i = 0; i < modules.size(); i++) {
                                                     Module module = modules.get(i);
                                                     AppCMSUIKeyType moduleType = appCMSPresenter.getJsonValueKeyMap().get(module.getModuleType());
-                                                    Log.d(TAG, "NITS moduleType = " + module.getModuleType() + " jsonKey = " + moduleType);
                                                     if (moduleType == AppCMSUIKeyType.PAGE_API_HISTORY_MODULE_KEY) {
                                                         if (module.getContentData() != null &&
                                                                 !module.getContentData().isEmpty()) {

@@ -212,9 +212,9 @@ import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
-import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
@@ -4356,7 +4356,6 @@ public class AppCMSPresenter {
     /**
      * Method launches the autoplay screen
      *
-     * @param pageId    pageId to get the Page UI from navigationPages
      * @param pageTitle pageTitle
      * @param url       url of the API which gets the VideoDetails
      * @param binder    binder to share data
@@ -4386,7 +4385,9 @@ public class AppCMSPresenter {
                                     for (ModuleList moduleList : appCMSPageUI.getModuleList()) {
                                         if (jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01) ||
                                                 jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02) ||
-                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03)) {
+                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03) ||
+                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY) ||
+                                                jsonValueKeyMap.get(moduleList.getType()).equals(AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY)) {
                                             pageAPI = appCMSVideoDetail.convertToAppCMSPageAPI(autoplayPageId,
                                                     moduleList.getType());
                                             break;
@@ -11125,7 +11126,7 @@ public class AppCMSPresenter {
                                                     if (!TextUtils.isEmpty(extraData[1])) {
 
                                                         List<String> relatedVideoIds;
-                                                        if (relateVideoIds == null) {
+                                                        if (relateVideoIds == null || relateVideoIds.size() == 0) {
                                                             relatedVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
                                                         } else {
                                                             relatedVideoIds = relateVideoIds;

@@ -53,7 +53,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -93,7 +92,6 @@ import net.nightwhistler.htmlspanner.TextUtil;
 
 import org.jsoup.Jsoup;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -252,9 +250,12 @@ public class TVViewCreator {
               //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
                 isGrid = true;
             }
-            if (module.getBlockName().equalsIgnoreCase("tray04")) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
+            /*if (module.getBlockName().equalsIgnoreCase("tray01")) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
             }
+            if (module.getBlockName().equalsIgnoreCase("tray02")) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
+            }*/
 
             for (Component component : module.getComponents()) {
                 createTrayModule(context, component, module.getLayout(), module, moduleAPI,
@@ -262,7 +263,7 @@ public class TVViewCreator {
             }
             return null;
         } else if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())){
-            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+            //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             moduleView = new ShowDetailModuleView(
                     context,
                     module,
@@ -288,7 +289,7 @@ public class TVViewCreator {
             }
         } else {
             if ("AC AutoPlayLandscape 01".equalsIgnoreCase(module.getView())) {
-                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "autoplay_land.json"), ModuleList.class);
+//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "autoplay_land.json"), ModuleList.class);
             }
 
 
@@ -296,7 +297,7 @@ public class TVViewCreator {
             ViewGroup childrenContainer = moduleView.getChildrenContainer();
 
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
-                    && "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
+                    || "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
                 if (null == moduleAPI
                         || moduleAPI.getContentData() == null) {
                     TextView textView = new TextView(context);
@@ -310,7 +311,8 @@ public class TVViewCreator {
                     return moduleView;
                 }
 
-                if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())) {
+                if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView())
+                        || "AC VideoPlayerWithInfo 02".equalsIgnoreCase(module.getView())) {
                     final TVPageView finalPageView = pageView;
                     if (null != moduleAPI.getContentData()
                             && null != moduleAPI.getContentData().get(0)
@@ -420,7 +422,7 @@ public class TVViewCreator {
                     case PAGE_TRAY_TITLE_KEY:
                         if (moduleData != null
                                 && moduleData.getContentData() != null
-                                &&  moduleData.getContentData().size() > 0
+                                && !moduleData.getContentData().isEmpty()
                                 && moduleData.getContentData().get(0) != null
                                 && moduleData.getContentData().get(0).getGist() != null
                                 && moduleData.getContentData().get(0).getGist().getContentType() != null
@@ -512,12 +514,10 @@ public class TVViewCreator {
                         List<Component> components = component.getComponents();
                         List<ContentDatum> episodes = moduleData.getContentData().get(0).getSeason().get(0).getEpisodes();
                         for (int i = 0; i < episodes.size(); i++) {
-                            List<String> relatedVids = new ArrayList<>();
-                            for (int j = i + 1; j < episodes.size(); j++) {
-                                ContentDatum contentDatum = episodes.get(j);
-                                relatedVids.add(contentDatum.getGist().getId());
-
-                            }
+                            List<String> relatedVids = Utils.getRelatedVideosInShow(
+                                    moduleData.getContentData().get(0).getSeason(),
+                                    0,
+                                    i);
                             ContentDatum contentDatum = episodes.get(i);
                             contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
                             BrowseFragmentRowData rowData = new BrowseFragmentRowData();
@@ -1722,14 +1722,22 @@ public class TVViewCreator {
                         case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
                             if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
                                 TextView tv = (TextView) componentViewResult.componentView;
+                                tv.setEllipsize(TextUtils.TruncateAt.MARQUEE);
+                                tv.setSelected(true);
+                                tv.setSingleLine();
                                 if (appCMSPresenter.getActiveSubscriptionStatus() == null
                                         || appCMSPresenter.getActiveSubscriptionPlanName() == null) {
                                     appCMSPresenter.getSubscriptionData(appCMSUserSubscriptionPlanResult -> {
                                         try {
                                             if (appCMSUserSubscriptionPlanResult != null) {
                                                 String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                                        subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED")) {
+                                                    String planName = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName();
+                                                    appCMSPresenter.setActiveSubscriptionStatus(subscriptionStatus);
+                                                    appCMSPresenter.setActiveSubscriptionPlanName(planName);
+                                                    appCMSPresenter.setActiveSubscriptionPlatform(appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform());
+                                                    tv.setText(planName.substring(0, planName.length() - 14));
+                                                } else if (subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
                                                     String planName = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName();
                                                     appCMSPresenter.setActiveSubscriptionStatus(subscriptionStatus);
                                                     appCMSPresenter.setActiveSubscriptionPlanName(planName);
@@ -1746,12 +1754,19 @@ public class TVViewCreator {
                                         }
                                     });
                                 } else {
-                                    String activeSubscriptionStatus = appCMSPresenter.getActiveSubscriptionStatus();
-                                    if (activeSubscriptionStatus.equalsIgnoreCase("COMPLETED") ||
-                                            activeSubscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                        tv.setText(appCMSPresenter.getActiveSubscriptionPlanName());
-                                    } else {
-                                        tv.setText(context.getString(R.string.no_active_subscription));
+                                    try {
+                                        String activeSubscriptionStatus = appCMSPresenter.getActiveSubscriptionStatus();
+                                        if (activeSubscriptionStatus.equalsIgnoreCase("COMPLETED")) {
+                                            String planName = appCMSPresenter.getActiveSubscriptionPlanName();
+                                            tv.setText(planName);
+                                        } else if (activeSubscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
+                                            String planName = appCMSPresenter.getActiveSubscriptionPlanName();
+                                            tv.setText(planName.substring(0, planName.length() - 14));
+                                        } else {
+                                            tv.setText(context.getString(R.string.no_active_subscription));
+                                        }
+                                    } catch (Exception e) {
+
                                     }
                                 }
                             }
@@ -2329,12 +2344,11 @@ public class TVViewCreator {
                 return new Module();
             }
 
-            if (module != null && (jsonValueKeyMap.get(module.getView())
-                    == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01 ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02 ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03  ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY  ||
-                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY )) {
+            if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_01
+                    || jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_02
+                    || jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03
+                    || jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_LANDSCAPE_MODULE_KEY
+                    || jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_AUTOPLAY_PORTRAIT_MODULE_KEY) {
                 if (appCMSPageAPI.getModules() != null && appCMSPageAPI.getModules().size() > 0) {
                     return appCMSPageAPI.getModules().get(0);
                 }
@@ -2346,9 +2360,9 @@ public class TVViewCreator {
                 }
             }
 
-            if (module.getId().equalsIgnoreCase("d3de2b27-0e90-492e-974a-54fcc220a638")){
+            /*if (module.getId().equalsIgnoreCase("d3de2b27-0e90-492e-974a-54fcc220a638")){
                 return appCMSPageAPI.getModules().get(1);
-            }
+            }*/
         }
         return null;
     }
@@ -2434,10 +2448,10 @@ public class TVViewCreator {
                 moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes() != null &&
                 moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0) != null) {
 
-            List<String> relatedVideosIds = new ArrayList<>();
-            for (ContentDatum episode : moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes()) {
-                relatedVideosIds.add(episode.getGist().getId());
-            }
+            List<String> relatedVideosIds = Utils.getRelatedVideosInShow(
+                    moduleAPI.getContentData().get(0).getSeason(),
+                    0,
+                    -1);
 
             ContentDatum contentDatum = moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0);
             contentDatum.setSeason(moduleAPI.getContentData().get(0).getSeason());
