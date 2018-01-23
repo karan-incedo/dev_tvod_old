@@ -1256,6 +1256,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 appCMSPresenter.isUserLoggedIn()) {
             handleCloseAction(true);
         }
+
+        ViewCreator.cancelBeaconPing();
     }
 
     @Override
@@ -2824,6 +2826,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             ViewCreator.pausePlayer();
             ViewCreator.clearPlayerView();
         }
+        ViewCreator.cancelBeaconPing();
         ViewCreator.resetFullPlayerMode(this, appCMSPresenter);
     }
 

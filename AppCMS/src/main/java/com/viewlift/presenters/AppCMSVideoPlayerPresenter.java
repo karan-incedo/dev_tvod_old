@@ -160,11 +160,6 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                              boolean isTrailer,
                              String downloadedVideoUrl,
                              boolean reset) {
-        if (reset) {
-            stop();
-            init(context, appCMSPresenter, videoPlayerView, onClosePlayerEvent, onUpdateContentDatumEvent);
-        }
-
         this.playIndex = playIndex;
         this.isTrailer = isTrailer;
         this.appCMSVideoPageBinder = binder;
@@ -241,6 +236,11 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                         }
                     }
                 }
+
+                if (reset) {
+                    stop();
+                    init(context, appCMSPresenter, videoPlayerView, onClosePlayerEvent, onUpdateContentDatumEvent);
+                }
             }
         }
     }
@@ -256,6 +256,8 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
         this.onUpdateContentDatumEvent = onUpdateContentDatumEvent;
 
         sentBeaconPlay = (0 < playIndex && watchedTime != 0);
+
+        stop();
 
         initAdsManager(context);
         initResourceValues(context);
@@ -483,7 +485,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                             }
                         }
 
-                        if (!sentBeaconFirstFrame) {
+                        if (!TextUtils.isEmpty(mStreamId) && !sentBeaconFirstFrame) {
                             mStopBufferMilliSec = new Date().getTime();
                             ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                             appCMSPresenter.sendBeaconMessage(filmId,
@@ -569,7 +571,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
 
             }
 
-            if (!sentBeaconPlay) {
+            if (!TextUtils.isEmpty(mStreamId) && !sentBeaconPlay) {
                 appCMSPresenter.sendBeaconMessage(filmId,
                         permaLink,
                         parentScreenName,
@@ -757,23 +759,6 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
 
             adsLoader.requestAds(request);
             apod += 1;
-
-            if (appCMSPresenter != null) {
-                appCMSPresenter.sendBeaconMessage(filmId,
-                        permaLink,
-                        parentScreenName,
-                        videoPlayerView.getCurrentPosition(),
-                        false,
-                        AppCMSPresenter.BeaconEvent.AD_REQUEST,
-                        "Video",
-                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                        String.valueOf(videoPlayerView.getVideoHeight()),
-                        String.valueOf(videoPlayerView.getVideoWidth()),
-                        mStreamId,
-                        0d,
-                        apod,
-                        isVideoDownloaded);
-            }
         }
     }
 
@@ -859,20 +844,22 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
             event = AppCMSPresenter.BeaconEvent.FAILED_TO_START;
         }
 
-        appCMSPresenter.sendBeaconMessage(filmId,
-                permaLink,
-                parentScreenName,
-                videoPlayerView.getCurrentPosition(),
-                false,
-                event,
-                "Video",
-                videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                String.valueOf(videoPlayerView.getVideoHeight()),
-                String.valueOf(videoPlayerView.getVideoWidth()),
-                mStreamId,
-                0d,
-                0,
-                isVideoDownloaded);
+        if (!TextUtils.isEmpty(mStreamId)) {
+            appCMSPresenter.sendBeaconMessage(filmId,
+                    permaLink,
+                    parentScreenName,
+                    videoPlayerView.getCurrentPosition(),
+                    false,
+                    event,
+                    "Video",
+                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                    String.valueOf(videoPlayerView.getVideoHeight()),
+                    String.valueOf(videoPlayerView.getVideoWidth()),
+                    mStreamId,
+                    0d,
+                    0,
+                    isVideoDownloaded);
+        }
         if (onClosePlayerEvent != null) {
             onClosePlayerEvent.closePlayer();
         }
@@ -915,6 +902,8 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         videoPlayerView.resumePlayer();
+        sendAdRequest();
+        resumeContent();
     }
 
     @Override
@@ -932,7 +921,8 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                         mProgressHandler.removeCallbacks(mProgressRunnable);
                     }
                 }
-                if (appCMSPresenter != null) {
+                sendAdRequest();
+                if (!TextUtils.isEmpty(mStreamId) && appCMSPresenter != null) {
 
                     appCMSPresenter.sendBeaconMessage(filmId,
                             permaLink,
@@ -953,35 +943,7 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
                 break;
 
             case CONTENT_RESUME_REQUESTED:
-                isAdDisplayed = false;
-                // videoPlayerView.startPlayer();
-                if (beaconPing != null) {
-                    beaconPing.sendBeaconPing = true;
-                }
-                if (appCMSPresenter != null) {
-                    mStopBufferMilliSec = new Date().getTime();
-                    ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                    appCMSPresenter.sendBeaconMessage(filmId,
-                            permaLink,
-                            parentScreenName,
-                            videoPlayerView.getCurrentPosition(),
-                            false,
-                            AppCMSPresenter.BeaconEvent.FIRST_FRAME,
-                            "Video",
-                            videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                            String.valueOf(videoPlayerView.getVideoHeight()),
-                            String.valueOf(videoPlayerView.getVideoWidth()),
-                            mStreamId,
-                            ttfirstframe,
-                            0,
-                            isVideoDownloaded);
-                }
-                if (beaconPing != null && !beaconPing.isAlive()) {
-                    beaconPing.start();
-
-                    if (mProgressHandler != null)
-                        mProgressHandler.post(mProgressRunnable);
-                }
+                resumeContent();
                 break;
 
             case ALL_ADS_COMPLETED:
@@ -993,6 +955,60 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
 
             default:
                 break;
+        }
+    }
+
+    private void sendAdRequest() {
+        if (!TextUtils.isEmpty(mStreamId) && appCMSPresenter != null) {
+            appCMSPresenter.sendBeaconMessage(filmId,
+                    permaLink,
+                    parentScreenName,
+                    videoPlayerView.getCurrentPosition(),
+                    false,
+                    AppCMSPresenter.BeaconEvent.AD_REQUEST,
+                    "Video",
+                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                    String.valueOf(videoPlayerView.getVideoHeight()),
+                    String.valueOf(videoPlayerView.getVideoWidth()),
+                    mStreamId,
+                    0d,
+                    apod,
+                    isVideoDownloaded);
+        }
+    }
+
+    private void resumeContent() {
+        isAdDisplayed = false;
+        // videoPlayerView.startPlayer();
+        if (beaconPing != null) {
+            beaconPing.sendBeaconPing = true;
+        }
+        if (appCMSPresenter != null) {
+            mStopBufferMilliSec = new Date().getTime();
+            ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+            if (!TextUtils.isEmpty(mStreamId) && !sentBeaconFirstFrame) {
+                appCMSPresenter.sendBeaconMessage(filmId,
+                        permaLink,
+                        parentScreenName,
+                        videoPlayerView.getCurrentPosition(),
+                        false,
+                        AppCMSPresenter.BeaconEvent.FIRST_FRAME,
+                        "Video",
+                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                        String.valueOf(videoPlayerView.getVideoHeight()),
+                        String.valueOf(videoPlayerView.getVideoWidth()),
+                        mStreamId,
+                        ttfirstframe,
+                        0,
+                        isVideoDownloaded);
+                sentBeaconFirstFrame = true;
+            }
+        }
+        if (beaconPing != null && !beaconPing.isAlive()) {
+            beaconPing.start();
+
+            if (mProgressHandler != null)
+                mProgressHandler.post(mProgressRunnable);
         }
     }
 
@@ -1025,6 +1041,8 @@ public class AppCMSVideoPlayerPresenter implements AdErrorEvent.AdErrorListener,
             adsLoader.removeAdErrorListener(this);
         }
         adsLoader = null;
+        sentBeaconFirstFrame = false;
+        sentBeaconPlay = false;
     }
 
     public interface OnClosePlayerEvent {

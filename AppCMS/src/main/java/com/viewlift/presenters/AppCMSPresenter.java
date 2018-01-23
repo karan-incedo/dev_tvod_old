@@ -7900,6 +7900,8 @@ public class AppCMSPresenter {
                 request.setBeaconRequest(beaconRequests);
                 if (url != null) {
 
+                    Log.e(TAG, "Beacon request: " + gson.toJson(request));
+
                     appCMSBeaconCall.call(url, beaconResponse -> {
                         try {
 
@@ -7923,12 +7925,14 @@ public class AppCMSPresenter {
 
     public String getStreamingId(String filmName) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
 
-        SecretKeySpec key = new SecretKeySpec((getCurrentTimeStamp()).getBytes("UTF-8"), "HmacSHA1");
-        Mac mac = Mac.getInstance("HmacSHA1");
-        mac.init(key);
-        byte[] bytes = mac.doFinal(filmName.getBytes("UTF-8"));
-        return UUID.nameUUIDFromBytes(bytes).toString();
-
+        if (filmName != null) {
+            SecretKeySpec key = new SecretKeySpec((getCurrentTimeStamp()).getBytes("UTF-8"), "HmacSHA1");
+            Mac mac = Mac.getInstance("HmacSHA1");
+            mac.init(key);
+            byte[] bytes = mac.doFinal(filmName.getBytes("UTF-8"));
+            return UUID.nameUUIDFromBytes(bytes).toString();
+        }
+        return "";
     }
 
     private String getPermalinkCompletePath(String pagePath) {

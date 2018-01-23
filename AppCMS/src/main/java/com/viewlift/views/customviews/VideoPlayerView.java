@@ -794,6 +794,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } else {
             playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
         }
+
+        videoWidth = width;
+        videoHeight = height;
     }
 
     @Override

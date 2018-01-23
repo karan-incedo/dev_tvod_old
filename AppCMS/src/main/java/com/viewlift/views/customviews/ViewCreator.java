@@ -330,6 +330,12 @@ public class ViewCreator {
         }
     }
 
+    public static void cancelBeaconPing() {
+        if (appCMSVideoPlayerPresenter != null) {
+            appCMSVideoPlayerPresenter.stop();
+        }
+    }
+
     public static VideoPlayerView playerView(Context context,
                                              AppCMSPresenter presenter,
                                              String videoUrl,
