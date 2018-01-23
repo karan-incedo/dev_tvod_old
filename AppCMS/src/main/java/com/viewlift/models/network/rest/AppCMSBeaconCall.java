@@ -42,6 +42,10 @@ public class AppCMSBeaconCall {
             Map<String, String> authTokenMap = new HashMap<>();
             authTokenMap.put("Content-Type", "application/json");
             authTokenMap.put("user-agent", userAgent);
+
+            Log.e(TAG,"Beacon request URL: " + url);
+            Log.e(TAG, "Beacon request headers: " + authTokenMap);
+
             Call<BeaconResponse> call;
             call = appCMSBeaconRest.sendBeaconMessage(url, authTokenMap, request.getBeaconRequest());
             call.enqueue(new Callback<BeaconResponse>() {

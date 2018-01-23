@@ -563,27 +563,27 @@ public class AppCMSPlayVideoFragment extends Fragment
                                 //
                             }
                         }
+                    }
 
-                        if (!sentBeaconFirstFrame) {
-                            mStopBufferMilliSec = new Date().getTime();
-                            ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                            appCMSPresenter.sendBeaconMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    videoPlayerView.getCurrentPosition(),
-                                    false,
-                                    AppCMSPresenter.BeaconEvent.FIRST_FRAME,
-                                    "Video",
-                                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                                    String.valueOf(videoPlayerView.getVideoHeight()),
-                                    String.valueOf(videoPlayerView.getVideoWidth()),
-                                    mStreamId,
-                                    ttfirstframe,
-                                    0,
-                                    isVideoDownloaded);
-                            sentBeaconFirstFrame = true;
+                    if (!sentBeaconFirstFrame) {
+                        mStopBufferMilliSec = new Date().getTime();
+                        ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                        appCMSPresenter.sendBeaconMessage(filmId,
+                                permaLink,
+                                parentScreenName,
+                                videoPlayerView.getCurrentPosition(),
+                                false,
+                                AppCMSPresenter.BeaconEvent.FIRST_FRAME,
+                                "Video",
+                                videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                                String.valueOf(videoPlayerView.getVideoHeight()),
+                                String.valueOf(videoPlayerView.getVideoWidth()),
+                                mStreamId,
+                                ttfirstframe,
+                                0,
+                                isVideoDownloaded);
+                        sentBeaconFirstFrame = true;
 
-                        }
                     }
                 }
 
@@ -848,6 +848,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         //Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
 //        createContentRatingView();
         videoPlayerView.resumePlayer();
+        sendAdRequest();
+        resumeContent();
     }
 
     @Override
@@ -867,7 +869,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                         mProgressHandler.removeCallbacks(mProgressRunnable);
                 }
                 if (appCMSPresenter != null) {
-
+                    sendAdRequest();
                     appCMSPresenter.sendBeaconMessage(filmId,
                             permaLink,
                             parentScreenName,
@@ -887,35 +889,7 @@ public class AppCMSPlayVideoFragment extends Fragment
                 break;
 
             case CONTENT_RESUME_REQUESTED:
-                isAdDisplayed = false;
-                // videoPlayerView.startPlayer();
-                if (beaconPing != null) {
-                    beaconPing.sendBeaconPing = true;
-                }
-                if (appCMSPresenter != null) {
-                    mStopBufferMilliSec = new Date().getTime();
-                    ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                    appCMSPresenter.sendBeaconMessage(filmId,
-                            permaLink,
-                            parentScreenName,
-                            videoPlayerView.getCurrentPosition(),
-                            false,
-                            AppCMSPresenter.BeaconEvent.FIRST_FRAME,
-                            "Video",
-                            videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                            String.valueOf(videoPlayerView.getVideoHeight()),
-                            String.valueOf(videoPlayerView.getVideoWidth()),
-                            mStreamId,
-                            ttfirstframe,
-                            0,
-                            isVideoDownloaded);
-                }
-                if (beaconPing != null && !beaconPing.isAlive()) {
-                    beaconPing.start();
-
-                    if (mProgressHandler != null)
-                        mProgressHandler.post(mProgressRunnable);
-                }
+                resumeContent();
                 break;
 
             case ALL_ADS_COMPLETED:
@@ -933,6 +907,40 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             default:
                 break;
+        }
+    }
+
+    private void sendAdRequest() {
+        if (!TextUtils.isEmpty(mStreamId) && appCMSPresenter != null) {
+            appCMSPresenter.sendBeaconMessage(filmId,
+                    permaLink,
+                    parentScreenName,
+                    videoPlayerView.getCurrentPosition(),
+                    false,
+                    AppCMSPresenter.BeaconEvent.AD_REQUEST,
+                    "Video",
+                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
+                    String.valueOf(videoPlayerView.getVideoHeight()),
+                    String.valueOf(videoPlayerView.getVideoWidth()),
+                    mStreamId,
+                    0d,
+                    apod,
+                    isVideoDownloaded);
+        }
+    }
+
+    private void resumeContent() {
+        isAdDisplayed = false;
+        // videoPlayerView.startPlayer();
+        if (beaconPing != null) {
+            beaconPing.sendBeaconPing = true;
+        }
+
+        if (beaconPing != null && !beaconPing.isAlive()) {
+            beaconPing.start();
+
+            if (mProgressHandler != null)
+                mProgressHandler.post(mProgressRunnable);
         }
     }
 
@@ -1103,23 +1111,6 @@ public class AppCMSPlayVideoFragment extends Fragment
 
             adsLoader.requestAds(request);
             apod += 1;
-
-            if (appCMSPresenter != null) {
-                appCMSPresenter.sendBeaconMessage(filmId,
-                        permaLink,
-                        parentScreenName,
-                        videoPlayerView.getCurrentPosition(),
-                        false,
-                        AppCMSPresenter.BeaconEvent.AD_REQUEST,
-                        "Video",
-                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                        String.valueOf(videoPlayerView.getVideoHeight()),
-                        String.valueOf(videoPlayerView.getVideoWidth()),
-                        mStreamId,
-                        0d,
-                        apod,
-                        isVideoDownloaded);
-            }
         }
     }
 
