@@ -2442,6 +2442,35 @@ public class ViewCreator {
 //                                            " film URL: " +
 //                                            filmUrl.toString());
                                 }
+                            } else if (appCMSMain != null &&
+                                    moduleAPI != null &&
+                                    moduleAPI.getContentData() != null &&
+                                    !moduleAPI.getContentData().isEmpty() &&
+                                    moduleAPI.getContentData().get(0) != null &&
+                                    moduleAPI.getContentData().get(0).getAudioGist() != null &&
+                                    moduleAPI.getContentData().get(0).getAudioGist().getTitle() != null &&
+                                    moduleAPI.getContentData().get(0).getAudioGist().getPermalink() != null) {
+                                StringBuilder filmUrl = new StringBuilder();
+                                filmUrl.append(appCMSMain.getDomainName());
+                                filmUrl.append(moduleAPI.getContentData().get(0).getAudioGist().getPermalink());
+                                String[] extraData = new String[1];
+                                extraData[0] = filmUrl.toString();
+                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getAudioGist().getPermalink(),
+                                        component.getAction(),
+                                        moduleAPI.getContentData().get(0).getAudioGist().getTitle(),
+                                        extraData,
+                                        moduleAPI.getContentData().get(0),
+                                        false,
+                                        0,
+                                        null)) {
+                                    //Log.e(TAG, "Could not launch action: " +
+//                                            " permalink: " +
+//                                            moduleAPI.getContentData().get(0).getGist().getPermalink() +
+//                                            " action: " +
+//                                            component.getAction() +
+//                                            " film URL: " +
+//                                            filmUrl.toString());
+                                }
                             }
                         });
                         break;

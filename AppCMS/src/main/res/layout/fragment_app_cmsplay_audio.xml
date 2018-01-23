@@ -12,7 +12,7 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight=".8"
@@ -24,7 +24,22 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:scaleType="fitXY" />
-        </LinearLayout>
+
+            <TextView
+                android:id="@+id/extra_info"
+                tools:text="casting to MyCast"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:padding="20dp"
+                android:textSize="20sp"
+                android:background="#80ffffff"
+                android:textColor="#000000"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -151,6 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/app_cms_audio_play_control_height"
             android:layout_marginBottom="10dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <ImageButton
@@ -171,14 +187,26 @@
 
                 android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/previous_track" />
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                >
+                <ImageButton
+                    android:id="@+id/play_pause"
+                    android:layout_width="@dimen/app_cms_audio_play_width"
+                    android:layout_height="@dimen/app_cms_audio_play_height"
+                    android:layout_gravity="center_vertical"
+                    android:background="@drawable/pause_track"
+                    />
+                <ProgressBar
+                    android:id="@+id/progressBarPlayPause"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerInParent="true"
+                    android:visibility="gone" />
+            </RelativeLayout>
 
-            <ImageButton
-                android:id="@+id/play_pause"
-                android:layout_width="@dimen/app_cms_audio_play_width"
-                android:layout_height="@dimen/app_cms_audio_play_height"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/pause_track"
-                />
 
             <ImageButton
                 android:id="@+id/next"

@@ -65,7 +65,7 @@ public class AudioGist implements Serializable {
 
     @SerializedName("updateDate")
     @Expose
-    long updateDate;
+    String updateDate;
 
     @SerializedName("primaryCategory")
     @Expose
@@ -198,11 +198,11 @@ public class AudioGist implements Serializable {
     }
 
 
-    public long getUpdateDate() {
+    public String getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(long updateDate) {
+    public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
     }
 

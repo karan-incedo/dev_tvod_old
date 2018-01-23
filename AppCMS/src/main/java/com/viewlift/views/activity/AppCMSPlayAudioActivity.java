@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.viewlift.AppCMSApplication;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -129,6 +130,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
-        audioData = "" + metadata.getDescription().getTitle();
+        audioData = "" +metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
     }
 }

@@ -235,6 +235,7 @@ public class CollectionGridItemView extends BaseView {
                           final String componentViewType,
                           int themeColor,
                           AppCMSPresenter appCMSPresenter, int position) {
+
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
@@ -562,6 +563,7 @@ public class CollectionGridItemView extends BaseView {
                         } catch (Exception e) {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
+                        if(data.getGist()!=null && data.getGist().getDescription()!=null)
                         ((TextView) view).setText(data.getGist().getDescription());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
                         ((TextView) view).setText(data.getGist().getDescription());

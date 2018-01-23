@@ -1,13 +1,11 @@
 package com.viewlift;
 
 import android.app.Activity;
-import android.app.Application;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
-import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
@@ -60,7 +58,6 @@ public class AppCMSApplication extends MultiDexApplication {
 
             @Override
             public void onAttributionFailure(String s) {
-
             }
         };
 
@@ -78,7 +75,7 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", getApplicationContext()));
                 FacebookSdk.sdkInitialize(getApplicationContext());
-            }catch(NullPointerException e){
+            } catch (NullPointerException e) {
 
             }
         }).run();

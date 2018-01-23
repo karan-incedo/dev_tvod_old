@@ -24,12 +24,20 @@ public class AudioServiceHelper {
     Activity mActivity;
     private PlaybackControlsFragment mControlsFragment;
     public static AudioServiceHelper audioHelper;
+    public static IaudioServiceCallBack callbackAudioService;
+    public static String APP_CMS_STOP_AUDIO_SERVICE_MESSAGE="app_cms_stop_audio_service_message";
+    public static String APP_CMS_STOP_AUDIO_SERVICE_ACTION="app_cms_stop_audio_service_action";
 
     public static AudioServiceHelper getAudioInstance() {
         if (audioHelper == null) {
             audioHelper = new AudioServiceHelper();
         }
         return audioHelper;
+    }
+
+    public void setCallBack(IaudioServiceCallBack callbackAudio){
+        callbackAudioService=callbackAudio;
+
     }
     public void createAudioPlaylistInstance(AppCMSPresenter appCMSPresenter,Activity mActivity){
         AudioPlaylistHelper .getInstance().setAppCMSPresenter(appCMSPresenter,mActivity);
@@ -39,7 +47,6 @@ public class AudioServiceHelper {
         this.mActivity = mActivity;
         mMediaBrowser = new MediaBrowserCompat(mActivity,
                 new ComponentName(mActivity, MusicService.class), mConnectionCallback, null);
-
     }
 
     public void onStart() {
@@ -119,6 +126,10 @@ public class AudioServiceHelper {
         mActivity.getFragmentManager().beginTransaction()
                 .show(mControlsFragment)
                 .commit();
+        changeMiniControllerVisiblity(false);
+    }
+    public void changeMiniControllerVisiblity(boolean isShow){
+        callbackAudioService.getAudioPlaybackControlVisibility(isShow);
 
     }
 
@@ -126,6 +137,12 @@ public class AudioServiceHelper {
         mActivity.getFragmentManager().beginTransaction()
                 .hide(mControlsFragment)
                 .commit();
+//        changeMiniControllerVisiblity(true);
+
+    }
+
+    public boolean isAudioPlaybackControlShowing(){
+        return mControlsFragment.isVisible();
     }
 
     /**
@@ -135,6 +152,22 @@ public class AudioServiceHelper {
      * @return true if the MediaSession's state requires playback controls to be visible.
      */
     protected boolean shouldShowControls() {
+        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(mActivity);
+        if (mediaController == null ||
+                mediaController.getMetadata() == null ||
+                mediaController.getPlaybackState() == null) {
+            return false;
+        }
+        switch (mediaController.getPlaybackState().getState()) {
+            case PlaybackStateCompat.STATE_ERROR:
+            case PlaybackStateCompat.STATE_NONE:
+            case PlaybackStateCompat.STATE_STOPPED:
+                return false;
+            default:
+                return true;
+        }
+    }
+    public  boolean isAudioPlaying() {
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(mActivity);
         if (mediaController == null ||
                 mediaController.getMetadata() == null ||
@@ -212,6 +245,13 @@ public class AudioServiceHelper {
 
     public MediaBrowserCompat getMediaBrowser() {
         return mMediaBrowser;
+    }
+
+    public void stopPlayback() {
+    }
+
+    public interface IaudioServiceCallBack{
+        public void getAudioPlaybackControlVisibility(boolean isControllerShowing);
     }
 
 }

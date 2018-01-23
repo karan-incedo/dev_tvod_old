@@ -302,7 +302,7 @@
     <string name="app_cms_pagename_authscreen_key">Authentication Screen</string>
     <string name="app_cms_pagename_splashscreen_key">Splash Screen</string>
     <string name="app_cms_pagename_downloadsettingscreen_key">Download Settings</string>
-    <string name="app_cms_pagename_homescreen_key">Home Page</string>
+    <string name="app_cms_pagename_homescreen_key">Home Page CLONE</string>
     <string name="app_cms_pagename_moviesscreen_key">Categories Page</string>
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
@@ -567,4 +567,6 @@
     <string name="app_cms_page_playlist_sub_title_key">playlistSubTitle</string>
     <string name="app_cms_page_playlist_audio_duration_key">audioDuration</string>
     <string name="app_cms_page_playlist_audio_artist_key">audioArtistName</string>
+    <string name="not_item_available_inqueue">No item available in queue</string>
+
 </resources>

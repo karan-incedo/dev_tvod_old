@@ -46,6 +46,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.model.MusicLibrary;
+import com.viewlift.casting.CastServiceProvider;
 
 import static com.google.android.exoplayer2.C.CONTENT_TYPE_MUSIC;
 import static com.google.android.exoplayer2.C.USAGE_MEDIA;
@@ -79,7 +80,7 @@ public final class LocalPlayback implements Playback {
 
     private int mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
     private final AudioManager mAudioManager;
-    private SimpleExoPlayer mExoPlayer;
+    private SimpleExoPlayer mExoPlayer = null;
     private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
 
     // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
@@ -104,8 +105,17 @@ public final class LocalPlayback implements Playback {
                 }
             };
 
+    public static LocalPlayback localPlaybackInstance;
+    public static synchronized LocalPlayback getInstance(Context context, MetadataUpdateListener listener) {
+        if (localPlaybackInstance == null) {
+            localPlaybackInstance = new LocalPlayback(context,listener);
+        }
+        return localPlaybackInstance;
+    }
     public LocalPlayback(Context context, MetadataUpdateListener listener) {
         Context applicationContext = context.getApplicationContext();
+        System.out.println("LocalPlayback constructor");
+
         this.mContext = applicationContext;
         this.mListener = listener;
 
@@ -124,6 +134,18 @@ public final class LocalPlayback implements Playback {
 
     @Override
     public void stop(boolean notifyListeners) {
+
+        giveUpAudioFocus();
+        unregisterAudioNoisyReceiver();
+        releaseResources(true);
+
+    }
+
+    @Override
+    public void stopPlayback(boolean notifyListeners) {
+        if (mExoPlayer != null) {
+            mExoPlayer.setPlayWhenReady(false);
+        }
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
@@ -175,7 +197,6 @@ public final class LocalPlayback implements Playback {
     @Override
     public long getTotalDuration() {
         return mExoPlayer != null ? mExoPlayer.getDuration() : 0;
-
     }
 
     @Override
@@ -188,17 +209,19 @@ public final class LocalPlayback implements Playback {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
+
         String mediaId = item.getDescription().getMediaId();
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
         if (mediaHasChanged) {
             mCurrentMediaId = mediaId;
             AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
-
         }
 
         mListener.onMetadataChanged(item);
 
+        //if media has changed than load new audio url
         if (mediaHasChanged || mExoPlayer == null || currentPosition > 0) {
+
             releaseResources(false); // release everything except the player
             MediaMetadataCompat track = item;
 
@@ -232,6 +255,9 @@ public final class LocalPlayback implements Playback {
             // Wifi lock, which prevents the Wifi radio from going to
             // sleep while the song is playing.
             mWifiLock.acquire();
+            if (mCallback != null) {
+                mCallback.onPlaybackStatusChanged(getState(), mExoPlayer);
+            }
         }
 
         configurePlayerState();
@@ -276,16 +302,6 @@ public final class LocalPlayback implements Playback {
     @Override
     public void setCallback(Callback callback) {
         this.mCallback = callback;
-    }
-
-    @Override
-    public void setCurrentMediaId(String mediaId) {
-        this.mCurrentMediaId = mediaId;
-    }
-
-    @Override
-    public String getCurrentMediaId() {
-        return mCurrentMediaId;
     }
 
     private void tryToGetAudioFocus() {
@@ -458,8 +474,6 @@ public final class LocalPlayback implements Playback {
             }
             long mCurrentPlayerPosition = mExoPlayer.getCurrentPosition();
             MediaMetadataCompat track = AudioPlaylistHelper.getMetadata(mCurrentMediaId);
-            String source = track.getString(MusicLibrary.CUSTOM_METADATA_TRACK_SOURCE);
-//            setUri(source);
             System.out.println("Exo Player erroe" + error.type);
             AudioPlaylistHelper.getInstance().playAudioOnClick(mCurrentMediaId, mCurrentPlayerPosition);
 //            if (mCallback != null) {
@@ -490,19 +504,11 @@ public final class LocalPlayback implements Playback {
 
         @Override
         public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
-
         }
-
-
     }
+
 
     public interface MetadataUpdateListener {
         void onMetadataChanged(MediaMetadataCompat metadata);
-
-    }
-
-    public interface IupdateExoplayer {
-        void getDuration(long duration);
-
     }
 }

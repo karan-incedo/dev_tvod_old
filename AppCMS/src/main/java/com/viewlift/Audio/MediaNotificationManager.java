@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.RemoteException;
@@ -272,8 +273,8 @@ public class MediaNotificationManager extends BroadcastReceiver {
             if (art == null) {
                 fetchArtUrl = artUrl;
                 // use a placeholder art while the remote art is being downloaded
-//                art = BitmapFactory.decodeResource(mService.getResources(),
-//                        R.drawable.ic_default_art);
+                art = BitmapFactory.decodeResource(mService.getResources(),
+                        R.drawable.logo);
             }
         }
 
@@ -305,13 +306,13 @@ public class MediaNotificationManager extends BroadcastReceiver {
 
         if (mController != null && mController.getExtras() != null) {
             String castName = mController.getExtras().getString(MusicService.EXTRA_CONNECTED_CAST);
-//            if (castName != null) {
-//                String castInfo = mService.getResources()
-//                        .getString(R.string.casting_to_device, castName);
-//                notificationBuilder.setSubText(castInfo);
+            if (castName != null) {
+                String castInfo = mService.getResources()
+                        .getString(R.string.casting_to_device, castName);
+                notificationBuilder.setSubText(castInfo);
 //                notificationBuilder.addAction(R.drawable.ic_close_black_24dp,
-//                        mService.getString(R.string.stop_casting), mStopCastIntent);
-//            }
+//                        mService.getString(R.string.app_cms_action_change_password_key), mStopCastIntent);
+            }
         }
 
         setNotificationPlaybackState(notificationBuilder);
@@ -327,7 +328,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
         int playPauseButtonPosition = 0;
         // If skip to previous action is enabled
         if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS) != 0) {
-            notificationBuilder.addAction(R.drawable.previous_track,
+            notificationBuilder.addAction(R.drawable.notification_prev,
                     mService.getString(R.string.label_previous), mPreviousIntent);
 
             // If there is a "skip to previous" button, the play/pause button will
@@ -343,19 +344,18 @@ public class MediaNotificationManager extends BroadcastReceiver {
         final PendingIntent intent;
         if (mPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
             label = mService.getString(R.string.label_pause);
-            icon = R.drawable.pause_track;
+            icon = R.drawable.notification_pause;
             intent = mPauseIntent;
         } else {
             label = mService.getString(R.string.label_play);
-            icon = R.drawable.play_track;
+            icon = R.drawable.notification_play;
             intent = mPlayIntent;
         }
-
         notificationBuilder.addAction(new NotificationCompat.Action(icon, label, intent));
 
         // If skip to next action is enabled
         if ((mPlaybackState.getActions() & PlaybackStateCompat.ACTION_SKIP_TO_NEXT) != 0) {
-            notificationBuilder.addAction(R.drawable.next_track,
+            notificationBuilder.addAction(R.drawable.notification_next,
                     mService.getString(R.string.label_next), mNextIntent);
         }
 
@@ -381,7 +381,7 @@ public class MediaNotificationManager extends BroadcastReceiver {
                         mMetadata.getDescription().getIconUri().toString().equals(artUrl)) {
                     // If the media is still the same, update the notification:
                     builder.setLargeIcon(bitmap);
-                    addActions(builder);
+//                    addActions(builder);
                     mNotificationManager.notify(NOTIFICATION_ID, builder.build());
                 }
             }
