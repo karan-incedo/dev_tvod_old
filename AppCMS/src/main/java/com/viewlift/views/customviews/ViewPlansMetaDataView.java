@@ -93,6 +93,7 @@ public class ViewPlansMetaDataView extends LinearLayout {
     }
 
     private void createPlanDetails(List<FeatureDetail> featureDetails) {
+        removeAllViews();
         LinearLayout planLayout = new LinearLayout(getContext());
         LinearLayout.LayoutParams layoutParams =
                 new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,

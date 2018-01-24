@@ -8304,7 +8304,9 @@ public class AppCMSPresenter {
         setActiveSubscriptionCurrency(currencyOfPlanToPurchase);
         setActiveSubscriptionPlanName(planToPurchaseName);
         setActiveSubscriptionPrice(String.valueOf(planToPurchasePrice));
-        setActiveSubscriptionProcessor(currentActivity.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+        if (currentContext != null) {
+            setActiveSubscriptionProcessor(currentContext.getString(R.string.subscription_ccavenue_payment_processor_friendly));
+        }
         refreshSubscriptionData(null, true);
     }
 
