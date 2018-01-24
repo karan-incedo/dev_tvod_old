@@ -138,33 +138,28 @@ public class AppCmsGenericDialogFragment extends DialogFragment {
     }
 
     private void setSubscriptionText(boolean isSubscribe) {
-        try {
-            String message = getResources().getString(R.string.blank_string);
-            if (!isSubscribe) {
-                if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
-                        && null != appCMSPresenter.getNavigation().getSettings()
-                        && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()
-                        ) {
-                    message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
-                            appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
-                } else {
-                    message = getResources().getString(R.string.watch_live_text);
-                }
-            }
-            subscriptionTitle.setText(message);
-
-            FrameLayout.LayoutParams textLayoutParams = (FrameLayout.LayoutParams) subscriptionTitle.getLayoutParams();
-            if (message.length() == 0) {
-                textLayoutParams.height = 10;
+        String message = getResources().getString(R.string.blank_string);
+        if (!isSubscribe) {
+            if (null != appCMSPresenter && null != appCMSPresenter.getNavigation()
+                    && null != appCMSPresenter.getNavigation().getSettings()
+                    && null != appCMSPresenter.getNavigation().getSettings().getPrimaryCta()
+                    ) {
+                message = appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getBannerText() +
+                        appCMSPresenter.getNavigation().getSettings().getPrimaryCta().getCtaText();
             } else {
-                textLayoutParams.height = 40;
+                message = getResources().getString(R.string.watch_live_text);
             }
-            subscriptionTitle.setLayoutParams(textLayoutParams);
-        }catch (Exception e){
-
         }
-    }
+        subscriptionTitle.setText(message);
 
+        FrameLayout.LayoutParams textLayoutParams = (FrameLayout.LayoutParams) subscriptionTitle.getLayoutParams();
+        if (message.length() == 0) {
+            textLayoutParams.height = 10;
+        } else {
+            textLayoutParams.height = 40;
+        }
+        subscriptionTitle.setLayoutParams(textLayoutParams);
+    }
 
 
     @Override

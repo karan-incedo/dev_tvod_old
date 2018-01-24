@@ -35,6 +35,7 @@ import android.os.StatFs;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -79,10 +80,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-/*import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
+import com.kiswe.kmsdkcorekit.KMSDKCoreKit;
 import com.kiswe.kmsdkcorekit.reports.Report;
 import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-import com.kiswe.kmsdkcorekit.reports.Reports;*/
+import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -301,7 +302,6 @@ public class AppCMSPresenter {
     public static final String PRESENTER_CLOSE_SCREEN_ACTION = "appcms_presenter_close_action";
     public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
     public static final String PRESENTER_UPDATE_HISTORY_ACTION = "appcms_presenter_update_history_action";
-    public static final String PRESENTER_UPDATE_WATCHLIST_ACTION = "appcms_presenter_update_history_action";
     public static final String PRESENTER_REFRESH_PAGE_ACTION = "appcms_presenter_refresh_page_action";
     public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
     public static final String PRESENTER_UPDATE_LISTS_ACTION = "appcms_presenter_update_lists_action";
@@ -654,7 +654,7 @@ public class AppCMSPresenter {
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
-   /* private ReportSubscriber reportSubscriber = new ReportSubscriber() {
+    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
         @Override
         public void handleReport(Report report) {
 
@@ -668,7 +668,7 @@ public class AppCMSPresenter {
 
             Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
         }
-    };*/
+    };
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
 
@@ -4210,11 +4210,6 @@ public class AppCMSPresenter {
         }
     }
 
-    public void sendUpdateWatchListAction() {
-        Intent updateWatchlistIntent = new Intent(PRESENTER_UPDATE_WATCHLIST_ACTION);
-        currentActivity.sendBroadcast(updateWatchlistIntent);
-    }
-
     public void getWatchlistData(final Action1<AppCMSWatchlistResult> appCMSWatchlistResultAction) {
         if (currentActivity != null) {
             MetaPage watchlistMetaPage = actionTypeToMetaPageMap.get(AppCMSActionType.WATCHLIST_PAGE);
@@ -4976,11 +4971,11 @@ public class AppCMSPresenter {
                                 Log.d(TAG, "Successfully reset password for email: " + email);
 
                                 if (platformType == PlatformType.TV) {
-                                    openTVErrorDialog(currentActivity.getString(R.string.app_cms_reset_password_success_description),
+                                    openTVErrorDialog(currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
                                             currentActivity.getString(R.string.app_cms_forgot_password_title), true);
                                 } else {
                                     showDialog(DialogType.RESET_PASSWORD,
-                                            currentActivity.getString(R.string.app_cms_reset_password_success_description),
+                                            currentActivity.getString(R.string.app_cms_reset_password_success_description, email),
                                             false,
                                             null,
                                             null);
@@ -8713,7 +8708,7 @@ public class AppCMSPresenter {
                                             currentActivity.sendBroadcast(myProfileIntent);
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
-                                           // getPlayerLruCache().evictAll();
+                                            getPlayerLruCache().evictAll();
                                         }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
@@ -10102,7 +10097,7 @@ public class AppCMSPresenter {
                     return key;
                 }
             } else {
-                if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_port_key))) {
                     return key;
                 }
             }
@@ -11502,21 +11497,21 @@ public class AppCMSPresenter {
     }
 
     public void openChromeTab(String browseURL) {
-       /* CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         CustomTabsIntent customTabsIntent = builder.build();
-        customTabsIntent.launchUrl(getCurrentActivity(), Uri.parse(browseURL));*/
+        customTabsIntent.launchUrl(getCurrentActivity(), Uri.parse(browseURL));
     }
 
     public void launchKiswePlayer(String eventId) {
 
-     /*   KMSDKCoreKit.initialize(currentActivity);
+        KMSDKCoreKit.initialize(currentActivity);
         KMSDKCoreKit mKit = KMSDKCoreKit.getInstance()
                 .addReportSubscriber(Reports.TYPE_STATUS, reportSubscriber)
                 .setLogLevel(KMSDKCoreKit.DEBUG);
         mKit.setApiKey(currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
 
         mKit.configUser(isUserLoggedIn() ? getLoggedInUserEmail() : "guest", currentContext.getResources().getString(R.string.KISWE_PLAYER_API_KEY));
-        mKit.startKiswePlayerActivity(currentActivity, eventId);*/
+        mKit.startKiswePlayerActivity(currentActivity, eventId);
     }
 
     public void showEmptySearchToast() {

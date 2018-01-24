@@ -152,7 +152,7 @@ public class CustomTVVideoPlayerView
         });
     }
 
-    public void playVideos(ContentDatum contentDatum) {
+    public void playVideos(int currentPlayingIndex, ContentDatum contentDatum) {
         try {
             mStreamId = appCMSPresenter.getStreamingId(videoData.getGist().getTitle());
         } catch (Exception e) {
@@ -172,7 +172,6 @@ public class CustomTVVideoPlayerView
         Log.d(TAG , "Url is = "+url);
         if (null != url) {
             lastUrl = url;
-            setAppCMSPresenter(appCMSPresenter);
             setUri(Uri.parse(url), null);
             if (null != appCMSPresenter.getCurrentActivity() &&
                     appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
@@ -201,7 +200,7 @@ public class CustomTVVideoPlayerView
             }
             setTitle();
             adsUrl = getAdsUrl(contentDatum);
-            Log.d(TAG, "CVP Free1 : " + contentDatum.getGist().getFree());
+            Log.d(TAG, "CVP Free : " + contentDatum.getGist().getFree());
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn()) {
@@ -217,7 +216,7 @@ public class CustomTVVideoPlayerView
                             requestAds(adsUrl);
                         }
                         else{
-                            playVideos(contentDatum);
+                            playVideos(0, contentDatum);
                             startFreePlayTimer();
                         }
 
@@ -232,7 +231,7 @@ public class CustomTVVideoPlayerView
                                         subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION"))) {
                                     videoData = contentDatum;
                                     //  if (shouldRequestAds) requestAds(adsUrl);
-                                    playVideos(contentDatum);
+                                    playVideos(0, contentDatum);
                                     // start free play time timer
                                 } else if (!userFreePlayTimeExceeded()){
                                     videoData = contentDatum;
@@ -240,7 +239,7 @@ public class CustomTVVideoPlayerView
                                         requestAds(adsUrl);
                                     }
                                     else {
-                                        playVideos(contentDatum);
+                                        playVideos(0, contentDatum);
                                         startFreePlayTimer();
                                     }
 
@@ -272,7 +271,7 @@ public class CustomTVVideoPlayerView
                 if (shouldRequestAds){
                     requestAds(adsUrl);
                 }else{
-                    playVideos(contentDatum);
+                    playVideos(0, contentDatum);
                 }
             }
         });
@@ -294,9 +293,6 @@ public class CustomTVVideoPlayerView
     private void startFreePlayTimer() {
         if (timer != null || timerTask != null) {
             /*Means timer is already running*/
-            return;
-        }
-        if(contentDatum == null){
             return;
         }
         if(contentDatum != null
@@ -445,8 +441,6 @@ public class CustomTVVideoPlayerView
                 if (null != relatedVideoId
                         && currentPlayingIndex <= relatedVideoId.size() - 1) {
                     if (appCMSPresenter.getAutoplayEnabledUserPref(mContext)) {
-                        imageViewContainer.setVisibility(View.GONE);
-                        imageView.setVisibility(View.GONE);
                         showProgressBar("Loading Next Video...");
                         setVideoUri(relatedVideoId.get(currentPlayingIndex));
                     } else /*Autoplay is turned-off*/ {
@@ -460,7 +454,6 @@ public class CustomTVVideoPlayerView
                     showRestrictMessage(getResources().getString(R.string.no_more_videos_in_queue));
                     toggleLoginButtonVisibility(false);
                     exitFullScreenPlayer();
-                    currentPlayingIndex = -1;
                 }
                 break;
             case STATE_BUFFERING:
@@ -531,7 +524,6 @@ public class CustomTVVideoPlayerView
         }
         if (!TextUtils.isEmpty(videoImageUrl)) {
             imageViewContainer.setVisibility(VISIBLE);
-            imageView.setVisibility(View.VISIBLE);
             Glide.with(mContext)
                     .load(videoImageUrl)
                     .diskCacheStrategy(DiskCacheStrategy.SOURCE)
@@ -540,7 +532,6 @@ public class CustomTVVideoPlayerView
     }
 
     public void pausePlayer() {
-        Log.d(TAG, "NITS pausePlayer.........");
         super.pausePlayer();
         stopTimer();
 
@@ -558,8 +549,7 @@ public class CustomTVVideoPlayerView
             if (appCMSPresenter.getCurrentActivity() != null && appCMSPresenter.getCurrentActivity() instanceof AppCmsHomeActivity) {
                 if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
                     startFreePlayTimer();
-                    if(!isHardPause() && !isLoginButtonVisible()) {
-                        Log.d(TAG, "NITS resume Player.........");
+                    if(!isHardPause()) {
                         getPlayer().setPlayWhenReady(true);
                         if (beaconMessageThread != null) {
                             beaconMessageThread.sendBeaconPing = true;
@@ -756,7 +746,7 @@ public class CustomTVVideoPlayerView
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         Log.e(TAG, "OnAdError: " + adErrorEvent.getError().getMessage());
-        playVideos(contentDatum);
+        playVideos(0,contentDatum);
         startFreePlayTimer();
         // startPlayer();
     }
@@ -832,7 +822,7 @@ public class CustomTVVideoPlayerView
                     adsManager = null;
                 }
                 isAdsDisplaying = false;
-                playVideos(contentDatum);
+                playVideos(0,contentDatum);
                 startFreePlayTimer();
                 /*if (isVisible() && isAdded()) {
                     preparePlayer();

@@ -55,11 +55,20 @@ public abstract class TVBaseView extends FrameLayout {
 
 
     static void setShowViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int episodes = 0;
-        for (Season_ season : data.getSeason()) {
-            episodes += season.getEpisodes().size();
+        int number = 0;
+        StringBuilder stringBuilder = new StringBuilder();
+        if(data.getSeason() != null && data.getSeason().size() > 1){
+            number = data.getSeason().size();
+            stringBuilder.append(context.getResources().getString(R.string.seasons, number));
+        } else {
+            for (Season_ season : data.getSeason()) {
+                number += season.getEpisodes().size();
+            }
+            stringBuilder.append(context.getResources().getQuantityString(R.plurals.episodes, number, number));
         }
-        ((TextView) view).setText(context.getResources().getQuantityString(R.plurals.episodes, episodes, episodes));
+        stringBuilder.append(" | ");
+        stringBuilder.append(data.getGist().getPrimaryCategory().getTitle().toUpperCase());
+        ((TextView) view).setText(stringBuilder);
         view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
     }
@@ -79,6 +88,10 @@ public abstract class TVBaseView extends FrameLayout {
                 data.getGist().getPrimaryCategory() != null ?
                         data.getGist().getPrimaryCategory().getTitle() :
                         null;
+//        boolean appendFirstSep = minutes > 0
+//                && (!TextUtils.isEmpty(year) || !TextUtils.isEmpty(primaryCategory));
+//        boolean appendSecondSep = (minutes > 0 || !TextUtils.isEmpty(year))
+//                && !TextUtils.isEmpty(primaryCategory);
 
         StringBuilder infoText = new StringBuilder();
 
@@ -90,13 +103,13 @@ public abstract class TVBaseView extends FrameLayout {
             infoText.append(minutes)/*.append(" ")*/.append(context.getString(R.string.mins_abbreviation));
         }
 
-        if (seconds == 1) {
+        /*if (seconds == 1) {
             infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.sec_abbreviation));
         } else if (seconds > 1 && seconds < 10) {
             infoText.append(" ").append("0").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
         } else if (seconds >= 10) {
             infoText.append(" ").append(seconds).append(" ").append(context.getString(R.string.secs_abbreviation));
-        }
+        }*/
 
         if (!TextUtils.isEmpty(year)) {
             infoText.append(context.getString(R.string.text_separator));

@@ -226,7 +226,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
             freeContent = args.getBoolean(getString(R.string.free_content_key));
-            Log.d(TAG, "ANAS: free " + freeContent);
         }
 
         appCMSPresenter =
@@ -354,15 +353,10 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         }
                         if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
                             // tell the activity that the movie is finished
-                            //sedn the history when complete play.
-                            if (!isTrailer && videoPlayerView != null) {
-                                appCMSPresenter.updateWatchedTime(filmId,
-                                        videoPlayerView.getCurrentPosition() / 1000);
+                            if ((appCMSPresenter.isUserLoggedIn()
+                                    && appCMSPresenter.isUserSubscribed()) || freeContent) {
+                                onClosePlayerEvent.onMovieFinished();
                             }
-
-                           if(shouldAutoPlay()){
-                               onClosePlayerEvent.onMovieFinished();
-                           }
                         }
                         break;
                     default:
@@ -390,13 +384,6 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         });
     }
 
-    private boolean shouldAutoPlay() {
-        boolean isPerVideo = appCMSPresenter.getAppCMSMain().getFeatures().getFreePreview().isPerVideo();
-         if (isPerVideo && !appCMSPresenter.isUserSubscribed()){
-            return false;
-        }
-        return true;
-    }
     private boolean isAdsDisplaying = false;
 
     public boolean isAdsPlaying() {
