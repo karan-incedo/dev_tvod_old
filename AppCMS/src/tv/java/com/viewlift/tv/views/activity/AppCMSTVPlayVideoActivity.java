@@ -112,8 +112,9 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                                     launchVideoPlayer(updatedContentDatum.getGist());
                                 });
                     }
+                } else {
+                    launchVideoPlayer(binder.getContentData().getGist());
                 }
-                launchVideoPlayer(binder.getContentData().getGist());
             }
         } catch (ClassCastException e) {
             e.printStackTrace();
