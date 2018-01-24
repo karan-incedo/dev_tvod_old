@@ -5274,7 +5274,7 @@ public class AppCMSPresenter {
             }
 
             loadingPage = true;
-            //Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
+            //      Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
             //Log.d(TAG, "Search query (optional): " + searchQuery);
             AppCMSPageUI appCMSPageUI = navigationPages.get(pageId);
 

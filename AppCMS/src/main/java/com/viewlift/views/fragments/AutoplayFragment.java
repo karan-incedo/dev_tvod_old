@@ -56,6 +56,7 @@ public class AutoplayFragment extends Fragment {
     private OnPageCreation onPageCreation;
     private CountDownTimer countdownTimer;
     private TextView tvCountdown;
+    private long timeRemaining = 13000;
 
     public AutoplayFragment() {
         // Required empty public constructor
@@ -95,6 +96,8 @@ public class AutoplayFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        totalCountdownInMillis = Integer.valueOf(appCMSPresenter.getCurrentActivity().getResources()
+                .getString(R.string.app_cms_autoplay_countdown_timer));
     }
 
     @Override
@@ -210,9 +213,7 @@ public class AutoplayFragment extends Fragment {
     }
 
     private void startCountdown() {
-        totalCountdownInMillis = Integer.valueOf(appCMSPresenter.getCurrentActivity().getResources()
-                .getString(R.string.app_cms_autoplay_countdown_timer));
-        countdownTimer = new CountDownTimer(totalCountdownInMillis, COUNTDOWN_INTERVAL_IN_MILLIS) {
+        countdownTimer = new CountDownTimer(timeRemaining, COUNTDOWN_INTERVAL_IN_MILLIS) {
 
             @Override
             public void onTick(long millisUntilFinished) {
@@ -220,6 +221,7 @@ public class AutoplayFragment extends Fragment {
                     int quantity = (int) (millisUntilFinished / 1000);
                     tvCountdown.setText(getResources().getQuantityString(R.plurals.countdown_seconds,
                             quantity, quantity));
+                    timeRemaining = millisUntilFinished;
                 }
             }
 
@@ -243,9 +245,7 @@ public class AutoplayFragment extends Fragment {
             }
         }
 
-        if (countdownTimer == null) {
-            startCountdown();
-        }
+
     }
 
     @Override
@@ -264,6 +264,18 @@ public class AutoplayFragment extends Fragment {
 
         if (appCMSPresenter != null) {
             appCMSPresenter.dismissOpenDialogs(null);
+        }
+        if (countdownTimer == null) {
+            startCountdown();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (countdownTimer != null) {
+            countdownTimer.cancel();
+            countdownTimer = null;
         }
     }
 

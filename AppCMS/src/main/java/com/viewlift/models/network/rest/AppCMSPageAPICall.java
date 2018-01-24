@@ -68,7 +68,7 @@ public class AppCMSPageAPICall {
             try {
                 appCMSPageAPI = readPageFromFile(filename);
             } catch (Exception e) {
-
+              e.printStackTrace();
             }
         }
 
