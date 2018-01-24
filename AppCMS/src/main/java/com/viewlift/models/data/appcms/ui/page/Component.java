@@ -228,6 +228,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     String trayBackground;
 
+    @SerializedName("textCase")
+    @Expose
+    String textCase;
+
     boolean yAxisSetManually;
 
     boolean widthModified;
@@ -583,4 +587,13 @@ public class Component implements ModuleWithComponents, Serializable {
     public void setTrayBackground(String trayBackground) {
         this.trayBackground = trayBackground;
     }
+
+    public String getTextCase() {
+        return textCase;
+    }
+
+    public void setTextCase(String textCase) {
+        this.textCase = textCase;
+    }
+
 }

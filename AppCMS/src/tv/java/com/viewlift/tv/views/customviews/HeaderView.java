@@ -50,7 +50,7 @@ public class HeaderView extends TVBaseView {
         float viewWidth = Utils.getViewHeight(mContext ,mComponent.getLayout() ,DEFAULT_WIDTH );
         LayoutParams layoutParams= new LayoutParams((int)viewWidth , (int)viewHeight);
         setLayoutParams(layoutParams);
-        setBackgroundColor(ContextCompat.getColor(mContext , R.color.video_detail_header));
+        setBackgroundColor(ContextCompat.getColor(mContext , R.color.transparent));
     }
 
     @Override

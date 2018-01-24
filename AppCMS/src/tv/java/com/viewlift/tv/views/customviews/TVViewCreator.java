@@ -49,10 +49,12 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.apptentive.android.sdk.util.StringUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -91,6 +93,7 @@ import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 import net.nightwhistler.htmlspanner.TextUtil;
 
 import org.jsoup.Jsoup;
+import org.w3c.dom.Text;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -290,6 +293,10 @@ public class TVViewCreator {
         } else {
             if ("AC AutoPlayLandscape 01".equalsIgnoreCase(module.getView())) {
 //                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "autoplay_land.json"), ModuleList.class);
+            }
+            if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView()))
+            {
+               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail1.json"), ModuleList.class);
             }
 
 
@@ -583,6 +590,19 @@ public class TVViewCreator {
     }
 
     private void createHeaderItem(Component component, Context context, ModuleList moduleUI, Module moduleData, String name, boolean mIsCarousal) {
+        String textCase = component.getTextCase();
+        if(textCase != null){
+            if(textCase.equalsIgnoreCase(context.getResources().getString(R.string.text_case_caps))){
+                name = name.toUpperCase();
+            }else if(textCase.equalsIgnoreCase(context.getResources().getString(R.string.text_case_small))){
+                name = name.toLowerCase();
+            }else if(textCase.equalsIgnoreCase(context.getResources().getString(R.string.text_case_sentence))){
+                String text  = Utils.convertStringIntoCamelCase(name);
+                if(text != null){
+                    name = text;
+                }
+            }
+        }
         customHeaderItem = new CustomHeaderItem(context, trayIndex++, name);
         customHeaderItem.setmIsCarousal(mIsCarousal);
         String padding = moduleUI.getLayout().getTv().getPadding();
