@@ -24,21 +24,25 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.viewlift.Audio.MusicService;
 import com.viewlift.R;
+import com.viewlift.casting.CastHelper;
 import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -49,7 +53,7 @@ public class PlaybackControlsFragment extends Fragment {
 
 
     private ImageButton mPlayPause;
-    private TextView mTitle;
+    private TextView mTitle, extra_info;
 
     private String mArtUrl;
     private final ScheduledExecutorService mExecutorService =
@@ -58,6 +62,7 @@ public class PlaybackControlsFragment extends Fragment {
     public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
             "CURRENT_MEDIA_DESCRIPTION";
 
+    ProgressBar progressBarPlayPause;
 
     private ScheduledFuture<?> mScheduleFuture;
     // Receive callbacks from the MediaController. Here we update our state such as which queue
@@ -67,6 +72,7 @@ public class PlaybackControlsFragment extends Fragment {
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
             PlaybackControlsFragment.this.onPlaybackStateChanged(state);
             updatePlaybackState(state);
+            System.out.println("update playback state in playbackcontrol"+state);
         }
 
         @Override
@@ -83,8 +89,10 @@ public class PlaybackControlsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
         mPlayPause = (ImageButton) rootView.findViewById(R.id.play_pause);
+        progressBarPlayPause = (ProgressBar) rootView.findViewById(R.id.progressBarPlayPause);
         mPlayPause.setEnabled(true);
         mPlayPause.setOnClickListener(mButtonListener);
+        extra_info = (TextView) rootView.findViewById(R.id.extra_info);
 
         mTitle = (TextView) rootView.findViewById(R.id.title);
         rootView.setOnClickListener(new View.OnClickListener() {
@@ -111,6 +119,16 @@ public class PlaybackControlsFragment extends Fragment {
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
         if (controller != null) {
             onConnected();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+        if (controller != null) {
+            PlaybackStateCompat state = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState();
+            updatePlaybackState(state);
         }
     }
 
@@ -145,7 +163,7 @@ public class PlaybackControlsFragment extends Fragment {
     }
 
 
-    private void onPlaybackStateChanged(PlaybackStateCompat state) {
+    public void onPlaybackStateChanged(PlaybackStateCompat state) {
         if (getActivity() == null) {
             //(TAG, "onPlaybackStateChanged called when getActivity null," +
             //      "this should not happen if the callback was properly unregistered. Ignoring.");
@@ -154,6 +172,16 @@ public class PlaybackControlsFragment extends Fragment {
         if (state == null) {
             return;
         }
+        if (CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName())) {
+            String castName = CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName();
+            String line3Text = castName == null ? "" : getResources()
+                    .getString(R.string.casting_to_device, castName);
+            extra_info.setText(line3Text);
+            extra_info.setVisibility(View.VISIBLE);
+        } else {
+            extra_info.setVisibility(View.GONE);
+        }
+
         boolean enablePlay = false;
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PAUSED:
@@ -182,24 +210,35 @@ public class PlaybackControlsFragment extends Fragment {
         MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(getActivity());
         if (controllerCompat != null && controllerCompat.getExtras() != null) {
             String castName = controllerCompat.getExtras().getString(MusicService.EXTRA_CONNECTED_CAST);
-//            String line3Text = castName == null ? "" : getResources()
-//                    .getString(R.string.casting_to_device, castName);
+            String castInfo = castName == null ? "" : getResources()
+                    .getString(R.string.casting_to_device, castName);
+            extra_info.setText(castInfo);
+            extra_info.setVisibility(View.VISIBLE);
+        } else {
+            extra_info.setVisibility(View.GONE);
+
         }
 
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
                 mPlayPause.setVisibility(VISIBLE);
-
+                progressBarPlayPause.setVisibility(GONE);
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 mPlayPause.setVisibility(VISIBLE);
+                progressBarPlayPause.setVisibility(GONE);
+
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
                 mPlayPause.setVisibility(VISIBLE);
+                progressBarPlayPause.setVisibility(GONE);
+
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
                 mPlayPause.setVisibility(INVISIBLE);
+                progressBarPlayPause.setVisibility(VISIBLE);
+
                 break;
             default:
         }
@@ -244,4 +283,5 @@ public class PlaybackControlsFragment extends Fragment {
             controller.getTransportControls().pause();
         }
     }
+
 }

@@ -28,7 +28,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -68,7 +67,6 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
-import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
@@ -517,9 +515,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.sendCloseOthersAction(null, false, false);
         AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
-
+        AudioServiceHelper.getAudioInstance().setCallBack(callbackAudioService);
 //        Log.d(TAG, "onCreate()");
     }
+
 
     private void initPageActivity() {
         AndroidThreeTen.init(this);
@@ -743,7 +742,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
         appCMSPresenter.setCancelAllLoads(false);
         AudioServiceHelper.getAudioInstance().onStart();
-        AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter,this);
+        AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter, this);
     }
 
     @Override
@@ -2315,6 +2314,12 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 //
             }
         }
+        if (CastServiceProvider.getInstance(this).shouldCastMiniControllerVisible()) {
+            appCMSCastController.setVisibility(View.VISIBLE);
+        } else {
+            appCMSCastController.setVisibility(View.GONE);
+
+        }
     }
 
     public void setCastingVisibility(boolean isVisible) {
@@ -2549,7 +2554,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
     }
 
-
     public void setFullScreenFocus() {
         synchronized (this) {
             getWindow().getDecorView()
@@ -2563,7 +2567,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             appCMSTabNavContainer.setVisibility(View.GONE);
             appBarLayout.setVisibility(View.GONE);
-
         }
     }
 
@@ -2573,9 +2576,18 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     .setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
             appCMSTabNavContainer.setVisibility(View.VISIBLE);
             appBarLayout.setVisibility(View.VISIBLE);
-
-
         }
     }
 
+    AudioServiceHelper.IaudioServiceCallBack callbackAudioService = new AudioServiceHelper.IaudioServiceCallBack() {
+        @Override
+        public void getAudioPlaybackControlVisibility(boolean shouldCastControllerShow) {
+
+            if (shouldCastControllerShow) {
+                appCMSCastController.setVisibility(View.VISIBLE);
+            } else {
+                appCMSCastController.setVisibility(View.GONE);
+            }
+        }
+    };
 }

@@ -142,6 +142,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/app_cms_audio_play_control_height"
                 android:layout_marginBottom="10dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageButton
@@ -163,13 +164,25 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:src="@drawable/previous_track" />
 
-                <ImageButton
-                    android:id="@+id/play_pause"
-                    android:layout_width="@dimen/app_cms_audio_play_width"
-                    android:layout_height="@dimen/app_cms_audio_play_height"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/pause_track"
-                    />
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    >
+                    <ImageButton
+                        android:id="@+id/play_pause"
+                        android:layout_width="@dimen/app_cms_audio_play_width"
+                        android:layout_height="@dimen/app_cms_audio_play_height"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/pause_track"
+                        />
+                    <ProgressBar
+                        android:id="@+id/progressBarPlayPause"
+                        style="?android:attr/progressBarStyleSmall"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_centerInParent="true"
+                        android:visibility="visible" />
+                </RelativeLayout>
 
 
                 <ImageButton

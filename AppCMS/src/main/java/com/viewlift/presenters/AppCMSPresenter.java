@@ -88,7 +88,7 @@ import com.kiswe.kmsdkcorekit.reports.Report;
 import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
 import com.kiswe.kmsdkcorekit.reports.Reports;
 import com.viewlift.AppCMSApplication;
-import com.viewlift.Audio.model.MusicLibrary;
+import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.playback.PlaybackManager;
 import com.viewlift.R;
@@ -4597,66 +4597,113 @@ public class AppCMSPresenter {
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
-                            cancelInternalEvents();
-                            pushActionInternalEvents(this.pageId
-                                    + BaseView.isLandscape(currentActivity));
-
-                            AppCMSPageAPI pageAPI;
                             if (appCMSPlaylistResult != null) {
-                                pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(this.pageId);
-                                //on browsinfany play list .set this playlist in temporaray listing of playlist .so that it could not effect on currently playing listing
-                                if (appCMSPlaylistResult.getAudioList() != null &&
-                                        appCMSPlaylistResult.getAudioList().size() > 0) {
-                                    AudioPlaylistHelper.getInstance().setTempPlaylist(MusicLibrary.createPlaylistByIDList(appCMSPlaylistResult.getAudioList()));
-
-                                }
-
-                            } else {
-                                pageAPI = new AppCMSPageAPI();
-                                pageAPI.setId(this.pageId);
-                                List<String> moduleIds = new ArrayList<>();
-                                List<Module> apiModules = new ArrayList<>();
-                                for (ModuleList module : appCMSPageUI.getModuleList()) {
-                                    Module module1 = new Module();
-                                    module1.setId(module.getId());
-                                    apiModules.add(module1);
-                                    moduleIds.add(module.getId());
-                                }
-                                pageAPI.setModuleIds(moduleIds);
-                                pageAPI.setModules(apiModules);
+                                setPlayListData(appCMSPlaylistResult, this);
                             }
-
-                            navigationPageData.put(this.pageId, pageAPI);
-
-                            Bundle args = getPageActivityBundle(currentActivity,
-                                    this.appCMSPageUI,
-                                    pageAPI,
-                                    this.pageId,
-                                    this.pageTitle,
-                                    this.pagePath,
-                                    pageIdToPageNameMap.get(this.pageId),
-                                    loadFromFile,
-                                    this.appbarPresent,
-                                    this.fullscreenEnabled,
-                                    this.navbarPresent,
-                                    false,
-                                    null,
-                                    ExtraScreenType.NONE);
-                            if (args != null) {
-                                Intent playlistPageIntent =
-                                        new Intent(AppCMSPresenter
-                                                .PRESENTER_NAVIGATE_ACTION);
-                                playlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
-                                        args);
-                                currentActivity.sendBroadcast(playlistPageIntent);
-                            }
-
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                                    .PRESENTER_STOP_PAGE_LOADING_ACTION));
                         }
                     });
 
         }
+    }
+
+    public void navigatePlayListPageWithPreLoadData(AppCMSPlaylistResult appCMSPlaylistResultData) {
+        AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
+        String pageId = appCMSPlaylistResultData.getId();
+        String pageTitle = appCMSPlaylistResultData.getGist().getTitle();
+        AppCMSPlaylistAPIAction playlistApiAction = new AppCMSPlaylistAPIAction(false,
+                false,
+                false,
+                appCMSPageUI,
+                pageId,
+                pageId,
+                pageTitle,
+                pageId,
+                false, null) {
+            @Override
+            public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
+                setPlayListData(appCMSPlaylistResult, this);
+            }
+        };
+        playlistApiAction.call(appCMSPlaylistResultData);
+
+    }
+
+    public void setPlayListData(AppCMSPlaylistResult appCMSPlaylistResult, AppCMSPlaylistAPIAction appCMSPlaylistAPIAction) {
+        AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
+
+        //on browsinfany play list .set this playlist in temporaray listing of playlist .so that it could not effect on currently playing listing
+        if (appCMSPlaylistResult.getAudioList() != null && appCMSPlaylistResult.getAudioList().size() > 0) {
+            AudioPlaylistHelper.getInstance().setCurrentPlaylistId(appCMSPlaylistResult.getId());
+//                                AudioPlaylistHelper.getInstance().setTempPlaylist(MusicLibrary.createPlaylistByIDList(appCMSPlaylistResult.getAudioList()));
+            AudioPlaylistHelper.getInstance().setTempPlaylistData(appCMSPlaylistResult);
+        }
+
+        cancelInternalEvents();
+        pushActionInternalEvents(appCMSPlaylistAPIAction.pageId
+                + BaseView.isLandscape(currentActivity));
+
+        AppCMSPageAPI pageAPI;
+        if (appCMSPlaylistResult != null) {
+            pageAPI = appCMSPlaylistResult.convertToAppCMSPageAPI(appCMSPlaylistAPIAction.pageId);
+        } else {
+            pageAPI = new AppCMSPageAPI();
+            pageAPI.setId(appCMSPlaylistAPIAction.pageId);
+            List<String> moduleIds = new ArrayList<>();
+            List<Module> apiModules = new ArrayList<>();
+            for (ModuleList module : appCMSPageUI.getModuleList()) {
+                Module module1 = new Module();
+                module1.setId(module.getId());
+                apiModules.add(module1);
+                moduleIds.add(module.getId());
+            }
+            pageAPI.setModuleIds(moduleIds);
+            pageAPI.setModules(apiModules);
+        }
+
+        navigationPageData.put(appCMSPlaylistAPIAction.pageId, pageAPI);
+
+        if (appCMSPlaylistAPIAction.launchActivity) {
+            launchPageActivity(currentActivity,
+                    appCMSPlaylistAPIAction.appCMSPageUI,
+                    pageAPI,
+                    appCMSPlaylistAPIAction.pageId,
+                    appCMSPlaylistAPIAction.pageTitle,
+                    appCMSPlaylistAPIAction.pagePath,
+                    pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
+                    loadFromFile,
+                    appCMSPlaylistAPIAction.appbarPresent,
+                    appCMSPlaylistAPIAction.fullscreenEnabled,
+                    appCMSPlaylistAPIAction.navbarPresent,
+                    false,
+                    appCMSPlaylistAPIAction.searchQuery,
+                    ExtraScreenType.NONE);
+        } else {
+            Bundle args = getPageActivityBundle(currentActivity,
+                    appCMSPlaylistAPIAction.appCMSPageUI,
+                    pageAPI,
+                    appCMSPlaylistAPIAction.pageId,
+                    appCMSPlaylistAPIAction.pageTitle,
+                    appCMSPlaylistAPIAction.pagePath,
+                    pageIdToPageNameMap.get(appCMSPlaylistAPIAction.pageId),
+                    loadFromFile,
+                    appCMSPlaylistAPIAction.appbarPresent,
+                    appCMSPlaylistAPIAction.fullscreenEnabled,
+                    appCMSPlaylistAPIAction.navbarPresent,
+                    false,
+                    null,
+                    ExtraScreenType.NONE);
+            if (args != null) {
+                Intent playlistPageIntent =
+                        new Intent(AppCMSPresenter
+                                .PRESENTER_NAVIGATE_ACTION);
+                playlistPageIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key),
+                        args);
+                currentActivity.sendBroadcast(playlistPageIntent);
+            }
+        }
+
+        currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                .PRESENTER_STOP_PAGE_LOADING_ACTION));
     }
 
     private void getWatchlistPageContent(final String apiBaseUrl, String endPoint,
@@ -12852,6 +12899,13 @@ public class AppCMSPresenter {
         isFullScreenVisible = false;
     }
 
+
+    public void stopAudioServices() {
+        Intent intent = new Intent();
+        intent.setAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
+        intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
+        currentActivity.sendBroadcast(intent);
+    }
     public void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView,
                                                            Boolean playlistDownload) {
         String userId = getLoggedInUser();
