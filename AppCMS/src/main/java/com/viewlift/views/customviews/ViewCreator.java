@@ -3918,8 +3918,8 @@ public class ViewCreator {
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
                         android.R.attr.progressBarStyleHorizontal);
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor())) {
-                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getBlockTitleColor()));
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCtaBackgroundColor())) {
+                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCtaBackgroundColor()));
                     ((ProgressBar) componentViewResult.componentView).getProgressDrawable()
                             .setColorFilter(color, PorterDuff.Mode.SRC_IN);
                 }
