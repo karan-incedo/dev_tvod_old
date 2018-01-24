@@ -18,6 +18,14 @@ import java.util.List;
 
 @UseStag
 public class AppCMSPlaylistResult {
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @SerializedName("id")
     @Expose
     String id;
@@ -33,6 +41,10 @@ public class AppCMSPlaylistResult {
 
     public void setGist(AudioGist gist) {
         this.gist = gist;
+    }
+
+    public void setAudioList(List<AudioList> audioList) {
+        this.audioList = audioList;
     }
 
     @SerializedName("audioList")

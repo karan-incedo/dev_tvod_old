@@ -77,6 +77,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
 
         getBundleData();
+        appCMSPresenter.stopAudioServices();
     }
 
     @Override

@@ -446,7 +446,7 @@ public class AppCMSPageFragment extends Fragment {
     public synchronized void setPageOriantationForVideoPage() {
 
         if (pageView != null && pageView.findChildViewById(R.id.video_player_id) != null &&
-                appCMSPresenter.isAutoRotate() ) {
+                appCMSPresenter.isAutoRotate()) {
             appCMSPresenter.unrestrictPortraitOnly();
         } else if (!BaseView.isTablet(getContext())) {
             appCMSPresenter.restrictPortraitOnly();
@@ -563,7 +563,7 @@ public class AppCMSPageFragment extends Fragment {
         }
     }
 
-	private void removeAllViews(ViewGroup viewGroup) {
+    private void removeAllViews(ViewGroup viewGroup) {
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             if (viewGroup.getChildAt(i) instanceof ViewGroup) {
                 removeAllViews(((ViewGroup) viewGroup.getChildAt(i)));

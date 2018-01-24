@@ -25,6 +25,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -42,6 +44,7 @@ import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
+import com.viewlift.casting.CastHelper;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
@@ -56,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -90,9 +94,15 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     ImageButton nextTrack;
     @BindView(R.id.playlist)
     ImageButton playlist;
+    @BindView(R.id.extra_info)
+    TextView extra_info;
 
     @BindView(R.id.progressBarLoading)
     ProgressBar progressBarLoading;
+
+
+    @BindView(R.id.progressBarPlayPause)
+    ProgressBar progressBarPlayPause;
 
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
@@ -141,6 +151,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
     private final MediaControllerCompat.Callback mCallback = new MediaControllerCompat.Callback() {
         @Override
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
+            System.out.println("update playback state in fullscreen" + state);
             updatePlaybackState(state);
         }
 
@@ -226,11 +237,13 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(AppCMSPresenter.PRESENTER_AUDIO_LOADING_ACTION)) {
-                progressBarLoading.setVisibility(VISIBLE);
-
+                progressBarPlayPause.setVisibility(VISIBLE);
+                playPauseTrack.setVisibility(GONE);
             }
             if (intent.getAction().equals(AppCMSPresenter.PRESENTER_AUDIO_LOADING_STOP_ACTION)) {
-                progressBarLoading.setVisibility(INVISIBLE);
+                progressBarPlayPause.setVisibility(INVISIBLE);
+                playPauseTrack.setVisibility(VISIBLE);
+
 
             }
             // Get extra data included in the Intent
@@ -308,13 +321,18 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
         if (view == nextTrack) {
             MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-            controls.pause();
+//            controls.pause();
             controls.skipToNext();
         }
         if (view == playlist) {
+            if (AudioPlaylistHelper.getInstance().getCurrentPlaylistData() != null) {
+                appCMSPresenter.navigatePlayListPageWithPreLoadData(AudioPlaylistHelper.getInstance().getCurrentPlaylistData());
+                getActivity().finish();
+            } else {
+                Toast.makeText(getActivity(), getString(R.string.not_item_available_inqueue), Toast.LENGTH_SHORT).show();
+            }
         }
     }
-
 
     private void connectToSession(MediaSessionCompat.Token token) throws RemoteException {
         MediaControllerCompat mediaController = new MediaControllerCompat(
@@ -426,12 +444,16 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (metadata == null) {
             return;
         }
-//        int duration = (int) metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+        long duration = 0;
+        if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) != 0) {
+            duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+
+        } else {
+            duration = AudioPlaylistHelper.getInstance().mediaDuration;
+        }
 //        seekAudio.setMax(duration);
-        long duration = AudioPlaylistHelper.getInstance().mediaDuration;
-
         seekAudio.setMax((int) duration);
-
+        seekAudio.setProgress(0);
         trackEndTime.setText(DateUtils.formatElapsedTime(duration / 1000));
     }
 
@@ -440,36 +462,47 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             return;
         }
         mLastPlaybackState = state;
-        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(getActivity());
 
-
+        if (CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName())) {
+            String castName = CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName();
+            String line3Text = castName == null ? "" : getResources()
+                    .getString(R.string.casting_to_device, castName);
+            extra_info.setText(line3Text);
+            extra_info.setVisibility(View.VISIBLE);
+        } else {
+            extra_info.setVisibility(View.GONE);
+        }
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
-                progressBarLoading.setVisibility(INVISIBLE);
+//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPauseDrawable);
-//                mControllers.setVisibility(VISIBLE);
+                progressBarPlayPause.setVisibility(GONE);
                 scheduleSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
 //                mControllers.setVisibility(VISIBLE);
-                progressBarLoading.setVisibility(INVISIBLE);
+//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPlayDrawable);
+                progressBarPlayPause.setVisibility(GONE);
+
                 stopSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
-                progressBarLoading.setVisibility(INVISIBLE);
+//                progressBarLoading.setVisibility(INVISIBLE);
                 playPauseTrack.setVisibility(VISIBLE);
                 playPauseTrack.setBackground(mPlayDrawable);
+                progressBarPlayPause.setVisibility(GONE);
                 stopSeekbarUpdate();
                 getActivity().finish();
                 break;
+
             case PlaybackStateCompat.STATE_BUFFERING:
                 playPauseTrack.setVisibility(INVISIBLE);
-                progressBarLoading.setVisibility(VISIBLE);
-//                mLine3.setText(R.string.loading);
+//                progressBarLoading.setVisibility(VISIBLE);
+                progressBarPlayPause.setVisibility(View.VISIBLE);
                 stopSeekbarUpdate();
                 break;
             default:
@@ -495,9 +528,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
                     mLastPlaybackState.getLastPositionUpdateTime();
             currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
         }
-        long duration = AudioPlaylistHelper.getInstance().mediaDuration;
-        seekAudio.setMax((int) duration);
-        trackEndTime.setText(DateUtils.formatElapsedTime(duration / 1000));
         seekAudio.setProgress((int) currentPosition);
     }
 

@@ -40,6 +40,9 @@ public interface Playback {
      */
     void stop(boolean notifyListeners);
 
+
+    void stopPlayback(boolean notifyListeners);
+
     /**
      * Set the latest playback state as determined by the caller.
      */
@@ -78,15 +81,18 @@ public interface Playback {
 
     void seekTo(long position);
 
-    void setCurrentMediaId(String mediaId);
-
-    String getCurrentMediaId();
+//    void setCurrentMediaId(String mediaId);
+//
+//    String getCurrentMediaId();
 
     interface Callback {
         /**
          * On current music completed.
          */
         void onCompletion();
+
+        void onCastCompletion();
+
         /**
          * on Playback status changed
          * Implementations can use this callback to update

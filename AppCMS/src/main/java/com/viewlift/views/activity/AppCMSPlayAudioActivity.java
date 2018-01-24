@@ -135,6 +135,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
-        audioData = "" + metadata.getDescription().getTitle();
+        audioData = "" +metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
     }
 }

@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.media.MediaBrowserCompat;
@@ -28,28 +29,31 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.viewlift.Audio.ui.PlaybackControlsFragment;
+import com.viewlift.casting.CastServiceProvider;
 
 
 /**
- * Manage the interactions among the container service, the queue manager and the actual playback.
+ * Manage the interactions among the container service, localplayback ,audio cast playback and the actual playback.
  */
 public class PlaybackManager implements Playback.Callback {
 
     Activity mActivity;
-    private Resources mResources;
     private Playback mPlayback;
     private PlaybackServiceCallback mServiceCallback;
     private MediaSessionCallback mMediaSessionCallback;
     public static String mCurrentMusicId;
     public static MediaMetadataCompat mCurrentMediaMetaData;
     Context mContext;
+    private LocalPlayback.MetadataUpdateListener mListener;
 
-    public PlaybackManager(PlaybackServiceCallback serviceCallback, Resources resources,
-                           Playback playback, Context applicationContext) {
+    public PlaybackManager(PlaybackServiceCallback serviceCallback,
+                           Playback playback, Context applicationContext, LocalPlayback.MetadataUpdateListener callBackLocalPlaybackListener) {
         mServiceCallback = serviceCallback;
-        mResources = resources;
         mMediaSessionCallback = new MediaSessionCallback();
         mPlayback = playback;
+        this.mListener = callBackLocalPlaybackListener;
+
         mContext = applicationContext;
         mPlayback.setCallback(this);
     }
@@ -68,12 +72,8 @@ public class PlaybackManager implements Playback.Callback {
      * @param currentPosition
      */
     public void handlePlayRequest(long currentPosition) {
-        MediaMetadataCompat currentMusic = getCurrentMediaData();
-        if (currentMusic != null) {
-
-            mServiceCallback.onPlaybackStart();
-            mPlayback.play(currentMusic, currentPosition);
-        }
+        mServiceCallback.onPlaybackStart();
+        mServiceCallback.switchPlayback(currentPosition);
     }
 
     public void setActivity(Activity mAct) {
@@ -101,6 +101,7 @@ public class PlaybackManager implements Playback.Callback {
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
+
         AudioPlaylistHelper.getInstance().setCurrentMediaId(null);
     }
 
@@ -115,29 +116,38 @@ public class PlaybackManager implements Playback.Callback {
         if (mPlayback != null && mPlayback.isConnected()) {
             position = mPlayback.getCurrentStreamPosition();
         }
-
-        //noinspection ResourceType
-        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
-                .setActions(getAvailableActions());
-
         int state = mPlayback.getState();
 
         // If there is an error message, send it to the playback state:
         if (error != null) {
             // Error states are really only supposed to be used for errors that cause playback to
             // stop unexpectedly and persist until the user takes action to fix it.
-            stateBuilder.setErrorMessage(error);
+//            stateBuilder.setErrorMessage(error);
             state = PlaybackStateCompat.STATE_ERROR;
         }
-        //noinspection ResourceType
-        stateBuilder.setState(state, position, 1.0f, SystemClock.elapsedRealtime());
 
-        mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
+
+        updatePlaybackStatus(state, position, error);
 
         if (state == PlaybackStateCompat.STATE_PLAYING ||
                 state == PlaybackStateCompat.STATE_PAUSED) {
             mServiceCallback.onNotificationRequired();
         }
+    }
+
+    private void updatePlaybackStatus(int playBackState, long position, String error) {
+        //noinspection ResourceType
+        PlaybackStateCompat.Builder stateBuilder = new PlaybackStateCompat.Builder()
+                .setActions(getAvailableActions());
+        if (error != null) {
+            // Error states are really only supposed to be used for errors that cause playback to
+            // stop unexpectedly and persist until the user takes action to fix it.
+            stateBuilder.setErrorMessage(error);
+            playBackState = PlaybackStateCompat.STATE_ERROR;
+        }
+        stateBuilder.setState(playBackState, position, 1.0f, SystemClock.elapsedRealtime());
+
+        mServiceCallback.onPlaybackStateUpdated(stateBuilder.build());
     }
 
 
@@ -167,8 +177,12 @@ public class PlaybackManager implements Playback.Callback {
             } else {
                 AudioPlaylistHelper.getInstance().autoPlayNextItemFromPLaylist(callBackPlaylistHelper);
             }
-
         }
+    }
+
+    @Override
+    public void onCastCompletion() {
+
     }
 
     SimpleExoPlayer mExoPlayer;
@@ -176,8 +190,11 @@ public class PlaybackManager implements Playback.Callback {
     @Override
     public void onPlaybackStatusChanged(int state, SimpleExoPlayer mExoPlayerInstance) {
         updatePlaybackState(null);
-        mExoPlayer = mExoPlayerInstance;
+        System.out.println("update playback state in playbackmanager-" + state);
+//        PlaybackControlsFragment.onPlaybackStateChanged(state);
+
         if (mExoPlayer != null) {
+            mExoPlayer = mExoPlayerInstance;
             AudioPlaylistHelper.getInstance().setDuration(mExoPlayer.getDuration());
         }
     }
@@ -202,8 +219,8 @@ public class PlaybackManager implements Playback.Callback {
         mCurrentMusicId = mediaId;
     }
 
-    public MediaMetadataCompat getCurrentMediaId() {
-        return mCurrentMediaMetaData;
+    public String getCurrentMediaId() {
+        return mCurrentMusicId;
     }
 
 
@@ -286,10 +303,59 @@ public class PlaybackManager implements Playback.Callback {
             playMediaData(item.getMediaId(), mCurrentPlayerPosition);
         }
 
+        @Override
+        public void updatePlayStateOnSkip() {
+            if ((mPlayback instanceof LocalPlayback) && mPlayback.isPlaying()) {
+                mPlayback.pause();
+            }
+            updatePlaybackStatus(PlaybackStateCompat.STATE_BUFFERING, 0, null);
+        }
+
     };
+
+
+    public void updatePlayback(Playback playback, boolean resumePlaying, long currentPosition) {
+        mPlayback = playback;
+        MediaMetadataCompat currentMusic = getCurrentMediaData();
+        mPlayback.setCallback(this);
+        if (currentMusic != null) {
+            updatePlaybackStatus(PlaybackStateCompat.STATE_BUFFERING, currentPosition, null);
+            mPlayback.setCallback(this);
+            mServiceCallback.onPlaybackStart();
+            mPlayback.play(currentMusic, currentPosition);
+        }
+    }
+
+    /**
+     * Switch to a different Playback instance, maintaining all playback state, if possible.
+     *
+     * @param playback switch to this playback
+     */
+    public void switchToPlayback(Playback playback, boolean resumePlaying) {
+        if (playback == null) {
+            throw new IllegalArgumentException("Playback cannot be null");
+        }
+        long pos = mPlayback.getCurrentStreamPosition();
+        String currentMediaId = AudioPlaylistHelper.getInstance().getCurrentMediaId();
+        AudioPlaylistHelper.getInstance().stopPlayback();
+        mPlayback.stopPlayback(true);
+        AudioPlaylistHelper.getInstance().setCurrentMediaId(currentMediaId);
+        setCurrentMediaId(currentMediaId);
+        updatePlaybackStatus(PlaybackStateCompat.STATE_BUFFERING, 0, null);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPlayback = playback;
+                AudioPlaylistHelper.getInstance().playAudioOnClick(currentMediaId, pos);
+            }
+        }, 500);
+
+    }
 
     public interface PlaybackServiceCallback {
         void onPlaybackStart();
+
+        void switchPlayback(long currentPosition);
 
         void onNotificationRequired();
 
