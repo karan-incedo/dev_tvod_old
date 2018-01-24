@@ -214,10 +214,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                     }
                                 }
                             } else {
-                                showSubNavigation(false, false); //close subnavigation if any.
-                                showNavigation(false); //close navigation if any.
                                 updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                 handleLaunchPageAction(updatedAppCMSBinder);
+                                showSubNavigation(false, false); //close subnavigation if any.
+                                showNavigation(false); //close navigation if any.
                             }
                         }
                     } catch (ClassCastException e) {
