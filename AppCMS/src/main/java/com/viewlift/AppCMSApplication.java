@@ -20,6 +20,7 @@ import com.viewlift.views.utilities.ImageUtils;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
+import rx.functions.Action0;
 
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;
 
@@ -35,6 +36,8 @@ public class AppCMSApplication extends MultiDexApplication {
     private AppsFlyerConversionListener conversionDataListener;
 
     private int openActivities;
+
+    private Action0 onActivityResumedAction;
 
     @Override
     public void onCreate() {
@@ -99,6 +102,10 @@ public class AppCMSApplication extends MultiDexApplication {
                 public void onActivityResumed(Activity activity) {
                     if (activity instanceof AppCompatActivity) {
                         appCMSPresenterComponent.appCMSPresenter().setCurrentActivity((AppCompatActivity) activity);
+                        if (onActivityResumedAction != null) {
+                            onActivityResumedAction.call();
+                            onActivityResumedAction = null;
+                        }
                     }
                 }
 
@@ -145,5 +152,13 @@ public class AppCMSApplication extends MultiDexApplication {
 
     private void sendAnalytics() {
         trackInstallationEvent(this);
+    }
+
+    public Action0 getOnActivityResumedAction() {
+        return onActivityResumedAction;
+    }
+
+    public void setOnActivityResumedAction(Action0 onActivityResumedAction) {
+        this.onActivityResumedAction = onActivityResumedAction;
     }
 }

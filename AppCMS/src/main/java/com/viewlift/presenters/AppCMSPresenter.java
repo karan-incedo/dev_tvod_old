@@ -5123,7 +5123,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    private void navigateToHomePage() {
+    public void navigateToHomePage() {
         if (homePage != null) {
             restartInternalEvents();
             navigateToPage(homePage.getPageId(),
@@ -8284,18 +8284,10 @@ public class AppCMSPresenter {
                 setUserDownloadQualityPref(currentActivity.getString(R.string.app_cms_default_download_quality));
             }
 
-            NavigationPrimary homePageNavItem = findHomePageNavItem();
-            if (homePageNavItem != null) {
-                cancelInternalEvents();
-                navigateToPage(homePageNavItem.getPageId(),
-                        homePageNavItem.getTitle(),
-                        homePageNavItem.getUrl(),
-                        false,
-                        true,
-                        false,
-                        true,
-                        true,
-                        deeplinkSearchQuery);
+            if (currentContext != null && currentContext instanceof AppCMSApplication) {
+                ((AppCMSApplication) currentContext).setOnActivityResumedAction(() -> {
+                    navigateToHomePage();
+                });
             }
         }
 
