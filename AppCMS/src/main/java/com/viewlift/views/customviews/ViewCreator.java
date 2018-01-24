@@ -3,7 +3,9 @@ package com.viewlift.views.customviews;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
@@ -3915,14 +3917,34 @@ public class ViewCreator {
                 break;
 
             case PAGE_PROGRESS_VIEW_KEY:
+                int color = ContextCompat.getColor(context, R.color.colorAccent);
+
+                if (!TextUtils.isEmpty(appCMSPresenter.getAppCtaBackgroundColor())) {
+                    color = Color.parseColor(getColor(context, appCMSPresenter.getAppCtaBackgroundColor()));
+                }
+
+                final int progressColor = color;
                 componentViewResult.componentView = new ProgressBar(context,
                         null,
-                        android.R.attr.progressBarStyleHorizontal);
-                if (!TextUtils.isEmpty(appCMSPresenter.getAppCtaBackgroundColor())) {
-                    int color = Color.parseColor(getColor(context, appCMSPresenter.getAppCtaBackgroundColor()));
-                    ((ProgressBar) componentViewResult.componentView).getProgressDrawable()
-                            .setColorFilter(color, PorterDuff.Mode.SRC_IN);
-                }
+                        android.R.attr.progressBarStyleHorizontal) {
+                    Paint paint = new Paint();
+                    @Override
+                    public void onDraw(Canvas canvas) {
+                        super.onDraw(canvas);
+                        int count = canvas.save();
+                        int toX = (int) ((float) canvas.getWidth() * ((float) getProgress() / 100.0f));
+
+                        paint.setColor(progressColor);
+                        canvas.drawRect(0, 0, toX, canvas.getHeight(), paint);
+//                        canvas.clipRect(0, 0, toX, canvas.getHeight());
+                        getBackground().draw(canvas);
+                        canvas.restoreToCount(count);
+                    }
+                };
+
+                ((ProgressBar) componentViewResult.componentView).getProgressDrawable()
+                        .setColorFilter(0x00000000, PorterDuff.Mode.SRC_IN);
+                componentViewResult.componentView.setBackgroundColor(color & 0x44ffffff);
 
                 if (appCMSPresenter.isUserLoggedIn()) {
                     ((ProgressBar) componentViewResult.componentView).setMax(100);

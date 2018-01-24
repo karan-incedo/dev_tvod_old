@@ -622,20 +622,22 @@ public class CollectionGridItemView extends BaseView {
                         historyData = appCMSPresenter.getUserHistoryContentDatum(data.getGist().getId());
                     }
 
+                    int progress = 0;
+
                     if (historyData != null) {
                         data.getGist().setWatchedPercentage(historyData.getGist().getWatchedPercentage());
                         data.getGist().setWatchedTime(historyData.getGist().getWatchedTime());
                         if (historyData.getGist().getWatchedPercentage() > 0) {
+                            progress = historyData.getGist().getWatchedPercentage();
                             view.setVisibility(View.VISIBLE);
-                            ((ProgressBar) view)
-                                    .setProgress(historyData.getGist().getWatchedPercentage());
+                            ((ProgressBar) view).setProgress(progress);
                         } else {
                             long watchedTime = historyData.getGist().getWatchedTime();
                             long runTime = historyData.getGist().getRuntime();
                             if (watchedTime > 0 && runTime > 0) {
                                 long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
-                                ((ProgressBar) view)
-                                        .setProgress((int) percentageWatched);
+                                progress = (int) percentageWatched;
+                                ((ProgressBar) view).setProgress(progress);
                                 view.setVisibility(View.VISIBLE);
                             } else {
                                 view.setVisibility(View.INVISIBLE);
