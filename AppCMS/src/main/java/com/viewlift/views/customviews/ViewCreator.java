@@ -1642,15 +1642,7 @@ public class ViewCreator {
                             .setLayoutManager(new LinearLayoutManager(context,
                                     LinearLayoutManager.VERTICAL,
                                     false));
-                    Module tempModuleAPI = new Module();
-                    tempModuleAPI.setContentData(new ArrayList<>());
-                    if (moduleAPI.getContentData() != null) {
-                        tempModuleAPI.getContentData().addAll(moduleAPI.getContentData());
-            /*removing 1st data in the list since it contains playlist GIST*/
-                        if (tempModuleAPI.getContentData().get(0).getGist() == null) {
-                            tempModuleAPI.getContentData().remove(0);
-                        }
-                    }
+
                     appCMSPlaylistAdapter = new AppCMSPlaylistAdapter(context,
                             this,
                             appCMSPresenter,
@@ -1659,7 +1651,7 @@ public class ViewCreator {
                             false,
                             component,
                             jsonValueKeyMap,
-                            tempModuleAPI,
+                            moduleAPI,
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT,
                             viewType,

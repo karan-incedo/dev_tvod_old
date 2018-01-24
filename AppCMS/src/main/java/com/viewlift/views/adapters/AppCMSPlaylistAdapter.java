@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
 import com.bumptech.glide.Glide;
+import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -60,6 +61,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     private boolean isClickable;
 
     private List<OnInternalEvent> receivers;
+    private String mCurrentPlayListId;
 
     private String moduleId;
     RecyclerView mRecyclerView;
@@ -89,13 +91,19 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         this.moduleAPI = moduleAPI;
         this.receivers = new ArrayList<>();
         this.downloadAudioAction = getDownloadAudioAction(context);
-        if (moduleAPI != null && moduleAPI.getContentData() != null) {
-            this.adapterData = moduleAPI.getContentData();
-            allViews = new CollectionGridItemView[this.adapterData.size()];
-        } else {
-            this.adapterData = new ArrayList<>();
-        }
+        this.adapterData = new ArrayList<>();
 
+        if (moduleAPI != null && moduleAPI.getContentData() != null) {
+            adapterData.addAll(moduleAPI.getContentData());
+            if (moduleAPI.getContentData().get(0).getGist() != null) {
+                mCurrentPlayListId = moduleAPI.getContentData().get(0).getGist().getId();
+            }
+             /*removing 1st data in the list since it contains playlist GIST*/
+            if (moduleAPI.getContentData().get(0).getGist() == null) {
+                adapterData.remove(0);
+            }
+            allViews=new CollectionGridItemView[this.adapterData.size()];
+        }
         this.componentViewType = viewType;
         this.viewTypeKey = jsonValueKeyMap.get(componentViewType);
         if (this.viewTypeKey == null) {
@@ -209,9 +217,12 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                         appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
                                                 .PRESENTER_PAGE_LOADING_ACTION));
                                         // on click from playlist adapter .Get playlist from temp list and set into current playlist
-                                        if (AudioPlaylistHelper.getInstance().getTempPlaylist() != null && AudioPlaylistHelper.getInstance().getTempPlaylist().size() > 0) {
-                                            AudioPlaylistHelper.getInstance().setPlaylist(AudioPlaylistHelper.getInstance().getTempPlaylist());
+                                        if (AudioPlaylistHelper.getInstance().getCurrentPlaylistId() != null && !AudioPlaylistHelper.getInstance().getCurrentPlaylistId().equalsIgnoreCase(mCurrentPlayListId)) {
+                                            AudioPlaylistHelper.getInstance().setCurrentPlaylistId(mCurrentPlayListId);
+                                            AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
+                                            AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
                                         }
+
                                         AudioPlaylistHelper.getInstance().playAudioOnClick(data.getGist().getId(), 0);
                                         return;
                                     }

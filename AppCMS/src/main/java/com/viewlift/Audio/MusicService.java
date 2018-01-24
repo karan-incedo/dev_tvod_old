@@ -108,15 +108,18 @@ public class MusicService extends MediaBrowserServiceCompat implements
         // create castPlayback instance for playing audio on casting device
         castPlayback = AudioCastPlayback.getInstance(MusicService.this, callBackLocalPlaybackListener);
 
-
         //switch playback instance to local or casting playback based on casting device status
-        if (!CastServiceProvider.getInstance(getApplicationContext()).isCastingConnected()) {
-            isCastConnected=true;
-            playback = localPlayback;
-        } else {
-            playback = castPlayback;
 
+        CastSession castSession = CastContext.getSharedInstance(getApplicationContext()).getSessionManager()
+                .getCurrentCastSession();
+        if (castSession != null && castSession.isConnected()) {
+            isCastConnected=true;
+            playback = castPlayback;
+        }else{
+            isCastConnected=false;
+            playback = localPlayback;
         }
+
 
         // create mPlaybackManager instance to manage audio between different services
         mPlaybackManager = new PlaybackManager(this,
