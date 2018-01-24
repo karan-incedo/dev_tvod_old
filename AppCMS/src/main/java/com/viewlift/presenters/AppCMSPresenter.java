@@ -18,6 +18,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -59,6 +61,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -3230,10 +3233,18 @@ public class AppCMSPresenter {
                 }
             }
 
-            String downloadURL;
+            String downloadURL = null;
             long file_size = 0L;
             try {
-                downloadURL = getDownloadURL(contentDatum);
+                if (contentDatum.getGist() != null &&
+                        contentDatum.getGist().getMediaType() != null &&
+                        contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                        contentDatum.getGist().getContentType() != null &&
+                        contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+                    downloadURL = contentDatum.getStreamingInfo().getAudioAssets().getMp3().getUrl();
+                } else {
+                    downloadURL = getDownloadURL(contentDatum);
+                }
                 URL url = new URL(downloadURL);
                 URLConnection urlConnection = url.openConnection();
                 urlConnection.connect();
@@ -3248,8 +3259,17 @@ public class AppCMSPresenter {
                 createLocalCopyForUser(contentDatum, resultAction1);
             } else if (getMegabytesAvailable() > file_size) {
                 try {
-                    startDownload(contentDatum,
-                            resultAction1);
+                    if (contentDatum.getGist() != null &&
+                            contentDatum.getGist().getMediaType() != null &&
+                            contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                            contentDatum.getGist().getContentType() != null &&
+                            contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+                        downloadMediaFile(contentDatum, downloadURL, 0);
+                    } else {
+                        startDownload(contentDatum,
+                                resultAction1);
+                    }
+
 //                        startNextDownload = false;
                 } catch (Exception e) {
 
@@ -3325,6 +3345,8 @@ public class AppCMSPresenter {
             downloadVideoRealm.setDownloadDate(System.currentTimeMillis());
             downloadVideoRealm.setVideoDuration(contentDatum.getGist().getRuntime());
             downloadVideoRealm.setWatchedTime(contentDatum.getGist().getWatchedTime());
+            downloadVideoRealm.setContentType(contentDatum.getGist().getContentType());
+            downloadVideoRealm.setMediaType(contentDatum.getGist().getMediaType());
 
             downloadVideoRealm.setPermalink(contentDatum.getGist().getPermalink());
             downloadVideoRealm.setDownloadStatus(DownloadStatus.STATUS_PENDING);
@@ -3587,7 +3609,6 @@ public class AppCMSPresenter {
                 getAppCMSSignedURL(updateContentDatum.getGist().getId(), appCMSSignedURLResult -> currentActivity.runOnUiThread(() -> {
                     try {
 
-                        long enqueueId;
 
                         if (updateContentDatum.getStreamingInfo() == null) { // This will handle the case if we get video streaming info null at Video detail page.
 
@@ -3621,44 +3642,7 @@ public class AppCMSPresenter {
                         int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
 
                         downloadURL = getDownloadURL(updateContentDatum);
-
-                        DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
-                                .setTitle(updateContentDatum.getGist().getTitle())
-                                .setDescription(updateContentDatum.getGist().getDescription())
-                                .setAllowedOverRoaming(false)
-                                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                                .setVisibleInDownloadsUi(false)
-                                .setShowRunningNotification(true);
-
-                        if (getUserDownloadLocationPref()) {
-                            downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, Environment.DIRECTORY_DOWNLOADS),
-                                    updateContentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
-                        } else {
-                            downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
-                                    updateContentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
-                        }
-
-                        enqueueId = downloadManager.enqueue(downloadRequest);
-
-                        long thumbEnqueueId = downloadVideoImage(updateContentDatum.getGist().getVideoImageUrl(),
-                                updateContentDatum.getGist().getId());
-                        long posterEnqueueId = downloadPosterImage(updateContentDatum.getGist().getPosterImageUrl(),
-                                updateContentDatum.getGist().getId());
-
-                        /*
-                         * Inserting data in realm data object
-                         */
-                        createLocalEntry(
-                                enqueueId,
-                                thumbEnqueueId,
-                                posterEnqueueId,
-                                ccEnqueueId,
-                                updateContentDatum,
-                                downloadURL);
-
-                        showToast(
-                                currentActivity.getString(R.string.app_cms_download_started_message,
-                                        updateContentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+                        downloadMediaFile(updateContentDatum, downloadURL, ccEnqueueId);
 
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
@@ -3670,6 +3654,47 @@ public class AppCMSPresenter {
                 }));
             }
         });
+    }
+
+    void downloadMediaFile(ContentDatum contentDatum, String downloadURL, long ccEnqueueId) {
+        cancelDownloadIconTimerTask();
+        DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
+                .setTitle(contentDatum.getGist().getTitle())
+                .setDescription(contentDatum.getGist().getDescription())
+                .setAllowedOverRoaming(false)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setVisibleInDownloadsUi(false)
+                .setShowRunningNotification(true);
+
+        if (getUserDownloadLocationPref()) {
+            downloadRequest.setDestinationUri(Uri.fromFile(new File(getSDCardPath(currentActivity, Environment.DIRECTORY_DOWNLOADS),
+                    contentDatum.getGist().getId() + MEDIA_SURFIX_MP4)));
+        } else {
+            downloadRequest.setDestinationInExternalFilesDir(currentActivity, Environment.DIRECTORY_DOWNLOADS,
+                    contentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
+        }
+
+        long enqueueId = downloadManager.enqueue(downloadRequest);
+
+        long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
+                contentDatum.getGist().getId());
+        long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
+                contentDatum.getGist().getId());
+
+                        /*
+                         * Inserting data in realm data object
+                         */
+        createLocalEntry(
+                enqueueId,
+                thumbEnqueueId,
+                posterEnqueueId,
+                ccEnqueueId,
+                contentDatum,
+                downloadURL);
+
+        showToast(
+                currentActivity.getString(R.string.app_cms_download_started_message,
+                        contentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
     }
 
     @SuppressWarnings("unused")
@@ -4467,7 +4492,6 @@ public class AppCMSPresenter {
                 String url = currentContext.getString(R.string.app_cms_refresh_identity_api_url,
                         appCMSMain.getApiBaseUrl(),
                         getRefreshToken());
-
                 appCMSRefreshIdentityCall.call(url, refreshIdentityResponse -> {
                     try {
                         appCMSAudioDetailCall.call(
@@ -4480,54 +4504,65 @@ public class AppCMSPresenter {
                     }
                 });
             } catch (Exception e) {
-
             }
         }
     }
 
 
-    public void getAudioDetail(String pageId, long mCurrentPlayerPosition, AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper) {
+    public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
+                               AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
+            , Boolean playAudio, ImageButton download, Boolean playlistDownload) {
         if (currentActivity != null) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_AUDIO_LOADING_ACTION));
+            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+                    .PRESENTER_PAGE_LOADING_ACTION));
         }
-
-
 //        AudioPlaylistHelper.getInstance().setAppCMSPresenter(AppCMSPresenter.this, currentActivity);
         getAudioContent(appCMSMain.getApiBaseUrl(),
                 appCMSSite.getGist().getSiteInternalName(),
-                pageId,
+                audioId,
                 new AppCMSAudioDetailAPIAction(false,
                         false,
                         false,
                         null,
-                        pageId,
-                        pageId,
+                        audioId,
+                        audioId,
                         null,
-                        pageId,
+                        audioId,
                         false, null) {
                     @Override
                     public void call(AppCMSAudioDetailResult appCMSAudioDetailResult) {
 
-                        cancelInternalEvents();
-                        if (currentActivity != null) {
-                            pushActionInternalEvents(this.pageId
-                                    + BaseView.isLandscape(currentActivity));
-                        }
-
-                        AppCMSPageAPI pageAPI;
                         if (appCMSAudioDetailResult != null) {
-                            AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
-                            mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
-                            PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
-                            if (callBackPlaylistHelper != null) {
-                                callBackPlaylistHelper.onPlaybackStart(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
-                            } else if (currentActivity != null) {
-                                mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                            AppCMSPageAPI audioApiDetail = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
+                            /*check to play audio*/
+                            if (playAudio) {
+                                AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
+                                mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
+                                PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
+                                if (callBackPlaylistHelper != null) {
+                                    callBackPlaylistHelper.onPlaybackStart(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                } else if (currentActivity != null) {
+                                    mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
+                                }
+                                AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
                             }
-                            pageAPI = appCMSAudioDetailResult.convertToAppCMSPageAPI(this.pageId);
+                            /*check to download audio after getting audio URL*/
+                            if (download != null && !playAudio) {
+                                if (audioApiDetail != null &&
+                                        audioApiDetail.getModules() != null &&
+                                        audioApiDetail.getModules().get(0) != null &&
+                                        audioApiDetail.getModules().get(0).getContentData() != null &&
+                                        !audioApiDetail.getModules().get(0).getContentData().isEmpty() &&
+                                        audioApiDetail.getModules().get(0).getContentData().get(0) != null &&
+                                        audioApiDetail.getModules().get(0).getContentData().get(0).getGist() != null) {
+                                    updateDownloadImageAndStartDownloadProcess(audioApiDetail.getModules().get(0).getContentData().get(0), download, playlistDownload);
+                                }
+                            }
+
                         } else {
-                            Toast.makeText(currentContext, "Unable to fetch audio item.try again", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(currentContext, "Unable to fetch data", Toast.LENGTH_SHORT).show();
                         }
 
                         if (currentActivity != null) {
@@ -4541,24 +4576,24 @@ public class AppCMSPresenter {
     }
 
 
-    public void navigateToPlaylistPage(String pageId, String pageTitle, String url,
+    public void navigateToPlaylistPage(String playlistId, String pageTitle,
                                        boolean launchActivity) {
 
-        if (currentActivity != null && !TextUtils.isEmpty(pageId)) {
+        if (currentActivity != null && !TextUtils.isEmpty(playlistId)) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_PAGE_LOADING_ACTION));
             AppCMSPageUI appCMSPageUI = navigationPages.get(playlistPage.getPageId());
 
             getPlaylistPageContent(appCMSMain.getApiBaseUrl(),
                     appCMSSite.getGist().getSiteInternalName(),
-                    pageId, new AppCMSPlaylistAPIAction(false,
+                    playlistId, new AppCMSPlaylistAPIAction(false,
                             false,
                             false,
                             appCMSPageUI,
-                            pageId,
-                            pageId,
+                            playlistId,
+                            playlistId,
                             pageTitle,
-                            pageId,
+                            playlistId,
                             launchActivity, null) {
                         @Override
                         public void call(AppCMSPlaylistResult appCMSPlaylistResult) {
@@ -12871,4 +12906,168 @@ public class AppCMSPresenter {
         intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
         currentActivity.sendBroadcast(intent);
     }
+    public void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView,
+                                                           Boolean playlistDownload) {
+        String userId = getLoggedInUser();
+        getUserVideoDownloadStatus(
+                contentDatum.getGist().getId(),
+                new UpdateDownloadImageIconAction(downloadView,
+                        this,
+                        contentDatum, userId, playlistDownload), userId);
+    }
+
+    /**
+     * This class has been created to updated the Download Image Action and Status
+     */
+    private static class UpdateDownloadImageIconAction implements Action1<UserVideoDownloadStatus> {
+        private final AppCMSPresenter appCMSPresenter;
+        private final ContentDatum contentDatum;
+        private final String userId;
+        private ImageButton imageButton;
+        private Boolean playlistDownload;
+        private View.OnClickListener addClickListener;
+
+        UpdateDownloadImageIconAction(ImageButton imageButton, AppCMSPresenter presenter,
+                                      ContentDatum contentDatum, String userId, boolean playlistDownload) {
+            this.imageButton = imageButton;
+            this.appCMSPresenter = presenter;
+            this.contentDatum = contentDatum;
+            this.playlistDownload = playlistDownload;
+            this.userId = userId;
+
+            addClickListener = v -> {
+                if (!appCMSPresenter.isNetworkConnected()) {
+                    if (!appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK, null, false,
+                                appCMSPresenter::launchBlankPage,
+                                null);
+                        return;
+                    }
+                    appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
+                            appCMSPresenter.getNetworkConnectivityDownloadErrorMsg(),
+                            true,
+                            () -> appCMSPresenter.navigateToDownloadPage(appCMSPresenter.getDownloadPageId(),
+                                    null, null, false),
+                            null);
+                    return;
+                }
+                if ((appCMSPresenter.isUserSubscribed()) &&
+                        appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.editDownload(UpdateDownloadImageIconAction.this.contentDatum, UpdateDownloadImageIconAction.this, true);
+                } else {
+                    if (appCMSPresenter.isUserLoggedIn()) {
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                                () -> {
+                                    appCMSPresenter.setAfterLoginAction(() -> {
+
+                                    });
+                                });
+                    } else {
+                        appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                                () -> {
+                                    appCMSPresenter.setAfterLoginAction(() -> {
+
+                                    });
+                                });
+                    }
+                }
+//                imageButton.setOnClickListener(null);
+            }
+
+            ;
+        }
+
+        @Override
+        public void call(UserVideoDownloadStatus userVideoDownloadStatus) {
+            if (userVideoDownloadStatus != null) {
+
+                switch (userVideoDownloadStatus.getDownloadStatus()) {
+                    case STATUS_FAILED:
+                        appCMSPresenter.setDownloadInProgress(false);
+                        appCMSPresenter.startNextDownload();
+                        break;
+
+                    case STATUS_PAUSED:
+                        //
+                        break;
+
+                    case STATUS_PENDING:
+                        appCMSPresenter.setDownloadInProgress(false);
+                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                        imageButton.setOnClickListener(null);
+                        break;
+
+                    case STATUS_RUNNING:
+                        appCMSPresenter.setDownloadInProgress(true);
+                        appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
+                                UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                        imageButton.setOnClickListener(null);
+                        break;
+
+                    case STATUS_SUCCESSFUL:
+                        appCMSPresenter.setDownloadInProgress(false);
+                        appCMSPresenter.cancelDownloadIconTimerTask();
+                        imageButton.setImageResource(R.drawable.ic_downloaded);
+                        imageButton.setOnClickListener(null);
+                        appCMSPresenter.notifyDownloadHasCompleted();
+                        break;
+
+                    case STATUS_INTERRUPTED:
+                        appCMSPresenter.setDownloadInProgress(false);
+                        imageButton.setImageResource(android.R.drawable.stat_sys_warning);
+                        imageButton.setOnClickListener(null);
+                        break;
+
+                    default:
+                        //Log.d(TAG, "No download Status available ");
+                        break;
+                }
+
+            } else {
+                appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
+                        UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false);
+                imageButton.setImageResource(R.drawable.ic_download);
+                imageButton.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
+                imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+                imageButton.setOnClickListener(addClickListener);
+                if (playlistDownload) {
+                    addClickListener.onClick(imageButton);
+                }
+            }
+        }
+
+        public void updateDownloadImageButton(ImageButton imageButton) {
+            this.imageButton = imageButton;
+        }
+
+    }
+
+    public String audioDuration(int totalSeconds) {
+
+        final int MINUTES_IN_AN_HOUR = 60;
+        final int SECONDS_IN_A_MINUTE = 60;
+
+        int seconds = totalSeconds % SECONDS_IN_A_MINUTE;
+        int totalMinutes = totalSeconds / SECONDS_IN_A_MINUTE;
+        int minutes = totalMinutes % MINUTES_IN_AN_HOUR;
+//        int hours = totalMinutes / MINUTES_IN_AN_HOUR;
+
+//        return hours + " hours " + minutes + " minutes " + seconds + " seconds";
+        String min = "";
+        String sec = "";
+        if (minutes < 10) {
+            min = min + "0" + minutes;
+        } else {
+            min = min + minutes;
+        }
+        if (seconds < 10) {
+            sec = sec + "0" + seconds;
+        } else {
+            sec = sec + seconds;
+        }
+        return min + ":" + sec;
+    }
+
 }

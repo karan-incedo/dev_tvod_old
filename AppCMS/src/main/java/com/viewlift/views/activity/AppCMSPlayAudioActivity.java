@@ -1,25 +1,21 @@
 package com.viewlift.views.activity;
 
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 
 import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
-import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.fragments.AppCMSPlayAudioFragment;
 
@@ -27,14 +23,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.OnClickListener, AppCMSPlayAudioFragment.OnUpdateMetaChange {
-    @BindView(R.id.audio_player_back)
-    LinearLayout activityBack;
     @BindView(R.id.media_route_button)
     ImageButton casting;
     @BindView(R.id.add_to_playlist)
     ImageView addToPlaylist;
     @BindView(R.id.download_audio)
-    ImageView downloadAudio;
+    ImageButton downloadAudio;
     @BindView(R.id.share_audio)
     ImageView shareAudio;
 
@@ -47,7 +41,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_cmsplay_audio);
         ButterKnife.bind(this);
-        activityBack.setOnClickListener(this);
         casting.setOnClickListener(this);
         addToPlaylist.setOnClickListener(this);
         downloadAudio.setOnClickListener(this);
@@ -77,6 +70,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
+        appCMSPresenter.updateDownloadImageAndStartDownloadProcess(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData(), downloadAudio,false);
+
     }
 
     private void launchAudioPlayer() {
@@ -97,16 +92,37 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void onClick(View view) {
-        if (view == activityBack) {
-        }
         if (view == casting) {
+
         }
         if (view == addToPlaylist) {
         }
         if (view == downloadAudio) {
+            appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
+                    0, null, false, downloadAudio,false);
         }
         if (view == shareAudio) {
-            shareAction(audioData);
+            AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
+            ContentDatum currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+            if (appCMSMain != null &&
+                    currentAudio != null &&
+                    currentAudio.getAudioGist() != null &&
+                    currentAudio.getAudioGist().getTitle() != null &&
+                    currentAudio.getAudioGist().getPermalink() != null) {
+                StringBuilder audioUrl = new StringBuilder();
+                audioUrl.append(appCMSMain.getDomainName());
+                audioUrl.append(currentAudio.getAudioGist().getPermalink());
+                String[] extraData = new String[1];
+                extraData[0] = audioUrl.toString();
+                appCMSPresenter.launchButtonSelectedAction(currentAudio.getAudioGist().getPermalink(),
+                        getString(R.string.app_cms_action_share_key),
+                        currentAudio.getAudioGist().getTitle(),
+                        extraData,
+                        currentAudio,
+                        false,
+                        0,
+                        null);
+            }
         }
     }
 
@@ -116,17 +132,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         finish();
     }
 
-    private void shareAction(String shareData) {
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, shareData);
-        sendIntent.setType(getString(R.string.text_plain_mime_type));
-        Intent chooserIntent = Intent.createChooser(sendIntent,
-                getResources().getText(R.string.send_to));
-        chooserIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(chooserIntent);
-
-    }
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {

@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.viewlift.Audio.MusicService;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
 import com.viewlift.models.data.appcms.playlist.AppCMSPlaylistResult;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -113,7 +114,7 @@ public class AudioPlaylistHelper {
         indexAudioFromPlaylist++;
         if (currentAudioPlaylist.size() > indexAudioFromPlaylist) {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper,true,null,false);
         }
     }
 
@@ -126,17 +127,18 @@ public class AudioPlaylistHelper {
     public void playAudioOnClick(String mediaId, long currentPosition) {
         context.startService(new Intent(context, MusicService.class));
         indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
-        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null);
+        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null,true,null,false);
     }
 
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist + 1) && indexAudioFromPlaylist + 1 >= 0) {
             indexAudioFromPlaylist++;
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
+            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper,true,null,false);
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
 //            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls().pause();
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper);
+            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper,true,null,false);
 
         } else {
             Toast.makeText(context, "No next item available in queue", Toast.LENGTH_SHORT).show();
@@ -152,7 +154,7 @@ public class AudioPlaylistHelper {
             callBackPlaylistHelper.updatePlayStateOnSkip();
 
 //            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls().pause();
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper);
+            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper,true,null,false);
         } else {
             Toast.makeText(context, "No previous item available in playlist", Toast.LENGTH_SHORT).show();
         }
@@ -257,5 +259,16 @@ public class AudioPlaylistHelper {
     public interface IPlaybackCall {
         void onPlaybackStart(MediaBrowserCompat.MediaItem item, long mCurrentPlayerPosition);
         void updatePlayStateOnSkip();
+
+    }
+
+    ContentDatum currentAudioPLayingData;
+
+    public ContentDatum getCurrentAudioPLayingData() {
+        return currentAudioPLayingData;
+    }
+
+    public void setCurrentAudioPLayingData(ContentDatum currentAudioPLayingData) {
+        this.currentAudioPLayingData = currentAudioPLayingData;
     }
 }

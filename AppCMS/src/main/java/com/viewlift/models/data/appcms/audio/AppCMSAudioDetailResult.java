@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.vimeo.stag.UseStag;
@@ -64,6 +65,15 @@ public class AppCMSAudioDetailResult {
         contentDatum.setStreamingInfo(this.streamingInfo);
         contentDatum.setAudioGist(this.gist);
         contentDatum.setCreditBlocks(this.creditBlocks);
+        Gist gist=new Gist();
+        gist.setId(this.gist.getId());
+        gist.setMediaType(this.gist.getMediaType());
+        gist.setContentType(this.gist.getContentType());
+        gist.setTitle(this.gist.getTitle());
+        gist.setDescription(this.gist.getDescription());
+        gist.setRuntime(this.gist.getRuntime());
+        gist.setPosterImageUrl(this.gist.getPosterImageUrl());
+        contentDatum.setGist(gist);
         data.add(contentDatum);
 
         module.setContentData(data);
