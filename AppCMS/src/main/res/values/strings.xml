@@ -384,6 +384,7 @@
         <item quantity="one">%d EPISODE</item>
         <item quantity="other">%d EPISODES</item>
     </plurals>
+    <string name="seasons">%d SEASONS</string>
     <string name="item_shop">{0,choice,0#Added Today|1#Added 1 Day Ago|1&lt;Added {0} Days Ago}</string>
     <string name="retryCallBinderKey">retryCallBinderKey</string>
     <string name="retryCallBundleKey">retryCallBundleKey</string>

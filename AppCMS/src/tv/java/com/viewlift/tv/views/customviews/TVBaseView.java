@@ -55,11 +55,20 @@ public abstract class TVBaseView extends FrameLayout {
 
 
     static void setShowViewWithSubtitle(Context context, ContentDatum data, View view) {
-        int episodes = 0;
-        for (Season_ season : data.getSeason()) {
-            episodes += season.getEpisodes().size();
+        int number = 0;
+        StringBuilder stringBuilder = new StringBuilder();
+        if(data.getSeason() != null && data.getSeason().size() > 1){
+            number = data.getSeason().size();
+            stringBuilder.append(context.getResources().getString(R.string.seasons, number));
+        } else {
+            for (Season_ season : data.getSeason()) {
+                number += season.getEpisodes().size();
+            }
+            stringBuilder.append(context.getResources().getQuantityString(R.plurals.episodes, number, number));
         }
-        ((TextView) view).setText(context.getResources().getQuantityString(R.plurals.episodes, episodes, episodes));
+        stringBuilder.append(" | ");
+        stringBuilder.append(data.getGist().getPrimaryCategory().getTitle().toUpperCase());
+        ((TextView) view).setText(stringBuilder);
         view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
     }
