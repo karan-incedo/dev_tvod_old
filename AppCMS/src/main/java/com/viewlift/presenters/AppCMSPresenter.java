@@ -7680,7 +7680,7 @@ public class AppCMSPresenter {
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to get branding text color - defaulting to accent color: " +
 //                    e.getMessage());
-                textColor = ContextCompat.getColor(currentContext, R.color.colorAccent);
+                textColor = ContextCompat.getColor(currentContext, android.R.color.white);
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
             String title;
@@ -7860,9 +7860,15 @@ public class AppCMSPresenter {
                 }
 
                 dialog.setOnShowListener(arg0 -> {
-                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
+                    int buttonTextColor = ContextCompat.getColor(currentActivity, R.color.colorAccent);
+                    try {
+                        buttonTextColor = Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor());
+                    } catch (Exception e) {
+                        buttonTextColor = ContextCompat.getColor(currentActivity, R.color.colorAccent);
+                    }
+                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(buttonTextColor);
                     if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(buttonTextColor);
                     }
                 });
 
