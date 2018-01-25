@@ -75,9 +75,11 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
     private List<OnInternalEvent> receivers;
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
     private InternalEvent<Integer> showRemoveAllButtonEvent;
-
     private String moduleId;
     RecyclerView mRecyclerView;
+    private boolean isHistory;
+    private boolean isDownload;
+    private boolean isWatchlist;
 
     public AppCMSUserWatHisDowAdapter(Context context,
                                       ViewCreator viewCreator,
@@ -130,12 +132,55 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         this.isClickable = true;
         this.setHasStableIds(false);
         this.appCMSAndroidModules = appCMSAndroidModules;
+        detectViewTypes(jsonValueKeyMap,viewType);
+        sortData();
     }
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         mRecyclerView = recyclerView;
+    }
+
+    private void detectViewTypes(Map<String, AppCMSUIKeyType> jsonValueKeyMap,String viewType){
+
+        switch (jsonValueKeyMap.get(viewType)) {
+            case PAGE_HISTORY_MODULE_KEY:
+                this.isHistory = true;
+                break;
+
+            case PAGE_DOWNLOAD_MODULE_KEY:
+                this.isDownload = true;
+                break;
+
+            case PAGE_WATCHLIST_MODULE_KEY:
+                this.isWatchlist = true;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void sortData() {
+        if (adapterData != null) {
+            if (isWatchlist || isDownload) {
+                sortByAddedDate();
+            } else if (isHistory) {
+                sortByUpdateDate();
+            }
+        }
+    }
+
+    private void sortByAddedDate() {
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getAddedDate(),
+                o2.getAddedDate()));
+    }
+
+    private void sortByUpdateDate() {
+        Collections.sort(adapterData, (o1, o2) -> Long.compare(o1.getGist().getUpdateDate(),
+                o2.getGist().getUpdateDate()));
+        Collections.reverse(adapterData);
     }
 
     @Override
@@ -311,26 +356,28 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             }
         }
     }
-
+//STATUS_COMPLETED ,STATUS_SUCCESSFUL
     private void deleteDownloadVideo(final ContentDatum contentDatum, int position) {
-        appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
-                appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message,(appCMSPresenter.isSportsTemplate()?"video":"film")),
-                true, () ->
-                        appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
-                                userVideoDownloadStatus -> {
+       if(contentDatum.getGist().getDownloadStatus() != null && (contentDatum.getGist().getDownloadStatus() == DownloadStatus.STATUS_COMPLETED || contentDatum.getGist().getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL)) {
+           appCMSPresenter.showDialog(AppCMSPresenter.DialogType.DELETE_ONE_DOWNLOAD_ITEM,
+                   appCMSPresenter.getCurrentActivity().getString(R.string.app_cms_delete_one_download_item_message, (appCMSPresenter.isSportsTemplate() ? "video" : "film")),
+                   true, () ->
+                           appCMSPresenter.removeDownloadedFile(contentDatum.getGist().getId(),
+                                   userVideoDownloadStatus -> {
 //                                    ((AppCMSWatchlistItemAdapter.ViewHolder) mRecyclerView.findViewHolderForAdapterPosition(position))
 //                                            .appCMSContinueWatchingDeleteButton.setImageBitmap(null);
-                                    notifyItemRangeRemoved(position, getItemCount());
-                                    adapterData.remove(contentDatum);
-                                    notifyItemRangeChanged(position, getItemCount());
-                                    if (adapterData.size() == 0) {
-                                        emptyList = true;
-                                        sendEvent(hideRemoveAllButtonEvent);
-                                        notifyDataSetChanged();
-                                        updateData(mRecyclerView,adapterData);
-                                    }
-                                }),
-                null);
+                                       notifyItemRangeRemoved(position, getItemCount());
+                                       adapterData.remove(contentDatum);
+                                       notifyItemRangeChanged(position, getItemCount());
+                                       if (adapterData.size() == 0) {
+                                           emptyList = true;
+                                           sendEvent(hideRemoveAllButtonEvent);
+                                           notifyDataSetChanged();
+                                           updateData(mRecyclerView, adapterData);
+                                       }
+                                   }),
+                   null);
+       }
     }
 
     private void loadImage(Context context, String url, ImageView imageView) {
@@ -361,6 +408,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         adapterData = null;
         notifyDataSetChanged();
         adapterData = contentData;
+        sortData();
         notifyDataSetChanged();
         listView.setAdapter(this);
         listView.invalidate();
