@@ -3,7 +3,9 @@ package com.viewlift.views.fragments;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.URLUtil;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -39,6 +42,7 @@ import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.modules.AppCMSPageViewModule;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 
@@ -182,16 +186,20 @@ public class AutoplayFragment extends Fragment {
             }
 
             if (loadImageFromLocalSystem) {
-                RequestOptions requestOptions = new RequestOptions()
-                        .transform(new AutoplayBlurTransformation(getContext(), imageURI.toString()));
-                Glide.with(getContext()).load(imageURI)
-                        .apply(requestOptions)
+                Uri uri =  Uri.parse(imageURI.toString());
+                Glide.with(getContext()).load(uri)
                         .into(new SimpleTarget<Drawable>() {
                             @Override
                             public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                                 if (isAdded() && isVisible()) {
                                     pageView.setBackground(resource);
                                 }
+                            }
+
+                            @Override
+                            public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                                super.onLoadFailed(errorDrawable);
+                                Log.e("AutoPlay","Failed");
                             }
                         });
             } else {
