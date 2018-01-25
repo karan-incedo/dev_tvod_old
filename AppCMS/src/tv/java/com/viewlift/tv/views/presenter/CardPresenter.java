@@ -294,6 +294,9 @@ public class CardPresenter extends Presenter {
                             spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                             tvTitle.setText(spannableStringBuilder);
+                            tvTitle.setSingleLine(true);
+                            tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                            tvTitle.setSelected(true);
                         } else {
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
