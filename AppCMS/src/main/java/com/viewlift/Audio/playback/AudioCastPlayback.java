@@ -48,8 +48,6 @@ public class AudioCastPlayback implements Playback {
     private String mCurrentMediaId;
     CastMediaClientListener mRemoteMediaClientListener;
     private LocalPlayback.MetadataUpdateListener mListener;
-
-
     public static AudioCastPlayback castPlaybackInstance;
     MediaMetadataCompat updatedMetaItem;
 
@@ -116,7 +114,7 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public long getCurrentStreamPosition() {
-        return mCurrentPosition;//(int) mRemoteMediaClient.getApproximateStreamPosition();
+        return mCurrentPosition;
     }
 
     @Override
@@ -241,7 +239,6 @@ public class AudioCastPlayback implements Playback {
                 mCurrentMediaId = mediaId;
             }
             appPackageName = mAppContext.getPackageName();
-            System.out.println("package name on loadmedia audio-" + appPackageName);
             JSONObject customData = new JSONObject();
             customData.put(ITEM_ID, mediaId);
             customData.put(CastingUtils.ITEM_TYPE, appPackageName + "" + CastingUtils.ITEM_TYPE_AUDIO);
@@ -338,10 +335,6 @@ public class AudioCastPlayback implements Playback {
         if (mRemoteMediaClient != null) {
             int status = mRemoteMediaClient.getPlayerState();
             int idleReason = mRemoteMediaClient.getIdleReason();
-
-            Log.d(TAG, "onRemoteMediaPlayerStatusUpdated " + status);
-            Log.d(TAG, "onRemoteMediaPlayerStatusUpdated idleReason" + idleReason);
-            Log.d(TAG, "onRemoteMediaPlayerStatusUpdated duration" + mRemoteMediaClient.getStreamDuration());
 
             if (mRemoteMediaClient != null && mRemoteMediaClient.getStreamDuration() > 0) {
                 long duration = mRemoteMediaClient.getStreamDuration();
