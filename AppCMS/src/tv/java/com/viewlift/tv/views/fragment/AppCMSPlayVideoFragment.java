@@ -353,10 +353,15 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         }
                         if (onClosePlayerEvent != null && playerState.isPlayWhenReady()) {
                             // tell the activity that the movie is finished
-                            if ((appCMSPresenter.isUserLoggedIn()
-                                    && appCMSPresenter.isUserSubscribed()) || freeContent) {
-                                onClosePlayerEvent.onMovieFinished();
+                            //sedn the history when complete play.
+                            if (!isTrailer && videoPlayerView != null) {
+                                appCMSPresenter.updateWatchedTime(filmId,
+                                        videoPlayerView.getCurrentPosition() / 1000);
                             }
+
+                           if(shouldAutoPlay()){
+                               onClosePlayerEvent.onMovieFinished();
+                           }
                         }
                         break;
                     default:
@@ -384,6 +389,13 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
         });
     }
 
+    private boolean shouldAutoPlay() {
+        boolean isPerVideo = appCMSPresenter.getAppCMSMain().getFeatures().getFreePreview().isPerVideo();
+         if (isPerVideo && !appCMSPresenter.isUserSubscribed()){
+            return false;
+        }
+        return true;
+    }
     private boolean isAdsDisplaying = false;
 
     public boolean isAdsPlaying() {

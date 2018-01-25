@@ -32,6 +32,7 @@ import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -109,12 +110,25 @@ public class AppCmsTVPageFragment extends Fragment {
                 browseFragment.setmRowsAdapter(appCmsViewComponent.tvviewCreator().mRowsAdapter);
                 getChildFragmentManager().beginTransaction().replace(R.id.appcms_browsefragment, browseFragment, mAppCMSBinder.getScreenName()).commitAllowingStateLoss();
             } else {
-               //refreshBrowseFragment();
+               refreshBrowseFragment();
             }
         }
         return tvPageView;
     }
 
+
+    public void refreshPage(){
+        if(null != appCmsViewComponent){
+            appCmsViewComponent.tvviewCreator().refreshPageView(
+                    tvPageView,
+                    mAppCMSBinder.getAppCMSPageUI(),
+                    mAppCMSBinder.getAppCMSPageAPI(),
+                    mAppCMSBinder.getJsonValueKeyMap(),
+                    appCMSPresenter,
+                    Arrays.asList(getResources().getStringArray(R.array.app_cms_modules_to_ignore_tv)
+            ));
+        }
+    }
 
     @Override
     public void onResume() {
@@ -122,6 +136,10 @@ public class AppCmsTVPageFragment extends Fragment {
         requestFocus();
         if (null != appCMSPresenter)
             appCMSPresenter.sendStopLoadingPageAction(false,null);
+        if(appCMSPresenter.isUserLoggedIn()
+                && mAppCMSBinder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_watchlist_navigation_title))) {
+            updateAdapterData(mAppCMSBinder);
+        }
     }
 
     @Override
@@ -242,7 +260,12 @@ public class AppCmsTVPageFragment extends Fragment {
                         && tvModuleView.getChildrenContainer().getChildAt(i) instanceof RecyclerView) {
                     RecyclerView recyclerView = (RecyclerView) tvModuleView.getChildrenContainer().getChildAt(i);
                     ((AppCMSTVTrayAdapter) recyclerView.getAdapter()).setContentData(appCmsBinder.getAppCMSPageAPI().getModules().get(0).getContentData());
-
+                    if(appCmsBinder.getAppCMSPageAPI().getModules().get(0).getContentData().size() == 0){
+                        View view = tvModuleView.findViewById(R.id.appcms_removeall);
+                        if(null != view){
+                            view.setVisibility(View.GONE);
+                        }
+                    }
                 }
             }
         } catch (Exception e) {

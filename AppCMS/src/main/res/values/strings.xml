@@ -59,7 +59,9 @@
     <string name="app_cms_signup_error_title">Sign Up</string>
     <string name="app_cms_reset_password_title">Reset Password</string>
     <string name="app_cms_forgot_password_title">Forgot Password</string>
-    <string name="app_cms_reset_password_success_description">Please check %1$s for a reset password link.</string>
+    <string name="app_cms_reset_password_success_description">Follow the instructions in the email we just sent you to reset your password.</string>
+    <string name="st_privacy_policy_icon_key">icon-privacy-policy</string>
+    <string name="start_watching">Start Watching</string>
     <string name="app_cms_cancel_subscription_ask_for_confirmation_message">Are you sure you wish to cancel your subscription?</string>
     <string name="app_cms_data_error_title">Could Not Access Data</string>
     <string name="app_cms_data_error_message">Data is currently unavailable.  Please try again later.</string>

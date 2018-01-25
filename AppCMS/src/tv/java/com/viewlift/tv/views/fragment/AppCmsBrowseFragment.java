@@ -317,14 +317,6 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         super.onPause();
     }
 
-    @Override
-    public void onStop() {
-        if(null != customVideoVideoPlayerView){
-            customVideoVideoPlayerView.pausePlayer();
-        }
-        super.onStop();
-    }
-
     public CustomTVVideoPlayerView getCustomVideoVideoPlayerView(){
         return customVideoVideoPlayerView;
     }

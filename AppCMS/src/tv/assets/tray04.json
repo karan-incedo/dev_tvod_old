@@ -1,33 +1,35 @@
 {
-  "id": "4d634550-8a37-4d5a-9833-d5c2cf02f529",
+  "id": "bb6f4e60-4c2b-4133-8a27-eb295c6ceb98",
   "settings": {
     "loop": false,
     "columns": {
-      "tablet": 3,
-      "desktop": 3,
-      "mobile": 2,
-      "ott": 3
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
     },
+    "infoHover": false,
     "thumbnailType": "landscape"
   },
-  "view": "AC Tray 01",
-  "type": "AC Tray 01",
-  "blockName": "tray04",
+  "view": "AC ContinueWatching 01",
+  "type": "AC ContinueWatching 01",
+  "blockName": "continueWatching01",
   "layout": {
     "ftv": {
-      "yAxis": 0,
+      "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 438
+      "height": 260
     }
   },
   "components": [
     {
       "layout": {
         "ftv": {
-          "fontSize": 18
+          "fontSize": 14
         }
       },
+      "textCase": "caps",
       "fontFamily": "OpenSans",
       "textAlignment": "left",
       "type": "label",
@@ -38,19 +40,19 @@
     {
       "layout": {
         "ftv": {
-          "width": 590,
-          "height": 438
+          "width": 350,
+          "height": 250
         }
       },
-      "trayClickAction": "lectureDetailPage",
+      "trayClickAction": "watchVideo",
       "components": [
         {
           "layout": {
             "ftv": {
               "padding": 6,
-              "topMargin": 25,
-              "width": 588,
-              "height": 330
+              "topMargin": 0,
+              "width": 350,
+              "height": 197
             }
           },
           "type": "image",
@@ -59,20 +61,8 @@
         {
           "layout": {
             "ftv": {
-              "padding": 6,
-              "topMargin": 25,
-              "width": 588,
-              "height": 330
-            }
-          },
-          "type": "image",
-          "key": "badgeImage"
-        },
-        {
-          "layout": {
-            "ftv": {
-              "leftMargin": 10,
-              "topMargin": 360,
+              "leftMargin": 0,
+              "topMargin": 202,
               "rightMargin": 0,
               "fontSize": 11,
               "height": 40
@@ -84,6 +74,20 @@
           "textColor": "#ffffff",
           "fontWeight": "Semibold",
           "key": "thumbnailTitle"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "yAxis": 183,
+              "xAxis": 0,
+              "height": 8
+            }
+          },
+          "progressColor": "008EE0",
+          "unprogressColor": "0A151C",
+          "type": "progressView",
+          "key": "progressView"
         }
       ],
       "type": "collectionGrid",
