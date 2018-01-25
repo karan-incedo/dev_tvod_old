@@ -12219,9 +12219,9 @@ public class AppCMSPresenter {
                 final RectF oval = new RectF();
                 paint.setStyle(Paint.Style.STROKE);
                 if (isTablet) {
-                    oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
+                    oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - radiusDifference);
                 } else {
-                    oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 4); //Fix SVFA-1561  change 2 to 6
+                    oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - radiusDifference); //Fix SVFA-1561  change 2 to 6
                 }
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
