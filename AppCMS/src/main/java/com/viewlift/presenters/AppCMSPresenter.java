@@ -3977,7 +3977,12 @@ public class AppCMSPresenter {
                 for (DownloadTimerTask downloadProgressTask : downloadProgressTimerList) {
                     if (downloadProgressTask.filmIdLocal.equals(filmId)) {
                         downloadProgressTask.imageView = downloadStatusIcon;
-                        new Timer().schedule(downloadProgressTask, 0);
+                        try {
+                            new Thread(downloadProgressTask).run();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Failed to re-run download progress task for film: " +
+                                    filmId);
+                        }
                     }
                 }
             }
