@@ -88,8 +88,8 @@
                         android:layout_height="@dimen/close_button_size"
                         android:layout_margin="@dimen/close_button_margin"
                         android:background="@android:color/transparent"
-                        android:scaleType="fitCenter"
-                        android:src="@drawable/search"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/icon_search"
                         android:visibility="gone"/>
                     <LinearLayout
                         android:id="@+id/ll_media_route_button"
