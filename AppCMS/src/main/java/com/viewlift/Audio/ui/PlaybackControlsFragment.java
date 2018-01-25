@@ -130,6 +130,7 @@ public class PlaybackControlsFragment extends Fragment {
             PlaybackStateCompat state = MediaControllerCompat.getMediaController(getActivity()).getPlaybackState();
             updatePlaybackState(state);
         }
+        updateCastInfo();
     }
 
     @Override
@@ -172,15 +173,7 @@ public class PlaybackControlsFragment extends Fragment {
         if (state == null) {
             return;
         }
-        if (CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName())) {
-            String castName = CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName();
-            String line3Text = castName == null ? "" : getResources()
-                    .getString(R.string.casting_to_device, castName);
-            extra_info.setText(line3Text);
-            extra_info.setVisibility(View.VISIBLE);
-        } else {
-            extra_info.setVisibility(View.GONE);
-        }
+
 
         boolean enablePlay = false;
         switch (state.getState()) {
@@ -203,21 +196,23 @@ public class PlaybackControlsFragment extends Fragment {
 
     }
 
+
+    private void updateCastInfo(){
+        if (CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName())) {
+            String castName = CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName();
+            String line3Text = castName == null ? "" : getResources()
+                    .getString(R.string.casting_to_device, castName);
+            extra_info.setText(line3Text);
+            extra_info.setVisibility(View.VISIBLE);
+        } else {
+            extra_info.setVisibility(View.GONE);
+        }
+    }
     private void updatePlaybackState(PlaybackStateCompat state) {
         if (state == null) {
             return;
         }
-        MediaControllerCompat controllerCompat = MediaControllerCompat.getMediaController(getActivity());
-        if (controllerCompat != null && controllerCompat.getExtras() != null) {
-            String castName = controllerCompat.getExtras().getString(MusicService.EXTRA_CONNECTED_CAST);
-            String castInfo = castName == null ? "" : getResources()
-                    .getString(R.string.casting_to_device, castName);
-            extra_info.setText(castInfo);
-            extra_info.setVisibility(View.VISIBLE);
-        } else {
-            extra_info.setVisibility(View.GONE);
-
-        }
+        updateCastInfo();
 
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
