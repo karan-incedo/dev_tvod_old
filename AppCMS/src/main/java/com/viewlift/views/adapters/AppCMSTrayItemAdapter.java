@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import net.nightwhistler.htmlspanner.HtmlSpanner;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -51,7 +53,7 @@ import butterknife.ButterKnife;
 
 public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAdapter.ViewHolder>
         implements OnInternalEvent, AppCMSBaseAdapter {
-    private static final String TAG = "AppCMSTrayAdapter";
+    private static final String TAG = "AppCMSPresenter";
 
     private static final int SECONDS_PER_MIN = 60;
 
@@ -70,6 +72,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private String userId;
     private InternalEvent<Integer> hideRemoveAllButtonEvent;
     private InternalEvent<Integer> showRemoveAllButtonEvent;
+
+    private Map<String, Boolean> filmDownloadIconUpdatedMap;
 
     private String moduleId;
 
@@ -92,13 +96,16 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         switch (jsonValueKeyMap.get(viewType)) {
             case PAGE_HISTORY_MODULE_KEY:
                 this.isHistory = true;
+                Log.e(TAG, "Created new history tray");
                 break;
 
             case PAGE_DOWNLOAD_MODULE_KEY:
+                Log.e(TAG, "Created new download tray");
                 this.isDownload = true;
                 break;
 
             case PAGE_WATCHLIST_MODULE_KEY:
+                Log.e(TAG, "Created new watchlist tray");
                 this.isWatchlist = true;
                 break;
 
@@ -114,7 +121,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         this.hideRemoveAllButtonEvent = new InternalEvent<>(View.GONE);
         this.showRemoveAllButtonEvent = new InternalEvent<>(View.VISIBLE);
 
-        this.setHasStableIds(false);
+        this.filmDownloadIconUpdatedMap = new HashMap<>();
     }
 
     private void sortData() {
@@ -146,6 +153,9 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 //        View view = collectionGridItemViewCreator.createView(parent.getContext());
         ViewHolder viewHolder = new ViewHolder(view);
         applyStyles(viewHolder);
+
+        Log.e(TAG, "Created new view holder");
+
         return viewHolder;
     }
 
@@ -164,6 +174,23 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     @UiThread
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        StringBuilder logMessage = new StringBuilder("Binding tray item adapter view holder: \n\t" + position);
+        if (adapterData != null && !adapterData.isEmpty() && position < adapterData.size()) {
+            ContentDatum contentDatum = adapterData.get(position);
+            if (contentDatum.getGist() != null) {
+                if (contentDatum.getGist().getId() != null) {
+                    logMessage.append("\n\t" + contentDatum.getGist().getId());
+                }
+                if (contentDatum.getGist().getTitle() != null) {
+                    logMessage.append("\n\t" + contentDatum.getGist().getTitle());
+                }
+                if (contentDatum.getGist().getVideoImageUrl() != null) {
+                    logMessage.append("\n\t" + contentDatum.getGist().getVideoImageUrl());
+                }
+            }
+        }
+        Log.e(TAG, logMessage.toString());
+
         if (adapterData != null && adapterData.size() == 0) {
             sendEvent(hideRemoveAllButtonEvent);
         }
@@ -181,14 +208,18 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                 holder.appCMSContinueWatchingSize.setVisibility(View.VISIBLE);
                 holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(contentDatum.getGist().getId()));
+
                 if (contentDatum.getGist() != null) {
-                    switch (contentDatum.getGist().getDownloadStatus()) {
+                    holder.appCMSContinueWatchingDeleteButton.setTag(contentDatum.getGist().getId());
+
+                    switch (appCMSPresenter.getVideoDownloadStatus(contentDatum.getGist().getId())) {
                         case STATUS_PENDING:
                         case STATUS_RUNNING:
-                            if (contentDatum.getGist() != null) {
-                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(ContextCompat.getColor(holder.itemView.getContext(), R.color.transparentColor));
-                                holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+                            Log.e(TAG, "Film downloading: " + contentDatum.getGist().getId());
 
+                            Boolean filmDownloadUpdated = filmDownloadIconUpdatedMap.get(contentDatum.getGist().getId());
+                            if (filmDownloadUpdated == null || !filmDownloadUpdated) {
+                                filmDownloadIconUpdatedMap.put(contentDatum.getGist().getId(), true);
                                 int radiusDifference = 5;
                                 if (BaseView.isTablet(holder.itemView.getContext())) {
                                     radiusDifference = 2;
@@ -199,13 +230,13 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                         appCMSPresenter,
                                         userVideoDownloadStatus -> {
                                             if (userVideoDownloadStatus != null) {
+
                                                 if (userVideoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_SUCCESSFUL) {
                                                     holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                                                     holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(), R.drawable.ic_deleteicon));
                                                     holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                                                     holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                                                     holder.appCMSContinueWatchingDeleteButton.invalidate();
-                                                    loadImage(holder.itemView.getContext(), userVideoDownloadStatus.getThumbUri(), holder.appCMSContinueWatchingVideoImage);
                                                     holder.appCMSContinueWatchingSize.setText(appCMSPresenter.getDownloadedFileSize(userVideoDownloadStatus.getVideoSize()));
 
                                                     contentDatum.getGist().setLocalFileUrl(userVideoDownloadStatus.getVideoUri());
@@ -232,27 +263,36 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                             }
                                         },
                                         userId, true, radiusDifference);
-
-                                holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
-                                holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum, position));
-
+                            } else {
+                                appCMSPresenter.updateDownloadTimerTask(contentDatum.getGist().getId(), holder.appCMSContinueWatchingDeleteButton);
                             }
+
+                            holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());
+                            holder.appCMSContinueWatchingSize.setOnClickListener(v -> delete(contentDatum, position));
+
                             break;
 
                         case STATUS_FAILED:
-                            //
+                            Log.e(TAG, "Film download failed: " + contentDatum.getGist().getId());
+                            holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
+                            holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                                    android.R.drawable.stat_notify_error));
                             break;
 
                         case STATUS_SUCCESSFUL:
+                            Log.e(TAG, "Film download successful: " + contentDatum.getGist().getId());
+                            holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                             holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
                                     R.drawable.ic_deleteicon));
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTint(tintColor);
                             holder.appCMSContinueWatchingDeleteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
                             contentDatum.getGist().setDownloadStatus(DownloadStatus.STATUS_COMPLETED);
-//                            appCMSPresenter.sendRefreshPageAction();
                             break;
 
                         case STATUS_INTERRUPTED:
+                            Log.e(TAG, "Film download interrupted: " + contentDatum.getGist().getId());
+                            holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                             holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
                                     android.R.drawable.stat_sys_warning));
                             holder.appCMSContinueWatchingSize.setText("Remove".toUpperCase());
@@ -260,6 +300,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             break;
 
                         default:
+                            Log.e(TAG, "Film download status unknown: " + contentDatum.getGist().getId());
+                            holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                             break;
                     }
                     DownloadVideoRealm downloadVideoRealm = appCMSPresenter.getRealmController()

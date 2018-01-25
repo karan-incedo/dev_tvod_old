@@ -3719,6 +3719,23 @@ public class AppCMSPresenter {
     }
 
     @UiThread
+    public DownloadStatus getVideoDownloadStatus(String videoId) {
+        if (realmController != null) {
+            try {
+                DownloadVideoRealm downloadVideoRealm = realmController.getDownloadByIdBelongstoUser(videoId,
+                        getLoggedInUser());
+                if (downloadVideoRealm != null &&
+                        downloadVideoRealm.getVideoId().equalsIgnoreCase(videoId)) {
+                    return downloadVideoRealm.getDownloadStatus();
+                }
+            } catch (Exception e) {
+
+            }
+        }
+        return DownloadStatus.STATUS_PENDING;
+    }
+
+    @UiThread
     public boolean isVideoDownloaded(String videoId) {
         if (realmController != null) {
             try {
@@ -3952,6 +3969,21 @@ public class AppCMSPresenter {
         }
     }
 
+    public void updateDownloadTimerTask(String filmId, ImageView downloadStatusIcon) {
+        if (downloadTaskRunning(filmId)) {
+            if (filmId != null &&
+                    downloadProgressTimerList != null &&
+                    !downloadProgressTimerList.isEmpty()) {
+                for (DownloadTimerTask downloadProgressTask : downloadProgressTimerList) {
+                    if (downloadProgressTask.filmIdLocal.equals(filmId)) {
+                        downloadProgressTask.imageView = downloadStatusIcon;
+                        new Timer().schedule(downloadProgressTask, 0);
+                    }
+                }
+            }
+        }
+    }
+
     public boolean downloadTaskRunning(String filmId) {
         if (filmId != null &&
                 downloadProgressTimerList != null &&
@@ -3974,7 +4006,7 @@ public class AppCMSPresenter {
         }*/
         if (downloadProgressTimerList != null && !downloadProgressTimerList.isEmpty()) {
             int indexToDelete = -1;
-            for (int i = 0; i < downloadProgressTimerList.size(); i++) {
+            for (int i = 0; i < downloadProgressTimerList.size() && indexToDelete == -1; i++) {
                 DownloadTimerTask downloadTimerTask = downloadProgressTimerList.get(i);
                 if (filmId == null || downloadTimerTask.filmIdLocal.equals(filmId)) {
                     downloadTimerTask.timer.cancel();
@@ -12029,10 +12061,12 @@ public class AppCMSPresenter {
         final OnRunOnUIThread onRunOnUIThread;
         final boolean isTablet;
         final AppCMSPresenter appCMSPresenter;
-        final ImageView imageView;
+        ImageView imageView;
         final Action1<UserVideoDownloadStatus> responseAction;
         final Timer timer;
         final int radiusDifference;
+        volatile boolean cancelled;
+        volatile boolean finished;
 
         public DownloadTimerTask(String filmId,
                                  long videoId,
@@ -12052,6 +12086,8 @@ public class AppCMSPresenter {
             this.responseAction = responseAction;
             this.timer = timer;
             this.radiusDifference = radiusDifference;
+            this.cancelled = false;
+            this.finished = false;
         }
 
         @Override
@@ -12063,35 +12099,57 @@ public class AppCMSPresenter {
                 if (c != null && c.moveToFirst()) {
                     long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                     long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    int downloadStatus = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     c.close();
                     int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                     //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
                     //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
-                    if ((downloaded >= totalSize || downloadPercent > 100) && totalSize > 0) {
-                        if (onRunOnUIThread != null && appCMSPresenter.isUserLoggedIn())
-                            onRunOnUIThread.runOnUiThread(() -> appCMSPresenter.appCMSUserDownloadVideoStatusCall
-                                    .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser()));
-                        this.cancel();
-                    } else {
-                        if (onRunOnUIThread != null && appCMSPresenter.runUpdateDownloadIconTimer)
-                            onRunOnUIThread.runOnUiThread(() -> {
+                    if (onRunOnUIThread != null &&
+                            appCMSPresenter.runUpdateDownloadIconTimer &&
+                            appCMSPresenter.isUserLoggedIn()) {
+                        if ((downloaded >= totalSize ||
+                                downloadPercent > 100 ||
+                                downloadStatus == DownloadManager.STATUS_SUCCESSFUL) && totalSize > 0) {
+                            cancelled = true;
+                            this.cancel();
+                        }
+                        onRunOnUIThread.runOnUiThread(() -> {
+                            Log.d(TAG, "Film update status: " + downloadStatus);
+                            if ((downloaded >= totalSize ||
+                                    downloadPercent > 100 ||
+                                    downloadStatus == DownloadManager.STATUS_SUCCESSFUL) &&
+                                    totalSize > 0 &&
+                                    !finished) {
+                                imageView.setImageBitmap(null);
+                                imageView.requestLayout();
+                                appCMSPresenter.appCMSUserDownloadVideoStatusCall
+                                        .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
+                                finished = true;
+                                Log.e(TAG, "Film finished downloading: " + filmIdLocal);
+                            } else if (downloadStatus == DownloadManager.STATUS_RUNNING) {
                                 try {
-                                    if ((imageView.getTag() == null) ||
+                                    if (((imageView.getTag() == null) ||
                                             (imageView.getTag() != null &&
-                                            imageView.getTag() instanceof String &&
-                                            imageView.getTag().equals(filmIdLocal))) {
+                                                    imageView.getTag() instanceof String &&
+                                                    imageView.getTag().equals(filmIdLocal))) &&
+                                            !cancelled) {
 //                                        int radiusDifference = 5;
 //                                        if (isTablet) {
 //                                            radiusDifference = 2;
 //                                        }
+                                        imageView.setBackground(null);
                                         circularImageBar(imageView, downloadPercent, radiusDifference);
+                                    } else if (cancelled) {
+                                        imageView.setImageBitmap(null);
+                                        imageView.requestLayout();
                                     }
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Error rendering circular image bar");
                                 }
-                            });
+                                Log.e(TAG, "Updating film download progress: " + filmIdLocal);
+                            }
+                        });
                     }
-
                 } else {
                     //noinspection ConstantConditions
                     System.out.println(" Downloading fails" + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
