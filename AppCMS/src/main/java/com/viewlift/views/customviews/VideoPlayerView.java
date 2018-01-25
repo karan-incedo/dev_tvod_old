@@ -1129,7 +1129,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                     long bytesRead = ((FileDataSource) dataSource).getBytesRead();
                     result = dataSource.read(buffer, offset, readLength);
                     for (int i = 0; i < 10 - bytesRead && i < readLength; i++) {
-                        if (~buffer[i] >= -128 && ~buffer[i] <= 127) {
+                        if (~buffer[i] >= -128 &&
+                                ~buffer[i] <= 127 &&
+                                buffer[i + offset]<0) {
                             buffer[i + offset] = (byte) ~buffer[i + offset];
                         }
                     }
