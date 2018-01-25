@@ -80,7 +80,7 @@ public final class LocalPlayback implements Playback {
 
     private int mCurrentAudioFocusState = AUDIO_NO_FOCUS_NO_DUCK;
     private final AudioManager mAudioManager;
-    private SimpleExoPlayer mExoPlayer = null;
+    private SimpleExoPlayer mExoPlayer;
     private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
 
     // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
@@ -106,12 +106,21 @@ public final class LocalPlayback implements Playback {
             };
 
     public static LocalPlayback localPlaybackInstance;
-    public static synchronized LocalPlayback getInstance(Context context, MetadataUpdateListener listener) {
+    MediaMetadataCompat updatedMetaItem;
+
+    public static LocalPlayback getInstance(Context context, MetadataUpdateListener listener) {
         if (localPlaybackInstance == null) {
-            localPlaybackInstance = new LocalPlayback(context,listener);
+
+            synchronized (LocalPlayback.class) {
+
+                if (localPlaybackInstance == null) {
+                    localPlaybackInstance = new LocalPlayback(context, listener);
+                }
+            }
         }
         return localPlaybackInstance;
     }
+
     public LocalPlayback(Context context, MetadataUpdateListener listener) {
         Context applicationContext = context.getApplicationContext();
         System.out.println("LocalPlayback constructor");
@@ -218,7 +227,7 @@ public final class LocalPlayback implements Playback {
         }
 
         mListener.onMetadataChanged(item);
-
+        updatedMetaItem = item;
         //if media has changed than load new audio url
         if (mediaHasChanged || mExoPlayer == null || currentPosition > 0) {
 
@@ -232,10 +241,11 @@ public final class LocalPlayback implements Playback {
             }
 
             if (mExoPlayer == null) {
-                mExoPlayer =
+                this.mExoPlayer =
                         ExoPlayerFactory.newSimpleInstance(
                                 mContext, new DefaultTrackSelector(), new DefaultLoadControl());
-                mExoPlayer.addListener(mEventListener);
+                this.mExoPlayer.addListener(mEventListener);
+                localPlaybackInstance.mExoPlayer = mExoPlayer;
             }
 
             // Android "O" makes much greater use of AudioAttributes, especially
@@ -248,7 +258,6 @@ public final class LocalPlayback implements Playback {
                     .setUsage(USAGE_MEDIA)
                     .build();
             mExoPlayer.setAudioAttributes(audioAttributes);
-
             setUri(source);
             mExoPlayer.seekTo(currentPosition);
             // If we are streaming from the internet, we want to hold a
@@ -256,11 +265,13 @@ public final class LocalPlayback implements Playback {
             // sleep while the song is playing.
             mWifiLock.acquire();
             if (mCallback != null) {
-                mCallback.onPlaybackStatusChanged(getState(), mExoPlayer);
+                mCallback.onPlaybackStatusChanged(getState());
             }
         }
 
         configurePlayerState();
+        mCallback.onPlaybackStatusChanged(getState());
+
     }
 
     private void setUri(String source) {
@@ -278,6 +289,7 @@ public final class LocalPlayback implements Playback {
         // Prepares media to play (happens on background thread) and triggers
         // {@code onPlayerStateChanged} callback when the stream is ready to play.
         mExoPlayer.prepare(mediaSource);
+
     }
 
     @Override
@@ -439,12 +451,28 @@ public final class LocalPlayback implements Playback {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+            if (playbackState == ExoPlayer.STATE_READY && mExoPlayer != null) {
+                long duration = mExoPlayer.getDuration();
+                updatedMetaItem = new MediaMetadataCompat.Builder(updatedMetaItem)
+
+                        // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
+                        // example, on the lockscreen background when the media session is active.
+                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+
+                        // set small version of the album art in the DISPLAY_ICON. This is used on
+                        // the MediaDescription and thus it should be small to be serialized if
+                        // necessary
+
+                        .build();
+                mListener.onMetadataChanged(updatedMetaItem);
+            }
+
             switch (playbackState) {
                 case ExoPlayer.STATE_IDLE:
                 case ExoPlayer.STATE_BUFFERING:
                 case ExoPlayer.STATE_READY:
                     if (mCallback != null) {
-                        mCallback.onPlaybackStatusChanged(getState(), mExoPlayer);
+                        mCallback.onPlaybackStatusChanged(getState());
                     }
                     break;
                 case ExoPlayer.STATE_ENDED:
@@ -476,9 +504,6 @@ public final class LocalPlayback implements Playback {
             MediaMetadataCompat track = AudioPlaylistHelper.getMetadata(mCurrentMediaId);
             System.out.println("Exo Player erroe" + error.type);
             AudioPlaylistHelper.getInstance().playAudioOnClick(mCurrentMediaId, mCurrentPlayerPosition);
-//            if (mCallback != null) {
-//                mCallback.onError("ExoPlayer error " + what);
-//            }
         }
 
         @Override
@@ -505,10 +530,13 @@ public final class LocalPlayback implements Playback {
         @Override
         public void onShuffleModeEnabledChanged(boolean shuffleModeEnabled) {
         }
+
     }
 
 
     public interface MetadataUpdateListener {
         void onMetadataChanged(MediaMetadataCompat metadata);
+
+
     }
 }

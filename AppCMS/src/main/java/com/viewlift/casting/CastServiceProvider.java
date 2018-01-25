@@ -163,7 +163,6 @@ public class CastServiceProvider {
 
         @Override
         public void onRouterSelected(MediaRouter mMediaRouter, MediaRouter.RouteInfo info) {
-
             mCastHelper.chromeCastConnecting = true;
             mCastHelper.mSelectedDevice = CastDevice.getFromBundle(info.getExtras());
             mCastHelper.isCastDeviceConnected = true;

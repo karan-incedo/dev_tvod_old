@@ -98,7 +98,7 @@ public interface Playback {
          * Implementations can use this callback to update
          * playback state on the media sessions.
          */
-        void onPlaybackStatusChanged(int state, SimpleExoPlayer mExoPlayer);
+        void onPlaybackStatusChanged(int state);
 
         /**
          * @param error to be added to the PlaybackState

@@ -27,8 +27,17 @@ import android.support.v4.media.MediaBrowserCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.support.v7.media.MediaRouter;
 
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.gms.cast.framework.CastContext;
+import com.google.android.gms.cast.framework.CastSession;
+import com.google.android.gms.cast.framework.SessionManager;
+import com.google.android.gms.cast.framework.SessionManagerListener;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.casting.CastServiceProvider;
 
@@ -45,17 +54,35 @@ public class PlaybackManager implements Playback.Callback {
     public static String mCurrentMusicId;
     public static MediaMetadataCompat mCurrentMediaMetaData;
     Context mContext;
-    private LocalPlayback.MetadataUpdateListener mListener;
+    LocalPlayback.MetadataUpdateListener mListener;
+
+    private SessionManager mCastSessionManager;
+    private SessionManagerListener<CastSession> mCastSessionManagerListener;
+    private MediaRouter mMediaRouter;
+    private static boolean isCastConnected = false;
+    MediaSessionCompat msession;
 
     public PlaybackManager(PlaybackServiceCallback serviceCallback,
-                           Playback playback, Context applicationContext, LocalPlayback.MetadataUpdateListener callBackLocalPlaybackListener) {
+                           Playback playback, Context applicationContext, LocalPlayback.MetadataUpdateListener callBackLocalPlaybackListener, MediaSessionCompat mSession) {
         mServiceCallback = serviceCallback;
         mMediaSessionCallback = new MediaSessionCallback();
-        mPlayback = playback;
+        this.mPlayback = playback;
         this.mListener = callBackLocalPlaybackListener;
 
+        this.msession = mSession;
         mContext = applicationContext;
         mPlayback.setCallback(this);
+
+        int playServicesAvailable =
+                GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(applicationContext);
+        if (playServicesAvailable == ConnectionResult.SUCCESS) {
+            mCastSessionManager = CastContext.getSharedInstance(applicationContext).getSessionManager();
+            mCastSessionManagerListener = new CastSessionManagerListener();
+            mCastSessionManager.addSessionManagerListener(mCastSessionManagerListener,
+                    CastSession.class);
+        }
+        mMediaRouter = MediaRouter.getInstance(mContext);
+
     }
 
     public Playback getPlayback() {
@@ -129,7 +156,7 @@ public class PlaybackManager implements Playback.Callback {
 
         updatePlaybackStatus(state, position, error);
 
-        if (state == PlaybackStateCompat.STATE_PLAYING ||
+        if (mServiceCallback != null && state == PlaybackStateCompat.STATE_PLAYING ||
                 state == PlaybackStateCompat.STATE_PAUSED) {
             mServiceCallback.onNotificationRequired();
         }
@@ -182,21 +209,12 @@ public class PlaybackManager implements Playback.Callback {
 
     @Override
     public void onCastCompletion() {
-
     }
 
-    SimpleExoPlayer mExoPlayer;
 
     @Override
-    public void onPlaybackStatusChanged(int state, SimpleExoPlayer mExoPlayerInstance) {
+    public void onPlaybackStatusChanged(int state) {
         updatePlaybackState(null);
-        System.out.println("update playback state in playbackmanager-" + state);
-//        PlaybackControlsFragment.onPlaybackStateChanged(state);
-
-        if (mExoPlayer != null) {
-            mExoPlayer = mExoPlayerInstance;
-            AudioPlaylistHelper.getInstance().setDuration(mExoPlayer.getDuration());
-        }
     }
 
     @Override
@@ -284,7 +302,7 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onPrepare() {
-            AudioPlaylistHelper.getInstance().setDuration(mExoPlayer.getDuration());
+//            AudioPlaylistHelper.getInstance().setDuration(mExoPlayer.getDuration());
 
             super.onPrepare();
         }
@@ -315,7 +333,8 @@ public class PlaybackManager implements Playback.Callback {
 
 
     public void updatePlayback(Playback playback, boolean resumePlaying, long currentPosition) {
-        mPlayback = playback;
+        this.mPlayback = playback;
+
         MediaMetadataCompat currentMusic = getCurrentMediaData();
         mPlayback.setCallback(this);
         if (currentMusic != null) {
@@ -335,17 +354,18 @@ public class PlaybackManager implements Playback.Callback {
         if (playback == null) {
             throw new IllegalArgumentException("Playback cannot be null");
         }
-        long pos = mPlayback.getCurrentStreamPosition();
+
+        long pos = getPlayback().getCurrentStreamPosition();
         String currentMediaId = AudioPlaylistHelper.getInstance().getCurrentMediaId();
         AudioPlaylistHelper.getInstance().stopPlayback();
-        mPlayback.stopPlayback(true);
+        this.mPlayback.stopPlayback(true);
         AudioPlaylistHelper.getInstance().setCurrentMediaId(currentMediaId);
         setCurrentMediaId(currentMediaId);
         updatePlaybackStatus(PlaybackStateCompat.STATE_BUFFERING, 0, null);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                mPlayback = playback;
+                PlaybackManager.this.mPlayback = playback;
                 AudioPlaylistHelper.getInstance().playAudioOnClick(currentMediaId, pos);
             }
         }, 500);
@@ -362,6 +382,88 @@ public class PlaybackManager implements Playback.Callback {
         void onPlaybackStop();
 
         void onPlaybackStateUpdated(PlaybackStateCompat newState);
+    }
+
+    /**
+     * Session Manager Listener responsible for switching the Playback instances
+     * depending on whether it is connected to a remote player.
+     */
+    private class CastSessionManagerListener implements SessionManagerListener<CastSession> {
+
+        @Override
+        public void onSessionEnded(CastSession session, int error) {
+            System.out.println("Music Service on Session ended");
+            boolean isAudioPlaying = AudioServiceHelper.getAudioInstance().isAudioPlaying();
+
+            if (isCastConnected) {
+
+                mMediaRouter.setMediaSessionCompat(null);
+                if (isAudioPlaying) {
+                    mMediaRouter.setMediaSessionCompat(null);
+                    switchToPlayback(LocalPlayback.getInstance(mContext, mListener), false);
+                }
+                isCastConnected = false;
+            }
+        }
+
+        @Override
+        public void onSessionResumed(CastSession session, boolean wasSuspended) {
+
+        }
+
+        @Override
+        public void onSessionStarted(CastSession session, String sessionId) {
+            System.out.println("Music Service on Session started");
+//            System.out.println("ram value in session-"+ramk);
+
+            //in case if audio is playing than on cast session start play audio on casting device
+            boolean isAudioPlaying = AudioServiceHelper.getAudioInstance().isAudioPlaying();
+            // In case we are casting, send the device name as an extra on MediaSession metadata.
+            if (!isCastConnected) {
+
+//                playback = castPlayback;
+                if (isAudioPlaying) {
+
+                    // Now we can switch to AudioCastPlayback
+                    AudioCastPlayback.getInstance(mContext, mListener).initRemoteClient();
+                    mMediaRouter.setMediaSessionCompat(msession);
+
+                    switchToPlayback(AudioCastPlayback.getInstance(mContext, mListener), true);
+                }
+                isCastConnected = true;
+            }
+        }
+
+        @Override
+        public void onSessionStarting(CastSession session) {
+        }
+
+        @Override
+        public void onSessionStartFailed(CastSession session, int error) {
+        }
+
+        @Override
+        public void onSessionEnding(CastSession session) {
+            // This is our final chance to update the underlying stream position
+            // In onSessionEnded(), the underlying AudioCastPlayback#mRemoteMediaClient
+            // is disconnected and hence we update our local value of stream position
+            // to the latest position.
+//            mPlaybackManager.getPlayback().updateLastKnownStreamPosition();
+        }
+
+        @Override
+        public void onSessionResuming(CastSession session, String sessionId) {
+            System.out.println("on seesion resumed");
+        }
+
+        @Override
+        public void onSessionResumeFailed(CastSession session, int error) {
+
+        }
+
+        @Override
+        public void onSessionSuspended(CastSession session, int reason) {
+        }
     }
 
 }

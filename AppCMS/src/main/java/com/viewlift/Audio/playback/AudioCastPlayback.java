@@ -8,6 +8,7 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaStatus;
@@ -33,7 +34,7 @@ public class AudioCastPlayback implements Playback {
     private static final String ITEM_ID = "itemId";
 
     private final Context mAppContext;
-    public RemoteMediaClient mRemoteMediaClient = null;
+    private RemoteMediaClient mRemoteMediaClient;
 
     private int mPlaybackState;
     private RemoteMediaClient.ProgressListener progressListener;
@@ -43,17 +44,20 @@ public class AudioCastPlayback implements Playback {
      * Playback interface Callbacks
      */
     private Callback mCallback;
-    private long mCurrentPosition = 0;
+    private long mCurrentPosition;
     private String mCurrentMediaId;
     CastMediaClientListener mRemoteMediaClientListener;
     private LocalPlayback.MetadataUpdateListener mListener;
-
-
     public static AudioCastPlayback castPlaybackInstance;
+    MediaMetadataCompat updatedMetaItem;
 
     public static synchronized AudioCastPlayback getInstance(Context context, LocalPlayback.MetadataUpdateListener listener) {
         if (castPlaybackInstance == null) {
-            castPlaybackInstance = new AudioCastPlayback(context, listener);
+            synchronized (AudioCastPlayback.class) {
+                if (castPlaybackInstance == null) {
+                    castPlaybackInstance = new AudioCastPlayback(context, listener);
+                }
+            }
         }
         return castPlaybackInstance;
     }
@@ -71,7 +75,7 @@ public class AudioCastPlayback implements Playback {
     public void initRemoteClient() {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
-        if (castSession != null && castSession.isConnected()) {
+        if (castSession != null && castSession.isConnected() && castPlaybackInstance != null) {
             mRemoteMediaClient = castSession.getRemoteMediaClient();
         }
     }
@@ -84,19 +88,23 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public void stop(boolean notifyListeners) {
-        mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
-        mRemoteMediaClient.removeProgressListener(progressListener);
-
+        if (mRemoteMediaClient != null) {
+            mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
+            mRemoteMediaClient.removeProgressListener(progressListener);
+        }
         mPlaybackState = PlaybackStateCompat.STATE_STOPPED;
         if (notifyListeners && mCallback != null) {
-            mCallback.onPlaybackStatusChanged(mPlaybackState, null);
+            mCallback.onPlaybackStatusChanged(mPlaybackState);
         }
     }
 
     @Override
     public void stopPlayback(boolean notifyListeners) {
-        mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
-        mRemoteMediaClient.removeProgressListener(progressListener);
+        if (mRemoteMediaClient != null) {
+
+            mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
+            mRemoteMediaClient.removeProgressListener(progressListener);
+        }
     }
 
     @Override
@@ -106,7 +114,7 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public long getCurrentStreamPosition() {
-        return mCurrentPosition;//(int) mRemoteMediaClient.getApproximateStreamPosition();
+        return mCurrentPosition;
     }
 
     @Override
@@ -131,16 +139,16 @@ public class AudioCastPlayback implements Playback {
                     mCurrentMediaId = mediaId;
                     AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
                 }
-
+                updatedMetaItem = item;
                 if (!mediaHasChanged && mRemoteMediaClient != null && mRemoteMediaClient.isPaused()) {
                     mRemoteMediaClient.play();
                 } else {
-                    mCurrentPosition=currentPosition;
+                    mCurrentPosition = currentPosition;
                     loadMedia(item.getDescription().getMediaId(), true, currentPosition);
                     mPlaybackState = PlaybackStateCompat.STATE_BUFFERING;
                     mListener.onMetadataChanged(item);
                     if (mCallback != null) {
-                        mCallback.onPlaybackStatusChanged(mPlaybackState, null);
+                        mCallback.onPlaybackStatusChanged(mPlaybackState);
                     }
                 }
             }
@@ -158,7 +166,7 @@ public class AudioCastPlayback implements Playback {
     @Override
     public void pause() {
         try {
-            if (mRemoteMediaClient.hasMediaSession()) {
+            if (mRemoteMediaClient != null && mRemoteMediaClient.hasMediaSession()) {
                 mRemoteMediaClient.pause();
                 mCurrentPosition = (int) mRemoteMediaClient.getApproximateStreamPosition();
             } else {
@@ -179,7 +187,7 @@ public class AudioCastPlayback implements Playback {
             return;
         }
         try {
-            if (mRemoteMediaClient.hasMediaSession()) {
+            if (mRemoteMediaClient != null && mRemoteMediaClient.hasMediaSession()) {
                 mRemoteMediaClient.seek(position);
                 mCurrentPosition = position;
             } else {
@@ -209,7 +217,7 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public boolean isPlaying() {
-        return isConnected() && mRemoteMediaClient.isPlaying();
+        return isConnected() && mRemoteMediaClient != null && mRemoteMediaClient.isPlaying();
     }
 
     @Override
@@ -231,7 +239,6 @@ public class AudioCastPlayback implements Playback {
                 mCurrentMediaId = mediaId;
             }
             appPackageName = mAppContext.getPackageName();
-            System.out.println("package name on loadmedia audio-" + appPackageName);
             JSONObject customData = new JSONObject();
             customData.put(ITEM_ID, mediaId);
             customData.put(CastingUtils.ITEM_TYPE, appPackageName + "" + CastingUtils.ITEM_TYPE_AUDIO);
@@ -300,20 +307,22 @@ public class AudioCastPlayback implements Playback {
         // This can happen when the app was either restarted/disconnected + connected, or if the
         // app joins an existing session while the Chromecast was playing a queue.
         try {
-            MediaInfo mediaInfo = mRemoteMediaClient.getMediaInfo();
-            if (mediaInfo == null) {
-                return;
-            }
-            JSONObject customData = mediaInfo.getCustomData();
+            if (mRemoteMediaClient != null) {
+                MediaInfo mediaInfo = mRemoteMediaClient.getMediaInfo();
+                if (mediaInfo == null) {
+                    return;
+                }
+                JSONObject customData = mediaInfo.getCustomData();
 
-            if (customData != null && customData.has(ITEM_ID)) {
-                String remoteMediaId = customData.getString(ITEM_ID);
-                if (!TextUtils.equals(mCurrentMediaId, remoteMediaId)) {
-                    mCurrentMediaId = remoteMediaId;
-                    if (mCallback != null) {
-                        mCallback.setCurrentMediaId(remoteMediaId);
+                if (customData != null && customData.has(ITEM_ID)) {
+                    String remoteMediaId = customData.getString(ITEM_ID);
+                    if (!TextUtils.equals(mCurrentMediaId, remoteMediaId)) {
+                        mCurrentMediaId = remoteMediaId;
+                        if (mCallback != null) {
+                            mCallback.setCurrentMediaId(remoteMediaId);
+                        }
+                        updateLastKnownStreamPosition();
                     }
-                    updateLastKnownStreamPosition();
                 }
             }
         } catch (JSONException e) {
@@ -322,55 +331,69 @@ public class AudioCastPlayback implements Playback {
 
     }
 
-    private void
-    updatePlaybackState() {
-        int status = mRemoteMediaClient.getPlayerState();
-        int idleReason = mRemoteMediaClient.getIdleReason();
+    private void updatePlaybackState() {
+        if (mRemoteMediaClient != null) {
+            int status = mRemoteMediaClient.getPlayerState();
+            int idleReason = mRemoteMediaClient.getIdleReason();
 
-        Log.d(TAG, "onRemoteMediaPlayerStatusUpdated " + status);
+            if (mRemoteMediaClient != null && mRemoteMediaClient.getStreamDuration() > 0) {
+                long duration = mRemoteMediaClient.getStreamDuration();
+                updatedMetaItem = new MediaMetadataCompat.Builder(updatedMetaItem)
 
-        // Convert the remote playback states to media playback states.
-        switch (status) {
-            case MediaStatus.PLAYER_STATE_IDLE:
-                if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
-                    System.out.println("Music Service AudioCastPlayback PLAYER_STATE_IDLE");
-                    ifCastDeviceClosedPlayLocally();
-                    if (mCallback != null && !isStatusUpdateedForCurrentItem) {
-                        mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
-                        mRemoteMediaClient.removeProgressListener(progressListener);
-                        mCallback.onCompletion();
-                        isStatusUpdateedForCurrentItem = true;
+                        // set high resolution bitmap in METADATA_KEY_ALBUM_ART. This is used, for
+                        // example, on the lockscreen background when the media session is active.
+                        .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
+
+                        // set small version of the album art in the DISPLAY_ICON. This is used on
+                        // the MediaDescription and thus it should be small to be serialized if
+                        // necessary
+
+                        .build();
+                mListener.onMetadataChanged(updatedMetaItem);
+            }
+            // Convert the remote playback states to media playback states.
+            switch (status) {
+                case MediaStatus.PLAYER_STATE_IDLE:
+                    if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
+                        System.out.println("Music Service AudioCastPlayback PLAYER_STATE_IDLE");
+                        ifCastDeviceClosedPlayLocally();
+                        if (mCallback != null && !isStatusUpdateedForCurrentItem) {
+                            mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
+                            mRemoteMediaClient.removeProgressListener(progressListener);
+                            mCallback.onCompletion();
+                            isStatusUpdateedForCurrentItem = true;
+                        }
                     }
-                }
-                break;
-            case MediaStatus.PLAYER_STATE_BUFFERING:
-                System.out.println("Music Service AudioCastPlayback PLAYER_STATE_BUFFERING");
+                    break;
+                case MediaStatus.PLAYER_STATE_BUFFERING:
+                    System.out.println("Music Service AudioCastPlayback PLAYER_STATE_BUFFERING");
 
-                ifCastDeviceClosedPlayLocally();
-                mPlaybackState = PlaybackStateCompat.STATE_BUFFERING;
-                if (mCallback != null) {
-                    mCallback.onPlaybackStatusChanged(mPlaybackState, null);
-                }
-                break;
-            case MediaStatus.PLAYER_STATE_PLAYING:
-                mPlaybackState = PlaybackStateCompat.STATE_PLAYING;
-                isStatusUpdateedForCurrentItem = false;
+                    ifCastDeviceClosedPlayLocally();
+                    mPlaybackState = PlaybackStateCompat.STATE_BUFFERING;
+                    if (mCallback != null) {
+                        mCallback.onPlaybackStatusChanged(mPlaybackState);
+                    }
+                    break;
+                case MediaStatus.PLAYER_STATE_PLAYING:
+                    mPlaybackState = PlaybackStateCompat.STATE_PLAYING;
+                    isStatusUpdateedForCurrentItem = false;
 
-                setMetadataFromRemote();
-                if (mCallback != null) {
-                    mCallback.onPlaybackStatusChanged(mPlaybackState, null);
-                }
-                break;
-            case MediaStatus.PLAYER_STATE_PAUSED:
-                mPlaybackState = PlaybackStateCompat.STATE_PAUSED;
-                setMetadataFromRemote();
-                if (mCallback != null) {
-                    mCallback.onPlaybackStatusChanged(mPlaybackState, null);
-                }
-                break;
-            default: // case unknown
-                Log.d(TAG, "State default : " + status);
-                break;
+                    setMetadataFromRemote();
+                    if (mCallback != null) {
+                        mCallback.onPlaybackStatusChanged(mPlaybackState);
+                    }
+                    break;
+                case MediaStatus.PLAYER_STATE_PAUSED:
+                    mPlaybackState = PlaybackStateCompat.STATE_PAUSED;
+                    setMetadataFromRemote();
+                    if (mCallback != null) {
+                        mCallback.onPlaybackStatusChanged(mPlaybackState);
+                    }
+                    break;
+                default: // case unknown
+                    Log.d(TAG, "State default : " + status);
+                    break;
+            }
         }
     }
 
@@ -417,7 +440,7 @@ public class AudioCastPlayback implements Playback {
     private void initProgressListeners() {
 
         progressListener = (remoteCastProgress, totalCastDuration) -> {
-            mCurrentPosition = remoteCastProgress;
+            this.mCurrentPosition = remoteCastProgress;
             long castCurrentDuration = remoteCastProgress / 1000;
             try {
                 if (castCurrentDuration % 60 == 0) {
