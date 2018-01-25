@@ -12202,7 +12202,7 @@ public class AppCMSPresenter {
                 paint.setColor(Color.DKGRAY);
                 paint.setStrokeWidth(iv2.getWidth() / 10);
                 paint.setStyle(Paint.Style.STROKE);
-
+                paint.setAntiAlias(true);
                 canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - radiusDifference, paint);// Fix SVFA-1561 changed  -2 to -7
 
 //                if (isTablet) {
@@ -12214,7 +12214,8 @@ public class AppCMSPresenter {
                 int tintColor = Color.parseColor((appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
                 paint.setColor(tintColor);
                 paint.setStrokeWidth(iv2.getWidth() / 10);
-                paint.setStyle(Paint.Style.FILL);
+                paint.setAntiAlias(true);
+//                paint.setStyle(Paint.Style.FILL);
                 final RectF oval = new RectF();
                 paint.setStyle(Paint.Style.STROKE);
                 if (isTablet) {
