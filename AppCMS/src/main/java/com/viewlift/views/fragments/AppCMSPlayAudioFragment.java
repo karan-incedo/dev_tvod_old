@@ -297,7 +297,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
         if (view == previousTrack) {
             MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-            controls.pause();
             controls.skipToPrevious();
         }
         if (view == playPauseTrack) {
@@ -321,9 +320,9 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         }
         if (view == nextTrack) {
             MediaControllerCompat.TransportControls controls = MediaControllerCompat.getMediaController(getActivity()).getTransportControls();
-//            controls.pause();
             controls.skipToNext();
         }
+
         if (view == playlist) {
             if (AudioPlaylistHelper.getInstance().getCurrentPlaylistData() != null) {
                 appCMSPresenter.navigatePlayListPageWithPreLoadData(AudioPlaylistHelper.getInstance().getCurrentPlaylistData());
@@ -440,21 +439,25 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         fetchImageAsync(description);
     }
 
+    long duration = 0;
+
     private void updateDuration(MediaMetadataCompat metadata) {
         if (metadata == null) {
             return;
         }
-        long duration = 0;
-        if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) != 0) {
-            duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
-
-        } else {
-            duration = AudioPlaylistHelper.getInstance().mediaDuration;
-        }
+        if (duration != metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)) {
+            if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) > 0) {
+                duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+            }
+//            else {
+//                duration = AudioPlaylistHelper.getInstance().mediaDuration;
+//            }
 //        seekAudio.setMax(duration);
-        seekAudio.setMax((int) duration);
-        seekAudio.setProgress(0);
-        trackEndTime.setText(DateUtils.formatElapsedTime(duration / 1000));
+            System.out.println("ipdated meta info-" + duration);
+            seekAudio.setMax((int) duration);
+            seekAudio.setProgress(0);
+            trackEndTime.setText(DateUtils.formatElapsedTime(duration / 1000));
+        }
     }
 
     private void updatePlaybackState(PlaybackStateCompat state) {
@@ -462,7 +465,6 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
             return;
         }
         mLastPlaybackState = state;
-
         if (CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName())) {
             String castName = CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName();
             String line3Text = castName == null ? "" : getResources()

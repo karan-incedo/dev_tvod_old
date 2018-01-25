@@ -25,8 +25,8 @@ public class AudioServiceHelper {
     private PlaybackControlsFragment mControlsFragment;
     public static AudioServiceHelper audioHelper;
     public static IaudioServiceCallBack callbackAudioService;
-    public static String APP_CMS_STOP_AUDIO_SERVICE_MESSAGE="app_cms_stop_audio_service_message";
-    public static String APP_CMS_STOP_AUDIO_SERVICE_ACTION="app_cms_stop_audio_service_action";
+    public static String APP_CMS_STOP_AUDIO_SERVICE_MESSAGE = "app_cms_stop_audio_service_message";
+    public static String APP_CMS_STOP_AUDIO_SERVICE_ACTION = "app_cms_stop_audio_service_action";
 
     public static AudioServiceHelper getAudioInstance() {
         if (audioHelper == null) {
@@ -35,12 +35,13 @@ public class AudioServiceHelper {
         return audioHelper;
     }
 
-    public void setCallBack(IaudioServiceCallBack callbackAudio){
-        callbackAudioService=callbackAudio;
+    public void setCallBack(IaudioServiceCallBack callbackAudio) {
+        callbackAudioService = callbackAudio;
 
     }
-    public void createAudioPlaylistInstance(AppCMSPresenter appCMSPresenter,Activity mActivity){
-        AudioPlaylistHelper .getInstance().setAppCMSPresenter(appCMSPresenter,mActivity);
+
+    public void createAudioPlaylistInstance(AppCMSPresenter appCMSPresenter, Activity mActivity) {
+        AudioPlaylistHelper.getInstance().setAppCMSPresenter(appCMSPresenter, mActivity);
     }
 
     public void createMediaBrowserService(Activity mActivity) {
@@ -128,7 +129,8 @@ public class AudioServiceHelper {
                 .commit();
         changeMiniControllerVisiblity(false);
     }
-    public void changeMiniControllerVisiblity(boolean isShow){
+
+    public void changeMiniControllerVisiblity(boolean isShow) {
         callbackAudioService.getAudioPlaybackControlVisibility(isShow);
 
     }
@@ -141,7 +143,7 @@ public class AudioServiceHelper {
 
     }
 
-    public boolean isAudioPlaybackControlShowing(){
+    public boolean isAudioPlaybackControlShowing() {
         return mControlsFragment.isVisible();
     }
 
@@ -167,7 +169,8 @@ public class AudioServiceHelper {
                 return true;
         }
     }
-    public  boolean isAudioPlaying() {
+
+    public boolean isAudioPlaying() {
         MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(mActivity);
         if (mediaController == null ||
                 mediaController.getMetadata() == null ||
@@ -230,13 +233,7 @@ public class AudioServiceHelper {
                 @Override
                 public void onChildrenLoaded(@NonNull String parentId,
                                              @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                    try {
-//                        MediaControllerCompat.getMediaController(mActivity).getTransportControls()
-//                                .playFromMediaId( new MusicProvider().getChildren().get(0).getMediaId(), null);
-
-                    } catch (Throwable t) {
-                    }
-                }
+                 }
 
                 @Override
                 public void onError(@NonNull String id) {
@@ -247,10 +244,7 @@ public class AudioServiceHelper {
         return mMediaBrowser;
     }
 
-    public void stopPlayback() {
-    }
-
-    public interface IaudioServiceCallBack{
+    public interface IaudioServiceCallBack {
         public void getAudioPlaybackControlVisibility(boolean isControllerShowing);
     }
 

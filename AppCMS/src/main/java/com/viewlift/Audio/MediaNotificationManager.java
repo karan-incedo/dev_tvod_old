@@ -38,9 +38,12 @@ import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.text.TextUtils;
+import android.view.View;
 
 import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
+import com.viewlift.casting.CastHelper;
 import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
 
@@ -304,15 +307,11 @@ public class MediaNotificationManager extends BroadcastReceiver {
                 .setContentText(description.getSubtitle())
                 .setLargeIcon(art);
 
-        if (mController != null && mController.getExtras() != null) {
-            String castName = mController.getExtras().getString(MusicService.EXTRA_CONNECTED_CAST);
-            if (castName != null) {
-                String castInfo = mService.getResources()
-                        .getString(R.string.casting_to_device, castName);
-                notificationBuilder.setSubText(castInfo);
-//                notificationBuilder.addAction(R.drawable.ic_close_black_24dp,
-//                        mService.getString(R.string.app_cms_action_change_password_key), mStopCastIntent);
-            }
+        if (CastHelper.getInstance(mService.getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(mService.getApplicationContext()).getDeviceName())) {
+            String castName = CastHelper.getInstance(mService.getApplicationContext()).getDeviceName();
+            String castInfo = castName == null ? "" : mService.getResources()
+                    .getString(R.string.casting_to_device, castName);
+            notificationBuilder.setSubText(castInfo);
         }
 
         setNotificationPlaybackState(notificationBuilder);
