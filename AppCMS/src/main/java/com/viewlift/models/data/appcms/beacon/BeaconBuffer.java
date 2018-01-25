@@ -1,6 +1,8 @@
 package com.viewlift.models.data.appcms.beacon;
 
 import com.google.android.exoplayer2.ExoPlayer;
+import com.viewlift.R;
+import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
 
@@ -15,6 +17,7 @@ public class BeaconBuffer extends Thread {
     private String parentScreenName;
     private String streamId;
     private int bufferCount = 0;
+    ContentDatum contentDatum;
 
     public BeaconBuffer(long beaconBufferTimeoutMsec,
                         AppCMSPresenter appCMSPresenter,
@@ -22,7 +25,8 @@ public class BeaconBuffer extends Thread {
                         String permaLink,
                         String parentScreenName,
                         VideoPlayerView videoPlayerView,
-                        String streamId) {
+                        String streamId,
+                        ContentDatum contentDatum) {
         this.beaconBufferTimeoutMsec = beaconBufferTimeoutMsec;
         this.appCMSPresenter = appCMSPresenter;
         this.filmId = filmId;
@@ -30,6 +34,7 @@ public class BeaconBuffer extends Thread {
         this.parentScreenName = parentScreenName;
         this.videoPlayerView = videoPlayerView;
         this.streamId = streamId;
+        this.contentDatum = contentDatum;
     }
 
     @Override
@@ -65,6 +70,32 @@ public class BeaconBuffer extends Thread {
                             bufferCount = 0;
                         }
                     }
+
+                    if (contentDatum != null &&
+                            contentDatum.getAudioGist() != null &&
+                            contentDatum.getAudioGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
+                            contentDatum.getAudioGist().getContentType() != null &&
+                            contentDatum.getAudioGist().getContentType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.content_type_audio).toLowerCase())) {
+                        bufferCount++;
+
+                        if (bufferCount >= 5) {
+                            appCMSPresenter.sendBeaconMessage(contentDatum.getAudioGist().getId(),
+                                    contentDatum.getAudioGist().getPermalink(),
+                                    null,
+                                    contentDatum.getAudioGist().getCurrentPlayingPosition(),
+                                    contentDatum.getAudioGist().getCastingConnected(),
+                                    AppCMSPresenter.BeaconEvent.BUFFERING,
+                                    contentDatum.getAudioGist().getMediaType(),
+                                    null,
+                                    null,
+                                    null,
+                                    streamId,
+                                    0d,
+                                    0,
+                                    appCMSPresenter.isVideoDownloaded(contentDatum.getAudioGist().getId()));
+                            bufferCount = 0;
+                        }
+                    }
                 }
             } catch (InterruptedException e) {
                 //Log.e(TAG, "beaconBufferingThread sleep interrupted");
@@ -72,9 +103,21 @@ public class BeaconBuffer extends Thread {
         }
     }
 
-    public void setBeaconData(String videoId,String permaLink,String streamId) {
+    public void setBeaconData(String videoId, String permaLink, String streamId) {
         this.filmId = videoId;
         this.permaLink = permaLink;
+        this.streamId = streamId;
+    }
+
+    public void setFilmId(String filmId) {
+        this.filmId = filmId;
+    }
+
+    public void setPermaLink(String permaLink) {
+        this.permaLink = permaLink;
+    }
+
+    public void setStreamId(String streamId) {
         this.streamId = streamId;
     }
 }

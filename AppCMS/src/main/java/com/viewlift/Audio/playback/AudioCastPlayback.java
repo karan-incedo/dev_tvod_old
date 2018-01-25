@@ -17,11 +17,17 @@ import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.images.WebImage;
 import com.viewlift.Audio.AudioServiceHelper;
+import com.viewlift.R;
 import com.viewlift.casting.CastingUtils;
+import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
+import com.viewlift.models.data.appcms.beacon.BeaconPing;
 import com.viewlift.presenters.AppCMSPresenter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Date;
 
 /**
  * An implementation of Playback that talks to Cast.
@@ -51,6 +57,16 @@ public class AudioCastPlayback implements Playback {
     public static AudioCastPlayback castPlaybackInstance;
     MediaMetadataCompat updatedMetaItem;
 
+    private BeaconPing beaconPing;
+    private long beaconMsgTimeoutMsec;
+    private BeaconBuffer beaconBuffer;
+    private long beaconBufferingTimeoutMsec;
+    private boolean sentBeaconPlay;
+    private boolean sentBeaconFirstFrame;
+    private ContentDatum audioData;
+    private long mStartBufferMilliSec = 0l;
+    AppCMSPresenter appCMSPresenter;
+
     public static synchronized AudioCastPlayback getInstance(Context context, LocalPlayback.MetadataUpdateListener listener) {
         if (castPlaybackInstance == null) {
             synchronized (AudioCastPlayback.class) {
@@ -70,6 +86,30 @@ public class AudioCastPlayback implements Playback {
         initRemoteClient();
         mRemoteMediaClientListener = new CastMediaClientListener();
         initProgressListeners();
+
+        appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+        if (appCMSPresenter != null && appCMSPresenter.getCurrentContext() != null) {
+            beaconMsgTimeoutMsec = appCMSPresenter.getCurrentContext().getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
+            beaconBufferingTimeoutMsec = appCMSPresenter.getCurrentContext().getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
+        }
+        beaconPing = new BeaconPing(beaconMsgTimeoutMsec,
+                appCMSPresenter,
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null);
+
+        beaconBuffer = new BeaconBuffer(beaconBufferingTimeoutMsec,
+                appCMSPresenter,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 
     public void initRemoteClient() {
@@ -96,6 +136,14 @@ public class AudioCastPlayback implements Playback {
         if (notifyListeners && mCallback != null) {
             mCallback.onPlaybackStatusChanged(mPlaybackState);
         }
+
+        beaconPing.sendBeaconPing = false;
+        beaconPing.runBeaconPing = false;
+        beaconPing = null;
+
+        beaconBuffer.sendBeaconBuffering = false;
+        beaconBuffer.runBeaconBuffering = false;
+        beaconBuffer = null;
     }
 
     @Override
@@ -134,10 +182,12 @@ public class AudioCastPlayback implements Playback {
             {
                 initRemoteClient();
                 String mediaId = item.getDescription().getMediaId();
+                audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
                 boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
                 if (mediaHasChanged) {
                     mCurrentMediaId = mediaId;
                     AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
+                    audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
                 }
                 updatedMetaItem = item;
                 if (!mediaHasChanged && mRemoteMediaClient != null && mRemoteMediaClient.isPaused()) {
@@ -177,6 +227,13 @@ public class AudioCastPlayback implements Playback {
             if (mCallback != null) {
                 mCallback.onError(e.getMessage());
             }
+        }
+
+        if (beaconPing != null) {
+            beaconPing.sendBeaconPing = false;
+        }
+        if (beaconBuffer != null) {
+            beaconBuffer.sendBeaconBuffering = false;
         }
     }
 
@@ -352,6 +409,8 @@ public class AudioCastPlayback implements Playback {
                 mListener.onMetadataChanged(updatedMetaItem);
             }
             // Convert the remote playback states to media playback states.
+            setBeaconBufferValues();
+            setBeaconPingValues();
             switch (status) {
                 case MediaStatus.PLAYER_STATE_IDLE:
                     if (idleReason == MediaStatus.IDLE_REASON_FINISHED) {
@@ -364,6 +423,12 @@ public class AudioCastPlayback implements Playback {
                             isStatusUpdateedForCurrentItem = true;
                         }
                     }
+                    if (beaconBuffer != null) {
+                        beaconBuffer.sendBeaconBuffering = true;
+                        if (!beaconBuffer.isAlive()) {
+                            beaconBuffer.start();
+                        }
+                    }
                     break;
                 case MediaStatus.PLAYER_STATE_BUFFERING:
                     System.out.println("Music Service AudioCastPlayback PLAYER_STATE_BUFFERING");
@@ -373,6 +438,12 @@ public class AudioCastPlayback implements Playback {
                     if (mCallback != null) {
                         mCallback.onPlaybackStatusChanged(mPlaybackState);
                     }
+                    if (beaconBuffer != null) {
+                        beaconBuffer.sendBeaconBuffering = true;
+                        if (!beaconBuffer.isAlive()) {
+                            beaconBuffer.start();
+                        }
+                    }
                     break;
                 case MediaStatus.PLAYER_STATE_PLAYING:
                     mPlaybackState = PlaybackStateCompat.STATE_PLAYING;
@@ -381,6 +452,41 @@ public class AudioCastPlayback implements Playback {
                     setMetadataFromRemote();
                     if (mCallback != null) {
                         mCallback.onPlaybackStatusChanged(mPlaybackState);
+                    }
+                    if (beaconBuffer != null) {
+                        beaconBuffer.sendBeaconBuffering = false;
+                    }
+
+                    if (beaconPing != null) {
+                        beaconPing.sendBeaconPing = true;
+
+                        if (!beaconPing.isAlive()) {
+                            try {
+                                beaconPing.start();
+                            } catch (Exception e) {
+
+                            }
+                        }
+                        if (!sentBeaconFirstFrame) {
+//                                mStopBufferMilliSec = new Date().getTime();
+//                                ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
+                            appCMSPresenter.sendBeaconMessage(audioData.getAudioGist().getId(),
+                                    audioData.getAudioGist().getPermalink(),
+                                    null,
+                                    getCurrentStreamPosition(),
+                                    true,
+                                    AppCMSPresenter.BeaconEvent.FIRST_FRAME,
+                                    audioData.getAudioGist().getMediaType(),
+                                    null,
+                                    null,
+                                    null,
+                                    getStreamId(),
+                                    10,
+                                    0,
+                                    appCMSPresenter.isVideoDownloaded(audioData.getAudioGist().getId()));
+                            sentBeaconFirstFrame = true;
+
+                        }
                     }
                     break;
                 case MediaStatus.PLAYER_STATE_PAUSED:
@@ -392,6 +498,24 @@ public class AudioCastPlayback implements Playback {
                     break;
                 default: // case unknown
                     Log.d(TAG, "State default : " + status);
+                    if (!sentBeaconPlay) {
+                        appCMSPresenter.sendBeaconMessage(audioData.getAudioGist().getId(),
+                                audioData.getAudioGist().getPermalink(),
+                                null,
+                                getCurrentStreamPosition(),
+                                true,
+                                AppCMSPresenter.BeaconEvent.PLAY,
+                                audioData.getAudioGist().getMediaType(),
+                                null,
+                                null,
+                                null,
+                                getStreamId(),
+                                0d,
+                                0,
+                                appCMSPresenter.isVideoDownloaded(audioData.getAudioGist().getId()));
+                        sentBeaconPlay = true;
+                        mStartBufferMilliSec = new Date().getTime();
+                    }
                     break;
             }
         }
@@ -451,5 +575,34 @@ public class AudioCastPlayback implements Playback {
                 //Log.e(TAG, "Error initializing progress indicators: " + e.getMessage());
             }
         };
+    }
+
+    String getStreamId() {
+        String mStreamId;
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(audioData.getAudioGist().getTitle());
+        } catch (Exception e) {
+            //Log.e(TAG, e.getMessage());
+            mStreamId = audioData.getAudioGist().getId() + appCMSPresenter.getCurrentTimeStamp();
+        }
+        return mStreamId;
+    }
+
+    void setBeaconPingValues() {
+        beaconPing.setFilmId(audioData.getAudioGist().getId());
+        beaconPing.setPermaLink(audioData.getAudioGist().getPermalink());
+        beaconPing.setStreamId(getStreamId());
+        audioData.getAudioGist().setCastingConnected(true);
+        audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
+        beaconPing.setContentDatum(audioData);
+    }
+
+    void setBeaconBufferValues() {
+        beaconBuffer.setFilmId(audioData.getAudioGist().getId());
+        beaconBuffer.setPermaLink(audioData.getAudioGist().getPermalink());
+        beaconBuffer.setStreamId(getStreamId());
+        audioData.getAudioGist().setCastingConnected(true);
+        audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
+        beaconPing.setContentDatum(audioData);
     }
 }

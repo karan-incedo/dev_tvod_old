@@ -25,22 +25,9 @@ public class AudioGist implements Serializable {
     @Expose
     String title;
 
-    @SerializedName("logLine")
-    @Expose
-    String logLine;
-
     @SerializedName("description")
     @Expose
     String description;
-
-    @SerializedName("year")
-    @Expose
-    String year;
-
-    @SerializedName("free")
-    @Expose
-    boolean free;
-
 
     @SerializedName("runtime")
     @Expose
@@ -50,50 +37,17 @@ public class AudioGist implements Serializable {
     @Expose
     String posterImageUrl;
 
-    @SerializedName("videoImageUrl")
-    @Expose
-    String videoImageUrl;
-
     @SerializedName("imageGist")
     @Expose
     ImageGist imageGist;
-
-    @SerializedName("badgeImages")
-    @Expose
-    BadgeImages badgeImages;
-
-
-    @SerializedName("updateDate")
-    @Expose
-    String updateDate;
 
     @SerializedName("primaryCategory")
     @Expose
     PrimaryCategory primaryCategory;
 
-    @SerializedName("watchedTime")
-    @Expose
-    long watchedTime;
-
     @SerializedName("contentType")
     @Expose
     String contentType;
-
-    @SerializedName("averageGrade")
-    @Expose
-    String averageGrade;
-
-    @SerializedName("averageStarRating")
-    @Expose
-    float averageStarRating;
-
-    @SerializedName("watchedPercentage")
-    @Expose
-    int watchedPercentage;
-
-    @SerializedName("kisweEventId")
-    @Expose
-    String kisweEventId;
 
     String downloadStatus;
     /**
@@ -133,13 +87,6 @@ public class AudioGist implements Serializable {
         this.title = title;
     }
 
-    public String getLogLine() {
-        return logLine;
-    }
-
-    public void setLogLine(String logLine) {
-        this.logLine = logLine;
-    }
 
     public String getDescription() {
         return description;
@@ -149,21 +96,6 @@ public class AudioGist implements Serializable {
         this.description = description;
     }
 
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
-    }
-
-    public boolean getFree() {
-        return free;
-    }
-
-    public void setFree(boolean free) {
-        this.free = free;
-    }
 
     public long getRuntime() {
         return runtime;
@@ -181,30 +113,6 @@ public class AudioGist implements Serializable {
         this.posterImageUrl = posterImageUrl;
     }
 
-    public String getVideoImageUrl() {
-        return videoImageUrl;
-    }
-
-    public void setVideoImageUrl(String videoImageUrl) {
-        this.videoImageUrl = videoImageUrl;
-    }
-
-    public BadgeImages getBadgeImages() {
-        return badgeImages;
-    }
-
-    public void setBadgeImages(BadgeImages badgeImages) {
-        this.badgeImages = badgeImages;
-    }
-
-
-    public String getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(String updateDate) {
-        this.updateDate = updateDate;
-    }
 
     public PrimaryCategory getPrimaryCategory() {
         return primaryCategory;
@@ -214,13 +122,6 @@ public class AudioGist implements Serializable {
         this.primaryCategory = primaryCategory;
     }
 
-    public long getWatchedTime() {
-        return watchedTime;
-    }
-
-    public void setWatchedTime(long watchedTime) {
-        this.watchedTime = watchedTime;
-    }
 
     public String getContentType() {
         return contentType;
@@ -230,29 +131,6 @@ public class AudioGist implements Serializable {
         this.contentType = contentType;
     }
 
-    public String getAverageGrade() {
-        return averageGrade;
-    }
-
-    public void setAverageGrade(String averageGrade) {
-        this.averageGrade = averageGrade;
-    }
-
-    public float getAverageStarRating() {
-        return averageStarRating;
-    }
-
-    public void setAverageStarRating(float averageStarRating) {
-        this.averageStarRating = averageStarRating;
-    }
-
-    public int getWatchedPercentage() {
-        return watchedPercentage;
-    }
-
-    public void setWatchedPercentage(int watchedPercentage) {
-        this.watchedPercentage = watchedPercentage;
-    }
 
     public DownloadStatus getDownloadStatus() {
         if (downloadStatus != null) {
@@ -281,11 +159,22 @@ public class AudioGist implements Serializable {
         this.imageGist = imageGist;
     }
 
-    public String getKisweEventId() {
-        return kisweEventId;
+    long currentPlayingPosition;
+    Boolean isCastingConnected;
+
+    public long getCurrentPlayingPosition() {
+        return currentPlayingPosition;
     }
 
-    public void setKisweEventId(String kisweEventId) {
-        this.kisweEventId = kisweEventId;
+    public void setCurrentPlayingPosition(long currentPlayingPosition) {
+        this.currentPlayingPosition = currentPlayingPosition;
+    }
+
+    public Boolean getCastingConnected() {
+        return isCastingConnected;
+    }
+
+    public void setCastingConnected(Boolean castingConnected) {
+        isCastingConnected = castingConnected;
     }
 }
