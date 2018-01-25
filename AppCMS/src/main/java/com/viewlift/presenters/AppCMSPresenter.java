@@ -223,9 +223,9 @@ import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
-import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
+import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
@@ -509,6 +509,8 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private Activity currentActivity;
+
+
     private Context currentContext;
     private Navigation navigation;
     private SubscriptionFlowContent subscriptionFlowContent;
@@ -9271,6 +9273,8 @@ public class AppCMSPresenter {
         this.currentContext = context;
     }
 
+
+
     private Bundle getPageActivityBundle(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
                                          AppCMSPageAPI appCMSPageAPI,
@@ -13068,6 +13072,9 @@ public class AppCMSPresenter {
             sec = sec + seconds;
         }
         return min + ":" + sec;
+    }
+    public Context getCurrentContext() {
+        return currentContext;
     }
 
 }

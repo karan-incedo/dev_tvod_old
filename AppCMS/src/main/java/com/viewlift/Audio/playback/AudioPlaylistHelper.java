@@ -35,6 +35,11 @@ public class AudioPlaylistHelper {
     public static String CUSTOM_METADATA_TRACK_PARAM_LINK = "__PARAM_LINK__";
 
     Activity mAct;
+
+    public AppCMSPresenter getAppCmsPresenter() {
+        return appCmsPresenter;
+    }
+
     private AppCMSPresenter appCmsPresenter;
     Context context;
     AppCMSPlaylistResult appCMSPlaylistResult;
@@ -52,6 +57,7 @@ public class AudioPlaylistHelper {
         mAct = mActivity;
         context = mActivity.getApplicationContext();
     }
+
 
     public void setCurrentPlaylistData(AppCMSPlaylistResult mAppCMSPlaylistResult) {
         currentPlaylistData = mAppCMSPlaylistResult;
