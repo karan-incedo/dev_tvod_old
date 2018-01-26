@@ -37,10 +37,10 @@ public class AppCMSVideoDetailCall {
             authHeaders.put("Authorization", authToken);
             return appCMSVideoDetailRest.get(url, authHeaders).execute().body();
         } catch (JsonSyntaxException e) {
-            //Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
+            Log.e(TAG, "DialogType parsing input JSON - " + url + ": " + e.toString());
         } catch (Exception e) {
            // e.printStackTrace();
-            //Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
+            Log.e(TAG, "Network error retrieving site data - " + url + ": " + e.toString());
         }
         return null;
     }
