@@ -214,6 +214,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                     switch (appCMSPresenter.getVideoDownloadStatus(contentDatum.getGist().getId())) {
                         case STATUS_PENDING:
+                            holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                                    R.drawable.ic_download_queued));
                         case STATUS_RUNNING:
                             Log.e(TAG, "Film downloading: " + contentDatum.getGist().getId());
 
@@ -755,10 +757,11 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                         }
                     }
 
+                    viewHolder.appCMSContinueWatchingSize.setTextColor(textColor);
+
                     switch (componentKey) {
                         case PAGE_WATCHLIST_DURATION_KEY:
                             viewHolder.appCMSContinueWatchingDuration.setTextColor(textColor);
-                            viewHolder.appCMSContinueWatchingSize.setTextColor(textColor);
 
                             if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                                 viewHolder.appCMSContinueWatchingDuration

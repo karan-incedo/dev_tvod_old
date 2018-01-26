@@ -395,6 +395,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_download_uration_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_unit_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_UNIT_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_description_key),

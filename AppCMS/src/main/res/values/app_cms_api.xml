@@ -181,6 +181,7 @@
     <string name="app_cms_page_download_title">My Downloads</string>
 
     <string name="app_cms_page_watchlist_duration_key">duration</string>
+    <string name="app_cms_page_watchlist_download_uration_key">downloadDuration</string>
     <string name="app_cms_page_watchlist_duration_unit_key">durationUnit</string>
     <string name="app_cms_page_watchlist_description_key">description</string>
     <string name="app_cms_page_watchlist_title_key">title</string>
