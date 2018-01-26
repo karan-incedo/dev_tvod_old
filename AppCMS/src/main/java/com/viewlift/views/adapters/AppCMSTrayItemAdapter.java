@@ -1,5 +1,6 @@
 package com.viewlift.views.adapters;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -212,10 +213,17 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                 if (contentDatum.getGist() != null) {
                     holder.appCMSContinueWatchingDeleteButton.setTag(contentDatum.getGist().getId());
 
+                    appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
+                            videoDownloadStatus -> {
+                                if (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
+                                    holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
+                                            R.drawable.ic_download_queued));
+                                }
+                            },
+                            appCMSPresenter.getLoggedInUser());
+
                     switch (appCMSPresenter.getVideoDownloadStatus(contentDatum.getGist().getId())) {
                         case STATUS_PENDING:
-                            holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
-                                    R.drawable.ic_download_queued));
                         case STATUS_RUNNING:
                             Log.e(TAG, "Film downloading: " + contentDatum.getGist().getId());
 
