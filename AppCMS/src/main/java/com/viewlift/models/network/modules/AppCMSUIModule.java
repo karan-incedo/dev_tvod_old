@@ -9,11 +9,9 @@ import android.content.res.AssetManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
-import com.viewlift.models.data.appcms.ui.main.Content;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.network.rest.AppCMSAddToWatchlistRest;
 import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
@@ -393,9 +391,13 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_user_management_download_settings_key),
                 AppCMSUIKeyType.PAGE_USER_MANAGEMENT_DOWNLOADS_MODULE_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_duration_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
-        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_download_uration_key),
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_duration_key),
+                AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_duration_key),
                 AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_duration_unit_key),
