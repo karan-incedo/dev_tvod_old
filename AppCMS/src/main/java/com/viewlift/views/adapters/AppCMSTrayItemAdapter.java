@@ -215,7 +215,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
                     appCMSPresenter.getUserVideoDownloadStatus(contentDatum.getGist().getId(),
                             videoDownloadStatus -> {
-                                if (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
+                                if (videoDownloadStatus != null &&
+                                        videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING) {
                                     holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
                                             R.drawable.ic_download_queued));
                                 }
@@ -275,9 +276,14 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                                                 contentDatum.getGist().setDownloadStatus(userVideoDownloadStatus.getDownloadStatus());
                                             }
                                         },
-                                        userId, true, radiusDifference);
+                                        userId,
+                                        true,
+                                        radiusDifference,
+                                        appCMSPresenter.getDownloadPageId());
                             } else {
-                                appCMSPresenter.updateDownloadTimerTask(contentDatum.getGist().getId(), holder.appCMSContinueWatchingDeleteButton);
+                                appCMSPresenter.updateDownloadTimerTask(contentDatum.getGist().getId(),
+                                        appCMSPresenter.getDownloadPageId(),
+                                        holder.appCMSContinueWatchingDeleteButton);
                             }
 
                             holder.appCMSContinueWatchingSize.setText("Cancel".toUpperCase());

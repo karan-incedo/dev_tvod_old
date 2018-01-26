@@ -32,6 +32,9 @@ public class AppCMSUserDownloadVideoStatusCall {
                      final Action1<UserVideoDownloadStatus> readyAction1, String userId) {
         DownloadVideoRealm downloadVideoRealm=null;
         UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
+
+        Cursor cursor = null;
+
         try {
              downloadVideoRealm = appCMSPresenter.getRealmController()
                     .getDownloadByIdBelongstoUser(videoId, userId);
@@ -52,7 +55,7 @@ public class AppCMSUserDownloadVideoStatusCall {
             DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(downloadVideoRealm.getVideoId_DM());
 
-            Cursor cursor = downloadManager.query(query);
+            cursor = downloadManager.query(query);
             if (cursor.moveToFirst()) {
                 int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
 
@@ -125,6 +128,10 @@ public class AppCMSUserDownloadVideoStatusCall {
             Observable.just((UserVideoDownloadStatus) null)
                     .onErrorResumeNext(throwable -> Observable.empty())
                     .subscribe(readyAction1);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
 }

@@ -65,6 +65,7 @@ public class CollectionGridItemView extends BaseView {
     private final Layout parentLayout;
     private final boolean useParentLayout;
     private final Component component;
+    private final String moduleId;
     protected int defaultWidth;
     protected int defaultHeight;
     private List<ItemContainer> childItems;
@@ -78,6 +79,7 @@ public class CollectionGridItemView extends BaseView {
                                   Layout parentLayout,
                                   boolean useParentLayout,
                                   Component component,
+                                  String moduleId,
                                   int defaultWidth,
                                   int defaultHeight,
                                   boolean createMultipleContainersForChildren,
@@ -86,6 +88,7 @@ public class CollectionGridItemView extends BaseView {
         this.parentLayout = parentLayout;
         this.useParentLayout = useParentLayout;
         this.component = component;
+        this.moduleId = moduleId;
         this.defaultWidth = defaultWidth;
         this.defaultHeight = defaultHeight;
         this.viewsToUpdateOnClickEvent = new ArrayList<>();
@@ -441,7 +444,7 @@ public class CollectionGridItemView extends BaseView {
                                 updateDownloadImageIconActionMap.get(data.getGist().getId());
                         if (updateDownloadImageIconAction == null) {
                             updateDownloadImageIconAction = new ViewCreator.UpdateDownloadImageIconAction((ImageButton) view, appCMSPresenter,
-                                    data, userId, radiusDifference);
+                                    data, userId, radiusDifference, moduleId);
                             updateDownloadImageIconActionMap.put(data.getGist().getId(), updateDownloadImageIconAction);
                         }
 

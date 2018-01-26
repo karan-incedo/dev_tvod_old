@@ -3414,21 +3414,10 @@ public class AppCMSPresenter {
             if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
                 createLocalCopyForUser(contentDatum, resultAction1);
             } else if (getMegabytesAvailable() > file_size) {
-                boolean existingDownloadOrInProgress = false;
                 try {
-                    DownloadVideoRealm existingVideoDownload =
-                            realmController.getDownloadById(contentDatum.getGist().getId());
-                    existingDownloadOrInProgress = existingVideoDownload != null;
+                    startDownload(contentDatum, resultAction1);
                 } catch (Exception e) {
 
-                }
-
-                if (!existingDownloadOrInProgress) {
-                    try {
-                        startDownload(contentDatum, resultAction1);
-                    } catch (Exception e) {
-
-                    }
                 }
             } else {
                 currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
@@ -3856,8 +3845,6 @@ public class AppCMSPresenter {
                                     .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
                         }
 
-                        cancelDownloadIconTimerTask(updateContentDatum.getGist().getId());
-
                         String downloadURL;
 
                         int bitrate = updateContentDatum.getStreamingInfo().getVideoAssets().getMpeg().get(0).getBitrate();
@@ -3880,27 +3867,34 @@ public class AppCMSPresenter {
                                     updateContentDatum.getGist().getId() + MEDIA_SURFIX_MP4);
                         }
 
-                        enqueueId = downloadManager.enqueue(downloadRequest);
+                        if (contentDatum == null ||
+                                contentDatum.getGist() == null |
+                                !downloadTaskRunning(contentDatum.getGist().getId())) {
+                            cancelDownloadIconTimerTask(updateContentDatum.getGist().getId());
 
-                        long thumbEnqueueId = downloadVideoImage(updateContentDatum.getGist().getVideoImageUrl(),
-                                updateContentDatum.getGist().getId());
-                        long posterEnqueueId = downloadPosterImage(updateContentDatum.getGist().getPosterImageUrl(),
-                                updateContentDatum.getGist().getId());
+                            enqueueId = downloadManager.enqueue(downloadRequest);
+
+
+                            long thumbEnqueueId = downloadVideoImage(updateContentDatum.getGist().getVideoImageUrl(),
+                                    updateContentDatum.getGist().getId());
+                            long posterEnqueueId = downloadPosterImage(updateContentDatum.getGist().getPosterImageUrl(),
+                                    updateContentDatum.getGist().getId());
 
                         /*
                          * Inserting data in realm data object
                          */
-                        createLocalEntry(
-                                enqueueId,
-                                thumbEnqueueId,
-                                posterEnqueueId,
-                                ccEnqueueId,
-                                updateContentDatum,
-                                downloadURL);
+                            createLocalEntry(
+                                    enqueueId,
+                                    thumbEnqueueId,
+                                    posterEnqueueId,
+                                    ccEnqueueId,
+                                    updateContentDatum,
+                                    downloadURL);
 
-                        showToast(
-                                currentActivity.getString(R.string.app_cms_download_started_message,
-                                        updateContentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+                            showToast(
+                                    currentActivity.getString(R.string.app_cms_download_started_message,
+                                            updateContentDatum.getGist().getTitle()), Toast.LENGTH_LONG);
+                        }
 
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
@@ -3933,7 +3927,8 @@ public class AppCMSPresenter {
                                                      AppCMSPresenter presenter,
                                                      final Action1<UserVideoDownloadStatus> responseAction,
                                                      String userId, boolean isFromDownload,
-                                                     int radiusDifference) {
+                                                     int radiusDifference,
+                                                     String id) {
         if (!isFromDownload) {
             cancelDownloadIconTimerTask(filmId);
         }
@@ -3946,19 +3941,24 @@ public class AppCMSPresenter {
             long videoId = realmController.getDownloadByIdBelongstoUser(filmId, getLoggedInUser()).getVideoId_DM();
 
 
-            DownloadTimerTask downloadTimerTask = new DownloadTimerTask(filmId,
-                    videoId,
-                    runOnUiThreadAction -> {
-                        currentActivity.runOnUiThread(runOnUiThreadAction::call);
-                    },
-                    BaseView.isTablet(currentActivity),
-                    this,
-                    imageView,
-                    responseAction,
-                    updateDownloadIconTimer,
-                    radiusDifference);
+            DownloadTimerTask downloadTimerTask = findDownloadTimerTask(videoId, filmId, id);
+            if (downloadTimerTask == null) {
+                downloadTimerTask = new DownloadTimerTask(filmId,
+                        videoId,
+                        runOnUiThreadAction -> {
+                            currentActivity.runOnUiThread(runOnUiThreadAction::call);
+                        },
+                        BaseView.isTablet(currentActivity),
+                        this,
+                        imageView,
+                        responseAction,
+                        updateDownloadIconTimer,
+                        radiusDifference,
+                        id);
+                downloadProgressTimerList.add(downloadTimerTask);
+            }
 
-            downloadProgressTimerList.add(downloadTimerTask);
+            downloadTimerTask.imageView = imageView;
 
             updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
         } catch (Exception e) {
@@ -3966,13 +3966,36 @@ public class AppCMSPresenter {
         }
     }
 
-    public void updateDownloadTimerTask(String filmId, ImageView downloadStatusIcon) {
+    public DownloadTimerTask findDownloadTimerTask(long videoId,
+                                                   String filmId,
+                                                   String id) {
+        if (downloadTaskRunning(filmId)) {
+            if (downloadProgressTimerList != null &&
+                    !downloadProgressTimerList.isEmpty()) {
+                for (DownloadTimerTask downloadProgressTask : downloadProgressTimerList) {
+                    if (downloadProgressTask.videoId == videoId &&
+                            !TextUtils.isEmpty(id) &&
+                            id.equals(downloadProgressTask.id)) {
+                        return downloadProgressTask;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public void updateDownloadTimerTask(String filmId,
+                                        String id,
+                                        ImageView downloadStatusIcon) {
         if (downloadTaskRunning(filmId)) {
             if (filmId != null &&
                     downloadProgressTimerList != null &&
                     !downloadProgressTimerList.isEmpty()) {
                 for (DownloadTimerTask downloadProgressTask : downloadProgressTimerList) {
-                    if (downloadProgressTask.filmIdLocal.equals(filmId)) {
+                    if (downloadProgressTask.filmIdLocal.equals(filmId) &&
+                            !TextUtils.isEmpty(id) &&
+                            id.equals(downloadProgressTask.id)) {
                         downloadProgressTask.imageView = downloadStatusIcon;
                         try {
                             new Thread(downloadProgressTask).run();
@@ -12088,6 +12111,7 @@ public class AppCMSPresenter {
         final Action1<UserVideoDownloadStatus> responseAction;
         final Timer timer;
         final int radiusDifference;
+        final String id;
         volatile boolean cancelled;
         volatile boolean finished;
 
@@ -12099,7 +12123,8 @@ public class AppCMSPresenter {
                                  ImageView imageView,
                                  Action1<UserVideoDownloadStatus> responseAction,
                                  Timer timer,
-                                 int radiusDifference) {
+                                 int radiusDifference,
+                                 String id) {
             this.filmIdLocal = filmId;
             this.videoId = videoId;
             this.onRunOnUIThread = onRunOnUIThread;
@@ -12111,6 +12136,7 @@ public class AppCMSPresenter {
             this.radiusDifference = radiusDifference;
             this.cancelled = false;
             this.finished = false;
+            this.id = id;
         }
 
         @Override
@@ -12123,7 +12149,12 @@ public class AppCMSPresenter {
                     long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                     long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     int downloadStatus = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                    String filmId =
+                            c.getString(c.getColumnIndex(DownloadManager.COLUMN_TITLE));
+                    Log.e(TAG, "Updating download status for: " + filmId);
                     c.close();
+
+
                     int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
                     //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
                     //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
@@ -12137,7 +12168,6 @@ public class AppCMSPresenter {
                             this.cancel();
                         }
                         onRunOnUIThread.runOnUiThread(() -> {
-                            Log.d(TAG, "Film update status: " + downloadStatus);
                             if ((downloaded >= totalSize ||
                                     downloadPercent > 100 ||
                                     downloadStatus == DownloadManager.STATUS_SUCCESSFUL) &&
@@ -12148,7 +12178,11 @@ public class AppCMSPresenter {
                                 appCMSPresenter.appCMSUserDownloadVideoStatusCall
                                         .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
                                 finished = true;
-                                Log.e(TAG, "Film finished downloading: " + filmIdLocal);
+                                Log.e(TAG, "Film download completed: " + filmId);
+                            } else if (downloadStatus == DownloadManager.STATUS_PENDING) {
+                                appCMSPresenter.appCMSUserDownloadVideoStatusCall
+                                        .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
+                                Log.e(TAG, "Film download pending: " + filmId);
                             } else if (downloadStatus == DownloadManager.STATUS_RUNNING) {
                                 try {
                                     if (((imageView.getTag() == null) ||
@@ -12169,7 +12203,7 @@ public class AppCMSPresenter {
                                 } catch (Exception e) {
                                     //Log.e(TAG, "Error rendering circular image bar");
                                 }
-                                Log.e(TAG, "Updating film download progress: " + filmIdLocal);
+                                Log.e(TAG, "Updating film download progress: " + filmId);
                             }
                         });
                     }
