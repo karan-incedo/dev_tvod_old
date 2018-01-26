@@ -3942,7 +3942,8 @@ public class AppCMSPresenter {
 
 
             DownloadTimerTask downloadTimerTask = findDownloadTimerTask(videoId, filmId, id);
-            if (downloadTimerTask == null) {
+            if (downloadTimerTask == null ||
+                    downloadTimerTask.cancelled) {
                 downloadTimerTask = new DownloadTimerTask(filmId,
                         videoId,
                         runOnUiThreadAction -> {
@@ -12140,6 +12141,12 @@ public class AppCMSPresenter {
         }
 
         @Override
+        public boolean cancel() {
+            this.cancelled = true;
+            return super.cancel();
+        }
+
+        @Override
         public void run() {
             try {
                 DownloadManager.Query query = new DownloadManager.Query();
@@ -12179,10 +12186,6 @@ public class AppCMSPresenter {
                                         .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
                                 finished = true;
                                 Log.e(TAG, "Film download completed: " + filmId);
-                            } else if (downloadStatus == DownloadManager.STATUS_PENDING) {
-                                appCMSPresenter.appCMSUserDownloadVideoStatusCall
-                                        .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
-                                Log.e(TAG, "Film download pending: " + filmId);
                             } else if (downloadStatus == DownloadManager.STATUS_RUNNING) {
                                 try {
                                     if (((imageView.getTag() == null) ||

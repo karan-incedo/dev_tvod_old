@@ -4864,6 +4864,10 @@ public class ViewCreator {
         public void updateDownloadImageButton(ImageButton imageButton) {
             this.imageButton = imageButton;
         }
+
+        public View.OnClickListener getAddClickListener() {
+            return addClickListener;
+        }
     }
 
     private static class OnRemoveAllInternalEvent implements OnInternalEvent {

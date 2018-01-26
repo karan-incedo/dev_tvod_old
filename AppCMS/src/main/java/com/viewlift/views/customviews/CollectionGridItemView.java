@@ -251,6 +251,9 @@ public class CollectionGridItemView extends BaseView {
             moduleType = AppCMSUIKeyType.PAGE_EMPTY_KEY;
         }
 
+        Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
+                appCMSPresenter.getUpdateDownloadImageIconActionMap();
+
         if (childComponent != null) {
             boolean bringToFront = true;
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
@@ -435,9 +438,6 @@ public class CollectionGridItemView extends BaseView {
                     String userId = appCMSPresenter.getLoggedInUser();
 
                     try {
-                        Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap =
-                                appCMSPresenter.getUpdateDownloadImageIconActionMap();
-
                         int radiusDifference = 5;
 
                         ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
@@ -483,9 +483,24 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(data.getGist().getTitle());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
+
+                        ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
+                                updateDownloadImageIconActionMap.get(data.getGist().getId());
+                        if (updateDownloadImageIconAction != null) {
+                            view.setClickable(true);
+                            view.setOnClickListener(updateDownloadImageIconAction.getAddClickListener());
+                        }
+
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_UNIT_KEY) {
                         ((TextView) view).setText(context.getResources().getQuantityString(R.plurals.min_duration_unit,
                                 (int) (data.getGist().getRuntime() / 60)));
+
+                        ViewCreator.UpdateDownloadImageIconAction updateDownloadImageIconAction =
+                                updateDownloadImageIconActionMap.get(data.getGist().getId());
+                        if (updateDownloadImageIconAction != null) {
+                            view.setClickable(true);
+                            view.setOnClickListener(updateDownloadImageIconAction.getAddClickListener());
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
                         ((TextView) view).setText(thumbInfo);
