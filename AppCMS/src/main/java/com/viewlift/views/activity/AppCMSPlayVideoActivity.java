@@ -34,6 +34,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.fragments.AppCMSPlayVideoFragment;
+import com.viewlift.views.fragments.OnResumeVideo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +52,8 @@ import rx.functions.Action1;
 public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent,
         AppCMSPlayVideoFragment.OnUpdateContentDatumEvent,
-        VideoPlayerView.StreamingQualitySelector {
+        VideoPlayerView.StreamingQualitySelector,
+        AppCMSPlayVideoFragment.RegisterOnResumeVideo {
     private static final String TAG = "VideoPlayerActivity";
 
     private BroadcastReceiver handoffReceiver;
@@ -72,6 +74,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
     private Map<String, String> availableStreamingQualityMap;
     private List<String> availableStreamingQualities;
+
+    private OnResumeVideo onResumeVideo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -239,6 +243,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer(),
                                 null);
+                    } else if (onResumeVideo != null) {
+                        onResumeVideo.onResumeVideo();
                     }
                 } catch (Exception e) {
                     if ((binder != null &&
@@ -273,6 +279,9 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         String videoUrl = "";
         String closedCaptionUrl = null;
         title = gist.getTitle();
+
+        appCMSPresenter.setPlayingVideo(true);
+
         if (binder.isOffline()
                 && extra != null
                 && extra.length >= 2
@@ -446,6 +455,12 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             unregisterReceiver(networkConnectedReceiver);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to unregister Handoff Receiver: " + e.getMessage());
+        }
+
+        try {
+            appCMSPresenter.setPlayingVideo(false);
+        } catch (Exception e) {
+
         }
 
         super.onDestroy();
@@ -656,5 +671,10 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         for (int i = 0; i < numStreamingQualities; i++) {
             availableStreamingQualities.set(i, availableStreamingQualities.get(i));
         }
+    }
+
+    @Override
+    public void registerOnResumeVideo(OnResumeVideo onResumeVideo) {
+        this.onResumeVideo = onResumeVideo;
     }
 }

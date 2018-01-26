@@ -6,7 +6,6 @@ import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.ServiceConnection;
@@ -22,7 +21,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -83,7 +81,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.urbanairship.AirshipConfigOptions;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
@@ -215,8 +212,6 @@ import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
 import com.viewlift.views.fragments.AppCMSTrayMenuDialogFragment;
-
-import net.nightwhistler.htmlspanner.TextUtil;
 
 import org.jsoup.Jsoup;
 import org.threeten.bp.Duration;
@@ -365,6 +360,8 @@ public class AppCMSPresenter {
     private static final String SUBSCRIPTION_STATUS = "subscription_status_pref_name";
     private static final String DOWNLOAD_OVER_CELLULAR_ENABLED_PREF_NAME = "download_over_cellular_enabled_pref_name";
     private static final String ACTIVE_NETWORK_TYPE_PREF_NAME = "active_network_type_pref_name";
+
+    private static final String PLAYING_VIDEO_PREF_NAME = "playing_offline_video_pref_name";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String ANONYMOUS_AUTH_TOKEN_PREF_NAME = "anonymous_auth_token_pref_key";
@@ -4152,6 +4149,8 @@ public class AppCMSPresenter {
 
     public void navigateToDownloadPage(String pageId, String pageTitle, String url,
                                        boolean launchActivity) {
+        setPlayingVideo(false);
+
         if (currentActivity != null && !TextUtils.isEmpty(pageId) && downloadsAvailableForApp()) {
             for (Fragment fragment : ((FragmentActivity) currentActivity).getSupportFragmentManager().getFragments()) {
                 if (fragment instanceof AppCMSMoreFragment) {
@@ -6093,6 +6092,23 @@ public class AppCMSPresenter {
         return ConnectivityManager.TYPE_MOBILE;
     }
 
+    public boolean setPlayingVideo(boolean playingOfflineVideo) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(PLAYING_VIDEO_PREF_NAME, 0);
+            return sharedPrefs.edit().putBoolean(PLAYING_VIDEO_PREF_NAME, playingOfflineVideo).commit();
+        }
+
+        return false;
+    }
+
+    public boolean getPlayingVideo() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(PLAYING_VIDEO_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(PLAYING_VIDEO_PREF_NAME, false);
+        }
+        return false;
+    }
+
     public boolean setCastOverLay() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(CASTING_OVERLAY_PREF_NAME, 0);
@@ -6425,7 +6441,9 @@ public class AppCMSPresenter {
                         null, null, false);
             }
 
-            if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) && networkConnected) {
+            if (!sharedPrefs.getBoolean(NETWORK_CONNECTED_SHARED_PREF_NAME, true) &&
+                    networkConnected &&
+                    !getPlayingVideo()) {
                 sendCloseOthersAction(null, true, true);
                 navigateToHomePage();
             }

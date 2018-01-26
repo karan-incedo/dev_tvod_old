@@ -74,7 +74,8 @@ public class AppCMSPlayVideoFragment extends Fragment
         AdEvent.AdEventListener,
         VideoPlayerView.ErrorEventListener,
         Animation.AnimationListener,
-        AudioManager.OnAudioFocusChangeListener {
+        AudioManager.OnAudioFocusChangeListener,
+        OnResumeVideo {
     private static final String TAG = "PlayVideoFragment";
 
     private static final long SECS_TO_MSECS = 1000L;
@@ -268,6 +269,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
         if (context instanceof VideoPlayerView.StreamingQualitySelector) {
             streamingQualitySelector = (VideoPlayerView.StreamingQualitySelector) context;
+        }
+        if (context instanceof RegisterOnResumeVideo) {
+            ((RegisterOnResumeVideo) context).registerOnResumeVideo(this);
         }
     }
 
@@ -1464,6 +1468,14 @@ public class AppCMSPlayVideoFragment extends Fragment
         }
     }
 
+    @Override
+    public void onResumeVideo() {
+        resumeVideo();
+        if (videoPlayerView != null) {
+            videoPlayerView.startPlayer();
+        }
+    }
+
     public interface OnClosePlayerEvent {
         void closePlayer();
 
@@ -1485,5 +1497,9 @@ public class AppCMSPlayVideoFragment extends Fragment
         ContentDatum getCurrentContentDatum();
 
         List<String> getCurrentRelatedVideoIds();
+    }
+
+    public interface RegisterOnResumeVideo {
+        void registerOnResumeVideo(OnResumeVideo onResumeVideo);
     }
 }
