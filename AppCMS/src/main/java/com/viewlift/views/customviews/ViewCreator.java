@@ -4800,6 +4800,7 @@ public class ViewCreator {
 
                     case STATUS_PENDING:
                         appCMSPresenter.setDownloadInProgress(false);
+                        imageButton.setImageResource(R.drawable.ic_download_queued);
                         appCMSPresenter.updateDownloadingStatus(contentDatum.getGist().getId(),
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false, radiusDifference);
                         imageButton.setOnClickListener(null);
