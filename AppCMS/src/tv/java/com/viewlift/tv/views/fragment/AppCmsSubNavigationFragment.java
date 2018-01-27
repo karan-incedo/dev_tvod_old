@@ -621,8 +621,6 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                         }
                                 );
                         } else {
-
-
                             if(!appCMSPresenter.isUserLoggedIn() && appCMSPresenter.isNetworkConnected()) {
                                 appCMSPresenter.setLaunchType(AppCMSPresenter.LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG);
                                 ClearDialogFragment newFragment = Utils.getClearDialogFragment(
@@ -842,6 +840,15 @@ public class AppCmsSubNavigationFragment extends Fragment {
                                     return true;
                                 }
                                 break;
+                            case KeyEvent.KEYCODE_DPAD_DOWN:
+                            case KeyEvent.KEYCODE_DPAD_UP:
+                            case KeyEvent.KEYCODE_MENU:
+                                return true;
+                        }
+                    }else if(action == KeyEvent.ACTION_UP){
+                        switch(keyCode){
+                            case KeyEvent.KEYCODE_MENU:
+                                return true;
                         }
                     }
                     return false;

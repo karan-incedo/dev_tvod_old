@@ -226,6 +226,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
             primaryCategory = args.getString(getString(R.string.video_primary_category_key));
             parentalRating = args.getString(getString(R.string.video_player_content_rating_key));
             freeContent = args.getBoolean(getString(R.string.free_content_key));
+            Log.d(TAG, "ANAS: free " + freeContent);
         }
 
         appCMSPresenter =

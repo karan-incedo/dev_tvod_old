@@ -605,7 +605,7 @@ public class AppCmsNavigationFragment extends Fragment {
                     /*History*/
                     else if (primary.getTitle().equalsIgnoreCase(getString(R.string.app_cms_page_history_title))) {
                         if (appCmsPresenter.isUserLoggedIn()) {
-                            navigationVisibilityListener.showNavigation(false);
+                            //navigationVisibilityListener.showNavigation(false);
                             Utils.pageLoading(true, getActivity());
                             appCmsPresenter.navigateToHistoryPage(
                                     primary.getPageId(),

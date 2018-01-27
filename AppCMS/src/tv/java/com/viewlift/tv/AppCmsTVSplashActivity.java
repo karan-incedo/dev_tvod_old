@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.viewlift.AppCMSApplication;
