@@ -211,10 +211,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                     }
                                 }
                             } else {
-                                showSubNavigation(false, false); //close subnavigation if any.
-                                showNavigation(false); //close navigation if any.
                                 updatedAppCMSBinder = (AppCMSBinder) args.getBinder(getString(R.string.app_cms_binder_key));
                                 handleLaunchPageAction(updatedAppCMSBinder);
+                                showSubNavigation(false, false); //close subnavigation if any.
+                                showNavigation(false); //close navigation if any.
                             }
                         }
                     } catch (ClassCastException e) {
@@ -818,7 +818,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_ffwd).requestFocus();
                                 return super.dispatchKeyEvent(event);
                             }
-                        case KeyEvent.KEYCODE_DPAD_DOWN:
                         case KeyEvent.KEYCODE_DPAD_UP:
                             if(findViewById(R.id.exo_pause).hasFocus() ||
                                     findViewById(R.id.exo_play).hasFocus() ||
@@ -895,8 +894,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     browseFragment.getCustomVideoVideoPlayerView().resumePlayer();
                 }
             } else {
-                showNavigation(true);
-
                 if (null != browseFragment && null != browseFragment.getCustomVideoVideoPlayerView()) {
                     browseFragment.getCustomVideoVideoPlayerView().pausePlayer();
                 }

@@ -79,9 +79,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-import com.kiswe.kmsdkcorekit.reports.Report;
+/*import com.kiswe.kmsdkcorekit.reports.Report;
 import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-import com.kiswe.kmsdkcorekit.reports.Reports;
+import com.kiswe.kmsdkcorekit.reports.Reports;*/
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -653,7 +653,7 @@ public class AppCMSPresenter {
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
-    private ReportSubscriber reportSubscriber = new ReportSubscriber() {
+   /* private ReportSubscriber reportSubscriber = new ReportSubscriber() {
         @Override
         public void handleReport(Report report) {
 
@@ -667,7 +667,7 @@ public class AppCMSPresenter {
 
             Log.i(TAG, "(handleReport) Status (" + code + "): " + msg + " [" + eventId + "]");
         }
-    };
+    };*/
     private LruCache<String, Object> tvPlayerViewCache;
     private boolean isTeamPAgeVisible = false;
 
