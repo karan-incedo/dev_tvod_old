@@ -324,6 +324,7 @@
     <string name="app_cms_download_write_external_storage_permission_rationale_message">May we request permission to access your external storage to download the video?</string>
     <string name="app_cms_download_external_storage_write_permission_info_error_title">Download to External Storage</string>
     <string name="app_cms_download_limit_message">Download is only available for 30 days after it has been downloaded.</string>
+    <string name="app_cms_download_unavailable_error_message">The download is currently unavailable. Please try again later.</string>
     <string name="app_cms_download_unavailable_error_title">Download Unavailable</string>
     <string name="app_cms_download_failed_error_title">Not Enough Storage</string>
     <!-- <string name="app_cms_download_failed_error_message">Cannot be downloaded due to low device storage, Please manage space in your storage area and try again.</string>-->
@@ -446,8 +447,8 @@
     <string name="app_cms_download_over_cellular_disabled_error_message">You are currently using a cellular only network.  Please navigate to the User Settings page and enable downloading over cellular to continue.</string>
     <string name="app_cms_package_name_key">app_cms_package_name</string>
     <string name="exit_fullscreen_relaunch_page_extra_key">exit_fullscreen_relaunch_page_extra</string>
-    <string name="app_cms_video_not_available_errot_title">Video Not Available</string>
-    <string name="app_cms_video_not_available_errot_message">Could not load the video.  Please try again later.</string>
+    <string name="app_cms_video_not_available_error_title">Video Not Available</string>
+    <string name="app_cms_video_not_available_error_message">Could not load the video.  Please try again later.</string>
 
     <plurals name="episode_subtitle_text">
         <item quantity="one">EPISODE</item>

@@ -170,14 +170,14 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                         } catch (Exception e) {
                                             //
                                             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
-                                                    getString(R.string.app_cms_video_not_available_errot_message),
+                                                    getString(R.string.app_cms_video_not_available_error_message),
                                                     false,
                                                     this::finish,
                                                     null);
                                         }
                                     } else {
                                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
-                                                getString(R.string.app_cms_video_not_available_errot_message),
+                                                getString(R.string.app_cms_video_not_available_error_message),
                                                 false,
                                                 this::finish,
                                                 null);
@@ -185,7 +185,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                                 });
                     } else {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
-                                getString(R.string.app_cms_video_not_available_errot_message),
+                                getString(R.string.app_cms_video_not_available_error_message),
                                 false,
                                 this::finish,
                                 null);
@@ -193,7 +193,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 }
             } else {
                 appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
-                        getString(R.string.app_cms_video_not_available_errot_message),
+                        getString(R.string.app_cms_video_not_available_error_message),
                         false,
                         this::finish,
                         null);
@@ -413,7 +413,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         } catch (Exception e) {
             //
             appCMSPresenter.showDialog(AppCMSPresenter.DialogType.VIDEO_NOT_AVAILABLE,
-                    getString(R.string.app_cms_video_not_available_errot_message),
+                    getString(R.string.app_cms_video_not_available_error_message),
                     false,
                     this::finish,
                     null);
