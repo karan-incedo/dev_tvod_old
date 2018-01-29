@@ -41,7 +41,7 @@
                 <action android:name="com.urbanairship.push.RECEIVED" />
                 <action android:name="com.urbanairship.push.DISMISSED" />
 
-                <category android:name="@string/app_cms_app_name" />
+                <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
         <service
