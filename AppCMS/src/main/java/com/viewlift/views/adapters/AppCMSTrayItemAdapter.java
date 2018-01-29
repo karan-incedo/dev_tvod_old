@@ -217,7 +217,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
                             videoDownloadStatus -> {
                                 if (videoDownloadStatus != null &&
                                         (videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PAUSED ||
-                                                videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING)) {
+                                                videoDownloadStatus.getDownloadStatus() == DownloadStatus.STATUS_PENDING ||
+                                        !appCMSPresenter.isNetworkConnected())) {
                                     holder.appCMSContinueWatchingDeleteButton.setImageBitmap(null);
                                     holder.appCMSContinueWatchingDeleteButton.setBackground(ContextCompat.getDrawable(holder.itemView.getContext(),
                                             R.drawable.ic_download_queued));
