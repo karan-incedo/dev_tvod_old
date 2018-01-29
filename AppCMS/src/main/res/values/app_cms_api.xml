@@ -474,6 +474,7 @@
     <string name="app_cms_autoplay_up_next_loader_key">upNextLoader</string>
     <string name="app_cms_autoplay_rotating_loader_view">rotatingLoaderView</string>
     <string name="app_cms_settings_subscription_duration_label">subscriptionDurationLabel</string>
+    <string name="app_cms_settings_subscription_end_date_label">subscriptionEndDateLabel</string>
     <string name="app_cms_settings_manage_subscription_button_key">manageSubscriptionButton</string>
     <string name="app_cms_settings_subscription_label_key">subscriptionLabel</string>
 
