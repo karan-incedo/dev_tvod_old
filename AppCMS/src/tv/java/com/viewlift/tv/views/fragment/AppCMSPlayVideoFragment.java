@@ -362,6 +362,8 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
                            if(shouldAutoPlay()){
                                onClosePlayerEvent.onMovieFinished();
+                           } else {
+                               onClosePlayerEvent.closePlayer();
                            }
                         }
                         break;
@@ -392,7 +394,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
     private boolean shouldAutoPlay() {
         boolean isPerVideo = appCMSPresenter.getAppCMSMain().getFeatures().getFreePreview().isPerVideo();
-         if (isPerVideo && !appCMSPresenter.isUserSubscribed()){
+         if (isPerVideo && !appCMSPresenter.isUserSubscribed() && !freeContent){
             return false;
         }
         return true;
