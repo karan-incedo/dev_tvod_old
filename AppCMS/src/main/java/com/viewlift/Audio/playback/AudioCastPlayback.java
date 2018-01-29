@@ -75,7 +75,7 @@ public class AudioCastPlayback implements Playback {
     public void initRemoteClient() {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
-        if (castSession != null && castSession.isConnected() && castPlaybackInstance != null) {
+        if (castSession != null && castSession.isConnected() ) {
             mRemoteMediaClient = castSession.getRemoteMediaClient();
         }
     }
