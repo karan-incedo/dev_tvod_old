@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.PendingIntent;
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -3397,32 +3398,123 @@ public class AppCMSPresenter {
                 }
             }
 
-            String downloadURL;
-            long file_size = 0L;
-            try {
-                downloadURL = getDownloadURL(contentDatum);
-                URL url = new URL(downloadURL);
-                URLConnection urlConnection = url.openConnection();
-                urlConnection.connect();
-                //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
-                file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
-                file_size = ((file_size / 1000) / 1000);
 
-            } catch (Exception e) {
-                //Log.e(TAG, "Error trying to download: " + e.getMessage());
-            }
-            if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
-                createLocalCopyForUser(contentDatum, resultAction1);
-            } else if (getMegabytesAvailable() > file_size) {
-                try {
-                    startDownload(contentDatum, resultAction1);
-                } catch (Exception e) {
-
+            if (isVideoDownloadRunning(contentDatum)) {
+                if (!pauseDownload(contentDatum)) {
+                    Log.e(TAG, "Failed to pause download");
+                }
+            } else if (isVideoDownloadPaused(contentDatum)) {
+                if (!resumeDownload(contentDatum)) {
+                    Log.e(TAG, "Failed to resume download");
                 }
             } else {
-                currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
+
+                String downloadURL;
+                long file_size = 0L;
+                try {
+                    downloadURL = getDownloadURL(contentDatum);
+                    URL url = new URL(downloadURL);
+                    URLConnection urlConnection = url.openConnection();
+                    urlConnection.connect();
+                    //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
+                    file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
+                    file_size = ((file_size / 1000) / 1000);
+
+                } catch (Exception e) {
+                    //Log.e(TAG, "Error trying to download: " + e.getMessage());
+                }
+                if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
+                    createLocalCopyForUser(contentDatum, resultAction1);
+                } else if (getMegabytesAvailable() > file_size) {
+                    try {
+                        startDownload(contentDatum, resultAction1);
+                    } catch (Exception e) {
+
+                    }
+                } else {
+                    currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
+                }
             }
         }
+    }
+
+    private boolean resumeDownload(ContentDatum contentDatum) {
+        if (currentContext != null &&
+                contentDatum != null &&
+                contentDatum.getGist() != null &&
+                !TextUtils.isEmpty(contentDatum.getGist().getTitle())) {
+            ContentValues pauseDownload = new ContentValues();
+            pauseDownload.put("control", 0);
+
+            int updatedRows = 0;
+            try {
+                updatedRows = currentContext.getContentResolver().update(Uri.parse("content://downloads/my_downloads"),
+                        pauseDownload,
+                        "title=?",
+                        new String[]{ contentDatum.getGist().getTitle() });
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to update control for downloading video");
+            }
+
+            return 0 < updatedRows;
+        }
+        return false;
+    }
+
+    private boolean pauseDownload(ContentDatum contentDatum) {
+        if (currentContext != null &&
+                contentDatum != null &&
+                contentDatum.getGist() != null &&
+                !TextUtils.isEmpty(contentDatum.getGist().getTitle())) {
+            ContentValues pauseDownload = new ContentValues();
+            pauseDownload.put("control", 1);
+
+            int updatedRows = 0;
+
+            try {
+                updatedRows = currentContext.getContentResolver().update(Uri.parse("content://downloads/my_downloads"),
+                        pauseDownload,
+                        "title=?",
+                        new String[]{contentDatum.getGist().getTitle()});
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to update control for downloading video");
+            }
+            return 0 < updatedRows;
+        }
+        return false;
+    }
+
+    private int getVideoDownloadStatus(ContentDatum contentDatum) {
+        if (contentDatum != null && contentDatum.getGist() != null) {
+            Cursor c = null;
+            try {
+                DownloadManager.Query query = new DownloadManager.Query();
+                long videoId = realmController.getDownloadByIdBelongstoUser(contentDatum.getGist().getId(),
+                        getLoggedInUser()).getVideoId_DM();
+                query.setFilterById(videoId);
+                c = downloadManager.query(query);
+                if (c != null && c.moveToFirst()) {
+                    return c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                }
+            } catch (Exception e) {
+
+            } finally {
+                if (c != null) {
+                    c.close();
+                }
+            }
+        }
+        return DownloadManager.STATUS_PENDING;
+    }
+
+    private boolean isVideoDownloadRunning(ContentDatum contentDatum) {
+        return getVideoDownloadStatus(contentDatum) ==
+                DownloadManager.STATUS_RUNNING;
+    }
+
+    private boolean isVideoDownloadPaused(ContentDatum contentDatum) {
+        return getVideoDownloadStatus(contentDatum) ==
+                DownloadManager.STATUS_PAUSED;
     }
 
     private void createLocalCopyForUser(ContentDatum contentDatum,
@@ -12172,15 +12264,18 @@ public class AppCMSPresenter {
             this.running = true;
             try {
                 DownloadManager.Query query = new DownloadManager.Query();
+                DownloadManager.Request request;
                 query.setFilterById(videoId);
                 Cursor c = appCMSPresenter.downloadManager.query(query);
                 if (c != null && c.moveToFirst()) {
                     long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
                     long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                     int downloadStatus = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+
                     String filmId =
                             c.getString(c.getColumnIndex(DownloadManager.COLUMN_TITLE));
                     Log.e(TAG, "Updating download status for: " + filmId);
+
                     c.close();
 
 

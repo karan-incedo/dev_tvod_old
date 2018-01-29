@@ -4786,8 +4786,11 @@ public class ViewCreator {
                                 });
                     }
                 }
-                imageButton.setOnClickListener(null);
+//                imageButton.setOnClickListener(null);
             };
+
+            imageButton.setOnClickListener(addClickListener);
+
         }
 
         @Override
@@ -4811,7 +4814,7 @@ public class ViewCreator {
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                                 radiusDifference,
                                 id);
-                        imageButton.setOnClickListener(null);
+//                        imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_RUNNING:
@@ -4821,13 +4824,13 @@ public class ViewCreator {
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                                 radiusDifference,
                                 id);
-                        imageButton.setOnClickListener(null);
+//                        imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_SUCCESSFUL:
                         imageButton.setImageResource(R.drawable.ic_downloaded_big);
                         imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        imageButton.setOnClickListener(null);
+//                        imageButton.setOnClickListener(null);
                         if (appCMSPresenter.downloadTaskRunning(contentDatum.getGist().getId())) {
                             appCMSPresenter.setDownloadInProgress(false);
                             appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
@@ -4839,7 +4842,7 @@ public class ViewCreator {
                         appCMSPresenter.setDownloadInProgress(false);
                         imageButton.setImageResource(android.R.drawable.stat_sys_warning);
                         imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                        imageButton.setOnClickListener(null);
+//                        imageButton.setOnClickListener(null);
                         break;
 
                     default:
@@ -4856,7 +4859,6 @@ public class ViewCreator {
                 imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
-                imageButton.setOnClickListener(addClickListener);
                 imageButton.requestLayout();
             }
         }
