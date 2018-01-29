@@ -12206,11 +12206,10 @@ public class AppCMSPresenter {
                                 Log.e(TAG, "Film download completed: " + filmId);
                             } else if (downloadStatus == DownloadManager.STATUS_RUNNING) {
                                 try {
-                                    if (((imageView.getTag() == null) ||
+                                    if ((imageView.getTag() == null) ||
                                             (imageView.getTag() != null &&
                                                     imageView.getTag() instanceof String &&
-                                                    imageView.getTag().equals(filmIdLocal))) &&
-                                            !cancelled) {
+                                                    imageView.getTag().equals(filmIdLocal))) {
 //                                        int radiusDifference = 5;
 //                                        if (isTablet) {
 //                                            radiusDifference = 2;
@@ -12235,7 +12234,7 @@ public class AppCMSPresenter {
             } catch (StaleDataException exception) {
 
             } catch (Exception exception) {
-                //Log.e(TAG, filmIdLocal + " Removed from top +++ " + exception.getMessage());
+                Log.e(TAG, filmIdLocal + " Removed from top +++ " + exception.getMessage());
                 this.cancel();
                 UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
                 statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
