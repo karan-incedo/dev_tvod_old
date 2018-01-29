@@ -6567,6 +6567,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionSku(null);
             setActiveSubscriptionCountryCode(null);
             setActiveSubscriptionPlanName(null);
+            setActiveSubscriptionEndDate(null);
             setActiveSubscriptionReceipt(null);
             setRefreshToken(null);
             setAuthToken(null);
@@ -6642,6 +6643,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionId(null);
             setActiveSubscriptionSku(null);
             setActiveSubscriptionPlanName(null);
+            setActiveSubscriptionEndDate(null);
             setActiveSubscriptionStatus(null);
             setActiveSubscriptionReceipt(null);
             setActiveSubscriptionPlatform(null);
