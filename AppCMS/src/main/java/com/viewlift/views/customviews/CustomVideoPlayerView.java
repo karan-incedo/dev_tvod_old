@@ -196,7 +196,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 isTrailer,
                 parentScreenName,
                 this,
-                mStreamId);
+                mStreamId,
+                onUpdatedContentDatum);
 
         beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
                 appCMSPresenter,
@@ -204,7 +205,8 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
                 permaLink,
                 parentScreenName,
                 this,
-                mStreamId);
+                mStreamId,
+                onUpdatedContentDatum);
     }
 
     public void setVideoId(String videoId) {
