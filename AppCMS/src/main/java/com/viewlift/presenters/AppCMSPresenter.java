@@ -12229,7 +12229,8 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error rendering circular image bar");
                                 }
                                 Log.e(TAG, "Updating film download progress: " + filmId);
-                            } else if (downloadStatus == DownloadManager.STATUS_FAILED) {
+                            } else if (downloadStatus == DownloadManager.STATUS_FAILED ||
+                                    downloadStatus == DownloadManager.STATUS_PAUSED) {
                                 Log.e(TAG, "Failed to download film: " + filmId);
                                 appCMSPresenter.appCMSUserDownloadVideoStatusCall
                                         .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
@@ -12238,7 +12239,10 @@ public class AppCMSPresenter {
                     }
                 } else {
                     //noinspection ConstantConditions
-                    System.out.println(" Downloading fails" + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
+                    Log.e(TAG, " Downloading failed: " + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
+                    imageView.setImageBitmap(null);
+                    imageView.setBackground(ContextCompat.getDrawable(imageView.getContext(),
+                            android.R.drawable.stat_sys_warning));
                 }
             } catch (StaleDataException exception) {
 

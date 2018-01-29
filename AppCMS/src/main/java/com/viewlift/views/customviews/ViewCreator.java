@@ -4801,7 +4801,7 @@ public class ViewCreator {
                         break;
 
                     case STATUS_PAUSED:
-                        //
+                        imageButton.setImageResource(R.drawable.ic_download_queued);
                         break;
 
                     case STATUS_PENDING:
