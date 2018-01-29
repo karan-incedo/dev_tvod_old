@@ -7,7 +7,7 @@ def final hostName = "www.hoichoi.tv"
 def final hostNameSuffix = "*.hoichoi.tv"
 
 
-def final appVersionName = "2.1.66"
+def final appVersionName = "2.1.67"
 
 buildscript {
     repositories {
@@ -39,7 +39,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 197
+        versionCode 198
 
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
