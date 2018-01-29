@@ -47,6 +47,7 @@ public class AppCmsTVPageFragment extends Fragment {
     private AppCMSTVViewComponent appCmsViewComponent;
     private TVPageView tvPageView;
     public String mPageId;
+    private View focusableView;
 
     public static AppCmsTVPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCmsTVPageFragment appCmsTVPageFragment = new AppCmsTVPageFragment();
@@ -133,13 +134,30 @@ public class AppCmsTVPageFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        requestFocus();
-        if (null != appCMSPresenter)
-            appCMSPresenter.sendStopLoadingPageAction(false,null);
-        if(appCMSPresenter.isUserLoggedIn()
-                && mAppCMSBinder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_watchlist_navigation_title))) {
-            updateAdapterData(mAppCMSBinder);
+//        requestFocus();
+
+        try {
+            if(focusableView != null) {
+                focusableView.requestFocus();
+            } else {
+                requestFocus();
+            }
+        } catch (Exception e) {
         }
+
+        if (null != appCMSPresenter) {
+            appCMSPresenter.sendStopLoadingPageAction(false, null);
+            if (appCMSPresenter.isUserLoggedIn()
+                    && mAppCMSBinder.getPageName().equalsIgnoreCase(getString(R.string.app_cms_watchlist_navigation_title))) {
+                updateAdapterData(mAppCMSBinder);
+            }
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        focusableView = getActivity().getCurrentFocus();
     }
 
     @Override
@@ -154,35 +172,32 @@ public class AppCmsTVPageFragment extends Fragment {
     }
 
     public void requestFocus() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (null != tvPageView) {
-                    ViewGroup ChildContaineer = (ViewGroup) (tvPageView.getChildrenContainer());
-                    int childcount = 0;
-                    if (null != ChildContaineer) {
-                        childcount = ChildContaineer.getChildCount();
-                    }
-                    for (int i = 0; i < childcount; i++) {
-                        if (ChildContaineer.getChildAt(0) instanceof TVModuleView) {
-                            TVModuleView tvModuleView = (TVModuleView) ChildContaineer.getChildAt(0);
-                            ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
-                            int moduleChild = moduleChildContaineer.getChildCount();
+        new Handler().postDelayed(() -> {
+            if (null != tvPageView) {
+                ViewGroup ChildContaineer = tvPageView.getChildrenContainer();
+                int childcount = 0;
+                if (null != ChildContaineer) {
+                    childcount = ChildContaineer.getChildCount();
+                }
+                for (int i = 0; i < childcount; i++) {
+                    if (ChildContaineer.getChildAt(0) instanceof TVModuleView) {
+                        TVModuleView tvModuleView = (TVModuleView) ChildContaineer.getChildAt(0);
+                        ViewGroup moduleChildContaineer = tvModuleView.getChildrenContainer();
+                        int moduleChild = moduleChildContaineer.getChildCount();
 
-                            for (int j = 0; j < moduleChild; j++) {
-                                View view = moduleChildContaineer.getChildAt(j);
-                                if (null != view) {
-                                    System.out.println("View isFocusable == " + view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
-                                    if (null != view.getTag() &&
-                                            view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))) {
-                                        ((FrameLayout) view).getChildAt(0).requestFocus();
-                                        break;
-                                    } else if (view.isFocusable()) {
-                                        view.requestFocus();
-                                        break;
-                                    } else {
-                                        view.clearFocus();
-                                    }
+                        for (int j = 0; j < moduleChild; j++) {
+                            View view = moduleChildContaineer.getChildAt(j);
+                            if (null != view) {
+                                System.out.println("View isFocusable == " + view.isFocusable() + "TAG =  = == " + (view.getTag() != null ? view.getTag().toString() : null));
+                                if (null != view.getTag() &&
+                                        view.getTag().toString().equalsIgnoreCase(getString(R.string.video_image_key))) {
+                                    ((FrameLayout) view).getChildAt(0).requestFocus();
+                                    break;
+                                } else if (view.isFocusable()) {
+                                    view.requestFocus();
+                                    break;
+                                } else {
+                                    view.clearFocus();
                                 }
                             }
                         }
