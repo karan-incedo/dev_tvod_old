@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/controller_view_separator"
+        android:layout_alignParentTop="true"
         android:orientation="vertical"
         android:weightSum="1">
 
@@ -16,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight=".8"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="@dimen/app_cms_audio_image_padding">
 
             <ImageView
                 android:id="@+id/track_image"
@@ -27,18 +29,18 @@
 
             <TextView
                 android:id="@+id/extra_info"
-                tools:text="casting to MyCast"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:layout_centerInParent="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:padding="20dp"
-                android:textSize="20sp"
+                android:layout_centerInParent="true"
                 android:background="#80ffffff"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="20dp"
+                android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#000000"
-                android:textAppearance="?android:attr/textAppearanceSmall"/>
+                android:textSize="20sp"
+                android:visibility="gone"
+                tools:text="casting to MyCast" />
         </RelativeLayout>
 
         <LinearLayout
@@ -53,6 +55,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text=""
+                android:singleLine="true"
+                android:textStyle="bold"
                 android:textColor="@android:color/white"
                 android:textSize="20sp" />
 
@@ -61,6 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:singleLine="true"
                 android:text=""
                 android:textColor="@android:color/darker_gray"
                 android:textSize="20sp" />
@@ -181,23 +186,24 @@
             <ImageButton
                 android:id="@+id/prev"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-
                 android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/previous_track" />
+
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                >
+                android:layout_height="match_parent"
+                android:gravity="center_vertical">
+
                 <ImageButton
                     android:id="@+id/play_pause"
                     android:layout_width="@dimen/app_cms_audio_play_width"
                     android:layout_height="@dimen/app_cms_audio_play_height"
                     android:layout_gravity="center_vertical"
-                    android:background="@drawable/pause_track"
-                    />
+                    android:background="@drawable/pause_track" />
+
                 <ProgressBar
                     android:id="@+id/progressBarPlayPause"
                     style="?android:attr/progressBarStyleSmall"
@@ -211,7 +217,7 @@
             <ImageButton
                 android:id="@+id/next"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:background="?selectableItemBackgroundBorderless"

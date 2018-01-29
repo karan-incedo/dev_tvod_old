@@ -104,7 +104,7 @@ public class PlaybackControlsFragment extends Fragment {
                 MediaMetadataCompat metadata = controller.getMetadata();
                 if (metadata != null) {
                     intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
-                            metadata.getDescription());
+                            metadata);
                 }
                 startActivity(intent);
             }
@@ -187,10 +187,10 @@ public class PlaybackControlsFragment extends Fragment {
         }
 
         if (enablePlay) {
-            mPlayPause.setImageDrawable(
+            mPlayPause.setBackground(
                     ContextCompat.getDrawable(getActivity(), R.drawable.play_track));
         } else {
-            mPlayPause.setImageDrawable(
+            mPlayPause.setBackground(
                     ContextCompat.getDrawable(getActivity(), R.drawable.pause_track));
         }
 

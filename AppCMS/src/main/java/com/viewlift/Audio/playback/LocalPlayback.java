@@ -122,6 +122,7 @@ public final class LocalPlayback implements Playback {
     private boolean sentBeaconFirstFrame;
     private ContentDatum audioData;
     private long mStartBufferMilliSec = 0l;
+
     public static LocalPlayback getInstance(Context context, MetadataUpdateListener listener) {
         if (localPlaybackInstance == null) {
 
@@ -185,13 +186,18 @@ public final class LocalPlayback implements Playback {
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
-        beaconPing.sendBeaconPing = false;
-        beaconPing.runBeaconPing = false;
-        beaconPing = null;
+        if (beaconPing != null) {
+            beaconPing.sendBeaconPing = false;
+            beaconPing.runBeaconPing = false;
+            beaconPing = null;
+        }
 
-        beaconBuffer.sendBeaconBuffering = false;
-        beaconBuffer.runBeaconBuffering = false;
-        beaconBuffer = null;
+        if (beaconBuffer != null) {
+            beaconBuffer.sendBeaconBuffering = false;
+            beaconBuffer.runBeaconBuffering = false;
+            beaconBuffer = null;
+        }
+
     }
 
     @Override
@@ -669,6 +675,17 @@ public final class LocalPlayback implements Playback {
     }
 
     void setBeaconPingValues() {
+        if (beaconPing == null) {
+            beaconPing = new BeaconPing(beaconMsgTimeoutMsec,
+                    appCMSPresenter,
+                    null,
+                    null,
+                    false,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
         beaconPing.setFilmId(audioData.getAudioGist().getId());
         beaconPing.setPermaLink(audioData.getAudioGist().getPermalink());
         beaconPing.setStreamId(getStreamId());
@@ -678,11 +695,21 @@ public final class LocalPlayback implements Playback {
     }
 
     void setBeaconBufferValues() {
+        if (beaconBuffer == null) {
+            beaconBuffer = new BeaconBuffer(beaconBufferingTimeoutMsec,
+                    appCMSPresenter,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
         beaconBuffer.setFilmId(audioData.getAudioGist().getId());
         beaconBuffer.setPermaLink(audioData.getAudioGist().getPermalink());
         beaconBuffer.setStreamId(getStreamId());
         audioData.getAudioGist().setCastingConnected(false);
         audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
-        beaconPing.setContentDatum(audioData);
+        beaconBuffer.setContentDatum(audioData);
     }
 }

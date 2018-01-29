@@ -45,12 +45,10 @@ import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.Audio.ui.PlaybackControlsFragment;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
-import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.ViewCreator;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -158,7 +156,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         @Override
         public void onMetadataChanged(MediaMetadataCompat metadata) {
             if (metadata != null) {
-                updateMediaDescription(metadata.getDescription());
+                updateMediaDescription(metadata);
                 updateDuration(metadata);
                 onUpdateMetaChange.updateMetaData(metadata);
             }
@@ -347,7 +345,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         updatePlaybackState(state);
         MediaMetadataCompat metadata = mediaController.getMetadata();
         if (metadata != null) {
-            updateMediaDescription(metadata.getDescription());
+            updateMediaDescription(metadata);
             updateDuration(metadata);
         }
         updateProgress();
@@ -359,7 +357,7 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
     private void updateFromParams(Intent intent) {
         if (intent != null) {
-            MediaDescriptionCompat description = intent.getParcelableExtra(
+            MediaMetadataCompat description = intent.getParcelableExtra(
                     PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION);
             if (description != null) {
                 updateMediaDescription(description);
@@ -423,20 +421,26 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         mCurrentArtUrl = artUrl;
 
 
-        Glide.with(getActivity())
-                .load(mCurrentArtUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .placeholder(R.drawable.logo)
-                .into(trackImage);
+        if(getActivity()!=null) {
+            Glide.with(getActivity())
+                    .load(mCurrentArtUrl).diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .placeholder(R.drawable.logo)
+                    .into(trackImage);
+        }
 
     }
 
-    private void updateMediaDescription(MediaDescriptionCompat description) {
-        if (description == null) {
+    private void updateMediaDescription(MediaMetadataCompat metaData) {
+        if (metaData == null) {
             return;
         }
-        trackName.setText(description.getTitle());
-        artistName.setText(description.getSubtitle());
-        fetchImageAsync(description);
+        trackName.setText(metaData.getDescription().getTitle());
+        artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        String albumInfo=metaData.getText(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_ALBUM_YEAR)+" | "+metaData.getText(MediaMetadataCompat.METADATA_KEY_ALBUM);
+        artistName.setText(metaData.getText(MediaMetadataCompat.METADATA_KEY_ARTIST));
+        trackYear.setText(albumInfo);
+
+        fetchImageAsync(metaData.getDescription());
     }
 
     long duration = 0;

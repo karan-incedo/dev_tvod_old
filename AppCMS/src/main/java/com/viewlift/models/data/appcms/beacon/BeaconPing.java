@@ -77,7 +77,7 @@ public class BeaconPing extends Thread {
                                     videoPlayerView.getCurrentPosition() / 1000);
                         }
                     }
-                    if (contentDatum != null &&
+                    if (appCMSPresenter!=null && appCMSPresenter.getCurrentActivity()!=null && contentDatum != null &&
                             contentDatum.getAudioGist() != null &&
                             contentDatum.getAudioGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
                             contentDatum.getAudioGist().getContentType() != null &&

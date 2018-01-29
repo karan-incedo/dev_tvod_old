@@ -33,6 +33,7 @@ public class AudioPlaylistHelper {
     private String mCurrentMusicId = "";
     public static String mCurrentPlayListId = "";
     public static String CUSTOM_METADATA_TRACK_PARAM_LINK = "__PARAM_LINK__";
+    public static String CUSTOM_METADATA_TRACK_ALBUM_YEAR = "_ALBUM_YEAR";
 
     Activity mAct;
 
@@ -120,7 +121,7 @@ public class AudioPlaylistHelper {
         indexAudioFromPlaylist++;
         if (currentAudioPlaylist.size() > indexAudioFromPlaylist) {
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper,true,null,false);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, true, null, false);
         }
     }
 
@@ -133,18 +134,18 @@ public class AudioPlaylistHelper {
     public void playAudioOnClick(String mediaId, long currentPosition) {
         context.startService(new Intent(context, MusicService.class));
         indexAudioFromPlaylist = currentAudioPlaylist.indexOf(mediaId);
-        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null,true,null,false);
+        appCmsPresenter.getAudioDetail(mediaId, currentPosition, null, true, null, false);
     }
 
     public void skipToNextItem(IPlaybackCall callBackPlaylistHelper) {
         if ((currentAudioPlaylist.size() > indexAudioFromPlaylist + 1) && indexAudioFromPlaylist + 1 >= 0) {
             indexAudioFromPlaylist++;
             String mediaId = currentAudioPlaylist.get(indexAudioFromPlaylist);
-            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper,true,null,false);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, true, null, false);
             //pause current item while loading next item
             callBackPlaylistHelper.updatePlayStateOnSkip();
 //            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls().pause();
-            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper,true,null,false);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, true, null, false);
 
         } else {
             Toast.makeText(context, "No next item available in queue", Toast.LENGTH_SHORT).show();
@@ -160,7 +161,7 @@ public class AudioPlaylistHelper {
             callBackPlaylistHelper.updatePlayStateOnSkip();
 
 //            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls().pause();
-            appCmsPresenter.getAudioDetail(mediaId, 0,callBackPlaylistHelper,true,null,false);
+            appCmsPresenter.getAudioDetail(mediaId, 0, callBackPlaylistHelper, true, null, false);
         } else {
             Toast.makeText(context, "No previous item available in playlist", Toast.LENGTH_SHORT).show();
         }
@@ -169,7 +170,7 @@ public class AudioPlaylistHelper {
     public static void createMediaMetaDataForAudioItem(AppCMSAudioDetailResult appCMSAudioDetailResult) {
         String mediaId = appCMSAudioDetailResult.getId();
         String title = "";
-        String album = "", iconUrl = "", artist = "", source = "", param_link = "";
+        String album = "Unknown", iconUrl = "", artist = "Unknown", source = "", param_link = "", album_year = "Unknown";
         long runTime = 240 * 1000;
         if (appCMSAudioDetailResult.getGist() != null) {
             title = appCMSAudioDetailResult.getGist().getTitle();
@@ -188,8 +189,8 @@ public class AudioPlaylistHelper {
 
         }
 
-        if (appCMSAudioDetailResult.getCreditBlocks() != null && appCMSAudioDetailResult.getCreditBlocks().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getTitle() != null)
-            artist = appCMSAudioDetailResult.getCreditBlocks().get(0).getTitle();
+        if (appCMSAudioDetailResult.getCreditBlocks() != null && appCMSAudioDetailResult.getCreditBlocks().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits() != null && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().size() > 0 && appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle() != null)
+            artist = appCMSAudioDetailResult.getCreditBlocks().get(0).getCredits().get(0).getTitle();
 
         if (appCMSAudioDetailResult.getStreamingInfo() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets() != null
                 && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3() != null && appCMSAudioDetailResult.getStreamingInfo().getAudioAssets().getMp3().getUrl() != null)
@@ -207,6 +208,8 @@ public class AudioPlaylistHelper {
                 new MediaMetadataCompat.Builder()
                         .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, mediaId)
                         .putString(CUSTOM_METADATA_TRACK_SOURCE, source)
+                        .putString(CUSTOM_METADATA_TRACK_ALBUM_YEAR, album_year)
+
                         .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
                         .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
                         .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration)
@@ -264,6 +267,7 @@ public class AudioPlaylistHelper {
 
     public interface IPlaybackCall {
         void onPlaybackStart(MediaBrowserCompat.MediaItem item, long mCurrentPlayerPosition);
+
         void updatePlayStateOnSkip();
 
     }
