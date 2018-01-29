@@ -3871,8 +3871,6 @@ public class AppCMSPresenter {
                             if (contentDatum == null ||
                                     contentDatum.getGist() == null |
                                             !downloadTaskRunning(contentDatum.getGist().getId())) {
-                                cancelDownloadIconTimerTask(updateContentDatum.getGist().getId());
-
                                 enqueueId = downloadManager.enqueue(downloadRequest);
 
 
@@ -3881,9 +3879,9 @@ public class AppCMSPresenter {
                                 long posterEnqueueId = downloadPosterImage(updateContentDatum.getGist().getPosterImageUrl(),
                                         updateContentDatum.getGist().getId());
 
-                        /*
-                         * Inserting data in realm data object
-                         */
+                                /*
+                                 * Inserting data in realm data object
+                                 */
                                 createLocalEntry(
                                         enqueueId,
                                         thumbEnqueueId,
@@ -3979,7 +3977,9 @@ public class AppCMSPresenter {
 
             downloadTimerTask.imageView = imageView;
 
-            updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
+            if (!downloadTimerTask.running) {
+                updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
+            }
         } catch (Exception e) {
             Log.e(TAG, "Error updating download status: " + e.getMessage());
         }
@@ -12126,13 +12126,14 @@ public class AppCMSPresenter {
         final OnRunOnUIThread onRunOnUIThread;
         final boolean isTablet;
         final AppCMSPresenter appCMSPresenter;
-        ImageView imageView;
+        volatile ImageView imageView;
         final Action1<UserVideoDownloadStatus> responseAction;
         final Timer timer;
         final int radiusDifference;
         final String id;
         volatile boolean cancelled;
         volatile boolean finished;
+        volatile boolean running;
 
         public DownloadTimerTask(String filmId,
                                  long videoId,
@@ -12156,16 +12157,19 @@ public class AppCMSPresenter {
             this.cancelled = false;
             this.finished = false;
             this.id = id;
+            this.running = false;
         }
 
         @Override
         public boolean cancel() {
             this.cancelled = true;
+            this.running = false;
             return super.cancel();
         }
 
         @Override
         public void run() {
+            this.running = true;
             try {
                 DownloadManager.Query query = new DownloadManager.Query();
                 query.setFilterById(videoId);
@@ -12188,7 +12192,8 @@ public class AppCMSPresenter {
                             appCMSPresenter.isUserLoggedIn()) {
                         if ((downloaded >= totalSize ||
                                 downloadPercent > 100 ||
-                                downloadStatus == DownloadManager.STATUS_SUCCESSFUL) && totalSize > 0) {
+                                downloadStatus == DownloadManager.STATUS_SUCCESSFUL ||
+                                downloadStatus == DownloadManager.STATUS_FAILED) && totalSize > 0) {
                             cancelled = true;
                             this.cancel();
                         }
@@ -12224,6 +12229,10 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error rendering circular image bar");
                                 }
                                 Log.e(TAG, "Updating film download progress: " + filmId);
+                            } else if (downloadStatus == DownloadManager.STATUS_FAILED) {
+                                Log.e(TAG, "Failed to download film: " + filmId);
+                                appCMSPresenter.appCMSUserDownloadVideoStatusCall
+                                        .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser());
                             }
                         });
                     }

@@ -161,4 +161,6 @@ public class AppCMSApplication extends MultiDexApplication {
     public void setOnActivityResumedAction(Action0 onActivityResumedAction) {
         this.onActivityResumedAction = onActivityResumedAction;
     }
+
+
 }
