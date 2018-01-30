@@ -10167,7 +10167,6 @@ public class AppCMSPresenter {
                         //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                         launchUpgradeAppActivity();
                     } else {
-                        tryCount = 0;
                         getAppCMSModules(appCMSAndroidUI,
                                 false,
                                 false,
