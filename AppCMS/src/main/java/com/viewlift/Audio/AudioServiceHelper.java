@@ -171,20 +171,24 @@ public class AudioServiceHelper {
     }
 
     public boolean isAudioPlaying() {
-        MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(mActivity);
-        if (mediaController == null ||
-                mediaController.getMetadata() == null ||
-                mediaController.getPlaybackState() == null) {
-            return false;
-        }
-        switch (mediaController.getPlaybackState().getState()) {
-            case PlaybackStateCompat.STATE_ERROR:
-            case PlaybackStateCompat.STATE_NONE:
-            case PlaybackStateCompat.STATE_STOPPED:
+        if (mActivity != null) {
+            MediaControllerCompat mediaController = MediaControllerCompat.getMediaController(mActivity);
+            if (mediaController == null ||
+                    mediaController.getMetadata() == null ||
+                    mediaController.getPlaybackState() == null) {
                 return false;
-            default:
-                return true;
+            }
+            switch (mediaController.getPlaybackState().getState()) {
+                case PlaybackStateCompat.STATE_ERROR:
+                case PlaybackStateCompat.STATE_NONE:
+                case PlaybackStateCompat.STATE_STOPPED:
+                    return false;
+                default:
+                    return true;
+            }
         }
+        return false;
+
     }
 
     protected boolean isFullScreenPlayerEnable() {
@@ -233,7 +237,7 @@ public class AudioServiceHelper {
                 @Override
                 public void onChildrenLoaded(@NonNull String parentId,
                                              @NonNull List<MediaBrowserCompat.MediaItem> children) {
-                 }
+                }
 
                 @Override
                 public void onError(@NonNull String id) {

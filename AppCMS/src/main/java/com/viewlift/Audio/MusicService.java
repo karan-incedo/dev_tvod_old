@@ -155,7 +155,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
     };
 
     /**
-     * (non-Javadoc)
+     * (non-Javadoc)A
      *
      * @see android.app.Service#onStartCommand(Intent, int, int)
      */
@@ -330,9 +330,7 @@ public class MusicService extends MediaBrowserServiceCompat implements
 
         @Override
         public void onReceive(Context arg0, Intent arg1) {
-            //verify if the extra var exist
-            System.out.println("in service receiver"); // true or false
-            //if var exist only print or do some stuff
+
             if (arg1 != null && arg1.hasExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE)) {
                 //do what you want to
                 mPlaybackManager.handleStopRequest(null);
