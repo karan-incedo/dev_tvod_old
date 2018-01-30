@@ -292,9 +292,12 @@ public class TVViewCreator {
                 });
             }
         } else {
-            /*if ("AC History 01".equalsIgnoreCase(module.getView())) {
+            if ("AC History 01".equalsIgnoreCase(module.getView())) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
-            }*/
+            }
+            if ("AC Watchlist 01".equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
+            }
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView()))
             {
 //                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
@@ -666,6 +669,8 @@ public class TVViewCreator {
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
                                 false));
+
+                ((RecyclerView) componentViewResult.componentView).setClipToPadding(false);
                 componentViewResult.componentView.setId(R.id.tv_recycler_view);
 
                 componentViewResult.componentView.setNextFocusDownId(R.id.tv_recycler_view);

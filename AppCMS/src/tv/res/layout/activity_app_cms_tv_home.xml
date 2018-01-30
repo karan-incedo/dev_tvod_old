@@ -132,7 +132,7 @@
                 android:layout_height="200dp"
                 android:layout_alignParentBottom="true"
                 android:background="@drawable/footer_gradient_image"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
 
         </RelativeLayout>
 
