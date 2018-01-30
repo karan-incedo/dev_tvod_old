@@ -26,7 +26,8 @@ public class ResponsiveButton extends android.support.v7.widget.AppCompatImageBu
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             setPressed(true);
-            return true;
+            performClick();
+            return false;
         }
         return super.onTouchEvent(event);
     }
