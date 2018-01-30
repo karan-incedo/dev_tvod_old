@@ -10158,8 +10158,8 @@ public class AppCMSPresenter {
                             appCMSAndroidUI.getMetaPages() == null ||
                             appCMSAndroidUI.getMetaPages().isEmpty()) {
                         //Log.e(TAG, "AppCMS keys for pages for appCMSAndroid not found");
-                        if (tryCount == 0) {
-                            getAppCMSAndroid(tryCount);
+                        if (tryCount < 2) {
+                            getAppCMSAndroid(tryCount + 1);
                         } else {
                             launchBlankPage();
                         }
@@ -10167,6 +10167,7 @@ public class AppCMSPresenter {
                         //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                         launchUpgradeAppActivity();
                     } else {
+                        tryCount = 0;
                         getAppCMSModules(appCMSAndroidUI,
                                 false,
                                 false,
