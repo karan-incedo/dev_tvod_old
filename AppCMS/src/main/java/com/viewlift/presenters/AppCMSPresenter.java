@@ -3387,28 +3387,18 @@ public class AppCMSPresenter {
             showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null);
             //Log.w(TAG, currentActivity.getString(R.string.app_cms_download_failed_error_message));
         } else {
-            if (downloadQueueThread != null) {
-                DownloadQueueItem downloadQueueItem = new DownloadQueueItem();
-                downloadQueueItem.contentDatum = contentDatum;
-                downloadQueueItem.resultAction1 = resultAction1;
-                downloadQueueItem.isDownloadedFromOther = isVideoDownloadedByOtherUser(contentDatum.getGist().getId());
-                downloadQueueThread.addToQueue(downloadQueueItem);
-                if (!downloadQueueThread.running()) {
-                    downloadQueueThread.start();
-                }
-            }
 
-
-            if (isVideoDownloadRunning(contentDatum)) {
-                if (!pauseDownload(contentDatum)) {
-                    Log.e(TAG, "Failed to pause download");
-                }
-                return;
-            } else if (isVideoDownloadPaused(contentDatum)) {
-                if (!resumeDownload(contentDatum)) {
-                    Log.e(TAG, "Failed to resume download");
-                }
-            }
+            // Uncomment to allow for Pause/Resume
+//            if (isVideoDownloadRunning(contentDatum)) {
+//                if (!pauseDownload(contentDatum)) {
+//                    Log.e(TAG, "Failed to pause download");
+//                }
+//                return;
+//            } else if (isVideoDownloadPaused(contentDatum)) {
+//                if (!resumeDownload(contentDatum)) {
+//                    Log.e(TAG, "Failed to resume download");
+//                }
+//            }
             String downloadURL;
             long file_size = 0L;
             try {
@@ -10168,7 +10158,11 @@ public class AppCMSPresenter {
                             appCMSAndroidUI.getMetaPages() == null ||
                             appCMSAndroidUI.getMetaPages().isEmpty()) {
                         //Log.e(TAG, "AppCMS keys for pages for appCMSAndroid not found");
-                        launchBlankPage();
+                        if (tryCount == 0) {
+                            getAppCMSAndroid(tryCount);
+                        } else {
+                            launchBlankPage();
+                        }
                     } else if (isAppBelowMinVersion()) {
                         //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                         launchUpgradeAppActivity();

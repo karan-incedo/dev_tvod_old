@@ -1,8 +1,10 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 
 /**
@@ -32,5 +34,8 @@ public class ResponsiveButton extends android.support.v7.widget.AppCompatImageBu
         return super.onTouchEvent(event);
     }
 
-
+    @Override
+    public void setOnClickListener(@Nullable OnClickListener l) {
+        super.setOnClickListener(l);
+    }
 }

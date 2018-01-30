@@ -4805,7 +4805,8 @@ public class ViewCreator {
 
                     case STATUS_PAUSED:
                         imageButton.setImageResource(R.drawable.ic_download_queued);
-                        imageButton.setOnClickListener(addClickListener);
+                        // Uncomment to allow for Pause/Resume functionality
+//                        imageButton.setOnClickListener(addClickListener);
                         break;
 
                     case STATUS_PENDING:
@@ -4815,7 +4816,7 @@ public class ViewCreator {
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                                 radiusDifference,
                                 id);
-//                        imageButton.setOnClickListener(null);
+                        imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_RUNNING:
@@ -4825,14 +4826,15 @@ public class ViewCreator {
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                                 radiusDifference,
                                 id);
-                        imageButton.setOnClickListener(addClickListener);
-//                        imageButton.setOnClickListener(null);
+                        // Uncomment to allow for Pause/Resume functionality
+//                        imageButton.setOnClickListener(addClickListener);
+                        imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_SUCCESSFUL:
                         imageButton.setImageResource(R.drawable.ic_downloaded_big);
                         imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                        imageButton.setOnClickListener(null);
+                        imageButton.setOnClickListener(null);
                         if (appCMSPresenter.downloadTaskRunning(contentDatum.getGist().getId())) {
                             appCMSPresenter.setDownloadInProgress(false);
                             appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
@@ -4844,7 +4846,7 @@ public class ViewCreator {
                         appCMSPresenter.setDownloadInProgress(false);
                         imageButton.setImageResource(android.R.drawable.stat_sys_warning);
                         imageButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
-//                        imageButton.setOnClickListener(null);
+                        imageButton.setOnClickListener(null);
                         break;
 
                     default:
