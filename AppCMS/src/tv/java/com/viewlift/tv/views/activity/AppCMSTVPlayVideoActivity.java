@@ -50,7 +50,7 @@ import rx.functions.Action1;
 public class AppCMSTVPlayVideoActivity extends Activity implements
         AppCMSPlayVideoFragment.OnClosePlayerEvent, AppCmsTvErrorFragment.ErrorFragmentListener,
         VideoPlayerView.StreamingQualitySelector {
-    private static final String TAG = "VideoPlayerActivity";
+    private static final String TAG = "TVPlayVideoActivity";
 
     private BroadcastReceiver handoffReceiver;
     private AppCMSPresenter appCMSPresenter;

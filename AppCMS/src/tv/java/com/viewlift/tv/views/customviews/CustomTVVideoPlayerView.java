@@ -62,7 +62,7 @@ public class CustomTVVideoPlayerView
         implements AdErrorEvent.AdErrorListener,
     AdEvent.AdEventListener,
     VideoPlayerView.ErrorEventListener {
-        protected static final String TAG = TVVideoPlayerView.class.getSimpleName();
+        protected static final String TAG = CustomTVVideoPlayerView.class.getSimpleName();
     private final AppCMSPresenter appCMSPresenter;
     private Context mContext;
     private LinearLayout custonLoaderContaineer;
@@ -201,7 +201,7 @@ public class CustomTVVideoPlayerView
             }
             setTitle();
             adsUrl = getAdsUrl(contentDatum);
-            Log.d(TAG, "CVP Free1 : " + contentDatum.getGist().getFree());
+            Log.d(TAG, "CVP Free1 : " + contentDatum.getGist().getFree() + " isLiveStream = "+isLiveStream);
             if (!contentDatum.getGist().getFree()) {
                 //check login and subscription first.
                 if (!appCMSPresenter.isUserLoggedIn()) {
@@ -540,7 +540,7 @@ public class CustomTVVideoPlayerView
     }
 
     public void pausePlayer() {
-        Log.d(TAG, "NITS pausePlayer.........");
+        Log.d(TAG , "pausePlayer()");
         super.pausePlayer();
         stopTimer();
 
@@ -559,7 +559,7 @@ public class CustomTVVideoPlayerView
                 if (((AppCmsHomeActivity) appCMSPresenter.getCurrentActivity()).isActive) {
                     startFreePlayTimer();
                     if(!isHardPause() && !isLoginButtonVisible()) {
-                        Log.d(TAG, "NITS resume Player.........");
+                        Log.d(TAG , "resumePlayer()");
                         getPlayer().setPlayWhenReady(true);
                         if (beaconMessageThread != null) {
                             beaconMessageThread.sendBeaconPing = true;

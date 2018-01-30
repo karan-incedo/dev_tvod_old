@@ -414,7 +414,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             appCMSPresenter.tvVideoPlayerView.getPlayerView().hideController();
             appCMSPresenter.tvVideoPlayerView.getPlayerView().setUseController(false);
             appCMSPresenter.exitFullScreenTVPlayer();
-            return;
         }
 
         super.onPause();
