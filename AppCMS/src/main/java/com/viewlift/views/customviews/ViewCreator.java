@@ -4805,6 +4805,7 @@ public class ViewCreator {
 
                     case STATUS_PAUSED:
                         imageButton.setImageResource(R.drawable.ic_download_queued);
+                        imageButton.setOnClickListener(addClickListener);
                         break;
 
                     case STATUS_PENDING:
@@ -4824,6 +4825,7 @@ public class ViewCreator {
                                 UpdateDownloadImageIconAction.this.imageButton, appCMSPresenter, this, userId, false,
                                 radiusDifference,
                                 id);
+                        imageButton.setOnClickListener(addClickListener);
 //                        imageButton.setOnClickListener(null);
                         break;
 

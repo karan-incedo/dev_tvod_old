@@ -3403,37 +3403,36 @@ public class AppCMSPresenter {
                 if (!pauseDownload(contentDatum)) {
                     Log.e(TAG, "Failed to pause download");
                 }
+                return;
             } else if (isVideoDownloadPaused(contentDatum)) {
                 if (!resumeDownload(contentDatum)) {
                     Log.e(TAG, "Failed to resume download");
                 }
-            } else {
+            }
+            String downloadURL;
+            long file_size = 0L;
+            try {
+                downloadURL = getDownloadURL(contentDatum);
+                URL url = new URL(downloadURL);
+                URLConnection urlConnection = url.openConnection();
+                urlConnection.connect();
+                //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
+                file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
+                file_size = ((file_size / 1000) / 1000);
 
-                String downloadURL;
-                long file_size = 0L;
+            } catch (Exception e) {
+                //Log.e(TAG, "Error trying to download: " + e.getMessage());
+            }
+            if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
+                createLocalCopyForUser(contentDatum, resultAction1);
+            } else if (getMegabytesAvailable() > file_size) {
                 try {
-                    downloadURL = getDownloadURL(contentDatum);
-                    URL url = new URL(downloadURL);
-                    URLConnection urlConnection = url.openConnection();
-                    urlConnection.connect();
-                    //file_size =urlConnection.getContentLength();  // some of the video url length value go over the max limit of int for 720p  rendition
-                    file_size = Long.parseLong(urlConnection.getHeaderField("content-length"));
-                    file_size = ((file_size / 1000) / 1000);
-
+                    startDownload(contentDatum, resultAction1);
                 } catch (Exception e) {
-                    //Log.e(TAG, "Error trying to download: " + e.getMessage());
-                }
-                if (isVideoDownloadedByOtherUser(contentDatum.getGist().getId())) {
-                    createLocalCopyForUser(contentDatum, resultAction1);
-                } else if (getMegabytesAvailable() > file_size) {
-                    try {
-                        startDownload(contentDatum, resultAction1);
-                    } catch (Exception e) {
 
-                    }
-                } else {
-                    currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
                 }
+            } else {
+                currentActivity.runOnUiThread(() -> showDialog(DialogType.DOWNLOAD_FAILED, currentActivity.getString(R.string.app_cms_download_failed_error_message), false, null, null));
             }
         }
     }
