@@ -71,7 +71,7 @@ public class BeaconBuffer extends Thread {
                         }
                     }
 
-                    if (contentDatum != null &&
+                    if (appCMSPresenter!=null && appCMSPresenter.getCurrentActivity()!=null && contentDatum != null &&
                             contentDatum.getAudioGist() != null &&
                             contentDatum.getAudioGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
                             contentDatum.getAudioGist().getContentType() != null &&
@@ -119,5 +119,9 @@ public class BeaconBuffer extends Thread {
 
     public void setStreamId(String streamId) {
         this.streamId = streamId;
+    }
+
+    public void setContentDatum(ContentDatum contentDatum) {
+        this.contentDatum = contentDatum;
     }
 }

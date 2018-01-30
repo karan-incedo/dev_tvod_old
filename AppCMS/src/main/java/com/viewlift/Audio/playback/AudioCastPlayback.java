@@ -16,6 +16,7 @@ import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.media.RemoteMediaClient;
 import com.google.android.gms.common.images.WebImage;
+import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastingUtils;
@@ -79,7 +80,6 @@ public class AudioCastPlayback implements Playback {
     }
 
     public AudioCastPlayback(Context context, LocalPlayback.MetadataUpdateListener callBackLocalPlaybackListener) {
-        System.out.println("AudioCastPlayback constructor");
         mAppContext = context.getApplicationContext();
         this.mListener = callBackLocalPlaybackListener;
 
@@ -87,7 +87,10 @@ public class AudioCastPlayback implements Playback {
         mRemoteMediaClientListener = new CastMediaClientListener();
         initProgressListeners();
 
-        appCMSPresenter = AudioPlaylistHelper.getInstance().getAppCmsPresenter();
+
+        appCMSPresenter = ((AppCMSApplication) context.getApplicationContext()).
+                getAppCMSPresenterComponent().appCMSPresenter();
+
         if (appCMSPresenter != null && appCMSPresenter.getCurrentContext() != null) {
             beaconMsgTimeoutMsec = appCMSPresenter.getCurrentContext().getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
             beaconBufferingTimeoutMsec = appCMSPresenter.getCurrentContext().getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
@@ -115,7 +118,7 @@ public class AudioCastPlayback implements Playback {
     public void initRemoteClient() {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
-        if (castSession != null && castSession.isConnected() && castPlaybackInstance != null) {
+        if (castSession != null && castSession.isConnected() ) {
             mRemoteMediaClient = castSession.getRemoteMediaClient();
         }
     }
@@ -137,13 +140,17 @@ public class AudioCastPlayback implements Playback {
             mCallback.onPlaybackStatusChanged(mPlaybackState);
         }
 
-        beaconPing.sendBeaconPing = false;
-        beaconPing.runBeaconPing = false;
-        beaconPing = null;
+        if (beaconPing != null) {
+            beaconPing.sendBeaconPing = false;
+            beaconPing.runBeaconPing = false;
+            beaconPing = null;
+        }
 
-        beaconBuffer.sendBeaconBuffering = false;
-        beaconBuffer.runBeaconBuffering = false;
-        beaconBuffer = null;
+        if (beaconBuffer != null) {
+            beaconBuffer.sendBeaconBuffering = false;
+            beaconBuffer.runBeaconBuffering = false;
+            beaconBuffer = null;
+        }
     }
 
     @Override
@@ -589,20 +596,41 @@ public class AudioCastPlayback implements Playback {
     }
 
     void setBeaconPingValues() {
+        if (beaconPing == null) {
+            beaconPing = new BeaconPing(beaconMsgTimeoutMsec,
+                    appCMSPresenter,
+                    null,
+                    null,
+                    false,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
         beaconPing.setFilmId(audioData.getAudioGist().getId());
         beaconPing.setPermaLink(audioData.getAudioGist().getPermalink());
         beaconPing.setStreamId(getStreamId());
-        audioData.getAudioGist().setCastingConnected(true);
+        audioData.getAudioGist().setCastingConnected(false);
         audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
         beaconPing.setContentDatum(audioData);
     }
 
     void setBeaconBufferValues() {
+        if (beaconBuffer == null) {
+            beaconBuffer = new BeaconBuffer(beaconBufferingTimeoutMsec,
+                    appCMSPresenter,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
+        }
         beaconBuffer.setFilmId(audioData.getAudioGist().getId());
         beaconBuffer.setPermaLink(audioData.getAudioGist().getPermalink());
         beaconBuffer.setStreamId(getStreamId());
-        audioData.getAudioGist().setCastingConnected(true);
+        audioData.getAudioGist().setCastingConnected(false);
         audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
-        beaconPing.setContentDatum(audioData);
+        beaconBuffer.setContentDatum(audioData);
     }
 }
