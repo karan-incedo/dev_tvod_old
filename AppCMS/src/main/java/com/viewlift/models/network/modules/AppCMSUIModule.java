@@ -684,6 +684,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_subscription_duration_label),
                 AppCMSUIKeyType.PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_subscription_end_date_label),
+                AppCMSUIKeyType.PAGE_SETTINGS_SUBSCRIPTION_END_DATE_LABEL_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_settings_manage_subscription_button_key),
                 AppCMSUIKeyType.PAGE_SETTINGS_MANAGE_SUBSCRIPTION_BUTTON_KEY);
 

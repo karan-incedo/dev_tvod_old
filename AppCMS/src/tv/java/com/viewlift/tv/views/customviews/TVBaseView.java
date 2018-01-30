@@ -319,6 +319,12 @@ public abstract class TVBaseView extends FrameLayout {
         }else if(componentType == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_VIEW_KEY){
             viewHeight = DEVICE_HEIGHT;
             viewWidth = FrameLayout.LayoutParams.MATCH_PARENT;
+        } else if (componentType.equals(AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY)) {
+            Integer padding = Integer.valueOf(
+                    childComponent.getLayout().getTv().getPadding() != null
+                            ? childComponent.getLayout().getTv().getPadding()
+                            : "0");
+            view.setPadding(0, 0, 0, padding);
         }
 
         if (useWidthOfScreen) {

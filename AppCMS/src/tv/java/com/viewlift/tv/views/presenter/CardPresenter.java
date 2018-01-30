@@ -294,9 +294,6 @@ public class CardPresenter extends Presenter {
                             spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                             tvTitle.setText(spannableStringBuilder);
-                            tvTitle.setSingleLine(true);
-                            tvTitle.setEllipsize(TextUtils.TruncateAt.END);
-                            tvTitle.setSelected(true);
                         } else {
                             Integer height = component.getLayout().getTv().getHeight() != null
                                     ? Integer.valueOf(component.getLayout().getTv().getHeight())
@@ -307,6 +304,9 @@ public class CardPresenter extends Presenter {
                             tvTitle.setEllipsize(TextUtils.TruncateAt.END);
                             tvTitle.setText(contentData.getGist().getTitle());
                         }
+                        tvTitle.setSingleLine(true);
+                        tvTitle.setEllipsize(TextUtils.TruncateAt.END);
+                        tvTitle.setSelected(true);
 
                         if (component.getLayout().getTv().getTopMargin() != null)
                             layoutParams.topMargin = Utils.getViewYAxisAsPerScreen(mContext, Integer.valueOf(component.getLayout().getTv().getTopMargin()));

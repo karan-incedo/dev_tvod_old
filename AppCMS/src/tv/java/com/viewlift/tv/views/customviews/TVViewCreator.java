@@ -53,6 +53,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -90,9 +91,13 @@ import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 
 import org.jsoup.Jsoup;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.viewlift.models.data.appcms.ui.AppCMSUIKeyType.PAGE_API_DESCRIPTION;
@@ -287,12 +292,20 @@ public class TVViewCreator {
                 });
             }
         } else {
-            /*if ("AC History 01".equalsIgnoreCase(module.getView())) {
+            if ("AC History 01".equalsIgnoreCase(module.getView())) {
                 module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "history.json"), ModuleList.class);
-            }*/
+            }
+            if ("AC Watchlist 01".equalsIgnoreCase(module.getView())) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
+            }
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView()))
             {
-               // module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail1.json"), ModuleList.class);
+//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+            }
+
+            if ("AC UserManagement 01".equalsIgnoreCase(module.getView()))
+            {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "settings.json"), ModuleList.class);
             }
 
 
@@ -656,6 +669,8 @@ public class TVViewCreator {
                         .setLayoutManager(new LinearLayoutManager(context,
                                 LinearLayoutManager.VERTICAL,
                                 false));
+
+                ((RecyclerView) componentViewResult.componentView).setClipToPadding(false);
                 componentViewResult.componentView.setId(R.id.tv_recycler_view);
 
                 componentViewResult.componentView.setNextFocusDownId(R.id.tv_recycler_view);
@@ -1734,6 +1749,23 @@ public class TVViewCreator {
                             componentViewResult.componentView.setId(R.id.countdown_cancelled_text_view_id);
                             componentViewResult.componentView.setVisibility(View.INVISIBLE);
                             break;
+
+                        case PAGE_SETTINGS_SUBSCRIPTION_END_DATE_LABEL_KEY:
+                            if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
+                                TextView tvEndDate = (TextView) componentViewResult.componentView;
+                                if (appCMSPresenter.getActiveSubscriptionEndDate() != null) {
+                                    String strDate = appCMSPresenter.getActiveSubscriptionEndDate().substring(0, 10);
+                                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                                    try {
+                                        Date date = format.parse(strDate);
+                                        System.out.println("Date ->" + date);
+                                        tvEndDate.setText(context.getString(R.string.subscription_cancelled_in, android.text.format.DateFormat.format("MM-dd-yyyy", date)));
+                                    } catch (ParseException e) {
+                                        tvEndDate.setText(context.getString(R.string.subscription_cancelled_in, strDate));
+                                    }
+                                }
+                            }
+                            break;
                         case PAGE_SETTINGS_SUBSCRIPTION_DURATION_LABEL_KEY:
                             if (appCMSPresenter.getAppCMSMain().getServiceType().equalsIgnoreCase(context.getString(R.string.app_cms_main_svod_service_type_key))) {
                                 TextView tv = (TextView) componentViewResult.componentView;
@@ -1746,17 +1778,13 @@ public class TVViewCreator {
                                         try {
                                             if (appCMSUserSubscriptionPlanResult != null) {
                                                 String subscriptionStatus = appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus();
-                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED")) {
+                                                if (subscriptionStatus.equalsIgnoreCase("COMPLETED")
+                                                        || subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
                                                     String planName = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName();
                                                     appCMSPresenter.setActiveSubscriptionStatus(subscriptionStatus);
                                                     appCMSPresenter.setActiveSubscriptionPlanName(planName);
                                                     appCMSPresenter.setActiveSubscriptionPlatform(appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform());
-                                                    tv.setText(planName.substring(0, planName.length() - 14));
-                                                } else if (subscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                                    String planName = appCMSUserSubscriptionPlanResult.getSubscriptionPlanInfo().getName();
-                                                    appCMSPresenter.setActiveSubscriptionStatus(subscriptionStatus);
-                                                    appCMSPresenter.setActiveSubscriptionPlanName(planName);
-                                                    appCMSPresenter.setActiveSubscriptionPlatform(appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getPlatform());
+                                                    appCMSPresenter.setActiveSubscriptionEndDate(appCMSUserSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
                                                     tv.setText(planName);
                                                 } else {
                                                     tv.setText(context.getString(R.string.no_active_subscription));
@@ -1771,12 +1799,10 @@ public class TVViewCreator {
                                 } else {
                                     try {
                                         String activeSubscriptionStatus = appCMSPresenter.getActiveSubscriptionStatus();
-                                        if (activeSubscriptionStatus.equalsIgnoreCase("COMPLETED")) {
+                                        if (activeSubscriptionStatus.equalsIgnoreCase("COMPLETED")
+                                                || activeSubscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
                                             String planName = appCMSPresenter.getActiveSubscriptionPlanName();
                                             tv.setText(planName);
-                                        } else if (activeSubscriptionStatus.equalsIgnoreCase("DEFERRED_CANCELLATION")) {
-                                            String planName = appCMSPresenter.getActiveSubscriptionPlanName();
-                                            tv.setText(planName.substring(0, planName.length() - 14));
                                         } else {
                                             tv.setText(context.getString(R.string.no_active_subscription));
                                         }

@@ -79,9 +79,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.gson.Gson;
-/*import com.kiswe.kmsdkcorekit.reports.Report;
-import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
-import com.kiswe.kmsdkcorekit.reports.Reports;*/
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.Utils;
@@ -289,6 +286,10 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_AC
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY_ACTION;
 
+/*import com.kiswe.kmsdkcorekit.reports.Report;
+import com.kiswe.kmsdkcorekit.reports.ReportSubscriber;
+import com.kiswe.kmsdkcorekit.reports.Reports;*/
+
 /*
  * Created by viewlift on 5/3/17.
  */
@@ -345,6 +346,7 @@ public class AppCMSPresenter {
     private static final String ACTIVE_SUBSCRIPTION_CURRENCY = "active_subscription_currency_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_RECEIPT = "active_subscription_token_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PLAN_NAME = "active_subscription_plan_name_pref_key";
+    private static final String ACTIVE_SUBSCRIPTION_END_DATE = "active_subscription_end_date_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_STATUS = "active_subscription_status_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PLATFORM = "active_subscription_platform_pref_key";
     private static final String ACTIVE_SUBSCRIPTION_PRICE_NAME = "active_subscription_plan_price_pref_key";
@@ -6419,6 +6421,21 @@ public class AppCMSPresenter {
         }
     }
 
+    public String getActiveSubscriptionEndDate() {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_END_DATE, 0);
+            return sharedPrefs.getString(ACTIVE_SUBSCRIPTION_END_DATE, null);
+        }
+        return null;
+    }
+
+    public void setActiveSubscriptionEndDate(String subscriptionEndDate) {
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(ACTIVE_SUBSCRIPTION_END_DATE, 0);
+            sharedPrefs.edit().putString(ACTIVE_SUBSCRIPTION_END_DATE, subscriptionEndDate).apply();
+        }
+    }
+
     public boolean isSubscriptionCompleted() {
         String activeSubscriptionStatus = getActiveSubscriptionStatus();
 
@@ -6550,6 +6567,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionSku(null);
             setActiveSubscriptionCountryCode(null);
             setActiveSubscriptionPlanName(null);
+            setActiveSubscriptionEndDate(null);
             setActiveSubscriptionReceipt(null);
             setRefreshToken(null);
             setAuthToken(null);
@@ -6625,6 +6643,7 @@ public class AppCMSPresenter {
             setActiveSubscriptionId(null);
             setActiveSubscriptionSku(null);
             setActiveSubscriptionPlanName(null);
+            setActiveSubscriptionEndDate(null);
             setActiveSubscriptionStatus(null);
             setActiveSubscriptionReceipt(null);
             setActiveSubscriptionPlatform(null);
@@ -8386,8 +8405,13 @@ public class AppCMSPresenter {
                                                         setActiveSubscriptionStatus(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionStatus());
                                                         //if (useCCAvenue() && !isSubscriptionCompleted()) {
                                                         if (!isSubscriptionCompleted()) {
-                                                            setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
-                                                                    appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                            if (platformType.equals(PlatformType.ANDROID)) {
+                                                                setActiveSubscriptionPlanName("Scheduled to be cancelled by " +
+                                                                        appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                            } else {
+                                                                setActiveSubscriptionPlanName(appCMSSubscriptionPlanResult.getSubscriptionPlanInfo().getName());
+                                                                setActiveSubscriptionEndDate(appCMSSubscriptionPlanResult.getSubscriptionInfo().getSubscriptionEndDate());
+                                                            }
                                                         }
                                                         //}
                                                     }
