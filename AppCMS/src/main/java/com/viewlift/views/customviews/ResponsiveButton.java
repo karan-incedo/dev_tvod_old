@@ -3,6 +3,7 @@ package com.viewlift.views.customviews;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -12,6 +13,8 @@ import android.view.ViewConfiguration;
  */
 
 public class ResponsiveButton extends android.support.v7.widget.AppCompatImageButton {
+    private static final String TAG = "ResponsiveButton";
+
     public ResponsiveButton(Context context) {
         super(context);
     }
@@ -28,8 +31,7 @@ public class ResponsiveButton extends android.support.v7.widget.AppCompatImageBu
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             setPressed(true);
-            performClick();
-            return false;
+            return performClick();
         }
         return super.onTouchEvent(event);
     }
