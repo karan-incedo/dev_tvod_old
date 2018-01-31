@@ -60,6 +60,7 @@ import com.viewlift.models.data.appcms.api.ClosedCaptions;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.CreditBlock;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.api.Trailer;
 import com.viewlift.models.data.appcms.api.VideoAssets;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
@@ -267,7 +268,7 @@ public class TVViewCreator {
             }
             return null;
         } else if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())){
-            //module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             moduleView = new ShowDetailModuleView(
                     context,
                     module,
@@ -435,18 +436,17 @@ public class TVViewCreator {
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
-                        if (moduleData != null
-                                && moduleData.getContentData() != null
-                                && !moduleData.getContentData().isEmpty()
-                                && moduleData.getContentData().get(0) != null
-                                && moduleData.getContentData().get(0).getGist() != null
-                                && moduleData.getContentData().get(0).getGist().getContentType() != null
-                                && moduleData.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                        if (moduleData != null) {
                             customHeaderItem = null;
+                            createHeaderItem(component, context, moduleUI, moduleData, moduleData.getTitle() != null ? moduleData.getTitle() : "", isCarousel);
+                        }
+                        break;
+
+                    case PAGE_TRAY_SEASON_TITLE_KEY:
+                        if (moduleData != null) {
+                            customHeaderItem = null;
+                            moduleUI.getLayout().getTv().setHeight("250");
                             createHeaderItem(component, context, moduleUI, moduleData, moduleData.getTitle() != null ? moduleData.getTitle() : "SEASON 1", isCarousel);
-                        } else {
-                            customHeaderItem = null;
-                            createHeaderItem(component, context, moduleUI, moduleData, (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle() : "", isCarousel);
                         }
                         break;
                 }
@@ -525,26 +525,37 @@ public class TVViewCreator {
                             && moduleData.getContentData() != null
                             && moduleData.getContentData().get(0) != null) {
                         Log.d(TAG, "It's a series");
-                        ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
                         List<Component> components = component.getComponents();
-                        List<ContentDatum> episodes = moduleData.getContentData().get(0).getSeason().get(0).getEpisodes();
-                        for (int i = 0; i < episodes.size(); i++) {
-                            List<String> relatedVids = Utils.getRelatedVideosInShow(
-                                    moduleData.getContentData().get(0).getSeason(),
-                                    0,
-                                    i);
-                            ContentDatum contentDatum = episodes.get(i);
-                            contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
-                            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
-                            rowData.contentData = contentDatum;
-                            rowData.relatedVideoIds = relatedVids;
-                            rowData.uiComponentList = components;
-                            rowData.action = component.getTrayClickAction();
-                            rowData.blockName = moduleUI.getBlockName();
-                            rowData.rowNumber = trayIndex;
-                            traylistRowAdapter.add(rowData);
+                        ArrayObjectAdapter traylistRowAdapter = null;
+                        List<Season_> seasonList = moduleData.getContentData().get(0).getSeason();
+                        for (int seasonIndex = 0; seasonIndex < seasonList.size(); seasonIndex++) {
+                            Season_ season = seasonList.get(seasonIndex);
+                            traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+                            List<ContentDatum> episodes = season.getEpisodes();
+
+                            for (int i = 0; i < episodes.size(); i++) {
+                                List<String> relatedVids = Utils.getRelatedVideosInShow(
+                                        moduleData.getContentData().get(0).getSeason(),
+                                        0,
+                                        i);
+                                ContentDatum contentDatum = episodes.get(i);
+                                contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
+                                BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                                rowData.contentData = contentDatum;
+                                rowData.relatedVideoIds = relatedVids;
+                                rowData.uiComponentList = components;
+                                rowData.action = component.getTrayClickAction();
+                                rowData.blockName = moduleUI.getBlockName();
+                                rowData.rowNumber = trayIndex;
+                                traylistRowAdapter.add(rowData);
+                            }
+                            mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
+                            if(customHeaderItem != null ){
+                                customHeaderItem = null;
+                                moduleUI.getLayout().getTv().setHeight("250");
+                                createHeaderItem(component, context, moduleUI, moduleData, "SEASON " + (seasonIndex + 1), isCarousel);
+                            }
                         }
-                        mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                     }else{
                         ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
                         if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
@@ -671,6 +682,7 @@ public class TVViewCreator {
                                 false));
 
                 ((RecyclerView) componentViewResult.componentView).setClipToPadding(false);
+                ((RecyclerView) componentViewResult.componentView).setFocusable(false);
                 componentViewResult.componentView.setId(R.id.tv_recycler_view);
 
                 componentViewResult.componentView.setNextFocusDownId(R.id.tv_recycler_view);
