@@ -4786,10 +4786,10 @@ public class ViewCreator {
                                 });
                     }
                 }
-//                imageButton.setOnClickListener(null);
+                imageButton.setOnClickListener(null);
             };
 
-            imageButton.setOnClickListener(addClickListener);
+//            imageButton.setOnClickListener(addClickListener);
 
         }
 
@@ -4807,6 +4807,7 @@ public class ViewCreator {
                         imageButton.setImageResource(R.drawable.ic_download_queued);
                         // Uncomment to allow for Pause/Resume functionality
 //                        imageButton.setOnClickListener(addClickListener);
+                        imageButton.setOnClickListener(null);
                         break;
 
                     case STATUS_PENDING:
@@ -4864,6 +4865,7 @@ public class ViewCreator {
                 int fillColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor());
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.requestLayout();
+                imageButton.setOnClickListener(addClickListener);
             }
         }
 
