@@ -34,6 +34,8 @@ package com.viewlift.tv.views.customviews;
         import com.viewlift.R;
         import com.viewlift.models.data.appcms.api.ContentDatum;
         import com.viewlift.models.data.appcms.api.VideoAssets;
+        import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
+        import com.viewlift.models.data.appcms.beacon.BeaconPing;
         import com.viewlift.models.data.appcms.ui.android.NavigationUser;
         import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
         import com.viewlift.presenters.AppCMSPresenter;
@@ -64,6 +66,7 @@ public class CustomTVVideoPlayerView
     VideoPlayerView.ErrorEventListener {
         protected static final String TAG = CustomTVVideoPlayerView.class.getSimpleName();
     private final AppCMSPresenter appCMSPresenter;
+    private boolean isTrailer;
     private Context mContext;
     private LinearLayout custonLoaderContaineer;
     private TextView loaderMessageView;
@@ -92,13 +95,15 @@ public class CustomTVVideoPlayerView
     protected String mStreamId;
     private int apod;
     protected ContentDatum videoData = null;
-    private BeaconBufferingThread beaconBufferingThread;
-    private BeaconPingThread beaconMessageThread;
+    private BeaconBuffer beaconBufferingThread;
+    private BeaconPing beaconMessageThread;
     private boolean sentBeaconPlay;
     private Timer timer;
     private TimerTask timerTask;
     private ContentDatum contentDatum;
     private boolean isHardPause;
+    private String videoDataId;
+    private String permaLink;
 
 
     public CustomTVVideoPlayerView(Context context) {
@@ -121,6 +126,33 @@ public class CustomTVVideoPlayerView
                 headerTitleContaineer.setVisibility(integer);
             }
         });
+
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(videoDataId);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
+        }
+
+        beaconMsgTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
+        beaconBufferingTimeoutMsec = getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
+
+        beaconMessageThread = new BeaconPing(beaconMsgTimeoutMsec,
+                appCMSPresenter,
+                videoDataId,
+                permaLink,
+                isTrailer,
+                parentScreenName,
+                this,
+                mStreamId);
+
+        beaconBufferingThread = new BeaconBuffer(beaconBufferingTimeoutMsec,
+                appCMSPresenter,
+                videoDataId,
+                permaLink,
+                parentScreenName,
+                this,
+                mStreamId);
     }
 
 
@@ -158,8 +190,8 @@ public class CustomTVVideoPlayerView
         } catch (Exception e) {
             e.printStackTrace();
         }
-        releaseBeaconsThread();
-        startBeaconsThread();
+        permaLink = contentDatum.getGist().getPermalink();
+        setBeaconData();
         hideRestrictedMessage();
         String url = null;
         if (null != contentDatum && null != contentDatum.getStreamingInfo()) {
@@ -194,6 +226,9 @@ public class CustomTVVideoPlayerView
 
     public void setVideoUri(String videoId) {
         showProgressBar("Loading...");
+        videoDataId = videoId;
+        sentBeaconPlay = false;
+        sentBeaconFirstFrame = false;
         appCMSPresenter.refreshVideoData(videoId, contentDatum -> {
             this.contentDatum = contentDatum;
             if (contentDatum.getStreamingInfo() != null) {
@@ -436,10 +471,14 @@ public class CustomTVVideoPlayerView
 
     @Override
     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+
+        if (beaconMessageThread != null) {
+            beaconMessageThread.playbackState = playbackState;
+        }
+
         switch (playbackState) {
             case STATE_ENDED:
                 currentPlayingIndex++;
-//                getPlayerView().getPlayer().setPlayWhenReady(false);
                 Log.d(TAG, "appCMSPresenter.getAutoplayEnabledUserPref(mContext): " +
                         appCMSPresenter.getAutoplayEnabledUserPref(mContext));
                 if (null != relatedVideoId
@@ -484,17 +523,23 @@ public class CustomTVVideoPlayerView
                     beaconBufferingThread.sendBeaconBuffering = false;
                 }
                 if (beaconMessageThread != null) {
+                    if(!isLiveStream)
                     beaconMessageThread.sendBeaconPing = true;
                     if (!beaconMessageThread.isAlive()) {
-                        beaconMessageThread.start();
-                        mTotalVideoDuration = getDuration() / 1000;
-                        mTotalVideoDuration -= mTotalVideoDuration % 4;
+                        try {
+                            beaconMessageThread.start();
+                            mTotalVideoDuration = getDuration() / 1000;
+                            mTotalVideoDuration -= mTotalVideoDuration % 4;
+                        //    mProgressHandler.post(mProgressRunnable);
+                        } catch (Exception e) {
+
+                        }
                     }
                     if (!sentBeaconFirstFrame) {
                         mStopBufferMilliSec = new Date().getTime();
                         ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                        appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
-                                contentDatum.getGist().getPermalink(),
+                        appCMSPresenter.sendBeaconMessage(videoDataId,
+                                permaLink,
                                 parentScreenName,
                                 getCurrentPosition(),
                                 false,
@@ -514,6 +559,25 @@ public class CustomTVVideoPlayerView
                 break;
             default:
                 hideProgressBar();
+        }
+
+        if (!sentBeaconPlay) {
+            appCMSPresenter.sendBeaconMessage(videoDataId,
+                    permaLink,
+                    parentScreenName,
+                    getCurrentPosition(),
+                    false,
+                    AppCMSPresenter.BeaconEvent.PLAY,
+                    "Video",
+                    getBitrate() != 0 ? String.valueOf(getBitrate()) : null,
+                    String.valueOf(getVideoHeight()),
+                    String.valueOf(getVideoWidth()),
+                    mStreamId,
+                    0d,
+                    0,
+                    false);
+            sentBeaconPlay = true;
+            mStartBufferMilliSec = new Date().getTime();
         }
     }
 
@@ -562,6 +626,7 @@ public class CustomTVVideoPlayerView
                         Log.d(TAG , "resumePlayer()");
                         getPlayer().setPlayWhenReady(true);
                         if (beaconMessageThread != null) {
+                            if(!isLiveStream)
                             beaconMessageThread.sendBeaconPing = true;
                         }
                         if (beaconBufferingThread != null) {
@@ -652,26 +717,6 @@ public class CustomTVVideoPlayerView
                 }
             }
         });
-
-
-/*
-
-        cancelButton = new Button(mContext);
-        cancelButton.setText("Cancel");
-        cancelButton.setPadding(5,5,5,5);
-        customMessageContaineer.addView(cancelButton);
-        cancelButton.setLayoutParams(textViewParams);
-        cancelButton.setBackground(getResources().getDrawable(R.drawable.st_subscriber_module_color_selector));
-        cancelButton.setVisibility(View.VISIBLE);
-
-        cancelButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(mContext,"Cancel ",Toast.LENGTH_SHORT).show();
-            }
-        });
-*/
-
 
         this.addView(customMessageContaineer);
     }
@@ -798,33 +843,6 @@ public class CustomTVVideoPlayerView
                 break;
             case CONTENT_RESUME_REQUESTED:
                 isAdDisplayed = false;
-                // this.startPlayer();
-                if (beaconMessageThread != null) {
-                    beaconMessageThread.sendBeaconPing = true;
-                }
-
-                if (appCMSPresenter != null) {
-                    mStopBufferMilliSec = new Date().getTime();
-                    ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
-                    appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
-                            contentDatum.getGist().getPermalink(),
-                            parentScreenName,
-                            getCurrentPosition(),
-                            false,
-                            AppCMSPresenter.BeaconEvent.FIRST_FRAME,
-                            "Video",
-                            getBitrate() != 0 ? String.valueOf(getBitrate()) : null,
-                            String.valueOf(getVideoHeight()),
-                            String.valueOf(getVideoWidth()),
-                            mStreamId,
-                            ttfirstframe,
-                            0,
-                            false);
-                }
-                if (beaconMessageThread != null && !beaconMessageThread.isAlive()) {
-                    beaconMessageThread.start();
-
-                }
                 break;
             case ALL_ADS_COMPLETED:
                 if (adsManager != null) {
@@ -834,79 +852,9 @@ public class CustomTVVideoPlayerView
                 isAdsDisplaying = false;
                 playVideos(contentDatum);
                 startFreePlayTimer();
-                /*if (isVisible() && isAdded()) {
-                    preparePlayer();
-                }
-                videoPlayerInfoContainer.setVisibility(View.VISIBLE);*/ //show player controlls.
                 break;
             default:
                 break;
-        }
-    }
-
-    public void startBeaconsThread() {
-        beaconMsgTimeoutMsec = mContext.getResources().getInteger(R.integer.app_cms_beacon_timeout_msec);
-        beaconBufferingTimeoutMsec = mContext.getResources().getInteger(R.integer.app_cms_beacon_buffering_timeout_msec);
-
-        if (!sentBeaconPlay) {
-            appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
-                    contentDatum.getGist().getPermalink(),
-                    parentScreenName,
-                    getCurrentPosition(),
-                    false,
-                    AppCMSPresenter.BeaconEvent.PLAY,
-                    "Video",
-                    getBitrate() != 0 ? String.valueOf(getBitrate()) : null,
-                    String.valueOf(getVideoHeight()),
-                    String.valueOf(getVideoWidth()),
-                    mStreamId,
-                    0d,
-                    0,
-                    false);
-            sentBeaconPlay = true;
-            mStartBufferMilliSec = new Date().getTime();
-        }
-
-
-        beaconMessageThread = new BeaconPingThread(
-                beaconMsgTimeoutMsec,
-                appCMSPresenter,
-                contentDatum.getGist().getId(),
-                contentDatum.getGist().getPermalink(),
-                false,
-                parentScreenName,
-                this,
-                mStreamId,
-                isLiveStream());
-
-        beaconBufferingThread = new BeaconBufferingThread(
-                beaconBufferingTimeoutMsec,
-                appCMSPresenter,
-                contentDatum.getGist().getId(),
-                contentDatum.getGist().getPermalink(),
-                parentScreenName,
-                this,
-                mStreamId);
-    }
-
-
-    public void releaseBeaconsThread() {
-        try {
-            if (null != beaconMessageThread) {
-                beaconMessageThread.sendBeaconPing = false;
-                beaconMessageThread.runBeaconPing = false;
-                beaconMessageThread.videoPlayerView = null;
-                beaconMessageThread = null;
-            }
-
-            if (null != beaconBufferingThread) {
-                beaconBufferingThread.sendBeaconBuffering = false;
-                beaconBufferingThread.runBeaconBuffering = false;
-                beaconBufferingThread.videoPlayerView = null;
-                beaconBufferingThread = null;
-            }
-        }catch (Exception e){
-            e.printStackTrace();
         }
     }
 
@@ -977,147 +925,7 @@ public class CustomTVVideoPlayerView
         }
     }
 
-    private static class BeaconPingThread extends Thread {
-        final long beaconMsgTimeoutMsec;
-        final AppCMSPresenter appCMSPresenter;
-        final String filmId;
-        final String permaLink;
-        final String parentScreenName;
-        final String mStreamId;
-        VideoPlayerView videoPlayerView;
-        boolean runBeaconPing;
-        boolean sendBeaconPing;
-        boolean isTrailer;
-        int playbackState;
-        boolean isLiveStream;
 
-
-        public BeaconPingThread(long beaconMsgTimeoutMsec,
-                                AppCMSPresenter appCMSPresenter,
-                                String filmId,
-                                String permaLink,
-                                boolean isTrailer,
-                                String parentScreenName,
-                                VideoPlayerView videoPlayerView,
-                                String mStreamId,
-                                boolean isLiveStream) {
-            this.beaconMsgTimeoutMsec = beaconMsgTimeoutMsec;
-            this.appCMSPresenter = appCMSPresenter;
-            this.filmId = filmId;
-            this.permaLink = permaLink;
-            this.parentScreenName = parentScreenName;
-            this.videoPlayerView = videoPlayerView;
-            this.isTrailer = isTrailer;
-            this.mStreamId = mStreamId;
-            this.isLiveStream = isLiveStream;
-        }
-
-        @Override
-        public void run() {
-            runBeaconPing = true;
-            while (runBeaconPing) {
-                try {
-                    Thread.sleep(beaconMsgTimeoutMsec);
-                    if (sendBeaconPing) {
-
-                        long currentTime = videoPlayerView.getCurrentPosition() / 1000;
-                        playbackState = videoPlayerView.getPlayer().getPlaybackState();
-                        boolean pingCondition = appCMSPresenter != null && videoPlayerView != null
-                                && 30 <= (videoPlayerView.getCurrentPosition() / 1000)
-                                && playbackState == ExoPlayer.STATE_READY && currentTime % 30 == 0;
-                        if (pingCondition) { // For not to sent PIN in PAUSE mode
-                            appCMSPresenter.sendBeaconMessage(filmId,
-                                    permaLink,
-                                    parentScreenName,
-                                    videoPlayerView.getCurrentPosition(),
-                                    false,
-                                    AppCMSPresenter.BeaconEvent.PING,
-                                    "Video",
-                                    videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                                    String.valueOf(videoPlayerView.getVideoHeight()),
-                                    String.valueOf(videoPlayerView.getVideoWidth()),
-                                    mStreamId,
-                                    0d,
-                                    0,
-                                    false);
-
-                            if (!isTrailer && videoPlayerView != null && !isLiveStream) {
-                                appCMSPresenter.updateWatchedTime(filmId,
-                                        videoPlayerView.getCurrentPosition() / 1000);
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "BeaconPingThread sleep interrupted");
-                }
-            }
-        }
-    }
-
-    private static class BeaconBufferingThread extends Thread {
-        final long beaconBufferTimeoutMsec;
-        final AppCMSPresenter appCMSPresenter;
-        final String filmId;
-        final String permaLink;
-        final String parentScreenName;
-        final String mStreamId;
-        VideoPlayerView videoPlayerView;
-        boolean runBeaconBuffering;
-        boolean sendBeaconBuffering;
-        int bufferCount = 0;
-
-        public BeaconBufferingThread(long beaconBufferTimeoutMsec,
-                                     AppCMSPresenter appCMSPresenter,
-                                     String filmId,
-                                     String permaLink,
-                                     String parentScreenName,
-                                     VideoPlayerView videoPlayerView,
-                                     String mStreamId) {
-            this.beaconBufferTimeoutMsec = beaconBufferTimeoutMsec;
-            this.appCMSPresenter = appCMSPresenter;
-            this.filmId = filmId;
-            this.permaLink = permaLink;
-            this.parentScreenName = parentScreenName;
-            this.videoPlayerView = videoPlayerView;
-            this.mStreamId = mStreamId;
-        }
-
-        public void run() {
-            runBeaconBuffering = true;
-            while (runBeaconBuffering) {
-                try {
-                    Thread.sleep(beaconBufferTimeoutMsec);
-                    if (sendBeaconBuffering) {
-                        if (appCMSPresenter != null && videoPlayerView != null &&
-                                videoPlayerView.getPlayer().getPlayWhenReady() &&
-                                videoPlayerView.getPlayer().getPlaybackState() == ExoPlayer.STATE_BUFFERING) { // For not to sent PIN in PAUSE mode
-                            bufferCount++;
-                            if (bufferCount >= 5) {
-                                appCMSPresenter.sendBeaconMessage(filmId,
-                                        permaLink,
-                                        parentScreenName,
-                                        videoPlayerView.getCurrentPosition(),
-                                        false,
-                                        AppCMSPresenter.BeaconEvent.BUFFERING,
-                                        "Video",
-                                        videoPlayerView.getBitrate() != 0 ? String.valueOf(videoPlayerView.getBitrate()) : null,
-                                        String.valueOf(videoPlayerView.getVideoHeight()),
-                                        String.valueOf(videoPlayerView.getVideoWidth()),
-                                        mStreamId,
-                                        0d,
-                                        0,
-                                        false);
-                                bufferCount = 0;
-                            }
-
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    Log.e(TAG, "beaconBufferingThread sleep interrupted");
-                }
-            }
-        }
-    }
     LinearLayout headerTitleContaineer;
     TextView titleView;
     private void createTitleView(){
@@ -1169,4 +977,15 @@ public class CustomTVVideoPlayerView
             setUri(Uri.parse(lastUrl), null);
         }
     }
+
+    private void setBeaconData() {
+        try {
+            mStreamId = appCMSPresenter.getStreamingId(videoDataId);
+        } catch (Exception e) {
+            mStreamId = videoDataId + appCMSPresenter.getCurrentTimeStamp();
+        }
+        beaconBufferingThread.setBeaconData(videoDataId, permaLink, mStreamId);
+        beaconMessageThread.setBeaconData(videoDataId, permaLink, mStreamId);
+    }
+
 }
