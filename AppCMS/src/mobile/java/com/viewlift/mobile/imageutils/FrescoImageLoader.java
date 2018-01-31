@@ -38,19 +38,23 @@ public class FrescoImageLoader implements ImageLoader {
     private GradientPostProcessor gradientPostProcessor;
 
     public FrescoImageLoader(Context context) {
-        Set<RequestListener> requestListeners = new HashSet<>();
-        requestListeners.add(new RequestLoggingListener());
-        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(context)
-                // other setters
-                .setDownsampleEnabled(true)
-                .setRequestListeners(requestListeners)
-                .build();
-        Fresco.initialize(context, config);
-        FLog.setMinimumLoggingLevel(FLog.VERBOSE);
+        if (!Fresco.hasBeenInitialized()) {
+            Set<RequestListener> requestListeners = new HashSet<>();
+            requestListeners.add(new RequestLoggingListener());
+            ImagePipelineConfig config = ImagePipelineConfig.newBuilder(context)
+                    // other setters
+                    .setDownsampleEnabled(true)
+                    .setRequestListeners(requestListeners)
+                    .build();
+            Fresco.initialize(context, config);
+//            FLog.setMinimumLoggingLevel(FLog.VERBOSE);
 
-        Fresco.initialize(context, config);
+            Fresco.initialize(context, config);
+        }
 
-        this.gradientPostProcessor = new GradientPostProcessor();
+        if (this.gradientPostProcessor == null) {
+            this.gradientPostProcessor = new GradientPostProcessor();
+        }
     }
 
     @Override

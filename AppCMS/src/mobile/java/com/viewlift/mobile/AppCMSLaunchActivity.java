@@ -110,6 +110,8 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
 
             AppsFlyerLib.getInstance().startTracking(getApplication());
+
+            //            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
         }).run();
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
