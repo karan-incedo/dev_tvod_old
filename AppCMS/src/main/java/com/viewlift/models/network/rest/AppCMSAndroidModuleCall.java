@@ -169,8 +169,10 @@ public class AppCMSAndroidModuleCall {
                         new TypeToken<Map<String, ModuleList>>() {
                         }.getType());
                 moduleDataMap.loadedFromNetwork = true;
-                deletePreviousFiles(getResourceFilenameWithJsonOnly(blocksBaseUrl));
-                writeModuleToFile(getResourceFilename(blocksBaseUrl, version), moduleDataMap.appCMSAndroidModule);
+                new Thread(() -> {
+                    deletePreviousFiles(getResourceFilenameWithJsonOnly(blocksBaseUrl));
+                    writeModuleToFile(getResourceFilename(blocksBaseUrl, version), moduleDataMap.appCMSAndroidModule);
+                }).run();
             }
         } catch (Exception e1) {
             //Log.e(TAG, "Failed to load block modules from file: " + e1.getMessage());

@@ -512,6 +512,7 @@ public class AppCMSPresenter {
     private MetaPage downloadQualityPage;
     private MetaPage homePage;
     private MetaPage moviesPage;
+    private MetaPage showsPage;
     private MetaPage downloadPage;
     private MetaPage subscriptionPage;
     private MetaPage historyPage;
@@ -10174,21 +10175,23 @@ public class AppCMSPresenter {
                         //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
                         launchUpgradeAppActivity();
                     } else {
+                        this.appCMSAndroid = appCMSAndroidUI;
+
+                        initializeAppCMSAnalytics(appCMSAndroidUI);
+
+                        navigation = appCMSAndroidUI.getNavigation();
+                        new SoftReference<>(navigation, referenceQueue);
+                        queueMetaPages(appCMSAndroidUI.getMetaPages());
+                        //Log.d(TAG, "Processing meta pages queue");
+
+                        launchBlankPage();
+
                         getAppCMSModules(appCMSAndroidUI,
                                 false,
                                 false,
                                 (appCMSAndroidModules) -> {
-                                    launchBlankPage();
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;
-                                    this.appCMSAndroid = appCMSAndroidUI;
-
-                                    initializeAppCMSAnalytics(appCMSAndroidUI);
-
-                                    navigation = appCMSAndroidUI.getNavigation();
-                                    new SoftReference<>(navigation, referenceQueue);
-                                    queueMetaPages(appCMSAndroidUI.getMetaPages());
-                                    //Log.d(TAG, "Processing meta pages queue");
 
                                     processMetaPagesList(loadFromFile,
                                             appCMSAndroidUI.getMetaPages(),
@@ -10343,6 +10346,27 @@ public class AppCMSPresenter {
             int homePageIndex = getHomePage(metaPageList);
             if (homePageIndex >= 0) {
                 homePage = metaPageList.get(homePageIndex);
+
+                if (homePage != null) {
+                    String baseUrl = appCMSMain.getApiBaseUrl();
+                    String endPoint = homePage.getPageAPI();
+                    String siteId = appCMSSite.getGist().getSiteInternalName();
+
+                    // Cache home page when the app is loading
+                    getPageIdContent(getApiUrl(true,
+                            false,
+                            false,
+                            baseUrl,
+                            endPoint,
+                            siteId,
+                            homePage.getPageId(),
+                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
+                            homePage.getPageId(),
+                            null,
+                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
+                            null);
+                }
+
                 new SoftReference<Object>(homePage, referenceQueue);
             }
 
@@ -10363,19 +10387,67 @@ public class AppCMSPresenter {
                             endPoint,
                             siteId,
                             moviesPage.getPageId(),
-                            false),
+                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
                             moviesPage.getPageId(),
                             null,
-                            false,
+                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
                             null);
                 }
 
                 new SoftReference<Object>(moviesPage, referenceQueue);
             }
 
+            int showsPageIndex = getShowsPage(metaPageList);
+            if (showsPageIndex >= 0) {
+                showsPage = metaPageList.get(moviesPageIndex);
+
+                if (moviesPage != null) {
+                    String baseUrl = appCMSMain.getApiBaseUrl();
+                    String endPoint = showsPage.getPageAPI();
+                    String siteId = appCMSSite.getGist().getSiteInternalName();
+
+                    // Cache movies page when the app is loading
+                    getPageIdContent(getApiUrl(true,
+                            false,
+                            false,
+                            baseUrl,
+                            endPoint,
+                            siteId,
+                            showsPage.getPageId(),
+                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
+                            showsPage.getPageId(),
+                            null,
+                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
+                            null);
+                }
+
+                new SoftReference<Object>(showsPage, referenceQueue);
+            }
+
             int subscriptionPageIndex = getSubscriptionPage(metaPageList);
             if (subscriptionPageIndex >= 0) {
                 subscriptionPage = metaPageList.get(subscriptionPageIndex);
+
+                if (subscriptionPage != null) {
+                    String baseUrl = appCMSMain.getApiBaseUrl();
+                    String endPoint = subscriptionPage.getPageAPI();
+                    String siteId = appCMSSite.getGist().getSiteInternalName();
+
+                    // Cache subscription page when the app is loading
+                    getPageIdContent(getApiUrl(true,
+                            true,
+                            false,
+                            baseUrl,
+                            endPoint,
+                            siteId,
+                            subscriptionPage.getPageId(),
+                            false),
+                            subscriptionPage.getPageId(),
+                            null,
+                            false,
+                            null);
+                }
+
                 new SoftReference<Object>(subscriptionPage, referenceQueue);
             }
 
@@ -10649,6 +10721,16 @@ public class AppCMSPresenter {
         for (int i = 0; i < metaPageList.size(); i++) {
             if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
                     == AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int getShowsPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY) {
                 return i;
             }
         }
