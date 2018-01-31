@@ -1211,7 +1211,7 @@ public class ViewCreator {
                 }
             }
         }
-        pageView.notifyAdapterDataSetChanged();
+      //  pageView.notifyAdapterDataSetChanged();
 
         List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
         if (presenterOnInternalEvents != null) {
