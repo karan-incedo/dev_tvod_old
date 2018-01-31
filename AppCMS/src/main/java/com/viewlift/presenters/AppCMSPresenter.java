@@ -10394,6 +10394,9 @@ public class AppCMSPresenter {
     private void populateTVPage(AppCMSPageAPI appCMSPageAPI, AppCMSPageUI appCMSPageUI, String pageId,
                                 boolean launchActivity, String pageTitle, boolean isTosPage,
                                 boolean isLoginPage, String pagePath) {
+        if(cancelAllLoads){
+            return;
+        }
         cancelInternalEvents();
         pushActionInternalEvents(pageId
                 + BaseView.isLandscape(currentActivity));
@@ -10633,6 +10636,7 @@ public class AppCMSPresenter {
                                                 int currentlyPlayingIndex,
                                                 List<String> relateVideoIds) {
         boolean result = false;
+        Log.d(TAG , "launchTVButtonSelectedAction = "+pagePath + " action = "+action);
         //Log.d(TAG, "Attempting to load page " + filmTitle + ": " + pagePath);
         if (!isNetworkConnected()) {
             RetryCallBinder retryCallBinder = getRetryCallBinder(pagePath, action,
