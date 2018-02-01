@@ -301,7 +301,7 @@ public class TVViewCreator {
             }
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView()))
             {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
             }
 
             if ("AC UserManagement 01".equalsIgnoreCase(module.getView()))
@@ -342,7 +342,7 @@ public class TVViewCreator {
                                 Drawable drawable = new BitmapDrawable(context.getResources(), resource);
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                                     finalPageView.setBackground(drawable);
-                                    finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
+                                    finalPageView.getChildrenContainer().setBackgroundColor(Color.parseColor("#CC000000"));
                                 }
                             }
                         });
@@ -441,14 +441,6 @@ public class TVViewCreator {
                             createHeaderItem(component, context, moduleUI, moduleData, moduleData.getTitle() != null ? moduleData.getTitle() : "", isCarousel);
                         }
                         break;
-
-                    case PAGE_TRAY_SEASON_TITLE_KEY:
-                        if (moduleData != null) {
-                            customHeaderItem = null;
-                            moduleUI.getLayout().getTv().setHeight("250");
-                            createHeaderItem(component, context, moduleUI, moduleData, moduleData.getTitle() != null ? moduleData.getTitle() : "SEASON 1", isCarousel);
-                        }
-                        break;
                 }
                 break;
             case PAGE_CAROUSEL_VIEW_KEY: {
@@ -533,6 +525,9 @@ public class TVViewCreator {
                             traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
                             List<ContentDatum> episodes = season.getEpisodes();
 
+                            customHeaderItem = null;
+                            moduleUI.getLayout().getTv().setHeight("250");
+                            createHeaderItemForSeason(component, context, "SEASON " + (seasonIndex + 1));
                             for (int i = 0; i < episodes.size(); i++) {
                                 List<String> relatedVids = Utils.getRelatedVideosInShow(
                                         moduleData.getContentData().get(0).getSeason(),
@@ -639,6 +634,36 @@ public class TVViewCreator {
         customHeaderItem.setFontWeight(component.getFontWeight());
         customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
         customHeaderItem.setmModuleId((moduleData != null) ? moduleData.getId() : null);
+    }
+
+    private void createHeaderItemForSeason(Component component,
+                                           Context context,
+                                           String name) {
+        String textCase = component.getTextCase();
+        if(textCase != null){
+            if(textCase.equalsIgnoreCase(context.getResources().getString(R.string.text_case_caps))){
+                name = name.toUpperCase();
+            }else if(textCase.equalsIgnoreCase(context.getResources().getString(R.string.text_case_small))){
+                name = name.toLowerCase();
+            }else if(textCase.equalsIgnoreCase(context.getResources().getString(R.string.text_case_sentence))){
+                String text  = Utils.convertStringIntoCamelCase(name);
+                if(text != null){
+                    name = text;
+                }
+            }
+        }
+        customHeaderItem = new CustomHeaderItem(context, trayIndex++, name);
+        customHeaderItem.setItemSpacing(component.getLayout().getTv().getItemSpacing());
+        customHeaderItem.setmBackGroundColor(component.getLayout().getTv().getBackgroundColor());
+        if (null != component.getLayout().getTv().getHeight()) {
+            customHeaderItem.setmListRowHeight(Integer.valueOf(component.getLayout().getTv().getHeight()));
+        }
+        if(null != component.getLayout().getTv().getWidth()) {
+            customHeaderItem.setmListRowWidth(Integer.valueOf(component.getLayout().getTv().getWidth()));
+        }
+        customHeaderItem.setFontFamily(component.getFontFamily());
+        customHeaderItem.setFontWeight(component.getFontWeight());
+        customHeaderItem.setFontSize(component.getLayout().getTv().getFontSize());
     }
 
 
@@ -2181,7 +2206,9 @@ public class TVViewCreator {
                         if (creditBlock != null && creditBlock.getCredits() != null) {
                             for (int i = 0; i < creditBlock.getCredits().size(); i++) {
                                 directorListSb.append(creditBlock.getCredits().get(i).getTitle());
-                                if (i < creditBlock.getCredits().size() - 1) {
+                                if (i == creditBlock.getCredits().size() - 2){
+                                    directorListSb.append(" & ");
+                                } else if (i < creditBlock.getCredits().size() - 1) {
                                     directorListSb.append(", ");
                                 }
                             }
@@ -2433,30 +2460,32 @@ public class TVViewCreator {
                              Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                              Component component,
                              TextView textView) {
-        if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
-            AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
-            if (fontWeight == null) {
-                fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+        if (textView != null) {
+            if (jsonValueKeyMap.get(component.getFontFamily()) == AppCMSUIKeyType.PAGE_TEXT_OPENSANS_FONTFAMILY_KEY) {
+                AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(component.getFontWeight());
+                if (fontWeight == null) {
+                    fontWeight = AppCMSUIKeyType.PAGE_EMPTY_KEY;
+                }
+                Typeface face = null;
+                switch (fontWeight) {
+                    case PAGE_TEXT_BOLD_KEY:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
+                        //Log.d(TAG, "setTypeFace===Opensans_Bold" + " text = " + component.getKey().toString());
+                        break;
+                    case PAGE_TEXT_SEMIBOLD_KEY:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
+                        //Log.d(TAG, "setTypeFace===Opensans_SemiBold" + " text = " + component.getKey().toString());
+                        break;
+                    case PAGE_TEXT_EXTRABOLD_KEY:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
+                        //Log.d(TAG, "setTypeFace===Opensans_ExtraBold" + " text = " + component.getKey().toString());
+                        break;
+                    default:
+                        face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
+                        //Log.d(TAG, "setTypeFace===Opensans_RegularBold" + " text = " + component.getKey().toString());
+                }
+                textView.setTypeface(face);
             }
-            Typeface face = null;
-            switch (fontWeight) {
-                case PAGE_TEXT_BOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_bold_ttf));
-                    //Log.d(TAG, "setTypeFace===Opensans_Bold" + " text = " + component.getKey().toString());
-                    break;
-                case PAGE_TEXT_SEMIBOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_semibold_ttf));
-                    //Log.d(TAG, "setTypeFace===Opensans_SemiBold" + " text = " + component.getKey().toString());
-                    break;
-                case PAGE_TEXT_EXTRABOLD_KEY:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_extrabold_ttf));
-                    //Log.d(TAG, "setTypeFace===Opensans_ExtraBold" + " text = " + component.getKey().toString());
-                    break;
-                default:
-                    face = Typeface.createFromAsset(context.getAssets(), context.getString(R.string.opensans_regular_ttf));
-                    //Log.d(TAG, "setTypeFace===Opensans_RegularBold" + " text = " + component.getKey().toString());
-            }
-            textView.setTypeface(face);
         }
     }
 
