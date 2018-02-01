@@ -30,10 +30,10 @@ public class BitmapHelper {
     private static final int MAX_READ_LIMIT_PER_IMG = 1024 * 1024;
 
     public static Bitmap scaleBitmap(Bitmap src, int maxWidth, int maxHeight) {
-       double scaleFactor = Math.min(
-           ((double) maxWidth)/src.getWidth(), ((double) maxHeight)/src.getHeight());
+        double scaleFactor = Math.min(
+                ((double) maxWidth) / src.getWidth(), ((double) maxHeight) / src.getHeight());
         return Bitmap.createScaledBitmap(src,
-            (int) (src.getWidth() * scaleFactor), (int) (src.getHeight() * scaleFactor), false);
+                (int) (src.getWidth() * scaleFactor), (int) (src.getHeight() * scaleFactor), false);
     }
 
     public static Bitmap scaleBitmap(int scaleFactor, InputStream is) {
@@ -56,7 +56,7 @@ public class BitmapHelper {
         int actualH = bmOptions.outHeight;
 
         // Determine how much to scale down the image
-        return Math.min(actualW/targetW, actualH/targetH);
+        return Math.min(actualW / targetW, actualH / targetH);
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -69,8 +69,10 @@ public class BitmapHelper {
             is = new BufferedInputStream(urlConnection.getInputStream());
             is.mark(MAX_READ_LIMIT_PER_IMG);
             int scaleFactor = findScaleFactor(width, height, is);
-                       is.reset();
+            is.reset();
             return scaleBitmap(scaleFactor, is);
+        } catch (ClassCastException e) {
+            return null;
         } finally {
             if (is != null) {
                 is.close();

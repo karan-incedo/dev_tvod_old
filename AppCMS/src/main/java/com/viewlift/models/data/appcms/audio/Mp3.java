@@ -26,4 +26,8 @@ public class Mp3 {
     public long getBitrate() {
         return bitrate;
     }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

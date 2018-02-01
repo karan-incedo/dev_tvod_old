@@ -615,7 +615,7 @@ public class AudioCastPlayback implements Playback {
         beaconPing.setFilmId(audioData.getAudioGist().getId());
         beaconPing.setPermaLink(audioData.getAudioGist().getPermalink());
         beaconPing.setStreamId(getStreamId());
-        audioData.getAudioGist().setCastingConnected(false);
+        audioData.getAudioGist().setCastingConnected(true);
         audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
         beaconPing.setContentDatum(audioData);
     }
@@ -634,7 +634,7 @@ public class AudioCastPlayback implements Playback {
         beaconBuffer.setFilmId(audioData.getAudioGist().getId());
         beaconBuffer.setPermaLink(audioData.getAudioGist().getPermalink());
         beaconBuffer.setStreamId(getStreamId());
-        audioData.getAudioGist().setCastingConnected(false);
+        audioData.getAudioGist().setCastingConnected(true);
         audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
         beaconBuffer.setContentDatum(audioData);
     }

@@ -84,4 +84,16 @@ public class AppCMSAudioDetailResult {
 
         return appCMSPageAPI;
     }
+
+    public void setGist(AudioGist gist) {
+        this.gist = gist;
+    }
+
+    public void setCreditBlocks(List<CreditBlock> creditBlocks) {
+        this.creditBlocks = creditBlocks;
+    }
+
+    public void setStreamingInfo(StreamingInfo streamingInfo) {
+        this.streamingInfo = streamingInfo;
+    }
 }

@@ -53,4 +53,8 @@ public class StreamingInfo implements Serializable {
     public void setCuePoints(String cuePoints) {
         this.cuePoints = cuePoints;
     }
+
+    public void setAudioAssets(AudioAssets audioAssets) {
+        this.audioAssets = audioAssets;
+    }
 }
