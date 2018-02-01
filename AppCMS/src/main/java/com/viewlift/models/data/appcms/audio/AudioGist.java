@@ -63,6 +63,7 @@ public class AudioGist implements Serializable {
     @Expose
     String mediaType;
 
+
     public String getId() {
         return id;
     }
@@ -176,5 +177,13 @@ public class AudioGist implements Serializable {
 
     public void setCastingConnected(Boolean castingConnected) {
         isCastingConnected = castingConnected;
+    }
+
+    public void setDownloadStatus(String downloadStatus) {
+        this.downloadStatus = downloadStatus;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
 }

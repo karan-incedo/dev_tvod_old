@@ -422,13 +422,13 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key),
-                AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key),
-                AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key2),
-                AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key2),
-                AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY);
+                AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_download_module_key),
                 AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_playlist_module_key),

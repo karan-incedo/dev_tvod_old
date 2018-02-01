@@ -443,17 +443,11 @@ public class CollectionGridItemView extends BaseView {
             } else if (componentType == AppCMSUIKeyType.PAGE_BUTTON_KEY) {
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAY_IMAGE_KEY) {
                     ((TextView) view).setText("");
-
                 } else if (componentKey == AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY) {
                     ((TextView) view).setText(childComponent.getText());
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
-                }
-
-                if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
-                    view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                            childComponent, data, position));
                 } else if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
                     String userId = appCMSPresenter.getLoggedInUser();
 
@@ -475,6 +469,13 @@ public class CollectionGridItemView extends BaseView {
                                 data.getGist().getId(), updateDownloadImageIconAction, userId);
                     } catch (Exception e) {
 
+                    }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DOWNLOAD_BUTTON_KEY) {
+                    view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
+                            childComponent, data, position));
+                    if (appCMSPresenter.isVideoDownloaded(data.getGist().getId())) {
+                        ((ImageButton) view).setImageResource(R.drawable.ic_downloaded);
+                        view.setOnClickListener(null);
                     }
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
@@ -513,14 +514,12 @@ public class CollectionGridItemView extends BaseView {
                                     .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
                                     .append(" ")
                                     .append(context.getString(R.string.min_abbreviation));
-
                             ((TextView) view).setText(runtimeText);
                         } else {
                             StringBuilder runtimeText = new StringBuilder()
                                     .append(data.getGist().getRuntime() / SECONDS_PER_MINS)
                                     .append(" ")
                                     .append(context.getString(R.string.mins_abbreviation));
-
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_AUDIO_DURATION_KEY) {
@@ -531,7 +530,7 @@ public class CollectionGridItemView extends BaseView {
                         ((TextView) view).setText(thumbInfo);
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
-                        if (data.getGist() != null) {
+                        if (data.getGist() != null && data.getGist().getTitle() != null) {
                             ((TextView) view).setText(data.getGist().getTitle());
                             ((TextView) view).setSingleLine(true);
                             ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
@@ -539,26 +538,15 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
-                        ((TextView) view).setSingleLine(false);
-                        ((TextView) view).setMaxLines(2);
-                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                        ((TextView) view).setText(data.getGist().getDescription());
-
-                        try {
-                            ViewTreeObserver titleTextVto = view.getViewTreeObserver();
-                            ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
-                                    new ViewCreatorMultiLineLayoutListener((TextView) view,
-                                            data.getGist().getTitle(),
-                                            data.getGist().getDescription(),
-                                            appCMSPresenter,
-                                            true,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
-                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
-                        } catch (Exception e) {
+                        if (data.getGist() != null && data.getGist().getDescription() != null) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMaxLines(2);
+                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                            ((TextView) view).setText(data.getGist().getDescription());
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
-                        if(data.getGist()!=null && data.getGist().getDescription()!=null)
-                        ((TextView) view).setText(data.getGist().getDescription());
+                        if (data.getGist() != null && data.getGist().getDescription() != null)
+                            ((TextView) view).setText(data.getGist().getDescription());
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_DESCRIPTION) {
                         ((TextView) view).setText(data.getGist().getDescription());
                         try {

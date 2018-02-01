@@ -26,4 +26,8 @@ public class AudioAssets {
     public Mp3 getMp3() {
         return mp3;
     }
+
+    public void setMp3(Mp3 mp3) {
+        this.mp3 = mp3;
+    }
 }

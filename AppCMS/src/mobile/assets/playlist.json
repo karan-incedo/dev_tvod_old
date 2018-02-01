@@ -132,19 +132,19 @@
           "layout": {
             "mobile": {
               "yAxis": 22,
-              "xAxis": 310,
+              "xAxis": 306,
               "width": 25,
               "height": 25
             },
             "tabletLandscape": {
               "yAxis": 22,
-              "xAxis": 965,
+              "xAxis": 952,
               "width": 20,
               "height": 26
             },
             "tabletPortrait": {
               "yAxis": 22,
-              "xAxis": 704,
+              "xAxis": 687,
               "width": 20,
               "height": 26
             }
@@ -256,11 +256,11 @@
               "layout": {
                 "mobile": {
                   "leftMargin": 64,
-                  "topMargin": 3.5,
+                  "topMargin": 3.2,
                   "rightMargin": 14.93,
                   "fontSize": 16,
                   "height": 22,
-                  "width":240
+                  "width": 240
                 },
                 "tabletLandscape": {
                   "leftMargin": 64,
@@ -268,7 +268,7 @@
                   "rightMargin": 14.93,
                   "fontSize": 16,
                   "height": 22,
-                  "width":240
+                  "width": 240
                 },
                 "tabletPortrait": {
                   "leftMargin": 64,
@@ -276,7 +276,7 @@
                   "rightMargin": 14.93,
                   "fontSize": 16,
                   "height": 22,
-                  "width":240
+                  "width": 240
                 }
               },
               "fontFamily": "OpenSans",
@@ -294,7 +294,7 @@
                   "rightMargin": 19.93,
                   "fontSize": 15,
                   "height": 20,
-                  "width":175
+                  "width": 175
                 },
                 "tabletLandscape": {
                   "leftMargin": 64,
@@ -302,7 +302,7 @@
                   "rightMargin": 19.93,
                   "fontSize": 15,
                   "height": 20,
-                  "width":175
+                  "width": 175
                 },
                 "tabletPortrait": {
                   "leftMargin": 64,
@@ -310,7 +310,7 @@
                   "rightMargin": 19.93,
                   "fontSize": 15,
                   "height": 20,
-                  "width":175
+                  "width": 175
                 }
               },
               "fontFamily": "OpenSans",
@@ -328,14 +328,14 @@
                   "height": 20
                 },
                 "tabletLandscape": {
-                  "topMargin": 4,
-                  "rightMargin": 20,
+                  "topMargin": 5,
+                  "xAxis": 965,
                   "width": 20,
                   "height": 20
                 },
                 "tabletPortrait": {
-                  "topMargin": 4,
-                  "rightMargin": 20,
+                  "topMargin": 3,
+                  "rightMargin": 40,
                   "width": 20,
                   "height": 20
                 }
@@ -354,16 +354,16 @@
                   "height": 19
                 },
                 "tabletLandscape": {
-                  "topMargin": 4,
-                  "rightMargin": 1.6,
-                  "width": 15,
+                  "topMargin": 4.5,
+                  "xAxis": 985,
+                  "width": 35,
                   "fontSize": 12,
                   "height": 19
                 },
                 "tabletPortrait": {
-                  "topMargin": 4,
+                  "topMargin": 3,
                   "rightMargin": 1.6,
-                  "width": 15,
+                  "width": 35,
                   "fontSize": 12,
                   "height": 19
                 }
@@ -463,7 +463,6 @@
             }
           },
           "fontFamily": "OpenSans",
-          "numberOfLines": 1,
           "textAlignment": "center",
           "isSelectable": true,
           "type": "label",

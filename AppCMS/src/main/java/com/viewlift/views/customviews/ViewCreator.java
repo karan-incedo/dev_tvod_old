@@ -661,11 +661,13 @@ public class ViewCreator {
                                             } else if (moduleAPI != null && moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
                                                     !TextUtils.isEmpty(moduleAPI.getTitle())) {
                                                 ((TextView) view).setText(moduleAPI.getTitle().toUpperCase());
-                                            } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                                            } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
+                                                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
                                                 ((TextView) view).setText(R.string.app_cms_page_watchlist_title);
                                             } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                                 ((TextView) view).setText(R.string.app_cms_page_download_title);
-                                            } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                                            } else if (jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
+                                                    jsonValueKeyMap.get(module.getView()) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                                                 ((TextView) view).setText(R.string.app_cms_page_history_title);
                                             }
                                         }
@@ -1118,7 +1120,25 @@ public class ViewCreator {
             }
             newView = true;
         }
-
+        // TODO: need to remove these checks once we get correct JSON from backend
+        if (screenName != null && screenName.contains("My Watchlist")) {
+            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                    loadJsonFromAssets(context, "watchlist.json"),
+                    AppCMSPageUI.class);
+            appCMSPageUI = appCMSPageUI1;
+        }
+        if (screenName != null && screenName.contains("My History")) {
+            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                    loadJsonFromAssets(context, "history.json"),
+                    AppCMSPageUI.class);
+            appCMSPageUI = appCMSPageUI1;
+        }
+        if (screenName != null && screenName.contains("Downloads")) {
+            AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                    loadJsonFromAssets(context, "download.json"),
+                    AppCMSPageUI.class);
+            appCMSPageUI = appCMSPageUI1;
+        }
         if (newView ||
                 (!appCMSPresenter.isPagePrimary(screenName) && !appCMSPresenter.isPageAVideoPage(screenName)) ||
                 appCMSPresenter.isUserLoggedIn() != pageView.isUserLoggedIn()) {
@@ -1167,9 +1187,20 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                if (moduleInfo.getBlockName().contains("playlistDetail01")) {
+                // TODO: need to remove these checks once we get correct JSON from backend
+                if (moduleInfo.getBlockName().equalsIgnoreCase("watchlist01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
-                            loadJsonFromAssets(context, "playlist.json"),
+                            loadJsonFromAssets(context, "watchlist.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else if (moduleInfo.getBlockName().equalsIgnoreCase("history01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "history.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                } else if (moduleInfo.getBlockName().equalsIgnoreCase("downloads01")) {
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "download.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(1);
                 } else {
@@ -2534,7 +2565,8 @@ public class ViewCreator {
                             @Override
                             public void onClick(final View v) {
                                 switch (jsonValueKeyMap.get(viewType)) {
-                                    case PAGE_HISTORY_MODULE_KEY:
+                                    case PAGE_HISTORY_01_MODULE_KEY:
+                                    case PAGE_HISTORY_02_MODULE_KEY:
                                         appCMSPresenter.clearHistory(appCMSDeleteHistoryResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
@@ -2548,7 +2580,8 @@ public class ViewCreator {
                                         });
                                         break;
 
-                                    case PAGE_WATCHLIST_MODULE_KEY:
+                                    case PAGE_WATCHLIST_01_MODULE_KEY:
+                                    case PAGE_WATCHLIST_02_MODULE_KEY:
                                         appCMSPresenter.clearWatchlist(appCMSAddToWatchlistResult -> {
                                             onInternalEvent.sendEvent(null);
                                             v.setVisibility(View.GONE);
@@ -2836,11 +2869,13 @@ public class ViewCreator {
                                     ((TextView) componentViewResult.componentView).setMaxLines(component.getNumberOfLines());
                                 }
                                 ((TextView) componentViewResult.componentView).setEllipsize(TextUtils.TruncateAt.END);
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
                             } else if (moduleAPI != null &&
                                     moduleAPI.getContentData() != null &&
@@ -2866,11 +2901,13 @@ public class ViewCreator {
                             } else if (moduleAPI != null && moduleAPI.getSettings() != null && !moduleAPI.getSettings().getHideTitle() &&
                                     !TextUtils.isEmpty(moduleAPI.getTitle())) {
                                 ((TextView) componentViewResult.componentView).setText(moduleAPI.getTitle().toUpperCase());
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_MODULE_KEY) {
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_01_MODULE_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_WATCHLIST_02_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_watchlist_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_DOWNLOAD_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_download_title);
-                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
+                            } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_01_MODULE_KEY ||
+                                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_02_MODULE_KEY) {
                                 ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                             } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                                 if (moduleAPI != null && moduleAPI.getContentData() != null &&
@@ -3748,9 +3785,11 @@ public class ViewCreator {
 
             if (jsonValueKeyMap.get(module.getView()) != null) {
                 switch (jsonValueKeyMap.get(module.getView())) {
-                    case PAGE_HISTORY_MODULE_KEY:
+                    case PAGE_HISTORY_01_MODULE_KEY:
+                    case PAGE_HISTORY_02_MODULE_KEY:
                     case PAGE_PLAYLIST_MODULE_KEY:
-                    case PAGE_WATCHLIST_MODULE_KEY:
+                    case PAGE_WATCHLIST_01_MODULE_KEY:
+                    case PAGE_WATCHLIST_02_MODULE_KEY:
                     case PAGE_AUTOPLAY_MODULE_KEY_01:
                     case PAGE_AUTOPLAY_MODULE_KEY_02:
                     case PAGE_AUTOPLAY_MODULE_KEY_03:
