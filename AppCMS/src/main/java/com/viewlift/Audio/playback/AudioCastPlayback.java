@@ -181,7 +181,10 @@ public class AudioCastPlayback implements Playback {
 //        mCurrentPosition = getCurrentStreamPosition();
     }
 
-
+    @Override
+    public String getCurrentId(){
+        return mCurrentMediaId;
+    }
     @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
         try {

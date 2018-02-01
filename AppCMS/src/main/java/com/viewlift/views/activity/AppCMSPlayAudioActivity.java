@@ -63,27 +63,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        System.out.println("appCMSPresenter.getAppHomeActivityCreated() new intent-");
-
-//        try {
-//            if (intent != null) {
-//                 if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
-//                    Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
-//                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-//                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    startActivity(fullScreenIntent);
-//                }
-//            }
-//        } catch (Exception e) {
-//            //
-//        }
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
-
     }
 
     @Override
@@ -102,12 +83,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
         appCMSPresenter.updateDownloadImageAndStartDownloadProcess(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData(), downloadAudio, false);
 
-        System.out.println("appCMSPresenter.getAppHomeActivityCreated()-"+appCMSPresenter.getAppHomeActivityCreated());
-
-        if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
-            startActivity(new Intent(this, AppCMSLaunchActivity.class));
-            finish();
-        }
     }
 
     private void launchAudioPlayer() {

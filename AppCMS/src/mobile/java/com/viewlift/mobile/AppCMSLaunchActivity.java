@@ -110,6 +110,9 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             AppsFlyerLib.getInstance().startTracking(getApplication());
         });
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
+
+        appCMSPresenterComponent.appCMSPresenter().setAppHomeActivityCreated(true);
+
     }
 
     @Override
