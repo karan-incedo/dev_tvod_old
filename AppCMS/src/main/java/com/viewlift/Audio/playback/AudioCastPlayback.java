@@ -117,7 +117,7 @@ public class AudioCastPlayback implements Playback {
     public void initRemoteClient() {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
-        if (castSession != null && castSession.isConnected() ) {
+        if (castSession != null && castSession.isConnected()) {
             mRemoteMediaClient = castSession.getRemoteMediaClient();
         }
     }
@@ -130,6 +130,7 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public void stop(boolean notifyListeners) {
+        mCurrentMediaId = null;
         if (mRemoteMediaClient != null) {
             mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
             mRemoteMediaClient.removeProgressListener(progressListener);
@@ -154,8 +155,9 @@ public class AudioCastPlayback implements Playback {
 
     @Override
     public void stopPlayback(boolean notifyListeners) {
-        if (mRemoteMediaClient != null) {
+        mCurrentMediaId=null;
 
+        if (mRemoteMediaClient != null) {
             mRemoteMediaClient.removeListener(mRemoteMediaClientListener);
             mRemoteMediaClient.removeProgressListener(progressListener);
         }
@@ -182,9 +184,10 @@ public class AudioCastPlayback implements Playback {
     }
 
     @Override
-    public String getCurrentId(){
+    public String getCurrentId() {
         return mCurrentMediaId;
     }
+
     @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
         try {

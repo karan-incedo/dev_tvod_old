@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -33,7 +34,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     ImageButton downloadAudio;
     @BindView(R.id.share_audio)
     ImageView shareAudio;
-
+    AppCMSPlayAudioFragment appCMSPlayAudioFragment;
     private AppCMSPresenter appCMSPresenter;
     private String audioData = "";
     private CastServiceProvider castProvider;
@@ -89,7 +90,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         try {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            final AppCMSPlayAudioFragment appCMSPlayAudioFragment =
+             appCMSPlayAudioFragment =
                     AppCMSPlayAudioFragment.newInstance(this);
             fragmentTransaction.add(R.id.app_cms_play_audio_page_container,
                     appCMSPlayAudioFragment,
@@ -148,4 +149,5 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     public void updateMetaData(MediaMetadataCompat metadata) {
         audioData = "" + metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
     }
+
 }

@@ -182,6 +182,7 @@ public final class LocalPlayback implements Playback {
     @Override
     public void stop(boolean notifyListeners) {
 
+        mCurrentMediaId=null;
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
@@ -204,6 +205,8 @@ public final class LocalPlayback implements Playback {
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
+        mCurrentMediaId=null;
+
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
