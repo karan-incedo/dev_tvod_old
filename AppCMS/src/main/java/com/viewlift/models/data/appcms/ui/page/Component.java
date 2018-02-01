@@ -6,7 +6,6 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 @UseStag(UseStag.FieldOption.SERIALIZED_NAME)
 public class Component implements ModuleWithComponents, Serializable {
@@ -231,6 +230,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("textCase")
     @Expose
     String textCase;
+
+    @SerializedName("lineSpacingMultiplier")
+    @Expose
+    float lineSpacingMultiplier;
 
     boolean yAxisSetManually;
 
@@ -596,4 +599,11 @@ public class Component implements ModuleWithComponents, Serializable {
         this.textCase = textCase;
     }
 
+    public float getLineSpacingMultiplier() {
+        return lineSpacingMultiplier;
+    }
+
+    public void setLineSpacingMultiplier(float lineSpacingMultiplier) {
+        this.lineSpacingMultiplier = lineSpacingMultiplier;
+    }
 }

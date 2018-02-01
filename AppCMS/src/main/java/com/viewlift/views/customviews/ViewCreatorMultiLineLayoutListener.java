@@ -18,9 +18,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
-import com.viewlift.presenters.AppCMSPresenter;
-
 import com.viewlift.R;
+import com.viewlift.presenters.AppCMSPresenter;
 
 /**
  * Created by viewlift on 6/7/17.
@@ -64,7 +63,9 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                     0,
                     textView.getText().length(),
                     bounds);
-            if (bounds.height() < linesCompletelyVisible * textView.getLineHeight()) {
+            if (bounds.height() < linesCompletelyVisible * textView.getLineHeight()
+                    && appCMSPresenter.getPlatformType()
+                    .equals(AppCMSPresenter.PlatformType.ANDROID)) {
                 linesCompletelyVisible--;
             }
             if (linesCompletelyVisible < textView.getLineCount() &&

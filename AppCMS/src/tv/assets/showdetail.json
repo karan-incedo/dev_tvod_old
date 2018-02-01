@@ -9,7 +9,8 @@
       "yAxis": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 630
+      "height": 680,
+      "itemSpacing" : 50
     }
   },
   "components": [
@@ -63,27 +64,17 @@
       ],
       "textAlignment": "left",
       "type": "headerView",
-      "key": "showDetailHeader"
+      "key": "showDetailHeader",
+      "backgroundColor" : "#24282b"
     },
     {
       "layout": {
         "ftv": {
-          "topMargin": 138,
-          "width": 1920,
-          "height": 390
-        }
-      },
-      "backgroundColor": "#800a151c",
-      "type": "label"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "leftMargin": 1220,
+          "leftMargin": 960,
           "topMargin": 138,
           "rightMargin": 0,
-          "width": 700,
-          "height": 390
+          "width": 960,
+          "height": 540
         }
       },
       "type": "image",
@@ -92,10 +83,11 @@
     {
       "layout": {
         "ftv": {
-          "leftMargin": 50,
-          "yAxis": 138,
+          "leftMargin": 960,
+          "topMargin": 138,
           "rightMargin": 0,
-          "height": 390
+          "width": 960,
+          "height": 540
         }
       },
       "type": "image",
@@ -105,9 +97,9 @@
       "layout": {
         "ftv": {
           "leftMargin": 95,
-          "topMargin": 570,
+          "topMargin": 595,
           "width": 250,
-          "fontSize": 9,
+          "fontSize": 11.5,
           "height": 60
         }
       },
@@ -115,39 +107,19 @@
       "fontFamily": "OpenSans",
       "borderWidth": 4,
       "action": "watchVideo",
-      "text": "WATCH NOW",
+      "text": "START WATCHING",
       "type": "button",
       "textColor": "ffffff",
-      "fontWeight": "Semibold",
+      "fontWeight": "ExtraBold",
       "key": "showStartWatching"
     },
     {
       "layout": {
         "ftv": {
           "leftMargin": 365,
-          "topMargin": 570,
+          "topMargin": 595,
           "width": 250,
-          "fontSize": 9,
-          "height": 60
-        }
-      },
-      "borderColor": "ffffff",
-      "fontFamily": "OpenSans",
-      "borderWidth": 4,
-      "action": "selectSeasons",
-      "text": "SWITCH SEASONS",
-      "type": "button",
-      "textColor": "ffffff",
-      "fontWeight": "Semibold",
-      "key": "switchSeasons"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "leftMargin": 635,
-          "topMargin": 570,
-          "width": 250,
-          "fontSize": 9,
+          "fontSize": 11.5,
           "height": 60
         }
       },
@@ -158,21 +130,42 @@
       "text": "WATCH TRAILER",
       "type": "button",
       "textColor": "ffffff",
-      "fontWeight": "Semibold",
+      "fontWeight": "ExtraBold",
       "key": "watchShowTrailer"
     },
+   /* {
+      "layout": {
+        "ftv": {
+          "leftMargin": 635,
+          "topMargin": 595,
+          "width": 250,
+          "fontSize": 11.5,
+          "height": 60
+        }
+      },
+      "borderColor": "ffffff",
+      "fontFamily": "OpenSans",
+      "borderWidth": 4,
+      "action": "watchTrailer",
+      "text": "WATCH TRAILER",
+      "type": "button",
+      "textColor": "ffffff",
+      "fontWeight": "ExtraBold",
+      "key": "watchShowTrailer"
+    },*/
     {
       "layout": {
         "ftv": {
-          "fontSizeKey": 11,
+          "fontSizeKey": 11.5,
           "yAxis": 409,
           "xAxis": 95,
-          "width": 1000,
+          "width": 815,
+          "rightMargin" : 1050,
           "height": 120,
-          "fontSizeValue": 5
+          "fontSizeValue": 11.5
         }
       },
-      "fontFamilyKey": "OpenSans-Extrabold",
+      "fontFamilyKey": "OpenSans-ExtraBold",
       "fontFamilyValue": "OpenSans",
       "type": "castView",
       "textColor": "#ffffff",
@@ -183,16 +176,18 @@
         "ftv": {
           "yAxis": 188,
           "xAxis": 95,
-          "width": 768,
-          "fontSize": 11,
-          "height": 180
+          "rightMargin" : 1050,
+          "width": 815,
+          "fontSize": 12,
+          "height": 200
         }
       },
       "fontFamily": "OpenSans",
       "type": "label",
       "textColor": "#ffffff",
-      "fontWeight": "Semibold",
-      "key": "showDescriptionText"
+      "fontWeight": "SemiBold",
+      "key": "showDescriptionText",
+      "lineSpacingMultiplier": 1.2
     },
     {
       "layout": {
@@ -232,18 +227,6 @@
         {
           "layout": {
             "ftv": {
-              "leftMargin": 0,
-              "topMargin": 40,
-              "rightMargin": 4.8,
-              "height": 2
-            }
-          },
-          "backgroundColor": "#808080",
-          "type": "separatorView"
-        },
-        {
-          "layout": {
-            "ftv": {
               "width": 325,
               "height": 230
             }
@@ -275,10 +258,10 @@
             {
               "layout": {
                 "ftv": {
-                  "leftMargin": 0,
-                  "topMargin": 147,
-                  "rightMargin": 0,
-                  "fontSize": 12,
+                  "leftMargin": 5,
+                  "topMargin": 180,
+                  "rightMargin": 30,
+                  "fontSize": 11.5,
                   "height": 40
                 }
               },

@@ -288,7 +288,7 @@ public class TVViewCreator {
                     public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
                         Drawable drawable = new BitmapDrawable(context.getResources(), resource);
                         finalPageView.setBackground(drawable);
-                        finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
+                        finalPageView.getChildrenContainer().setBackgroundColor(Color.parseColor("#CC000000"));
                     }
                 });
             }
@@ -627,6 +627,7 @@ public class TVViewCreator {
         String padding = moduleUI.getLayout().getTv().getPadding();
         customHeaderItem.setmListRowLeftMargin(Integer.valueOf(padding != null ? padding : "0"));
         customHeaderItem.setmListRowRightMargin(Integer.valueOf(padding != null ? padding : "0"));
+        customHeaderItem.setItemSpacing(moduleUI.getLayout().getTv().getItemSpacing());
         customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
         if (null != moduleUI.getLayout().getTv().getHeight()) {
             customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
@@ -1351,6 +1352,12 @@ public class TVViewCreator {
 
                     default:
                 }
+                if (!TextUtils.isEmpty(component.getFontFamily())) {
+                    setTypeFace(context,
+                            jsonValueKeyMap,
+                            component,
+                            (TextView) componentViewResult.componentView);
+                }
                 break;
 
             case PAGE_LABEL_KEY:
@@ -1853,12 +1860,14 @@ public class TVViewCreator {
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
-                if (!TextUtils.isEmpty(component.getFontFamily())
-                        && componentKey != PAGE_API_DESCRIPTION) {
+                if (!TextUtils.isEmpty(component.getFontFamily())) {
                     setTypeFace(context,
                             jsonValueKeyMap,
                             component,
                             (TextView) componentViewResult.componentView);
+                }
+                if (component.getLineSpacingMultiplier() != 0) {
+                    ((TextView) componentViewResult.componentView).setLineSpacing(0, component.getLineSpacingMultiplier());
                 }
                 break;
 
@@ -2144,13 +2153,6 @@ public class TVViewCreator {
                         fontFamilyKeyTypeParsed = fontFamilyKeyArr[1];
                     }
                 }
-                int fontFamilyKeyType = Typeface.NORMAL;
-                AppCMSUIKeyType fontWeight = jsonValueKeyMap.get(fontFamilyKeyTypeParsed);
-                if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
-                        fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
-                        fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
-                    fontFamilyKeyType = Typeface.BOLD;
-                }
 
                 String fontFamilyValue = null, fontFamilyValueTypeParsed = null;
                 if (!TextUtils.isEmpty(component.getFontFamilyValue())) {
@@ -2161,20 +2163,11 @@ public class TVViewCreator {
                     }
                 }
 
-                int fontFamilyValueType = Typeface.NORMAL;
-                fontWeight = jsonValueKeyMap.get(fontFamilyValueTypeParsed);
-
-                if (fontWeight == AppCMSUIKeyType.PAGE_TEXT_BOLD_KEY ||
-                        fontWeight == AppCMSUIKeyType.PAGE_TEXT_SEMIBOLD_KEY ||
-                        fontWeight == AppCMSUIKeyType.PAGE_TEXT_EXTRABOLD_KEY) {
-                    fontFamilyValueType = Typeface.BOLD;
-                }
-
                 textColor = Color.parseColor(getColor(context, component.getTextColor()));
                 String directorTitle = null;
-                StringBuffer directorListSb = new StringBuffer();
+                StringBuilder directorListSb = new StringBuilder();
                 String starringTitle = null;
-                StringBuffer starringListSb = new StringBuffer();
+                StringBuilder starringListSb = new StringBuilder();
 
                 for (CreditBlock creditBlock : moduleAPI.getContentData().get(0).getCreditBlocks()) {
                     AppCMSUIKeyType creditBlockType = jsonValueKeyMap.get(creditBlock.getTitle());
@@ -2183,7 +2176,7 @@ public class TVViewCreator {
                                     creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTOR_KEY ||
                                     creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_DIRECTORS_KEY)) {
                         if (!TextUtils.isEmpty(creditBlock.getTitle())) {
-                            directorTitle = creditBlock.getTitle().toUpperCase();
+                            directorTitle = creditBlock.getTitle();
                         }
                         if (creditBlock != null && creditBlock.getCredits() != null) {
                             for (int i = 0; i < creditBlock.getCredits().size(); i++) {
@@ -2196,12 +2189,14 @@ public class TVViewCreator {
                     } else if (creditBlockType != null &&
                             creditBlockType == AppCMSUIKeyType.PAGE_VIDEO_CREDITS_STARRING_KEY) {
                         if (!TextUtils.isEmpty(creditBlock.getTitle())) {
-                            starringTitle = creditBlock.getTitle().toUpperCase();
+                            starringTitle = creditBlock.getTitle();
                         }
                         if (creditBlock != null && creditBlock.getCredits() != null) {
                             for (int i = 0; i < creditBlock.getCredits().size(); i++) {
                                 starringListSb.append(creditBlock.getCredits().get(i).getTitle());
-                                if (i < creditBlock.getCredits().size() - 1) {
+                                if (i == creditBlock.getCredits().size() - 2){
+                                    starringListSb.append(" & ");
+                                } else if (i < creditBlock.getCredits().size() - 1) {
                                     starringListSb.append(", ");
                                 }
                             }
@@ -2209,15 +2204,16 @@ public class TVViewCreator {
                     }
                 }
 
-                componentViewResult.componentView = new CreditBlocksView(context,
+                componentViewResult.componentView = new TVCreditBlocksView(context,
+                        jsonValueKeyMap,
                         fontFamilyKey,
-                        fontFamilyKeyType,
+                        fontFamilyKeyTypeParsed,
                         fontFamilyValue,
-                        fontFamilyValueType,
+                        fontFamilyValueTypeParsed,
                         directorTitle,
-                        directorListSb.toString().toUpperCase(),
+                        directorListSb.toString(),
                         starringTitle,
-                        starringListSb.toString().toUpperCase(),
+                        starringListSb.toString(),
                         textColor,
                         Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()),
                         Utils.getFontSizeKey(context, component.getLayout()),

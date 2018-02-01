@@ -265,7 +265,7 @@ public class Utils {
 
     public static float getFontSizeValue(Context context, Layout layout) {
             if (layout.getTv().getFontSizeValue() != null) {
-                layout.getTv().getFontSizeValue();
+                return layout.getTv().getFontSizeValue();
             }
         return -1.0f;
     }
