@@ -49,6 +49,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.appsflyer.AppsFlyerLib;
+import com.apptentive.android.sdk.Apptentive;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -63,8 +66,10 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.iid.InstanceID;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
+import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
@@ -105,6 +110,7 @@ import java.util.Stack;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.fabric.sdk.android.Fabric;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
@@ -245,9 +251,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         navLivePageIndex = getResources().getInteger(R.integer.nav_live_page_index);
 
         ButterKnife.bind(this);
+
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+
+        new Thread(() -> {
+            Fabric.with(getApplication(), new Crashlytics());
+            Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
+                    getString(R.string.app_cms_apptentive_signature_key));
+
+            if (appCMSPresenter != null) {
+                appCMSPresenter.setInstanceId(InstanceID.getInstance(this).getId());
+            }
+
+            UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+
+            AppsFlyerLib.getInstance().startTracking(getApplication());
+
+            //            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
+        }).run();
+
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
 

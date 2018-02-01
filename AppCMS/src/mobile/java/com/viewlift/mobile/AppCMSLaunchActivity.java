@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.appsflyer.AppsFlyerLib;
+import com.apptentive.android.sdk.Apptentive;
+import com.crashlytics.android.Crashlytics;
 import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
@@ -25,6 +27,8 @@ import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
 
 import com.google.android.gms.iid.InstanceID;
+
+import io.fabric.sdk.android.Fabric;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
@@ -101,18 +105,6 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         };
 
         setCasting();
-
-        new Thread(() -> {
-            if (appCMSPresenterComponent != null) {
-                appCMSPresenterComponent.appCMSPresenter().setInstanceId(InstanceID.getInstance(this).getId());
-            }
-
-            UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
-
-            AppsFlyerLib.getInstance().startTracking(getApplication());
-
-            //            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
-        }).run();
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 

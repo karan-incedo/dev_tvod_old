@@ -67,10 +67,6 @@ public class AppCMSApplication extends MultiDexApplication {
                 }
             };
 
-            Fabric.with(AppCMSApplication.this, new Crashlytics());
-            Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key),
-                    getString(R.string.app_cms_apptentive_signature_key));
-
             appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                     .builder()
                     .appCMSUIModule(new AppCMSUIModule(this))

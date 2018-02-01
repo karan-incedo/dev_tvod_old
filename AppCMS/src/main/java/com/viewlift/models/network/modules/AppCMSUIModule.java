@@ -171,7 +171,7 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_HOME_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_moviesscreen_key),
                 AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY);
-        jsonValueKeyMap.put("",
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_showsscreen_key),
                 AppCMSUIKeyType.ANDROID_SHOWS_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_subscriptionscreen_key),
                 AppCMSUIKeyType.ANDROID_SUBSCRIPTION_SCREEN_KEY);

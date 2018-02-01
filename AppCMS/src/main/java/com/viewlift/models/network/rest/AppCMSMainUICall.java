@@ -78,14 +78,8 @@ public class AppCMSMainUICall {
                     -> okHttpClient.dns().lookup(hostName));
             try {
                 future.get(connectionTimeout, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException e) {
+            } catch (TimeoutException | InterruptedException e) {
                 //Log.e(TAG, "Connection timed out: " + e.toString());
-                if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, bustCache);
-                }
-                return null;
-            } catch (InterruptedException e) {
-                //Log.e(TAG, "Connection interrupted: " + e.toString());
                 if (tryCount == 0) {
                     return call(context, siteId, tryCount + 1, bustCache);
                 }
@@ -137,7 +131,7 @@ public class AppCMSMainUICall {
 
             main = writeMainToFile(filename, main);
         } catch (Exception e) {
-            //Log.e(TAG, "A serious network error has occurred: " + e.getMessage());
+            Log.e(TAG, "A serious error has occurred: " + e.getMessage());
         }
 
         if (main == null && tryCount == 0) {
