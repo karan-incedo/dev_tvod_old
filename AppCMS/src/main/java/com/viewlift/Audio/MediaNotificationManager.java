@@ -45,7 +45,9 @@ import com.viewlift.Audio.utils.ResourceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.mobile.AppCMSLaunchActivity;
+import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.activity.AppCMSPageActivity;
+import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 
 
 /**
@@ -214,14 +216,15 @@ public class MediaNotificationManager extends BroadcastReceiver {
     }
 
     private PendingIntent createContentIntent(MediaDescriptionCompat description) {
-        Intent openUI = new Intent(mService, AppCMSLaunchActivity.class);
-        openUI.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Intent openUI = new Intent(mService.getApplicationContext(), AppCMSPlayAudioActivity.class);
+        openUI.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK );
 //        openUI.putExtra(AppCMSPageActivity.EXTRA_START_FULLSCREEN, true);
 //        if (description != null) {
-//            openUI.putExtra(AppCMSPageActivity.EXTRA_CURRENT_MEDIA_DESCRIPTION, description);
+            openUI.putExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, true);
 //        }
-        return PendingIntent.getActivity(mService, REQUEST_CODE, openUI,
-                PendingIntent.FLAG_CANCEL_CURRENT);
+//        openUI.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT );
+        return PendingIntent.getActivity(mService.getApplicationContext(), REQUEST_CODE, openUI,
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     private final MediaControllerCompat.Callback mCb = new MediaControllerCompat.Callback() {

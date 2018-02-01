@@ -18,7 +18,6 @@ package com.viewlift.Audio.playback;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -29,7 +28,6 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.media.MediaRouter;
 
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
 import com.google.android.gms.cast.framework.SessionManager;
@@ -37,9 +35,6 @@ import com.google.android.gms.cast.framework.SessionManagerListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.viewlift.Audio.AudioServiceHelper;
-import com.viewlift.Audio.MusicService;
-import com.viewlift.Audio.ui.PlaybackControlsFragment;
-import com.viewlift.casting.CastServiceProvider;
 
 
 /**
@@ -366,7 +361,7 @@ public class PlaybackManager implements Playback.Callback {
             @Override
             public void run() {
                 PlaybackManager.this.mPlayback = playback;
-                AudioPlaylistHelper.getInstance().playAudioOnClick(currentMediaId, pos);
+                AudioPlaylistHelper.getInstance().playAudio(currentMediaId, pos);
             }
         }, 500);
 

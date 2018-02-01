@@ -741,6 +741,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restartInternalEvents();
         }
         appCMSPresenter.setCancelAllLoads(false);
+        appCMSPresenter.setAppHomeActivityCreated(true);
         AudioServiceHelper.getAudioInstance().onStart();
         AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter, this);
     }
@@ -748,6 +749,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
+        appCMSPresenter.setAppHomeActivityCreated(true);
+
         if (appCMSPresenter == null) {
             appCMSPresenter = ((AppCMSApplication) getApplication())
                     .getAppCMSPresenterComponent()
@@ -872,6 +875,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
     @Override
     protected void onNewIntent(Intent intent) {
+        System.out.println("in page act intent");
         try {
             if (intent != null) {
                 Bundle args = intent.getBundleExtra(getString(R.string.app_cms_bundle_key));
@@ -887,6 +891,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 false,
                                 false);
                     }
+                }
+
+                if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
+                    Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
+                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(fullScreenIntent);
                 }
             }
         } catch (Exception e) {
@@ -908,6 +919,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handleCloseAction(true);
         }
         AudioServiceHelper.getAudioInstance().onStop();
+//        appCMSPresenter.setAppHomeActivityCreated(false);
 
     }
 
@@ -966,6 +978,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter.clearVideoPlayerViewCache();
         appCMSPresenter.clearWebViewCache();
         appCMSPresenter.setMiniPLayerVisibility(true);
+        appCMSPresenter.setAppHomeActivityCreated(false);
 
 
     }
@@ -2590,4 +2603,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         }
     };
+
+
 }

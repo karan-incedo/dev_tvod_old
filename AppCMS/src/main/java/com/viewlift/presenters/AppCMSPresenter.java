@@ -208,6 +208,7 @@ import com.viewlift.models.network.rest.GoogleRefreshTokenCall;
 import com.viewlift.views.activity.AppCMSDownloadQualityActivity;
 import com.viewlift.views.activity.AppCMSErrorActivity;
 import com.viewlift.views.activity.AppCMSPageActivity;
+import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AppCMSUpgradeActivity;
@@ -318,6 +319,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_REFRESH_PAGE_DATA_ACTION = "appcms_presenter_refresh_page_data_action";
     public static final String PRESENTER_AUDIO_LOADING_ACTION = "appcms_presenter_audio_loading_action";
     public static final String PRESENTER_AUDIO_LOADING_STOP_ACTION = "appcms_presenter_audio_loading_stop_action";
+    public static final String EXTRA_OPEN_AUDIO_PLAYER="extra_open_audio_player";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -381,6 +383,7 @@ public class AppCMSPresenter {
     private static final String PREVIEW_LIVE_TIMER_VALUE = "live_preview_timer_pref_name";
     private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
     private static final String AUDIO_SHUFFLED_SHARED_PREF_NAME = "audio_shuffled_sd_card_pref";
+    private static final String IS_HOME_STARTED = "is_home_started";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String FLOODLIGHT_STATUS_PREF_NAME = "floodlight_status_pref_key";
@@ -509,7 +512,7 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private Activity currentActivity;
-
+    private boolean isAppHomeActivityCreated=false;
 
     private Context currentContext;
     private Navigation navigation;
@@ -4513,7 +4516,7 @@ public class AppCMSPresenter {
 
     public void getAudioDetail(String audioId, long mCurrentPlayerPosition,
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
-            , Boolean playAudio, ImageButton download, Boolean playlistDownload) {
+            , Boolean playAudio, ImageButton download, Boolean playlistDownload, boolean isPlayerScreenOpen) {
         if (currentActivity != null) {
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_AUDIO_LOADING_ACTION));
@@ -4549,6 +4552,9 @@ public class AppCMSPresenter {
                                     mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 }
                                 AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
+                            }
+                            if(isPlayerScreenOpen){
+                                currentActivity.startActivity(new Intent(currentActivity, AppCMSPlayAudioActivity.class));
                             }
                             /*check to download audio after getting audio URL*/
                             if (download != null && !playAudio) {
@@ -6198,6 +6204,7 @@ public class AppCMSPresenter {
         }
         return false;
     }
+
 
     private String getRefreshToken() {
         if (currentContext != null) {
@@ -13076,5 +13083,21 @@ public class AppCMSPresenter {
     public Context getCurrentContext() {
         return currentContext;
     }
+
+    public void setAppHomeActivityCreated(boolean isHomeCreated){
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
+            sharedPrefs.edit().putBoolean(IS_HOME_STARTED, isHomeCreated).commit();
+        }
+
+    }
+    public boolean getAppHomeActivityCreated(){
+        if (currentContext != null) {
+            SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
+            return sharedPrefs.getBoolean(IS_HOME_STARTED, false);
+        }
+        return false;
+    }
+
 
 }

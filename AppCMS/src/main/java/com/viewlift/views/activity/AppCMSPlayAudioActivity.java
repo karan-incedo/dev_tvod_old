@@ -1,5 +1,6 @@
 package com.viewlift.views.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -13,6 +14,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -41,12 +43,17 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_cmsplay_audio);
         ButterKnife.bind(this);
+
         casting.setOnClickListener(this);
         addToPlaylist.setOnClickListener(this);
         downloadAudio.setOnClickListener(this);
         shareAudio.setOnClickListener(this);
         launchAudioPlayer();
         setCasting();
+
+
+
+
     }
 
     private void setCasting() {
@@ -56,9 +63,32 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        System.out.println("appCMSPresenter.getAppHomeActivityCreated() new intent-");
+
+//        try {
+//            if (intent != null) {
+//                 if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
+//                    Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
+//                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+//                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    startActivity(fullScreenIntent);
+//                }
+//            }
+//        } catch (Exception e) {
+//            //
+//        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-
         if (appCMSPresenter == null) {
             appCMSPresenter = ((AppCMSApplication) getApplication())
                     .getAppCMSPresenterComponent()
@@ -70,8 +100,14 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         } else {
             appCMSPresenter.unrestrictPortraitOnly();
         }
-        appCMSPresenter.updateDownloadImageAndStartDownloadProcess(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData(), downloadAudio,false);
+        appCMSPresenter.updateDownloadImageAndStartDownloadProcess(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData(), downloadAudio, false);
 
+        System.out.println("appCMSPresenter.getAppHomeActivityCreated()-"+appCMSPresenter.getAppHomeActivityCreated());
+
+        if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+            startActivity(new Intent(this, AppCMSLaunchActivity.class));
+            finish();
+        }
     }
 
     private void launchAudioPlayer() {
@@ -99,7 +135,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
         if (view == downloadAudio) {
             appCMSPresenter.getAudioDetail(AudioPlaylistHelper.getInstance().getCurrentMediaId(),
-                    0, null, false, downloadAudio,false);
+                    0, null, false, downloadAudio, false, false);
         }
         if (view == shareAudio) {
             AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
@@ -135,6 +171,6 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
     @Override
     public void updateMetaData(MediaMetadataCompat metadata) {
-        audioData = "" +metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
+        audioData = "" + metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
     }
 }

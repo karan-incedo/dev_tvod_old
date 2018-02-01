@@ -11,17 +11,23 @@
         android:id="@+id/ll_upper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:orientation="horizontal">
 
-        <View
-            android:id="@+id/view_Sep"
+        <SeekBar
+            android:id="@+id/seek_audio"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorAccent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:max="100"
+            android:maxHeight="2dp"
+            android:minHeight="2dp"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
+            android:progress="0"
+            android:progressDrawable="@drawable/seekbar_style"
+            android:thumb="@null" />
 
-        </View>
     </LinearLayout>
 
     <RelativeLayout

@@ -47,7 +47,6 @@ import com.google.android.exoplayer2.util.Util;
 import com.viewlift.Audio.MusicService;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.R;
-import com.viewlift.casting.CastServiceProvider;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.beacon.BeaconBuffer;
 import com.viewlift.models.data.appcms.beacon.BeaconPing;
@@ -557,7 +556,7 @@ public final class LocalPlayback implements Playback {
 
                                 }
                             }
-                            if (!sentBeaconFirstFrame) {
+                            if (!sentBeaconFirstFrame && appCMSPresenter!=null) {
 //                                mStopBufferMilliSec = new Date().getTime();
 //                                ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                                 appCMSPresenter.sendBeaconMessage(audioData.getAudioGist().getId(),
@@ -587,7 +586,7 @@ public final class LocalPlayback implements Playback {
                     }
                     break;
                 default:
-                    if (!sentBeaconPlay) {
+                    if (!sentBeaconPlay && appCMSPresenter!=null) {
                         appCMSPresenter.sendBeaconMessage(audioData.getAudioGist().getId(),
                                 audioData.getAudioGist().getPermalink(),
                                 null,
@@ -628,7 +627,7 @@ public final class LocalPlayback implements Playback {
             long mCurrentPlayerPosition = mExoPlayer.getCurrentPosition();
             MediaMetadataCompat track = AudioPlaylistHelper.getMetadata(mCurrentMediaId);
             System.out.println("Exo Player erroe" + error.type);
-            AudioPlaylistHelper.getInstance().playAudioOnClick(mCurrentMediaId, mCurrentPlayerPosition);
+            AudioPlaylistHelper.getInstance().playAudio(mCurrentMediaId, mCurrentPlayerPosition);
         }
 
         @Override
@@ -664,12 +663,14 @@ public final class LocalPlayback implements Playback {
     }
 
     String getStreamId() {
-        String mStreamId;
-        try {
-            mStreamId = appCMSPresenter.getStreamingId(audioData.getAudioGist().getTitle());
-        } catch (Exception e) {
-            //Log.e(TAG, e.getMessage());
-            mStreamId = audioData.getAudioGist().getId() + appCMSPresenter.getCurrentTimeStamp();
+        String mStreamId = "";
+        if (audioData != null && audioData.getAudioGist()!=null && audioData.getAudioGist().getTitle()!=null && appCMSPresenter != null) {
+            try {
+                mStreamId = appCMSPresenter.getStreamingId(audioData.getAudioGist().getTitle());
+            } catch (Exception e) {
+                //Log.e(TAG, e.getMessage());
+                mStreamId = audioData.getAudioGist().getId() + appCMSPresenter.getCurrentTimeStamp();
+            }
         }
         return mStreamId;
     }

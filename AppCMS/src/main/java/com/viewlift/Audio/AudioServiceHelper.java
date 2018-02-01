@@ -131,6 +131,7 @@ public class AudioServiceHelper {
     }
 
     public void changeMiniControllerVisiblity(boolean isShow) {
+        if(callbackAudioService!=null)
         callbackAudioService.getAudioPlaybackControlVisibility(isShow);
 
     }

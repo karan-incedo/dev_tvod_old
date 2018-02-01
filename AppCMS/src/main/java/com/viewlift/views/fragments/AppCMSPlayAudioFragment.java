@@ -452,15 +452,10 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
         if (duration != metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)) {
             if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) > 0) {
                 duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+                seekAudio.setMax((int) duration);
+                seekAudio.setProgress(0);
+                trackEndTime.setText(DateUtils.formatElapsedTime(duration / 1000));
             }
-//            else {
-//                duration = AudioPlaylistHelper.getInstance().mediaDuration;
-//            }
-//        seekAudio.setMax(duration);
-            System.out.println("ipdated meta info-" + duration);
-            seekAudio.setMax((int) duration);
-            seekAudio.setProgress(0);
-            trackEndTime.setText(DateUtils.formatElapsedTime(duration / 1000));
         }
     }
 
