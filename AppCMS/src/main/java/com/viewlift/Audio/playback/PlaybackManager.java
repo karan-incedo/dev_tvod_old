@@ -27,6 +27,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.media.MediaRouter;
+import android.text.TextUtils;
 
 import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastSession;
@@ -256,12 +257,17 @@ public class PlaybackManager implements Playback.Callback {
 
         @Override
         public void onPlayFromMediaId(String mediaId, Bundle extras) {
-            long currentPosition = 0;
-            if (extras != null) {
-                currentPosition = extras.getLong("CURRENT_POSITION");
+
+
+            boolean mediaHasChanged = !TextUtils.equals(mediaId, mPlayback.getCurrentId());
+            if (mediaHasChanged) {
+                long currentPosition = 0;
+                if (extras != null) {
+                    currentPosition = extras.getLong("CURRENT_POSITION");
+                }
+                setCurrentMediaId(mediaId);
+                handlePlayRequest(currentPosition);
             }
-            setCurrentMediaId(mediaId);
-            handlePlayRequest(currentPosition);
         }
 
         @Override

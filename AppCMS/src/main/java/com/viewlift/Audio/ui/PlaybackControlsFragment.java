@@ -159,14 +159,16 @@ public class PlaybackControlsFragment extends Fragment {
     }
 
     public void onConnected() {
-        MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
-        if (controller != null) {
-            onMetadataChanged(controller.getMetadata());
-            onPlaybackStateChanged(controller.getPlaybackState());
-            controller.registerCallback(mCallback);
-        }
+        if(getActivity()!=null) {
+            MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
+            if (controller != null) {
+                onMetadataChanged(controller.getMetadata());
+                onPlaybackStateChanged(controller.getPlaybackState());
+                controller.registerCallback(mCallback);
+            }
 
-        scheduleSeekbarUpdate();
+            scheduleSeekbarUpdate();
+        }
     }
 
     private void onMetadataChanged(MediaMetadataCompat metadata) {

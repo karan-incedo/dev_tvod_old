@@ -182,6 +182,7 @@ public final class LocalPlayback implements Playback {
     @Override
     public void stop(boolean notifyListeners) {
 
+        mCurrentMediaId=null;
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
@@ -204,6 +205,8 @@ public final class LocalPlayback implements Playback {
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
+        mCurrentMediaId=null;
+
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
@@ -263,6 +266,10 @@ public final class LocalPlayback implements Playback {
     }
 
     @Override
+    public String getCurrentId(){
+        return mCurrentMediaId;
+    }
+    @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
@@ -276,10 +283,11 @@ public final class LocalPlayback implements Playback {
             audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
         }
 
-        mListener.onMetadataChanged(item);
-        updatedMetaItem = item;
         //if media has changed than load new audio url
         if (mediaHasChanged || mExoPlayer == null || currentPosition > 0) {
+
+            mListener.onMetadataChanged(item);
+            updatedMetaItem = item;
 
             releaseResources(false); // release everything except the player
             MediaMetadataCompat track = item;
@@ -317,11 +325,11 @@ public final class LocalPlayback implements Playback {
             if (mCallback != null) {
                 mCallback.onPlaybackStatusChanged(getState());
             }
+
         }
 
         configurePlayerState();
         mCallback.onPlaybackStatusChanged(getState());
-
     }
 
     private void setUri(String source) {

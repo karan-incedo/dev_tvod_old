@@ -124,8 +124,7 @@
         <activity
             android:name=".views.activity.AppCMSPlayAudioActivity"
             android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:excludeFromRecents="true">
+         >
 
             <!--<intent-filter>-->
             <!--<action android:name="com.viewlift.Audio.MediaNotificationManager" />-->
