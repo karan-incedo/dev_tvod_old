@@ -5127,18 +5127,25 @@ public class AppCMSPresenter {
                                             appCMSMain.getApiBaseUrl(),
                                             appCMSSite.getGist().getSiteInternalName());
                                     try {
-                                        showLoadingDialog(true);
-                                        showToast(currentActivity.getString(R.string.checking_for_existing_subscription_toast_message), Toast.LENGTH_SHORT);
+                                        if (showErrorDialogIfSubscriptionExists) {
+                                            showLoadingDialog(true);
+                                            showToast(currentActivity.getString(R.string.checking_for_existing_subscription_toast_message), Toast.LENGTH_SHORT);
+
+                                        }
                                         final String restoreSubscriptionReceipt = subscribedItemList.get(i);
                                         appCMSRestorePurchaseCall.call(apikey,
                                                 restorePurchaseUrl,
                                                 inAppPurchaseData.getPurchaseToken(),
                                                 appCMSSite.getGist().getSiteInternalName(),
                                                 (signInResponse) -> {
-                                                    showLoadingDialog(false);
+                                                    if (showErrorDialogIfSubscriptionExists) {
+                                                        showLoadingDialog(false);
+                                                    }
                                                     //Log.d(TAG, "Retrieved restore purchase call");
                                                     if (signInResponse == null || !TextUtils.isEmpty(signInResponse.getMessage())) {
-                                                        showToast(currentActivity.getString(R.string.existing_subscription_does_not_exist_toast_message), Toast.LENGTH_SHORT);
+                                                        if (showErrorDialogIfSubscriptionExists) {
+                                                            showToast(currentActivity.getString(R.string.existing_subscription_does_not_exist_toast_message), Toast.LENGTH_SHORT);
+                                                        }
                                                         //Log.d(TAG, "SignIn response is null or error response is non empty");
                                                         if (!isUserLoggedIn()) {
                                                             if (signInResponse != null) {
@@ -5179,7 +5186,6 @@ public class AppCMSPresenter {
                                                                 refreshSubscriptionData(() -> {
 
                                                                 }, true);
-                                                                showToast(currentActivity.getString(R.string.logging_in_using_existing_subscription), Toast.LENGTH_SHORT);
                                                             } else if (showErrorDialogIfSubscriptionExists) {
                                                                 showEntitlementDialog(DialogType.EXISTING_SUBSCRIPTION_LOGOUT,
                                                                         this::logout);
@@ -5201,11 +5207,17 @@ public class AppCMSPresenter {
                                                                 }, true);
 
                                                                 if (showErrorDialogIfSubscriptionExists) {
+                                                                    StringBuilder loggingInWithUserSb =
+                                                                            new StringBuilder();
+                                                                    loggingInWithUserSb.append(currentActivity.getString(R.string.logging_in_using_existing_subscription));
+                                                                    loggingInWithUserSb.append(" ");
+                                                                    loggingInWithUserSb.append(signInResponse.getEmail());
+                                                                    showToast(loggingInWithUserSb.toString(), Toast.LENGTH_SHORT);
                                                                     finalizeLogin(false,
                                                                             signInResponse.isSubscribed(),
                                                                             false,
                                                                             false);
-                                                                    showToast(currentActivity.getString(R.string.logging_in_using_existing_subscription), Toast.LENGTH_SHORT);
+                                                                    showLoadingDialog(true);
                                                                 }
                                                             }
                                                         }
