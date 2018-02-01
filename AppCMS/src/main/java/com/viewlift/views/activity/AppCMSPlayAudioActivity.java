@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -33,7 +34,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     ImageButton downloadAudio;
     @BindView(R.id.share_audio)
     ImageView shareAudio;
-
+    AppCMSPlayAudioFragment appCMSPlayAudioFragment;
     private AppCMSPresenter appCMSPresenter;
     private String audioData = "";
     private CastServiceProvider castProvider;
@@ -63,27 +64,8 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        System.out.println("appCMSPresenter.getAppHomeActivityCreated() new intent-");
-
-//        try {
-//            if (intent != null) {
-//                 if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
-//                    Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
-//                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-//                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    startActivity(fullScreenIntent);
-//                }
-//            }
-//        } catch (Exception e) {
-//            //
-//        }
-    }
-
-    @Override
     protected void onStart() {
         super.onStart();
-
     }
 
     @Override
@@ -102,19 +84,13 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
         }
         appCMSPresenter.updateDownloadImageAndStartDownloadProcess(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData(), downloadAudio, false);
 
-        System.out.println("appCMSPresenter.getAppHomeActivityCreated()-"+appCMSPresenter.getAppHomeActivityCreated());
-
-        if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
-            startActivity(new Intent(this, AppCMSLaunchActivity.class));
-            finish();
-        }
     }
 
     private void launchAudioPlayer() {
         try {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            final AppCMSPlayAudioFragment appCMSPlayAudioFragment =
+             appCMSPlayAudioFragment =
                     AppCMSPlayAudioFragment.newInstance(this);
             fragmentTransaction.add(R.id.app_cms_play_audio_page_container,
                     appCMSPlayAudioFragment,
@@ -173,4 +149,5 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
     public void updateMetaData(MediaMetadataCompat metadata) {
         audioData = "" + metadata.getString(AudioPlaylistHelper.CUSTOM_METADATA_TRACK_PARAM_LINK);// metadata.getDescription().getTitle();
     }
+
 }

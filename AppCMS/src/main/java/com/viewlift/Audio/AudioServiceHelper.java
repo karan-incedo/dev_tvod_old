@@ -126,13 +126,13 @@ public class AudioServiceHelper {
     protected void showPlaybackControls() {
         mActivity.getFragmentManager().beginTransaction()
                 .show(mControlsFragment)
-                .commit();
+                .commitAllowingStateLoss();
         changeMiniControllerVisiblity(false);
     }
 
     public void changeMiniControllerVisiblity(boolean isShow) {
-        if(callbackAudioService!=null)
-        callbackAudioService.getAudioPlaybackControlVisibility(isShow);
+        if (callbackAudioService != null)
+            callbackAudioService.getAudioPlaybackControlVisibility(isShow);
 
     }
 

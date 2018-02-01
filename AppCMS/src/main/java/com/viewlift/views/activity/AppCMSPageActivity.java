@@ -69,6 +69,7 @@ import com.viewlift.AppCMSApplication;
 import com.viewlift.Audio.AudioServiceHelper;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.mobile.AppCMSLaunchActivity;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -236,11 +237,27 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
+        AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
+        AudioServiceHelper.getAudioInstance().setCallBack(callbackAudioService);
+
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
 
         initPageActivity();
+        if (getIntent() != null && getIntent().getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false) ) {
 
+            if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+                startActivity(new Intent(this, AppCMSLaunchActivity.class));
+                finish();
+            }else{
+                Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(fullScreenIntent);
+            }
+            appCMSPresenter.setAppHomeActivityCreated(true);
+
+        }
         Bundle args = getIntent().getBundleExtra(getString(R.string.app_cms_bundle_key));
         if (args != null) {
             try {
@@ -514,8 +531,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 });
 
         appCMSPresenter.sendCloseOthersAction(null, false, false);
-        AudioServiceHelper.getAudioInstance().createMediaBrowserService(this);
-        AudioServiceHelper.getAudioInstance().setCallBack(callbackAudioService);
+
 //        Log.d(TAG, "onCreate()");
     }
 
@@ -741,7 +757,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.restartInternalEvents();
         }
         appCMSPresenter.setCancelAllLoads(false);
-        appCMSPresenter.setAppHomeActivityCreated(true);
         AudioServiceHelper.getAudioInstance().onStart();
         AudioServiceHelper.getAudioInstance().createAudioPlaylistInstance(appCMSPresenter, this);
     }
@@ -749,7 +764,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     @Override
     protected void onResume() {
         super.onResume();
-        appCMSPresenter.setAppHomeActivityCreated(true);
 
         if (appCMSPresenter == null) {
             appCMSPresenter = ((AppCMSApplication) getApplication())
@@ -893,11 +907,19 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 }
 
-                if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false)) {
-                    Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
-                            .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(fullScreenIntent);
+                if (intent != null && intent.getBooleanExtra(AppCMSPresenter.EXTRA_OPEN_AUDIO_PLAYER, false) ) {
+
+                    if (appCMSPresenter != null && !appCMSPresenter.getAppHomeActivityCreated()) {
+                        startActivity(new Intent(this, AppCMSLaunchActivity.class));
+                        finish();
+                    }else{
+                        Intent fullScreenIntent = new Intent(this, AppCMSPlayAudioActivity.class)
+                                .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(fullScreenIntent);
+                    }
+                    appCMSPresenter.setAppHomeActivityCreated(true);
+
                 }
             }
         } catch (Exception e) {
@@ -919,7 +941,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             handleCloseAction(true);
         }
         AudioServiceHelper.getAudioInstance().onStop();
-//        appCMSPresenter.setAppHomeActivityCreated(false);
 
     }
 

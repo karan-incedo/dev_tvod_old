@@ -43,6 +43,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -292,6 +294,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
+import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.BUTTON_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.EDIT_WATCHLIST;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.HISTORY_RETRY_ACTION;
@@ -319,7 +322,7 @@ public class AppCMSPresenter {
     public static final String PRESENTER_REFRESH_PAGE_DATA_ACTION = "appcms_presenter_refresh_page_data_action";
     public static final String PRESENTER_AUDIO_LOADING_ACTION = "appcms_presenter_audio_loading_action";
     public static final String PRESENTER_AUDIO_LOADING_STOP_ACTION = "appcms_presenter_audio_loading_stop_action";
-    public static final String EXTRA_OPEN_AUDIO_PLAYER="extra_open_audio_player";
+    public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -512,7 +515,7 @@ public class AppCMSPresenter {
     private AppCMSStreamingInfoCall appCMSStreamingInfoCall;
     private AppCMSVideoDetailCall appCMSVideoDetailCall;
     private Activity currentActivity;
-    private boolean isAppHomeActivityCreated=false;
+    private boolean isAppHomeActivityCreated = false;
 
     private Context currentContext;
     private Navigation navigation;
@@ -4553,8 +4556,17 @@ public class AppCMSPresenter {
                                 }
                                 AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
                             }
-                            if(isPlayerScreenOpen){
-                                currentActivity.startActivity(new Intent(currentActivity, AppCMSPlayAudioActivity.class));
+                            if (isPlayerScreenOpen) {
+                                Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                MediaControllerCompat controller = MediaControllerCompat.getMediaController(currentActivity);
+                                MediaMetadataCompat metadata = controller.getMetadata();
+                                if (metadata != null) {
+                                    intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                                            metadata);
+                                }
+                                currentActivity.startActivity(intent);
+
                             }
                             /*check to download audio after getting audio URL*/
                             if (download != null && !playAudio) {
@@ -9281,7 +9293,6 @@ public class AppCMSPresenter {
     }
 
 
-
     private Bundle getPageActivityBundle(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
                                          AppCMSPageAPI appCMSPageAPI,
@@ -9537,6 +9548,8 @@ public class AppCMSPresenter {
                 appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 activity.startActivity(appCMSIntent);
+                setAppHomeActivityCreated(true);
+
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             } catch (Exception e) {
                 //Log.e(TAG, "Error launching page activity: " + pageName);
@@ -9566,6 +9579,8 @@ public class AppCMSPresenter {
                 appCMSIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 currentActivity.startActivity(appCMSIntent);
+                setAppHomeActivityCreated(true);
+
             }
         } else if (getPlatformType() == PlatformType.TV) {
             launchErrorActivity(PlatformType.TV);
@@ -12917,6 +12932,7 @@ public class AppCMSPresenter {
         intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
         currentActivity.sendBroadcast(intent);
     }
+
     public void updateDownloadImageAndStartDownloadProcess(ContentDatum contentDatum, ImageButton downloadView,
                                                            Boolean playlistDownload) {
         String userId = getLoggedInUser();
@@ -13080,18 +13096,20 @@ public class AppCMSPresenter {
         }
         return min + ":" + sec;
     }
+
     public Context getCurrentContext() {
         return currentContext;
     }
 
-    public void setAppHomeActivityCreated(boolean isHomeCreated){
+    public void setAppHomeActivityCreated(boolean isHomeCreated) {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
             sharedPrefs.edit().putBoolean(IS_HOME_STARTED, isHomeCreated).commit();
         }
 
     }
-    public boolean getAppHomeActivityCreated(){
+
+    public boolean getAppHomeActivityCreated() {
         if (currentContext != null) {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
             return sharedPrefs.getBoolean(IS_HOME_STARTED, false);

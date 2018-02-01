@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -101,6 +102,8 @@ public class AppCMSPlayAudioFragment extends Fragment implements View.OnClickLis
 
     @BindView(R.id.progressBarPlayPause)
     ProgressBar progressBarPlayPause;
+
+
 
     private static final long PROGRESS_UPDATE_INTERNAL = 1000;
     private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
