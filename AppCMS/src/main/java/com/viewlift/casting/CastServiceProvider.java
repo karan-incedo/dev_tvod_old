@@ -554,23 +554,23 @@ public class CastServiceProvider {
         }
 
         mMediaRouteButton.setOnClickListener(v -> {
-//            if (!allowFreePlay &&
-//                    ((!appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) ||
-//                            (appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserSubscribed()))) {
-//                CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
-//                        .getSessionManager().endCurrentSession(true);
-//                if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
-//                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
-//                            null);
-//                } else if (appCMSPresenter.isAppSVOD()) {
-//                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
-//                            () -> {
-//                                if (mActivity instanceof AppCMSPlayVideoActivity) {
-//                                    mActivity.finish();
-//                                }
-//                            });
-//                }
-//            } else
+            if (!allowFreePlay &&
+                    ((!appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) ||
+                            (appCMSPresenter.isAppSVOD() && !appCMSPresenter.isUserSubscribed()))) {
+                CastContext.getSharedInstance(appCMSPresenter.getCurrentActivity())
+                        .getSessionManager().endCurrentSession(true);
+                if (appCMSPresenter.isAppSVOD() && appCMSPresenter.isUserLoggedIn()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.SUBSCRIPTION_REQUIRED,
+                            null);
+                } else if (appCMSPresenter.isAppSVOD()) {
+                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
+                            () -> {
+                                if (mActivity instanceof AppCMSPlayVideoActivity) {
+                                    mActivity.finish();
+                                }
+                            });
+                }
+            } else
 
             {
                 try {

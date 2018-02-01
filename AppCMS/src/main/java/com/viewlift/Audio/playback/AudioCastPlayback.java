@@ -8,7 +8,6 @@ import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.gms.cast.MediaInfo;
 import com.google.android.gms.cast.MediaMetadata;
 import com.google.android.gms.cast.MediaStatus;
@@ -532,7 +531,7 @@ public class AudioCastPlayback implements Playback {
         CastSession castSession = CastContext.getSharedInstance(mAppContext).getSessionManager()
                 .getCurrentCastSession();
         if (castSession == null && (castSession != null && !castSession.isConnected())) {
-            AudioPlaylistHelper.getInstance().playAudioOnClick(mCurrentMediaId, mCurrentPosition);
+            AudioPlaylistHelper.getInstance().playAudio(mCurrentMediaId, mCurrentPosition);
         }
     }
 

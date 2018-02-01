@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
-import com.bumptech.glide.Glide;
 import com.viewlift.Audio.model.MusicLibrary;
 import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
@@ -223,7 +222,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                             AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
                                         }
 
-                                        AudioPlaylistHelper.getInstance().playAudioOnClick(data.getGist().getId(), 0);
+                                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
                                         return;
                                     }
                                 }
@@ -320,7 +319,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
 
     void audioDownload(ImageButton download, ContentDatum data, Boolean playlistDownload) {
         appCMSPresenter.getAudioDetail(data.getGist().getId(),
-                0, null, false, download, playlistDownload);
+                0, null, false, download, playlistDownload, false);
     }
 
 
