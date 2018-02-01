@@ -17,19 +17,25 @@ package com.viewlift.Audio.ui;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +47,7 @@ import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -54,6 +61,7 @@ public class PlaybackControlsFragment extends Fragment {
 
     private ImageButton mPlayPause;
     private TextView mTitle, extra_info;
+    private SeekBar seek_audio;
 
     private String mArtUrl;
     private final ScheduledExecutorService mExecutorService =
@@ -61,7 +69,10 @@ public class PlaybackControlsFragment extends Fragment {
     private final Handler mHandler = new Handler();
     public static final String EXTRA_CURRENT_MEDIA_DESCRIPTION =
             "CURRENT_MEDIA_DESCRIPTION";
+    private PlaybackStateCompat mLastPlaybackState;
 
+    private static final long PROGRESS_UPDATE_INTERNAL = 1000;
+    private static final long PROGRESS_UPDATE_INITIAL_INTERVAL = 100;
     ProgressBar progressBarPlayPause;
 
     private ScheduledFuture<?> mScheduleFuture;
@@ -72,7 +83,7 @@ public class PlaybackControlsFragment extends Fragment {
         public void onPlaybackStateChanged(@NonNull PlaybackStateCompat state) {
             PlaybackControlsFragment.this.onPlaybackStateChanged(state);
             updatePlaybackState(state);
-            System.out.println("update playback state in playbackcontrol"+state);
+            System.out.println("update playback state in playbackcontrol" + state);
         }
 
         @Override
@@ -80,6 +91,7 @@ public class PlaybackControlsFragment extends Fragment {
             if (metadata == null) {
                 return;
             }
+            updateDuration(metadata);
             PlaybackControlsFragment.this.onMetadataChanged(metadata);
         }
     };
@@ -89,8 +101,12 @@ public class PlaybackControlsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_playback_controls, container, false);
         mPlayPause = (ImageButton) rootView.findViewById(R.id.play_pause);
+        seek_audio = (SeekBar) rootView.findViewById(R.id.seek_audio);
+
         progressBarPlayPause = (ProgressBar) rootView.findViewById(R.id.progressBarPlayPause);
         mPlayPause.setEnabled(true);
+        seek_audio.setEnabled(true);
+
         mPlayPause.setOnClickListener(mButtonListener);
         extra_info = (TextView) rootView.findViewById(R.id.extra_info);
 
@@ -149,6 +165,8 @@ public class PlaybackControlsFragment extends Fragment {
             onPlaybackStateChanged(controller.getPlaybackState());
             controller.registerCallback(mCallback);
         }
+
+        scheduleSeekbarUpdate();
     }
 
     private void onMetadataChanged(MediaMetadataCompat metadata) {
@@ -159,6 +177,7 @@ public class PlaybackControlsFragment extends Fragment {
             return;
         }
 
+        updateDuration(metadata);
         mTitle.setText(metadata.getDescription().getTitle());
 
     }
@@ -187,17 +206,17 @@ public class PlaybackControlsFragment extends Fragment {
         }
 
         if (enablePlay) {
-            mPlayPause.setBackground(
-                    ContextCompat.getDrawable(getActivity(), R.drawable.play_track));
+            mPlayPause.setBackground(getActivity().getDrawable(R.drawable.play_track_white));
         } else {
-            mPlayPause.setBackground(
-                    ContextCompat.getDrawable(getActivity(), R.drawable.pause_track));
+            mPlayPause.setBackground(getActivity().getDrawable(R.drawable.pause_track_white));
         }
+
+        int tintColor = (getActivity().getResources().getColor(android.R.color.white));
 
     }
 
 
-    private void updateCastInfo(){
+    private void updateCastInfo() {
         if (CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName() != null && !TextUtils.isEmpty(CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName())) {
             String castName = CastHelper.getInstance(getActivity().getApplicationContext()).getDeviceName();
             String line3Text = castName == null ? "" : getResources()
@@ -208,31 +227,36 @@ public class PlaybackControlsFragment extends Fragment {
             extra_info.setVisibility(View.GONE);
         }
     }
+
     private void updatePlaybackState(PlaybackStateCompat state) {
         if (state == null) {
             return;
         }
+        mLastPlaybackState = state;
         updateCastInfo();
-
         switch (state.getState()) {
             case PlaybackStateCompat.STATE_PLAYING:
                 mPlayPause.setVisibility(VISIBLE);
                 progressBarPlayPause.setVisibility(GONE);
+                scheduleSeekbarUpdate();
                 break;
             case PlaybackStateCompat.STATE_PAUSED:
                 mPlayPause.setVisibility(VISIBLE);
                 progressBarPlayPause.setVisibility(GONE);
+                stopSeekbarUpdate();
 
                 break;
             case PlaybackStateCompat.STATE_NONE:
             case PlaybackStateCompat.STATE_STOPPED:
                 mPlayPause.setVisibility(VISIBLE);
                 progressBarPlayPause.setVisibility(GONE);
+                stopSeekbarUpdate();
 
                 break;
             case PlaybackStateCompat.STATE_BUFFERING:
                 mPlayPause.setVisibility(INVISIBLE);
                 progressBarPlayPause.setVisibility(VISIBLE);
+                stopSeekbarUpdate();
 
                 break;
             default:
@@ -276,6 +300,64 @@ public class PlaybackControlsFragment extends Fragment {
         MediaControllerCompat controller = MediaControllerCompat.getMediaController(getActivity());
         if (controller != null) {
             controller.getTransportControls().pause();
+        }
+    }
+
+    private void scheduleSeekbarUpdate() {
+        stopSeekbarUpdate();
+        if (!mExecutorService.isShutdown()) {
+            mScheduleFuture = mExecutorService.scheduleAtFixedRate(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            mHandler.post(mUpdateProgressTask);
+                        }
+                    }, PROGRESS_UPDATE_INITIAL_INTERVAL,
+                    PROGRESS_UPDATE_INTERNAL, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private final Runnable mUpdateProgressTask = new Runnable() {
+        @Override
+        public void run() {
+            updateProgress();
+        }
+    };
+
+    private void updateProgress() {
+        if (mLastPlaybackState == null) {
+            return;
+        }
+        long currentPosition = mLastPlaybackState.getPosition();
+        if (mLastPlaybackState.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            // Calculate the elapsed time between the last position update and now and unless
+            // paused, we can assume (delta * speed) + current position is approximately the
+            // latest position. This ensure that we do not repeatedly call the getPlaybackState()
+            // on MediaControllerCompat.
+            long timeDelta = SystemClock.elapsedRealtime() -
+                    mLastPlaybackState.getLastPositionUpdateTime();
+            currentPosition += (int) timeDelta * mLastPlaybackState.getPlaybackSpeed();
+        }
+        if (seek_audio != null)
+            seek_audio.setProgress((int) currentPosition);
+    }
+
+    private void updateDuration(MediaMetadataCompat metadata) {
+        if (metadata == null) {
+            return;
+        }
+        long duration = 0;
+        if (duration != metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)) {
+            if (metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION) > 0) {
+                duration = metadata.getLong(MediaMetadataCompat.METADATA_KEY_DURATION);
+            }
+            seek_audio.setMax((int) duration);
+        }
+    }
+
+    private void stopSeekbarUpdate() {
+        if (mScheduleFuture != null) {
+            mScheduleFuture.cancel(false);
         }
     }
 
