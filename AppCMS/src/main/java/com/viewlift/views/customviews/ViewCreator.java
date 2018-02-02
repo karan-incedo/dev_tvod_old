@@ -1186,15 +1186,15 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                if (moduleInfo.getBlockName().contains("articleTray01")) {
+               /* if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
                 } else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-                }
-                //module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                }*/
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             } catch (Exception e) {
 
             }
