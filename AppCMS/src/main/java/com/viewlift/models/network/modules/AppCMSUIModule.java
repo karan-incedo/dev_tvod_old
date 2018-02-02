@@ -20,6 +20,8 @@ import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAndroidUIRest;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenRest;
+import com.viewlift.models.network.rest.AppCMSArticleCall;
+import com.viewlift.models.network.rest.AppCMSArticleRest;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
 import com.viewlift.models.network.rest.AppCMSCCAvenueRest;
@@ -168,6 +170,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.ANDROID_WATCHLIST_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_watchlistscreen_key),
                 AppCMSUIKeyType.ANDROID_WATCHLIST_SCREEN_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_pagename_articlescreen_key),
+                AppCMSUIKeyType.ANDROID_ARTICLE_SCREEN_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_download_page_title),
                 AppCMSUIKeyType.ANDROID_DOWNLOAD_NAV_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_history_navigation_title),
@@ -180,6 +184,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_label_key),
                 AppCMSUIKeyType.PAGE_LABEL_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_title_key),
+                AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_description_key),
+                AppCMSUIKeyType.PAGE_ARTICLE_DESCRIPTION_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_collection_grid_key),
                 AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_table_view_key),
@@ -196,7 +204,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_SHOW_PLAYER_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_web_view_key),
                 AppCMSUIKeyType.PAGE_WEB_VIEW_KEY);
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_web_view_key),
+                AppCMSUIKeyType.PAGE_ARTICLE_WEB_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_full_screen_key),
                 AppCMSUIKeyType.PAGE_FULL_SCREEN_IMAGE_KEY);
 
@@ -414,7 +423,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_PLAN_PURCHASE_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_plan_meta_dataview_key),
                 AppCMSUIKeyType.PAGE_PLAN_META_DATA_VIEW_KEY);
-
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_module_key),
+                AppCMSUIKeyType.PAGE_ARTICLE_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_history_module_key),
                 AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchlist_module_key),
@@ -465,6 +475,9 @@ public class AppCMSUIModule {
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_selectionplan_02_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY);
+
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_tray_key),
+                AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY);
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_selectionplan_01_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY);
@@ -953,6 +966,12 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
+    public AppCMSArticleRest providesAppCMSArticleRest(Retrofit retrofit) {
+        return retrofit.create(AppCMSArticleRest.class);
+    }
+
+    @Provides
+    @Singleton
     public AppCMSBeaconRest providesAppCMSBeaconMessage(Retrofit retrofit) {
         return retrofit.create(AppCMSBeaconRest.class);
     }
@@ -1124,6 +1143,12 @@ public class AppCMSUIModule {
     @Singleton
     public AppCMSHistoryCall providesAppCMSHistoryCall(AppCMSHistoryRest appCMSHistoryRest, Gson gson) {
         return new AppCMSHistoryCall(appCMSHistoryRest, gson);
+    }
+
+    @Provides
+    @Singleton
+    public AppCMSArticleCall providesAppCMSArticleCall(AppCMSArticleRest appCMSArticleRest, Gson gson) {
+        return new AppCMSArticleCall(appCMSArticleRest, gson);
     }
 
     @Provides

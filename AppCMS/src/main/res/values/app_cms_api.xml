@@ -69,6 +69,8 @@
     <!-- -->
     <string name="app_cms_signed_url_api_url">%1$s/content/signature/%2$s?site=%3$s</string>
 
+    <string name="app_cms_article_api_url">%1$s/content/article?id=%2$s&amp;site=%3$s</string>
+
     <!-- AppCMS JSON data input keys -->
     <string-array name="app_cms_modules_to_ignore">
         <item>AC Masthead 01</item>
@@ -96,6 +98,7 @@
     <string name="app_cms_page_video_player_key_value">videoPlayer</string>
 
     <string name="app_cms_page_web_view_key">web_view</string>
+    <string name="app_cms_page_article_web_view_key">webView</string>
     <string name="app_cms_page_full_screen_key">full_Screen_icon</string>
 
     <string name="app_cms_page_page_control_key">pageControl</string>
@@ -148,6 +151,8 @@
     <string name="app_cms_page_textview_key">textView</string>
     <string name="app_cms_page_textfield_key">textfield</string>
     <string name="app_cms_page_emailtextfield_key">emailTextField</string>
+    <string name="app_cms_page_article_title_key">articleTitle</string>
+    <string name="app_cms_page_article_description_key">articleDescription</string>
     <string name="app_cms_page_emailtextfield2_key">email label</string>
     <string name="app_cms_page_passwordtextfield_key">passwordTextField</string>
     <string name="app_cms_page_passwordtextfield2_key">password label</string>
@@ -194,6 +199,7 @@
 
     <string name="app_cms_user_management_autoplay_text_key">autoplayTitle</string>
     <string name="app_cms_user_management_use_sd_card_for_downloads_text_key">Use SD Card For Downloads</string>
+    <string name="app_cms_page_article_module_key">AC ArticleDetail 01</string>
     <string name="app_cms_page_history_module_key">AC History 01</string>
     <string name="app_cms_page_history_module_key2">AC History 02</string>
     <string name="app_cms_page_watchlist_module_key">AC Watchlist 01</string>
@@ -268,6 +274,7 @@
     <string name="app_cms_page_subscription_selectionplan_01_key">AC SelectPlan 01</string>
     <string name="app_cms_page_subscription_selection_plan_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_imagetextrow_key">AC ImageTextRow 01</string>
+    <string name="app_cms_page_article_tray_key">AC ArticleTray 01</string>
     <string name="app_cms_plan_title_key">planTitle</string>
     <string name="app_cms_plan_priceinfo_key">planPriceInfo</string>
     <string name="app_cms_plan_bestvalue_key">planBestValueLabel</string>
@@ -297,6 +304,7 @@
     <string name="app_cms_pagename_subscriptionscreen_key">View Plans</string>
     <string name="app_cms_pagename_historyscreen_key">My History</string>
     <string name="app_cms_pagename_watchlistscreen_key">My Watchlist</string>
+    <string name="app_cms_pagename_articlescreen_key">Article Page</string>
     <string name="app_cms_pagename_videoscreen_key">Video Page</string>
     <string name="app_cms_pagename_showscreen_key">Show Page</string>
     <string name="app_cms_pagename_privacy_policy_key">Privacy Policy</string>

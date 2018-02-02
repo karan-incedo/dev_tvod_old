@@ -156,7 +156,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 true,
                 this.componentViewType,
                 false,
-                useRoundedCorners());
+                useRoundedCorners(),this.viewTypeKey);
 
         if (viewTypeKey == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY) {
             applyBgColorToChildren(view, selectedColor);
@@ -441,6 +441,12 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                                     action = showAction;
                                 } else if (contentType.equals(fullLengthFeatureType)) {
                                     action =  action != null && action.equalsIgnoreCase("openOptionDialog") ? action : videoAction;
+                                }
+
+                                if (data.getGist() != null && data.getGist().getMediaType() != null
+                                        && data.getGist().getMediaType().toLowerCase().contains(itemView.getContext().getString(R.string.app_cms_article_key_type).toLowerCase())) {
+                                    appCMSPresenter.navigateToArticlePage(data.getGist().getId(), data.getGist().getTitle(), false);
+                                    return;
                                 }
 
                                 if (data.getGist() == null ||

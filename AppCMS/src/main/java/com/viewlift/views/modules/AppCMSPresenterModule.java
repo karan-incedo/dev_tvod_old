@@ -9,6 +9,7 @@ import com.viewlift.models.network.rest.AppCMSAddToWatchlistCall;
 import com.viewlift.models.network.rest.AppCMSAndroidModuleCall;
 import com.viewlift.models.network.rest.AppCMSAndroidUICall;
 import com.viewlift.models.network.rest.AppCMSAnonymousAuthTokenCall;
+import com.viewlift.models.network.rest.AppCMSArticleCall;
 import com.viewlift.models.network.rest.AppCMSBeaconCall;
 import com.viewlift.models.network.rest.AppCMSBeaconRest;
 import com.viewlift.models.network.rest.AppCMSCCAvenueCall;
@@ -59,7 +60,7 @@ public class AppCMSPresenterModule {
 
     @Provides
     @Singleton
-    public AppCMSPresenter providesAppCMSPresenter(Gson gson,
+    public AppCMSPresenter providesAppCMSPresenter(Gson gson,AppCMSArticleCall appCMSArticleCall,
                                                    AppCMSMainUICall appCMSMainUICall,
                                                    AppCMSAndroidUICall appCMSAndroidUICall,
                                                    AppCMSPageUICall appCMSPageUICall,
@@ -108,7 +109,7 @@ public class AppCMSPresenterModule {
                                                    Map<String, AppCMSActionType> actionToActionTypeMap,
 
                                                    ReferenceQueue<Object> referenceQueue) {
-        return new AppCMSPresenter(gson,
+        return new AppCMSPresenter(gson,appCMSArticleCall,
                 appCMSMainUICall,
                 appCMSAndroidUICall,
                 appCMSPageUICall,

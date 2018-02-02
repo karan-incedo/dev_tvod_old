@@ -1,14 +1,17 @@
-package com.viewlift.models.data.appcms.api;
+package com.viewlift.models.data.appcms.article;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.viewlift.models.data.appcms.api.BadgeImages;
+import com.viewlift.models.data.appcms.api.ImageGist;
+import com.viewlift.models.data.appcms.api.PrimaryCategory;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 
 @UseStag
-public class Gist implements Serializable {
+public class ArticleGist implements Serializable {
 
     @SerializedName("id")
     @Expose
@@ -38,9 +41,6 @@ public class Gist implements Serializable {
     @Expose
     boolean free;
 
-    @SerializedName("publishDate")
-    @Expose
-    long publishDate;
 
     @SerializedName("runtime")
     @Expose
@@ -49,6 +49,10 @@ public class Gist implements Serializable {
     @SerializedName("posterImageUrl")
     @Expose
     String posterImageUrl;
+
+    @SerializedName("landscapeImageUrl")
+    @Expose
+    String landscapeImageUrl;
 
     @SerializedName("videoImageUrl")
     @Expose
@@ -62,14 +66,6 @@ public class Gist implements Serializable {
     @Expose
     BadgeImages badgeImages;
 
-    @SerializedName("addedDate")
-    @Expose
-    long addedDate;
-
-    @SerializedName("updateDate")
-    @Expose
-    long updateDate;
-
     @SerializedName("primaryCategory")
     @Expose
     PrimaryCategory primaryCategory;
@@ -77,6 +73,14 @@ public class Gist implements Serializable {
     @SerializedName("watchedTime")
     @Expose
     long watchedTime;
+
+    @SerializedName("readTime")
+    @Expose
+    String readTime;
+
+    @SerializedName("summaryText")
+    @Expose
+    String summaryText;
 
     @SerializedName("contentType")
     @Expose
@@ -97,6 +101,14 @@ public class Gist implements Serializable {
     @SerializedName("kisweEventId")
     @Expose
     String kisweEventId;
+
+    public String getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
 
     @SerializedName("mediaType")
     @Expose
@@ -164,14 +176,6 @@ public class Gist implements Serializable {
         this.free = free;
     }
 
-    public long getPublishDate() {
-        return publishDate;
-    }
-
-    public void setPublishDate(long publishDate) {
-        this.publishDate = publishDate;
-    }
-
     public long getRuntime() {
         return runtime;
     }
@@ -202,22 +206,6 @@ public class Gist implements Serializable {
 
     public void setBadgeImages(BadgeImages badgeImages) {
         this.badgeImages = badgeImages;
-    }
-
-    public long getAddedDate() {
-        return addedDate;
-    }
-
-    public void setAddedDate(long addedDate) {
-        this.addedDate = addedDate;
-    }
-
-    public long getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(long updateDate) {
-        this.updateDate = updateDate;
     }
 
     public PrimaryCategory getPrimaryCategory() {
@@ -303,11 +291,27 @@ public class Gist implements Serializable {
         this.kisweEventId = kisweEventId;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    public String getLandscapeImageUrl() {
+        return landscapeImageUrl;
     }
 
-    public void setMediaType(String mediaType) {
-        this.mediaType = mediaType;
+    public void setLandscapeImageUrl(String landscapeImageUrl) {
+        this.landscapeImageUrl = landscapeImageUrl;
+    }
+
+    public String getReadTime() {
+        return readTime;
+    }
+
+    public void setReadTime(String readTime) {
+        this.readTime = readTime;
+    }
+
+    public String getSummaryText() {
+        return summaryText;
+    }
+
+    public void setSummaryText(String summaryText) {
+        this.summaryText = summaryText;
     }
 }
