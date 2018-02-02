@@ -712,6 +712,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         registerReceiver(appCMSAirshipReceiver,
                 new IntentFilter("com.urbanairship.push.DISMISSED"));
 
+        appCMSPresenter.initializeAppCMSAnalytics();
+
         resumeInternalEvents = false;
 
         shouldSendCloseOthersAction = false;

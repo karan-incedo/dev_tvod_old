@@ -9913,31 +9913,6 @@ public class AppCMSPresenter {
                             if (appCMSSite != null) {
                                 this.appCMSSite = appCMSSite;
 
-                                if (!isUserLoggedIn()) {
-                                    //Log.d(TAG, "Signing in as an anonymous user");
-                                    signinAnonymousUser();
-                                } else if (isUserLoggedIn()) {
-                                    //Log.d(TAG, "Updating logged in user data");
-                                    getUserData(userIdentity -> {
-                                        try {
-                                            if (userIdentity != null) {
-                                                //Log.d(TAG, "Retrieved valid user identity");
-                                                setLoggedInUser(userIdentity.getUserId());
-                                                setLoggedInUserEmail(userIdentity.getEmail());
-                                                setLoggedInUserName(userIdentity.getName());
-                                                setIsUserSubscribed(userIdentity.isSubscribed());
-                                                if (!userIdentity.isSubscribed()) {
-                                                    setActiveSubscriptionProcessor(null);
-                                                }
-                                            }
-                                        } catch (Exception e) {
-                                            //Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
-//                                e.getMessage());
-                                            launchBlankPage();
-                                        }
-                                    });
-                                }
-
                                 appCMSSearchUrlComponent = DaggerAppCMSSearchUrlComponent.builder()
                                         .appCMSSearchUrlModule(new AppCMSSearchUrlModule(appCMSMain.getApiBaseUrl(),
                                                 appCMSSite.getGist().getSiteInternalName(),
@@ -10214,8 +10189,6 @@ public class AppCMSPresenter {
                     } else {
                         this.appCMSAndroid = appCMSAndroidUI;
 
-                        initializeAppCMSAnalytics(appCMSAndroidUI);
-
                         navigation = appCMSAndroidUI.getNavigation();
                         new SoftReference<>(navigation, referenceQueue);
                         queueMetaPages(appCMSAndroidUI.getMetaPages());
@@ -10237,10 +10210,29 @@ public class AppCMSPresenter {
                                                     openDownloadScreenForNetworkError(true,
                                                             () -> getAppCMSAndroid(tryCount));
                                                 } else {
-                                                    try {
-                                                        getPageViewLruCache().evictAll();
-                                                    } catch (Exception e) {
-
+                                                    if (!isUserLoggedIn()) {
+                                                        //Log.d(TAG, "Signing in as an anonymous user");
+                                                        signinAnonymousUser();
+                                                    } else if (isUserLoggedIn()) {
+                                                        //Log.d(TAG, "Updating logged in user data");
+                                                        getUserData(userIdentity -> {
+                                                            try {
+                                                                if (userIdentity != null) {
+                                                                    //Log.d(TAG, "Retrieved valid user identity");
+                                                                    setLoggedInUser(userIdentity.getUserId());
+                                                                    setLoggedInUserEmail(userIdentity.getEmail());
+                                                                    setLoggedInUserName(userIdentity.getName());
+                                                                    setIsUserSubscribed(userIdentity.isSubscribed());
+                                                                    if (!userIdentity.isSubscribed()) {
+                                                                        setActiveSubscriptionProcessor(null);
+                                                                    }
+                                                                }
+                                                            } catch (Exception e) {
+                                                                //Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
+//                                e.getMessage());
+                                                                launchBlankPage();
+                                                            }
+                                                        });
                                                     }
 
                                                     if (appCMSMain.getServiceType()
@@ -10300,9 +10292,11 @@ public class AppCMSPresenter {
         }
     }
 
-    private void initializeAppCMSAnalytics(AppCMSAndroidUI appCMSAndroidUI) {
-        initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-        initAppsFlyer(appCMSAndroidUI);
+    public void initializeAppCMSAnalytics() {
+        if (appCMSAndroid != null) {
+            initializeGA(appCMSAndroid.getAnalytics().getGoogleAnalyticsId());
+            initAppsFlyer(appCMSAndroid);
+        }
     }
 
     private void getAppCMSModules(AppCMSAndroidUI appCMSAndroidUI,
