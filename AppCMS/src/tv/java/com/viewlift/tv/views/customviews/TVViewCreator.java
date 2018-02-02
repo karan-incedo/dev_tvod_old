@@ -528,6 +528,8 @@ public class TVViewCreator {
                             customHeaderItem = null;
                             moduleUI.getLayout().getTv().setHeight("250");
                             createHeaderItemForSeason(component, context, "SEASON " + (seasonIndex + 1));
+                            int index = trayIndex;
+                            index = index -1;
                             for (int i = 0; i < episodes.size(); i++) {
                                 List<String> relatedVids = Utils.getRelatedVideosInShow(
                                         moduleData.getContentData().get(0).getSeason(),
@@ -541,15 +543,10 @@ public class TVViewCreator {
                                 rowData.uiComponentList = components;
                                 rowData.action = component.getTrayClickAction();
                                 rowData.blockName = moduleUI.getBlockName();
-                                rowData.rowNumber = trayIndex;
+                                rowData.rowNumber = index;
                                 traylistRowAdapter.add(rowData);
                             }
                             mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
-                            if(customHeaderItem != null ){
-                                customHeaderItem = null;
-                                moduleUI.getLayout().getTv().setHeight("250");
-                                createHeaderItem(component, context, moduleUI, moduleData, "SEASON " + (seasonIndex + 1), isCarousel);
-                            }
                         }
                     }else{
                         ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
