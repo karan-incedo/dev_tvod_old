@@ -261,6 +261,10 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                        new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
                                (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
+                    } else if (rowData.blockName.equalsIgnoreCase("showDetail01")){
+                        new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
+                                (int) getResources().getDimension(R.dimen.browse_fragment_show_season_margin_left),
+                                (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
                     }else{
                         Utils.setBrowseFragmentViewParameters(view,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
