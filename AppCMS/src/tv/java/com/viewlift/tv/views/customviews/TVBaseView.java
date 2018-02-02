@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Season_;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
@@ -53,10 +54,20 @@ public abstract class TVBaseView extends FrameLayout {
     protected abstract Layout getLayout();
 
 
+    static void setShowViewWithSubtitle(Context context, ContentDatum data, View view) {
+        int episodes = 0;
+        for (Season_ season : data.getSeason()) {
+            episodes += season.getEpisodes().size();
+        }
+        ((TextView) view).setText(context.getResources().getQuantityString(R.plurals.episodes, episodes, episodes));
+        view.setAlpha(0.6f);
+        ((TextView) view).setLetterSpacing(LETTER_SPACING);
+    }
+
     /**
      * Fix for JM-26
      */
-    static void setViewWithSubtitle(Context context, ContentDatum data, View view) {
+    static void setVideoViewWithSubtitle(Context context, ContentDatum data, View view) {
 
         long durationInSeconds = data.getGist().getRuntime();
 
@@ -212,7 +223,8 @@ public abstract class TVBaseView extends FrameLayout {
                         break;
                     case PAGE_TEXTALIGNMENT_RIGHT_KEY:
                         gravity = Gravity.RIGHT ;
-                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY){
+                        if(componentKey == AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY
+                                || componentKey == AppCMSUIKeyType.PAGE_SHOW_SUBTITLE_KEY){
                             gravity = Gravity.RIGHT | Gravity.CENTER_VERTICAL;
                         }
                         break;
@@ -269,8 +281,8 @@ public abstract class TVBaseView extends FrameLayout {
                     view.setPadding(padding,padding,padding,padding);
                     break;
                 case PAGE_VIDEO_TITLE_KEY:
-                    //  if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
-                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 50);
+                  //  if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
+//                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
                   //  }
                     break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
@@ -288,8 +300,6 @@ public abstract class TVBaseView extends FrameLayout {
             }
         } else if (componentType == AppCMSUIKeyType.PAGE_TEXTFIELD_KEY) {
             viewHeight *= 1.2;
-        } else if (componentType == AppCMSUIKeyType.PAGE_TABLE_VIEW_KEY) {
-            viewHeight = (int) (viewHeight / 1.15);
         } else if (componentType == AppCMSUIKeyType.PAGE_IMAGE_KEY
             && componentKey == AppCMSUIKeyType.PAGE_AUTOPLAY_MOVIE_IMAGE_KEY) {
                 int imagePadding = Integer.valueOf(

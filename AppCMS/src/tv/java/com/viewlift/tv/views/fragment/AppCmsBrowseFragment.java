@@ -1,6 +1,5 @@
 package com.viewlift.tv.views.fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,7 +23,7 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
 import com.viewlift.tv.utility.Utils;
 import com.viewlift.tv.views.activity.AppCmsHomeActivity;
-import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
+import com.viewlift.tv.views.customviews.CustomTVVideoPlayerView;
 import com.viewlift.tv.views.customviews.TVPageView;
 
 /**
@@ -49,6 +48,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     public void setmRowsAdapter(ArrayObjectAdapter rowsAdapter) {
         this.mRowsAdapter = rowsAdapter;
+        //mRowsAdapter.notifyItemRangeChanged(0, rowsAdapter.size());
+        // todo check anas azeem
     }
 
     @Override
@@ -58,24 +59,20 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
+    public void onResume() {
+        super.onResume();
         AppCmsHomeActivity activity = (AppCmsHomeActivity) getActivity();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(null != customVideoVideoPlayerView){
-                    if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
-                    } else {
-                        if(activity.isActive) {
-                            customVideoVideoPlayerView.resumePlayer();
-                        }
+        new Handler().postDelayed(() -> {
+            if(null != customVideoVideoPlayerView){
+                if (activity.isNavigationVisible() || activity.isSubNavigationVisible()) {
+                } else {
+                    if(activity.isActive) {
+                        customVideoVideoPlayerView.resumePlayer();
                     }
                 }
             }
-        },500);
+        },50);
     }
 
     public void requestFocus(boolean requestFocus) {
@@ -124,10 +121,21 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
-                        -1,
-                        null,
-                        rowData.contentData.getGist().getWatchedTime());
+                if (rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                    appCMSPresenter.launchButtonSelectedAction(rowData.contentData.getGist().getPermalink(),
+                            "showDetailPage",
+                            rowData.contentData.getGist().getTitle(),
+                            null,
+                            rowData.contentData,
+                            false,
+                            -1,
+                            null);
+                } else {
+                    appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
+                            -1,
+                            rowData.relatedVideoIds,
+                            rowData.contentData.getGist().getWatchedTime());
+                }
             } else {
                 appCMSPresenter.showLoadingDialog(false);
             }
@@ -143,9 +151,28 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
+            if(AppCMSPresenter.isFullScreenVisible){
+                return;
+            }
             if (null != item && item instanceof BrowseFragmentRowData) {
                 BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
                 if(rowData.isPlayerComponent){
+                    if(customVideoVideoPlayerView.isLoginButtonVisible()){
+                        if(!appCMSPresenter.isUserLoggedIn()) {
+                            customVideoVideoPlayerView.performLoginButtonClick();
+                        }
+                        else{
+                         customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
+                         customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
+                        }
+                        return;
+                    }
+                    appCMSPresenter.setTVVideoPlayerView(null);
+                    appCMSPresenter.setTVVideoPlayerView(customVideoVideoPlayerView);
+                    appCMSPresenter.tvVideoPlayerView.getPlayerView().setUseController(true);
+                    customVideoVideoPlayerView.hideControlsForLiveStream();
+                    appCMSPresenter.showFullScreenTVPlayer();
+                    appCMSPresenter.tvVideoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.tvVideoPlayerView.getPlayer().getContentPosition() + 1000);
                     return;
                 }
                 ContentDatum data = rowData.contentData;
@@ -196,11 +223,15 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
     }
 
     boolean isPlayerComponentSelected = false;
-    CustomVideoPlayerView customVideoVideoPlayerView;
+    CustomTVVideoPlayerView customVideoVideoPlayerView;
     private class ItemViewSelectedListener implements OnItemViewSelectedListener {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                    RowPresenter.ViewHolder rowViewHolder, Row row) {
+            if(AppCMSPresenter.isFullScreenVisible){
+                return;
+            }
+
             if (null != item && item instanceof BrowseFragmentRowData) {
                 isPlayerComponentSelected = false;
                 rowData = (BrowseFragmentRowData) item;
@@ -208,21 +239,31 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
                     data = rowData.contentData;
                     if(rowData.isPlayerComponent){
                         if( null != itemViewHolder && null != itemViewHolder.view
-                                && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomVideoPlayerView){
-                            customVideoVideoPlayerView  =  (CustomVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
-                            customVideoVideoPlayerView.requestFocusOnLogin();
+                                && ((FrameLayout) itemViewHolder.view).getChildAt(0) instanceof CustomTVVideoPlayerView){
+                            customVideoVideoPlayerView  =  (CustomTVVideoPlayerView)((FrameLayout) itemViewHolder.view).getChildAt(0);
+                            if(customVideoVideoPlayerView.isLoginButtonVisible() && appCMSPresenter.isUserLoggedIn()){
+                               customVideoVideoPlayerView.showRestrictMessage(getString(R.string.reload_page_from_menu));
+                               customVideoVideoPlayerView.toggleLoginButtonVisibility(false);
+                            }
                         }
                         Utils.setBrowseFragmentViewParameters(view,
-                                -40,
+                                Utils.getViewYAxisAsPerScreen(getActivity() , (int) getResources().getDimension(R.dimen.browse_fragment_margin_left)),
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_top_for_player));
                         isPlayerComponentSelected = true;
                         showMoreContentIcon();
+                    } else if(rowData.isSearchPage){
+                       new Handler().postDelayed(() -> Utils.setBrowseFragmentViewParameters(view,
+                               (int) getResources().getDimension(R.dimen.grid_browse_fragment_margin_left),
+                               (int) getResources().getDimension(R.dimen.browse_fragment_margin_top)), 0);
                     }else{
                         Utils.setBrowseFragmentViewParameters(view,
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
                                 (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));
                         hideController();
                     }
+                   /* Utils.setBrowseFragmentViewParameters(view,
+                            (int) getResources().getDimension(R.dimen.browse_fragment_margin_left),
+                            (int) getResources().getDimension(R.dimen.browse_fragment_margin_top));*/
                 }
             }
 
@@ -257,9 +298,12 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     @Override
     public void onPause() {
-        if(null != customVideoVideoPlayerView){
-            customVideoVideoPlayerView.pausePlayer();
-        }
+        new Handler().postDelayed(() -> {
+            if(null != customVideoVideoPlayerView){
+                customVideoVideoPlayerView.pausePlayer();
+            }
+        },51);
+
         super.onPause();
     }
 
@@ -271,7 +315,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         super.onStop();
     }
 
-    public CustomVideoPlayerView getCustomVideoVideoPlayerView(){
+    public CustomTVVideoPlayerView getCustomVideoVideoPlayerView(){
         return customVideoVideoPlayerView;
     }
 

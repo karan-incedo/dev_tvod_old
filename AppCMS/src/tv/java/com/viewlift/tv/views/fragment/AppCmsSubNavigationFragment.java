@@ -553,7 +553,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
 
             if (!mShowTeams) {
                 holder.navImageView.setPadding(0, 0, 0, 0);
-                holder.navImageView.setImageResource(getIcon(subItem.icon));
+                holder.navImageView.setImageResource(subItem.icon != null
+                        ? getIcon(subItem.icon) : -1);
             } else {
                 holder.navImageView.setPadding(10, 10, 10, 10);
                 Glide.with(mContext)
@@ -765,6 +766,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 iconResId = R.drawable.st_settings_icon_signin;
             } else if (icon.equalsIgnoreCase(getString(R.string.st_signout_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_signout;
+            }else if (icon.equalsIgnoreCase(getString(R.string.st_about_us_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_about_us;
             }
             return iconResId;
         }

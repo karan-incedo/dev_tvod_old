@@ -8,29 +8,28 @@
       "yAxis": 0,
       "xAxis": 0,
       "width": 1920,
-      "height": 940
+      "height": 1080
     }
   },
   "components": [
     {
       "layout": {
         "ftv": {
-          "yAxis": 63,
-          "xAxis": 490,
+          "yAxis": 37,
           "width": 600,
-          "fontSize": 20,
-          "height": 55
+          "fontSize": 21,
+          "height": 57
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
       "numberOfLines": 1,
-      "textAlignment": "left",
+      "textAlignment": "center_horizontal",
       "letterSpacing": 4.5,
       "text": "PRIVACY POLICY",
       "type": "label",
-      "textColor": "#000000",
+      "textColor": "#FFFFFF",
       "key": "title",
-      "fontWeight": "Semibold"
+      "fontWeight": "Regular"
     },
     {
       "layout": {
@@ -46,7 +45,7 @@
       "type": "textView",
       "textColor": "ffffff",
       "key": "description"
-    },
+    }/*,
     {
       "layout": {
         "ftv": {
@@ -58,6 +57,6 @@
       },
       "backgroundColor": "808080",
       "type": "separatorView"
-    }
+    }*/
   ]
 }

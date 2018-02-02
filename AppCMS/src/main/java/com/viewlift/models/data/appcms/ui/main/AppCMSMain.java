@@ -138,6 +138,10 @@ public class AppCMSMain implements Serializable {
     @Expose
     CustomerService customerService;
 
+    @SerializedName("templateName")
+    @Expose
+    String templateName;
+
     public String getId() {
         return id;
     }
@@ -348,5 +352,13 @@ public class AppCMSMain implements Serializable {
 
     public void setAppVersions(AppVersions appVersions) {
         this.appVersions = appVersions;
+    }
+
+    public String getTemplateName() {
+        return templateName;
+    }
+
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
     }
 }

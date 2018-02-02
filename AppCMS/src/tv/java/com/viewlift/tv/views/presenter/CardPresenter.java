@@ -41,9 +41,11 @@ public class CardPresenter extends Presenter {
     int i = 0;
     int mHeight = -1;
     int mWidth = -1;
-    private Map<String, AppCMSUIKeyType> mJsonKeyValuemap;
+    private Map<String , AppCMSUIKeyType> mJsonKeyValuemap;
     String borderColor = null;
     private Typeface fontType;
+    private boolean consumeUpKeyEvent = false;
+
 
     public CardPresenter(Context context,
                          AppCMSPresenter appCMSPresenter,
@@ -51,20 +53,20 @@ public class CardPresenter extends Presenter {
                          int width,
                          String trayBackground,
                          Map<String,
-                                 AppCMSUIKeyType> jsonKeyValuemap) {
+            AppCMSUIKeyType> jsonKeyValuemap) {
         mContext = context;
         mAppCmsPresenter = appCMSPresenter;
         mHeight = height;
         mWidth = width;
         this.trayBackground = trayBackground;
         mJsonKeyValuemap = jsonKeyValuemap;
-        borderColor = Utils.getFocusColor(mContext, appCMSPresenter);
+        borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
     }
 
     public CardPresenter(Context context, AppCMSPresenter appCMSPresenter) {
         mContext = context;
         mAppCmsPresenter = appCMSPresenter;
-        borderColor = Utils.getFocusColor(mContext, appCMSPresenter);
+        borderColor = Utils.getFocusColor(mContext,appCMSPresenter);
 
     }
 
@@ -84,33 +86,40 @@ public class CardPresenter extends Presenter {
         }
         frameLayout.setLayoutParams(layoutParams);
         frameLayout.setFocusable(true);
-
-        frameLayout.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-                if (keyCode == KeyEvent.KEYCODE_DPAD_UP
-                        && keyEvent.getAction() == KeyEvent.ACTION_UP) {
-                    frameLayout.clearFocus();
-                }
-                return false;
-            }
-        });
-
         return new ViewHolder(frameLayout);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
         //Log.d("Presenter" , " CardPresenter onBindViewHolder******. viewHolder: " + viewHolder + ", item: " + item);
-        BrowseFragmentRowData rowData = (BrowseFragmentRowData) item;
+        BrowseFragmentRowData rowData = (BrowseFragmentRowData)item;
         ContentDatum contentData = rowData.contentData;
         List<Component> componentList = rowData.uiComponentList;
         String blockName = rowData.blockName;
         FrameLayout cardView = (FrameLayout) viewHolder.view;
-        if (null != blockName && (blockName.equalsIgnoreCase("tray03"))) {
+        if(null != blockName && ( blockName.equalsIgnoreCase("tray03"))){
             cardView.setBackground(Utils.getTrayBorder(mContext, Utils.getPrimaryHoverColor(mContext, mAppCmsPresenter), Utils.getSecondaryHoverColor(mContext, mAppCmsPresenter)));
         }
-        createComponent(componentList, cardView, contentData, blockName);
+        createComponent(componentList, cardView, contentData,blockName);
+
+        cardView.setOnKeyListener((v, keyCode, event) -> {
+            if(keyCode == KeyEvent.KEYCODE_DPAD_UP
+                    && event.getAction() == KeyEvent.ACTION_UP){
+                if (rowData.rowNumber == 0) {
+                    if (consumeUpKeyEvent) {
+                        cardView.clearFocus();
+                        consumeUpKeyEvent = false;
+                    }
+                    consumeUpKeyEvent = true;
+                } else {
+                    consumeUpKeyEvent = false;
+                }
+            } else if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN
+                    && event.getAction() == KeyEvent.ACTION_DOWN) {
+                consumeUpKeyEvent = false;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -119,13 +128,12 @@ public class CardPresenter extends Presenter {
             if (null != viewHolder && null != viewHolder.view) {
                 ((FrameLayout) viewHolder.view).removeAllViews();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch (Exception e){
         }
     }
 
-    public void createComponent(List<Component> componentList, ViewGroup parentLayout, ContentDatum contentData, String blockName) {
-        if (null != componentList && componentList.size() > 0) {
+    public void createComponent(List<Component> componentList , ViewGroup parentLayout , ContentDatum contentData , String blockName){
+        if(null != componentList && componentList.size() > 0) {
             for (Component component : componentList) {
                 AppCMSUIKeyType componentType = mAppCmsPresenter.getJsonValueKeyMap().get(component.getType());
                 if (componentType == null) {
@@ -140,7 +148,7 @@ public class CardPresenter extends Presenter {
                 switch (componentType) {
                     case PAGE_IMAGE_KEY:
                         ImageView imageView = new ImageView(parentLayout.getContext());
-                        switch (componentKey) {
+                        switch(componentKey){
                             case PAGE_THUMBNAIL_IMAGE_KEY:
                                 Integer itemWidth = Integer.valueOf(component.getLayout().getTv().getWidth());
                                 Integer itemHeight = Integer.valueOf(component.getLayout().getTv().getHeight());
@@ -164,7 +172,10 @@ public class CardPresenter extends Presenter {
                                 imageView.setLayoutParams(parms);
                                 if (null != blockName && (blockName.equalsIgnoreCase("tray01")
                                         || blockName.equalsIgnoreCase("tray02")
-                                        || blockName.equalsIgnoreCase("continueWatching01"))) {
+                                        || blockName.equalsIgnoreCase("grid01")
+                                        || blockName.equalsIgnoreCase("showDetail01")
+                                        || blockName.equalsIgnoreCase("tray04")
+                                        || blockName.equalsIgnoreCase("continuewatching01"))) {
                                     imageView.setBackground(Utils.getTrayBorder(mContext, borderColor, component));
                                 }
                                 int gridImagePadding = Integer.valueOf(component.getLayout().getTv().getPadding());
@@ -273,7 +284,7 @@ public class CardPresenter extends Presenter {
                         if (fontType != null) {
                             tvTitle.setTypeface(fontType);
                         }
-                        // tvTitle.setTextSize(component.getFontSize());
+                       // tvTitle.setTextSize(component.getFontSize());
                         parentLayout.addView(tvTitle);
                         break;
 

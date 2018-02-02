@@ -48,6 +48,7 @@ import com.viewlift.tv.views.fragment.AppCmsTVPageFragment;
 import com.viewlift.tv.views.fragment.AppCmsTvErrorFragment;
 import com.viewlift.tv.views.fragment.TextOverlayDialogFragment;
 import com.viewlift.views.binders.AppCMSBinder;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 
 import java.util.HashMap;
@@ -236,6 +237,10 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                     updateData();
                 } else if (intent.getAction().equals(AppCMSPresenter.UPDATE_SUBSCRIPTION)) {
                     updateSubscriptionStrip();
+                } else if (intent.getAction().equals(AppCMSPresenter.SWITCH_SEASON_ACTION)) {
+                    AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder = (AppCMSSwitchSeasonBinder) intent.getExtras().getBundle("app_cms_season_selector_key").getBinder("app_cms_episode_data");
+                    AppCmsTVPageFragment parentFragment = (AppCmsTVPageFragment) getFragmentManager().findFragmentById(R.id.home_placeholder);
+                    parentFragment.updateSeasonData(appCMSSwitchSeasonBinder);
                 }
             }
         };
@@ -340,6 +345,12 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             Fragment fragment = getFragmentManager().findFragmentById(R.id.home_placeholder);
             if (null != fragment && fragment instanceof AppCmsTVPageFragment) {
                 ((AppCmsTVPageFragment) fragment).refreshBrowseFragment();
+                AppCmsTVPageFragment appCmsTVPageFragment = ((AppCmsTVPageFragment) fragment);
+                AppCMSBinder appCmsBinder = appCMSBinderMap.get(appCmsTVPageFragment.getTag());
+                if (appCmsBinder.getPageName()
+                        .equalsIgnoreCase(getString(R.string.app_cms_history_navigation_title))) {
+                    ((AppCmsTVPageFragment) fragment).updateAdapterData(appCmsBinder);
+                }
             } else if (null != fragment && fragment instanceof AppCmsMyProfileFragment) {
                 AppCmsMyProfileFragment profileFragment = ((AppCmsMyProfileFragment) fragment);
                 AppCMSBinder appCmsBinder = appCMSBinderMap.get(profileFragment.getTag());
@@ -368,11 +379,21 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ERROR_DIALOG_ACTION));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.ACTION_RESET_PASSWORD));
         registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.UPDATE_SUBSCRIPTION));
+        registerReceiver(presenterActionReceiver, new IntentFilter(AppCMSPresenter.SWITCH_SEASON_ACTION));
     }
 
     @Override
     protected void onPause() {
         unregisterReceiver(presenterActionReceiver);
+
+        //when activity pause then close the full screen player.
+        if(appCMSPresenter.isFullScreenVisible){
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().hideController();
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().setUseController(false);
+            appCMSPresenter.exitFullScreenTVPlayer();
+            return;
+        }
+
         super.onPause();
         isActive = false;
     }
@@ -627,6 +648,11 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
         //Log.d(TAG, "Launching new page: " + appCMSBinder.getPageName());
         appCMSPresenter.sendGaScreen(appCMSBinder.getScreenName());
         boolean isPoped = getFragmentManager().popBackStackImmediate(appCMSBinder.getPageId(), 1);
+
+        if(isPoped){
+            if (appCMSBinderStack.contains(getTag(appCMSBinder)))
+                appCMSBinderStack.remove(getTag(appCMSBinder));
+        }
         //if(!isPoped)
         setPageFragment(updatedAppCMSBinder);
         //else
@@ -643,6 +669,14 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     @Override
     public void onBackPressed() {
+
+        if(appCMSPresenter.isFullScreenVisible){
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().hideController();
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().setUseController(false);
+            appCMSPresenter.exitFullScreenTVPlayer();
+            return;
+        }
+
         //if navigation is visible then first hide the navigation.
         if (isNavigationVisible()) {
             handleNavigationVisibility();
@@ -699,7 +733,6 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
 
     private void setPageFragment(AppCMSBinder appCMSBinder) {
         Fragment attached = getFragmentManager().findFragmentById(R.id.home_placeholder);
-
         if (attached == null || (attached != null && !attached.getTag().equalsIgnoreCase(getTag(appCMSBinder)))) {
             AppCmsTVPageFragment appCMSPageFragment = AppCmsTVPageFragment.newInstance(this, appCMSBinder);
             FragmentManager fragmentManager = getFragmentManager();
@@ -720,6 +753,55 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
     public boolean dispatchKeyEvent(KeyEvent event) {
         int keyCode = event.getKeyCode();
         int action = event.getAction();
+        if(AppCMSPresenter.isFullScreenVisible){
+            appCMSPresenter.tvVideoPlayerView.getPlayerView().showController();
+            switch (action) {
+                case KeyEvent.ACTION_DOWN:
+                    switch (keyCode) {
+                        case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                            appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_pause).requestFocus();
+                            appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_play).requestFocus();
+                            if (appCMSPresenter.tvVideoPlayerView.getPlayerView() != null) {
+                                appCMSPresenter.tvVideoPlayerView.setHardPause(appCMSPresenter.tvVideoPlayerView.getPlayer().getPlayWhenReady());
+                                if(appCMSPresenter.tvVideoPlayerView.getPlayer().getPlayWhenReady()){
+                                    appCMSPresenter.tvVideoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.tvVideoPlayerView.getPlayer().getContentPosition() + 1000);
+                                }
+                                return super.dispatchKeyEvent(event)
+                                        || appCMSPresenter.tvVideoPlayerView.getPlayerView()
+                                        .dispatchKeyEvent(event);
+                            }
+                            break;
+                        case KeyEvent.KEYCODE_DPAD_CENTER:
+                            if (appCMSPresenter.tvVideoPlayerView.getPlayerView() != null) {
+                                appCMSPresenter.tvVideoPlayerView.setHardPause(appCMSPresenter.tvVideoPlayerView.getPlayer().getPlayWhenReady());
+                                if(appCMSPresenter.tvVideoPlayerView.getPlayer().getPlayWhenReady()){
+                                    appCMSPresenter.tvVideoPlayerView.getPlayerView().getPlayer().seekTo(appCMSPresenter.tvVideoPlayerView.getPlayer().getContentPosition() + 1000);
+                                }
+                            }
+                            return super.dispatchKeyEvent(event);
+                        case KeyEvent.KEYCODE_MEDIA_REWIND:
+                            if (null != appCMSPresenter.tvVideoPlayerView) {
+                                if (appCMSPresenter.tvVideoPlayerView.isLiveStream()) return true;
+                                appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_rew).requestFocus();
+                                return super.dispatchKeyEvent(event);
+                            }
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                            if (null != appCMSPresenter.tvVideoPlayerView) {
+                                if (appCMSPresenter.tvVideoPlayerView.isLiveStream()) return true;
+                                appCMSPresenter.tvVideoPlayerView.findViewById(R.id.exo_ffwd).requestFocus();
+                                return super.dispatchKeyEvent(event);
+                            }
+                        case KeyEvent.KEYCODE_DPAD_DOWN:
+                        case KeyEvent.KEYCODE_DPAD_UP:
+                            return true;
+                        default:
+                            return super.dispatchKeyEvent(event);
+                    }
+                default:
+                    return super.dispatchKeyEvent(event);
+            }
+        }
 
         switch (action) {
             case KeyEvent.ACTION_DOWN:
@@ -1041,4 +1123,5 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
             findViewById(R.id.press_down_button).setVisibility(View.INVISIBLE);
         }
     }
+
 }

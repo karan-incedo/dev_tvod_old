@@ -119,6 +119,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private RecyclerView listView;
 
+    public VideoPlayerView(Context context) {
+        super(context);
+        initializeView(context);
+    }
 
     public VideoPlayerView(Context context, AppCMSPresenter appCMSPresenter) {
         super(context);
@@ -169,15 +173,18 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
-        if (closedCaptionUri == null) {
-            if (ccToggleButton != null) {
-                ccToggleButton.setVisibility(GONE);
+        if( appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID){
+            if (closedCaptionUri == null) {
+                if (ccToggleButton != null) {
+                    ccToggleButton.setVisibility(GONE);
+                }
+            } else {
+                if (ccToggleButton != null) {
+                    ccToggleButton.setChecked(isClosedCaptionEnabled);
+                    ccToggleButton.setVisibility(VISIBLE);
+                }
             }
-        } else {
-            if (ccToggleButton != null) {
-                ccToggleButton.setChecked(isClosedCaptionEnabled);
-                ccToggleButton.setVisibility(VISIBLE);
-            }
+
         }
 
     }
@@ -489,6 +496,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     }
 
+
     @Override
     public void onPlayerError(ExoPlaybackException e) {
         mCurrentPlayerPosition = player.getCurrentPosition();
@@ -512,6 +520,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     public void onSeekProcessed() {
 
     }
+
 
     public void sendPlayerPosition(long position) {
         mCurrentPlayerPosition = position;

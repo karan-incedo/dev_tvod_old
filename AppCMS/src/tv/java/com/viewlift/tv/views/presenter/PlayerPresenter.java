@@ -5,11 +5,11 @@ import android.support.v17.leanback.widget.Presenter;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.google.android.exoplayer2.ui.PlaybackControlView;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.tv.model.BrowseFragmentRowData;
-import com.viewlift.tv.views.customviews.CustomVideoPlayerView;
+import com.viewlift.tv.utility.Utils;
+import com.viewlift.tv.views.customviews.CustomTVVideoPlayerView;
 
 /**
  * Created by nitin.tyagi on 11/2/2017.
@@ -20,10 +20,15 @@ public class PlayerPresenter extends Presenter {
     private static int DEVICE_HEIGHT , DEVICE_WIDTH= 0;
     private final Context context;
     private final AppCMSPresenter appCmsPresenter;
+    private int mHeight = -1;
+    private int mWidth = -1;
 
-    public PlayerPresenter(Context context , AppCMSPresenter appCMSPresenter){
+    public PlayerPresenter(Context context , AppCMSPresenter appCMSPresenter ,
+                           int height , int width){
         this.context = context;
         this.appCmsPresenter = appCMSPresenter;
+        mHeight = height;
+        mWidth = width;
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent) {
@@ -31,18 +36,17 @@ public class PlayerPresenter extends Presenter {
         DEVICE_HEIGHT = parent.getContext().getResources().getDisplayMetrics().heightPixels;
         //Log.d("Presenter" , " CardPresenter onCreateViewHolder******");
         final FrameLayout frameLayout = new FrameLayout(parent.getContext());
-        FrameLayout.LayoutParams layoutParams;
-        layoutParams = new FrameLayout.LayoutParams(DEVICE_WIDTH,
-                    DEVICE_HEIGHT);
-        frameLayout.setLayoutParams(layoutParams);
-
-
-
 
         if(mCustomVideoPlayerView == null){
             mCustomVideoPlayerView = playerView(context);
             setVideoPlayerView(mCustomVideoPlayerView , true);
         }
+
+        FrameLayout.LayoutParams layoutParams;
+        layoutParams = new FrameLayout.LayoutParams(Utils.getViewXAxisAsPerScreen(context , mWidth),
+                Utils.getViewYAxisAsPerScreen(context,mHeight));
+        frameLayout.setLayoutParams(layoutParams);
+
 
         FrameLayout.LayoutParams playerParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.MATCH_PARENT);
@@ -50,6 +54,8 @@ public class PlayerPresenter extends Presenter {
         if(mCustomVideoPlayerView != null && mCustomVideoPlayerView.getParent() != null){
             ((ViewGroup)mCustomVideoPlayerView.getParent()).removeView(mCustomVideoPlayerView);
         }
+
+//        mCustomVideoPlayerView.setPadding(10,10,10,10);
         frameLayout.addView(mCustomVideoPlayerView);
 
         frameLayout.setFocusable(true);
@@ -66,30 +72,15 @@ public class PlayerPresenter extends Presenter {
 
         if(shouldStartPlayer){
             mCustomVideoPlayerView.setVideoUri(contentData.getGist().getId());
+            shouldStartPlayer = false;
         }
 
         mCustomVideoPlayerView.requestFocusOnLogin();
-       //CustomVideoPlayerView videoPlayerView = null;
-       /* if(null != cardView && cardView.getChildCount() > 0){
-            videoPlayerView = (CustomVideoPlayerView)cardView.getChildAt(0);
-        }else {
-            videoPlayerView = playerView(cardView.getContext());
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT);
-            videoPlayerView.setLayoutParams(layoutParams);
 
-            cardView.addView(videoPlayerView);
-            boolean svodServiceType = appCmsPresenter.getAppCMSMain().getServiceType().equals(
-                    context.getString(R.string.app_cms_main_svod_service_type_key));
-
-            boolean requestAds = !svodServiceType;
-            String adsUrl = appCmsPresenter.getAdsUrl(appCmsPresenter.getPermalinkCompletePath(contentData.getGist().getPermalink()));
-            if(adsUrl == null) {
-                requestAds = false;
-            }
-            videoPlayerView.setupAds(requestAds ? adsUrl : null);
-            videoPlayerView.setVideoUri(contentData.getGist().getId());
-        }*/
+        cardView.setBackground(Utils.getGradientTrayBorder(
+                        context,
+                        Utils.getPrimaryHoverColor(context, appCmsPresenter),
+                        Utils.getSecondaryHoverColor(context, appCmsPresenter)));
     }
 
     @Override
@@ -105,25 +96,16 @@ public class PlayerPresenter extends Presenter {
 
 
 
-    public CustomVideoPlayerView playerView(Context context) {
-        CustomVideoPlayerView videoPlayerView = new CustomVideoPlayerView(context);
+    public CustomTVVideoPlayerView playerView(Context context) {
+        CustomTVVideoPlayerView videoPlayerView = new CustomTVVideoPlayerView(context);
         videoPlayerView.init(context);
         videoPlayerView.getPlayerView().hideController();
-        videoPlayerView.getPlayerView().setControllerVisibilityListener(new PlaybackControlView.VisibilityListener() {
-            @Override
-            public void onVisibilityChange(int i) {
-                if (i == 0) {
-                   videoPlayerView.getPlayerView().hideController();
-                }
-            }
-        });
-
         return videoPlayerView;
     }
 
-    private CustomVideoPlayerView mCustomVideoPlayerView;
+    private CustomTVVideoPlayerView mCustomVideoPlayerView;
     private boolean shouldStartPlayer;
-    public void setVideoPlayerView(CustomVideoPlayerView customVideoPlayerView , boolean shouldStartPlayer){
+    public void setVideoPlayerView(CustomTVVideoPlayerView customVideoPlayerView , boolean shouldStartPlayer){
         this.mCustomVideoPlayerView = customVideoPlayerView;
         this.shouldStartPlayer = shouldStartPlayer;
     }

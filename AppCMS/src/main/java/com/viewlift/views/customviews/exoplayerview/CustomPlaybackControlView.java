@@ -784,9 +784,9 @@ public class CustomPlaybackControlView extends FrameLayout {
         if (nextWindowIndex != C.INDEX_UNSET) {
             seekTo(nextWindowIndex, C.TIME_UNSET);
         } else if (timeline.getWindow(windowIndex, window, false).isDynamic) {
-            seekTo(windowIndex, C.TIME_UNSET);
-        }
+        seekTo(windowIndex, C.TIME_UNSET);
     }
+}
 
     private void rewind() {
         if (rewindMs <= 0) {

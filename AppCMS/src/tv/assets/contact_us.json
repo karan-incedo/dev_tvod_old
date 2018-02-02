@@ -1,8 +1,9 @@
 {
-  "id": "bccdacf8-25ba-406c-b133-8a6141e4f5e4",
+  "id": "83f0cf56-eea8-4816-a004-f13d4887c05b",
   "settings": {},
   "view": "AC ContactUs 01",
   "type": "AC ContactUs 01",
+  "blockName": "contactUs01",
   "layout": {
     "ftv": {
       "yAxis": 0,
@@ -15,98 +16,92 @@
     {
       "layout": {
         "ftv": {
-          "yAxis": 63,
-          "xAxis": 490,
+          "yAxis": 37,
           "width": 600,
-          "fontSize": 20,
-          "height": 55
+          "fontSize": 21,
+          "height": 57
         }
       },
-      "fontFamily": "OpenSans",
+      "fontFamily": "Lato",
       "numberOfLines": 1,
-      "textAlignment": "left",
-      "type": "label",
-      "textColor": "#000000",
-      "key": "title",
-      "fontWeight": "Semibold",
+      "textAlignment": "center_horizontal",
       "letterSpacing": 4.5,
-      "text": "CONTACT US"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 300,
-          "xAxis": 500,
-          "width": 55,
-          "height": 55
-        }
-      },
-      "type": "image",
-      "key": "call_Icon",
-      "imageName": "call_Icon"
-    },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 300,
-          "xAxis": 580,
-          "width": 950,
-          "fontSize": 17,
-          "height": 55
-        }
-      },
-      "fontFamily": "OpenSans",
-      "numberOfLines": 1,
-      "textAlignment": "left",
+      "text": "Contact Us",
       "type": "label",
-      "textColor": "#ffffff",
-      "key": "contactNumber",
-      "fontWeight": "Regular",
-      "text": "Call us toll free at:"
+      "textColor": "#FFFFFF",
+      "key": "title",
+      "fontWeight": "Regular"
+    }, {
+    "layout": {
+      "ftv": {
+        "yAxis": 300,
+        "xAxis": 500,
+        "width": 55,
+        "height": 55
+      }
     },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 200,
-          "xAxis": 500,
-          "width": 55,
-          "height": 55
-        }
-      },
-      "type": "image",
-      "key": "email_Icon",
-      "imageName": "email_Icon"
+    "imageName": "call_Icon",
+    "type": "image",
+    "key": "call_Icon"
+  }, {
+    "layout": {
+      "ftv": {
+        "yAxis": 300,
+        "xAxis": 580,
+        "width": 950,
+        "fontSize": 17,
+        "height": 55
+      }
     },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 200,
-          "xAxis": 580,
-          "width": 950,
-          "fontSize": 17,
-          "height": 55
-        }
-      },
-      "fontFamily": "OpenSans",
-      "numberOfLines": 1,
-      "textAlignment": "left",
-      "type": "label",
-      "textColor": "#ffffff",
-      "key": "emailId",
-      "fontWeight": "Regular",
-      "text": "Email us at:"
+    "fontFamily": "OpenSans",
+    "numberOfLines": 1,
+    "textAlignment": "left",
+    "text": "Call us toll free at:",
+    "type": "label",
+    "textColor": "#ffffff",
+    "key": "contactNumber",
+    "fontWeight": "Regular"
+  }, {
+    "layout": {
+      "ftv": {
+        "yAxis": 200,
+        "xAxis": 500,
+        "width": 55,
+        "height": 55
+      }
     },
-    {
-      "layout": {
-        "ftv": {
-          "yAxis": 118,
-          "xAxis": 485,
-          "width": 950,
-          "height": 2
-        }
-      },
-      "backgroundColor": "808080",
-      "type": "separatorView"
-    }
+    "imageName": "email_Icon",
+    "type": "image",
+    "key": "email_Icon"
+  }, {
+    "layout": {
+      "ftv": {
+        "yAxis": 200,
+        "xAxis": 580,
+        "width": 1150,
+        "fontSize": 17,
+        "height": 55
+      }
+    },
+    "fontFamily": "OpenSans",
+    "numberOfLines": 1,
+    "textAlignment": "left",
+    "text": "Email us at:",
+    "type": "label",
+    "textColor": "#ffffff",
+    "key": "emailId",
+    "fontWeight": "Regular"
+  }/*, {
+    "layout": {
+      "ftv": {
+        "yAxis": 118,
+        "xAxis": 485,
+        "width": 950,
+        "height": 2
+      }
+    },
+    "backgroundColor": "808080",
+    "type": "separatorView"
+  }*/
   ]
 }
