@@ -7,8 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
-import com.apptentive.android.sdk.Apptentive;
-import com.crashlytics.android.Crashlytics;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
 import com.viewlift.models.network.modules.AppCMSUIModule;
 import com.viewlift.views.components.AppCMSPresenterComponent;
@@ -17,7 +15,6 @@ import com.viewlift.views.modules.AppCMSPresenterModule;
 
 import java.util.Map;
 
-import io.fabric.sdk.android.Fabric;
 import rx.functions.Action0;
 
 import static com.viewlift.analytics.AppsFlyerUtils.trackInstallationEvent;

@@ -13,10 +13,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.appsflyer.AppsFlyerLib;
-import com.apptentive.android.sdk.Apptentive;
-import com.crashlytics.android.Crashlytics;
-import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.casting.CastHelper;
 import com.viewlift.presenters.AppCMSPresenter;
@@ -25,10 +21,6 @@ import com.viewlift.views.components.AppCMSPresenterComponent;
 
 import com.viewlift.R;
 import com.viewlift.views.customviews.BaseView;
-
-import com.google.android.gms.iid.InstanceID;
-
-import io.fabric.sdk.android.Fabric;
 
 public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
