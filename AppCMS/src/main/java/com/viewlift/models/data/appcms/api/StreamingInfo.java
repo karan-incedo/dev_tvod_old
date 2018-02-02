@@ -21,6 +21,10 @@ public class StreamingInfo implements Serializable {
     @Expose
     Object audioAssets;
 
+    @SerializedName("articleAssets")
+    @Expose
+    ArticleAssets articleAssets;
+
     @SerializedName("cuePoints")
     @Expose
     String cuePoints;
@@ -48,6 +52,15 @@ public class StreamingInfo implements Serializable {
     public void setAudioAssets(Object audioAssets) {
         this.audioAssets = audioAssets;
     }
+
+    public ArticleAssets getArticleAssets() {
+        return articleAssets;
+    }
+
+    public void setArticleAssets(ArticleAssets articleAssets) {
+        this.articleAssets = articleAssets;
+    }
+
 
     public String getCuePoints() {
         return cuePoints;

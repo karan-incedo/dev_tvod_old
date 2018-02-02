@@ -155,7 +155,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
                 true,
                 this.componentViewType,
                 false,
-                false);
+                false,viewTypeKey);
 
         if (emptyList) {
             TextView emptyView = new TextView(mContext);
