@@ -1,24 +1,25 @@
 {
-  "id": "4d634550-8a37-4d5a-9833-d5c2cf02f529",
+  "id": "036c0c78-5355-4ccd-838a-a88b122c9b6c",
   "settings": {
     "loop": false,
     "columns": {
-      "tablet": 3,
-      "desktop": 3,
-      "mobile": 2,
-      "ott": 3
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
     },
-    "thumbnailType": "landscape"
+    "thumbnailType": "portrait",
+    "infoHover": true
   },
   "view": "AC Tray 01",
   "type": "AC Tray 01",
-  "blockName": "tray04",
+  "blockName": "tray01",
   "layout": {
     "ftv": {
-      "yAxis": 0,
+      "padding": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 438
+      "height": 470
     }
   },
   "components": [
@@ -39,8 +40,8 @@
     {
       "layout": {
         "ftv": {
-          "width": 590,
-          "height": 438
+          "width": 260,
+          "height": 470
         }
       },
       "trayClickAction": "lectureDetailPage",
@@ -49,9 +50,9 @@
           "layout": {
             "ftv": {
               "padding": 6,
-              "topMargin": 15,
-              "width": 588,
-              "height": 330
+              "topMargin": 10,
+              "width": 260,
+              "height": 380
             }
           },
           "type": "image",
@@ -61,9 +62,9 @@
           "layout": {
             "ftv": {
               "padding": 6,
-              "topMargin": 15,
-              "width": 588,
-              "height": 330
+              "topMargin": 10,
+              "width": 260,
+              "height": 380
             }
           },
           "type": "image",
@@ -72,8 +73,8 @@
         {
           "layout": {
             "ftv": {
-              "leftMargin": 10,
-              "topMargin": 350,
+              "leftMargin": 0,
+              "topMargin": 395,
               "rightMargin": 0,
               "fontSize": 11,
               "height": 40
