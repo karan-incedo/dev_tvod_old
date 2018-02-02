@@ -256,10 +256,10 @@ public class TVViewCreator {
 //                isGrid = true;
             }
             if (module.getBlockName().equalsIgnoreCase("tray01")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray_ftv_component.json"), ModuleList.class);
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray01.json"), ModuleList.class);
             }
-            if (module.getBlockName().equalsIgnoreCase("tray02")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray02.json"), ModuleList.class);
+            if (module.getBlockName().equalsIgnoreCase("tray04")) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
             }
 
             for (Component component : module.getComponents()) {
