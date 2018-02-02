@@ -23,6 +23,7 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -2462,7 +2463,8 @@ public class ViewCreator {
                                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03
                         )) {
                             componentViewResult.componentView.setOnClickListener(v -> {
-                                if (!appCMSPresenter.sendCloseOthersAction(null,
+                                Log.e("ViewCreator","CLOSE CLICK");
+                                if (!appCMSPresenter.sendCloseAutoplayAction(null,
                                         true,
                                         false)) {
                                     //Log.e(TAG, "Could not perform close action: " +

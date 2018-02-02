@@ -87,10 +87,10 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     public void onBindViewHolder(PageViewHolder holder, int position) {
         try {
             if(!isPlayerView(position))
-            holder.parent.removeView(childViews.get(position));
+            holder.parent.removeAllViews();
             holder.parent.addView(childViews.get(position));
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
