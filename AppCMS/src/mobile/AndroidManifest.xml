@@ -32,6 +32,7 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </receiver>
+        <!--
         <receiver
             android:name=".mobile.pushnotif.AppCMSAirshipReceiver"
             android:exported="false">
@@ -44,6 +45,7 @@
                 <category android:name="${applicationId}" />
             </intent-filter>
         </receiver>
+        -->
         <service
             android:name="com.appsflyer.InstanceIDListener"
             android:exported="false">

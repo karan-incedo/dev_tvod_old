@@ -37,7 +37,6 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
@@ -73,6 +72,7 @@ import com.urbanairship.UAirship;
 import com.viewlift.AppCMSApplication;
 import com.viewlift.R;
 import com.viewlift.casting.CastServiceProvider;
+import com.viewlift.mobile.pushnotif.AppCMSAirshipReceiver;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.sites.AppCMSSite;
@@ -212,6 +212,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private BroadcastReceiver keepScreenOnReceiver;
     private BroadcastReceiver clearKeepScreenOnReceiver;
     private BroadcastReceiver chromecastDisconnectedReceiver;
+    private AppCMSAirshipReceiver appCMSAirshipReceiver;
 
     private boolean resumeInternalEvents;
     private boolean isActive;
@@ -676,6 +677,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
         };
 
+        appCMSAirshipReceiver = new AppCMSAirshipReceiver();
+
         registerReceiver(presenterActionReceiver,
                 new IntentFilter(AppCMSPresenter.PRESENTER_NAVIGATE_ACTION));
         registerReceiver(presenterActionReceiver,
@@ -700,6 +703,14 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 new IntentFilter(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION));
         registerReceiver(networkConnectedReceiver,
                 new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        registerReceiver(appCMSAirshipReceiver,
+                new IntentFilter("com.urbanairship.push.CHANNEL_UPDATED"));
+        registerReceiver(appCMSAirshipReceiver,
+                new IntentFilter("com.urbanairship.push.OPENED"));
+        registerReceiver(appCMSAirshipReceiver,
+                new IntentFilter("com.urbanairship.push.RECEIVED"));
+        registerReceiver(appCMSAirshipReceiver,
+                new IntentFilter("com.urbanairship.push.DISMISSED"));
 
         resumeInternalEvents = false;
 
@@ -1306,6 +1317,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         unregisterReceiver(refreshPageDataReceiver);
         unregisterReceiver(processDeeplinkReceiver);
         unregisterReceiver(networkConnectedReceiver);
+        unregisterReceiver(appCMSAirshipReceiver);
 
         if (inAppBillingServiceConn != null) {
             try {
