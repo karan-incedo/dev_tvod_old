@@ -165,7 +165,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
                 true,
                 this.componentViewType,
                 false,
-                useRoundedCorners());
+                useRoundedCorners() ||
+                        component.getSettings().isRoundedCorners());
 
         if ("AC SelectPlan 02".equals(componentViewType)) {
             applyBgColorToChildren(view, selectedColor);
@@ -197,7 +198,8 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
     }
 
     private boolean useRoundedCorners() {
-        return "AC SelectPlan 02".equals(componentViewType);
+        return "AC SelectPlan 02".equals(componentViewType) ||
+                "AC ContinueWatching 01".equals(componentViewType);
     }
 
     private void applyBgColorToChildren(ViewGroup viewGroup, int bgColor) {

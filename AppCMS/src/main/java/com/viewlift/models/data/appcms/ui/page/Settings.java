@@ -41,6 +41,10 @@ public class Settings implements Serializable {
     @Expose
     boolean showPlaybackControls;
 
+    @SerializedName("roundedCorners")
+    @Expose
+    boolean roundedCorners;
+
     public String getTitle() {
         return title;
     }
@@ -107,5 +111,13 @@ public class Settings implements Serializable {
 
     public boolean isStandaloneVideo() {
         return standaloneVideo;
+    }
+
+    public boolean isRoundedCorners() {
+        return roundedCorners;
+    }
+
+    public void setRoundedCorners(boolean roundedCorners) {
+        this.roundedCorners = roundedCorners;
     }
 }

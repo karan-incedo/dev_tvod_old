@@ -44,7 +44,8 @@ public class AppCMSAndroidModuleCall {
     private final File storageDirectory;
 
     private static final String[][] jsonFromAssets = {
-            {"trayXX", "trayXX.json"}
+            {"trayXX", "trayXX.json"},
+            {"continueWatching01", "continueWatching03.json"}
     };
 
     @Inject
@@ -85,7 +86,8 @@ public class AppCMSAndroidModuleCall {
         if (assetManager != null && moduleListMap != null) {
             for (String[] jsonFromAssetsVal : jsonFromAssets) {
                 if (jsonFromAssetsVal != null && jsonFromAssetsVal.length == 2) {
-                    if (!moduleListMap.containsKey(jsonFromAssetsVal[0])) {
+                    // TODO: Uncomment after module is available from AppCMS
+//                    if (!moduleListMap.containsKey(jsonFromAssetsVal[0])) {
                         try {
                             InputStream inputStream = assetManager.open(jsonFromAssetsVal[1]);
                             BufferedReader inputReader = new BufferedReader(new InputStreamReader(inputStream));
@@ -98,7 +100,7 @@ public class AppCMSAndroidModuleCall {
                                     ": " +
                                     e.getMessage());
                         }
-                    }
+//                    }
                 }
             }
         }

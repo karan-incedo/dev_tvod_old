@@ -13,35 +13,39 @@ public class Component implements ModuleWithComponents, Serializable {
 
     @SerializedName("text")
     @Expose
-    String text;
+    String text = "";
 
     @SerializedName("textColor")
     @Expose
-    String textColor;
+    String textColor = "";
 
     @SerializedName("backgroundColor")
     @Expose
-    String backgroundColor;
+    String backgroundColor = "";
 
     @SerializedName("layout")
     @Expose
-    Layout layout;
+    Layout layout = new Layout();
 
     @SerializedName("backgroundSelectedColor")
     @Expose
-    String backgroundSelectedColor;
+    String backgroundSelectedColor = "";
 
     @SerializedName("action")
     @Expose
-    String action;
+    String action = "";
 
     @SerializedName("type")
     @Expose
-    String type;
+    String type = "";
 
     @SerializedName("key")
     @Expose
-    String key;
+    String key = "";
+
+    @SerializedName("settings")
+    @Expose
+    Settings settings = new Settings();
 
     public int getOpacity() {
         return opacity;
@@ -282,6 +286,7 @@ public class Component implements ModuleWithComponents, Serializable {
     }
     @Override
     public void setSettings(Settings settings) {
+        this.settings = settings;
     }
 
     public String getKey() {
@@ -490,7 +495,7 @@ public class Component implements ModuleWithComponents, Serializable {
 
     @Override
     public Settings getSettings() {
-        return null;
+        return settings;
     }
 
     public void setView(String view) {
