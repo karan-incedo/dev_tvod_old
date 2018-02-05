@@ -12,11 +12,16 @@
         <item>@string/carousel_nodule</item>
         <item>AC ContinueWatching 01</item>
         <item>AC Tray 01</item>
+        <item>AC Tray 03</item>
+        <item>@string/standaloneplayer</item>
+        <item>AC Grid 01</item>
     </string-array>
 
     <string-array name="app_cms_detail_module">
-        <item>AC VideoPlayerWithInfo 01</item>
+        <item>AC VideoPlayerWithInfo 02</item>
     </string-array>
+
+    <string name="standaloneplayer">AC StandaloneVideoPlayer 01</string>
 
     <string name="app_cms_ancillary_pages_module">AC RichText 01</string>
     <string name="app_cms_reset_password_module">AC ResetPassword 01</string>
@@ -40,6 +45,8 @@
 
     <string name="video_image_key">video_image_key</string>
 
+    <string name="buffering_text">Buffering...</string>
+
 
     <plurals name="mins_abbreviation">
         <item quantity="one">MIN</item>
@@ -52,7 +59,12 @@
     <string name="no_data_in_history_text">You haven\'t watched anything yet.</string>
     <string name="title_activity_app_cms_sub_nav_item">AppCmsSubNavItemActivity</string>
 
-     <string name="blank_email_error_msg">Please enter email to continue.</string>
+    <string name="blank_email_error_msg">Please enter email to continue.</string>
     <string name="blank_password_error_msg">Please enter password to continue.</string>
     <string name="back">BACK</string>
+
+    <string name="watch_live_text">WATCH LIVE GAMES - <u>START FREE TRIAL NOW</u> </string>
+
+    <string name="autoplay_off_msg">Turn ON Autoplay from Settings to play next video.</string>
+    <string name="unsubscribe_text">Want more access to your DC sports teams?\nBecome a member now so you don’t miss another play!</string>
 </resources>

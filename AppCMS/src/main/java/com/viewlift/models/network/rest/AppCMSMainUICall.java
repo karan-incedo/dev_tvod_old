@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.R;
+import com.viewlift.Utils;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 
 import java.io.BufferedInputStream;
@@ -63,6 +64,7 @@ public class AppCMSMainUICall {
     @WorkerThread
     public AppCMSMain call(Context context, String siteId, int tryCount, boolean bustCache) {
         Date now = new Date();
+
         StringBuilder appCMSMainUrlSb = new StringBuilder(context.getString(R.string.app_cms_main_url,
                 context.getString(R.string.app_cms_baseurl),
                 siteId));
@@ -70,10 +72,12 @@ public class AppCMSMainUICall {
             appCMSMainUrlSb.append("?x=");
             appCMSMainUrlSb.append(now.getTime());
         }
+        final String appCMSMainUrl = appCMSMainUrlSb.toString();
+
         AppCMSMain main = null;
         AppCMSMain mainInStorage = null;
         try {
-            //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
+            Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
             final String hostName = new URL(appCMSMainUrlSb.toString()).getHost();
             ExecutorService executor = Executors.newCachedThreadPool();

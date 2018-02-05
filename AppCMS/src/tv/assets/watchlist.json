@@ -1,56 +1,64 @@
 {
   "id": "596730f6-c016-4cb8-b73e-96edda509f56",
   "settings": {},
-  "view": "AC Watchlist 01",
-  "type": "AC Watchlist 01",
+  "view": "AC Watchlist 02",
+  "type": "AC Watchlist 02",
   "layout": {
     "ftv": {
       "yAxis": 0,
       "xAxis": 0,
       "width": 1920,
-      "height": 940
+      "height": 1080
     }
   },
   "components": [
     {
       "layout": {
         "ftv": {
-          "yAxis": 28,
-          "xAxis": 96,
-          "width": 255,
-          "fontSize": 12,
-          "height": 60
+          "yAxis": 35,
+          "xAxis": 1585,
+          "width": 270,
+          "fontSize": 13,
+          "height": 70
         }
       },
-      "borderColor": "66ffffff",
-      "fontFamily": "OpenSans",
+      "borderColor": "ffffff",
+      "fontFamily": "Lato",
       "borderWidth": 4,
       "action": "clearWatchlist",
       "text": "CLEAR WATCHLIST",
       "type": "button",
       "textColor": "ffffff",
-      "fontWeight": "Semibold",
+      "fontWeight": "Bold",
       "key": "removeAll"
     },
-    {
+    /*{
       "layout": {
         "ftv": {
-          "yAxis": 111,
-          "leftMargin": 95,
-          "rightMargin": 4.9,
-          "fontSize": 20,
-          "height": 55
+          "width": 1920,
+          "height": 10
         }
       },
-      "fontFamily": "OpenSans",
+      "backgroundColor": "#cf0a2c",
+      "type": "label"
+    }, */{
+      "layout": {
+        "ftv": {
+          "yAxis": 37,
+          "fontSize": 24,
+          "height": 57
+        }
+      },
+      "fontFamily": "Lato",
       "numberOfLines": 1,
-      "textAlignment": "left",
+      "textAlignment": "center_horizontal",
       "letterSpacing": 4.5,
-      "text": "WATCHLIST",
+      "text": "Watchlist",
       "type": "label",
-      "fontWeight": "Semibold",
+      "fontWeight": "Regular",
+      "textColor": "ffffff",
       "key": "pageTitle"
-    },
+    },/*
     {
       "layout": {
         "ftv": {
@@ -62,7 +70,7 @@
       },
       "backgroundColor": "#808080",
       "type": "separatorView"
-    },
+    },*/
     {
       "layout": {
         "ftv": {
@@ -70,9 +78,9 @@
           "leftMargin": 4.9,
           "yAxis": 183,
           "rightMargin": 2.67,
-          "itemHeight": 118,
-          "itemWidth": 1730,
-          "height": 757
+          "itemHeight": 275,
+          "itemWidth": 1676,
+          "height": 800
         }
       },
       "components": [
@@ -82,14 +90,14 @@
               "leftMargin": 95,
               "yAxis": 0,
               "xAxis": 0,
-              "width": 210,
-              "height": 118
+              "width": 380,
+              "height": 214
             }
           },
           "type": "image",
           "key": "thumbnailImage"
         },
-        {
+        /*{
           "layout": {
             "ftv": {
               "yAxis": 35,
@@ -100,39 +108,84 @@
           },
           "type": "button",
           "key": "playImage"
-        },
+        },*/
         {
           "layout": {
             "ftv": {
-              "leftMargin": 325,
-              "fontSize": 12.5
+              "leftMargin": 550,
+              "fontSize": 16,
+              "width" : 850
             }
           },
-          "fontFamily": "OpenSans",
+          "numberOfLines": 1,
+          "fontFamily": "Lato",
           "textAlignment": "left",
           "type": "label",
           "textColor": "#ffffff",
-          "fontWeight": "SemiBold",
+          "fontWeight": "Heavy",
           "key": "titleLabel"
         },
         {
           "layout": {
             "ftv": {
-              "topMargin": 35,
-              "leftMargin": 325,
-              "width": 730,
-              "fontSize": 11.5,
-              "height": 74
+              "topMargin": 45,
+              "leftMargin": 550,
+              "fontSize": 11,
+              "width": 718
             }
           },
-          "fontFamily": "OpenSans",
-          "numberOfLines": 2,
+          "fontFamily": "Lato",
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Bold",
+          "key": "subtitleLabel"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "topMargin": 80,
+              "leftMargin": 550,
+              "width": 1246,
+              "fontSize": 14
+            }
+          },
+          "fontFamily": "Lato",
+          "numberOfLines": 3,
           "textAlignment": "left",
           "lineHeight": 36,
+          "fontWeight": "Regular",
           "type": "label",
           "textColor": "#ffffff",
           "key": "descriptionLabel"
         },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 1435,
+              "topMargin" : 15,
+              "width": 50,
+              "height": 50
+            }
+          },
+          "type": "image",
+          "key": "teamIcon"
+        }/*,
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 1585,
+              "topMargin" : 26,
+              "width": 215,
+              "height": 45
+            }
+          },
+          "borderColor" : "c70018",
+          "fillColor" : "cb0022",
+          "type": "starRating",
+          "key": "starRating"
+        }*/
+        /*,
         {
           "layout": {
             "ftv": {
@@ -152,7 +205,7 @@
           "textColor": "ffffff",
           "fontWeight": "Semibold",
           "key": "deleteItemButton"
-        }
+        }*/
       ],
       "itemClickAction": "lectureDetailPage",
       "type": "tableView",

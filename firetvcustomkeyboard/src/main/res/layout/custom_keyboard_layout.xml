@@ -219,7 +219,7 @@
             <ImageButton
                 android:id="@+id/btn_uc_key_backspace"
                 android:layout_width="28dp"
-                android:layout_height="18dp"
+                android:layout_height="16dp"
                 android:background="@drawable/search_backspace_selector"
                 android:contentDescription="@string/backspace"
                 android:nextFocusDown="@id/tv_select_uc"

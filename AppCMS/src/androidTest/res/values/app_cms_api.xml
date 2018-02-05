@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
+
+    <string name="app_cms_api_baseurl">https://appcmsprod.viewlift.com/</string>
+    <string name="app_cms_main_url">%1$s%2$s/main.json?x=%3$d</string>
     <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
 
     <!-- AppCMS JSON data input keys -->

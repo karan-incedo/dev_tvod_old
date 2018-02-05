@@ -63,6 +63,10 @@ public abstract class BaseView extends FrameLayout {
         return 0.0f;
     }
 
+    public static int dpToPx(int dp, Context context) {
+        return context.getResources().getDimensionPixelSize(dp);
+    }
+
     public static boolean isTablet(Context context) {
         if (context != null) {
             int largeScreenLayout =
@@ -780,6 +784,14 @@ public abstract class BaseView extends FrameLayout {
             if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_CENTER_KEY) {
                 ((TextView) view).setGravity(Gravity.CENTER);
             }
+            if (jsonValueKeyMap.get(childComponent.getTextAlignment()) == AppCMSUIKeyType.PAGE_TEXTALIGNMENT_RIGHT_KEY) {
+                ((TextView) view).setGravity(Gravity.RIGHT);
+            }
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY &&
+                    view instanceof Spinner) {
+                viewHeight = LayoutParams.WRAP_CONTENT;
+                viewWidth = LayoutParams.WRAP_CONTENT;
+            }
 
             AppCMSUIKeyType componentKey = jsonValueKeyMap.get(childComponent.getKey());
             if (componentKey == null) {
@@ -946,7 +958,8 @@ public abstract class BaseView extends FrameLayout {
         }
 
         if (componentType == AppCMSUIKeyType.PAGE_COLLECTIONGRID_KEY) {
-            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_KEY) {
+            if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY||
+                    jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
                 layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
                 layoutParams.setMargins(0, tm, 0, bm);

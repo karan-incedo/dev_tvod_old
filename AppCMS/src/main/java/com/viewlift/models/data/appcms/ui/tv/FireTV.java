@@ -26,6 +26,16 @@ public class FireTV implements Serializable {
 
     private String itemHeight;
 
+    public String getOrientation() {
+        return orientation;
+    }
+
+    public void setOrientation(String orientation) {
+        this.orientation = orientation;
+    }
+
+    private String orientation;
+
     public Float getFontSizeKey() {
         return fontSizeKey;
     }

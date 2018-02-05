@@ -102,7 +102,7 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                         ((TextView) holder.componentView.getChild(i)).setText("");
                     }
                 }
-                bindView(holder.componentView, adapterData.get(position));
+                bindView(holder.componentView, adapterData.get(position), position);
             }
         }
     }
@@ -170,29 +170,16 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
         return null;
     }
 
-    @Override
-    public void resetData(RecyclerView listView) {
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public void setClickable(boolean clickable) {
-        this.isClickable = clickable;
-    }
-
     private void bindView(CollectionGridItemView itemView,
-                          final ContentDatum data) {
+                          final ContentDatum data,
+                          int position) {
         if (onClickHandler == null) {
                 onClickHandler = new CollectionGridItemView.OnClickHandler() {
                     @Override
                     public void click(CollectionGridItemView collectionGridItemView,
                                       Component childComponent,
-                                      ContentDatum data) {
+                                      ContentDatum data,
+                                      int position) {
                         if (isClickable) {
                             if (data.getGist() != null) {
                                 //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
@@ -374,7 +361,72 @@ public class AppCMSTraySeasonItemAdapter extends RecyclerView.Adapter<AppCMSTray
                     onClickHandler,
                     componentViewType,
                     Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
-                    appCMSPresenter);
+                    appCMSPresenter,
+                    position);
+        }
+    }
+
+    @Override
+    public void resetData(RecyclerView listView) {
+        //
+    }
+
+    @Override
+    public void updateData(RecyclerView listView, List<ContentDatum> contentData) {
+        //
+    }
+
+    @Override
+    public void setClickable(boolean clickable) {
+
+    }
+
+    private void click(ContentDatum data) {
+        //Log.d(TAG, "Clicked on item: " + data.getGist().getTitle());
+
+        String permalink = data.getGist().getPermalink();
+        String action = defaultAction;
+        String title = data.getGist().getTitle();
+        String hlsUrl = getHlsUrl(data);
+
+        String[] extraData = new String[3];
+        extraData[0] = permalink;
+        extraData[1] = hlsUrl;
+        extraData[2] = data.getGist().getId();
+
+        List<String> relatedVideos = null;
+        if (data.getContentDetails() != null &&
+                data.getContentDetails().getRelatedVideoIds() != null) {
+            relatedVideos = data.getContentDetails().getRelatedVideoIds();
+        }
+        //Log.d(TAG, "Launching " + permalink + ": " + action);
+        if (!appCMSPresenter.launchButtonSelectedAction(permalink,
+                action,
+                title,
+                extraData,
+                data,
+                false,
+                -1,
+                relatedVideos)) {
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action +
+//                    " hlsUrl: " +
+//                    hlsUrl);
+        }
+    }
+
+    private void play(ContentDatum data, String action) {
+        if (!appCMSPresenter.launchVideoPlayer(data,
+                -1,
+                null,
+                data.getGist().getWatchedTime(),
+                null)) {
+            //Log.e(TAG, "Could not launch action: " +
+//                    " action: " +
+//                    action);
         }
     }
 

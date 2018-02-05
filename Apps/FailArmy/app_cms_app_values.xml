@@ -28,8 +28,6 @@
     <!-- Default video resolution -->
     <string name="default_video_resolution">360p</string>
 
-    <bool name="display_chromecast_overlay">false</bool>
-
     <string name="search_films">Search videos</string>
 
     <string name="app_cms_episodic_key_type">SERIES</string>

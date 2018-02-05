@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.viewlift.R;
+
 import com.viewlift.views.customviews.ModuleView;
 
 import java.util.ArrayList;
@@ -17,10 +19,13 @@ import java.util.List;
 
 public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAdapter.PageViewHolder> {
     private List<ModuleView> childViews;
+    private static int TYPE_PLAYER = 0;
+    private static int TYPE_STANZA = 1;
+
 
     public AppCMSPageViewAdapter() {
         childViews = new ArrayList<>();
-        setHasStableIds(false);
+        setHasStableIds(true);
     }
 
     public void addView(ModuleView view) {
@@ -49,6 +54,27 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     }
 
     @Override
+    public int getItemViewType(int position) {
+
+        if(isPlayerView(position))
+            return position;
+        else if(isStanzaView(position))
+            return TYPE_STANZA;
+        else
+            return position;
+    }
+
+    private boolean isPlayerView(int position){
+        if(((ModuleView)childViews.get(position)).getModule().getType().equalsIgnoreCase("AC StandaloneVideoPlayer 01"))
+            return true;
+        return false;
+    }
+
+    private boolean isStanzaView(int position){
+        return position == TYPE_STANZA;
+    }
+
+    @Override
     public PageViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         FrameLayout viewGroup = new FrameLayout(parent.getContext());
         FrameLayout.LayoutParams viewGroupLayoutParams =
@@ -61,10 +87,11 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public void onBindViewHolder(PageViewHolder holder, int position) {
         try {
-            holder.parent.removeAllViews();
+            if(!isPlayerView(position))
+                holder.parent.removeAllViews();
             holder.parent.addView(childViews.get(position));
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

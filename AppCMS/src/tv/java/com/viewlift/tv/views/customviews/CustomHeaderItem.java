@@ -16,10 +16,30 @@ public class CustomHeaderItem extends HeaderItem {
     private String fontFamily;
 
     private boolean mIsCarousal;
+
+    public boolean ismIsLivePlayer() {
+        return mIsLivePlayer;
+    }
+
+    public void setmIsLivePlayer(boolean mIsLivePlayer) {
+        this.mIsLivePlayer = mIsLivePlayer;
+    }
+
+    private boolean mIsLivePlayer;
     private int mListRowLeftMargin;
     private int mListRowRightMargin;
 
     private int mListRowHeight;
+
+    public int getmListRowWidth() {
+        return mListRowWidth;
+    }
+
+    public void setmListRowWidth(int mListRowWidth) {
+        this.mListRowWidth = mListRowWidth;
+    }
+
+    private int mListRowWidth;
     private String mBackGroundColor;
 
 

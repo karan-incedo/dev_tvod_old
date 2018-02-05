@@ -799,7 +799,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
 
     @Override
     public void setClickable(boolean clickable) {
-        
+
     }
 
     private void click(ContentDatum data) {

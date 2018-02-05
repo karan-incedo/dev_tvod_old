@@ -63,6 +63,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
     private long videoRunTime;
     private FrameLayout appCMSPlayVideoPageContainer;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         setFullScreenFocus();
@@ -186,7 +187,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null))) &&
+                                    binder.getContentData().getGist().getDownloadStatus() == null))) &&
                             (activeNetwork == null ||
                                     !activeNetwork.isConnectedOrConnecting())) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
@@ -201,7 +202,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                             ((binder.getContentData().getGist().getDownloadStatus() != null &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_COMPLETED &&
                                     binder.getContentData().getGist().getDownloadStatus() != DownloadStatus.STATUS_SUCCESSFUL) ||
-                            binder.getContentData().getGist().getDownloadStatus() == null))) {
+                                    binder.getContentData().getGist().getDownloadStatus() == null))) {
                         appCMSPresenter.showDialog(AppCMSPresenter.DialogType.NETWORK,
                                 appCMSPresenter.getNetworkConnectedVideoPlayerErrorMsg(),
                                 false, () -> closePlayer(),
@@ -227,7 +228,11 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         String videoUrl = "";
         String closedCaptionUrl = null;
         title = gist.getTitle();
-        if (binder.isOffline()
+        if (gist != null && gist.getKisweEventId() != null &&
+                gist.getKisweEventId().trim().length() > 0) {
+            appCMSPresenter.launchKiswePlayer(gist.getKisweEventId());
+            finish();
+        } else if (binder.isOffline()
                 && extra != null
                 && extra.length >= 2
                 && extra[1] != null
@@ -246,6 +251,8 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
                 binder.getContentData().getStreamingInfo() != null &&
                 binder.getContentData().getStreamingInfo().getVideoAssets() != null) {
             VideoAssets videoAssets = binder.getContentData().getStreamingInfo().getVideoAssets();
+
+
             if (useHls) {
                 videoUrl = videoAssets.getHls();
             }
@@ -324,7 +331,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
 
         String finalClosedCaptionUrl = closedCaptionUrl;
         boolean finalFreeContent = freeContent;
-
         try {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -352,7 +358,6 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
             fragmentTransaction.addToBackStack(getString(R.string.video_fragment_tag_key));
             fragmentTransaction.commit();
         } catch (Exception e) {
-
         }
     }
 
@@ -506,6 +511,7 @@ public class AppCMSPlayVideoActivity extends AppCompatActivity implements
         }
         return null;
     }
+
 
 
 }

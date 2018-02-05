@@ -9,13 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.ui.page.AppCMSPageUI;
 import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.ModuleList;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.adapters.AppCMSBaseAdapter;
+import com.viewlift.views.adapters.AppCMSCarouselItemAdapter;
 import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 
 import java.util.ArrayList;
@@ -40,6 +43,10 @@ public class PageView extends BaseView {
     private SwipeRefreshLayout mainView;
     private AppCMSPageViewAdapter appCMSPageViewAdapter;
 
+    private ViewDimensions fullScreenViewOriginalDimensions;
+
+    private boolean shouldRefresh;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -50,7 +57,41 @@ public class PageView extends BaseView {
         this.moduleViewMap = new HashMap<>();
         this.appCMSPresenter = appCMSPresenter;
         this.appCMSPageViewAdapter = new AppCMSPageViewAdapter();
+        this.shouldRefresh = true;
         init();
+    }
+
+    public void openViewInFullScreen(View view, ViewGroup viewParent) {
+        shouldRefresh = false;
+        if (fullScreenViewOriginalDimensions == null) {
+            fullScreenViewOriginalDimensions = new ViewDimensions();
+        }
+        try {
+            fullScreenViewOriginalDimensions.width = view.getLayoutParams().width;
+            fullScreenViewOriginalDimensions.height = view.getLayoutParams().height;
+        } catch (Exception e) {
+            //
+        }
+
+        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+        view.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        childrenContainer.setVisibility(GONE);
+        viewParent.removeView(view);
+        addView(view);
+    }
+
+    public void closeViewFromFullScreen(View view, ViewGroup viewParent) {
+        shouldRefresh = true;
+        if (fullScreenViewOriginalDimensions != null) {
+            removeView(view);
+
+            view.getLayoutParams().width = fullScreenViewOriginalDimensions.width;
+            view.getLayoutParams().height = fullScreenViewOriginalDimensions.height;
+
+            viewParent.addView(view);
+            childrenContainer.setVisibility(VISIBLE);
+        }
     }
 
     @Override
@@ -127,6 +168,7 @@ public class PageView extends BaseView {
     @Override
     protected ViewGroup createChildrenContainer() {
         childrenContainer = new RecyclerView(getContext());
+        childrenContainer.setId(R.id.home_nested_scroll_view);
         FrameLayout.LayoutParams nestedScrollViewLayoutParams =
                 new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                         LayoutParams.MATCH_PARENT);
@@ -169,7 +211,8 @@ public class PageView extends BaseView {
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
             appCMSPresenter.clearPageAPIData(() -> {
-                        mainView.setRefreshing(false);
+                appCMSPresenter.setMiniPLayerVisibility(true);
+                mainView.setRefreshing(false);
             },
                     true);
         });
@@ -221,7 +264,6 @@ public class PageView extends BaseView {
     public AppCMSPageUI getAppCMSPageUI() {
         return appCMSPageUI;
     }
-
     public void removeAllAddOnViews() {
         int index = 0;
         boolean removedChild = false;
@@ -235,17 +277,20 @@ public class PageView extends BaseView {
             index++;
         }
     }
-
     public void notifyAdapterDataSetChanged() {
         if (appCMSPageViewAdapter != null) {
-            appCMSPageViewAdapter.notifyDataSetChanged();
+            appCMSPageViewAdapter.notifyItemRangeChanged(1,appCMSPageViewAdapter.getItemCount());
         }
     }
-
     public View findChildViewById(int id) {
         if (appCMSPageViewAdapter != null) {
             return appCMSPageViewAdapter.findChildViewById(id);
         }
         return null;
+    }
+
+    private static class ViewDimensions {
+        int width;
+        int height;
     }
 }

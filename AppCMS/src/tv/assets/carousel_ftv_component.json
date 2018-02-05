@@ -9,10 +9,10 @@
   "type": "AC Carousel 01",
   "layout": {
     "ftv": {
-      "height": 628,
+      "height": 560,
       "yAxis": 0,
       "xAxis": 0,
-      "padding":30,
+      "padding":250,
       "backgroundColor": "#172e3c"
     }
   },
@@ -29,9 +29,9 @@
         {
           "layout": {
             "ftv": {
-              "height": 569,
+              "height": 481,
               "padding": 6,
-              "width": 1600
+              "width": 855
             }
           },
           "type": "image",

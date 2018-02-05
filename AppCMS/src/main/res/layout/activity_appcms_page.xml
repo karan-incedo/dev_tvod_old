@@ -66,6 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:background="#00000000"
+                    android:layout_centerVertical="true"
                     android:padding="5dp"
                     android:src="@drawable/profile"
                     android:visibility="gone" />
@@ -81,6 +82,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
                     android:orientation="horizontal">
                     <ImageButton
                         android:id="@+id/app_cms_search_button"
@@ -127,6 +129,14 @@
             </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
+        <TextView
+            android:id="@+id/app_cms_start_free_trial_tool"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:visibility="gone"
+            />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -134,10 +144,11 @@
         android:id="@+id/app_cms_tab_nav_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_navbar_height"
-        android:layout_marginTop="@dimen/app_cms_toolbar_margin_top"
         android:layout_alignParentBottom="true"
         android:background="@android:color/transparent"
-        android:orientation="horizontal">
+        android:gravity="center"
+        android:orientation="vertical">
+
 
     </LinearLayout>
 

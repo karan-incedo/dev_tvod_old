@@ -7,17 +7,41 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="com.android.vending.BILLING" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+
+
+    <!-- Allows unlocking your device and activating its screen so UI tests can succeed -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <!-- Allows for storing and retrieving screenshots -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Allows changing locales -->
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
+
+
+    <!-- Allows unlocking your device and activating its screen so UI tests can succeed -->
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <!-- Allows for storing and retrieving screenshots -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- Allows changing locales -->
+    <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
 
     <application
         android:icon="@mipmap/app_logo"
         android:label="@string/default_app_name"
         android:roundIcon="@mipmap/app_logo"
-        android:theme="@style/AppTheme">
-
+        android:theme="@style/AppTheme"
+        tools:replace="android:theme,android:label">
+        <meta-data
+            android:name="com.urbanairship.autopilot"
+            android:value="com.viewlift.mobile.pushnotif.AppCMSAutoPilot" />
         <receiver
             android:name="com.appsflyer.MultipleInstallBroadcastReceiver"
             android:exported="true">
@@ -53,9 +77,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="http"
                     android:host="@string/app_cms_app_host_name"
-                    android:pathPrefix="/films/title" />
+                    android:pathPrefix="/videos"
+                    android:scheme="http" />
                 <data
                     android:scheme="https"
                     android:host="@string/app_cms_app_host_name_suffix"
@@ -91,6 +115,10 @@
             android:name="com.viewlift.casting.roku.RokuCastingOverlay"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTask"/>
+
+        <meta-data
+            android:name="com.kiswe.apiKey"
+            android:value="@string/KISWE_PLAYER_API_KEY" />
     </application>
 
 </manifest>
