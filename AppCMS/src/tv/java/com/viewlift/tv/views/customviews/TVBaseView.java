@@ -69,7 +69,6 @@ public abstract class TVBaseView extends FrameLayout {
         stringBuilder.append(" | ");
         stringBuilder.append(data.getGist().getPrimaryCategory().getTitle().toUpperCase());
         ((TextView) view).setText(stringBuilder);
-        view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
     }
 
@@ -122,7 +121,6 @@ public abstract class TVBaseView extends FrameLayout {
         }
 
         ((TextView) view).setText(infoText.toString());
-         view.setAlpha(0.6f);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
 
     }

@@ -229,7 +229,7 @@
               "width": 325,
               "height": 250,
               "fontSize": 18,
-              "itemSpacing" : 50
+              "itemSpacing" : 40
             }
           },
           "trayClickAction": "watchVideo",

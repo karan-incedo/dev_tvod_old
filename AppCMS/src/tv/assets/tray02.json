@@ -1,0 +1,94 @@
+{
+  "id": "c39a18e9-d097-4822-8c4a-eba2071d29b3",
+  "settings": {
+    "loop": false,
+    "columns": {
+      "tablet": 4,
+      "desktop": 6,
+      "mobile": 3,
+      "ott": 6
+    },
+    "thumbnailType": "landscape"
+  },
+  "view": "AC Tray 01",
+  "type": "AC Tray 01",
+  "blockName": "tray02",
+  "layout": {
+    "ftv": {
+      "padding": 0,
+      "leftMargin": 0,
+      "rightMargin": 0,
+      "height": 260
+    }
+  },
+  "components": [
+    {
+      "layout": {
+        "ftv": {
+          "fontSize": 14
+        }
+      },
+      "fontFamily": "OpenSans",
+      "textAlignment": "left",
+      "textCase": "caps",
+      "type": "label",
+      "textColor": "#008EE0",
+      "fontWeight": "Semibold",
+      "key": "trayTitle"
+    },
+    {
+      "layout": {
+        "ftv": {
+          "width": 350,
+          "height": 260
+        }
+      },
+      "trayClickAction": "lectureDetailPage",
+      "components": [
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "topMargin": 0,
+              "width": 350,
+              "height": 197
+            }
+          },
+          "type": "image",
+          "key": "thumbnailImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "padding": 6,
+              "topMargin": 0,
+              "width": 350,
+              "height": 197
+            }
+          },
+          "type": "image",
+          "key": "badgeImage"
+        },
+        {
+          "layout": {
+            "ftv": {
+              "leftMargin": 0,
+              "topMargin": 200,
+              "rightMargin": 0,
+              "fontSize": 11,
+              "height": 40
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "left",
+          "type": "label",
+          "textColor": "#ffffff",
+          "fontWeight": "Semibold",
+          "key": "thumbnailTitle"
+        }
+      ],
+      "type": "collectionGrid",
+      "key": "collectionGrid"
+    }
+  ]
+}
