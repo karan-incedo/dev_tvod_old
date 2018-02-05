@@ -212,14 +212,14 @@
               "bottomMargin": 9
             },
             "tabletLandscape": {
-              "gridHeight": 92,
+              "gridHeight": 90,
               "leftMargin": 0,
               "topMargin": 6.5,
               "rightMargin": 0,
               "bottomMargin": 7.81
             },
             "tabletPortrait": {
-              "gridHeight": 92,
+              "gridHeight": 90,
               "leftMargin": 0,
               "topMargin": 6,
               "rightMargin": 0,
@@ -378,19 +378,19 @@
               "layout": {
                 "mobile": {
                   "leftMargin": 0,
-                  "yAxis": 75,
+                  "yAxis": 90,
                   "rightMargin": 0,
                   "height": 1
                 },
                 "tabletLandscape": {
                   "leftMargin": 0,
-                  "yAxis": 78,
+                  "yAxis": 90,
                   "rightMargin": 0,
                   "height": 1
                 },
                 "tabletPortrait": {
                   "leftMargin": 0,
-                  "yAxis": 75,
+                  "yAxis": 90,
                   "rightMargin": 0,
                   "height": 1
                 }

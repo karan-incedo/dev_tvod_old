@@ -194,6 +194,7 @@ public final class LocalPlayback implements Playback {
                 null,
                 null,
                 null);
+        audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
     }
 
     @Override
@@ -314,6 +315,9 @@ public final class LocalPlayback implements Playback {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
+        if (audioData != null) {
+            audioData.getGist().setAudioPlaying(false);
+        }
         audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
         String mediaId = item.getDescription().getMediaId();
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
@@ -321,9 +325,10 @@ public final class LocalPlayback implements Playback {
             mCurrentMediaId = mediaId;
             AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
             audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+            audioData.getGist().setAudioPlaying(true);
         }
 
-        //if media has changed than load new audio url
+        //if media has changed then load new audio url
         if (mediaHasChanged || mExoPlayer == null || currentPosition > 0) {
 
             mListener.onMetadataChanged(item);
@@ -365,7 +370,7 @@ public final class LocalPlayback implements Playback {
             if (mCallback != null) {
                 mCallback.onPlaybackStatusChanged(getState());
             }
-            setFirebaseProgressHandling();
+
         }
 
         configurePlayerState();
@@ -585,7 +590,6 @@ public final class LocalPlayback implements Playback {
                                 beaconBuffer.start();
                             }
                         }
-
                     }
                     break;
                 case ExoPlayer.STATE_READY:
@@ -640,6 +644,7 @@ public final class LocalPlayback implements Playback {
                     // The media player finished playing the current song.
                     if (mCallback != null) {
                         mCallback.onCompletion();
+                        audioData.getGist().setAudioPlaying(false);
                     }
                     break;
                 default:
@@ -769,119 +774,5 @@ public final class LocalPlayback implements Playback {
         audioData.getAudioGist().setCastingConnected(false);
         audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
         beaconBuffer.setContentDatum(audioData);
-    }
-
-
-    public void setFirebaseProgressHandling() {
-        isStreamStart = false;
-        isStream25 = false;
-        isStream50 = false;
-        isStream75 = false;
-        isStream100 = false;
-
-        mProgressHandler = new Handler();
-        mProgressRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (mProgressHandler != null && mProgressRunnable != null) {
-
-
-                    if (mProgressHandler != null && mProgressRunnable != null) {
-                        mProgressHandler.removeCallbacks(this);
-                        long totalAudioDurationMod4 = mTotalAudioDuration / (4);
-                        if (totalAudioDurationMod4 > 0 && mExoPlayer != null) {
-                            long mPercentage = (long)
-                                    (((float) (mExoPlayer.getCurrentPosition() / 1000) / mTotalAudioDuration) * 100);
-
-                            if (appCMSPresenter.getmFireBaseAnalytics() != null) {
-                                sendProgressAnalyticEvents(mPercentage);
-                            }
-                        }
-                    }
-                    mProgressHandler.postDelayed(this, 1000);
-                }
-            }
-        };
-    }
-
-    public void sendProgressAnalyticEvents(long progressPercent) {
-        String title = "";
-        if (audioData != null && audioData.getAudioGist() != null && audioData.getAudioGist().getTitle() != null && appCMSPresenter != null) {
-            title = audioData.getAudioGist().getTitle();
-        }
-        Bundle bundle = new Bundle();
-        bundle.putString(FIREBASE_AUDIO_ID_KEY, getCurrentId());
-        bundle.putString(FIREBASE_AUDIO_NAME_KEY, title);
-        bundle.putString(FIREBASE_PLAYER_NAME_KEY, FIREBASE_PLAYER_NATIVE);
-        bundle.putString(FIREBASE_MEDIA_TYPE_KEY, FIREBASE_MEDIA_TYPE_VIDEO);
-        //bundle.putString(FIREBASE_SERIES_ID_KEY, "");
-        //bundle.putString(FIREBASE_SERIES_NAME_KEY, "");
-
-        System.out.println("Audio Firebase-" + getCurrentId());
-        //Logs an app event.
-        if (progressPercent == 0 && !isStreamStart) {
-            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
-            isStreamStart = true;
-        }
-
-        if (!isStreamStart) {
-            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
-            isStreamStart = true;
-        }
-
-        if (progressPercent >= 25 && progressPercent < 50 && !isStream25) {
-            if (!isStreamStart) {
-                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
-                isStreamStart = true;
-            }
-
-            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
-            isStream25 = true;
-        }
-
-        if (progressPercent >= 50 && progressPercent < 75 && !isStream50) {
-            if (!isStream25) {
-                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
-                isStream25 = true;
-            }
-
-            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
-            isStream50 = true;
-        }
-
-        if (progressPercent >= 75 && progressPercent <= 100 && !isStream75) {
-            if (!isStream25) {
-                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
-                isStream25 = true;
-            }
-
-            if (!isStream50) {
-                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
-                isStream50 = true;
-            }
-
-            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
-            isStream75 = true;
-        }
-
-        if (progressPercent >= 98 && progressPercent <= 100 && !isStream100) {
-            if (!isStream25) {
-                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
-                isStream25 = true;
-            }
-
-            if (!isStream50) {
-                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
-                isStream50 = true;
-            }
-
-            if (!isStream75) {
-                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
-                isStream75 = true;
-            }
-
-            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_100, bundle);
-            isStream100 = true;
-        }
     }
 }
