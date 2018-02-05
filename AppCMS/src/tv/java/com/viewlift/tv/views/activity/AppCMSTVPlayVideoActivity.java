@@ -104,12 +104,14 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
                     if (id != null) {
                         appCMSPresenter.refreshVideoData(id,
                                 updatedContentDatum -> {
-                                    try {
-                                        binder.setContentData(updatedContentDatum);
-                                    } catch (Exception e) {
-                                        //
+                                    if (!AppCMSTVPlayVideoActivity.this.isFinishing()) {
+                                        try {
+                                            binder.setContentData(updatedContentDatum);
+                                        } catch (Exception e) {
+                                            //
+                                        }
+                                        launchVideoPlayer(updatedContentDatum.getGist());
                                     }
-                                    launchVideoPlayer(updatedContentDatum.getGist());
                                 });
                     }
                 } else {
