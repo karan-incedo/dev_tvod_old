@@ -157,11 +157,13 @@ public class AppCmsListRowPresenter extends ListRowPresenter {
                 horizontalGrLayoutParams.setMargins(paddingLeft, paddingTop, 0, 0);
                 horizontalGridView.setLayoutParams(horizontalGrLayoutParams);
                 if (customHeaderItem.getItemSpacing() != null) {
-                    int spacing = Integer.parseInt(customHeaderItem.getItemSpacing());
-                    horizontalGridView.setItemSpacing(spacing);
-                }
-                //horizontalGridView.setItemSpacing(horizontalSpacing);
+                    try {
+                        horizontalSpacing = Integer.parseInt(customHeaderItem.getItemSpacing());
+                    } catch (NumberFormatException e) {
 
+                    }
+                }
+                horizontalGridView.setItemSpacing(horizontalSpacing);
                 headerTitleContainerLayoutParams.setMargins(paddingLeft, 0, 0, 0);
                 headerTitleContainer.setLayoutParams(headerTitleContainerLayoutParams);
 
