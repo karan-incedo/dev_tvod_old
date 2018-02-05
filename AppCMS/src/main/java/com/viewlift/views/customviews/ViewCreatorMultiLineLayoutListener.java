@@ -63,9 +63,7 @@ public class ViewCreatorMultiLineLayoutListener implements ViewTreeObserver.OnGl
                     0,
                     textView.getText().length(),
                     bounds);
-            if (bounds.height() < linesCompletelyVisible * textView.getLineHeight()
-                    && appCMSPresenter.getPlatformType()
-                    .equals(AppCMSPresenter.PlatformType.ANDROID)) {
+            if (bounds.height() < linesCompletelyVisible * textView.getLineHeight()) {
                 linesCompletelyVisible--;
             }
             if (linesCompletelyVisible < textView.getLineCount() &&
