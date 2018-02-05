@@ -43,11 +43,6 @@ public class NavBarItemView extends LinearLayout {
     private AppCMSPresenter appCMSPresenter;
     private int weight;
 
-    public NavBarItemView(Context context) {
-        super(context);
-        init();
-    }
-
     public NavBarItemView(Context context, ModuleList navigationItem, AppCMSPresenter appCMSPresenter, int weight) {
         super(context);
         this.navTabBar = navigationItem;
@@ -138,7 +133,7 @@ public class NavBarItemView extends LinearLayout {
                     LinearLayout.LayoutParams navImageLayoutParams =
                             new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.nav_image_width, getContext()), BaseView.dpToPx(R.dimen.nav_image_height, getContext()));
                     navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                    // navImage.setLayoutParams(navImageLayoutParams);
+                    navImage.setLayoutParams(navImageLayoutParams);
                     addView(navImage);
 
                     break;
