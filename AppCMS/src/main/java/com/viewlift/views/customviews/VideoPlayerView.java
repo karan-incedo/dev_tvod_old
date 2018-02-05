@@ -173,7 +173,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         } catch (IllegalStateException e) {
             //Log.e(TAG, "Unsupported video format for URI: " + videoUri.toString());
         }
-        if( appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID){
+        if(appCMSPresenter != null &&  appCMSPresenter.getPlatformType() == AppCMSPresenter.PlatformType.ANDROID){
             if (closedCaptionUri == null) {
                 if (ccToggleButton != null) {
                     ccToggleButton.setVisibility(GONE);
