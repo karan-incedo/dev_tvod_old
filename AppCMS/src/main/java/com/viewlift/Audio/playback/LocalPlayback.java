@@ -22,6 +22,8 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
@@ -88,10 +90,30 @@ public final class LocalPlayback implements Playback {
     private final AudioManager mAudioManager;
     private SimpleExoPlayer mExoPlayer;
     private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
+    boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
 
     // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
     private boolean mExoPlayerNullIsStopped = false;
     private MetadataUpdateListener mListener;
+    long mTotalAudioDuration;
+
+    Handler mProgressHandler;
+    Runnable mProgressRunnable;
+
+    private final String FIREBASE_STREAM_START = "stream_start";
+    private final String FIREBASE_STREAM_25 = "stream_25_pct";
+    private final String FIREBASE_STREAM_50 = "stream_50_pct";
+    private final String FIREBASE_STREAM_75 = "stream_75_pct";
+    private final String FIREBASE_STREAM_100 = "stream_100_pct";
+
+    private final String FIREBASE_AUDIO_ID_KEY = "video_id";
+    private final String FIREBASE_AUDIO_NAME_KEY = "auieo_name";
+    private final String FIREBASE_PLAYER_NAME_KEY = "player_name";
+    private final String FIREBASE_MEDIA_TYPE_KEY = "media_type";
+    private final String FIREBASE_PLAYER_NATIVE = "Native";
+    private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
+    private final String FIREBASE_MEDIA_TYPE_VIDEO = "Audio";
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
 
     private final IntentFilter mAudioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -182,7 +204,7 @@ public final class LocalPlayback implements Playback {
     @Override
     public void stop(boolean notifyListeners) {
 
-        mCurrentMediaId=null;
+        mCurrentMediaId = null;
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
@@ -197,6 +219,15 @@ public final class LocalPlayback implements Playback {
             beaconBuffer.runBeaconBuffering = false;
             beaconBuffer = null;
         }
+        if (mProgressHandler != null) {
+            isStreamStart = false;
+            isStream25 = false;
+            isStream50 = false;
+            isStream75 = false;
+            isStream100 = false;
+            mProgressHandler.removeCallbacks(mProgressRunnable);
+            mProgressHandler = null;
+        }
 
     }
 
@@ -205,8 +236,16 @@ public final class LocalPlayback implements Playback {
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
-        mCurrentMediaId=null;
-
+        mCurrentMediaId = null;
+        if (mProgressHandler != null) {
+            isStreamStart = false;
+            isStream25 = false;
+            isStream50 = false;
+            isStream75 = false;
+            isStream100 = false;
+            mProgressHandler.removeCallbacks(mProgressRunnable);
+            mProgressHandler = null;
+        }
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
@@ -266,9 +305,10 @@ public final class LocalPlayback implements Playback {
     }
 
     @Override
-    public String getCurrentId(){
+    public String getCurrentId() {
         return mCurrentMediaId;
     }
+
     @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
         mPlayOnFocusGain = true;
@@ -325,7 +365,7 @@ public final class LocalPlayback implements Playback {
             if (mCallback != null) {
                 mCallback.onPlaybackStatusChanged(getState());
             }
-
+            setFirebaseProgressHandling();
         }
 
         configurePlayerState();
@@ -545,6 +585,7 @@ public final class LocalPlayback implements Playback {
                                 beaconBuffer.start();
                             }
                         }
+
                     }
                     break;
                 case ExoPlayer.STATE_READY:
@@ -564,7 +605,15 @@ public final class LocalPlayback implements Playback {
 
                                 }
                             }
-                            if (!sentBeaconFirstFrame && appCMSPresenter!=null) {
+                            if (mExoPlayer != null) {
+                                mTotalAudioDuration = getTotalDuration() / 1000;
+                                mTotalAudioDuration -= mTotalAudioDuration % 4;
+
+                            }
+
+                            if (mProgressHandler != null)
+                                mProgressHandler.post(mProgressRunnable);
+                            if (!sentBeaconFirstFrame && appCMSPresenter != null) {
 //                                mStopBufferMilliSec = new Date().getTime();
 //                                ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                                 appCMSPresenter.sendBeaconMessage(audioData.getAudioGist().getId(),
@@ -594,7 +643,7 @@ public final class LocalPlayback implements Playback {
                     }
                     break;
                 default:
-                    if (!sentBeaconPlay && appCMSPresenter!=null) {
+                    if (!sentBeaconPlay && appCMSPresenter != null) {
                         appCMSPresenter.sendBeaconMessage(audioData.getAudioGist().getId(),
                                 audioData.getAudioGist().getPermalink(),
                                 null,
@@ -672,7 +721,7 @@ public final class LocalPlayback implements Playback {
 
     String getStreamId() {
         String mStreamId = "";
-        if (audioData != null && audioData.getAudioGist()!=null && audioData.getAudioGist().getTitle()!=null && appCMSPresenter != null) {
+        if (audioData != null && audioData.getAudioGist() != null && audioData.getAudioGist().getTitle() != null && appCMSPresenter != null) {
             try {
                 mStreamId = appCMSPresenter.getStreamingId(audioData.getAudioGist().getTitle());
             } catch (Exception e) {
@@ -720,5 +769,119 @@ public final class LocalPlayback implements Playback {
         audioData.getAudioGist().setCastingConnected(false);
         audioData.getAudioGist().setCurrentPlayingPosition(getCurrentStreamPosition());
         beaconBuffer.setContentDatum(audioData);
+    }
+
+
+    public void setFirebaseProgressHandling() {
+        isStreamStart = false;
+        isStream25 = false;
+        isStream50 = false;
+        isStream75 = false;
+        isStream100 = false;
+
+        mProgressHandler = new Handler();
+        mProgressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressHandler != null && mProgressRunnable != null) {
+
+
+                    if (mProgressHandler != null && mProgressRunnable != null) {
+                        mProgressHandler.removeCallbacks(this);
+                        long totalAudioDurationMod4 = mTotalAudioDuration / (4);
+                        if (totalAudioDurationMod4 > 0 && mExoPlayer != null) {
+                            long mPercentage = (long)
+                                    (((float) (mExoPlayer.getCurrentPosition() / 1000) / mTotalAudioDuration) * 100);
+
+                            if (appCMSPresenter.getmFireBaseAnalytics() != null) {
+                                sendProgressAnalyticEvents(mPercentage);
+                            }
+                        }
+                    }
+                    mProgressHandler.postDelayed(this, 1000);
+                }
+            }
+        };
+    }
+
+    public void sendProgressAnalyticEvents(long progressPercent) {
+        String title = "";
+        if (audioData != null && audioData.getAudioGist() != null && audioData.getAudioGist().getTitle() != null && appCMSPresenter != null) {
+            title = audioData.getAudioGist().getTitle();
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString(FIREBASE_AUDIO_ID_KEY, getCurrentId());
+        bundle.putString(FIREBASE_AUDIO_NAME_KEY, title);
+        bundle.putString(FIREBASE_PLAYER_NAME_KEY, FIREBASE_PLAYER_NATIVE);
+        bundle.putString(FIREBASE_MEDIA_TYPE_KEY, FIREBASE_MEDIA_TYPE_VIDEO);
+        //bundle.putString(FIREBASE_SERIES_ID_KEY, "");
+        //bundle.putString(FIREBASE_SERIES_NAME_KEY, "");
+
+        System.out.println("Audio Firebase-" + getCurrentId());
+        //Logs an app event.
+        if (progressPercent == 0 && !isStreamStart) {
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+            isStreamStart = true;
+        }
+
+        if (!isStreamStart) {
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+            isStreamStart = true;
+        }
+
+        if (progressPercent >= 25 && progressPercent < 50 && !isStream25) {
+            if (!isStreamStart) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_START, bundle);
+                isStreamStart = true;
+            }
+
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+            isStream25 = true;
+        }
+
+        if (progressPercent >= 50 && progressPercent < 75 && !isStream50) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+            isStream50 = true;
+        }
+
+        if (progressPercent >= 75 && progressPercent <= 100 && !isStream75) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+
+            if (!isStream50) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+                isStream50 = true;
+            }
+
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
+            isStream75 = true;
+        }
+
+        if (progressPercent >= 98 && progressPercent <= 100 && !isStream100) {
+            if (!isStream25) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_25, bundle);
+                isStream25 = true;
+            }
+
+            if (!isStream50) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_50, bundle);
+                isStream50 = true;
+            }
+
+            if (!isStream75) {
+                appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_75, bundle);
+                isStream75 = true;
+            }
+
+            appCMSPresenter.getmFireBaseAnalytics().logEvent(FIREBASE_STREAM_100, bundle);
+            isStream100 = true;
+        }
     }
 }
