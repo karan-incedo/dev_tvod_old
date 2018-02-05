@@ -1878,13 +1878,15 @@ public class TVViewCreator {
                 if (!TextUtils.isEmpty(component.getBackgroundColor())) {
                     componentViewResult.componentView.setBackgroundColor(Color.parseColor(getColor(context, component.getBackgroundColor())));
                 }
-                if (!TextUtils.isEmpty(component.getFontFamily())) {
+                if (!TextUtils.isEmpty(component.getFontFamily())
+                        && componentViewResult.componentView instanceof TextView) {
                     setTypeFace(context,
                             jsonValueKeyMap,
                             component,
                             (TextView) componentViewResult.componentView);
                 }
-                if (component.getLineSpacingMultiplier() != 0) {
+                if (component.getLineSpacingMultiplier() != 0
+                        && componentViewResult.componentView instanceof TextView) {
                     ((TextView) componentViewResult.componentView).setLineSpacing(0, component.getLineSpacingMultiplier());
                 }
                 break;
