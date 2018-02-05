@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -158,8 +159,19 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (0 <= position && position < adapterData.size()) {
             allViews[position] = holder.componentView;
-//            downloadView(adapterData.get(position), holder.componentView);
             bindView(holder.componentView, adapterData.get(position), position);
+            if (AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData() != null) {
+                if (adapterData.get(position).getGist().getId().equalsIgnoreCase(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().getId())) {
+                    adapterData.get(position).getGist().setAudioPlaying(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().isAudioPlaying());
+                } else {
+                    adapterData.get(position).getGist().setAudioPlaying(false);
+                }
+            }
+            if (adapterData.get(position).getGist().isAudioPlaying()) {
+                holder.componentView.setBackgroundColor(Color.parseColor("#4B0502"));
+            } else {
+                holder.componentView.setBackgroundColor(ContextCompat.getColor(mContext, android.R.color.transparent));
+            }
         }
     }
 
@@ -185,6 +197,8 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         notifyDataSetChanged();
 
     }
+
+    static int oldClick = -1;
 
     @SuppressLint("ClickableViewAccessibility")
     void bindView(CollectionGridItemView itemView,
@@ -229,8 +243,17 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                             AudioPlaylistHelper.getInstance().setCurrentPlaylistData(AudioPlaylistHelper.getInstance().getTempPlaylistData());
                                             AudioPlaylistHelper.getInstance().setPlaylist(MusicLibrary.createPlaylistByIDList(AudioPlaylistHelper.getInstance().getTempPlaylistData().getAudioList()));
                                         }
+                                        if (oldClick == -1) {
+                                            oldClick = clickPosition;
+                                            data.getGist().setAudioPlaying(true);
+                                        } else {
+                                            adapterData.get(oldClick).getGist().setAudioPlaying(false);
+                                            oldClick = clickPosition;
+                                            data.getGist().setAudioPlaying(true);
+                                        }
 
                                         AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
+                                        updateData(mRecyclerView, adapterData);
                                         return;
                                     }
                                 }
@@ -474,7 +497,7 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 imageButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
                 imageButton.setOnClickListener(addClickListener);
 //                if (playlistDownload) {
-                addClickListener.onClick(imageButton);
+//                addClickListener.onClick(imageButton);
 //                }
             }
         }

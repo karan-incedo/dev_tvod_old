@@ -172,6 +172,7 @@ public final class LocalPlayback implements Playback {
                 null,
                 null,
                 null);
+        audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
     }
 
     @Override
@@ -182,7 +183,7 @@ public final class LocalPlayback implements Playback {
     @Override
     public void stop(boolean notifyListeners) {
 
-        mCurrentMediaId=null;
+        mCurrentMediaId = null;
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
@@ -205,7 +206,7 @@ public final class LocalPlayback implements Playback {
         if (mExoPlayer != null) {
             mExoPlayer.setPlayWhenReady(false);
         }
-        mCurrentMediaId=null;
+        mCurrentMediaId = null;
 
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
@@ -266,14 +267,18 @@ public final class LocalPlayback implements Playback {
     }
 
     @Override
-    public String getCurrentId(){
+    public String getCurrentId() {
         return mCurrentMediaId;
     }
+
     @Override
     public void play(MediaMetadataCompat item, long currentPosition) {
         mPlayOnFocusGain = true;
         tryToGetAudioFocus();
         registerAudioNoisyReceiver();
+        if (audioData != null) {
+            audioData.getGist().setAudioPlaying(false);
+        }
         audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
         String mediaId = item.getDescription().getMediaId();
         boolean mediaHasChanged = !TextUtils.equals(mediaId, mCurrentMediaId);
@@ -281,9 +286,10 @@ public final class LocalPlayback implements Playback {
             mCurrentMediaId = mediaId;
             AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
             audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+            audioData.getGist().setAudioPlaying(true);
         }
 
-        //if media has changed than load new audio url
+        //if media has changed then load new audio url
         if (mediaHasChanged || mExoPlayer == null || currentPosition > 0) {
 
             mListener.onMetadataChanged(item);
@@ -564,7 +570,7 @@ public final class LocalPlayback implements Playback {
 
                                 }
                             }
-                            if (!sentBeaconFirstFrame && appCMSPresenter!=null) {
+                            if (!sentBeaconFirstFrame && appCMSPresenter != null) {
 //                                mStopBufferMilliSec = new Date().getTime();
 //                                ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
                                 appCMSPresenter.sendBeaconMessage(audioData.getAudioGist().getId(),
@@ -591,10 +597,11 @@ public final class LocalPlayback implements Playback {
                     // The media player finished playing the current song.
                     if (mCallback != null) {
                         mCallback.onCompletion();
+                        audioData.getGist().setAudioPlaying(false);
                     }
                     break;
                 default:
-                    if (!sentBeaconPlay && appCMSPresenter!=null) {
+                    if (!sentBeaconPlay && appCMSPresenter != null) {
                         appCMSPresenter.sendBeaconMessage(audioData.getAudioGist().getId(),
                                 audioData.getAudioGist().getPermalink(),
                                 null,
@@ -672,7 +679,7 @@ public final class LocalPlayback implements Playback {
 
     String getStreamId() {
         String mStreamId = "";
-        if (audioData != null && audioData.getAudioGist()!=null && audioData.getAudioGist().getTitle()!=null && appCMSPresenter != null) {
+        if (audioData != null && audioData.getAudioGist() != null && audioData.getAudioGist().getTitle() != null && appCMSPresenter != null) {
             try {
                 mStreamId = appCMSPresenter.getStreamingId(audioData.getAudioGist().getTitle());
             } catch (Exception e) {
