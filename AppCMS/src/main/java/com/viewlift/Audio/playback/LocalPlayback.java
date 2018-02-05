@@ -22,6 +22,8 @@ import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.text.TextUtils;
@@ -88,10 +90,30 @@ public final class LocalPlayback implements Playback {
     private final AudioManager mAudioManager;
     private SimpleExoPlayer mExoPlayer;
     private final ExoPlayerEventListener mEventListener = new ExoPlayerEventListener();
+    boolean isStreamStart, isStream25, isStream50, isStream75, isStream100;
 
     // Whether to return STATE_NONE or STATE_STOPPED when mExoPlayer is null;
     private boolean mExoPlayerNullIsStopped = false;
     private MetadataUpdateListener mListener;
+    long mTotalAudioDuration;
+
+    Handler mProgressHandler;
+    Runnable mProgressRunnable;
+
+    private final String FIREBASE_STREAM_START = "stream_start";
+    private final String FIREBASE_STREAM_25 = "stream_25_pct";
+    private final String FIREBASE_STREAM_50 = "stream_50_pct";
+    private final String FIREBASE_STREAM_75 = "stream_75_pct";
+    private final String FIREBASE_STREAM_100 = "stream_100_pct";
+
+    private final String FIREBASE_AUDIO_ID_KEY = "video_id";
+    private final String FIREBASE_AUDIO_NAME_KEY = "auieo_name";
+    private final String FIREBASE_PLAYER_NAME_KEY = "player_name";
+    private final String FIREBASE_MEDIA_TYPE_KEY = "media_type";
+    private final String FIREBASE_PLAYER_NATIVE = "Native";
+    private final String FIREBASE_PLAYER_CHROMECAST = "Chromecast";
+    private final String FIREBASE_MEDIA_TYPE_VIDEO = "Audio";
+    private final String FIREBASE_SCREEN_VIEW_EVENT = "screen_view";
 
     private final IntentFilter mAudioNoisyIntentFilter =
             new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
@@ -198,6 +220,15 @@ public final class LocalPlayback implements Playback {
             beaconBuffer.runBeaconBuffering = false;
             beaconBuffer = null;
         }
+        if (mProgressHandler != null) {
+            isStreamStart = false;
+            isStream25 = false;
+            isStream50 = false;
+            isStream75 = false;
+            isStream100 = false;
+            mProgressHandler.removeCallbacks(mProgressRunnable);
+            mProgressHandler = null;
+        }
 
     }
 
@@ -207,7 +238,15 @@ public final class LocalPlayback implements Playback {
             mExoPlayer.setPlayWhenReady(false);
         }
         mCurrentMediaId = null;
-
+        if (mProgressHandler != null) {
+            isStreamStart = false;
+            isStream25 = false;
+            isStream50 = false;
+            isStream75 = false;
+            isStream100 = false;
+            mProgressHandler.removeCallbacks(mProgressRunnable);
+            mProgressHandler = null;
+        }
         giveUpAudioFocus();
         unregisterAudioNoisyReceiver();
         releaseResources(true);
@@ -570,6 +609,14 @@ public final class LocalPlayback implements Playback {
 
                                 }
                             }
+                            if (mExoPlayer != null) {
+                                mTotalAudioDuration = getTotalDuration() / 1000;
+                                mTotalAudioDuration -= mTotalAudioDuration % 4;
+
+                            }
+
+                            if (mProgressHandler != null)
+                                mProgressHandler.post(mProgressRunnable);
                             if (!sentBeaconFirstFrame && appCMSPresenter != null) {
 //                                mStopBufferMilliSec = new Date().getTime();
 //                                ttfirstframe = mStartBufferMilliSec == 0l ? 0d : ((mStopBufferMilliSec - mStartBufferMilliSec) / 1000d);
