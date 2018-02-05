@@ -53,6 +53,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
+import com.google.gson.GsonBuilder;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ClosedCaptions;
@@ -255,10 +256,10 @@ public class TVViewCreator {
 //                isGrid = true;
             }
             if (module.getBlockName().equalsIgnoreCase("tray01")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray01.json"), ModuleList.class);
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray01.json"), ModuleList.class);
             }
             if (module.getBlockName().equalsIgnoreCase("tray04")) {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
             }
 
             for (Component component : module.getComponents()) {
@@ -267,10 +268,11 @@ public class TVViewCreator {
             }
             return null;
         } else if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())){
-//            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
             moduleView = new ShowDetailModuleView(
                     context,
                     module,
+                    moduleAPI,
                     appCMSPageAPI,
                     this,
                     appCMSPresenter,
@@ -300,7 +302,7 @@ public class TVViewCreator {
             }
             if (context.getResources().getString(R.string.appcms_detail_module).equalsIgnoreCase(module.getView()))
             {
-//                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "videodetail.json"), ModuleList.class);
             }
 
             if ("AC UserManagement 01".equalsIgnoreCase(module.getView()))
