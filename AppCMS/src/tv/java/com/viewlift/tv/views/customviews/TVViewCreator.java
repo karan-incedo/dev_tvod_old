@@ -523,7 +523,6 @@ public class TVViewCreator {
                             List<ContentDatum> episodes = season.getEpisodes();
 
                             customHeaderItem = null;
-                            moduleUI.getLayout().getTv().setHeight("250");
                             createHeaderItemForSeason(component, context, "SEASON " + (seasonIndex + 1));
                             int index = trayIndex;
                             index = index -1;
