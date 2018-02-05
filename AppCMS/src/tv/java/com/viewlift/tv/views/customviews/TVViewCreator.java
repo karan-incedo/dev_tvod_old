@@ -732,6 +732,7 @@ public class TVViewCreator {
             case PAGE_BUTTON_KEY:
                 if (componentKey != AppCMSUIKeyType.PAGE_VIDEO_CLOSE_KEY) {
                     componentViewResult.componentView = new Button(context);
+                    ((Button) componentViewResult.componentView).setStateListAnimator(null);
                 } else {
                     componentViewResult.componentView = new ImageButton(context);
                 }
