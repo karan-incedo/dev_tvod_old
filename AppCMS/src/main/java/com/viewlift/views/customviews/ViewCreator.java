@@ -1207,7 +1207,7 @@ public class ViewCreator {
                 }
             }
         }
-        pageView.notifyAdapterDataSetChanged();
+//        pageView.notifyAdapterDataSetChanged();
 
         List<OnInternalEvent> presenterOnInternalEvents = appCMSPresenter.getOnInternalEvents();
         if (presenterOnInternalEvents != null) {
@@ -2458,7 +2458,7 @@ public class ViewCreator {
                                         == AppCMSUIKeyType.PAGE_AUTOPLAY_MODULE_KEY_03
                         )) {
                             componentViewResult.componentView.setOnClickListener(v -> {
-                                if (!appCMSPresenter.sendCloseOthersAction(null,
+                                if (!appCMSPresenter.sendCloseAutoplayAction(null,
                                         true,
                                         false)) {
                                     //Log.e(TAG, "Could not perform close action: " +
