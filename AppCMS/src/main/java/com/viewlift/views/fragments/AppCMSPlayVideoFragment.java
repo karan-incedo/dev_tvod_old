@@ -52,6 +52,7 @@ import com.viewlift.models.data.appcms.ui.authentication.UserIdentity;
 import com.viewlift.models.data.appcms.ui.main.AppCMSMain;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.VideoPlayerView;
+import com.viewlift.views.customviews.ViewCreator;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -463,7 +464,9 @@ public class AppCMSPlayVideoFragment extends Fragment
             videoPlayerTitleView.setText(title);
         }
         if (!TextUtils.isEmpty(fontColor)) {
-            videoPlayerTitleView.setTextColor(Color.parseColor(fontColor));
+            videoPlayerTitleView.setTextColor(Color.parseColor(ViewCreator.getColorWithOpacity(getContext(),
+                    fontColor,
+                    0xff)));
         }
 
         sendFirebaseAnalyticsEvents(title);

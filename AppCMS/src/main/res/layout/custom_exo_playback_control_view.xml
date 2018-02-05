@@ -1,44 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:exoplayer="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom"
-    android:background="#CC000000"
+    android:layout_height="match_parent"
     android:layoutDirection="ltr"
-    android:orientation="vertical">
+    android:background="@android:color/transparent">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/chromecast_live_player_parent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:background="#CC000000"
+        android:orientation="horizontal"
         android:visibility="gone">
         <ImageButton
-            android:id="@+id/chromecast_live_player"
+            android:id="@+id/full_screen_back_button"
             android:layout_width="@dimen/chromecast_default_width"
             android:layout_height="@dimen/chromecast_default_height"
-            android:src="@drawable/anim_cast"
-            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_keyboard_arrow_left_white_24dp"
+            android:scaleType="fitCenter"
+            android:paddingTop="@dimen/chromecast_default_padding_top"
+            android:paddingStart="@dimen/chromecast_default_padding_end"
+            android:background="@android:color/transparent"
+            android:visibility="invisible"/>
+
+        <com.viewlift.views.customviews.AlwaysSelectedTextView
+            android:id="@+id/app_cms_mini_video_player_title_view"
+            android:layout_width="352dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:layout_weight="10"
+            android:background="@android:color/transparent"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:gravity="center"
+            android:padding="12dp"
+            android:singleLine="true"
+            android:textAlignment="center"
+            android:textSize="@dimen/app_cms_video_player_title_view_text_size" />
+
+        <FrameLayout
+            android:id="@+id/chromecast_live_player_placeholder"
+            android:layout_width="@dimen/chromecast_default_width"
+            android:layout_height="@dimen/chromecast_default_height"
+            android:layout_marginEnd="@dimen/chromecast_default_margin_end"
             android:paddingTop="@dimen/chromecast_default_padding_top"
             android:paddingEnd="@dimen/chromecast_default_padding_end"
             android:background="@android:color/transparent"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/exo_controller_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#CC000000"
+        android:orientation="vertical"
         android:layout_alignParentBottom="true">
         <LinearLayout
             android:id="@+id/exo_media_controller"
-            android:layout_centerVertical="true"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingTop="4dp">
+            android:paddingTop="4dp"
+            android:layout_above="@+id/seek_bar_parent">
 
 
             <ImageButton
@@ -57,17 +84,6 @@
                 android:id="@id/exo_ffwd"
                 style="@style/ExoMediaButton.FastForward" />
 
-            <!--<ToggleButton
-                android:id="@+id/ccButton"
-                android:layout_width="@dimen/app_cms_video_controller_cc_width"
-                android:layout_height="@dimen/app_cms_video_controller_cc_height"
-                android:layout_gravity="right|center_vertical"
-                android:layout_marginStart="@dimen/app_cms_video_controller_cc_left_margin"
-                android:background="@drawable/cc_toggle_selector"
-                android:checked="false"
-                android:textOff=""
-                android:textOn="" />-->
-
             <TextView
                 android:id="@+id/streamingQualitySelector"
                 android:layout_width="wrap_content"
@@ -77,9 +93,30 @@
                 android:textAlignment="center"
                 android:background="@drawable/streaming_quality_background"
                 android:visibility="gone"
+                android:layout_margin="@dimen/streaming_quality_view_margin"
                 android:padding="@dimen/streaming_quality_view_padding"/>
+
+            <ToggleButton
+                android:id="@+id/ccButton"
+                android:layout_width="@dimen/app_cms_video_controller_cc_width"
+                android:layout_height="@dimen/app_cms_video_controller_cc_height"
+                android:layout_gravity="right|center_vertical"
+                android:layout_marginStart="@dimen/app_cms_video_controller_cc_left_margin"
+                android:background="@drawable/cc_toggle_selector"
+                android:checked="false"
+                android:textOff=""
+                android:textOn="" />
+
+            <ImageButton
+                android:id="@+id/full_screen_button"
+                android:layout_width="@dimen/app_cms_video_controller_cc_width"
+                android:layout_height="@dimen/app_cms_video_controller_cc_width"
+                android:src="@drawable/full_screen"
+                android:background="@color/transparentColor"
+                android:scaleType="fitCenter"
+                android:visibility="gone"/>
         </LinearLayout>
-    </RelativeLayout>
+
         <LinearLayout
             android:id="@+id/seek_bar_parent"
             android:layout_width="match_parent"
@@ -104,7 +141,7 @@
                 android:id="@id/exo_progress"
                 android:layout_width="0dp"
                 android:layout_height="26dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
 
             <TextView
                 android:id="@id/exo_duration"
@@ -118,6 +155,6 @@
                 android:textStyle="bold" />
 
         </LinearLayout>
+    </LinearLayout>
 
-
-</LinearLayout>
+</RelativeLayout>

@@ -337,7 +337,9 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     private void initializeView(Context context) {
         LayoutInflater.from(context).inflate(R.layout.video_player_view, this);
-        playerView = (AppCMSSimpleExoPlayerView) findViewById(R.id.videoPlayerView);
+        playerView = findViewById(R.id.videoPlayerView);
+        playerJustInitialized = true;
+        fullScreenMode = false;
         playerJustInitialized = true;
     }
 
@@ -365,8 +367,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
         userAgent = Util.getUserAgent(getContext(),
                 getContext().getString(R.string.app_cms_user_agent));
 
-        ccToggleButton = createCC_ToggleButton();
-        ((RelativeLayout) playerView.findViewById(R.id.exo_controller_container)).addView(ccToggleButton);
+        ccToggleButton = playerView.findViewById(R.id.ccButton);
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
@@ -374,7 +375,7 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
             isClosedCaptionEnabled = isChecked;
         });
 
-        videoPlayerTitle = playerView.findViewById(R.id.app_cms_video_player_title_view);
+        videoPlayerTitle = playerView.findViewById(R.id.app_cms_mini_video_player_title_view);
         videoPlayerTitle.setText("");
 
         mediaDataSourceFactory = buildDataSourceFactory(true);

@@ -3946,7 +3946,7 @@ public class ViewCreator {
         return color;
     }
 
-    private String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
+    public static String getColorWithOpacity(Context context, String baseColorCode, int opacityColorCode) {
         if (baseColorCode.indexOf(context.getString(R.string.color_hash_prefix)) != 0) {
             return context.getString(R.string.color_hash_prefix) + opacityColorCode + baseColorCode;
         }
