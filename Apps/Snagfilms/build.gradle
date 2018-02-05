@@ -6,7 +6,7 @@ def final customApplicationId = 'SnagFilms'
 def final hostName = "www.snagfilms.com"
 def final hostNameSuffix = "*.snagfilms.com"
 
-def final appVersionName = "1.0.33"
+def final appVersionName = "1.0.34"
 
 buildscript {
     repositories {
@@ -38,7 +38,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 3042075
+        versionCode 3042076
 
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
