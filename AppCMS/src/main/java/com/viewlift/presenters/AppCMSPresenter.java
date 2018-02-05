@@ -3695,9 +3695,26 @@ public class AppCMSPresenter {
         }
 
         long enqueueId = downloadManager.enqueue(downloadRequest);
-
-        long thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
-                contentDatum.getGist().getId());
+        long thumbEnqueueId;
+        if (contentDatum.getGist() != null &&
+                contentDatum.getGist().getMediaType() != null &&
+                contentDatum.getGist().getMediaType().toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                contentDatum.getGist().getContentType() != null &&
+                contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+            String audioImageUrl = null;
+            if (contentDatum.getGist().getImageGist().get_16x9() != null) {
+                audioImageUrl = contentDatum.getGist().getImageGist().get_16x9();
+            } else if (contentDatum.getGist().getImageGist().get_3x4() != null) {
+                audioImageUrl = contentDatum.getGist().getImageGist().get_3x4();
+            } else if (contentDatum.getGist().getImageGist().get_32x9() != null) {
+                audioImageUrl = contentDatum.getGist().getImageGist().get_32x9();
+            }
+            thumbEnqueueId = downloadVideoImage(audioImageUrl,
+                    contentDatum.getGist().getId());
+        } else {
+            thumbEnqueueId = downloadVideoImage(contentDatum.getGist().getVideoImageUrl(),
+                    contentDatum.getGist().getId());
+        }
         long posterEnqueueId = downloadPosterImage(contentDatum.getGist().getPosterImageUrl(),
                 contentDatum.getGist().getId());
 
@@ -4567,12 +4584,16 @@ public class AppCMSPresenter {
                                 AudioPlaylistHelper mAudioPlaylist = new AudioPlaylistHelper().getInstance();
                                 mAudioPlaylist.createMediaMetaDataForAudioItem(appCMSAudioDetailResult);
                                 PlaybackManager.setCurrentMediaData(mAudioPlaylist.getMetadata(appCMSAudioDetailResult.getId()));
+                                mAudioPlaylist.setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
                                 if (callBackPlaylistHelper != null) {
                                     callBackPlaylistHelper.onPlaybackStart(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 } else if (currentActivity != null) {
                                     mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), mCurrentPlayerPosition);
                                 }
-                                AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
+                            } else {
+                                if (appCMSAudioDetailAPIAction != null) {
+                                    appCMSAudioDetailAPIAction.call(appCMSAudioDetailResult);
+                                }
                             }
                             if (isPlayerScreenOpen) {
                                 Intent intent = new Intent(currentActivity, AppCMSPlayAudioActivity.class);
@@ -4584,11 +4605,6 @@ public class AppCMSPresenter {
                                             metadata);
                                 }
                                 currentActivity.startActivity(intent);
-
-                            } else {
-                                if (appCMSAudioDetailAPIAction != null) {
-                                    appCMSAudioDetailAPIAction.call(appCMSAudioDetailResult);
-                                }
                             }
 
                         } else {
@@ -8009,6 +8025,7 @@ public class AppCMSPresenter {
             return null;
         }
     }
+
     //TODO: to be removed in signed apk
     void printBeacon(ArrayList<BeaconRequest> beaconRequestList) {
         for (int i = 0; i < beaconRequestList.size(); i++) {
@@ -8035,6 +8052,7 @@ public class AppCMSPresenter {
             Log.i("" + "Vid", "" + beaconRequestList.get(i).getVid());
         }
     }
+
     private void sendOfflineBeaconMessage() {
         ArrayList<BeaconRequest> beaconRequests = getBeaconRequestList();
 
@@ -12704,16 +12722,16 @@ public class AppCMSPresenter {
         final boolean launchActivity;
         final Uri searchQuery;
 
-        public  AppCMSAudioDetailAPIAction(boolean appbarPresent,
-                                   boolean fullscreenEnabled,
-                                   boolean navbarPresent,
-                                   AppCMSPageUI appCMSPageUI,
-                                   String action,
-                                   String pageId,
-                                   String pageTitle,
-                                   String pagePath,
-                                   boolean launchActivity,
-                                   Uri searchQuery) {
+        public AppCMSAudioDetailAPIAction(boolean appbarPresent,
+                                          boolean fullscreenEnabled,
+                                          boolean navbarPresent,
+                                          AppCMSPageUI appCMSPageUI,
+                                          String action,
+                                          String pageId,
+                                          String pageTitle,
+                                          String pagePath,
+                                          boolean launchActivity,
+                                          Uri searchQuery) {
             this.appbarPresent = appbarPresent;
             this.fullscreenEnabled = fullscreenEnabled;
             this.navbarPresent = navbarPresent;
@@ -12882,11 +12900,9 @@ public class AppCMSPresenter {
                 if (semverMatcher.group(1) != null) {
                     major = Integer.parseInt(semverMatcher.group(1));
                 }
-
                 if (semverMatcher.group(2) != null) {
                     minor = Integer.parseInt(semverMatcher.group(2));
                 }
-
                 if (semverMatcher.group(3) != null) {
                     patch = Integer.parseInt(semverMatcher.group(3));
                 }
@@ -12943,17 +12959,14 @@ public class AppCMSPresenter {
                 }
                 tvVideoPlayerView = null;
                 videoPlayerViewParent = null;
-
                 RelativeLayout rootView = ((RelativeLayout) currentActivity.findViewById(R.id.app_cms_parent_view));
                 rootView.postDelayed(() -> {
                     try {
                         rootView.removeView(relativeLayoutFull);
                         relativeLayoutFull = null;
                     } catch (Exception e) {
-
                     }
                 }, 50);
-
             }
         } catch (Exception e) {
         }
@@ -12963,15 +12976,12 @@ public class AppCMSPresenter {
         isFullScreenVisible = false;
     }
 
-
     public void stopAudioServices() {
         Intent intent = new Intent();
         intent.setAction(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_ACTION);
         intent.putExtra(AudioServiceHelper.APP_CMS_STOP_AUDIO_SERVICE_MESSAGE, true);
         currentActivity.sendBroadcast(intent);
     }
-
-
 
     public String audioDuration(int totalSeconds) {
 
@@ -13008,7 +13018,6 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs = currentContext.getSharedPreferences(INSTANCE_ID_PREF_NAME, 0);
             sharedPrefs.edit().putBoolean(IS_HOME_STARTED, isHomeCreated).commit();
         }
-
     }
 
     public boolean getAppHomeActivityCreated() {
@@ -13018,6 +13027,5 @@ public class AppCMSPresenter {
         }
         return false;
     }
-
 
 }

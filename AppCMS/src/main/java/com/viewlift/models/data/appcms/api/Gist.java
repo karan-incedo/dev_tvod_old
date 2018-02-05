@@ -310,4 +310,14 @@ public class Gist implements Serializable {
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
     }
+
+    boolean isAudioPlaying;
+
+    public boolean isAudioPlaying() {
+        return isAudioPlaying;
+    }
+
+    public void setAudioPlaying(boolean audioPlaying) {
+        isAudioPlaying = audioPlaying;
+    }
 }
