@@ -291,13 +291,13 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.RESET_PASSWORD_
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.SEARCH_RETRY_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.VIDEO_ACTION;
 import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY_ACTION;
-import static com.viewlift.tv.views.activity.AppCmsHomeActivity.DIALOG_FRAGMENT_TAG;
 
 /*
  * Created by viewlift on 5/3/17.
  */
 
 public class AppCMSPresenter {
+    public static final String PRESENTER_CLOSE_AUTOPLAY_SCREEN = "appcms_presenter_close_autoplay_action";
     public static final String PRESENTER_NAVIGATE_ACTION = "appcms_presenter_navigate_action";
     public static final String PRESENTER_PAGE_LOADING_ACTION = "appcms_presenter_page_loading_action";
     public static final String PRESENTER_STOP_PAGE_LOADING_ACTION = "appcms_presenter_stop_page_loading_action";
@@ -5372,6 +5372,25 @@ public class AppCMSPresenter {
             Intent refreshPageIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_ACTION);
             currentActivity.sendBroadcast(refreshPageIntent);
         }
+    }
+
+    public boolean sendCloseAutoplayAction(String pageName,
+                                           boolean closeSelf,
+                                           boolean closeOnePage) {
+        Log.e(TAG, "Sending close others action :");
+        boolean result = false;
+        if (currentActivity != null) {
+            Intent closeOthersIntent = new Intent(AppCMSPresenter.PRESENTER_CLOSE_AUTOPLAY_SCREEN);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_self_key),
+                    closeSelf);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_one_page_key),
+                    closeOnePage);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_closing_page_name),
+                    pageName);
+            currentActivity.sendBroadcast(closeOthersIntent);
+            result = true;
+        }
+        return result;
     }
 
     public boolean sendCloseOthersAction(String pageName,

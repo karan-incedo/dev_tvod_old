@@ -257,7 +257,7 @@ public class PageView extends BaseView {
     }
     public void notifyAdapterDataSetChanged() {
         if (appCMSPageViewAdapter != null) {
-            appCMSPageViewAdapter.notifyDataSetChanged();
+            appCMSPageViewAdapter.notifyItemRangeChanged(1,appCMSPageViewAdapter.getItemCount());
         }
     }
     public View findChildViewById(int id) {
