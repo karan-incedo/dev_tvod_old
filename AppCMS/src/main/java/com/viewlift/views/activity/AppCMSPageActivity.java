@@ -90,7 +90,6 @@ import com.viewlift.views.customviews.TabCreator;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSCCAvenueFragment;
 import com.viewlift.views.fragments.AppCMSChangePasswordFragment;
-import com.viewlift.views.fragments.AppCMSDraggableFragment;
 import com.viewlift.views.fragments.AppCMSEditProfileFragment;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSNavItemsFragment;
@@ -271,8 +270,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             AppsFlyerLib.getInstance().startTracking(getApplication());
 
             appCMSPresenter.initializeAppCMSAnalytics();
-            appCMSPresenter.cacheHomePage();
-            appCMSPresenter.cacheMoviesPage();
+//            appCMSPresenter.cacheHomePage();
+//            appCMSPresenter.cacheMoviesPage();
             //            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
         }).run();
 
@@ -1798,10 +1797,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     } catch (IllegalArgumentException e) {
                         //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
                     }
-                    break;
-
-                case DRAGGABLE_PANEL:
-                    appCMSPageFragment = AppCMSDraggableFragment.newInstance(this, appCMSBinder);
                     break;
 
                 case SEARCH:
