@@ -270,6 +270,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             AppsFlyerLib.getInstance().startTracking(getApplication());
 
+            appCMSPresenter.cacheHomePage();
+            appCMSPresenter.initializeAppCMSAnalytics();
+            appCMSPresenter.cacheMoviesPage();
             //            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
         }).run();
 
