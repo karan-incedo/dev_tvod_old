@@ -5657,8 +5657,10 @@ public class AppCMSPresenter {
                 refreshPages(null, false, 0, 0);
             }
 
-            refreshUserSubscriptionData(() -> {
-            }, true);
+            if (isUserLoggedIn()) {
+                refreshUserSubscriptionData(() -> {
+                }, true);
+            }
 
             loadingPage = true;
             //Log.d(TAG, "Launching page " + pageTitle + ": " + pageId);
@@ -10189,8 +10191,7 @@ public class AppCMSPresenter {
                         launchUpgradeAppActivity();
                     } else {
                         this.appCMSAndroid = appCMSAndroidUI;
-
-                        navigation = appCMSAndroidUI.getNavigation();
+                        this.navigation = appCMSAndroidUI.getNavigation();
                         new SoftReference<>(navigation, referenceQueue);
                         queueMetaPages(appCMSAndroidUI.getMetaPages());
                         //Log.d(TAG, "Processing meta pages queue");
@@ -10211,14 +10212,16 @@ public class AppCMSPresenter {
                                                     openDownloadScreenForNetworkError(true,
                                                             () -> getAppCMSAndroid(tryCount));
                                                 } else {
-                                                    if (appCMSMain.getServiceType()
+                                                    if (isUserLoggedIn() &&
+                                                            appCMSMain.getServiceType()
                                                             .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
                                                         refreshSubscriptionData(() -> {
 
                                                         }, true);
                                                     }
 
-                                                    if (!isUserLoggedIn() && TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())) {
+                                                    if (!isUserLoggedIn() &&
+                                                            TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())) {
                                                         //Log.d(TAG, "Signing in as an anonymous user");
                                                         signinAnonymousUser();
                                                     } else if (isUserLoggedIn()) {
@@ -10279,7 +10282,8 @@ public class AppCMSPresenter {
                                                         }
                                                     }
 
-                                                    if (!isUserLoggedIn() && !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())) {
+                                                    if (!isUserLoggedIn() &&
+                                                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())) {
                                                         //Log.d(TAG, "Signing in as an anonymous user");
                                                         signinAnonymousUser();
                                                     }
