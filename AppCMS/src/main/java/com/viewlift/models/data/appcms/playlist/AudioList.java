@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.ImageGist;
-import com.viewlift.models.data.appcms.audio.AudioGist;
 import com.vimeo.stag.UseStag;
 
 /**
@@ -15,28 +14,20 @@ import com.vimeo.stag.UseStag;
 public class AudioList {
     @SerializedName("gist")
     @Expose
-    AudioGist gist;
+    Gist gist;
 
-    public AudioGist getGist() {
+    public Gist getGist() {
         return gist;
     }
 
-    public void setGist(AudioGist gist) {
+    public void setGist(Gist gist) {
         this.gist = gist;
     }
 
     public ContentDatum convertToContentDatum() {
         ContentDatum contentDatum = new ContentDatum();
-        Gist gist=new Gist();
-        gist.setId(this.gist.getId());
-        gist.setPermalink(this.gist.getPermalink());
-        gist.setTitle(this.gist.getTitle());
-        gist.setDescription(this.gist.getDescription());
-        gist.setRuntime(this.gist.getRuntime());
-        gist.setImageGist(this.gist.getImageGist());
-        gist.setContentType(this.gist.getContentType());
-        gist.setMediaType(this.gist.getMediaType());
-        contentDatum.setGist(gist);
+
+        contentDatum.setGist(this.gist);
         return contentDatum;
     }
 

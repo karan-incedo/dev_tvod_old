@@ -3,7 +3,6 @@ package com.viewlift.models.data.appcms.api;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.audio.AudioAssets;
-import com.viewlift.models.data.appcms.audio.AudioGist;
 import com.viewlift.models.data.appcms.playlist.AudioList;
 import com.vimeo.stag.UseStag;
 
@@ -396,15 +395,7 @@ public class ContentDatum implements Serializable {
         this.audioAssets = audioAssets;
     }
 
-    AudioGist audioGist;
 
-    public AudioGist getAudioGist() {
-        return audioGist;
-    }
-
-    public void setAudioGist(AudioGist audioGist) {
-        this.audioGist = audioGist;
-    }
 
 
 }

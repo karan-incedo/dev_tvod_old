@@ -2,10 +2,13 @@ package com.viewlift.views.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.media.MediaMetadataCompat;
+import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -26,7 +29,6 @@ import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.audio.AppCMSAudioDetailResult;
 import com.viewlift.models.data.appcms.audio.AudioAssets;
-import com.viewlift.models.data.appcms.audio.AudioGist;
 import com.viewlift.models.data.appcms.audio.Mp3;
 import com.viewlift.models.data.appcms.downloads.DownloadStatus;
 import com.viewlift.models.data.appcms.downloads.DownloadVideoRealm;
@@ -36,6 +38,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.models.data.appcms.ui.page.Layout;
 import com.viewlift.models.data.appcms.ui.page.Settings;
 import com.viewlift.presenters.AppCMSPresenter;
+import com.viewlift.views.activity.AppCMSPlayAudioActivity;
 import com.viewlift.views.customviews.CollectionGridItemView;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -46,6 +49,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.viewlift.Audio.ui.PlaybackControlsFragment.EXTRA_CURRENT_MEDIA_DESCRIPTION;
 import static com.viewlift.models.data.appcms.downloads.DownloadStatus.STATUS_RUNNING;
 
 /*
@@ -691,6 +695,15 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
             mAudioPlaylist.onMediaItemSelected(mAudioPlaylist.getMediaMetaDataItem(appCMSAudioDetailResult.getId()), 0);
         }
         AudioPlaylistHelper.getInstance().setCurrentAudioPLayingData(audioApiDetail.getModules().get(0).getContentData().get(0));
+        Intent intent = new Intent(mContext, AppCMSPlayAudioActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        MediaControllerCompat controller = MediaControllerCompat.getMediaController(appCMSPresenter.getCurrentActivity());
+        MediaMetadataCompat metadata = controller.getMetadata();
+        if (metadata != null) {
+            intent.putExtra(EXTRA_CURRENT_MEDIA_DESCRIPTION,
+                    metadata);
+        }
+        mContext.startActivity(intent);
 
     }
 
@@ -698,17 +711,6 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         AppCMSAudioDetailResult appCMSAudioDetailResult = new AppCMSAudioDetailResult();
         appCMSAudioDetailResult.setId(contentDatum.getGist().getId());
 
-        AudioGist audioGist = new AudioGist();
-        audioGist.setId(contentDatum.getGist().getId());
-        audioGist.setDescription(contentDatum.getGist().getDescription());
-        audioGist.setTitle(contentDatum.getGist().getTitle());
-        audioGist.setContentType(contentDatum.getGist().getContentType());
-        audioGist.setMediaType(contentDatum.getGist().getMediaType());
-        audioGist.setDownloadStatus(contentDatum.getGist().getDownloadStatus());
-
-        ImageGist imageGist = new ImageGist();
-        imageGist.set_16x9(contentDatum.getGist().getPosterImageUrl());
-        audioGist.setImageGist(imageGist);
 
         Mp3 mp3 = new Mp3();
         mp3.setUrl(contentDatum.getGist().getLocalFileUrl());
@@ -719,7 +721,7 @@ public class AppCMSUserWatHisDowAdapter extends RecyclerView.Adapter<AppCMSUserW
         StreamingInfo streamingInfo = new StreamingInfo();
         streamingInfo.setAudioAssets(audioAssets);
 
-        appCMSAudioDetailResult.setGist(audioGist);
+        appCMSAudioDetailResult.setGist(contentDatum.getGist());
         appCMSAudioDetailResult.setStreamingInfo(streamingInfo);
         return appCMSAudioDetailResult;
     }

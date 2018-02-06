@@ -90,7 +90,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             appCMSPresenter.unrestrictPortraitOnly();
         }
         currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
-        if (appCMSPresenter.isVideoDownloaded(currentAudio.getAudioGist().getId())) {
+        if (appCMSPresenter.isVideoDownloaded(currentAudio.getGist().getId())) {
             downloadAudio.setImageResource(R.drawable.ic_downloaded);
             downloadAudio.setOnClickListener(null);
         }
@@ -129,17 +129,17 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
             ContentDatum currentAudio = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
             if (appCMSMain != null &&
                     currentAudio != null &&
-                    currentAudio.getAudioGist() != null &&
-                    currentAudio.getAudioGist().getTitle() != null &&
-                    currentAudio.getAudioGist().getPermalink() != null) {
+                    currentAudio.getGist() != null &&
+                    currentAudio.getGist().getTitle() != null &&
+                    currentAudio.getGist().getPermalink() != null) {
                 StringBuilder audioUrl = new StringBuilder();
                 audioUrl.append(appCMSMain.getDomainName());
-                audioUrl.append(currentAudio.getAudioGist().getPermalink());
+                audioUrl.append(currentAudio.getGist().getPermalink());
                 String[] extraData = new String[1];
                 extraData[0] = audioUrl.toString();
-                appCMSPresenter.launchButtonSelectedAction(currentAudio.getAudioGist().getPermalink(),
+                appCMSPresenter.launchButtonSelectedAction(currentAudio.getGist().getPermalink(),
                         getString(R.string.app_cms_action_share_key),
-                        currentAudio.getAudioGist().getTitle(),
+                        currentAudio.getGist().getTitle(),
                         extraData,
                         currentAudio,
                         false,

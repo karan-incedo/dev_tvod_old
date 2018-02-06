@@ -78,24 +78,24 @@ public class BeaconPing extends Thread {
                         }
                     }
                     if (appCMSPresenter!=null && appCMSPresenter.getCurrentActivity()!=null && contentDatum != null &&
-                            contentDatum.getAudioGist() != null &&
-                            contentDatum.getAudioGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
-                            contentDatum.getAudioGist().getContentType() != null &&
-                            contentDatum.getAudioGist().getContentType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.content_type_audio).toLowerCase())) {
-                        appCMSPresenter.sendBeaconMessage(contentDatum.getAudioGist().getId(),
-                                contentDatum.getAudioGist().getPermalink(),
+                            contentDatum.getGist() != null &&
+                            contentDatum.getGist().getMediaType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.media_type_audio).toLowerCase()) &&
+                            contentDatum.getGist().getContentType() != null &&
+                            contentDatum.getGist().getContentType().toLowerCase().contains(appCMSPresenter.getCurrentActivity().getString(R.string.content_type_audio).toLowerCase())) {
+                        appCMSPresenter.sendBeaconMessage(contentDatum.getGist().getId(),
+                                contentDatum.getGist().getPermalink(),
                                 null,
-                                contentDatum.getAudioGist().getCurrentPlayingPosition(),
-                                contentDatum.getAudioGist().getCastingConnected(),
+                                contentDatum.getGist().getCurrentPlayingPosition(),
+                                contentDatum.getGist().getCastingConnected(),
                                 AppCMSPresenter.BeaconEvent.PING,
-                                contentDatum.getAudioGist().getMediaType(),
+                                contentDatum.getGist().getMediaType(),
                                 null,
                                 null,
                                 null,
                                 streamId,
                                 0d,
                                 0,
-                                appCMSPresenter.isVideoDownloaded(contentDatum.getAudioGist().getId()));
+                                appCMSPresenter.isVideoDownloaded(contentDatum.getGist().getId()));
                     }
                 }
             } catch (InterruptedException e) {
