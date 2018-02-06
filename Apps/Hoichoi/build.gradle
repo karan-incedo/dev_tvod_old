@@ -6,12 +6,7 @@ def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 def final hostNameSuffix = "*.hoichoi.tv"
 
-
-<<<<<<< HEAD
-def final appVersionName = "2.1.74"
-=======
 def final appVersionName = "2.1.76"
->>>>>>> my_master
 
 buildscript {
     repositories {
