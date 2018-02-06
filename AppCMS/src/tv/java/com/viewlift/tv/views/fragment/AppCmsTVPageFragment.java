@@ -221,7 +221,8 @@ public class AppCmsTVPageFragment extends Fragment {
                             for (int i1 = 0; i1 < contentData.size(); i1++) {
                                 ContentDatum contentDatum = contentData.get(i1);
                                 for (int j = 0; j < listRow.getAdapter().size(); j++) {
-                                    if (((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId().equalsIgnoreCase(contentDatum.getGist().getId())) {
+                                    if (((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId() != null
+                                            && ((BrowseFragmentRowData) listRow.getAdapter().get(j)).contentData.getGist().getId().equalsIgnoreCase(contentDatum.getGist().getId())) {
                                         BrowseFragmentRowData rowData = (BrowseFragmentRowData) listRow.getAdapter().get(j);
                                         rowData.contentData = module.getContentData().get(i1);
                                         totalNumber++;
