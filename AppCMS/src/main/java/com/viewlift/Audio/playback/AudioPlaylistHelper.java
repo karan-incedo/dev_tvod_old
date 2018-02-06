@@ -250,7 +250,7 @@ public class AudioPlaylistHelper {
         if (item.isPlayable()) {
             Bundle bundle = new Bundle();
             bundle.putLong("CURRENT_POSITION", mCurrentPlayerPosition);
-            MediaControllerCompat.getMediaController(appCmsPresenter.getCurrentActivity()).getTransportControls()
+            MediaControllerCompat.getMediaController(mAct).getTransportControls()
                     .playFromMediaId(item.getMediaId(), bundle);
         }
     }

@@ -1,6 +1,7 @@
 package com.viewlift.views.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -16,12 +17,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.search.AppCMSSearchResult;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.BaseView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -95,6 +98,27 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         viewHolder.parentLayout.setOnClickListener(v -> {
             if (action != null) {
                 Observable.just("progress").subscribe(action);
+            }
+            /*get audio details on tray click item and play song*/
+            if (appCMSSearchResults.get(adapterPosition).getGist() != null &&
+                    appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null &&
+                    appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_audio).toLowerCase()) &&
+                    appCMSSearchResults.get(adapterPosition).getGist().getContentType() != null &&
+                    appCMSSearchResults.get(adapterPosition).getGist().getContentType().toLowerCase().contains(context.getString(R.string.content_type_audio).toLowerCase())) {
+                List<String> audioPlaylistId = new ArrayList<String>();
+                audioPlaylistId.add(appCMSSearchResults.get(adapterPosition).getGist().getId());
+                AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
+                AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
+                appCMSPresenter.getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                        .PRESENTER_PAGE_LOADING_ACTION));
+                AudioPlaylistHelper.getInstance().playAudioOnClickItem(appCMSSearchResults.get(adapterPosition).getGist().getId(),0);
+                return;
+            }
+             /*Get playlist data and open playlist page*/
+            if (appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
+                    && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())) {
+                appCMSPresenter.navigateToPlaylistPage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false);
+                return;
             }
             String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
             String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);

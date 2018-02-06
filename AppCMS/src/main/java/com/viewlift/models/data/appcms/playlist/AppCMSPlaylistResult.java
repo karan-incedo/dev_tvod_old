@@ -8,9 +8,8 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
-import com.viewlift.models.data.appcms.audio.AudioGist;
-import com.viewlift.models.data.appcms.history.Record;
 import com.vimeo.stag.UseStag;
 
 import java.util.ArrayList;
@@ -33,13 +32,13 @@ public class AppCMSPlaylistResult {
 
     @SerializedName("gist")
     @Expose
-    AudioGist gist;
+    Gist gist;
 
-    public AudioGist getGist() {
+    public Gist getGist() {
         return gist;
     }
 
-    public void setGist(AudioGist gist) {
+    public void setGist(Gist gist) {
         this.gist = gist;
     }
 
@@ -63,7 +62,7 @@ public class AppCMSPlaylistResult {
 
         ContentDatum contentDatum = new ContentDatum();
         contentDatum.setAudioList(this.audioList);
-        contentDatum.setAudioGist(this.gist);
+        contentDatum.setGist(this.gist);
         contentDatum.setId(this.id);
         data.add(contentDatum);
 
