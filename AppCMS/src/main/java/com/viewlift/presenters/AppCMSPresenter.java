@@ -10354,23 +10354,23 @@ public class AppCMSPresenter {
                 homePage = metaPageList.get(homePageIndex);
 
                 if (homePage != null) {
-                    String baseUrl = appCMSMain.getApiBaseUrl();
-                    String endPoint = homePage.getPageAPI();
-                    String siteId = appCMSSite.getGist().getSiteInternalName();
-
-                    // Cache home page when the app is loading
-                    getPageIdContent(getApiUrl(true,
-                            false,
-                            false,
-                            baseUrl,
-                            endPoint,
-                            siteId,
-                            homePage.getPageId(),
-                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                            homePage.getPageId(),
-                            null,
-                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
-                            null);
+//                    String baseUrl = appCMSMain.getApiBaseUrl();
+//                    String endPoint = homePage.getPageAPI();
+//                    String siteId = appCMSSite.getGist().getSiteInternalName();
+//
+//                    // Cache home page when the app is loading
+//                    getPageIdContent(getApiUrl(true,
+//                            false,
+//                            false,
+//                            baseUrl,
+//                            endPoint,
+//                            siteId,
+//                            homePage.getPageId(),
+//                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
+//                            homePage.getPageId(),
+//                            null,
+//                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
+//                            null);
 
                     new SoftReference<Object>(homePage, referenceQueue);
                 }
@@ -10499,6 +10499,28 @@ public class AppCMSPresenter {
             } else {
                 pagesToProcess.addAll(metaPageList);
             }
+        }
+    }
+
+    public void cacheHomePage() {
+        if (homePage != null && appCMSMain != null && appCMSSite != null) {
+            String baseUrl = appCMSMain.getApiBaseUrl();
+            String endPoint = homePage.getPageAPI();
+            String siteId = appCMSSite.getGist().getSiteInternalName();
+
+            // Cache home page when the app is loading
+            getPageIdContent(getApiUrl(true,
+                    false,
+                    false,
+                    baseUrl,
+                    endPoint,
+                    siteId,
+                    homePage.getPageId(),
+                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
+                    homePage.getPageId(),
+                    null,
+                    !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
+                    null);
         }
     }
 
