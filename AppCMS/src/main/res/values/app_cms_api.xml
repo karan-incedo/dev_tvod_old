@@ -152,6 +152,9 @@
     <string name="app_cms_page_settings_plan_processor_title_key">paymentProcess</string>
     <string name="app_cms_page_settings_plan_processor_value_key">paymentProcessorValue</string>
 
+    <string name="app_cms_page_resume_watching_key">resumeWatching</string>
+    <string name="app_cms_page_percentage_watched_key">percentageWatched</string>
+
     <string name="app_cms_setting_module">AC UserManagement 01</string>
     <string name="app_cms_page_edit_profile_key">Edit Profile</string>
     <string name="app_cms_page_change_password_key">Change Password</string>

@@ -20,21 +20,21 @@
       "yAxis": 0,
       "leftMargin": 0,
       "rightMargin": 0,
-      "height": 267
+      "height": 242
     },
     "tabletLandscape": {
       "yAxis": 0,
       "leftMargin": 0,
       "xAxis": 0,
       "rightMargin": 0,
-      "height": 267
+      "height": 242
     },
     "tabletPortrait": {
       "yAxis": 0,
       "leftMargin": 0,
       "xAxis": 0,
       "rightMargin": 0,
-      "height": 267
+      "height": 242
     }
   },
   "components": [
@@ -131,7 +131,7 @@
     {
       "layout": {
         "mobile": {
-          "gridHeight": 240,
+          "gridHeight": 215,
           "trayPadding": 4,
           "leftMargin": 2.13,
           "yAxis": 15.96,
@@ -240,6 +240,67 @@
           "alwaysVisible": true,
           "type": "progressView",
           "key": "progressView"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 187,
+              "leftMargin": 8,
+              "fontSize": 11,
+              "height": 15
+            },
+            "tabletLandscape": {
+              "yAxis": 235,
+              "leftMargin": 8,
+              "fontSize": 14,
+              "height": 19
+            },
+            "tabletPortrait": {
+              "yAxis": 235,
+              "leftMargin": 8,
+              "fontSize": 14,
+              "height": 19
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "left",
+          "type": "button",
+          "textColor": "#00CC00",
+          "iconColor": "#000000",
+          "fontWeight": "Semibold",
+          "action": "watchVideo",
+          "key": "resumeWatching"
+        },
+        {
+          "layout": {
+            "mobile": {
+              "yAxis": 187,
+              "leftMargin": 8,
+              "rightMargin": 8,
+              "fontSize": 9,
+              "height": 15
+            },
+            "tabletLandscape": {
+              "yAxis": 235,
+              "leftMargin": 8,
+              "rightMargin": 8,
+              "fontSize": 12,
+              "height": 19
+            },
+            "tabletPortrait": {
+              "yAxis": 235,
+              "leftMargin": 8,
+              "rightMargin": 8,
+              "fontSize": 12,
+              "height": 19
+            }
+          },
+          "fontFamily": "OpenSans",
+          "textAlignment": "right",
+          "type": "label",
+          "textColor": "#888888",
+          "fontWeight": "Normal",
+          "key": "percentageWatched"
         }
       ],
       "isHorizontalScroll": true,

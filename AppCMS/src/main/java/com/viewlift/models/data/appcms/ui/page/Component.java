@@ -233,6 +233,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     boolean alwaysVisible;
 
+    @SerializedName("iconColor")
+    @Expose
+    String iconColor;
+
     boolean yAxisSetManually;
 
     boolean widthModified;
@@ -478,6 +482,14 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public String getFontWeight() {
         return fontWeight;
+    }
+
+    public String getIconColor() {
+        return iconColor;
+    }
+
+    public void setIconColor(String iconColor) {
+        this.iconColor = iconColor;
     }
 
     public void setFontWeight(String fontWeight) {

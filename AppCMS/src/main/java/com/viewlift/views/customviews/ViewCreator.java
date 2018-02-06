@@ -116,24 +116,11 @@ public class ViewCreator {
     private ComponentViewResult componentViewResult;
     private HtmlSpanner htmlSpanner;
 
-    private Drawable viewAllDrawable;
-    private Drawable expandDrawable;
-    private Drawable shrinkDrawable;
-
     private static class VideoPlayerContent {
         long videoPlayTime = 0;
         String videoUrl;
         String ccUrl;
         boolean fullScreenEnabled;
-    }
-
-    private Drawable createViewAllDrawable(Context context, String colorTint) {
-        if (viewAllDrawable == null) {
-            viewAllDrawable = context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_right_white_24dp);
-            viewAllDrawable.setColorFilter(Color.parseColor(getColor(context, colorTint)),
-                    PorterDuff.Mode.MULTIPLY);
-        }
-        return viewAllDrawable;
     }
 
     private static VideoPlayerContent videoPlayerContent = new VideoPlayerContent();
@@ -2409,7 +2396,8 @@ public class ViewCreator {
                     componentViewResult.componentView = new ResponsiveButton(context);
                 } else if ((componentKey != AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY &&
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) ||
-                        componentKey == AppCMSUIKeyType.PAGE_VIEW_ALL_KEY) {
+                        componentKey == AppCMSUIKeyType.PAGE_VIEW_ALL_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_RESUME_WATCHING_KEY) {
                     componentViewResult.componentView = new Button(context);
                     if (componentKey == AppCMSUIKeyType.PAGE_VIEW_ALL_KEY) {
                         ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0,
@@ -2477,7 +2465,8 @@ public class ViewCreator {
                             !appCMSPresenter.getAppCMSMain().getSocialMedia().getGooglePlus().isSignin()) {
                         componentViewResult.componentView.setVisibility(View.GONE);
                     }
-                } else if (componentKey == AppCMSUIKeyType.PAGE_VIEW_ALL_KEY) {
+                } else if (componentKey == AppCMSUIKeyType.PAGE_VIEW_ALL_KEY ||
+                        componentKey == AppCMSUIKeyType.PAGE_RESUME_WATCHING_KEY) {
                     componentViewResult.componentView.setBackgroundColor(ContextCompat.getColor(context,
                             android.R.color.transparent));
                 } else if (moduleAPI != null && jsonValueKeyMap.get(moduleAPI.getModuleType())

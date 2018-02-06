@@ -306,6 +306,11 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_signup_key),
                 AppCMSUIKeyType.PAGE_SIGNUP_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_resume_watching_key),
+                AppCMSUIKeyType.PAGE_RESUME_WATCHING_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_percentage_watched_key),
+                AppCMSUIKeyType.PAGE_PERCENTAGE_WATCHED_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_authentication_module),
                 AppCMSUIKeyType.PAGE_AUTHENTICATION_MODULE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),

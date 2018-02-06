@@ -18,9 +18,11 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -432,6 +434,36 @@ public class CollectionGridItemView extends BaseView {
                     view.setBackgroundColor(ContextCompat.getColor(getContext(),
                             R.color.disabledButtonColor));
                     viewsToUpdateOnClickEvent.add(view);
+                } else if (componentKey == AppCMSUIKeyType.PAGE_RESUME_WATCHING_KEY) {
+                    int progress = getPercentageWatched(appCMSPresenter, data);
+                    if (0 < progress) {
+                        ((TextView) view).setText(getContext().getString(R.string.app_cms_resume_lecture_text));
+                        ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_replay_white_24dp,
+                                0,
+                                0,
+                                0);
+                    } else {
+                        ((TextView) view).setText(getContext().getString(R.string.app_cms_play_lecture_text));
+                        ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_circle_outline_white_24dp,
+                                0,
+                                0,
+                                0);
+                    }
+
+                    if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                        int textColor =
+                                Color.parseColor(ViewCreator.getColor(context, childComponent.getTextColor()));
+                        ((TextView) view).setTextColor(textColor);
+                    }
+
+                    if (!TextUtils.isEmpty(childComponent.getIconColor())) {
+                        int iconColor =
+                                Color.parseColor(ViewCreator.getColor(context, childComponent.getIconColor()));
+                        ViewCreator.applyTintToCompoundDrawables((TextView) view, iconColor);
+                    }
+                    ((TextView) view).setGravity(Gravity.TOP | Gravity.START);
+                    view.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY);
+                    ((Button) view).setAllCaps(false);
                 }
 
                 if (componentKey == AppCMSUIKeyType.PAGE_VIDEO_DOWNLOAD_BUTTON_KEY) {
@@ -457,6 +489,8 @@ public class CollectionGridItemView extends BaseView {
                     } catch (Exception e) {
 
                     }
+                } else if (componentKey == AppCMSUIKeyType.PAGE_RESUME_WATCHING_KEY) {
+                    view.setOnClickListener(v -> onClickHandler.play(childComponent, data));
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
                             childComponent, data));
@@ -486,6 +520,13 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setMinLines(childComponent.getMinLines());
                             ((TextView) view).setMaxLines(childComponent.getMinLines());
                         }
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            ((TextView) view).setTextColor(
+                                    Color.parseColor(ViewCreator.getColor(context, childComponent.getTextColor())));
+                        }
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_PERCENTAGE_WATCHED_KEY) {
+                        int progress = getPercentageWatched(appCMSPresenter, data);
+                        ((TextView) view).setText(getContext().getString(R.string.app_cms_percent_complete_text, progress));
                         if (!TextUtils.isEmpty(childComponent.getTextColor())) {
                             ((TextView) view).setTextColor(
                                     Color.parseColor(ViewCreator.getColor(context, childComponent.getTextColor())));
@@ -644,43 +685,12 @@ public class CollectionGridItemView extends BaseView {
                 view.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             } else if (componentType == AppCMSUIKeyType.PAGE_PROGRESS_VIEW_KEY) {
                 if (view instanceof ProgressBar) {
-                    ContentDatum historyData = null;
-                    if (data != null && data.getGist() != null && data.getGist().getId() != null) {
-                        historyData = appCMSPresenter.getUserHistoryContentDatum(data.getGist().getId());
-                    }
-
-                    int progress = 0;
-
-                    if (historyData != null) {
-                        data.getGist().setWatchedPercentage(historyData.getGist().getWatchedPercentage());
-                        data.getGist().setWatchedTime(historyData.getGist().getWatchedTime());
-                        if (historyData.getGist().getWatchedPercentage() > 0) {
-                            progress = historyData.getGist().getWatchedPercentage();
-                            view.setVisibility(View.VISIBLE);
-                            ((ProgressBar) view).setProgress(progress);
-                        } else {
-                            long watchedTime = historyData.getGist().getWatchedTime();
-                            long runTime = historyData.getGist().getRuntime();
-                            if (watchedTime > 0 && runTime > 0) {
-                                long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
-                                progress = (int) percentageWatched;
-                                ((ProgressBar) view).setProgress(progress);
-                                view.setVisibility(View.VISIBLE);
-                            } else {
-                                if (childComponent.isAlwaysVisible()) {
-                                    view.setVisibility(View.VISIBLE);
-                                } else {
-                                    view.setVisibility(View.INVISIBLE);
-                                }
-                                ((ProgressBar) view).setProgress(0);
-                            }
-                        }
+                    int progress = getPercentageWatched(appCMSPresenter, data);
+                    ((ProgressBar) view).setProgress(progress);
+                    if (childComponent.isAlwaysVisible() || 0 < progress) {
+                        view.setVisibility(View.VISIBLE);
                     } else {
-                        if (childComponent.isAlwaysVisible()) {
-                            view.setVisibility(View.VISIBLE);
-                        } else {
-                            view.setVisibility(View.INVISIBLE);
-                        }
+                        view.setVisibility(View.INVISIBLE);
                     }
                 }
             }
@@ -747,6 +757,34 @@ public class CollectionGridItemView extends BaseView {
                 return itemContainer;
             }
         }
+    }
+
+    private int getPercentageWatched(AppCMSPresenter appCMSPresenter,
+                                     ContentDatum data) {
+        ContentDatum historyData = null;
+
+        if (data != null && data.getGist() != null && data.getGist().getId() != null) {
+            historyData = appCMSPresenter.getUserHistoryContentDatum(data.getGist().getId());
+        }
+
+        int progress = 0;
+
+        if (historyData != null) {
+            data.getGist().setWatchedPercentage(historyData.getGist().getWatchedPercentage());
+            data.getGist().setWatchedTime(historyData.getGist().getWatchedTime());
+            if (historyData.getGist().getWatchedPercentage() > 0) {
+                progress = historyData.getGist().getWatchedPercentage();
+            } else {
+                long watchedTime = historyData.getGist().getWatchedTime();
+                long runTime = historyData.getGist().getRuntime();
+                if (watchedTime > 0 && runTime > 0) {
+                    long percentageWatched = (long) (((double) watchedTime / (double) runTime) * 100.0);
+                    progress = (int) percentageWatched;
+                }
+            }
+        }
+
+        return progress;
     }
 
     private static class GradientTransformation extends BitmapTransformation {

@@ -468,6 +468,9 @@
         <item quantity="other">SECS</item>
     </plurals>
 
+    <string name="app_cms_play_lecture_text">Play</string>
+    <string name="app_cms_resume_lecture_text">Resume</string>
+    <string name="app_cms_percent_complete_text">%1$d\%% Complete</string>
 </resources>
 
 
