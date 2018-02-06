@@ -304,7 +304,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .centerCrop();
+                                        .fitCenter();
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -328,7 +328,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight);
-                                requestOptions.centerCrop();
+                                requestOptions.fitCenter();
 
                                 Glide.with(context)
                                         .load(imageUrl)
@@ -389,7 +389,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .centerCrop();
+                                        .fitCenter();
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -405,7 +405,7 @@ public class CollectionGridItemView extends BaseView {
                             if (!ImageUtils.loadImage((ImageView) view, imageUrl, ImageLoader.ScaleType.START)) {
                                 RequestOptions requestOptions = new RequestOptions()
                                         .override(childViewWidth, childViewHeight)
-                                        .centerCrop();
+                                        .fitCenter();
                                 Glide.with(context)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -481,6 +481,13 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
+                        if (0 < childComponent.getMaxLines()) {
+                            ((TextView) view).setMaxLines(childComponent.getMaxLines());
+                        }
+                        if (!TextUtils.isEmpty(childComponent.getTextColor())) {
+                            ((TextView) view).setTextColor(
+                                    Color.parseColor(ViewCreator.getColor(context, childComponent.getTextColor())));
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DURATION_KEY) {
                         ((TextView) view).setText(String.valueOf(data.getGist().getRuntime() / 60));
 
@@ -658,12 +665,20 @@ public class CollectionGridItemView extends BaseView {
                                 ((ProgressBar) view).setProgress(progress);
                                 view.setVisibility(View.VISIBLE);
                             } else {
-                                view.setVisibility(View.INVISIBLE);
+                                if (childComponent.isAlwaysVisible()) {
+                                    view.setVisibility(View.VISIBLE);
+                                } else {
+                                    view.setVisibility(View.INVISIBLE);
+                                }
                                 ((ProgressBar) view).setProgress(0);
                             }
                         }
                     } else {
-                        view.setVisibility(View.INVISIBLE);
+                        if (childComponent.isAlwaysVisible()) {
+                            view.setVisibility(View.VISIBLE);
+                        } else {
+                            view.setVisibility(View.INVISIBLE);
+                        }
                     }
                 }
             }

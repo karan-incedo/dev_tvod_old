@@ -103,6 +103,7 @@
     <string name="app_cms_page_play_key">play</string>
     <string name="app_cms_page_play_image_key">playImage</string>
     <string name="app_cms_page_tray_title_key">trayTitle</string>
+    <string name="app_cms_page_view_all_key">viewAll</string>
     <string name="app_cms_page_thumbnail_image_key">thumbnailImage</string>
     <string name="app_cms_page_badge_image_key">badgeImage</string>
     <string name="app_cms_page_thumbnail_title_key">thumbnailTitle</string>
@@ -466,4 +467,5 @@
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
     <string name="app_cms_shows_deeplink_path_name">show</string>
     <string name="app_cms_text_alignment_right">right</string>
+    <string name="app_cms_view_all_text">View All</string>
 </resources>

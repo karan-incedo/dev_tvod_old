@@ -47,6 +47,14 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     Settings settings = new Settings();
 
+    @SerializedName("camelCase")
+    @Expose
+    boolean camelCase;
+
+    @SerializedName("maxLines")
+    @Expose
+    int maxLines;
+
     public int getOpacity() {
         return opacity;
     }
@@ -221,6 +229,10 @@ public class Component implements ModuleWithComponents, Serializable {
     @SerializedName("blockName")
     @Expose
     String blockName;
+
+    @SerializedName("alwaysVisible")
+    @Expose
+    boolean alwaysVisible;
 
     boolean yAxisSetManually;
 
@@ -564,5 +576,29 @@ public class Component implements ModuleWithComponents, Serializable {
 
     public void setWidthModified(boolean widthModified) {
         this.widthModified = widthModified;
+    }
+
+    public boolean isCamelCase() {
+        return camelCase;
+    }
+
+    public void setCamelCase(boolean camelCase) {
+        this.camelCase = camelCase;
+    }
+
+    public int getMaxLines() {
+        return maxLines;
+    }
+
+    public void setMaxLines(int maxLines) {
+        this.maxLines = maxLines;
+    }
+
+    public boolean isAlwaysVisible() {
+        return alwaysVisible;
+    }
+
+    public void setAlwaysVisible(boolean alwaysVisible) {
+        this.alwaysVisible = alwaysVisible;
     }
 }

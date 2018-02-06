@@ -1116,12 +1116,14 @@ public abstract class BaseView extends FrameLayout {
                                     jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
                         int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                         int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
-                        if (thumbnailHeight < thumbnailWidth) {
-                            int heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
-                            tm = heightByRatio + 4;
-                        } else {
-                            int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
-                            tm = heightByRatio + 4;
+                        if (0 < thumbnailHeight && 0 < thumbnailWidth) {
+                            if (thumbnailHeight < thumbnailWidth) {
+                                int heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
+                                tm = heightByRatio + 4;
+                            } else {
+                                int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
+                                tm = heightByRatio + 4;
+                            }
                         }
                     }
                     break;
@@ -1146,12 +1148,14 @@ public abstract class BaseView extends FrameLayout {
                         jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
                     int thumbnailWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                     int thumbnailHeight = (int) getThumbnailHeight(getContext(), layout, LayoutParams.WRAP_CONTENT);
-                    int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
-                    if (thumbnailHeight < thumbnailWidth) {
-                        heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
-                    }
+                    if (0 < thumbnailHeight && 0 < thumbnailWidth) {
+                        int heightByRatio = (int) ((float) thumbnailWidth * 4.0f / 3.0f);
+                        if (thumbnailHeight < thumbnailWidth) {
+                            heightByRatio = (int) ((float) thumbnailWidth * 9.0f / 16.0f);
+                        }
 
-                    tm = heightByRatio - viewHeight;
+                        tm = heightByRatio - viewHeight;
+                    }
                 } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_VIDEO_DETAILS_KEY) {
                     viewWidth = (int) getThumbnailWidth(getContext(), layout, LayoutParams.MATCH_PARENT);
                     gravity = Gravity.CENTER_HORIZONTAL;
