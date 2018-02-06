@@ -155,8 +155,8 @@ public class AppCmsTVPageFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onPause() {
+        super.onPause();
         focusableView = getActivity().getCurrentFocus();
     }
 
