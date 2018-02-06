@@ -105,6 +105,7 @@ public class TVCreditBlocksView extends RelativeLayout {
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         directorListLayoutParams.addRule(ALIGN_PARENT_END);
         directorListLayoutParams.addRule(END_OF, directorListTitleViewId);
+        directorListLayoutParams.addRule(ALIGN_BASELINE, directorListTitleViewId);
         directorListView.setLayoutParams(directorListLayoutParams);
         directorListView.setId(directorListViewId);
         addView(directorListView);
@@ -139,8 +140,7 @@ public class TVCreditBlocksView extends RelativeLayout {
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         starringListLayoutParams.addRule(ALIGN_PARENT_END);
         starringListLayoutParams.addRule(END_OF, starringListTitleViewId);
-        starringListLayoutParams.addRule(ALIGN_START, directorListViewId);
-        starringListLayoutParams.addRule(BELOW, directorListViewId);
+        starringListLayoutParams.addRule(ALIGN_BASELINE, starringListTitleViewId);
         starringListView.setLayoutParams(starringListLayoutParams);
         starringListView.setId(starringListViewId);
         addView(starringListView);
