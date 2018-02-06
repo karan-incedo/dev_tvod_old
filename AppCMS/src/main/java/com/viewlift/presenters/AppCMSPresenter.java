@@ -4376,7 +4376,8 @@ public class AppCMSPresenter {
                 new GetAppCMSVideoDetailAsyncTask(appCMSVideoDetailCall,
                         appCMSVideoDetail -> {
                             try {
-                                if (appCMSVideoDetail != null) {
+                                if (appCMSVideoDetail != null &&
+                                        appCMSVideoDetail.getRecords() != null) {
                                     ContentDatum contentData = appCMSVideoDetail.getRecords().get(0);
                                     contentData.setSeason(binder.getContentData().getSeason());
                                     binder.setContentData(contentData);
@@ -10116,12 +10117,13 @@ public class AppCMSPresenter {
 
 
     private String getAutoplayPageId(String mediaType) {
-
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             if (mediaType != null && mediaType.equalsIgnoreCase("episodic")){
                 if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))){
+                    return key;
+                }else if(value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))){
                     return key;
                 }
             } else {

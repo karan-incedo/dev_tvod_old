@@ -67,7 +67,7 @@ public abstract class TVBaseView extends FrameLayout {
             stringBuilder.append(context.getResources().getQuantityString(R.plurals.episodes, number, number));
         }
         stringBuilder.append(" | ");
-        stringBuilder.append(data.getGist().getPrimaryCategory().getTitle().toUpperCase());
+         stringBuilder.append(data.getGist().getPrimaryCategory().getTitle() != null ? data.getGist().getPrimaryCategory().getTitle().toUpperCase() : "");
         ((TextView) view).setText(stringBuilder);
         ((TextView) view).setLetterSpacing(LETTER_SPACING);
     }
@@ -290,7 +290,7 @@ public abstract class TVBaseView extends FrameLayout {
                 case PAGE_VIDEO_TITLE_KEY:
                   //  if (appCMSPresenter.getTemplateType().equals(AppCMSPresenter.TemplateType.ENTERTAINMENT)) {
 //                        viewWidth = DEVICE_WIDTH/2 - Utils.getViewXAxisAsPerScreen(getContext() , 150);
-                  //  }
+                    //  }
                     break;
                 case PAGE_VIDEO_SUBTITLE_KEY:
                     viewWidth = DEVICE_WIDTH/2;
