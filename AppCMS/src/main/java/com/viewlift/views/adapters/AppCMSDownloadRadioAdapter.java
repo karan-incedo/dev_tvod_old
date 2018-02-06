@@ -26,12 +26,12 @@ public abstract class AppCMSDownloadRadioAdapter<T>
         extends RecyclerView.Adapter<AppCMSDownloadRadioAdapter.ViewHolder> {
 
     int tintColor;
-    int downloadQualityPosition = 1; // Default position is 1, i.e 720p
+    protected int downloadQualityPosition = 1; // Default position is 1, i.e 720p
     List<T> mItems;
-    private ItemClickListener itemClickListener;
+    protected ItemClickListener itemClickListener;
     private Context mContext;
 
-    AppCMSDownloadRadioAdapter(Context context, List<T> items) {
+    public AppCMSDownloadRadioAdapter(Context context, List<T> items) {
         this.mContext = context;
         this.mItems = items;
     }
@@ -100,6 +100,22 @@ public abstract class AppCMSDownloadRadioAdapter<T>
 
                 mRadio.setButtonTintList(colorStateList);
             }
+        }
+
+        public AppCompatRadioButton getmRadio() {
+            return mRadio;
+        }
+
+        public void setmRadio(AppCompatRadioButton mRadio) {
+            this.mRadio = mRadio;
+        }
+
+        public TextView getmText() {
+            return mText;
+        }
+
+        public void setmText(TextView mText) {
+            this.mText = mText;
         }
     }
 }

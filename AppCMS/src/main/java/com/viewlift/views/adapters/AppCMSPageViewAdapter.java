@@ -1,11 +1,13 @@
 package com.viewlift.views.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.viewlift.R;
+
 import com.viewlift.views.customviews.ModuleView;
 
 import java.util.ArrayList;
@@ -16,7 +18,7 @@ import java.util.List;
  */
 
 public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAdapter.PageViewHolder> {
-    private List<View> childViews;
+    private List<ModuleView> childViews;
     private static int TYPE_PLAYER = 0;
     private static int TYPE_STANZA = 1;
 
@@ -26,7 +28,7 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
         setHasStableIds(true);
     }
 
-    public void addView(View view) {
+    public void addView(ModuleView view) {
         if (childViews == null) {
             childViews = new ArrayList<>();
         }
@@ -96,6 +98,27 @@ public class AppCMSPageViewAdapter extends RecyclerView.Adapter<AppCMSPageViewAd
     @Override
     public int getItemCount() {
         return childViews != null ? childViews.size() : 0;
+    }
+
+    public List<String> getViewIdList(int firstIndex, int lastIndex) {
+        List<String> viewIdList = new ArrayList<>();
+        try {
+            if (childViews != null && !childViews.isEmpty()) {
+                int childViewsSize = childViews.size();
+                for (int i = firstIndex; i < lastIndex && i < childViewsSize; i++) {
+                    if (childViews.get(i) != null &&
+                            childViews.get(i).getModule() != null) {
+                        String viewModuleId = childViews.get(i).getModule().getId();
+                        if (!TextUtils.isEmpty(viewModuleId)) {
+                            viewIdList.add(viewModuleId);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return viewIdList;
     }
 
     public static class PageViewHolder extends RecyclerView.ViewHolder {

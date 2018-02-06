@@ -11,7 +11,6 @@ import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.viewlift.AppCMSApplication;
@@ -31,13 +30,13 @@ import okhttp3.OkHttpClient;
 
 import static android.app.SearchManager.SUGGEST_URI_PATH_QUERY;
 
-/**
+/*
  * Created by viewlift on 6/12/17.
  */
 
 public class AppCMSSearchableContentProvider extends ContentProvider {
     public static final String URI_AUTHORITY = BuildConfig.AUTHORITY;
-    private static final String TAG = "SearchableProvider";
+    //private static final String TAG = "SearchableProvider";
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     private static final String[] SUGGESTION_COLUMN_NAMES = {BaseColumns._ID,
             SearchManager.SUGGEST_COLUMN_TEXT_1,
@@ -105,6 +104,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                             for (int i = 0; i < searchResultList.size(); i++) {
                                 Uri permalinkUri = Uri.parse(searchResultList.get(i).getGist().getPermalink());
                                 String filmUri = permalinkUri.getLastPathSegment();
+                                String title = searchResultList.get(i).getGist().getTitle();
                                 String runtime = String.valueOf(searchResultList.get(i).getGist().getRuntime());
                                 String searchHintResult = searchResultList.get(i).getGist().getTitle() +
                                         "," +
@@ -114,10 +114,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         "," +
                                         permalinkUri;
 
-                                Object[] rowResult = {i,
-                                        searchResultList.get(i).getGist().getTitle(),
-                                        searchResultList.get(i).getGist().getRuntime()/ 60,
-                                        searchHintResult};
+                                Object[] rowResult = {i, title, runtime, searchHintResult};
 
                                 cursor.addRow(rowResult);
                                 //Log.d(TAG, searchResultList.get(i).getGist().getTitle());

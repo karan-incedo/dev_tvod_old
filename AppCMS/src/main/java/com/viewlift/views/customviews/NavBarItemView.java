@@ -9,6 +9,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -132,7 +133,7 @@ public class NavBarItemView extends LinearLayout {
                     LinearLayout.LayoutParams navImageLayoutParams =
                             new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.nav_image_width, getContext()), BaseView.dpToPx(R.dimen.nav_image_height, getContext()));
                     navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                    // navImage.setLayoutParams(navImageLayoutParams);
+                    navImage.setLayoutParams(navImageLayoutParams);
                     addView(navImage);
 
                     break;
@@ -200,11 +201,15 @@ public class NavBarItemView extends LinearLayout {
 
     public void setImage(String drawableName) {
         Resources resources = getResources();
-        int drawableId = resources.getIdentifier(drawableName,
-                "drawable",
-                getContext().getPackageName());
-        if (navImage != null) {
-            navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
+        try {
+            int drawableId = resources.getIdentifier(drawableName,
+                    "drawable",
+                    getContext().getPackageName());
+            if (navImage != null) {
+                navImage.setImageDrawable(ContextCompat.getDrawable(getContext(), drawableId));
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Missing tab icon image resource: " + drawableName);
         }
     }
 
