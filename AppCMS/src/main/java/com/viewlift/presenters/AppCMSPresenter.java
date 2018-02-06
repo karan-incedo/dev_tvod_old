@@ -906,7 +906,8 @@ public class AppCMSPresenter {
                 } else {
                     try {
                         if (usedCachedAPI) {
-                            if (isUserLoggedIn()) {
+                            if (isUserLoggedIn() || (moviesPage != null && pageId != null &&
+                                    pageId.equals(moviesPage.getPageId()))) {
                                 urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
                                         appCMSMain.getApiBaseUrlCached(),
                                         siteId,
@@ -10217,7 +10218,7 @@ public class AppCMSPresenter {
                                                         }, true);
                                                     }
 
-                                                    if (!isUserLoggedIn()) {
+                                                    if (!isUserLoggedIn() && TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())) {
                                                         //Log.d(TAG, "Signing in as an anonymous user");
                                                         signinAnonymousUser();
                                                     } else if (isUserLoggedIn()) {
@@ -10276,6 +10277,11 @@ public class AppCMSPresenter {
 //                                                                        + loginPage.getPageName());
                                                             launchBlankPage();
                                                         }
+                                                    }
+
+                                                    if (!isUserLoggedIn() && !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())) {
+                                                        //Log.d(TAG, "Signing in as an anonymous user");
+                                                        signinAnonymousUser();
                                                     }
                                                 }
                                             });
