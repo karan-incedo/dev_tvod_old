@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_cms_main_url">%1$s%2$s/main.json?x=%3$d</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
 
-    <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
     <!-- AppCMS StreamingInfo API -->
@@ -62,6 +61,8 @@
     <!-- AppCMS Shows Status API-->
     <!--<string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>-->
     <string name="app_cms_shows_status_api_url">%1$s%2$s?path=%3$s&amp;site=%4$s&amp;includeContent=true</string>
+
+    <string name="app_cms_pages_api_url">%1$s/pages?site=%2$s&amp;modules=%3$s</string>
 
     <!-- Restore Purchase API -->
     <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/android?site=%2$s</string>
@@ -411,19 +412,17 @@
     <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userid=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Navigation menu -->
-    <string name="app_cms_menu_icon_name">menu_</string>
+    <string name="app_cms_menu_icon_name">icon-menu</string>
     <string name="app_cms_menu_label">Menu</string>
     <string name="app_cms_live_icon_name">live_</string>
-    <string name="app_cms_home_icon_name">home_page_</string>
-    <string name="app_cms_shows_icon_name">shows_</string>
+    <string name="app_cms_home_icon_name">icon-home</string>
     <string name="app_cms_team_icon_name">teams_</string>
-
     <string name="app_cms_home_label">Home</string>
-    <string name="app_cms_movies_icon_name">categories_page_categories</string>
+    <string name="app_cms_movies_icon_name">icon-movies</string>
     <string name="app_cms_movies_label">Movies</string>
-    <string name="app_cms_search_icon_name">search_</string>
+    <string name="app_cms_search_icon_name">icon-search</string>
     <string name="app_cms_search_label">Search</string>
-
+    <string name="app_cms_shows_icon_name">icon-shows</string>
     <string name="app_cms_shows_label">Shows</string>
     <string name="app_cms_teams_label">Teams</string>
     <string name="app_cms_my_profile_label">My %1$s</string>

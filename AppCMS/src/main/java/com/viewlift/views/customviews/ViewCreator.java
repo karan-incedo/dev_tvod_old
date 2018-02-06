@@ -2914,8 +2914,8 @@ public class ViewCreator {
                 }
 
                 if (showTrayLabel) {
-                    List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
-                    int numSeasons = seasons.size();
+                    int numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
+
                     componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
 
                     try {
@@ -2942,6 +2942,7 @@ public class ViewCreator {
                             seasonTitleSb.append(i + 1);
                             seasonTrayAdapter.add(seasonTitleSb.toString());
                         }
+
                     }
 
                     componentViewResult.onInternalEvent =
@@ -3107,6 +3108,7 @@ public class ViewCreator {
                                 } else if (jsonValueKeyMap.get(viewType) == AppCMSUIKeyType.PAGE_HISTORY_MODULE_KEY) {
                                     ((TextView) componentViewResult.componentView).setText(R.string.app_cms_page_history_title);
                                 } else if (moduleType == AppCMSUIKeyType.PAGE_SEASON_TRAY_MODULE_KEY) {
+
                                     if (moduleAPI != null &&
                                             moduleAPI.getContentData() != null &&
                                             moduleAPI.getContentData().get(0) != null &&
@@ -3121,6 +3123,7 @@ public class ViewCreator {
                                         seasonTitleSb.append(1);
                                         ((TextView) componentViewResult.componentView).setText(seasonTitleSb.toString());
                                     }
+
                                 }
                                 break;
 
@@ -3426,6 +3429,7 @@ public class ViewCreator {
                             fontSize = (int) (0.66 * fontSize);
                         }
                         ((TextView) componentViewResult.componentView).setTextSize(fontSize);
+
                     }
                 }
 
