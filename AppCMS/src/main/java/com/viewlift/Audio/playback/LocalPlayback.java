@@ -325,8 +325,10 @@ public final class LocalPlayback implements Playback {
             mCurrentMediaId = mediaId;
             AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
             audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
-            audioData.getGist().setAudioPlaying(true);
+
         }
+        audioData.getGist().setAudioPlaying(true);
+        appCMSPresenter.notifyDownloadHasCompleted();
 
         //if media has changed then load new audio url
         if (mediaHasChanged || mExoPlayer == null || currentPosition > 0) {
