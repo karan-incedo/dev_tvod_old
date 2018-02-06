@@ -1168,7 +1168,7 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-                    module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             } catch (Exception e) {
 
             }
@@ -2191,7 +2191,7 @@ public class ViewCreator {
                             @Override
                             public void onClick(View view) {
                                 if (!appCMSPresenter.isUserLoggedIn()) {
-                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_REQUIRED,
+                                    appCMSPresenter.showEntitlementDialog(AppCMSPresenter.DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED,
                                             () -> {
                                                 appCMSPresenter.setAfterLoginAction(() -> {
 
@@ -2454,17 +2454,17 @@ public class ViewCreator {
                                     moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
-                                    moduleAPI.getContentData().get(0).getAudioGist() != null &&
-                                    moduleAPI.getContentData().get(0).getAudioGist().getTitle() != null &&
-                                    moduleAPI.getContentData().get(0).getAudioGist().getPermalink() != null) {
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
                                 StringBuilder filmUrl = new StringBuilder();
                                 filmUrl.append(appCMSMain.getDomainName());
-                                filmUrl.append(moduleAPI.getContentData().get(0).getAudioGist().getPermalink());
+                                filmUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
                                 String[] extraData = new String[1];
                                 extraData[0] = filmUrl.toString();
-                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getAudioGist().getPermalink(),
+                                if (!appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                         component.getAction(),
-                                        moduleAPI.getContentData().get(0).getAudioGist().getTitle(),
+                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
                                         extraData,
                                         moduleAPI.getContentData().get(0),
                                         false,
@@ -2484,17 +2484,17 @@ public class ViewCreator {
                                     moduleAPI.getContentData() != null &&
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
-                                    moduleAPI.getContentData().get(0).getAudioGist() != null &&
-                                    moduleAPI.getContentData().get(0).getAudioGist().getTitle() != null &&
-                                    moduleAPI.getContentData().get(0).getAudioGist().getPermalink() != null) {
+                                    moduleAPI.getContentData().get(0).getGist() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getTitle() != null &&
+                                    moduleAPI.getContentData().get(0).getGist().getPermalink() != null) {
                                 StringBuilder playlistUrl = new StringBuilder();
                                 playlistUrl.append(appCMSMain.getDomainName());
-                                playlistUrl.append(moduleAPI.getContentData().get(0).getAudioGist().getPermalink());
+                                playlistUrl.append(moduleAPI.getContentData().get(0).getGist().getPermalink());
                                 String[] extraData = new String[1];
                                 extraData[0] = playlistUrl.toString();
-                                appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getAudioGist().getPermalink(),
+                                appCMSPresenter.launchButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
                                         component.getAction(),
-                                        moduleAPI.getContentData().get(0).getAudioGist().getTitle(),
+                                        moduleAPI.getContentData().get(0).getGist().getTitle(),
                                         extraData,
                                         moduleAPI.getContentData().get(0),
                                         false,
@@ -2714,10 +2714,10 @@ public class ViewCreator {
                     if (moduleAPI != null
                             && moduleAPI.getContentData() != null
                             && moduleAPI.getContentData().get(0) != null
-                            && moduleAPI.getContentData().get(0).getAudioGist() != null
-                            && moduleAPI.getContentData().get(0).getAudioGist().getTitle() != null
+                            && moduleAPI.getContentData().get(0).getGist() != null
+                            && moduleAPI.getContentData().get(0).getGist().getTitle() != null
                             ) {
-                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getAudioGist().getTitle());
+                        ((TextView) componentViewResult.componentView).setText(moduleAPI.getContentData().get(0).getGist().getTitle());
                     }
                 }
                 if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_SUB_TITLE) {
@@ -3021,8 +3021,8 @@ public class ViewCreator {
                                     !moduleAPI.getContentData().isEmpty() &&
                                     moduleAPI.getContentData().get(0) != null &&
                                     moduleAPI.getContentData().get(0).getGist() != null &&
-                                    moduleAPI.getContentData().get(0).getGist().getPublishDate() != 0) {
-                                long publishDateMillseconds = moduleAPI.getContentData().get(0).getGist().getPublishDate();
+                                    moduleAPI.getContentData().get(0).getGist().getPublishDate() != null) {
+                                long publishDateMillseconds = Long.parseLong(moduleAPI.getContentData().get(0).getGist().getPublishDate());
                                 long publishTimeMs = moduleAPI.getContentData().get(0).getGist().getRuntime();
 
                                 String publishDate = context.getResources().getString(R.string.published_on) + " " + appCMSPresenter.getDateFormat(publishDateMillseconds, "MMM dd,yyyy");

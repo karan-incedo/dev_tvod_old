@@ -47,8 +47,6 @@ import rx.functions.Action1;
 public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAdapter.ViewHolder>
         implements AppCMSBaseAdapter, OnInternalEvent {
     private static final String TAG = AppCMSPlaylistAdapter.class.getSimpleName() + "TAG";
-
-
     protected Context mContext;
     protected Layout parentLayout;
     protected Component component;
@@ -107,7 +105,9 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                 mCurrentPlayListId = moduleAPI.getContentData().get(0).getGist().getId();
             }
              /*removing 1st data in the list since it contains playlist GIST*/
-            if (moduleAPI.getContentData().get(0).getGist() == null) {
+            if (moduleAPI.getContentData().get(0).getGist() != null &&
+                    moduleAPI.getContentData().get(0).getGist().getMediaType() != null
+                    && moduleAPI.getContentData().get(0).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.media_type_playlist).toLowerCase())) {
                 adapterData.remove(0);
             }
             allViews = new CollectionGridItemView[this.adapterData.size()];
@@ -251,13 +251,11 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
                                             oldClick = clickPosition;
                                             data.getGist().setAudioPlaying(true);
                                         }
-
-                                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
                                         updateData(mRecyclerView, adapterData);
+                                        AudioPlaylistHelper.getInstance().playAudioOnClickItem(data.getGist().getId(), 0);
                                         return;
                                     }
                                 }
-
                             }
                         }
                     }
@@ -507,6 +505,4 @@ public class AppCMSPlaylistAdapter extends RecyclerView.Adapter<AppCMSPlaylistAd
         }
 
     }
-
-
 }

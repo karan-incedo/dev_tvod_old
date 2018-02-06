@@ -11681,12 +11681,36 @@ public class AppCMSPresenter {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
     }
 
-    public void openVideoPageFromSearch(String[] searchResultClick) {
+    public void searchSuggestionClick(String[] searchResultClick) {
         String permalink = searchResultClick[3];
         String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
         String title = searchResultClick[0];
         String runtime = searchResultClick[1];
+        String mediaType = searchResultClick[4];
+        String contentType = searchResultClick[5];
+        String gistId = searchResultClick[6];
         //Log.d(TAG, "Launching " + permalink + ":" + action);
+
+        /*get audio details on tray click item and play song*/
+        if (mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                contentType != null &&
+                contentType.toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+            List<String> audioPlaylistId = new ArrayList<String>();
+            audioPlaylistId.add(gistId);
+            AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
+            AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
+            getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                    .PRESENTER_PAGE_LOADING_ACTION));
+            AudioPlaylistHelper.getInstance().playAudioOnClickItem(gistId, 0);
+            return;
+        }
+
+                                /*Get playlist data and open playlist page*/
+        if (mediaType != null
+                && mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())) {
+            navigateToPlaylistPage(gistId, title, false);
+            return;
+        }
         if (!launchButtonSelectedAction(permalink,
                 action,
                 title,
@@ -12257,7 +12281,7 @@ public class AppCMSPresenter {
 
     public String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
-        long lastWatched = contentDatum.getGist().getUpdateDate();
+        long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 
         if (currentTime == 0) {
             lastWatched = 0;
