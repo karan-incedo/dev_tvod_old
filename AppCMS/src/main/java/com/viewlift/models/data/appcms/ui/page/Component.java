@@ -6,7 +6,6 @@ import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 @UseStag(UseStag.FieldOption.SERIALIZED_NAME)
 public class Component implements ModuleWithComponents, Serializable {
@@ -51,9 +50,9 @@ public class Component implements ModuleWithComponents, Serializable {
     @Expose
     boolean camelCase;
 
-    @SerializedName("maxLines")
+    @SerializedName("minLines")
     @Expose
-    int maxLines;
+    int minLines;
 
     public int getOpacity() {
         return opacity;
@@ -586,12 +585,12 @@ public class Component implements ModuleWithComponents, Serializable {
         this.camelCase = camelCase;
     }
 
-    public int getMaxLines() {
-        return maxLines;
+    public int getMinLines() {
+        return minLines;
     }
 
-    public void setMaxLines(int maxLines) {
-        this.maxLines = maxLines;
+    public void setMinLines(int minLines) {
+        this.minLines = minLines;
     }
 
     public boolean isAlwaysVisible() {

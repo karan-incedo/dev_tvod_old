@@ -481,8 +481,10 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
-                        if (0 < childComponent.getMaxLines()) {
-                            ((TextView) view).setMaxLines(childComponent.getMaxLines());
+                        if (0 < childComponent.getMinLines()) {
+                            ((TextView) view).setSingleLine(false);
+                            ((TextView) view).setMinLines(childComponent.getMinLines());
+                            ((TextView) view).setMaxLines(childComponent.getMinLines());
                         }
                         if (!TextUtils.isEmpty(childComponent.getTextColor())) {
                             ((TextView) view).setTextColor(

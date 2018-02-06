@@ -191,24 +191,24 @@
               "leftMargin": 8,
               "rightMargin": 8,
               "fontSize": 11,
-              "height": 15
+              "height": 34
             },
             "tabletLandscape": {
               "yAxis": 180,
               "leftMargin": 8,
               "rightMargin": 8,
               "fontSize": 14,
-              "height": 19
+              "height": 42
             },
             "tabletPortrait": {
               "yAxis": 180,
               "leftMargin": 8,
               "rightMargin": 8,
               "fontSize": 14,
-              "height": 19
+              "height": 42
             }
           },
-          "maxLines": 2,
+          "minLines": 2,
           "fontFamily": "OpenSans",
           "textAlignment": "left",
           "type": "label",
@@ -219,19 +219,19 @@
         {
           "layout": {
             "mobile": {
-              "yAxis": 160,
+              "yAxis": 179,
               "leftMargin": 8,
               "rightMargin": 8,
               "height": 3
             },
             "tabletLandscape": {
-              "yAxis": 87,
+              "yAxis": 227,
               "leftMargin": 8,
               "rightMargin": 8,
               "height": 3
             },
             "tabletPortrait": {
-              "yAxis": 87,
+              "yAxis": 227,
               "leftMargin": 8,
               "rightMargin": 8,
               "height": 3
