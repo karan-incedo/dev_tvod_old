@@ -533,7 +533,7 @@ public class TVViewCreator {
                             for (int i = 0; i < episodes.size(); i++) {
                                 List<String> relatedVids = Utils.getRelatedVideosInShow(
                                         moduleData.getContentData().get(0).getSeason(),
-                                        0,
+                                        seasonIndex,
                                         i);
                                 ContentDatum contentDatum = episodes.get(i);
                                 contentDatum.setSeason(moduleData.getContentData().get(0).getSeason());
