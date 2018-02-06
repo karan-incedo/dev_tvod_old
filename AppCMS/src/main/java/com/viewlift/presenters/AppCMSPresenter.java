@@ -10117,22 +10117,25 @@ public class AppCMSPresenter {
 
 
     private String getAutoplayPageId(String mediaType) {
+        String autoPlayKey = null;
         for (Map.Entry<String, String> entry : pageIdToPageNameMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (mediaType != null && mediaType.equalsIgnoreCase("episodic")){
-                if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))){
-                    return key;
-                }else if(value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))){
-                    return key;
+            if (mediaType != null && mediaType.equalsIgnoreCase("episodic")) {
+                if (value.equalsIgnoreCase(currentActivity.getString(R.string.app_cms_page_autoplay_land_key))) {
+                    autoPlayKey =  key;
+                    return autoPlayKey;
+                } else if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
+                    autoPlayKey =  key;
                 }
             } else {
                 if (value.equals(currentActivity.getString(R.string.app_cms_page_autoplay_key))) {
-                    return key;
+                    autoPlayKey =  key;
+                    return autoPlayKey;
                 }
             }
         }
-        return null;
+        return autoPlayKey;
     }
 
     private String getPageId(AppCMSPageUI appCMSPageUI) {
