@@ -10377,90 +10377,90 @@ public class AppCMSPresenter {
                             null,
                             !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
                             null);
-                }
 
-                new SoftReference<Object>(homePage, referenceQueue);
+                    new SoftReference<Object>(homePage, referenceQueue);
+                }
             }
 
             int moviesPageIndex = getMoviesPage(metaPageList);
             if (moviesPageIndex >= 0) {
                 moviesPage = metaPageList.get(moviesPageIndex);
 
-                if (moviesPage != null) {
-                    String baseUrl = appCMSMain.getApiBaseUrl();
-                    String endPoint = moviesPage.getPageAPI();
-                    String siteId = appCMSSite.getGist().getSiteInternalName();
-
-                    // Cache movies page when the app is loading
-                    getPageIdContent(getApiUrl(true,
-                            false,
-                            false,
-                            baseUrl,
-                            endPoint,
-                            siteId,
-                            moviesPage.getPageId(),
-                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                            moviesPage.getPageId(),
-                            null,
-                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
-                            null);
-                }
-
-                new SoftReference<Object>(moviesPage, referenceQueue);
+//                if (moviesPage != null) {
+//                    String baseUrl = appCMSMain.getApiBaseUrl();
+//                    String endPoint = moviesPage.getPageAPI();
+//                    String siteId = appCMSSite.getGist().getSiteInternalName();
+//
+//                    // Cache movies page when the app is loading
+//                    getPageIdContent(getApiUrl(true,
+//                            false,
+//                            false,
+//                            baseUrl,
+//                            endPoint,
+//                            siteId,
+//                            moviesPage.getPageId(),
+//                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
+//                            moviesPage.getPageId(),
+//                            null,
+//                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
+//                            null);
+//
+//                    new SoftReference<Object>(moviesPage, referenceQueue);
+//                }
             }
 
             int showsPageIndex = getShowsPage(metaPageList);
             if (showsPageIndex >= 0) {
                 showsPage = metaPageList.get(moviesPageIndex);
 
-                if (moviesPage != null) {
-                    String baseUrl = appCMSMain.getApiBaseUrl();
-                    String endPoint = showsPage.getPageAPI();
-                    String siteId = appCMSSite.getGist().getSiteInternalName();
+//                if (showsPage != null) {
+//                    String baseUrl = appCMSMain.getApiBaseUrl();
+//                    String endPoint = showsPage.getPageAPI();
+//                    String siteId = appCMSSite.getGist().getSiteInternalName();
+//
+//                    // Cache movies page when the app is loading
+//                    getPageIdContent(getApiUrl(true,
+//                            false,
+//                            false,
+//                            baseUrl,
+//                            endPoint,
+//                            siteId,
+//                            showsPage.getPageId(),
+//                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
+//                            showsPage.getPageId(),
+//                            null,
+//                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
+//                            null);
 
-                    // Cache movies page when the app is loading
-                    getPageIdContent(getApiUrl(true,
-                            false,
-                            false,
-                            baseUrl,
-                            endPoint,
-                            siteId,
-                            showsPage.getPageId(),
-                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached())),
-                            showsPage.getPageId(),
-                            null,
-                            !TextUtils.isEmpty(appCMSMain.getApiBaseUrlCached()),
-                            null);
-                }
-
-                new SoftReference<Object>(showsPage, referenceQueue);
+//                    new SoftReference<Object>(showsPage, referenceQueue);
+//                }
             }
 
             int subscriptionPageIndex = getSubscriptionPage(metaPageList);
             if (subscriptionPageIndex >= 0) {
                 subscriptionPage = metaPageList.get(subscriptionPageIndex);
 
-                if (subscriptionPage != null) {
-                    String baseUrl = appCMSMain.getApiBaseUrl();
-                    String endPoint = subscriptionPage.getPageAPI();
-                    String siteId = appCMSSite.getGist().getSiteInternalName();
+//                if (subscriptionPage != null) {
+//                    String baseUrl = appCMSMain.getApiBaseUrl();
+//                    String endPoint = subscriptionPage.getPageAPI();
+//                    String siteId = appCMSSite.getGist().getSiteInternalName();
+//
+//                    // Cache subscription page when the app is loading
+//                    getPageIdContent(getApiUrl(true,
+//                            true,
+//                            false,
+//                            baseUrl,
+//                            endPoint,
+//                            siteId,
+//                            subscriptionPage.getPageId(),
+//                            false),
+//                            subscriptionPage.getPageId(),
+//                            null,
+//                            false,
+//                            null);
 
-                    // Cache subscription page when the app is loading
-                    getPageIdContent(getApiUrl(true,
-                            true,
-                            false,
-                            baseUrl,
-                            endPoint,
-                            siteId,
-                            subscriptionPage.getPageId(),
-                            false),
-                            subscriptionPage.getPageId(),
-                            null,
-                            false,
-                            null);
-                }
-
-                new SoftReference<Object>(subscriptionPage, referenceQueue);
+//                    new SoftReference<Object>(subscriptionPage, referenceQueue);
+//                }
             }
 
             int splashScreenIndex = getSplashPage(metaPageList);
