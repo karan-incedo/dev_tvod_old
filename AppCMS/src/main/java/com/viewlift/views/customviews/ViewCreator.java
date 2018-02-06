@@ -2411,15 +2411,17 @@ public class ViewCreator {
                         componentKey != AppCMSUIKeyType.PAGE_ADD_TO_WATCHLIST_KEY) ||
                         componentKey == AppCMSUIKeyType.PAGE_VIEW_ALL_KEY) {
                     componentViewResult.componentView = new Button(context);
-                    ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0,
-                            0,
-                            R.drawable.ic_keyboard_arrow_right_white_24dp,
-                            0);
-                    if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
-                        int viewAllTintColor = Color.parseColor(
-                                appCMSPresenter.getAppTextColor());
-                        applyTintToCompoundDrawables((TextView) componentViewResult.componentView,
-                                viewAllTintColor);
+                    if (componentKey == AppCMSUIKeyType.PAGE_VIEW_ALL_KEY) {
+                        ((TextView) componentViewResult.componentView).setCompoundDrawablesWithIntrinsicBounds(0,
+                                0,
+                                R.drawable.ic_keyboard_arrow_right_white_24dp,
+                                0);
+                        if (!TextUtils.isEmpty(appCMSPresenter.getAppTextColor())) {
+                            int viewAllTintColor = Color.parseColor(
+                                    appCMSPresenter.getAppTextColor());
+                            applyTintToCompoundDrawables((TextView) componentViewResult.componentView,
+                                    viewAllTintColor);
+                        }
                     }
                 } else if (componentKey == AppCMSUIKeyType.PAGE_BUTTON_SWITCH_KEY) {
                     componentViewResult.componentView = new Switch(context);

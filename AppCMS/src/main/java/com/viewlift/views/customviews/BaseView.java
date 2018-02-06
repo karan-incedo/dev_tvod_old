@@ -887,6 +887,10 @@ public abstract class BaseView extends FrameLayout {
                 } else if (mobile.getLeftMargin() != 0f) {
                     float scaledLm = DEVICE_WIDTH * (mobile.getLeftMargin() / STANDARD_MOBILE_WIDTH_PX);
                     lm = Math.round(scaledLm);
+                    if (mobile.getRightMargin() != 0f) {
+                        float scaledRm = DEVICE_WIDTH * (mobile.getRightMargin() / STANDARD_MOBILE_WIDTH_PX);
+                        rm = Math.round(scaledRm);
+                    }
                 } else if (mobile.getRightMargin() != 0f) {
                     int lmDiff = viewWidth;
                     if (lmDiff < 0) {
