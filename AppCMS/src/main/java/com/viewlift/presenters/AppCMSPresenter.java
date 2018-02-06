@@ -10393,12 +10393,14 @@ public class AppCMSPresenter {
         return result;
     }
 
-    private void populateTVPage(AppCMSPageAPI appCMSPageAPI, AppCMSPageUI appCMSPageUI, String pageId,
-                                boolean launchActivity, String pageTitle, boolean isTosPage,
-                                boolean isLoginPage, String pagePath) {
-        if(cancelAllLoads){
-            return;
-        }
+    private void populateTVPage(AppCMSPageAPI appCMSPageAPI,
+                                AppCMSPageUI appCMSPageUI,
+                                String pageId,
+                                boolean launchActivity,
+                                String pageTitle,
+                                boolean isTosPage,
+                                boolean isLoginPage,
+                                String pagePath) {
         cancelInternalEvents();
         pushActionInternalEvents(pageId
                 + BaseView.isLandscape(currentActivity));

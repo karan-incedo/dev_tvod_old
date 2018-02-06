@@ -202,8 +202,8 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                             binder.getCurrentMovieId());
                     SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(seasonAndEpisodeNumber);
                     spannableStringBuilder.append(" ").append(binder.getCurrentMovieName());
-                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 5, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 5, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, seasonAndEpisodeNumber.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, seasonAndEpisodeNumber.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     finishedMovieTitle.setText(spannableStringBuilder);
                 } else {
                     finishedMovieTitle.setText(binder.getCurrentMovieName());
@@ -215,10 +215,11 @@ public class AppCMSTVAutoplayFragment extends Fragment {
                     int episodeNumber = getEpisodeNumber(binder.getContentData(),
                             binder.getContentData().getGist().getId());
                     String text = upNextMovieTitle.getText().toString();
-                    SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(Integer.toString(episodeNumber));
+                    String episodeNumberStr = Integer.toString(episodeNumber);
+                    SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(episodeNumberStr);
                     spannableStringBuilder.append(" ").append(text);
-                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, 2, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new ForegroundColorSpan(Color.parseColor("#7b7b7b")), 0, episodeNumberStr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spannableStringBuilder.setSpan(new CustomTypefaceSpan("", font), 0, episodeNumberStr.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
                     upNextMovieTitle.setText(spannableStringBuilder);
                 }
             }
