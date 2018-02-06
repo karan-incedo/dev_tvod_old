@@ -6,7 +6,7 @@ def final customApplicationId = 'Hoichoi'
 def final hostName = "www.hoichoi.tv"
 def final hostNameSuffix = "*.hoichoi.tv"
 
-def final appVersionName = "2.1.78"
+def final appVersionName = "2.1.79"
 
 buildscript {
     repositories {
@@ -42,7 +42,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 209
+        versionCode 210
 
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -276,8 +276,6 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-
-    compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
 }
 
 apply plugin: 'com.google.gms.google-services'
