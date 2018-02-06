@@ -2914,7 +2914,8 @@ public class ViewCreator {
                 }
 
                 if (showTrayLabel) {
-                    int numSeasons = moduleAPI.getContentData().get(0).getSeason().size();
+                                        List<Season_> seasons = moduleAPI.getContentData().get(0).getSeason();
+                                         int numSeasons = seasons.size();
 
                     componentViewResult.componentView = new Spinner(context, Spinner.MODE_DROPDOWN);
 
