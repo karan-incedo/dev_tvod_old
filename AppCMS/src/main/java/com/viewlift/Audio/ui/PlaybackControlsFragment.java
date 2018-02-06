@@ -105,8 +105,8 @@ public class PlaybackControlsFragment extends Fragment {
 
         progressBarPlayPause = (ProgressBar) rootView.findViewById(R.id.progressBarPlayPause);
         mPlayPause.setEnabled(true);
-        seek_audio.setEnabled(true);
-
+        seek_audio.setEnabled(false);
+        seek_audio.setClickable(false);
         mPlayPause.setOnClickListener(mButtonListener);
         extra_info = (TextView) rootView.findViewById(R.id.extra_info);
 
@@ -123,6 +123,8 @@ public class PlaybackControlsFragment extends Fragment {
                             metadata);
                 }
                 startActivity(intent);
+                getActivity().overridePendingTransition( R.anim.slide_in_up, R.anim.slide_out_up );
+
             }
         });
 

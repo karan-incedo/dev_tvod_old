@@ -199,8 +199,12 @@ public class AudioCastPlayback implements Playback {
                 if (mediaHasChanged) {
                     mCurrentMediaId = mediaId;
                     AudioPlaylistHelper.getInstance().setCurrentMediaId(mCurrentMediaId);
-                    audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+
                 }
+                audioData = AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData();
+                audioData.getGist().setAudioPlaying(true);
+                appCMSPresenter.notifyDownloadHasCompleted();
+
                 updatedMetaItem = item;
                 if (!mediaHasChanged && mRemoteMediaClient != null && mRemoteMediaClient.isPaused()) {
                     mRemoteMediaClient.play();

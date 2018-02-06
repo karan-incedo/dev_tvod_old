@@ -157,6 +157,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             public boolean onSuggestionSelect(int position) {
                 return true;
             }
+
             @Override
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
