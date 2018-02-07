@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary app values -->
-    <!--<string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>-->
-    <string name="app_cms_baseurl">https://appcms.viewlift.com</string>
+    <string name="app_cms_baseurl">https://appcmsprod.viewlift.com</string>
+    <!--<string name="app_cms_baseurl">https://appcms.viewlift.com</string>-->
 
-    <!--<string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>-->
-    <string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>
+    <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
+    <!--<string name="app_cms_app_name">3f5e193b-2e51-4853-839e-618e62896deb</string>-->
 
     <!-- x-api-key -->
     <string name="x_api_key">7arSnLdRpj8mtRj5Ruv0V1GK9PE0zOyC76KcfTi8</string>
