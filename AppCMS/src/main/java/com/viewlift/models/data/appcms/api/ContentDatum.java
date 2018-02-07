@@ -303,7 +303,6 @@ public class ContentDatum implements Serializable {
         this.planDetails = planDetails;
     }
 
-
     public ShowDetails getShowDetails() {
         return showDetails;
     }

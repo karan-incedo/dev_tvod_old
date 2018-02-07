@@ -38,10 +38,12 @@ public class AppCMSVideoPageBinder extends Binder {
     private String fontColor;
     private boolean isLoggedIn;
     private boolean isSubscribed;
-    private int currentPlayingVideoIndex;
+    private volatile int currentPlayingVideoIndex;
     private String currentMovieId;
     private String currentMovieName;
     private String currentMovieImageUrl;
+    private int playerState;
+    private boolean autoplayCancelled;
 
     public AppCMSVideoPageBinder(
             AppCMSPageUI appCMSPageUI,
@@ -88,6 +90,7 @@ public class AppCMSVideoPageBinder extends Binder {
         this.relateVideoIds = relatedVideoIds;
         this.currentPlayingVideoIndex = currentlyPlayingIndex;
         this.isOffline = isOffline;
+        this.playerState = Player.STATE_IDLE;
     }
 
     public AppCMSPageUI getAppCMSPageUI() {
@@ -284,5 +287,21 @@ public class AppCMSVideoPageBinder extends Binder {
 
     public void setCurrentMovieImageUrl(String currentMovieImageUrl) {
         this.currentMovieImageUrl = currentMovieImageUrl;
+    }
+
+    public int getPlayerState() {
+        return playerState;
+    }
+
+    public void setPlayerState(int playerState) {
+        this.playerState = playerState;
+    }
+
+    public boolean isAutoplayCancelled() {
+        return autoplayCancelled;
+    }
+
+    public void setAutoplayCancelled(boolean autoplayCancelled) {
+        this.autoplayCancelled = autoplayCancelled;
     }
 }

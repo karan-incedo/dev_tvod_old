@@ -690,10 +690,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
-    public boolean isClickable() {
-        return isClickable;
-    }
-
+    @Override
     public void setClickable(boolean clickable) {
         isClickable = clickable;
     }

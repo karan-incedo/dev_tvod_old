@@ -30,8 +30,8 @@ public class Navigation implements Serializable {
     @SerializedName("tabBar")
     @Expose
     List<NavigationPrimary> tabBar = null;
-	
-	
+
+
 	@SerializedName("right")
     @Expose
     List<NavigationPrimary> right = null;
@@ -39,10 +39,6 @@ public class Navigation implements Serializable {
     @SerializedName("settings")
     @Expose
     Settings settings;
-
-
-
-
 
     public List<NavigationPrimary> getLeft() {
         return left;
