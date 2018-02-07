@@ -363,7 +363,8 @@ public class CollectionGridItemView extends BaseView {
 
                                 RequestOptions requestOptions = new RequestOptions()
                                         .transform(gradientTransform)
-                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE);
+                                        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+                                        .override(childViewWidth, childViewHeight);
 
                                 Glide.with(context)
                                         .load(imageUrl)
