@@ -578,6 +578,8 @@ public class AppCMSPresenter {
     private ImageButton currentMediaRouteButton;
     private ViewGroup currentMediaRouteButtonParent;
 
+    private boolean loginDialogPopupOpen;
+
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -7525,7 +7527,7 @@ public class AppCMSPresenter {
     }
 
     public void showEntitlementDialog(DialogType dialogType, Action0 onCloseAction) {
-        if (currentActivity != null) {
+        if (currentActivity != null && !loginDialogPopupOpen) {
 
             try {
 
@@ -7769,10 +7771,19 @@ public class AppCMSPresenter {
                     }
 
                     dialog.setOnShowListener(arg0 -> {
+                        loginDialogPopupOpen = true;
                         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
                         if (dialog.getButton(AlertDialog.BUTTON_POSITIVE) != null) {
                             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.parseColor(appCMSMain.getBrand().getCta().getPrimary().getBackgroundColor()));
                         }
+                    });
+
+                    dialog.setOnDismissListener(arg0 -> {
+                        loginDialogPopupOpen = false;
+                    });
+
+                    dialog.setOnCancelListener(arg0 -> {
+                        loginDialogPopupOpen = false;
                     });
 
                     if (dialog.getWindow() != null) {
