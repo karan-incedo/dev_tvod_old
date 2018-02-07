@@ -12488,11 +12488,13 @@ public class AppCMSPresenter {
 //                paint.setStyle(Paint.Style.FILL);
                 final RectF oval = new RectF();
                 paint.setStyle(Paint.Style.STROKE);
-                if (isTablet) {
-                    oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - radiusDifference);
-                } else {
-                    oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - radiusDifference); //Fix SVFA-1561  change 2 to 6
-                }
+                oval.set(radiusDifference, radiusDifference, iv2.getWidth() - radiusDifference, iv2.getHeight() - radiusDifference); //Fix SVFA-1561  change 2 to 6
+
+//                if (isTablet) {
+//                    oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - radiusDifference);
+//                } else {
+//                    oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - radiusDifference); //Fix SVFA-1561  change 2 to 6
+//                }
                 canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
 
 
