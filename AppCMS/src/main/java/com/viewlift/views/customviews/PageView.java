@@ -212,12 +212,19 @@ public class PageView extends BaseView {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                if (onScrollChangeListener != null &&
+                    if (onScrollChangeListener != null &&
                         recyclerView.isLaidOut() &&
                         !ignoreScroll) {
-//                    int x = recyclerView.computeHorizontalScrollOffset();
-//                    int y = recyclerView.computeVerticalScrollOffset();
                     onScrollChangeListener.onScroll(dx, dy);
+                    int currentPosition =
+                            ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                    if (currentPosition < 0) {
+                        currentPosition =
+                                ((LinearLayoutManager) recyclerView.getLayoutManager()).findLastVisibleItemPosition();
+                    }
+                    if (0 <= currentPosition) {
+                        onScrollChangeListener.setCurrentPosition(currentPosition);
+                    }
                 }
 
                 ignoreScroll = false;
@@ -332,6 +339,7 @@ public class PageView extends BaseView {
 
     public interface OnScrollChangeListener {
         void onScroll(int dx, int dy);
+        void setCurrentPosition(int position);
     }
 
     public OnScrollChangeListener getOnScrollChangeListener() {
@@ -346,6 +354,12 @@ public class PageView extends BaseView {
         if (childrenContainer != null) {
             ignoreScroll = true;
             childrenContainer.scrollBy(dx, dy);
+        }
+    }
+
+    public void scrollToPosition(int position) {
+        if (childrenContainer != null) {
+            ((RecyclerView) childrenContainer).smoothScrollToPosition(position);
         }
     }
 }

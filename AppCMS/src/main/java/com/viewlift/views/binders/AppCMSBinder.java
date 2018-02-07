@@ -39,6 +39,8 @@ public class AppCMSBinder extends Binder {
     private AppCMSSearchCall appCMSSearchCall;
     private int xScroll;
     private int yScroll;
+    private boolean scrollOnLandscape;
+    private int currentScrollPosition;
 
     public AppCMSBinder(AppCMSMain appCMSMain,
                         AppCMSPageUI appCMSPageUI,
@@ -194,5 +196,21 @@ public class AppCMSBinder extends Binder {
 
     public void setyScroll(int yScroll) {
         this.yScroll = yScroll;
+    }
+
+    public boolean isScrollOnLandscape() {
+        return scrollOnLandscape;
+    }
+
+    public void setScrollOnLandscape(boolean scrollOnLandscape) {
+        this.scrollOnLandscape = scrollOnLandscape;
+    }
+
+    public int getCurrentScrollPosition() {
+        return currentScrollPosition;
+    }
+
+    public void setCurrentScrollPosition(int currentScrollPosition) {
+        this.currentScrollPosition = currentScrollPosition;
     }
 }
