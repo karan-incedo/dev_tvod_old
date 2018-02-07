@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -49,6 +50,10 @@ public class PageView extends BaseView {
 
     private boolean reparentChromecastButton;
 
+    private OnScrollChangeListener onScrollChangeListener;
+
+    private boolean ignoreScroll;
+
     @Inject
     public PageView(Context context,
                     AppCMSPageUI appCMSPageUI,
@@ -60,6 +65,7 @@ public class PageView extends BaseView {
         this.appCMSPresenter = appCMSPresenter;
         this.appCMSPageViewAdapter = new AppCMSPageViewAdapter(context);
         this.shouldRefresh = true;
+        this.ignoreScroll = false;
         init();
     }
 
@@ -202,6 +208,22 @@ public class PageView extends BaseView {
 //                    });
 //        });
 
+        ((RecyclerView) childrenContainer).setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (onScrollChangeListener != null &&
+                        recyclerView.isLaidOut() &&
+                        !ignoreScroll) {
+//                    int x = recyclerView.computeHorizontalScrollOffset();
+//                    int y = recyclerView.computeVerticalScrollOffset();
+                    onScrollChangeListener.onScroll(dx, dy);
+                }
+
+                ignoreScroll = false;
+            }
+        });
+
         mainView = new SwipeRefreshLayout(getContext());
         SwipeRefreshLayout.LayoutParams swipeRefreshLayoutParams =
                 new SwipeRefreshLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -306,5 +328,24 @@ public class PageView extends BaseView {
 
     public void setReparentChromecastButton(boolean reparentChromecastButton) {
         this.reparentChromecastButton = reparentChromecastButton;
+    }
+
+    public interface OnScrollChangeListener {
+        void onScroll(int dx, int dy);
+    }
+
+    public OnScrollChangeListener getOnScrollChangeListener() {
+        return onScrollChangeListener;
+    }
+
+    public void setOnScrollChangeListener(OnScrollChangeListener onScrollChangeListener) {
+        this.onScrollChangeListener = onScrollChangeListener;
+    }
+
+    public void scrollToPosition(int dx, int dy) {
+        if (childrenContainer != null) {
+            ignoreScroll = true;
+            childrenContainer.scrollBy(dx, dy);
+        }
     }
 }

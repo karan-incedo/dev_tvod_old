@@ -37,6 +37,8 @@ public class AppCMSBinder extends Binder {
     private boolean sendCloseAction;
     private Uri searchQuery;
     private AppCMSSearchCall appCMSSearchCall;
+    private int xScroll;
+    private int yScroll;
 
     public AppCMSBinder(AppCMSMain appCMSMain,
                         AppCMSPageUI appCMSPageUI,
@@ -176,5 +178,21 @@ public class AppCMSBinder extends Binder {
 
     public AppCMSPresenter.ExtraScreenType getExtraScreenType() {
         return extraScreenType;
+    }
+
+    public int getxScroll() {
+        return xScroll;
+    }
+
+    public void setxScroll(int xScroll) {
+        this.xScroll = xScroll;
+    }
+
+    public int getyScroll() {
+        return yScroll;
+    }
+
+    public void setyScroll(int yScroll) {
+        this.yScroll = yScroll;
     }
 }

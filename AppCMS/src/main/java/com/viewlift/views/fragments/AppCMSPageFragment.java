@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -20,7 +21,6 @@ import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.components.AppCMSViewComponent;
 import com.viewlift.views.components.DaggerAppCMSViewComponent;
-import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.PageView;
 import com.viewlift.views.customviews.VideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
@@ -49,6 +49,8 @@ public class AppCMSPageFragment extends Fragment {
     private boolean shouldSendFirebaseViewItemEvent;
     private ViewGroup pageViewGroup;
     private VideoPlayerView videoPlayerView;
+
+    private OnScrollGlobalLayoutListener onScrollGlobalLayoutListener;
 
     public static AppCMSPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCMSPageFragment fragment = new AppCMSPageFragment();
@@ -179,6 +181,22 @@ public class AppCMSPageFragment extends Fragment {
             } else if (appCMSPresenter.pipPlayerVisible) {
                 appCMSPresenter.dismissPopupWindowPlayer();
             }
+
+            pageView.setOnScrollChangeListener((dx, dy) -> {
+                if (appCMSBinder != null) {
+                    appCMSBinder.setxScroll(appCMSBinder.getxScroll() + dx);
+                    appCMSBinder.setyScroll(appCMSBinder.getyScroll() + dy);
+                }
+            });
+
+            if (onScrollGlobalLayoutListener != null) {
+                pageView.getViewTreeObserver().removeOnGlobalLayoutListener(onScrollGlobalLayoutListener);
+            }
+
+            onScrollGlobalLayoutListener = new OnScrollGlobalLayoutListener(appCMSBinder,
+                    pageView);
+
+            pageView.getViewTreeObserver().addOnGlobalLayoutListener(onScrollGlobalLayoutListener);
         }
 
         Log.d(TAG, "PageView created");
@@ -368,6 +386,25 @@ public class AppCMSPageFragment extends Fragment {
                     updateAllViews(pageViewGroup);
                     pageView.notifyAdaptersOfUpdate();
                 }
+
+                if (pageView != null) {
+                    pageView.setOnScrollChangeListener((dx, dy) -> {
+                        if (appCMSBinder != null) {
+                            appCMSBinder.setxScroll(appCMSBinder.getxScroll() + dx);
+                            appCMSBinder.setyScroll(appCMSBinder.getyScroll() + dy);
+                        }
+                    });
+
+                    if (onScrollGlobalLayoutListener != null) {
+                        pageView.getViewTreeObserver().removeOnGlobalLayoutListener(onScrollGlobalLayoutListener);
+                    }
+
+                    onScrollGlobalLayoutListener = new OnScrollGlobalLayoutListener(appCMSBinder,
+                            pageView);
+
+                    pageView.getViewTreeObserver().addOnGlobalLayoutListener(onScrollGlobalLayoutListener);
+                }
+
                 pageViewGroup.requestLayout();
             } catch (Exception e) {
                 //
@@ -403,5 +440,26 @@ public class AppCMSPageFragment extends Fragment {
         void enterFullScreenVideoPlayer();
 
         void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
+    }
+
+    private static class OnScrollGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
+        private AppCMSBinder appCMSBinder;
+        private PageView pageView;
+
+        public OnScrollGlobalLayoutListener(AppCMSBinder appCMSBinder,
+                                            PageView pageView) {
+            this.appCMSBinder = appCMSBinder;
+            this.pageView = pageView;
+        }
+
+        @Override
+        public void onGlobalLayout() {
+            if (pageView != null) {
+                if (appCMSBinder != null) {
+                    pageView.scrollToPosition(appCMSBinder.getxScroll(), appCMSBinder.getyScroll());
+                }
+                pageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        }
     }
 }
