@@ -1365,6 +1365,13 @@ public class AppCMSPresenter {
         return null;
     }
 
+    public boolean shouldDisplayCRW() {
+        if (appCMSMain != null && appCMSMain.getFeatures() != null) {
+            return appCMSMain.getFeatures().isAutoPlay();
+        }
+        return false;
+    }
+
     public void forceLoad() {
         this.forceLoad = true;
     }
