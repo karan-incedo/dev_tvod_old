@@ -346,8 +346,7 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
                         if (shouldRequestAds) {
                             adsLoader.contentComplete();
                         }
-                        if (onClosePlayerEvent != null && permaLink.contains(
-                                getString(R.string.app_cms_action_qualifier_watchvideo_key))) {
+                        if (onClosePlayerEvent != null && isTrailer) {
                             videoPlayerView.releasePlayer();
                             onClosePlayerEvent.closePlayer();
                             return;
@@ -362,9 +361,9 @@ public class AppCMSPlayVideoFragment extends Fragment implements AdErrorEvent.Ad
 
                            if(shouldAutoPlay()){
                                onClosePlayerEvent.onMovieFinished();
-                           } else {
+                           } /*else {
                                onClosePlayerEvent.closePlayer();
-                           }
+                           }*/
                         }
                         break;
                     default:
