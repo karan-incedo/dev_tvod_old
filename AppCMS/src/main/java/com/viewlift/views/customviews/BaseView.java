@@ -92,6 +92,48 @@ public abstract class BaseView extends FrameLayout {
                 && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
     }
 
+    public static float getLeftDrawableHeight(Context context,
+                                              Layout layout,
+                                              float defaultValue) {
+        if (BaseView.isTablet(context)) {
+            if (BaseView.isLandscape(context)) {
+                if (0 < layout.getTabletLandscape().getLeftDrawableHeight()) {
+                    return convertVerticalValue(context, layout.getTabletLandscape().getLeftDrawableHeight());
+                }
+            } else {
+                if (0 < layout.getTabletPortrait().getLeftDrawableHeight()) {
+                    return convertVerticalValue(context, layout.getTabletPortrait().getLeftDrawableHeight());
+                }
+            }
+        } else {
+            if (0 < layout.getMobile().getLeftDrawableHeight()) {
+                return convertVerticalValue(context, layout.getMobile().getLeftDrawableHeight());
+            }
+        }
+        return defaultValue;
+    }
+
+    public static float getLeftDrawableWidth(Context context,
+                                              Layout layout,
+                                              float defaultValue) {
+        if (BaseView.isTablet(context)) {
+            if (BaseView.isLandscape(context)) {
+                if (0 < layout.getTabletLandscape().getLeftDrawableWidth()) {
+                    return convertVerticalValue(context, layout.getTabletLandscape().getLeftDrawableWidth());
+                }
+            } else {
+                if (0 < layout.getTabletPortrait().getLeftDrawableWidth()) {
+                    return convertVerticalValue(context, layout.getTabletPortrait().getLeftDrawableWidth());
+                }
+            }
+        } else {
+            if (0 < layout.getMobile().getLeftDrawableWidth()) {
+                return convertVerticalValue(context, layout.getMobile().getLeftDrawableWidth());
+            }
+        }
+        return defaultValue;
+    }
+
     public static float convertHorizontalValue(Context context, float value) {
         if (context != null) {
             if (isTablet(context)) {

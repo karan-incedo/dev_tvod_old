@@ -3,13 +3,17 @@ package com.viewlift.views.customviews;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -437,19 +441,31 @@ public class CollectionGridItemView extends BaseView {
                     viewsToUpdateOnClickEvent.add(view);
                 } else if (componentKey == AppCMSUIKeyType.PAGE_RESUME_WATCHING_KEY) {
                     int progress = getPercentageWatched(appCMSPresenter, data);
+                    Bitmap compoundDrawableImage;
+                    int viewHeight = (int) BaseView.getLeftDrawableHeight(context,
+                            childComponent.getLayout(),
+                            0.0f);
                     if (0 < progress) {
                         ((TextView) view).setText(getContext().getString(R.string.app_cms_resume_lecture_text));
-                        ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_replay_white_24dp,
-                                0,
-                                0,
-                                0);
+                        compoundDrawableImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_replay_white_24dp);
                     } else {
                         ((TextView) view).setText(getContext().getString(R.string.app_cms_play_lecture_text));
-                        ((TextView) view).setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_play_circle_outline_white_24dp,
-                                0,
-                                0,
-                                0);
+                        compoundDrawableImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_play_circle_outline_white_24dp);
                     }
+
+                    Bitmap scaledDrawableImage = Bitmap.createScaledBitmap(compoundDrawableImage,
+                            viewHeight,
+                            viewHeight,
+                            true);
+                    Rect compoundBounds = new Rect(0, 0, viewHeight, viewHeight);
+                    Drawable compoundDrawable =
+                            new BitmapDrawable(context.getResources(), scaledDrawableImage);
+                    compoundDrawable.setBounds(compoundBounds);
+                    ((TextView) view).setCompoundDrawables(compoundDrawable,
+                            null,
+                            null,
+                            null);
+                    ((TextView) view).setCompoundDrawablePadding(16);
 
                     if (!TextUtils.isEmpty(childComponent.getTextColor())) {
                         int textColor =
@@ -462,6 +478,13 @@ public class CollectionGridItemView extends BaseView {
                                 Color.parseColor(ViewCreator.getColor(context, childComponent.getIconColor()));
                         ViewCreator.applyTintToCompoundDrawables((TextView) view, iconColor);
                     }
+
+                    if (childComponent.getFontSize() > 0) {
+                        ((TextView) view).setTextSize(childComponent.getFontSize());
+                    } else if (BaseView.getFontSize(getContext(), childComponent.getLayout()) > 0) {
+                        ((TextView) view).setTextSize(BaseView.getFontSize(getContext(), childComponent.getLayout()));
+                    }
+
                     ((TextView) view).setGravity(Gravity.TOP | Gravity.START);
                     view.setTextAlignment(View.TEXT_ALIGNMENT_GRAVITY);
                     ((Button) view).setAllCaps(false);

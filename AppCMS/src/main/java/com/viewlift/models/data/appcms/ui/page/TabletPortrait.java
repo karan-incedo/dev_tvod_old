@@ -77,6 +77,14 @@ public class TabletPortrait implements Serializable {
     @Expose
     int thumbnailHeight;
 
+    @SerializedName("leftDrawableHeight")
+    @Expose
+    float leftDrawableHeight;
+
+    @SerializedName("leftDrawableWidth")
+    @Expose
+    float leftDrawableWidth;
+
     private float savedWidth;
 
     public float getWidth() {
@@ -237,5 +245,21 @@ public class TabletPortrait implements Serializable {
 
     public void setThumbnailHeight(int thumbnailHeight) {
         this.thumbnailHeight = thumbnailHeight;
+    }
+
+    public float getLeftDrawableHeight() {
+        return leftDrawableHeight;
+    }
+
+    public void setLeftDrawableHeight(float leftDrawableHeight) {
+        this.leftDrawableHeight = leftDrawableHeight;
+    }
+
+    public float getLeftDrawableWidth() {
+        return leftDrawableWidth;
+    }
+
+    public void setLeftDrawableWidth(float leftDrawableWidth) {
+        this.leftDrawableWidth = leftDrawableWidth;
     }
 }
