@@ -466,4 +466,8 @@
     <string name="app_cms_page_play_live_image_key">playLiveImage</string>
     <string name="app_cms_shows_deeplink_path_name">show</string>
     <string name="app_cms_text_alignment_right">right</string>
+
+    <!-- AppCMS Content Types -->
+    <string name="app_cms_video_content_type">VIDEO</string>
+    <string name="app_cms_series_content_type">SERIES</string>
 </resources>

@@ -11955,7 +11955,9 @@ public class AppCMSPresenter {
     public void openVideoPageFromSearch(String[] searchResultClick) {
         String permalink = searchResultClick[3];
         String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
-        if (permalink.contains(currentActivity.getString(R.string.app_cms_shows_deeplink_path_name))) {
+        String contentType = searchResultClick[4];
+
+        if (contentType.contains(currentActivity.getString(R.string.app_cms_series_content_type))) {
             action = currentActivity.getString(R.string.app_cms_action_showvideopage_key);
         }
         String title = searchResultClick[0];
