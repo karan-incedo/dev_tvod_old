@@ -124,6 +124,10 @@ public class PlaybackManager implements Playback.Callback {
         mPlayback.stop(true);
         mServiceCallback.onPlaybackStop();
         updatePlaybackState(withError);
+        if(AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData()!=null && AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist()!=null ){
+            AudioPlaylistHelper.getInstance().getCurrentAudioPLayingData().getGist().setAudioPlaying(false);
+        }
+        AudioPlaylistHelper.getInstance().getAppCmsPresenter().notifyDownloadHasCompleted();
 
         AudioPlaylistHelper.getInstance().setCurrentMediaId(null);
     }
