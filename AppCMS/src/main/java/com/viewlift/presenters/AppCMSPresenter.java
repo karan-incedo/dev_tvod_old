@@ -10009,7 +10009,7 @@ public class AppCMSPresenter {
                                                                             numPagesProcessed = 0;
                                                                             getAppCMSModules(appCMSAndroid,
                                                                                     true,
-                                                                                    false,
+                                                                                    true,
                                                                                     (appCMSAndroidModules) -> {
                                                                                         if (appCMSAndroidModules != null) {
                                                                                             //Log.d(TAG, "Received and refreshed module list");
@@ -12579,8 +12579,8 @@ public class AppCMSPresenter {
                         .Builder()
                         .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
                         /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
-                        .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
-//                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
+//                        .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
+                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
                         .build();
     }
 
