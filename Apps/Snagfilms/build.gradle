@@ -6,7 +6,7 @@ def final customApplicationId = 'SnagFilms'
 def final hostName = "www.snagfilms.com"
 def final hostNameSuffix = "*.snagfilms.com"
 
-def final appVersionName = "1.0.34"
+def final appVersionName = "1.0.36"
 
 buildscript {
     repositories {
@@ -38,7 +38,7 @@ android {
         applicationId packageName
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 3042076
+        versionCode 3042078
 
         versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -317,6 +317,4 @@ dependencies {
     compile project(':library')
     compile project(':htmlspanner')
     compile project(path: ':exoplayer-extension-vp9')
-
-    compile "com.github.pedrovgs:draggablepanel:$rootProject.ext.draggablePanelVersion"
 }

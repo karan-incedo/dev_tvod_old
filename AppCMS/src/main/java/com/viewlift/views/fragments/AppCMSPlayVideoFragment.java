@@ -179,6 +179,7 @@ public class AppCMSPlayVideoFragment extends Fragment
     private CastHelper mCastHelper;
     private String closedCaptionUrl;
     private boolean isCastConnected;
+    private boolean crwCreated;
 
     CastServiceProvider.ILaunchRemoteMedia callBackRemotePlayback = castingModeChromecast -> {
         if (onClosePlayerEvent != null) {
@@ -850,8 +851,15 @@ public class AppCMSPlayVideoFragment extends Fragment
     @Override
     public void onAdError(AdErrorEvent adErrorEvent) {
         //Log.e(TAG, "Ad DialogType: " + adErrorEvent.getError().getMessage());
-//        createContentRatingView();
-        videoPlayerView.resumePlayer();
+        if (!crwCreated) {
+            try {
+                createContentRatingView();
+            } catch (Exception e) {
+                videoPlayerView.resumePlayer();
+            }
+        } else {
+            videoPlayerView.resumePlayer();
+        }
         sendAdRequest();
         resumeContent();
     }
@@ -1276,7 +1284,9 @@ public class AppCMSPlayVideoFragment extends Fragment
     }
 
     private void createContentRatingView() throws Exception {
-        if (!isTrailer &&
+        crwCreated = true;
+        if (appCMSPresenter.shouldDisplayCRW() &&
+                !isTrailer &&
                 !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_g)) &&
                 !getParentalRating().equalsIgnoreCase(getString(R.string.age_rating_converted_default)) &&
                 watchedTime == 0) {

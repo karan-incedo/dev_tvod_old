@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -49,6 +50,8 @@ public class AppCMSPageFragment extends Fragment {
     private boolean shouldSendFirebaseViewItemEvent;
     private ViewGroup pageViewGroup;
     private VideoPlayerView videoPlayerView;
+
+    private OnScrollGlobalLayoutListener onScrollGlobalLayoutListener;
 
     public static AppCMSPageFragment newInstance(Context context, AppCMSBinder appCMSBinder) {
         AppCMSPageFragment fragment = new AppCMSPageFragment();
@@ -179,6 +182,34 @@ public class AppCMSPageFragment extends Fragment {
             } else if (appCMSPresenter.pipPlayerVisible) {
                 appCMSPresenter.dismissPopupWindowPlayer();
             }
+
+            pageView.setOnScrollChangeListener(new PageView.OnScrollChangeListener() {
+                @Override
+                public void onScroll(int dx, int dy) {
+                    if (appCMSBinder != null) {
+                        appCMSBinder.setxScroll(appCMSBinder.getxScroll() + dx);
+                        appCMSBinder.setyScroll(appCMSBinder.getyScroll() + dy);
+                    }
+                }
+
+                @Override
+                public void setCurrentPosition(int position) {
+                    if (appCMSBinder != null) {
+                        appCMSBinder.setCurrentScrollPosition(position);
+                    }
+                }
+            });
+
+            if (onScrollGlobalLayoutListener != null) {
+                pageView.getViewTreeObserver().removeOnGlobalLayoutListener(onScrollGlobalLayoutListener);
+                onScrollGlobalLayoutListener.appCMSBinder = appCMSBinder;
+                onScrollGlobalLayoutListener.pageView = pageView;
+            } else {
+                onScrollGlobalLayoutListener = new OnScrollGlobalLayoutListener(appCMSBinder,
+                        pageView);
+            }
+
+            pageView.getViewTreeObserver().addOnGlobalLayoutListener(onScrollGlobalLayoutListener);
         }
 
         Log.d(TAG, "PageView created");
@@ -368,6 +399,37 @@ public class AppCMSPageFragment extends Fragment {
                     updateAllViews(pageViewGroup);
                     pageView.notifyAdaptersOfUpdate();
                 }
+
+                if (pageView != null) {
+                    pageView.setOnScrollChangeListener(new PageView.OnScrollChangeListener() {
+                        @Override
+                        public void onScroll(int dx, int dy) {
+                            if (appCMSBinder != null) {
+                                appCMSBinder.setxScroll(appCMSBinder.getxScroll() + dx);
+                                appCMSBinder.setyScroll(appCMSBinder.getyScroll() + dy);
+                            }
+                        }
+
+                        @Override
+                        public void setCurrentPosition(int position) {
+                            if (appCMSBinder != null) {
+                                appCMSBinder.setCurrentScrollPosition(position);
+                            }
+                        }
+                    });
+
+                    if (onScrollGlobalLayoutListener != null) {
+                        pageView.getViewTreeObserver().removeOnGlobalLayoutListener(onScrollGlobalLayoutListener);
+                        onScrollGlobalLayoutListener.appCMSBinder = appCMSBinder;
+                        onScrollGlobalLayoutListener.pageView = pageView;
+                    } else {
+                        onScrollGlobalLayoutListener = new OnScrollGlobalLayoutListener(appCMSBinder,
+                                pageView);
+                    }
+
+                    pageView.getViewTreeObserver().addOnGlobalLayoutListener(onScrollGlobalLayoutListener);
+                }
+
                 pageViewGroup.requestLayout();
             } catch (Exception e) {
                 //
@@ -403,5 +465,54 @@ public class AppCMSPageFragment extends Fragment {
         void enterFullScreenVideoPlayer();
 
         void exitFullScreenVideoPlayer(boolean exitFullScreenVideoPlayer);
+    }
+
+    private static class OnScrollGlobalLayoutListener implements ViewTreeObserver.OnGlobalLayoutListener {
+        private AppCMSBinder appCMSBinder;
+        private PageView pageView;
+
+        public OnScrollGlobalLayoutListener(AppCMSBinder appCMSBinder,
+                                            PageView pageView) {
+            this.appCMSBinder = appCMSBinder;
+            this.pageView = pageView;
+        }
+
+        @Override
+        public void onGlobalLayout() {
+            if (pageView != null) {
+                if (appCMSBinder != null) {
+
+                    if (appCMSBinder.isScrollOnLandscape() != BaseView.isLandscape(pageView.getContext())) {
+                        appCMSBinder.setxScroll(0);
+                        appCMSBinder.setyScroll(0);
+                        pageView.scrollToPosition(appCMSBinder.getCurrentScrollPosition());
+                    } else {
+
+                        int x = appCMSBinder.getxScroll();
+                        int y = appCMSBinder.getyScroll();
+                        pageView.scrollToPosition(-x, -y);
+                        pageView.scrollToPosition(x, y);
+                    }
+                    appCMSBinder.setScrollOnLandscape(BaseView.isLandscape(pageView.getContext()));
+                }
+                pageView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        }
+
+        public AppCMSBinder getAppCMSBinder() {
+            return appCMSBinder;
+        }
+
+        public void setAppCMSBinder(AppCMSBinder appCMSBinder) {
+            this.appCMSBinder = appCMSBinder;
+        }
+
+        public PageView getPageView() {
+            return pageView;
+        }
+
+        public void setPageView(PageView pageView) {
+            this.pageView = pageView;
+        }
     }
 }

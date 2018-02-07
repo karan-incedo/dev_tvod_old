@@ -70,8 +70,8 @@ public class AppCMSAndroidModuleCall {
 
         readModuleListFromFile(bundleUrl,
                 version,
-                bustCache,
                 forceLoadFromNetwork,
+                bustCache,
                 (moduleDataMap) -> {
                     addMissingModulesFromAssets(moduleDataMap.appCMSAndroidModule);
                     appCMSAndroidModules.setModuleListMap(moduleDataMap.appCMSAndroidModule);
