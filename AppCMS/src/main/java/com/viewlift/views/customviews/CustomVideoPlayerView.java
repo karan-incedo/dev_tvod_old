@@ -166,7 +166,7 @@ public class CustomVideoPlayerView extends VideoPlayerView implements AdErrorEve
         //appCMSPresenter = ((AppCMSApplication) mContext.getApplicationContext()).getAppCMSPresenterComponent().appCMSPresenter();
         createLoader();
         mFullScreenButton = createFullScreenToggleButton();
-        ((RelativeLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
+        ((LinearLayout) getPlayerView().findViewById(R.id.exo_controller_container)).addView(mFullScreenButton);
         setupAds();
         createPreviewMessageView();
         touchToCastOverlay();
