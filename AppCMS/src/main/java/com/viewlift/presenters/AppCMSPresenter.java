@@ -10009,7 +10009,7 @@ public class AppCMSPresenter {
                                                                             numPagesProcessed = 0;
                                                                             getAppCMSModules(appCMSAndroid,
                                                                                     true,
-                                                                                    false,
+                                                                                    true,
                                                                                     (appCMSAndroidModules) -> {
                                                                                         if (appCMSAndroidModules != null) {
                                                                                             //Log.d(TAG, "Received and refreshed module list");
