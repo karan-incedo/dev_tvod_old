@@ -5548,6 +5548,9 @@ public class AppCMSPresenter {
             //Firebase Event when contact us screen is opened.
             sendFireBaseContactUsEvent();
             if (Apptentive.canShowMessageCenter()) {
+                if (currentActivity != null) {
+                    Apptentive.engage(currentActivity, currentActivity.getString(R.string.app_cms_apptentive_launch_of_message_center_event_name));
+                }
                 Apptentive.showMessageCenter(currentActivity);
             }
         } else if (!cancelAllLoads && !isNetworkConnected()) {

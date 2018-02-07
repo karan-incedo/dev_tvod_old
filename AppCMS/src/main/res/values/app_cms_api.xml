@@ -560,4 +560,7 @@
     <string name="app_cms_page_history_description_key">listItemDescription</string>
     <string name="app_cms_page_history_duration_key">historyDuration</string>
     <string name="app_cms_page_history_watched_time_key">watchedTime</string>
+
+    <!-- AppCMS Apptentive Events -->
+    <string name="app_cms_apptentive_launch_of_message_center_event_name">Launch of Message Center</string>
 </resources>
