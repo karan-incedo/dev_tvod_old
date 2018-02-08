@@ -29,6 +29,9 @@ public class CustomWebView extends WebView {
         this.setBackgroundColor(Color.TRANSPARENT);
         this.getSettings().setAppCacheEnabled(true);
         this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        this.getSettings().setLoadWithOverviewMode(true);
+        //this.getSettings().setUseWideViewPort(true);
+
     }
 
     public CustomWebView(Context context, AttributeSet attrs) {
@@ -79,5 +82,29 @@ public class CustomWebView extends WebView {
         });
 
         this.loadData(loadingURL, "text/html", "UTF-8");
+    }
+
+    public void loadURL(Context mContext, AppCMSPresenter appCMSPresenter, String loadingURL, String cacheKey) {
+        this.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                super.shouldOverrideUrlLoading(view, url);
+                return false;
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                view.requestLayout();
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                //appCMSPresenter.clearWebViewCache();
+            }
+        });
+
+        this.loadUrl(loadingURL);
     }
 }
