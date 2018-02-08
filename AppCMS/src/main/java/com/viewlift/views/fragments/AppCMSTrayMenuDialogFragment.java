@@ -2,6 +2,9 @@ package com.viewlift.views.fragments;
 
 import android.app.DialogFragment;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -84,6 +87,12 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
 
         addToWatchList.setOnClickListener(this);
 
+        ShapeDrawable shapedrawable = new ShapeDrawable();
+        shapedrawable.setShape(new RectShape());
+        shapedrawable.getPaint().setColor(appCMSPresenter.getGeneralTextColor());
+        shapedrawable.getPaint().setStrokeWidth(5f);
+        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
+        closeBtn.setBackground(shapedrawable);
         closeBtn.setOnClickListener(this);
     }
 

@@ -2165,6 +2165,8 @@ public class ViewCreator {
 
                     case PAGE_GRID_OPTION_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.dots_more));
+                        componentViewResult.componentView.getBackground().setTint(appCMSPresenter.getGeneralTextColor());
+                        componentViewResult.componentView.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                         appCMSPresenter.setMoreIconAvailable();
 
                         componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
