@@ -1,4 +1,5 @@
 <resources>
+
     <string name="app_cms_api_baseurl">https://appcmsprod.viewlift.com/</string>
     <string name="app_cms_main_url">%1$s%2$s/main.json?x=%3$d</string>
     <string name="app_cms_app_name">00000149-86ec-d4f3-a7e9-e6fe760d0000</string>
@@ -25,13 +26,4 @@
     <string name="app_cms_action_splashpage_key">Splash Screen</string>
     <string name="app_cms_action_homepage_key">Home Page</string>
     <string name="app_cms_action_videopage_key">lectureDetailPage</string>
-
-
-    <string name="app_cms_page_playlist_title_key">playlistTitle</string>
-    <string name="app_cms_page_playlist_sub_title_key">playlistSubTitle</string>
-    <string name="app_cms_page_playlist_audio_duration_key">audioDuration</string>
-    <string name="app_cms_page_playlist_audio_artist_key">audioArtistName</string>
-    <string name="app_cms_download_audio_action">downloadAudio</string>
-    <string name="app_cms_page_audio_download_button_key">downloadButtonAudio</string>
-    <string name="app_cms_page_playlist_download_button_key">downloadButtonPlaylist</string>
 </resources>

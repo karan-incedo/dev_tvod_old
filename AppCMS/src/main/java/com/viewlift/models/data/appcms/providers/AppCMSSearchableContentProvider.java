@@ -105,6 +105,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                             for (int i = 0; i < searchResultList.size(); i++) {
                                 Uri permalinkUri = Uri.parse(searchResultList.get(i).getGist().getPermalink());
                                 String filmUri = permalinkUri.getLastPathSegment();
+                                String title = searchResultList.get(i).getGist().getTitle();
                                 String runtime = String.valueOf(searchResultList.get(i).getGist().getRuntime());
                                 String mediaType = searchResultList.get(i).getGist().getMediaType();
                                 String contentType = searchResultList.get(i).getGist().getContentType();
@@ -122,11 +123,7 @@ public class AppCMSSearchableContentProvider extends ContentProvider {
                                         contentType +
                                         "," +
                                         gistId;
-
-                                Object[] rowResult = {i,
-                                        searchResultList.get(i).getGist().getTitle(),
-                                        searchResultList.get(i).getGist().getRuntime() / 60,
-                                        searchHintResult};
+                                Object[] rowResult = {i, title, runtime, searchHintResult};
 
                                 cursor.addRow(rowResult);
                                 //Log.d(TAG, searchResultList.get(i).getGist().getTitle());

@@ -19,6 +19,7 @@ import com.viewlift.Audio.playback.AudioPlaylistHelper;
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.Module;
+import com.viewlift.models.data.appcms.api.SubscriptionPlan;
 import com.viewlift.models.data.appcms.ui.AppCMSUIKeyType;
 import com.viewlift.models.data.appcms.ui.android.AppCMSAndroidModules;
 import com.viewlift.models.data.appcms.ui.page.Component;
@@ -713,10 +714,7 @@ public class AppCMSViewAdapter extends RecyclerView.Adapter<AppCMSViewAdapter.Vi
         }
     }
 
-    public boolean isClickable() {
-        return isClickable;
-    }
-
+    @Override
     public void setClickable(boolean clickable) {
         isClickable = clickable;
     }

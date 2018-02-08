@@ -11,6 +11,7 @@ import java.util.List;
 
 public class BrowseFragmentRowData {
          public ContentDatum contentData;
+         public List<String> relatedVideoIds;
          public List<Component> uiComponentList;
          public String action;
          public String blockName;

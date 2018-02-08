@@ -245,19 +245,19 @@ public class CustomTVVideoPlayerView
 
                                 } else {
                                     setBackgroundImage();
-                                    showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                    showRestrictMessage(getUnSubscribeOvelayText());
                                     toggleLoginButtonVisibility(false);
                                     exitFullScreenPlayer();
                                 }
                             } else {
                                 setBackgroundImage();
-                                showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                                showRestrictMessage(getUnSubscribeOvelayText());
                                 toggleLoginButtonVisibility(false);
                                 exitFullScreenPlayer();
                             }
                         } catch (Exception e) {
                             setBackgroundImage();
-                            showRestrictMessage(getResources().getString(R.string.unsubscribe_text));
+                            showRestrictMessage(getUnSubscribeOvelayText());
                             toggleLoginButtonVisibility(false);
                             exitFullScreenPlayer();
                         }
@@ -719,16 +719,6 @@ public class CustomTVVideoPlayerView
             AdsRequest request = sdkFactory.createAdsRequest();
             request.setAdTagUrl(adTagUrl);
             request.setAdDisplayContainer(adDisplayContainer);
-            /*request.setContentProgressProvider(new ContentProgressProvider() {
-                @Override
-                public VideoProgressUpdate getContentProgress() {
-                    if (isAdDisplayed || tvVideoPlayerView.getDuration() <= 0) {
-                        return VideoProgressUpdate.VIDEO_TIME_NOT_READY;
-                    }
-                    return new VideoProgressUpdate(tvVideoPlayerView.getCurrentPosition(),
-                            tvVideoPlayerView.getDuration());
-                }
-            });*/
 
             adsLoader.requestAds(request);
             isAdsDisplaying = true;
@@ -1169,5 +1159,4 @@ public class CustomTVVideoPlayerView
             setUri(Uri.parse(lastUrl), null);
         }
     }
-
 }

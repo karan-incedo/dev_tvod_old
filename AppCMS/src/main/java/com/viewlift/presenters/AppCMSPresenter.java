@@ -14,6 +14,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.database.StaleDataException;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -61,6 +62,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -215,10 +217,12 @@ import com.viewlift.views.activity.AppCMSPlayVideoActivity;
 import com.viewlift.views.activity.AppCMSSearchActivity;
 import com.viewlift.views.activity.AppCMSUpgradeActivity;
 import com.viewlift.views.activity.AutoplayActivity;
+import com.viewlift.views.adapters.AppCMSBaseAdapter;
 import com.viewlift.views.adapters.AppCMSPageViewAdapter;
 import com.viewlift.views.adapters.AppCMSViewAdapter;
 import com.viewlift.views.binders.AppCMSBinder;
 import com.viewlift.views.binders.AppCMSDownloadQualityBinder;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.binders.AppCMSVideoPageBinder;
 import com.viewlift.views.binders.RetryCallBinder;
 import com.viewlift.views.customviews.BaseView;
@@ -226,9 +230,9 @@ import com.viewlift.views.customviews.CustomVideoPlayerView;
 import com.viewlift.views.customviews.CustomWebView;
 import com.viewlift.views.customviews.FullPlayerView;
 import com.viewlift.views.customviews.MiniPlayerView;
+import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.OnInternalEvent;
 import com.viewlift.views.customviews.PageView;
-import com.viewlift.views.customviews.TVVideoPlayerView;
 import com.viewlift.views.customviews.ViewCreator;
 import com.viewlift.views.fragments.AppCMSMoreFragment;
 import com.viewlift.views.fragments.AppCMSMoreMenuDialogFragment;
@@ -310,6 +314,7 @@ import static com.viewlift.presenters.AppCMSPresenter.RETRY_TYPE.WATCHLIST_RETRY
  */
 
 public class AppCMSPresenter {
+    public static final String PRESENTER_CLOSE_AUTOPLAY_SCREEN = "appcms_presenter_close_autoplay_action";
     public static final String PRESENTER_NAVIGATE_ACTION = "appcms_presenter_navigate_action";
     public static final String PRESENTER_PAGE_LOADING_ACTION = "appcms_presenter_page_loading_action";
     public static final String PRESENTER_STOP_PAGE_LOADING_ACTION = "appcms_presenter_stop_page_loading_action";
@@ -317,12 +322,17 @@ public class AppCMSPresenter {
     public static final String PRESENTER_RESET_NAVIGATION_ITEM_ACTION = "appcms_presenter_set_navigation_item_action";
     public static final String PRESENTER_UPDATE_HISTORY_ACTION = "appcms_presenter_update_history_action";
     public static final String PRESENTER_REFRESH_PAGE_ACTION = "appcms_presenter_refresh_page_action";
-    public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
     public static final String PRESENTER_UPDATE_LISTS_ACTION = "appcms_presenter_update_lists_action";
     public static final String PRESENTER_REFRESH_PAGE_DATA_ACTION = "appcms_presenter_refresh_page_data_action";
+    public static final String PRESENTER_ENTER_FULLSCREEN_ACTION = "apppresenter_enter_fullscreen_action";
+    public static final String PRESENTER_EXIT_FULLSCREEN_ACTION = "appcms_presenter_exit_fullscreen_action";
+    public static final String PRESENTER_KEEP_SCREEN_ON_ACTION = "appcms_presenter_keep_screen_on_action";
+    public static final String PRESENTER_DEEPLINK_ACTION = "appcms_presenter_deeplink_action";
+    public static final String PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION = "appcms_presenter_dont_keep_screen_on_action";
+    public static final String PRESENTER_CHROMECAST_DISCONNECTED_ACTION = "appcms_presenter_chromecast_disconnected_action";
+    public static final String SWITCH_SEASON_ACTION = "switch_season_action";
     public static final String PRESENTER_AUDIO_LOADING_ACTION = "appcms_presenter_audio_loading_action";
     public static final String PRESENTER_AUDIO_LOADING_STOP_ACTION = "appcms_presenter_audio_loading_stop_action";
-    public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
 
     public static final int RC_PURCHASE_PLAY_STORE_ITEM = 1002;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE_FOR_DOWNLOADS = 2002;
@@ -387,6 +397,7 @@ public class AppCMSPresenter {
     private static final String USER_FREE_PLAY_TIME_SHARED_PREF_NAME = "user_free_play_time_pref_name";
     private static final String AUDIO_SHUFFLED_SHARED_PREF_NAME = "audio_shuffled_sd_card_pref";
     private static final String IS_HOME_STARTED = "is_home_started";
+    public static final String EXTRA_OPEN_AUDIO_PLAYER = "extra_open_audio_player";
 
     private static final String AUTH_TOKEN_SHARED_PREF_NAME = "auth_token_pref";
     private static final String FLOODLIGHT_STATUS_PREF_NAME = "floodlight_status_pref_key";
@@ -497,7 +508,7 @@ public class AppCMSPresenter {
     private final BeaconRunnable beaconMessageRunnable;
     private final Runnable beaconMessageThread;
     private final String tvVideoPlayerPackage = "com.viewlift.tv.views.activity.AppCMSTVPlayVideoActivity";
-    private final List<Timer> downloadProgressTimerList = new ArrayList<>();
+    private final List<DownloadTimerTask> downloadProgressTimerList = new ArrayList<>();
     private final ReferenceQueue<Object> referenceQueue;
     public boolean pipPlayerVisible = false;
     public PopupWindow pipDialog;
@@ -548,7 +559,6 @@ public class AppCMSPresenter {
     private MetaPage privacyPolicyPage;
     private MetaPage tosPage;
     private PlatformType platformType;
-    private TemplateType templateType = TemplateType.SPORTS;
     private AppCMSNavItemsFragment appCMSNavItemsFragment;
     private LaunchType launchType;
     private IInAppBillingService inAppBillingService;
@@ -668,6 +678,10 @@ public class AppCMSPresenter {
     private HashMap<String, CustomWebView> webViewCache;
     private AppCMSWatchlistResult filmsInUserWatchList;
     private List<String> temporaryWatchlist;
+
+    private ImageButton currentMediaRouteButton;
+    private ViewGroup currentMediaRouteButtonParent;
+
     private Typeface regularFontFace;
     private Typeface boldTypeFace;
     private Typeface semiBoldTypeFace;
@@ -676,6 +690,9 @@ public class AppCMSPresenter {
     private boolean showNetworkConnectivity;
     private boolean waithingFor3rdPartyLogin;
     private AppCMSAndroidUI appCMSAndroid;
+
+    private boolean forceLoad;
+
     private Map<String, ViewCreator.UpdateDownloadImageIconAction> updateDownloadImageIconActionMap;
     private ReportSubscriber reportSubscriber = new ReportSubscriber() {
         @Override
@@ -1017,14 +1034,38 @@ public class AppCMSPresenter {
                                     siteId,
                                     currentContext.getString(R.string.app_cms_subscription_platform_key));
                 } else {
-                    urlWithContent =
-                            currentContext.getString(R.string.app_cms_page_api_url,
+                    try {
+                        if ((pageId.equals(homePage.getPageId()) ||
+                                pageId.equals(moviesPage.getPageId())) &&
+                                !isUserLoggedIn() &&
+                                usedCachedAPI) {
+                            if (pageId.equals(homePage.getPageId())) {
+                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url,
+                                        siteId,
+                                        pageId);
+                            } else {
+                                urlWithContent = currentContext.getString(R.string.app_cms_cached_page_api_url_with_user_id,
+                                        siteId,
+                                        pageId);
+                            }
+                        } else {
+                            urlWithContent = currentContext.getString(R.string.app_cms_page_api_url,
                                     baseUrl,
                                     endpoint,
                                     siteId,
                                     currentContext.getString(R.string.app_cms_page_id_query_parameter),
                                     pageId,
                                     getLoggedInUser());
+                        }
+                    } catch (Exception e) {
+                        urlWithContent = currentContext.getString(R.string.app_cms_page_api_url,
+                                baseUrl,
+                                endpoint,
+                                siteId,
+                                currentContext.getString(R.string.app_cms_page_id_query_parameter),
+                                pageId,
+                                getLoggedInUser());
+                    }
                 }
             } else {
                 if (showPage) {
@@ -1162,7 +1203,7 @@ public class AppCMSPresenter {
                                         appCMSVideoDetail.getRecords().get(0),
                                         false,
                                         currentlyPlayingIndex,
-                                        appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                        relateVideoIds);
                             } else {
                                 if (!isNetworkConnected()) {
                                     // Fix of SVFA-1435
@@ -1327,9 +1368,7 @@ public class AppCMSPresenter {
                 if (anonymousAuthTokenResponse != null) {
                     setAnonymousUserToken(anonymousAuthTokenResponse.getAuthorizationToken());
                     if (tryCount == 0) {
-                        if (platformType == PlatformType.ANDROID) {
-                            getAppCMSAndroid(tryCount + 1);
-                        } else if (platformType == PlatformType.TV) {
+                        if (platformType == PlatformType.TV) {
                             getAppCMSTV(tryCount + 1);
                         }
                     } else {
@@ -1344,6 +1383,73 @@ public class AppCMSPresenter {
                 }
             });
         }
+    }
+
+    public String getAppTextColor() {
+        if (appCMSMain != null) {
+            return getAppCMSMain()
+                    .getBrand()
+                    .getGeneral()
+                    .getTextColor();
+        }
+
+        return null;
+    }
+
+    public String getAppBackgroundColor() {
+        if (appCMSMain != null) {
+            return appCMSMain.getBrand()
+                    .getGeneral()
+                    .getBackgroundColor();
+        }
+
+        return null;
+    }
+
+    public String getAppCtaTextColor() {
+        if (appCMSMain != null) {
+            return appCMSMain.getBrand()
+                    .getCta()
+                    .getPrimary()
+                    .getTextColor();
+        }
+        return null;
+    }
+
+    public String getAppCtaBackgroundColor() {
+        if (appCMSMain != null) {
+            return appCMSMain.getBrand()
+                    .getCta()
+                    .getPrimary()
+                    .getBackgroundColor();
+        }
+        return null;
+    }
+
+    public String getAppAdsURL(String pagePath) {
+        if (currentActivity != null && appCMSAndroid != null) {
+            Date now = new Date();
+
+            String videoTag;
+
+            if (appCMSAndroid.getAdvertising() != null &&
+                    (TextUtils.isEmpty(appCMSAndroid.getAdvertising().getVideoTag()))) {
+                videoTag = appCMSAndroid.getAdvertising().getVideoTag();
+            } else {
+                videoTag = "";
+            }
+
+            return currentActivity.getString(R.string.app_cms_ads_api_url,
+                    videoTag,
+                    getPermalinkCompletePath(pagePath),
+                    now.getTime(),
+                    appCMSMain.getSite());
+        }
+        return null;
+    }
+
+    public void forceLoad() {
+        this.forceLoad = true;
     }
 
     public boolean launchButtonSelectedAction(String pagePath,
@@ -1412,7 +1518,8 @@ public class AppCMSPresenter {
             /*This is to enable offline video playback even if Internet is not available*/
             if (!(actionType == AppCMSActionType.PLAY_VIDEO_PAGE && isVideoOffline) && !isNetworkConnected()) {
                 showDialog(DialogType.NETWORK, null, false, null, null);
-            } else if (currentActivity != null && !loadingPage) {
+            } else if (currentActivity != null && (!loadingPage || forceLoad)) {
+                forceLoad = false;
                 if (actionType == null) {
                     //Log.e(TAG, "Action " + action + " not found!");
                     return false;
@@ -1789,6 +1896,7 @@ public class AppCMSPresenter {
                             List<String> finalRelateVideoIds1 = relateVideoIds;
                             getPageIdContent(apiUrl,
                                     pagePath,
+                                    null,
                                     new AppCMSPageAPIAction(appbarPresent,
                                             fullscreenEnabled,
                                             navbarPresent,
@@ -1853,6 +1961,36 @@ public class AppCMSPresenter {
             }
         }
         return result;
+    }
+
+    public AppCMSVideoPageBinder getDefaultAppCMSVideoPageBinder(ContentDatum contentDatum,
+                                                                 int currentlyPlayingIndex,
+                                                                 List<String> relateVideoIds,
+                                                                 boolean isVideoOffline,
+                                                                 boolean isTrailer,
+                                                                 boolean requestAds,
+                                                                 String adsUrl,
+                                                                 String backgroundColor) {
+        return getAppCMSVideoPageBinder(currentActivity,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false,
+                false,
+                false,
+                false,
+                requestAds,
+                appCMSMain.getBrand().getGeneral().getTextColor(),
+                backgroundColor,
+                adsUrl,
+                contentDatum,
+                isTrailer,
+                relateVideoIds,
+                currentlyPlayingIndex,
+                isVideoOffline);
     }
 
     public void setVideoPlayerHasStarted() {
@@ -2090,24 +2228,24 @@ public class AppCMSPresenter {
 
     @SuppressLint("ClickableViewAccessibility")
     private void setAllChildrenEnabled(boolean isEnabled, ViewGroup viewGroup) {
-        viewGroup.setEnabled(isEnabled);
-        viewGroup.setClickable(isEnabled);
         viewGroup.setNestedScrollingEnabled(isEnabled);
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            if (viewGroup.getChildAt(i) instanceof ViewGroup) {
-                if (viewGroup.getChildAt(i) instanceof RecyclerView) {
-                    ((RecyclerView) viewGroup.getChildAt(i)).setLayoutFrozen(!isEnabled);
-                    if (((RecyclerView) viewGroup.getChildAt(i)).getAdapter() instanceof AppCMSViewAdapter) {
-                        AppCMSViewAdapter appCMSViewAdapter =
-                                (AppCMSViewAdapter) ((RecyclerView) viewGroup.getChildAt(i)).getAdapter();
+            View view = viewGroup.getChildAt(i);
+            if (view instanceof ViewGroup) {
+                if (view instanceof RecyclerView) {
+                    ((RecyclerView) view).setLayoutFrozen(!isEnabled);
+                    if (((RecyclerView) view).getAdapter() instanceof AppCMSBaseAdapter) {
+                        AppCMSBaseAdapter appCMSViewAdapter =
+                                (AppCMSBaseAdapter) ((RecyclerView) view).getAdapter();
                         appCMSViewAdapter.setClickable(isEnabled);
                     }
-                } else {
-                    setAllChildrenEnabled(isEnabled, (ViewGroup) viewGroup.getChildAt(i));
                 }
+                setAllChildrenEnabled(isEnabled, (ViewGroup) view);
             } else {
-                viewGroup.getChildAt(i).setEnabled(isEnabled);
-                viewGroup.getChildAt(i).setClickable(isEnabled);
+                if (view instanceof Button || view instanceof ImageButton) {
+                    view.setEnabled(isEnabled);
+                    view.setClickable(isEnabled);
+                }
             }
         }
     }
@@ -2162,6 +2300,22 @@ public class AppCMSPresenter {
                     (FrameLayout) currentActivity.findViewById(R.id.app_cms_addon_fragment);
             additionalFragmentView.removeAllViews();
         }
+    }
+
+    public ImageButton getCurrentMediaRouteButton() {
+        return currentMediaRouteButton;
+    }
+
+    public void setCurrentMediaRouteButton(ImageButton currentMediaRouteButton) {
+        this.currentMediaRouteButton = currentMediaRouteButton;
+    }
+
+    public ViewGroup getCurrentMediaRouteButtonParent() {
+        return currentMediaRouteButtonParent;
+    }
+
+    public void setCurrentMediaRouteButtonParent(ViewGroup currentMediaRouteButtonParent) {
+        this.currentMediaRouteButtonParent = currentMediaRouteButtonParent;
     }
 
     public void launchSearchPage() {
@@ -2900,11 +3054,20 @@ public class AppCMSPresenter {
         }
     }
 
-    public void refreshAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
+    public void clearPageViewCache() {
+        try {
+            getPageViewLruCache().evictAll();
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void clearPageAPIData(Action0 onRefreshFinished, boolean sendRefreshPageDataAction) {
         if (isNetworkConnected()) {
             cancelInternalEvents();
             showLoadingDialog(true);
             try {
+                getPageViewLruCache().evictAll();
                 getPageAPILruCache().evictAll();
             } catch (Exception e) {
                 //
@@ -3647,7 +3810,7 @@ public class AppCMSPresenter {
                                     .getClosedCaptions().get(0).getUrl(), updateContentDatum.getGist().getId());
                         }
 
-                        cancelDownloadIconTimerTask();
+                        cancelDownloadIconTimerTask(updateContentDatum.getGist().getId());
 
                         String downloadURL;
 
@@ -3677,7 +3840,8 @@ public class AppCMSPresenter {
                 contentDatum.getGist().getContentType().toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
             mediaPrefix = MEDIA_SURFIX_MP3;
         }
-        cancelDownloadIconTimerTask();
+        cancelDownloadIconTimerTask(contentDatum.getGist().getId());
+
         DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL.replace(" ", "%20")))
                 .setTitle(contentDatum.getGist().getTitle())
                 .setDescription(contentDatum.getGist().getDescription())
@@ -3747,143 +3911,212 @@ public class AppCMSPresenter {
         }
     }
 
+    private interface OnRunOnUIThread {
+        void runOnUiThread(Action0 runOnUiThreadAction);
+    }
+
+    private static class DownloadTimerTask extends TimerTask {
+        final String filmIdLocal;
+        final long videoId;
+        final OnRunOnUIThread onRunOnUIThread;
+        final boolean isTablet;
+        final AppCMSPresenter appCMSPresenter;
+        final ImageView imageView;
+        final Action1<UserVideoDownloadStatus> responseAction;
+        final Timer timer;
+
+        public DownloadTimerTask(String filmId,
+                                 long videoId,
+                                 OnRunOnUIThread onRunOnUIThread,
+                                 boolean isTablet,
+                                 AppCMSPresenter appCMSPresenter,
+                                 ImageView imageView,
+                                 Action1<UserVideoDownloadStatus> responseAction,
+                                 Timer timer) {
+            this.filmIdLocal = filmId;
+            this.videoId = videoId;
+            this.onRunOnUIThread = onRunOnUIThread;
+            this.isTablet = isTablet;
+            this.appCMSPresenter = appCMSPresenter;
+            this.imageView = imageView;
+            this.responseAction = responseAction;
+            this.timer = timer;
+        }
+
+        @Override
+        public void run() {
+            try {
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(videoId);
+                Cursor c = appCMSPresenter.downloadManager.query(query);
+                if (c != null && c.moveToFirst()) {
+                    long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    c.close();
+                    int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
+                    //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
+                    //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
+                    if ((downloaded >= totalSize || downloadPercent > 100) && totalSize > 0) {
+                        if (onRunOnUIThread != null && appCMSPresenter.isUserLoggedIn())
+                            onRunOnUIThread.runOnUiThread(() -> appCMSPresenter.appCMSUserDownloadVideoStatusCall
+                                    .call(filmIdLocal, appCMSPresenter, responseAction, appCMSPresenter.getLoggedInUser()));
+                        this.cancel();
+                    } else {
+                        if (onRunOnUIThread != null && appCMSPresenter.runUpdateDownloadIconTimer)
+                            onRunOnUIThread.runOnUiThread(() -> {
+                                try {
+                                    circularImageBar(imageView, downloadPercent);
+                                } catch (Exception e) {
+                                    //Log.e(TAG, "Error rendering circular image bar");
+                                }
+                            });
+                    }
+
+                } else {
+                    //noinspection ConstantConditions
+                    System.out.println(" Downloading fails" + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
+                }
+            } catch (StaleDataException exception) {
+
+            } catch (Exception exception) {
+                //Log.e(TAG, filmIdLocal + " Removed from top +++ " + exception.getMessage());
+                this.cancel();
+                UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
+                statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
+
+                if (onRunOnUIThread != null) {
+                    try {
+                        onRunOnUIThread.runOnUiThread(() -> {
+                            try {
+                                DownloadVideoRealm downloadVideoRealm = appCMSPresenter.realmController.getRealm()
+                                        .copyFromRealm(
+                                                appCMSPresenter.realmController
+                                                        .getDownloadByIdBelongstoUser(filmIdLocal, appCMSPresenter.getLoggedInUser()));
+                                downloadVideoRealm.setDownloadStatus(statusResponse.getDownloadStatus());
+                                appCMSPresenter.realmController.updateDownload(downloadVideoRealm);
+
+                                Observable.just(statusResponse).subscribe(responseAction);
+                                //   removeDownloadedFile(filmIdLocal);
+                            } catch (Exception e) {
+                                //Log.e(TAG, "Error rendering circular image bar");
+                            }
+                        });
+                    } catch (Exception e) {
+
+                    }
+                }
+            }
+        }
+
+        private void circularImageBar(ImageView iv2, int i) {
+            if (appCMSPresenter.runUpdateDownloadIconTimer) {
+                Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(b);
+                Paint paint = new Paint();
+
+                paint.setColor(Color.DKGRAY);
+                paint.setStrokeWidth(iv2.getWidth() / 10);
+                paint.setStyle(Paint.Style.STROKE);
+                if (isTablet) {
+                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
+                } else {
+                    canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
+                }
+
+                int tintColor = Color.parseColor((appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getPageTitleColor()));
+                paint.setColor(tintColor);
+                paint.setStrokeWidth(iv2.getWidth() / 10);
+                paint.setStyle(Paint.Style.FILL);
+                final RectF oval = new RectF();
+                paint.setStyle(Paint.Style.STROKE);
+                if (isTablet) {
+                    oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
+                } else {
+                    oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 4); //Fix SVFA-1561  change 2 to 6
+                }
+                canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
+
+
+                iv2.setImageBitmap(b);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
+                }
+                iv2.requestLayout();
+            }
+        }
+    }
+
     @UiThread
     public synchronized void updateDownloadingStatus(String filmId, final ImageView imageView,
                                                      AppCMSPresenter presenter,
                                                      final Action1<UserVideoDownloadStatus> responseAction,
                                                      String userId, boolean isFromDownload) {
-        long videoId;
         if (!isFromDownload) {
-            cancelDownloadIconTimerTask();
+            cancelDownloadIconTimerTask(filmId);
         }
         try {
-            videoId = realmController.getDownloadByIdBelongstoUser(filmId, userId).getVideoId_DM();
-            DownloadManager.Query query = new DownloadManager.Query();
-            query.setFilterById(videoId);
-
             /*
              * Timer code can be optimize with RxJava code
              */
             runUpdateDownloadIconTimer = true;
             Timer updateDownloadIconTimer = new Timer();
-            downloadProgressTimerList.add(updateDownloadIconTimer);
-            updateDownloadIconTimer.schedule(new TimerTask() {
-                final String filmIdLocal = filmId;
-
-                @Override
-                public void run() {
-                    try {
-                        Cursor c = downloadManager.query(query);
-                        if (c != null && c.moveToFirst()) {
-                            downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                            long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                            long downloaded = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
-                            c.close();
-                            int downloadPercent = (int) (downloaded * 100.0 / totalSize + 0.5);
-                            //Log.d(TAG, "download progress =" + downloaded + " total-> " + totalSize + " " + downloadPercent);
-                            //Log.d(TAG, "download getCanonicalName " + filmIdLocal);
-                            if ((downloaded >= totalSize || downloadPercent > 100) && totalSize > 0) {
-                                if (currentActivity != null && isUserLoggedIn())
-                                    currentActivity.runOnUiThread(() -> appCMSUserDownloadVideoStatusCall
-                                            .call(filmId, presenter, responseAction, getLoggedInUser()));
-                                this.cancel();
-                            } else {
-                                if (currentActivity != null && runUpdateDownloadIconTimer)
-                                    currentActivity.runOnUiThread(() -> {
-                                        try {
-                                            circularImageBar(imageView, downloadPercent);
-                                        } catch (Exception e) {
-                                            //Log.e(TAG, "Error rendering circular image bar");
-                                        }
-                                    });
-                            }
-
-                        } else {
-                            //noinspection ConstantConditions
-                            System.out.println(" Downloading fails" + c.getLong(c.getColumnIndex(DownloadManager.COLUMN_STATUS)));
-                        }
-                    } catch (Exception exception) {
-                        //Log.e(TAG, filmIdLocal + " Removed from top +++ " + exception.getMessage());
-                        this.cancel();
-                        UserVideoDownloadStatus statusResponse = new UserVideoDownloadStatus();
-                        statusResponse.setDownloadStatus(DownloadStatus.STATUS_INTERRUPTED);
+            long videoId = realmController.getDownloadByIdBelongstoUser(filmId, getLoggedInUser()).getVideoId_DM();
 
 
-                        if (currentActivity != null)
-                            currentActivity.runOnUiThread(() -> {
-                                try {
-                                    DownloadVideoRealm downloadVideoRealm = realmController.getRealm()
-                                            .copyFromRealm(
-                                                    realmController
-                                                            .getDownloadByIdBelongstoUser(filmIdLocal, getLoggedInUser()));
-                                    downloadVideoRealm.setDownloadStatus(statusResponse.getDownloadStatus());
-                                    realmController.updateDownload(downloadVideoRealm);
+            DownloadTimerTask downloadTimerTask = new DownloadTimerTask(filmId,
+                    videoId,
+                    runOnUiThreadAction -> {
+                        currentActivity.runOnUiThread(runOnUiThreadAction::call);
+                    },
+                    BaseView.isTablet(currentActivity),
+                    this,
+                    imageView,
+                    responseAction,
+                    updateDownloadIconTimer);
 
-                                    Observable.just(statusResponse).subscribe(responseAction);
-                                    //   removeDownloadedFile(filmIdLocal);
-                                } catch (Exception e) {
-                                    //Log.e(TAG, "Error rendering circular image bar");
-                                }
-                            });
+            downloadProgressTimerList.add(downloadTimerTask);
 
-                    }
-                }
-            }, 500, 1000);
+            updateDownloadIconTimer.schedule(downloadTimerTask, 0, 1000);
         } catch (Exception e) {
             Log.e(TAG, "Error updating download status: " + e.getMessage());
         }
     }
 
-    public void cancelDownloadIconTimerTask() {
+    public boolean downloadTaskRunning(String filmId) {
+        if (filmId != null &&
+                downloadProgressTimerList != null &&
+                !downloadProgressTimerList.isEmpty()) {
+            for (DownloadTimerTask downloadProgressTask : downloadProgressTimerList) {
+                if (downloadProgressTask.filmIdLocal.equals(filmId)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public void cancelDownloadIconTimerTask(String filmId) {
        /* if (updateDownloadIconTimer != null) {
             runUpdateDownloadIconTimer = false;
             updateDownloadIconTimer.cancel();
             updateDownloadIconTimer.purge();
         }*/
         if (downloadProgressTimerList != null && !downloadProgressTimerList.isEmpty()) {
-            for (Timer downloadProgress : downloadProgressTimerList) {
-                downloadProgress.cancel();
-                downloadProgress.purge();
+            int indexToDelete = -1;
+            for (int i = 0; i < downloadProgressTimerList.size() && indexToDelete == -1; i++) {
+                DownloadTimerTask downloadTimerTask = downloadProgressTimerList.get(i);
+                if (filmId == null || downloadTimerTask.filmIdLocal.equals(filmId)) {
+                    downloadTimerTask.timer.cancel();
+                    downloadTimerTask.timer.purge();
+                    indexToDelete = i;
+                }
             }
-            downloadProgressTimerList.clear();
-
-        }
-    }
-
-    private void circularImageBar(ImageView iv2, int i) {
-        if (runUpdateDownloadIconTimer) {
-            Bitmap b = Bitmap.createBitmap(iv2.getWidth(), iv2.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(b);
-            Paint paint = new Paint();
-
-            paint.setColor(Color.DKGRAY);
-            paint.setStrokeWidth(iv2.getWidth() / 10);
-            paint.setStyle(Paint.Style.STROKE);
-            if (BaseView.isTablet(currentActivity)) {
-                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 2, paint);
-            } else {
-                canvas.drawCircle(iv2.getWidth() / 2, iv2.getHeight() / 2, (iv2.getWidth() / 2) - 5, paint);// Fix SVFA-1561 changed  -2 to -7
+            if (filmId == null) {
+                downloadProgressTimerList.clear();
+            } else if (indexToDelete != -1) {
+                downloadProgressTimerList.remove(indexToDelete);
             }
-
-            int tintColor = Color.parseColor((this.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor()));
-            paint.setColor(tintColor);
-            paint.setStrokeWidth(iv2.getWidth() / 9);
-            paint.setStyle(Paint.Style.FILL);
-            final RectF oval = new RectF();
-            paint.setStyle(Paint.Style.STROKE);
-            if (BaseView.isTablet(currentActivity)) {
-                oval.set(2, 2, iv2.getWidth() - 2, iv2.getHeight() - 2);
-            } else {
-                oval.set(6, 6, iv2.getWidth() - 6, iv2.getHeight() - 4); //Fix SVFA-1561  change 2 to 6
-            }
-            canvas.drawArc(oval, 270, ((i * 360) / 100), false, paint);
-
-
-            iv2.setImageBitmap(b);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                iv2.setForegroundGravity(View.TEXT_ALIGNMENT_CENTER);
-            }
-            iv2.requestLayout();
         }
     }
 
@@ -3941,7 +4174,7 @@ public class AppCMSPresenter {
                     }
                     appCMSUserDownloadVideoStatusCall.call("", this,
                             resultAction1, getLoggedInUser());
-                    cancelDownloadIconTimerTask();
+                    cancelDownloadIconTimerTask(null);
                 },
                 null);
     }
@@ -4555,8 +4788,8 @@ public class AppCMSPresenter {
                                AudioPlaylistHelper.IPlaybackCall callBackPlaylistHelper
             , boolean isPlayerScreenOpen, Boolean playAudio, AppCMSAudioDetailAPIAction appCMSAudioDetailAPIAction) {
         if (currentActivity != null) {
-            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                    .PRESENTER_AUDIO_LOADING_ACTION));
+//            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+//                    .PRESENTER_AUDIO_LOADING_ACTION));
             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                     .PRESENTER_PAGE_LOADING_ACTION));
         }
@@ -4612,8 +4845,8 @@ public class AppCMSPresenter {
                         }
 
                         if (currentActivity != null) {
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
-                                    .PRESENTER_AUDIO_LOADING_STOP_ACTION));
+//                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter
+//                                    .PRESENTER_AUDIO_LOADING_STOP_ACTION));
                             currentActivity.sendBroadcast(new Intent(AppCMSPresenter
                                     .PRESENTER_STOP_PAGE_LOADING_ACTION));
                         }
@@ -4679,7 +4912,7 @@ public class AppCMSPresenter {
 
         //on browsinfany play list .set this playlist in temporaray listing of playlist .so that it could not effect on currently playing listing
         if (appCMSPlaylistResult.getAudioList() != null && appCMSPlaylistResult.getAudioList().size() > 0) {
-            AudioPlaylistHelper.getInstance().setCurrentPlaylistId(appCMSPlaylistResult.getId());
+//            AudioPlaylistHelper.getInstance().setCurrentPlaylistId(appCMSPlaylistResult.getId());
 //                                AudioPlaylistHelper.getInstance().setTempPlaylist(MusicLibrary.createPlaylistByIDList(appCMSPlaylistResult.getAudioList()));
             AudioPlaylistHelper.getInstance().setTempPlaylistData(appCMSPlaylistResult);
         }
@@ -5585,6 +5818,9 @@ public class AppCMSPresenter {
                     }
                 }
 
+                pushActionInternalEvents(pageId
+                        + BaseView.isLandscape(currentActivity));
+
                 if (launchActivity) {
                     launchPageActivity(currentActivity,
                             appCMSPageUI,
@@ -5631,7 +5867,7 @@ public class AppCMSPresenter {
 
                 if (appCMSPageAPI == null) {
                     showLoadingDialog(true);
-                    refreshPageAPIData(appCMSPageUI, pageId, appCMSPageAPI1 -> {
+                    refreshPageAPIData(appCMSPageUI, pageId, null, appCMSPageAPI1 -> {
                         loadingPage = false;
                         try {
                             getPageAPILruCache().put(pageId, appCMSPageAPI1);
@@ -5639,19 +5875,13 @@ public class AppCMSPresenter {
 
                         }
                         cancelInternalEvents();
-                        if (currentActivity != null) {
-                            currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
-                            pushActionInternalEvents(pageId
-                                    + BaseView.isLandscape(currentActivity));
-                        }
                         restartInternalEvents();
                         navigationPageData.put(pageId, appCMSPageAPI1);
+                        currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION));
                     });
                 } else {
                     loadingPage = false;
                     cancelInternalEvents();
-                    pushActionInternalEvents(pageId
-                            + BaseView.isLandscape(currentActivity));
                     navigationPageData.put(pageId, appCMSPageAPI);
                 }
 
@@ -5711,6 +5941,25 @@ public class AppCMSPresenter {
         }
     }
 
+    public boolean sendCloseAutoplayAction(String pageName,
+                                           boolean closeSelf,
+                                           boolean closeOnePage) {
+        Log.e(TAG, "Sending close others action :");
+        boolean result = false;
+        if (currentActivity != null) {
+            Intent closeOthersIntent = new Intent(AppCMSPresenter.PRESENTER_CLOSE_AUTOPLAY_SCREEN);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_self_key),
+                    closeSelf);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.close_one_page_key),
+                    closeOnePage);
+            closeOthersIntent.putExtra(currentActivity.getString(R.string.app_cms_closing_page_name),
+                    pageName);
+            currentActivity.sendBroadcast(closeOthersIntent);
+            result = true;
+        }
+        return result;
+    }
+
     public boolean sendCloseOthersAction(String pageName,
                                          boolean closeSelf,
                                          boolean closeOnePage) {
@@ -5730,12 +5979,53 @@ public class AppCMSPresenter {
         return result;
     }
 
+    public void sendEnterFullScreenAction() {
+        if (currentActivity != null) {
+            Intent enterFullScreenAction = new Intent(AppCMSPresenter.PRESENTER_ENTER_FULLSCREEN_ACTION);
+            enterFullScreenAction.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(enterFullScreenAction);
+        }
+    }
+
+    public void sendExitFullScreenAction(boolean relaunchPage) {
+        if (currentActivity != null) {
+            Intent exitFullScreenAction = new Intent(AppCMSPresenter.PRESENTER_EXIT_FULLSCREEN_ACTION);
+            exitFullScreenAction.putExtra(currentActivity.getString(R.string.exit_fullscreen_relaunch_page_extra_key), relaunchPage);
+            exitFullScreenAction.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(exitFullScreenAction);
+        }
+    }
+
+    public void sendKeepScreenOnAction() {
+        if (currentActivity != null) {
+            Intent keepScreenOnAction = new Intent(AppCMSPresenter.PRESENTER_KEEP_SCREEN_ON_ACTION);
+            keepScreenOnAction.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(keepScreenOnAction);
+        }
+    }
+
+    public void sendClearKeepScreenOnAction() {
+        if (currentActivity != null) {
+            Intent clearKeepScreenOnAction = new Intent(AppCMSPresenter.PRESENTER_CLEAR_KEEP_SCREEN_ON_ACTION);
+            clearKeepScreenOnAction.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(clearKeepScreenOnAction);
+        }
+    }
+
+    public void sendChromecastDisconnectedAction() {
+        if (currentActivity != null) {
+            Intent chromecastDisconnected = new Intent(AppCMSPresenter.PRESENTER_CHROMECAST_DISCONNECTED_ACTION);
+            chromecastDisconnected.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
+            currentActivity.sendBroadcast(chromecastDisconnected);
+        }
+    }
+
     public boolean sendDeepLinkAction(Uri deeplinkUri) {
         //Log.d(TAG, "Sending deeplink action");
         boolean result = false;
         if (currentActivity != null) {
             Intent deeplinkIntent = new Intent(AppCMSPresenter.PRESENTER_DEEPLINK_ACTION);
-            deeplinkIntent.setData(deeplinkUri);
+            deeplinkIntent.putExtra(currentActivity.getString(R.string.deeplink_uri_extra_key), deeplinkUri.toString());
             currentActivity.sendBroadcast(deeplinkIntent);
             result = true;
         }
@@ -5778,8 +6068,52 @@ public class AppCMSPresenter {
         }
     }
 
+    public void getPagesContent(List<String> modules, Action1<AppCMSPageAPI> readyAction) {
+        if (currentActivity != null && modules != null && !modules.isEmpty()) {
+            int modulesLength = modules.size();
+            StringBuilder modulesParamsSb = new StringBuilder();
+
+            for (int i = 0; i < modulesLength; i++) {
+                modulesParamsSb.append(modules.get(i));
+                if (i < modulesLength - 1) {
+                    modulesParamsSb.append(",");
+                }
+            }
+
+            String url = currentActivity.getString(R.string.app_cms_pages_api_url,
+                    appCMSMain.getApiBaseUrl(),
+                    appCMSSite.getGist().getSiteInternalName(),
+                    modulesParamsSb.toString());
+
+            if (shouldRefreshAuthToken()) {
+                refreshIdentity(getRefreshToken(),
+                        () -> {
+                            try {
+                                GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                                        .urlWithContent(url)
+                                        .authToken(getAuthToken())
+                                        .build();
+                                new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
+                                        readyAction)
+                                        .executeWithModules(params);
+                            } catch (Exception e) {
+                                //Log.e(TAG, "Error retrieving page ID content: " + e.getMessage());
+                                showDialog(DialogType.NETWORK, null, false, null, null);
+                            }
+                        });
+            } else {
+                GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                        .urlWithContent(url)
+                        .authToken(getAuthToken())
+                        .build();
+                new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).executeWithModules(params);
+            }
+        }
+    }
+
     public void getPageIdContent(String urlWithContent,
                                  String pageId,
+                                 List<String> modules,
                                  Action1<AppCMSPageAPI> readyAction) {
         AppCMSPageAPI appCMSPageAPI = null;
         if (platformType == PlatformType.ANDROID) {
@@ -5789,16 +6123,29 @@ public class AppCMSPresenter {
                 appCMSPageAPI = null;
             }
         }
-        if (appCMSPageAPI == null) {
+        if (appCMSPageAPI == null && pageId != null) {
             if (shouldRefreshAuthToken()) {
                 refreshIdentity(getRefreshToken(),
                         () -> {
                             try {
+                                String authToken = getAuthToken();
+                                try {
+                                    if ((pageId.equals(homePage.getPageId()) ||
+                                            pageId.equals(moviesPage.getPageId())) &&
+                                            !isUserLoggedIn() &&
+                                            usedCachedAPI) {
+                                        authToken = getCachedUserToken();
+                                    }
+                                } catch (Exception e) {
+
+                                }
                                 GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                                        .context(currentContext)
                                         .urlWithContent(urlWithContent)
-                                        .authToken(getAuthToken())
+                                        .authToken(authToken)
                                         .pageId(pageId)
                                         .loadFromFile(platformType != PlatformType.TV && appCMSMain.shouldLoadFromFile())
+                                        .modules(modules)
                                         .appCMSPageAPILruCache(getPageAPILruCache())
                                         .build();
                                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall,
@@ -5810,11 +6157,24 @@ public class AppCMSPresenter {
                             }
                         });
             } else {
+                String authToken = getAuthToken();
+                try {
+                    if ((pageId.equals(homePage.getPageId()) ||
+                            pageId.equals(moviesPage.getPageId())) &&
+                            !isUserLoggedIn() &&
+                            usedCachedAPI) {
+                        authToken = getCachedUserToken();
+                    }
+                } catch (Exception e) {
+
+                }
                 GetAppCMSAPIAsyncTask.Params params = new GetAppCMSAPIAsyncTask.Params.Builder()
+                        .context(currentContext)
                         .urlWithContent(urlWithContent)
-                        .authToken(getAuthToken())
+                        .authToken(authToken)
                         .pageId(pageId)
                         .loadFromFile(platformType != PlatformType.TV && appCMSMain.shouldLoadFromFile())
+                        .modules(modules)
                         .appCMSPageAPILruCache(getPageAPILruCache())
                         .build();
                 new GetAppCMSAPIAsyncTask(appCMSPageAPICall, readyAction).execute(params);
@@ -6042,6 +6402,10 @@ public class AppCMSPresenter {
                     setLoggedInTime();
         }
         return false;
+    }
+
+    private String getCachedUserToken() {
+        return cachedAPIUserToken;
     }
 
     private String getAnonymousUserToken() {
@@ -6373,6 +6737,12 @@ public class AppCMSPresenter {
             SharedPreferences sharedPrefs =
                     currentContext.getSharedPreferences(APPS_FLYER_KEY_PREF_NAME, 0);
             sharedPrefs.edit().putString(APPS_FLYER_KEY_PREF_NAME, appsFlyerKey).apply();
+        }
+    }
+
+    public void sendAppsFlyerFilmViewingEvent(String primaryCategory, String filmId) {
+        if (currentContext != null) {
+            AppsFlyerUtils.filmViewingEvent(currentContext, primaryCategory, filmId, this);
         }
     }
 
@@ -6920,8 +7290,8 @@ public class AppCMSPresenter {
             }
 
             userHistoryData.clear();
-
-            navigateToHomePage();
+            getPageViewLruCache().evictAll();
+            clearPageAPIData(this::navigateToHomePage, false);
             CastHelper.getInstance(currentActivity.getApplicationContext()).disconnectChromecastOnLogout();
             AppsFlyerUtils.logoutEvent(currentActivity, getLoggedInUser());
         }
@@ -7095,7 +7465,7 @@ public class AppCMSPresenter {
                               final String siteId,
                               final Uri searchQuery,
                               final PlatformType platformType,
-                              boolean forceReloadFromNetwork) {
+                              boolean bustCache) {
         this.deeplinkSearchQuery = searchQuery;
         this.platformType = platformType;
         this.launched = false;
@@ -7105,7 +7475,7 @@ public class AppCMSPresenter {
         GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                 .context(currentActivity)
                 .siteId(siteId)
-                .forceReloadFromNetwork(forceReloadFromNetwork)
+                .bustCache(bustCache)
                 .build();
 
         try {
@@ -7119,7 +7489,7 @@ public class AppCMSPresenter {
                                             siteId,
                                             searchQuery,
                                             platformType,
-                                            forceReloadFromNetwork));
+                                            bustCache));
                         } else {
                             launchBlankPage();
                         }
@@ -7152,7 +7522,7 @@ public class AppCMSPresenter {
                         appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
                         appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
                         if (!loadFromFile) {
-                            refreshAPIData(() -> {
+                            clearPageAPIData(() -> {
                                         getAppCMSSite(platformType);
                                     },
                                     false);
@@ -7387,7 +7757,7 @@ public class AppCMSPresenter {
         return false;
     }
 
-    private void showToast(String message, int messageDuration) {
+    public void showToast(String message, int messageDuration) {
         Toast.makeText(currentActivity, message, messageDuration).show();
     }
 
@@ -7407,8 +7777,8 @@ public class AppCMSPresenter {
                 if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
                     title = currentActivity.getString(R.string.app_cms_login_and_subscription_required_title);
                     message = currentActivity.getString(R.string.app_cms_login_and_subscription_required_message);
-                    if (getTemplateType() == TemplateType.SPORTS) {
-                        if (isSportsTemplate()) {
+
+                    if (isSportsTemplate()) {
 
                             message = currentActivity.getString(R.string.app_cms_live_preview_text_message);
                             if (subscriptionFlowContent != null &&
@@ -7417,7 +7787,6 @@ public class AppCMSPresenter {
                                 message = subscriptionFlowContent.getOverlayMessage();
                             }
 
-                        }
                     }
                     //Set Firebase User Property when user is not logged in and unsubscribed
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
@@ -7425,27 +7794,51 @@ public class AppCMSPresenter {
                 }
 
                 if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
-                    title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
-                    message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
-                }
-
-                if (dialogType == DialogType.UPGRADE_UNAVAILABLE) {
-                    title = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_title);
-                    message = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_user_dialog);
+                    String paymentProcessor = getActiveSubscriptionProcessor();
+                    if ((!TextUtils.isEmpty(paymentProcessor) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_web_user_dialog);
+                    } else if (!TextUtils.isEmpty(paymentProcessor) &&
+                            ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
+                                    || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_upgrade_for_ios_user_dialog);
+                    } else {
+                        title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                    }
                 }
 
                 if (dialogType == DialogType.CANNOT_CANCEL_SUBSCRIPTION) {
                     String paymentProcessor = getActiveSubscriptionProcessor();
                     if ((!TextUtils.isEmpty(paymentProcessor) &&
                             !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor)) &&
-                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)))) {
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_android_payment_processor_friendly)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor)) &&
+                            !paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly)))) {
                         title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
                         message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_web_user_dialog);
                     } else if (!TextUtils.isEmpty(paymentProcessor) &&
-                            TextUtils.isEmpty(getExistingGooglePlaySubscriptionId())) {
-                        title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
-                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                            ((paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor))
+                                    || paymentProcessor.equalsIgnoreCase(currentActivity.getString(R.string.subscription_ios_payment_processor_friendly))))) {
+                        title = currentActivity.getString(R.string.app_cms_subscription_upgrade_cancel_title);
+                        message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_ios_user_dialog);
+                    } else {
+                        if (!TextUtils.isEmpty(paymentProcessor) &&
+                                TextUtils.isEmpty(getExistingGooglePlaySubscriptionId())) {
+                            title = currentActivity.getString(R.string.app_cms_subscription_google_play_cancel_title);
+                            message = currentActivity.getString(R.string.app_cms_subscription_cancel_for_google_play_user_dialog);
+                        }
                     }
+                }
+
+                if (dialogType == DialogType.UPGRADE_UNAVAILABLE) {
+                    title = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_title);
+                    message = currentActivity.getString(R.string.app_cms_subscription_upgrade_unavailable_user_dialog);
                 }
 
                 if (dialogType == DialogType.UNKNOWN_SUBSCRIPTION_FOR_UPGRADE) {
@@ -8019,13 +8412,12 @@ public class AppCMSPresenter {
                 beaconRequestList.add(beaconRequest);
             }
             //TODO: to be removed in signed apk
-//            printBeacon(beaconRequestList);
+            printBeacon(beaconRequestList);
             return beaconRequestList;
         } catch (Exception e) {
             return null;
         }
     }
-
     //TODO: to be removed in signed apk
     void printBeacon(ArrayList<BeaconRequest> beaconRequestList) {
         for (int i = 0; i < beaconRequestList.size(); i++) {
@@ -8661,6 +9053,7 @@ public class AppCMSPresenter {
                     subscriptionPage.getPageId());
             getPageIdContent(apiUrl,
                     subscriptionPage.getPageId(),
+                    null,
                     appCMSPageAPI -> {
                         clearSubscriptionPlans();
                         List<SubscriptionPlan> subscriptionPlans = new ArrayList<>();
@@ -8820,6 +9213,7 @@ public class AppCMSPresenter {
 
     public void refreshPageAPIData(AppCMSPageUI appCMSPageUI,
                                    String pageId,
+                                   List<String> modules,
                                    Action1<AppCMSPageAPI> appCMSPageAPIReadyAction) {
         if (appCMSPageUI != null) {
             String baseUrl = appCMSMain.getApiBaseUrl();
@@ -8835,8 +9229,10 @@ public class AppCMSPresenter {
                     endPoint,
                     siteId,
                     getPageId(appCMSPageUI));
+            getPageViewLruCache().remove(pageId);
             getPageIdContent(apiUrl,
                     getPageId(appCMSPageUI),
+                    modules,
                     appCMSPageAPIReadyAction);
         }
     }
@@ -9058,7 +9454,7 @@ public class AppCMSPresenter {
                             //
                         }
 
-                        refreshAPIData(() -> {
+                        clearPageAPIData(() -> {
                             if (!loginFromNavPage) {
                                 sendCloseOthersAction(null, true, !loginFromNavPage);
                             }
@@ -9090,7 +9486,7 @@ public class AppCMSPresenter {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
                                             getPlayerLruCache().evictAll();
-                                        } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
+                                        }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
                                             Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                             currentActivity.sendBroadcast(myProfileIntent);
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -9106,7 +9502,7 @@ public class AppCMSPresenter {
                                                     false,
                                                     false);
 
-                                        } else if (getLaunchType() == LaunchType.HOME) {
+                                        }  else if (getLaunchType() == LaunchType.HOME) {
                                             Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
                                             currentActivity.sendBroadcast(updateSubscription);
 
@@ -9130,7 +9526,7 @@ public class AppCMSPresenter {
 //                    currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
                 }, true);
             } else {
-                refreshAPIData(() -> {
+                clearPageAPIData(() -> {
                 }, false);
                 if (entitlementPendingVideoData != null) {
                     sendRefreshPageAction();
@@ -9179,7 +9575,7 @@ public class AppCMSPresenter {
                                 currentActivity.sendBroadcast(updateSubscription);
                                 getPlayerLruCache().evictAll();
 
-                            } else if (getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG) {
+                            }else if(getLaunchType() == LaunchType.NAVIGATE_TO_HOME_FROM_LOGIN_DIALOG){
                                 Intent myProfileIntent = new Intent(CLOSE_DIALOG_ACTION);
                                 currentActivity.sendBroadcast(myProfileIntent);
                                 Intent updateSubscription = new Intent(UPDATE_SUBSCRIPTION);
@@ -9346,8 +9742,13 @@ public class AppCMSPresenter {
 
     public void setCurrentContext(Context context) {
         this.currentContext = context;
-    }
+        try {
+            this.cachedAPIUserToken = context.getString(R.string.app_cms_cached_api_user_token);
+            this.usedCachedAPI = context.getResources().getBoolean(R.bool.use_cached_api);
+        } catch (Exception e) {
 
+        }
+    }
 
     private Bundle getPageActivityBundle(Activity activity,
                                          AppCMSPageUI appCMSPageUI,
@@ -9604,8 +10005,6 @@ public class AppCMSPresenter {
                 appCMSIntent.putExtra(activity.getString(R.string.app_cms_bundle_key), args);
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 activity.startActivity(appCMSIntent);
-                setAppHomeActivityCreated(true);
-
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_STOP_PAGE_LOADING_ACTION));
             } catch (Exception e) {
                 //Log.e(TAG, "Error launching page activity: " + pageName);
@@ -9635,8 +10034,6 @@ public class AppCMSPresenter {
                 appCMSIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
                 appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 currentActivity.startActivity(appCMSIntent);
-                setAppHomeActivityCreated(true);
-
             }
         } else if (getPlatformType() == PlatformType.TV) {
             launchErrorActivity(PlatformType.TV);
@@ -9736,8 +10133,6 @@ public class AppCMSPresenter {
                                                 apikey,
                                                 appCMSSearchCall))
                                         .build();
-
-                                clearMaps();
                                 switch (platformType) {
                                     case ANDROID:
                                         getAppCMSAndroid(0);
@@ -9763,7 +10158,7 @@ public class AppCMSPresenter {
         }
     }
 
-    public void refreshPages(Action0 onReadyAction,
+    public void refreshPages(Action1<Boolean> onReadyAction,
                              boolean attemptRetry,
                              int retryAttempts,
                              int maxRetryAttempts) {
@@ -9793,15 +10188,14 @@ public class AppCMSPresenter {
                                 refreshAppCMSAndroid((appCMSAndroid) -> {
                                     if (appCMSAndroid != null) {
                                         for (MetaPage metaPage : appCMSAndroid.getMetaPages()) {
-//                                            Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
+                                            //Log.d(TAG, "Refreshed module page: " + metaPage.getPageName() +
 //                                                " " +
 //                                                metaPage.getPageId() +
 //                                                " " +
 //                                                metaPage.getPageUI());
                                             if (currentActivity != null) {
                                                 try {
-                                                    getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                                            metaPage.getPageUI()),
+                                                    getAppCMSPage(metaPage.getPageUI(),
                                                             appCMSPageUI -> {
                                                                 if (appCMSPageUI != null) {
                                                                     navigationPages.put(metaPage.getPageId(), appCMSPageUI);
@@ -9819,7 +10213,8 @@ public class AppCMSPresenter {
                                                                 }
 
                                                             },
-                                                            false);
+                                                            false,
+                                                            true);
                                                 } catch (Exception e) {
                                                     //Log.e(TAG, "Failed to refresh AppCMS page " +
 //                                                    metaPage.getPageName() +
@@ -9830,29 +10225,32 @@ public class AppCMSPresenter {
                                         }
 
                                         try {
-                                            getAppCMSModules(appCMSAndroid, true, (appCMSAndroidModules) -> {
-                                                if (appCMSAndroidModules != null) {
-                                                    //Log.d(TAG, "Received and refreshed module list");
-                                                    this.appCMSAndroidModules = appCMSAndroidModules;
-                                                    if (appCMSAndroidModules.isLoadedFromNetwork() &&
-                                                            pageViewLruCache != null) {
-                                                        Log.d(TAG, "Clearing page cache");
-                                                        try {
-                                                            pageViewLruCache.evictAll();
-                                                        } catch (Exception e) {
+                                            getAppCMSModules(appCMSAndroid,
+                                                    true,
+                                                    true,
+                                                    (appCMSAndroidModules) -> {
+                                                        if (appCMSAndroidModules != null) {
+                                                            //Log.d(TAG, "Received and refreshed module list");
+                                                            this.appCMSAndroidModules = appCMSAndroidModules;
+                                                            if (appCMSAndroidModules.isLoadedFromNetwork() &&
+                                                                    pageViewLruCache != null) {
+                                                                Log.d(TAG, "Clearing page cache");
+                                                                try {
+                                                                    pageViewLruCache.evictAll();
+                                                                } catch (Exception e) {
 
-                                                        }
-                                                    }
-
-                                                    Log.d(TAG, "Refreshing API Data");
-                                                }
-                                                refreshAPIData(() -> {
-                                                            if (onReadyAction != null) {
-                                                                onReadyAction.call();
+                                                                }
                                                             }
-                                                        },
-                                                        true);
-                                            });
+
+                                                            Log.d(TAG, "Refreshing API Data");
+                                                        }
+                                                        clearPageAPIData(() -> {
+                                                                    if (onReadyAction != null) {
+                                                                        onReadyAction.call(true);
+                                                                    }
+                                                                },
+                                                                true);
+                                                    });
                                         } catch (Exception e) {
                                             //Log.e(TAG, "Failed to refresh AppCMS modules: " +
 //                                            e.getMessage());
@@ -9864,13 +10262,13 @@ public class AppCMSPresenter {
                             }
                         } else {
                             if (onReadyAction != null) {
-                                onReadyAction.call();
+                                onReadyAction.call(false);
                             }
                         }
                     } else {
                         Log.w(TAG, "Resulting main.json from refresh is null");
                         if (onReadyAction != null) {
-                            onReadyAction.call();
+                            onReadyAction.call(false);
                         }
                     }
                 });
@@ -9895,7 +10293,7 @@ public class AppCMSPresenter {
                                 GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                                         .context(currentActivity)
                                         .siteId(Utils.getProperty("SiteId", currentActivity))
-                                        .forceReloadFromNetwork(true)
+                                        .bustCache(true)
                                         .build();
                                 new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
                                     if (readyAction != null && main != null) {
@@ -9914,7 +10312,7 @@ public class AppCMSPresenter {
                     GetAppCMSMainUIAsyncTask.Params params = new GetAppCMSMainUIAsyncTask.Params.Builder()
                             .context(currentActivity)
                             .siteId(Utils.getProperty("SiteId", currentActivity))
-                            .forceReloadFromNetwork(true)
+                            .bustCache(true)
                             .build();
                     new GetAppCMSMainUIAsyncTask(appCMSMainUICall, main -> {
                         Log.d(TAG, "Refreshed main.json");
@@ -9935,9 +10333,9 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                            .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    appCMSMain.getAndroid()))
+                            .url(appCMSMain.getAndroid())
                             .loadFromFile(false)
+                            .bustCache(true)
                             .build();
             try {
                 new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
@@ -9960,64 +10358,38 @@ public class AppCMSPresenter {
 
     private void getAppCMSAndroid(int tryCount) {
         //Log.d(TAG, "Attempting to retrieve android.json");
+        //Log.d(TAG, "Retrieving android.json");
+
         try {
-            if (!isUserLoggedIn() && tryCount == 0) {
-                //Log.d(TAG, "Signing in as an anonymous user");
-                signinAnonymousUser(tryCount, null, PlatformType.ANDROID);
-            } else if (isUserLoggedIn() && tryCount == 0) {
-                //Log.d(TAG, "Updating logged in user data");
-                getUserData(userIdentity -> {
-                    try {
-                        if (userIdentity != null) {
-                            //Log.d(TAG, "Retrieved valid user identity");
-                            setLoggedInUser(userIdentity.getUserId());
-                            setLoggedInUserEmail(userIdentity.getEmail());
-                            setLoggedInUserName(userIdentity.getName());
-                            setIsUserSubscribed(userIdentity.isSubscribed());
-                            if (!userIdentity.isSubscribed()) {
-                                setActiveSubscriptionProcessor(null);
-                            }
-                        }
-                        getAppCMSAndroid(tryCount + 1);
-                    } catch (Exception e) {
-                        //Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
-//                                e.getMessage());
-                        launchBlankPage();
-                    }
-                });
-            } else {
-                //Log.d(TAG, "Retrieving android.json");
-
-                try {
-                    GetAppCMSAndroidUIAsyncTask.Params params =
-                            new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                                    .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                            appCMSMain.getAndroid()))
-                                    .loadFromFile(appCMSMain.shouldLoadFromFile())
-                                    .build();
+            GetAppCMSAndroidUIAsyncTask.Params params =
+                    new GetAppCMSAndroidUIAsyncTask.Params.Builder()
+                            .url(appCMSMain.getAndroid())
+                            .loadFromFile(appCMSMain.shouldLoadFromFile())
+                            .bustCache(false)
+                            .build();
 //                    Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
-                    new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
-                        try {
-                            if (appCMSAndroidUI == null ||
-                                    appCMSAndroidUI.getMetaPages() == null ||
-                                    appCMSAndroidUI.getMetaPages().isEmpty()) {
-                                //Log.e(TAG, "AppCMS keys for pages for appCMSAndroid not found");
-                                launchBlankPage();
-                            } else if (isAppBelowMinVersion()) {
-                                //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
-                                launchUpgradeAppActivity();
-                            } else {
-                                if (isUserLoggedIn()) {
-//                                    populateUserHistoryData();
-                                }
-
-                                getAppCMSModules(appCMSAndroidUI, false, (appCMSAndroidModules) -> {
+            new GetAppCMSAndroidUIAsyncTask(appCMSAndroidUICall, appCMSAndroidUI -> {
+                try {
+                    if (appCMSAndroidUI == null ||
+                            appCMSAndroidUI.getMetaPages() == null ||
+                            appCMSAndroidUI.getMetaPages().isEmpty()) {
+                        //Log.e(TAG, "AppCMS keys for pages for appCMSAndroid not found");
+                        launchBlankPage();
+                    } else if (isAppBelowMinVersion()) {
+                        //Log.e(TAG, "AppCMS current application version is below the minimum version supported");
+                        launchUpgradeAppActivity();
+                    } else {
+                        getAppCMSModules(appCMSAndroidUI,
+                                false,
+                                false,
+                                (appCMSAndroidModules) -> {
                                     launchBlankPage();
                                     //Log.d(TAG, "Received module list");
                                     this.appCMSAndroidModules = appCMSAndroidModules;
                                     this.appCMSAndroid = appCMSAndroidUI;
-                                    initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
-                                    initAppsFlyer(appCMSAndroidUI);
+
+                                    initializeAppCMSAnalytics(appCMSAndroidUI);
+
                                     navigation = appCMSAndroidUI.getNavigation();
                                     new SoftReference<>(navigation, referenceQueue);
                                     queueMetaPages(appCMSAndroidUI.getMetaPages());
@@ -10030,6 +10402,37 @@ public class AppCMSPresenter {
                                                     openDownloadScreenForNetworkError(true,
                                                             () -> getAppCMSAndroid(tryCount));
                                                 } else {
+                                                    if (!isUserLoggedIn() && tryCount == 0) {
+                                                        //Log.d(TAG, "Signing in as an anonymous user");
+                                                        signinAnonymousUser(tryCount, null, PlatformType.ANDROID);
+                                                    } else if (isUserLoggedIn() && tryCount == 0) {
+                                                        //Log.d(TAG, "Updating logged in user data");
+                                                        getUserData(userIdentity -> {
+                                                            try {
+                                                                if (userIdentity != null) {
+                                                                    //Log.d(TAG, "Retrieved valid user identity");
+                                                                    setLoggedInUser(userIdentity.getUserId());
+                                                                    setLoggedInUserEmail(userIdentity.getEmail());
+                                                                    setLoggedInUserName(userIdentity.getName());
+                                                                    setIsUserSubscribed(userIdentity.isSubscribed());
+                                                                    if (!userIdentity.isSubscribed()) {
+                                                                        setActiveSubscriptionProcessor(null);
+                                                                    }
+                                                                }
+                                                            } catch (Exception e) {
+                                                                //Log.e(TAG, "Error refreshing identity while attempting to retrieving AppCMS Android data: " +
+//                                e.getMessage());
+                                                                launchBlankPage();
+                                                            }
+                                                        });
+                                                    }
+
+                                                    try {
+                                                        getPageViewLruCache().evictAll();
+                                                    } catch (Exception e) {
+
+                                                    }
+
                                                     if (appCMSMain.getServiceType()
                                                             .equals(currentActivity.getString(R.string.app_cms_main_svod_service_type_key))) {
                                                         refreshSubscriptionData(() -> {
@@ -10075,45 +10478,44 @@ public class AppCMSPresenter {
                                                 }
                                             });
                                 });
-                            }
-                        } catch (Exception e) {
-                            //Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
-                            launchBlankPage();
-                        }
-                    }).execute(params);
+                    }
                 } catch (Exception e) {
-                    //Log.e(TAG, "Failed to load Android json file: " + e.getMessage());
+                    //Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
                     launchBlankPage();
                 }
-            }
+            }).execute(params);
         } catch (Exception e) {
             //Log.e(TAG, "Failed to load Android json file: " + e.getMessage());
             launchBlankPage();
         }
     }
 
+    private void initializeAppCMSAnalytics(AppCMSAndroidUI appCMSAndroidUI) {
+        initializeGA(appCMSAndroidUI.getAnalytics().getGoogleAnalyticsId());
+        initAppsFlyer(appCMSAndroidUI);
+    }
+
     private void getAppCMSModules(AppCMSAndroidUI appCMSAndroidUI,
                                   boolean forceLoadFromNetwork,
+                                  boolean bustCache,
                                   Action1<AppCMSAndroidModules> readyAction) {
         if (currentActivity != null) {
             appCMSAndroidModuleCall.call(appCMSAndroidUI.getBlocksBundleUrl(),
                     appCMSAndroidUI.getVersion(),
                     forceLoadFromNetwork,
+                    bustCache,
                     readyAction);
         }
     }
 
     private void getAppCMSPage(String url,
                                final Action1<AppCMSPageUI> onPageReady,
-                               boolean loadFromFile) {
-        long timeStamp = 0L;
-        if (appCMSMain != null) {
-            timeStamp = appCMSMain.getTimestamp();
-        }
+                               boolean loadFromFile,
+                               boolean bustCache) {
         GetAppCMSPageUIAsyncTask.Params params =
                 new GetAppCMSPageUIAsyncTask.Params.Builder()
                         .url(url)
-                        .timeStamp(timeStamp)
+                        .bustCache(bustCache)
                         .loadFromFile(loadFromFile)
                         .build();
         new GetAppCMSPageUIAsyncTask(appCMSPageUICall, onPageReady).execute(params);
@@ -10152,6 +10554,31 @@ public class AppCMSPresenter {
             if (homePageIndex >= 0) {
                 homePage = metaPageList.get(homePageIndex);
                 new SoftReference<Object>(homePage, referenceQueue);
+            }
+
+            int moviesPageIndex = getMoviesPage(metaPageList);
+            if (moviesPageIndex >= 0) {
+                moviesPage = metaPageList.get(moviesPageIndex);
+
+                if (moviesPage != null) {
+                    String baseUrl = appCMSMain.getApiBaseUrl();
+                    String endPoint = moviesPage.getPageAPI();
+                    String siteId = appCMSSite.getGist().getSiteInternalName();
+
+                    // Cache movies page when the app is loading
+                    getPageIdContent(getApiUrl(true,
+                            false,
+                            false,
+                            baseUrl,
+                            endPoint,
+                            siteId,
+                            moviesPage.getPageId()),
+                            moviesPage.getPageId(),
+                            null,
+                            null);
+                }
+
+                new SoftReference<Object>(moviesPage, referenceQueue);
             }
 
             int privacyPageIndex = getPrivacyPolicyPage(metaPageList);
@@ -10235,17 +10662,12 @@ public class AppCMSPresenter {
                 pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
                 pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
-                long timeStamp = 0L;
-                if (appCMSMain != null) {
-                    timeStamp = appCMSMain.getTimestamp();
-                }
-                String url = currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                        metaPage.getPageUI());
+                String url = metaPage.getPageUI();
 
                 GetAppCMSPageUIAsyncTask.Params params =
                         new GetAppCMSPageUIAsyncTask.Params.Builder()
                                 .url(url)
-                                .timeStamp(timeStamp)
+                                .bustCache(false)
                                 .loadFromFile(loadFromFile)
                                 .metaPage(metaPage)
                                 .build();
@@ -10302,8 +10724,7 @@ public class AppCMSPresenter {
             pageIdToPageAPIUrlMap.put(metaPage.getPageId(), metaPage.getPageAPI());
             pageIdToPageNameMap.put(metaPage.getPageId(), metaPage.getPageName());
 
-            getAppCMSPage(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                    metaPage.getPageUI()),
+            getAppCMSPage(metaPage.getPageUI(),
                     appCMSPageUI -> {
                         try {
                             navigationPages.put(metaPage.getPageId(), appCMSPageUI);
@@ -10328,7 +10749,8 @@ public class AppCMSPresenter {
                             launchBlankPage();
                         }
                     },
-                    loadFromFile);
+                    loadFromFile,
+                    false);
         }
     }
 
@@ -10454,6 +10876,15 @@ public class AppCMSPresenter {
         return -1;
     }
 
+    private int getMoviesPage(List<MetaPage> metaPageList) {
+        for (int i = 0; i < metaPageList.size(); i++) {
+            if (jsonValueKeyMap.get(metaPageList.get(i).getPageName())
+                    == AppCMSUIKeyType.ANDROID_MOVIES_SCREEN_KEY) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     private int getPrivacyPolicyPage(List<MetaPage> metaPageList) {
         for (int i = 0; i < metaPageList.size(); i++) {
@@ -10527,8 +10958,7 @@ public class AppCMSPresenter {
         } else {
             GetAppCMSAndroidUIAsyncTask.Params params =
                     new GetAppCMSAndroidUIAsyncTask.Params.Builder()
-                            .url(currentActivity.getString(R.string.app_cms_url_with_appended_timestamp,
-                                    appCMSMain.getFireTv()))
+                            .url(appCMSMain.getFireTv())
                             .loadFromFile(loadFromFile)
                             .build();
             //Log.d(TAG, "Params: " + appCMSMain.getAndroid() + " " + loadFromFile);
@@ -10649,6 +11079,7 @@ public class AppCMSPresenter {
 
                 getPageIdContent(apiUrl,
                         pageId,
+                        null,
                         new AppCMSPageAPIAction(true,
                                 false,
                                 true,
@@ -11154,6 +11585,10 @@ public class AppCMSPresenter {
                         break;
                 }
                 currentActivity.sendBroadcast(new Intent(AppCMSPresenter.PRESENTER_PAGE_LOADING_ACTION));
+                if (action.equalsIgnoreCase("lectureDetailPage")
+                        && contentDatum.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                    action = "showDetailPage";
+                }
                 AppCMSPageUI appCMSPageUI = actionToPageMap.get(action);
 
                 String apiUrl = getApiUrl(false,
@@ -11166,6 +11601,7 @@ public class AppCMSPresenter {
 
                 getPageIdContent(apiUrl,
                         pagePath,
+                        null,
                         new AppCMSPageAPIAction(appbarPresent,
                                 fullscreenEnabled,
                                 navbarPresent,
@@ -11514,6 +11950,13 @@ public class AppCMSPresenter {
                                                     }
                                                     //  extraData[3] = "https://vsvf.viewlift.com/Gannett/2015/ClosedCaptions/GANGSTER.srt";
                                                     if (!TextUtils.isEmpty(extraData[1])) {
+
+                                                        List<String> relatedVideoIds;
+                                                        if (relateVideoIds == null) {
+                                                            relatedVideoIds = appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds();
+                                                        } else {
+                                                            relatedVideoIds = relateVideoIds;
+                                                        }
                                                         launchTVButtonSelectedAction(contentDatum.getGist().getId(),
                                                                 action,
                                                                 appCMSVideoDetail.getRecords().get(0).getGist().getTitle(),
@@ -11521,7 +11964,7 @@ public class AppCMSPresenter {
                                                                 appCMSVideoDetail.getRecords().get(0),
                                                                 false,
                                                                 currentlyPlayingIndex,
-                                                                appCMSVideoDetail.getRecords().get(0).getContentDetails().getRelatedVideoIds());
+                                                                relatedVideoIds);
                                                     } else {
                                                         openTVErrorDialog(currentActivity.getString(R.string.api_error_message,
                                                                 currentActivity.getString(R.string.app_name)),
@@ -11681,36 +12124,15 @@ public class AppCMSPresenter {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
     }
 
-    public void searchSuggestionClick(String[] searchResultClick) {
+    public void openVideoPageFromSearch(String[] searchResultClick) {
         String permalink = searchResultClick[3];
         String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
+        if (permalink.contains(currentActivity.getString(R.string.app_cms_shows_deeplink_path_name))) {
+            action = currentActivity.getString(R.string.app_cms_action_showvideopage_key);
+        }
         String title = searchResultClick[0];
         String runtime = searchResultClick[1];
-        String mediaType = searchResultClick[4];
-        String contentType = searchResultClick[5];
-        String gistId = searchResultClick[6];
         //Log.d(TAG, "Launching " + permalink + ":" + action);
-
-        /*get audio details on tray click item and play song*/
-        if (mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
-                contentType != null &&
-                contentType.toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
-            List<String> audioPlaylistId = new ArrayList<String>();
-            audioPlaylistId.add(gistId);
-            AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
-            AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
-            getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
-                    .PRESENTER_PAGE_LOADING_ACTION));
-            AudioPlaylistHelper.getInstance().playAudioOnClickItem(gistId, 0);
-            return;
-        }
-
-                                /*Get playlist data and open playlist page*/
-        if (mediaType != null
-                && mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())) {
-            navigateToPlaylistPage(gistId, title, false);
-            return;
-        }
         if (!launchButtonSelectedAction(permalink,
                 action,
                 title,
@@ -12281,6 +12703,7 @@ public class AppCMSPresenter {
 
     public String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
+
         long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 
         if (currentTime == 0) {
@@ -12420,6 +12843,7 @@ public class AppCMSPresenter {
     public enum ExtraScreenType {
         NAVIGATION,
         SEARCH,
+        DRAGGABLE_PANEL,
         RESET_PASSWORD,
         CHANGE_PASSWORD,
         EDIT_PROFILE,
@@ -12428,10 +12852,6 @@ public class AppCMSPresenter {
         BLANK,
         NONE,
         TEAM
-    }
-
-    private interface OnRunOnUIThread {
-        void runOnUiThread(Action0 runOnUiThreadAction);
     }
 
     private static class EntitlementCheckActive implements Action1<UserIdentity> {

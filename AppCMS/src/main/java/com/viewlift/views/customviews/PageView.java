@@ -1,16 +1,13 @@
 package com.viewlift.views.customviews;
 
 import android.content.Context;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import com.viewlift.R;
 import com.viewlift.models.data.appcms.api.ContentDatum;
@@ -188,9 +185,9 @@ public class PageView extends BaseView {
         mainView.setLayoutParams(swipeRefreshLayoutParams);
         mainView.addView(childrenContainer);
         mainView.setOnRefreshListener(() -> {
-            appCMSPresenter.setMiniPLayerVisibility(true);
-            appCMSPresenter.refreshAPIData(() -> {
-                        mainView.setRefreshing(false);
+            appCMSPresenter.clearPageAPIData(() -> {
+                appCMSPresenter.setMiniPLayerVisibility(true);
+                mainView.setRefreshing(false);
             },
                     true);
         });
@@ -257,7 +254,7 @@ public class PageView extends BaseView {
     }
     public void notifyAdapterDataSetChanged() {
         if (appCMSPageViewAdapter != null) {
-            appCMSPageViewAdapter.notifyDataSetChanged();
+            appCMSPageViewAdapter.notifyItemRangeChanged(1,appCMSPageViewAdapter.getItemCount());
         }
     }
     public View findChildViewById(int id) {

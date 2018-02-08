@@ -5,6 +5,7 @@ package com.viewlift.models.network.modules;
  */
 
 import android.content.Context;
+import android.content.res.AssetManager;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -97,6 +98,7 @@ public class AppCMSUIModule {
     private final long defaultReadConnectionTimeout;
     private final long unknownHostExceptionTimeout;
     private final Cache cache;
+    private final AssetManager assetManager;
 
     public AppCMSUIModule(Context context) {
 
@@ -135,6 +137,8 @@ public class AppCMSUIModule {
                 context.getResources().getInteger(R.integer.app_cms_unknown_host_exception_connection_timeout_msec);
         int cacheSize = 10 * 1024 * 1024; // 10 MB
         cache = new Cache(context.getCacheDir(), cacheSize);
+
+        this.assetManager = context.getAssets();
     }
 
     private void createJsonValueKeyMap(Context context) {
@@ -524,6 +528,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_start_watching_button_key),
                 AppCMSUIKeyType.PAGE_START_WATCHING_BUTTON_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_start_watching_button_key),
+                AppCMSUIKeyType.PAGE_SHOW_START_WATCHING_BUTTON_KEY);
+
 
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_play_button_key),
                 AppCMSUIKeyType.PAGE_VIDEO_PLAY_BUTTON_KEY);
@@ -538,7 +545,7 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_subtitle_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_show_video_subtitle_key),
-                AppCMSUIKeyType.PAGE_VIDEO_SUBTITLE_KEY);
+                AppCMSUIKeyType.PAGE_SHOW_SUBTITLE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_share_key),
                 AppCMSUIKeyType.PAGE_VIDEO_SHARE_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_video_close_key),
@@ -557,6 +564,8 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_VIDEO_CREDITS_STARRING_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_watchTrailer_key),
                 AppCMSUIKeyType.PAGE_VIDEO_WATCH_TRAILER_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_show_watchTrailer_key),
+                AppCMSUIKeyType.PAGE_SHOW_WATCH_TRAILER_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_title_key),
@@ -564,7 +573,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_title_key),
                 AppCMSUIKeyType.PAGE_API_TITLE);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_show_title_key),
-                AppCMSUIKeyType.PAGE_API_TITLE);
+                AppCMSUIKeyType.PAGE_SHOW_TITLE_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_switch_seasons_key),
+                AppCMSUIKeyType.PAGE_SHOW_SWITCH_SEASONS_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_description_key),
                 AppCMSUIKeyType.PAGE_API_DESCRIPTION);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_api_thumbnail_url_key),
@@ -908,6 +919,12 @@ public class AppCMSUIModule {
                 AppCMSActionType.DELETE_SINGLE_DOWNLOAD_ITEM);
     }
 
+
+    @Provides
+    @Singleton
+    public AssetManager providesAssetManager() {
+        return assetManager;
+    }
 
     @Provides
     @Singleton
@@ -1259,9 +1276,13 @@ public class AppCMSUIModule {
 
     @Provides
     @Singleton
-    public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(Gson gson,
+    public AppCMSAndroidModuleCall providesAppCMSAndroidModuleCall(AssetManager assetManager,
+                                                                   Gson gson,
                                                                    AppCMSAndroidModuleRest appCMSAndroidModuleRest) {
-        return new AppCMSAndroidModuleCall(gson, appCMSAndroidModuleRest, storageDirectory);
+        return new AppCMSAndroidModuleCall(assetManager,
+                gson,
+                appCMSAndroidModuleRest,
+                storageDirectory);
     }
 
     @Provides

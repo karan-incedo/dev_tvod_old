@@ -48,6 +48,8 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
 
     public void setmRowsAdapter(ArrayObjectAdapter rowsAdapter) {
         this.mRowsAdapter = rowsAdapter;
+        //mRowsAdapter.notifyItemRangeChanged(0, rowsAdapter.size());
+        // todo check anas azeem
     }
 
     @Override
@@ -119,10 +121,21 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
             long diff = System.currentTimeMillis() - clickedTime;
             if (diff > 2000) {
                 clickedTime = System.currentTimeMillis();
-                appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
-                        -1,
-                        null,
-                        rowData.contentData.getGist().getWatchedTime());
+                if (rowData.contentData.getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                    appCMSPresenter.launchButtonSelectedAction(rowData.contentData.getGist().getPermalink(),
+                            "showDetailPage",
+                            rowData.contentData.getGist().getTitle(),
+                            null,
+                            rowData.contentData,
+                            false,
+                            -1,
+                            null);
+                } else {
+                    appCMSPresenter.launchTVVideoPlayer(rowData.contentData,
+                            -1,
+                            rowData.relatedVideoIds,
+                            rowData.contentData.getGist().getWatchedTime());
+                }
             } else {
                 appCMSPresenter.showLoadingDialog(false);
             }
@@ -138,7 +151,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,
                                   RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-            if(appCMSPresenter.isFullScreenVisible){
+            if(AppCMSPresenter.isFullScreenVisible){
                 return;
             }
             if (null != item && item instanceof BrowseFragmentRowData) {
@@ -215,7 +228,7 @@ public class AppCmsBrowseFragment extends BaseBrowseFragment {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,
                                    RowPresenter.ViewHolder rowViewHolder, Row row) {
-            if(appCMSPresenter.isFullScreenVisible){
+            if(AppCMSPresenter.isFullScreenVisible){
                 return;
             }
 

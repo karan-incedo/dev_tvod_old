@@ -42,8 +42,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Currency;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -234,11 +236,10 @@ public class CollectionGridItemView extends BaseView {
                           final String componentViewType,
                           int themeColor,
                           AppCMSPresenter appCMSPresenter, int position) {
-
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                    childComponent, data, position));
+                    childComponent, data,position));
             boolean bringToFront = true;
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
@@ -406,12 +407,13 @@ public class CollectionGridItemView extends BaseView {
                         } catch (IllegalArgumentException e) {
                             //Log.e(TAG, "Failed to load image with Glide: " + e.toString());
                         }
-                    } else if (data.getGist() != null &&
-                            data.getGist().getImageGist() != null &&
+                    } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getBadgeImages() != null &&
                             data.getGist().getImageGist().get_3x4() != null &&
                             data.getGist().getBadgeImages().get_3x4() != null &&
-                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                            componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY &&
+                            0 < childViewWidth &&
+                            0 < childViewHeight) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getBadgeImages().get_3x4(),
                                 childViewWidth,
@@ -423,20 +425,9 @@ public class CollectionGridItemView extends BaseView {
                                     .override(childViewWidth, childViewHeight)
                                     .into((ImageView) view);
                         }
-                    } else if (data.getGist() != null &&
-                            data.getGist().getImageGist() != null &&
-                            data.getGist().getImageGist().get_16x9() != null) {
-                        String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
-                                data.getGist().getImageGist().get_16x9(),
-                                childViewWidth,
-                                childViewHeight);
-
-                        if (!ImageUtils.loadImage((ImageView) view, imageUrl)) {
-                            Glide.with(context)
-                                    .load(imageUrl)
-                                    .override(childViewWidth, childViewHeight)
-                                    .into((ImageView) view);
-                        }
+                        view.setVisibility(VISIBLE);
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_BADGE_IMAGE_KEY) {
+                        view.setVisibility(GONE);
                     }
                     bringToFront = false;
                 }
@@ -538,11 +529,23 @@ public class CollectionGridItemView extends BaseView {
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_WATCHLIST_DESCRIPTION_KEY ||
                             componentKey == AppCMSUIKeyType.PAGE_DOWNLOAD_DESCRIPTION_KEY) {
-                        if (data.getGist() != null && data.getGist().getDescription() != null) {
-                            ((TextView) view).setSingleLine(false);
-                            ((TextView) view).setMaxLines(2);
-                            ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
-                            ((TextView) view).setText(data.getGist().getDescription());
+                        ((TextView) view).setSingleLine(false);
+                        ((TextView) view).setMaxLines(2);
+                        ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
+                        ((TextView) view).setText(data.getGist().getDescription());
+
+                        try {
+                            ViewTreeObserver titleTextVto = view.getViewTreeObserver();
+                            ViewCreatorMultiLineLayoutListener viewCreatorTitleLayoutListener =
+                                    new ViewCreatorMultiLineLayoutListener((TextView) view,
+                                            data.getGist().getTitle(),
+                                            data.getGist().getDescription(),
+                                            appCMSPresenter,
+                                            true,
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            false);
+                            titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
+                        } catch (Exception e) {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_PLAYLIST_AUDIO_ARTIST_TITLE) {
                         if (data.getGist() != null && data.getGist().getDescription() != null)
@@ -557,7 +560,8 @@ public class CollectionGridItemView extends BaseView {
                                             data.getGist().getDescription(),
                                             appCMSPresenter,
                                             false,
-                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()));
+                                            Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getTextColor()),
+                                            true);
                             titleTextVto.addOnGlobalLayoutListener(viewCreatorTitleLayoutListener);
                         } catch (Exception e) {
 

@@ -104,6 +104,9 @@ public class ContentDatum implements Serializable {
     @SerializedName("creditBlocks")
     @Expose
     List<CreditBlock> creditBlocks = null;
+    @SerializedName("showDetails")
+    @Expose
+    ShowDetails showDetails;
 
     @SerializedName("parentalRating")
     @Expose
@@ -355,6 +358,14 @@ public class ContentDatum implements Serializable {
 
     public void setPlanDetails(List<PlanDetail> planDetails) {
         this.planDetails = planDetails;
+    }
+
+    public ShowDetails getShowDetails() {
+        return showDetails;
+    }
+
+    public void setShowDetails(ShowDetails showDetails) {
+        this.showDetails = showDetails;
     }
 
     public AppCMSPageAPI convertToAppCMSPageAPI(String moduleType) {

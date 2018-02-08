@@ -1,11 +1,13 @@
 package com.viewlift;
 
 import android.app.Activity;
+import android.app.Application;
 import android.os.Bundle;
 import android.support.multidex.MultiDexApplication;
 
 import com.appsflyer.AppsFlyerConversionListener;
 import com.appsflyer.AppsFlyerLib;
+import com.apptentive.android.sdk.Apptentive;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.viewlift.models.network.modules.AppCMSSiteModule;
@@ -39,7 +41,8 @@ public class AppCMSApplication extends MultiDexApplication {
 
         openActivities = 0;
 
-        conversionDataListener = new AppsFlyerConversionListener() {
+        new Thread(() -> {
+            conversionDataListener = new AppsFlyerConversionListener() {
 
             @Override
             public void onInstallConversionDataLoaded(Map<String, String> map) {
@@ -61,8 +64,7 @@ public class AppCMSApplication extends MultiDexApplication {
             }
         };
 
-        new Thread(() -> {
-            try {
+            new Thread(() -> {
                 // NOTE: Replaced with Utils.getProperty()
                 //AppsFlyerLib.getInstance().init(getString(R.string.app_cms_appsflyer_dev_key), conversionDataListener);
                 AppsFlyerLib.getInstance().init(Utils.getProperty("AppsFlyerDevKey", getApplicationContext()), conversionDataListener);
@@ -71,14 +73,12 @@ public class AppCMSApplication extends MultiDexApplication {
 
                 // NOTE: Replaced with Utils.getProperty()
                 //Apptentive.register(this, getString(R.string.app_cms_apptentive_api_key));
-//                Apptentive.register(this, Utils.getProperty("ApptentiveApiKey", getApplicationContext()), Utils.getProperty("ApptentiveSignatureKey", getApplicationContext()));
+                if(Utils.getProperty("ApptentiveSignatureKey", getApplicationContext())!=null && Utils.getProperty("ApptentiveApiKey", getApplicationContext())!=null)
+                Apptentive.register(this, Utils.getProperty("ApptentiveApiKey", getApplicationContext()), Utils.getProperty("ApptentiveSignatureKey", getApplicationContext()));
 
                 FacebookSdk.setApplicationId(Utils.getProperty("FacebookAppId", getApplicationContext()));
                 FacebookSdk.sdkInitialize(getApplicationContext());
-            } catch (NullPointerException e) {
-
-            }
-        }).run();
+            }).run();
 
         appCMSPresenterComponent = DaggerAppCMSPresenterComponent
                 .builder()
@@ -126,13 +126,17 @@ public class AppCMSApplication extends MultiDexApplication {
 
             }
 
-            @Override
-            public void onActivityDestroyed(Activity activity) {
-                //Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
-                appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
-                appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
-            }
-        });
+                @Override
+                public void onActivityDestroyed(Activity activity) {
+                    //Log.d(TAG, "Activity being destroyed: " + activity.getLocalClassName());
+                    appCMSPresenterComponent.appCMSPresenter().unsetCurrentActivity(activity);
+                    appCMSPresenterComponent.appCMSPresenter().closeSoftKeyboard();
+                }
+            });
+
+
+        }).run();
+
     }
 
     public AppCMSPresenterComponent getAppCMSPresenterComponent() {

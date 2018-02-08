@@ -283,7 +283,7 @@ public class AppCMSPlayAudioActivity extends AppCompatActivity implements View.O
 
                     case STATUS_SUCCESSFUL:
                         appCMSPresenter.setDownloadInProgress(false);
-                        appCMSPresenter.cancelDownloadIconTimerTask();
+                        appCMSPresenter.cancelDownloadIconTimerTask(contentDatum.getGist().getId());
                         imageButton.setImageResource(R.drawable.ic_downloaded);
                         imageButton.setOnClickListener(null);
                         appCMSPresenter.notifyDownloadHasCompleted();
