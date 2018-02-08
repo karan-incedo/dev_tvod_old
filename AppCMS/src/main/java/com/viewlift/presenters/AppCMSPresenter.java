@@ -7309,13 +7309,12 @@ public class AppCMSPresenter {
                             appCMSMain = main;
                         }
                         new SoftReference<Object>(appCMSMain, referenceQueue);
-                        String version = appCMSMain.getVersion();
-                        String oldVersion = appCMSMain.getOldVersion();
-                        //Log.d(TAG, "Version: " + version);
-                        //Log.d(TAG, "OldVersion: " + oldVersion);
                         loadFromFile = appCMSMain.shouldLoadFromFile();
 
                         apikey = currentActivity.getString(R.string.x_api_key);
+
+                        getAppCMSSite(platformType);
+
                         AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
                                 .appCMSAPIModule(new AppCMSAPIModule(currentActivity,
                                         appCMSMain.getApiBaseUrl(),
@@ -7324,7 +7323,6 @@ public class AppCMSPresenter {
                         appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                         appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
                         appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
-                        getAppCMSSite(platformType);
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
