@@ -29,9 +29,6 @@ public class CustomWebView extends WebView {
         this.setBackgroundColor(Color.TRANSPARENT);
         this.getSettings().setAppCacheEnabled(true);
         this.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
-        this.getSettings().setLoadWithOverviewMode(true);
-        //this.getSettings().setUseWideViewPort(true);
-
     }
 
     public CustomWebView(Context context, AttributeSet attrs) {

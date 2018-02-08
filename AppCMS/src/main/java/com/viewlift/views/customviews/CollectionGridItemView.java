@@ -543,7 +543,19 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
                         String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
-                        ((TextView) view).setText(thumbInfo);
+                        if(data.getGist() != null && data.getGist().getReadTime() != null) {
+                            StringBuilder readTimeText = new StringBuilder()
+                                    .append(data.getGist().getReadTime())
+                                    .append(" ")
+                                    .append(context.getString(R.string.mins_abbreviation))
+                                    .append(" ")
+                                    .append("|")
+                                    .append(" ")
+                                    .append(thumbInfo);
+                            ((TextView) view).setText(readTimeText);
+                        }else{
+                            ((TextView) view).setText(thumbInfo);
+                        }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());

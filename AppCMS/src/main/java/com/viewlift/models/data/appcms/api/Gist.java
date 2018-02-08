@@ -102,6 +102,10 @@ public class Gist implements Serializable {
     @Expose
     String mediaType;
 
+    @SerializedName("readTime")
+    @Expose
+    String readTime;
+
     String downloadStatus;
     /**
      * This is to store the url of the downloaded file
@@ -310,4 +314,13 @@ public class Gist implements Serializable {
     public void setMediaType(String mediaType) {
         this.mediaType = mediaType;
     }
+
+    public String getReadTime() {
+        return readTime;
+    }
+
+    public void setReadTime(String readTime) {
+        this.readTime = readTime;
+    }
+
 }

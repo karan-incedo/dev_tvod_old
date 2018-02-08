@@ -1249,21 +1249,21 @@
                 "mobile": {
                   "yAxis": 114,
                   "leftMargin": 0,
-                  "rightMargin": 70,
+                  "rightMargin": 131,
                   "fontSize": 12,
                   "height": 20
                 },
                 "tabletLandscape": {
                   "yAxis": 114,
                   "leftMargin": 0,
-                  "rightMargin": 70,
+                  "rightMargin": 131,
                   "fontSize": 12,
                   "height": 20
                 },
                 "tabletPortrait": {
                   "yAxis": 114,
                   "leftMargin": 0,
-                  "rightMargin": 70,
+                  "rightMargin": 131,
                   "fontSize": 12,
                   "height": 20
                 }

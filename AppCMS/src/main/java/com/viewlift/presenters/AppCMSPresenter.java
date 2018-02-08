@@ -586,6 +586,7 @@ public class AppCMSPresenter {
     private boolean shouldLaunchLoginAction;
     private boolean selectedSubscriptionPlan;
     private Map<String, ContentDatum> userHistoryData;
+    private int currentArticleIndex;
     public AppCMSTrayMenuDialogFragment.TrayMenuClickListener trayMenuClickListener =
             new AppCMSTrayMenuDialogFragment.TrayMenuClickListener() {
                 @Override
@@ -12537,6 +12538,15 @@ public class AppCMSPresenter {
         }
         isFullScreenVisible = false;
     }
+
+    public int getCurrentArticleIndex() {
+        return currentArticleIndex;
+    }
+
+    public void setCurrentArticleIndex(int currentArticleIndex) {
+        this.currentArticleIndex = currentArticleIndex;
+    }
+
 
     public void navigateToArticlePage(String articleId, String pageTitle,
                                        boolean launchActivity) {
