@@ -2523,7 +2523,7 @@ public class ViewCreator {
                         componentViewResult.componentView.setPadding(30,0,30,0);
                         componentViewResult.componentView.setOnClickListener(v -> {
                             if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds().size() > appCMSPresenter.getCurrentArticleIndex()) {
-                                appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getRelatedArticleIds().get(appCMSPresenter.getCurrentArticleIndex()), moduleAPI.getContentData().get(0).getArticleGist().getTitle(), false);
+                                appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getRelatedArticleIds().get(appCMSPresenter.getCurrentArticleIndex()), moduleAPI.getContentData().get(0).getGist().getTitle(), false);
                                 int currentIndex = appCMSPresenter.getCurrentArticleIndex();
                                 currentIndex++;
                                 appCMSPresenter.setCurrentArticleIndex(currentIndex);

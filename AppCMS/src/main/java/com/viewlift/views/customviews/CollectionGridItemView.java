@@ -542,16 +542,22 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
+                        String thumbInfo = null;
+                        if(data.getGist().getPublishDate() != null) {
+                             thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
+                        }
                         if(data.getGist() != null && data.getGist().getReadTime() != null) {
                             StringBuilder readTimeText = new StringBuilder()
                                     .append(data.getGist().getReadTime())
                                     .append(" ")
                                     .append(context.getString(R.string.mins_abbreviation))
                                     .append(" ")
-                                    .append("|")
-                                    .append(" ")
-                                    .append(thumbInfo);
+                                    .append("|");
+
+                            if(thumbInfo != null) {
+                                readTimeText.append(" ")
+                                .append(thumbInfo);
+                            }
                             ((TextView) view).setText(readTimeText);
                         }else{
                             ((TextView) view).setText(thumbInfo);
