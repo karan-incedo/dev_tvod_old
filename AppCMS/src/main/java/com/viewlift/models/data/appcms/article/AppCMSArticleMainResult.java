@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.viewlift.models.data.appcms.api.AppCMSPageAPI;
 import com.viewlift.models.data.appcms.api.ContentDatum;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.vimeo.stag.UseStag;
 
@@ -24,7 +25,7 @@ public class AppCMSArticleMainResult {
 
     @SerializedName("gist")
     @Expose
-    ArticleGist gist;
+    Gist gist;
 
     public AppCMSPageAPI convertToAppCMSPageAPI(String Id) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
@@ -32,7 +33,7 @@ public class AppCMSArticleMainResult {
         List<ContentDatum> data = new ArrayList<>();
 
         ContentDatum contentDatum = new ContentDatum();
-        contentDatum.setArticleGist(this.gist);
+        contentDatum.setGist(this.gist);
         contentDatum.setId(this.id);
         data.add(contentDatum);
 
