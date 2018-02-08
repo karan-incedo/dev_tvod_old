@@ -1800,7 +1800,8 @@ public class ViewCreator {
                     } else {
                         AppCMSUIKeyType parentViewType = jsonValueKeyMap.get(viewType);
 
-                        if (parentViewType == AppCMSUIKeyType.PAGE_GRID_MODULE_KEY) {
+                        if (parentViewType == AppCMSUIKeyType.PAGE_GRID_MODULE_KEY ||
+                            parentViewType == AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY) {
                             int numCols = 1;
                             if (settings != null && settings.getColumns() != null) {
                                 if (BaseView.isTablet(context)) {
@@ -1808,6 +1809,10 @@ public class ViewCreator {
                                 } else {
                                     numCols = settings.getColumns().getMobile();
                                 }
+                            }
+                            //Todo remove later when cplum valye updated from UI
+                            if (parentViewType == AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY){
+                                numCols = 1;
                             }
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new GridLayoutManager(context,
