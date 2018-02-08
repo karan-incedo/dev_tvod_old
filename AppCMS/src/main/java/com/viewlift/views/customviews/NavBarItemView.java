@@ -100,7 +100,7 @@ public class NavBarItemView extends LinearLayout {
         if (hasFocus) {
             color = highlightColor;
             if (navigationTabBar.getNavigationModuleItem().isBackgroundSelectable()) {
-                setTabBg();
+                //setTabBg();
             }
         } else {
             this.setBackgroundResource(0);
