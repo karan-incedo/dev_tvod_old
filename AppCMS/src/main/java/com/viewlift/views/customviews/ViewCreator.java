@@ -31,6 +31,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
@@ -1186,15 +1187,20 @@ public class ViewCreator {
         for (ModuleList moduleInfo : modulesList) {
             ModuleList module = null;
             try {
-               /* if (moduleInfo.getBlockName().contains("articleTray01")) {
+                if (moduleInfo.getBlockName().contains("articleTray01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
-                } else {
+                }else if(moduleInfo.getBlockName().contains("articleDetail01")){
+                    AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
+                            loadJsonFromAssets(context, "article_details.json"),
+                            AppCMSPageUI.class);
+                    module = appCMSPageUI1.getModuleList().get(1);
+                }else {
                     module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
-                }*/
-                module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
+                }
+                //module = appCMSAndroidModules.getModuleListMap().get(moduleInfo.getBlockName());
             } catch (Exception e) {
 
             }
@@ -1948,6 +1954,7 @@ public class ViewCreator {
                     ((FrameLayout) componentViewResult.componentView).addView(articleWebView);
                 }
                 break;
+
             case PAGE_CAROUSEL_VIEW_KEY:
                 componentViewResult.componentView = new RecyclerView(context);
                 ((RecyclerView) componentViewResult.componentView)
@@ -2472,6 +2479,51 @@ public class ViewCreator {
                                     default:
                                         break;
                                 }
+                            }
+                        });
+                        break;
+
+                    case PAGE_ARTICLE_PREVIOUS_BUTTON_KEY:
+                        componentViewResult.addToPageView = true;
+
+                        FrameLayout.LayoutParams paramsPreviousButton =
+                                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                        paramsPreviousButton.setMargins(20,0,0,20);
+                        paramsPreviousButton.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                        componentViewResult.componentView.setLayoutParams(paramsPreviousButton);
+                        componentViewResult.componentView.setPadding(20,0,20,0);
+
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                            int position = (int)v.getTag();
+                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds().size() > 0) {
+                                //int relatedArticleSize = moduleAPI.getContentData().get(0).getRelatedArticleIds().size();
+                                appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getRelatedArticleIds().get(position), moduleAPI.getContentData().get(0).getArticleGist().getTitle(), false);
+                                position--;
+                                v.setTag(position);
+                            }
+                        });
+
+                        break;
+
+                    case PAGE_ARTICLE_NEXT_BUTTON_KEY:
+                        componentViewResult.addToPageView = true;
+
+                        FrameLayout.LayoutParams paramsNextButton =
+                                new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                        paramsNextButton.setMargins(20,0,0,20);
+                        paramsNextButton.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                        componentViewResult.componentView.setLayoutParams(paramsNextButton);
+                        componentViewResult.componentView.setPadding(20,0,20,0);
+                        componentViewResult.componentView.setTag(0);
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                            int position = (int)v.getTag();
+                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds().size() > position) {
+                                //int relatedArticleSize = moduleAPI.getContentData().get(0).getRelatedArticleIds().size();
+                                appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getRelatedArticleIds().get(position), moduleAPI.getContentData().get(0).getArticleGist().getTitle(), false);
+                                position++;
+                                v.setTag(position);
                             }
                         });
                         break;
@@ -4028,13 +4080,13 @@ public class ViewCreator {
         int height = ((int) component.getLayout().getMobile().getHeight()) - 55;
         String webViewUrl,html;
         if (moduleAPI != null && moduleAPI.getRawText() != null) {
-             webViewUrl = moduleAPI.getRawText();
-             html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+            webViewUrl = moduleAPI.getRawText();
+            html = "<iframe width=\"" + "100%" + "\" height=\"" + height + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
             webView.loadURLData(context,appCMSPresenter,html,key);
         }else if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets() != null){
             webView.setBackgroundColor(context.getResources().getColor(R.color.white));
             webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
-            html = "<iframe width=\"" + "100%" + "\" height=\"" + "100%" + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+            html = /*"<iframe width=\"" + "100%" + "\" height=\"" + "100%" + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>"*/webViewUrl;
             webView.loadURLData(context,appCMSPresenter,html,key);
         }
         return webView;

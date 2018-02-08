@@ -206,6 +206,10 @@ public class AppCMSUIModule {
                 AppCMSUIKeyType.PAGE_WEB_VIEW_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_web_view_key),
                 AppCMSUIKeyType.PAGE_ARTICLE_WEB_VIEW_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_previous_button_key),
+                AppCMSUIKeyType.PAGE_ARTICLE_PREVIOUS_BUTTON_KEY);
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_next_button_key),
+                AppCMSUIKeyType.PAGE_ARTICLE_NEXT_BUTTON_KEY);
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_full_screen_key),
                 AppCMSUIKeyType.PAGE_FULL_SCREEN_IMAGE_KEY);
 

@@ -99,6 +99,8 @@
 
     <string name="app_cms_page_web_view_key">web_view</string>
     <string name="app_cms_page_article_web_view_key">webView</string>
+    <string name="app_cms_page_article_previous_button_key">previousButton</string>
+    <string name="app_cms_page_article_next_button_key">nextButton</string>
     <string name="app_cms_page_full_screen_key">full_Screen_icon</string>
 
     <string name="app_cms_page_page_control_key">pageControl</string>
