@@ -7321,8 +7321,9 @@ public class AppCMSPresenter {
                         if (currentActivity.getWindow().isActive()) {
                             try {
                                 dialog.show();
-                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(textColor);
-                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(textColor);
+                                int tintTextColor = getBrandPrimaryCtaColor();
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(tintTextColor);
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(tintTextColor);
 
 
                             } catch (Exception e) {
@@ -7379,8 +7380,9 @@ public class AppCMSPresenter {
                 if (currentActivity.getWindow().isActive()) {
                     try {
                         dialog.show();
-                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(textColor);
-                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(textColor);
+                        int tintTextColor = getBrandPrimaryCtaColor();
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(tintTextColor);
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(tintTextColor);
                     } catch (Exception e) {
                         //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
@@ -7593,22 +7595,21 @@ public class AppCMSPresenter {
                 try {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                             getGeneralBackgroundColor()));
-                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(textColor);
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(textColor);
                 } catch (Exception e) {
                     //Log.w(TAG, "Failed to set background color from AppCMS branding - defaulting to colorPrimaryDark: " +
 //                            e.getMessage());
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                             ContextCompat.getColor(currentContext, R.color.colorPrimaryDark)));
                 }
-                int finalTextColor = textColor;
+
                 currentActivity.runOnUiThread(() -> {
                     if (currentActivity.getWindow().isActive()) {
                         try {
                             if (!dialog.isShowing())
                                 dialog.show();
-                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(finalTextColor);
-                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(finalTextColor);
+                            int tintTextColor = getBrandPrimaryCtaColor();
+                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(tintTextColor);
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(tintTextColor);
                         } catch (Exception e) {
                             //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
