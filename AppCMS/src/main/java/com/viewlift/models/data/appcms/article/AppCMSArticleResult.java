@@ -7,6 +7,7 @@ import com.viewlift.models.data.appcms.api.Category;
 import com.viewlift.models.data.appcms.api.ContentDatum;
 import com.viewlift.models.data.appcms.api.ContentDetails;
 import com.viewlift.models.data.appcms.api.CreditBlock;
+import com.viewlift.models.data.appcms.api.Gist;
 import com.viewlift.models.data.appcms.api.Module;
 import com.viewlift.models.data.appcms.api.StreamingInfo;
 import com.viewlift.models.data.appcms.api.Tag;
@@ -28,7 +29,7 @@ public class AppCMSArticleResult {
 
     @SerializedName("gist")
     @Expose
-    ArticleGist gist;
+    Gist gist;
 
     @SerializedName("contentDetails")
     ContentDetails contentDetails;
@@ -63,7 +64,7 @@ public class AppCMSArticleResult {
         List<ContentDatum> data = new ArrayList<>();
 
         ContentDatum contentDatum = new ContentDatum();
-        contentDatum.setArticleGist(this.gist);
+        contentDatum.setGist(this.gist);
         contentDatum.setId(this.id);
         contentDatum.setStreamingInfo(this.streamingInfo);
         contentDatum.setContentDetails(this.contentDetails);
