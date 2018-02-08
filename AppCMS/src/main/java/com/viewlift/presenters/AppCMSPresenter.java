@@ -7324,14 +7324,7 @@ public class AppCMSPresenter {
                         appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
                         appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
                         appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
-                        if (!loadFromFile) {
-                            clearPageAPIData(() -> {
-                                        getAppCMSSite(platformType);
-                                    },
-                                    false);
-                        } else {
-                            getAppCMSSite(platformType);
-                        }
+                        getAppCMSSite(platformType);
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
@@ -12579,8 +12572,8 @@ public class AppCMSPresenter {
                         .Builder()
                         .accessKey(UAirship.shared().getAirshipConfigOptions().getAppKey())
                         /** This value should ideally come from the Site.json response (2017-12-22 WIP AC-1384) */
-//                        .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
-                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
+                        .authKey("4qiw5pNUSuaw5HfAfVf-AQ") /** Production */
+//                        .authKey("9NvLFbMITeuJtb-AqrwOpw") /** QA */
                         .build();
     }
 
