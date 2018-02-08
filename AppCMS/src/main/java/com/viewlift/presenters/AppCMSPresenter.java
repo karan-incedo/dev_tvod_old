@@ -5744,6 +5744,7 @@ public class AppCMSPresenter {
                         Intent refreshPageDataActionIntent = new Intent(AppCMSPresenter.PRESENTER_REFRESH_PAGE_DATA_ACTION);
                         refreshPageDataActionIntent.putExtra(currentActivity.getString(R.string.app_cms_package_name_key), currentActivity.getPackageName());
                         currentActivity.sendBroadcast(refreshPageDataActionIntent);
+                        Log.w(TAG, "Sent PRESENTER_REFRESH_PAGE_DATA_ACTION");
                     });
                 } else {
                     loadingPage = false;
@@ -10187,8 +10188,6 @@ public class AppCMSPresenter {
                         queueMetaPages(appCMSAndroidUI.getMetaPages());
                         //Log.d(TAG, "Processing meta pages queue");
 
-                        launchBlankPage();
-
                         getAppCMSModules(appCMSAndroidUI,
                                 true,
                                 false,
@@ -10240,7 +10239,7 @@ public class AppCMSPresenter {
                                                         boolean launchSuccess = navigateToPage(loginPage.getPageId(),
                                                                 loginPage.getPageName(),
                                                                 loginPage.getPageUI(),
-                                                                false,
+                                                                true,
                                                                 true,
                                                                 false,
                                                                 false,
@@ -10255,7 +10254,7 @@ public class AppCMSPresenter {
                                                         boolean launchSuccess = navigateToPage(homePage.getPageId(),
                                                                 homePage.getPageName(),
                                                                 homePage.getPageUI(),
-                                                                false,
+                                                                true,
                                                                 true,
                                                                 false,
                                                                 true,
@@ -10270,6 +10269,9 @@ public class AppCMSPresenter {
                                                 }
                                             });
                                 });
+
+//                        cacheHomePage();
+//                        cacheMoviesPage();
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error processing meta pages queue: " + e.getMessage());
