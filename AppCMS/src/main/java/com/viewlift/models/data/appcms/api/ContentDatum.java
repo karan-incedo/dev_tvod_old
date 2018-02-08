@@ -2,7 +2,6 @@ package com.viewlift.models.data.appcms.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.viewlift.models.data.appcms.article.ArticleGist;
 import com.vimeo.stag.UseStag;
 
 import java.io.Serializable;
@@ -50,15 +49,15 @@ public class ContentDatum implements Serializable {
 
     List<String> relatedArticleIds;
 
-    ArticleGist articleGist;
-
-    public ArticleGist getArticleGist() {
-        return articleGist;
-    }
-
-    public void setArticleGist(ArticleGist articleGist) {
-        this.articleGist = articleGist;
-    }
+//    ArticleGist articleGist;
+//
+//    public ArticleGist getArticleGist() {
+//        return articleGist;
+//    }
+//
+//    public void setArticleGist(ArticleGist articleGist) {
+//        this.articleGist = articleGist;
+//    }
 
     @SerializedName("grade")
     @Expose

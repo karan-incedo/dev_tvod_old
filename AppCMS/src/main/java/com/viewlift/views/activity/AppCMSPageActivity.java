@@ -1195,7 +1195,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (AppCMSPresenter.isFullScreenVisible && appCMSPresenter.videoPlayerView != null) {
 
             appCMSPresenter.restrictLandscapeOnly();
-            if(newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+            if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
                 appCMSPresenter.exitFullScreenPlayer();
             return;
         }
@@ -1304,9 +1304,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             if (!castDisabled) {
                 setMediaRouterButtonVisibility(updatedAppCMSBinder.getPageId());
             }
-            handleToolbar(updatedAppCMSBinder.isAppbarPresent(),
-                    updatedAppCMSBinder.getAppCMSMain(),
-                    updatedAppCMSBinder.getPageId());
+            handleToolbar(updatedAppCMSBinder);
             handleNavbar(updatedAppCMSBinder);
         }
     }
@@ -1612,26 +1610,23 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         if (appCMSBinder != null) {
             if (appCMSBinder.isFullScreenEnabled() &&
                     orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                handleToolbar(false,
-                        appCMSBinder.getAppCMSMain(),
-                        appCMSBinder.getPageId());
+                appCMSBinder.setAppbarPresent(false);
+                handleToolbar(appCMSBinder);
                 hideSystemUI(getWindow().getDecorView());
             } else {
-                handleToolbar(appCMSBinder.isAppbarPresent(),
-                        appCMSBinder.getAppCMSMain(),
-                        appCMSBinder.getPageId());
+                handleToolbar(appCMSBinder);
                 showSystemUI(getWindow().getDecorView());
             }
             handleNavbar(appCMSBinder);
         }
     }
 
-    private void handleToolbar(boolean appbarPresent, AppCMSMain appCMSMain, String pageId) {
-        if (!appbarPresent) {
+    private void handleToolbar(AppCMSBinder appCMSBinder) {
+        if (!appCMSBinder.isAppbarPresent()) {
             appBarLayout.setVisibility(View.GONE);
         } else {
             try {
-                toolbar.setTitleTextColor(Color.parseColor(appCMSMain
+                toolbar.setTitleTextColor(Color.parseColor(appCMSBinder.getAppCMSMain()
                         .getBrand()
                         .getGeneral()
                         .getTextColor()));
@@ -1648,16 +1643,20 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             }
             appBarLayout.setVisibility(View.VISIBLE);
 
-            if (appCMSPresenter.isPagePrimary(pageId) &&
-                    !appCMSPresenter.isViewPlanPage(pageId)) {
+            if (appCMSPresenter.isPagePrimary(appCMSBinder.getPageId()) &&
+                    !appCMSPresenter.isViewPlanPage(appCMSBinder.getPageId())) {
                 closeButton.setVisibility(View.GONE);
             } else {
                 closeButton.setVisibility(View.VISIBLE);
             }
-            if (appCMSPresenter.isPageSearch(pageId)) {
-                mSearchTopButton.setVisibility(View.GONE);
+            if (appCMSBinder.getNavigation().getRight() != null) {
+                if (appCMSPresenter.isPageSearch(appCMSBinder.getPageId())) {
+                    mSearchTopButton.setVisibility(View.GONE);
+                } else {
+                    mSearchTopButton.setVisibility(View.VISIBLE);
+                }
             } else {
-                mSearchTopButton.setVisibility(View.VISIBLE);
+                mSearchTopButton.setVisibility(View.GONE);
             }
 //            setMediaRouterButtonVisibility(pageId);
         }
@@ -1698,9 +1697,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
             appCMSBinderMap.put(appCMSBinder.getPageId(), appCMSBinder);
             try {
-                handleToolbar(appCMSBinder.isAppbarPresent(),
-                        appCMSBinder.getAppCMSMain(),
-                        appCMSBinder.getPageId());
+                handleToolbar(appCMSBinder);
                 handleNavbar(appCMSBinder);
                 updatedAppCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
                 appCMSPresenter.showMainFragmentView(true);
@@ -1807,9 +1804,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                                 }
 
                                 if (!createFragment) {
-                                    handleToolbar(appCMSBinder.isAppbarPresent(),
-                                            appCMSBinder.getAppCMSMain(),
-                                            appCMSBinder.getPageId());
+                                    handleToolbar(appCMSBinder);
                                     handleNavbar(appCMSBinder);
                                 }
                             } catch (IllegalStateException e) {
@@ -1858,9 +1853,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     ((AppCMSPageFragment) fragment).refreshView(appCMSBinder);
                 }
                 pageLoading(false);
-                handleToolbar(appCMSBinder.isAppbarPresent(),
-                        appCMSBinder.getAppCMSMain(),
-                        appCMSBinder.getPageId());
+                handleToolbar(appCMSBinder);
             }
         }
 
@@ -1988,7 +1981,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         } else if (navigationTabTag.getPageId().equalsIgnoreCase("TEAMS") ||
                                 navigationTabTag.getTabBar().getTitle().equalsIgnoreCase("TEAMS")) {
                             appCMSPresenter.launchTeamNavPage();
-                        } else if (navigationTabTag.getPageId().equals("Search Screen")) {
+                        } else if (navigationTabTag.getPageId().equals("Search Screen") ||
+                                navigationTabTag.getTabBar().getDisplayedPath().equals("Search Screen")) {
                             appCMSPresenter.launchSearchPage();
                         } else if (!TextUtils.isEmpty(navigationTabTag.getPageId().toString())) {
                             selectNavItemAndLaunchPage(navBarItemView,
@@ -2637,7 +2631,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         }
 
     }
-
 
 
 }
