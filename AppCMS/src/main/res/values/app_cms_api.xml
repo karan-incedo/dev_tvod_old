@@ -171,6 +171,7 @@
     <string name="app_cms_page_banner_module_key">AC Banner 01</string>
     <!--<string name="app_cms_page_show_player_module_key">AC StandaloneVideoPlayer Show 01</string>-->
     <string name="app_cms_page_tray_module_key">AC Tray 01</string>
+    <string name="app_cms_photo_tray_module_key">PH Tray 01</string>
     <string name="app_cms_page_season_tray_module_key">AC SeasonTray 01</string>
     <string name="app_cms_page_grid_module_key">AC Grid 01</string>
     <string name="app_cms_page_removeall_key">removeAll</string>

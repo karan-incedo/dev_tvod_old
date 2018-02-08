@@ -258,7 +258,7 @@ public class ViewCreator {
             if (createModule && appCMSPresenter.isViewPlanPage(module.getId()) &&
                     (jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_CAROUSEL_MODULE_KEY ||
                             jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_VIDEO_PLAYER_MODULE_KEY ||
-                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY)) {
+                            jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_TRAY_MODULE_KEY || jsonValueKeyMap.get(module.getType()) == AppCMSUIKeyType.PAGE_PHOTO_TRAY_MODULE_KEY)) {
                 createModule = false;
             }
 
@@ -2496,10 +2496,10 @@ public class ViewCreator {
 
                         componentViewResult.componentView.setOnClickListener(v -> {
                             int position = (int)v.getTag();
-                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds().size() > 0) {
+                            if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getRelatedArticleIds() != null /*&& moduleAPI.getContentData().get(0).getRelatedArticleIds().size() > 0*/) {
                                 //int relatedArticleSize = moduleAPI.getContentData().get(0).getRelatedArticleIds().size();
                                 appCMSPresenter.navigateToArticlePage(moduleAPI.getContentData().get(0).getRelatedArticleIds().get(position), moduleAPI.getContentData().get(0).getArticleGist().getTitle(), false);
-                                position--;
+                                //position--;
                                 v.setTag(position);
                             }
                         });
@@ -2512,10 +2512,10 @@ public class ViewCreator {
                         FrameLayout.LayoutParams paramsNextButton =
                                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                                         ViewGroup.LayoutParams.WRAP_CONTENT);
-                        paramsNextButton.setMargins(20,0,0,20);
+                        paramsNextButton.setMargins(0,0,20,20);
                         paramsNextButton.gravity = Gravity.BOTTOM | Gravity.RIGHT;
                         componentViewResult.componentView.setLayoutParams(paramsNextButton);
-                        componentViewResult.componentView.setPadding(20,0,20,0);
+                        componentViewResult.componentView.setPadding(30,0,30,0);
                         componentViewResult.componentView.setTag(0);
                         componentViewResult.componentView.setOnClickListener(v -> {
                             int position = (int)v.getTag();
@@ -4086,8 +4086,8 @@ public class ViewCreator {
         }else if(moduleAPI != null && moduleAPI.getContentData() != null && moduleAPI.getContentData().get(0).getStreamingInfo() != null && moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets() != null){
             webView.setBackgroundColor(context.getResources().getColor(R.color.white));
             webViewUrl = moduleAPI.getContentData().get(0).getStreamingInfo().getArticleAssets().getUrl();
-            html = /*"<iframe width=\"" + "100%" + "\" height=\"" + "100%" + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>"*/webViewUrl;
-            webView.loadURLData(context,appCMSPresenter,html,key);
+            html = webViewUrl;//"<iframe width=\"" + "100%" + "\" height=\"" + "100%" + "px\" style=\"border: 0px solid #cccccc;\" src=\"" + webViewUrl + "\" ></iframe>";
+            webView.loadURL(context,appCMSPresenter,html,key);
         }
         return webView;
     }
