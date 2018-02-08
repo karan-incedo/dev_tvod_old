@@ -72,34 +72,6 @@ public class AppCMSMainUICall {
         try {
             //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
-            final String hostName = new URL(appCMSMainUrlSb.toString()).getHost();
-            ExecutorService executor = Executors.newCachedThreadPool();
-            Future<List<InetAddress>> future = executor.submit(()
-                    -> okHttpClient.dns().lookup(hostName));
-            try {
-                future.get(connectionTimeout, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException | InterruptedException e) {
-                //Log.e(TAG, "Connection timed out: " + e.toString());
-                if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, bustCache);
-                }
-                return null;
-            } catch (ExecutionException e) {
-                //Log.e(TAG, "Execution error: " + e.toString());
-                if (tryCount == 0) {
-                    return call(context, siteId, tryCount + 1, bustCache);
-                }
-                try {
-                    return readMainFromFile(getResourceFilename(appCMSMainUrlSb.toString()));
-                } catch (Exception e1) {
-                    //Log.e(TAG, "Could not retrieve main.json from file: " +
-//                        e1.getMessage());
-                }
-                return null;
-            } finally {
-                future.cancel(true);
-            }
-
             try {
 //                Log.d(TAG, "Retrieving main.json from URL: " + appCMSMainUrl);
                 long start = System.currentTimeMillis();

@@ -33,6 +33,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -234,6 +235,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     private TabCreator tabCreator;
     private boolean mAudioFocusGranted;
 
+    private boolean libsThreadExecuted;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -255,25 +258,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         appCMSPresenter = ((AppCMSApplication) getApplication())
                 .getAppCMSPresenterComponent()
                 .appCMSPresenter();
-
-        new Thread(() -> {
-            Fabric.with(getApplication(), new Crashlytics());
-            Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
-                    getString(R.string.app_cms_apptentive_signature_key));
-
-            if (appCMSPresenter != null) {
-                appCMSPresenter.setInstanceId(InstanceID.getInstance(this).getId());
-            }
-
-            UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
-
-            AppsFlyerLib.getInstance().startTracking(getApplication());
-
-            appCMSPresenter.initializeAppCMSAnalytics();
-            appCMSPresenter.cacheHomePage();
-//            appCMSPresenter.cacheMoviesPage();
-            //            ImageUtils.registerImageLoader(new FrescoImageLoader(getApplicationContext()));
-        }).run();
 
         appCMSBinderStack = new Stack<>();
         appCMSBinderMap = new HashMap<>();
@@ -775,6 +759,13 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 });
 
         appCMSPresenter.sendCloseOthersAction(null, false, false);
+
+        if (updatedAppCMSBinder != null) {
+            handleLaunchPageAction(updatedAppCMSBinder,
+                    false,
+                    false,
+                    false);
+        }
 //        Log.d(TAG, "onCreate()");
     }
 
@@ -1076,6 +1067,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
+        if (!libsThreadExecuted) {
+            new Thread(() -> {
+                Fabric.with(getApplication(), new Crashlytics());
+                Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
+                        getString(R.string.app_cms_apptentive_signature_key));
+
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setInstanceId(InstanceID.getInstance(this).getId());
+                }
+
+                UAirship.shared().getPushManager().setUserNotificationsEnabled(true);
+
+                AppsFlyerLib.getInstance().startTracking(getApplication());
+
+                appCMSPresenter.initializeAppCMSAnalytics();
+            }).run();
+            libsThreadExecuted = true;
+        }
+
         if (appCMSPresenter == null) {
             appCMSPresenter = ((AppCMSApplication) getApplication())
                     .getAppCMSPresenterComponent()
@@ -1196,6 +1206,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void refreshPageData() {
+        Log.w(TAG, "Refreshing page data");
         boolean cancelLoadingOnFinish = false;
         if (!appCMSPresenter.isPageLoading()) {
             pageLoading(true);
@@ -1206,6 +1217,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 !appCMSBinderStack.isEmpty()) {
             AppCMSBinder appCMSBinder = appCMSBinderMap.get(appCMSBinderStack.peek());
             if (appCMSBinder != null) {
+                Log.w(TAG, "Refreshing screen: " + appCMSBinder.getScreenName());
                 AppCMSPageUI appCMSPageUI = appCMSPresenter.getAppCMSPageUI(appCMSBinder.getScreenName());
                 if (appCMSPageUI != null) {
                     appCMSBinder.setAppCMSPageUI(appCMSPageUI);
@@ -2525,6 +2537,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void updateData(AppCMSBinder appCMSBinder, Action0 readyAction) {
+        Log.w(TAG, "Updating data for page: " + appCMSBinder.getScreenName());
         final AppCMSMain appCMSMain = appCMSPresenter.getAppCMSMain();
         final AppCMSSite appCMSSite = appCMSPresenter.getAppCMSSite();
 
@@ -2594,6 +2607,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         appCMSBinder.getAppCMSPageUI().getCaching() != null &&
                                 appCMSBinder.getAppCMSPageUI().getCaching().isEnabled(),
                         appCMSPageAPI -> {
+                            Log.w(TAG, "Retrieved page content");
                             if (appCMSPageAPI != null) {
                                 appCMSBinder.updateAppCMSPageAPI(appCMSPageAPI);
                             }
