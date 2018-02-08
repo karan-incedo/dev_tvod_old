@@ -3907,7 +3907,7 @@ public class ViewCreator {
                             }
                         }
 
-                        ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_CENTER);
+                        ((ImageView) componentViewResult.componentView).setScaleType(ImageView.ScaleType.FIT_START);
                         break;
                 }
                 break;
