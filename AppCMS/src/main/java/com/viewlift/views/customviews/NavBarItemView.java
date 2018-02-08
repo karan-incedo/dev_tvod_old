@@ -77,11 +77,26 @@ public class NavBarItemView extends LinearLayout {
         createChildren();
     }
 
+    private int getBrandPrimaryColor(){
+
+        if (appCMSPresenter!=null &&
+                appCMSPresenter.getAppCMSMain()!=null &&
+                appCMSPresenter.getAppCMSMain().getBrand() !=null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta() !=null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary() !=null &&
+                appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() !=null
+                ) {
+            return Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+        }else {
+            return ContextCompat.getColor(getContext(), R.color.colorNavBarText);
+        }
+    }
+
     public void select(boolean hasFocus, AppCMSPageActivity.NavTabTag navigationTabBar) {
 
         this.hasFocus = hasFocus;
-        Resources resources = getResources();
-        int color = ContextCompat.getColor(getContext(), R.color.colorNavBarText);
+        int color = getBrandPrimaryColor();
+
         if (hasFocus) {
             color = highlightColor;
             if (navigationTabBar.getNavigationModuleItem().isBackgroundSelectable()) {
@@ -132,7 +147,8 @@ public class NavBarItemView extends LinearLayout {
                     LinearLayout.LayoutParams navImageLayoutParams =
                             new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.nav_image_width, getContext()), BaseView.dpToPx(R.dimen.nav_image_height, getContext()));
                     navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                    // navImage.setLayoutParams(navImageLayoutParams);
+                    // navImage.setLayoutParams(navImageLayoutParams)
+
                     addView(navImage);
 
                     break;
