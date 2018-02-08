@@ -698,8 +698,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         registerReceiver(appCMSAirshipReceiver,
                 new IntentFilter("com.urbanairship.push.DISMISSED"));
 
-        appCMSPresenter.initializeAppCMSAnalytics();
-
         resumeInternalEvents = false;
 
         shouldSendCloseOthersAction = false;
@@ -778,10 +776,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
     }
 
     private void initPageActivity() {
-        AndroidThreeTen.init(this);
-
-        accessToken = AccessToken.getCurrentAccessToken();
-
         inAppBillingServiceConn = new ServiceConnection() {
             @Override
             public void onServiceDisconnected(ComponentName name) {
@@ -797,18 +791,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 }
             }
         };
-
-        //noinspection ConstantConditions
-        if (inAppBillingService == null && inAppBillingServiceConn != null) {
-            Intent serviceIntent =
-                    new Intent("com.android.vending.billing.InAppBillingService.BIND");
-            serviceIntent.setPackage("com.android.vending");
-            bindService(serviceIntent, inAppBillingServiceConn, Context.BIND_AUTO_CREATE);
-        }
-
-        if (appCMSPresenter != null) {
-            appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
-        }
 
         if (updatedAppCMSBinder != null) {
             try {
@@ -877,11 +859,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             createMenuNavItem(tabCount);
         }
 
-        FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
-        if (mFireBaseAnalytics != null && appCMSPresenter != null) {
-            appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
-        }
-
         closeButton.setOnClickListener(v -> {
                     View view = this.getCurrentFocus();
                     if (view != null) {
@@ -920,7 +897,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                     }
                 }
         );
-        inflateCastMiniController();
 
         if (loadingProgressBar != null) {
             try {
@@ -1073,6 +1049,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 Apptentive.register(getApplication(), getString(R.string.app_cms_apptentive_api_key),
                         getString(R.string.app_cms_apptentive_signature_key));
 
+                AndroidThreeTen.init(this);
+
+                accessToken = AccessToken.getCurrentAccessToken();
+
                 if (appCMSPresenter != null) {
                     appCMSPresenter.setInstanceId(InstanceID.getInstance(this).getId());
                 }
@@ -1082,6 +1062,25 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 AppsFlyerLib.getInstance().startTracking(getApplication());
 
                 appCMSPresenter.initializeAppCMSAnalytics();
+
+                //noinspection ConstantConditions
+                if (inAppBillingService == null && inAppBillingServiceConn != null) {
+                    Intent serviceIntent =
+                            new Intent("com.android.vending.billing.InAppBillingService.BIND");
+                    serviceIntent.setPackage("com.android.vending");
+                    bindService(serviceIntent, inAppBillingServiceConn, Context.BIND_AUTO_CREATE);
+                }
+
+                if (appCMSPresenter != null) {
+                    appCMSPresenter.setInAppBillingServiceConn(inAppBillingServiceConn);
+                }
+
+                FirebaseAnalytics mFireBaseAnalytics = FirebaseAnalytics.getInstance(this);
+                if (mFireBaseAnalytics != null && appCMSPresenter != null) {
+                    appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
+                }
+
+                inflateCastMiniController();
             }).run();
             libsThreadExecuted = true;
         }

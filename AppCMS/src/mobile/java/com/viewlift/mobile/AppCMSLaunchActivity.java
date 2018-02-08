@@ -26,7 +26,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
     private static final String TAG = "AppCMSLaunchActivity";
 
     private Uri searchQuery;
-    private CastHelper mCastHelper;
+//    private CastHelper mCastHelper;
     private BroadcastReceiver presenterCloseActionReceiver;
 
     private ConnectivityManager connectivityManager;
@@ -96,7 +96,7 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
             }
         };
 
-        setCasting();
+//        setCasting();
         //Log.i(TAG, "UA Device Channel ID: " + UAirship.shared().getPushManager().getChannelId());
     }
 
@@ -115,14 +115,14 @@ public class AppCMSLaunchActivity extends AppCompatActivity {
         }
     }
 
-    private void setCasting() {
-        try {
-            mCastHelper = CastHelper.getInstance(getApplicationContext());
-            mCastHelper.initCastingObj();
-        } catch (Exception e) {
-            //Log.e(TAG, "Error initializing casting: " + e.getMessage());
-        }
-    }
+//    private void setCasting() {
+//        try {
+//            mCastHelper = CastHelper.getInstance(getApplicationContext());
+//            mCastHelper.initCastingObj();
+//        } catch (Exception e) {
+//            //Log.e(TAG, "Error initializing casting: " + e.getMessage());
+//        }
+//    }
 
     public void handleIntent(Intent intent) {
         if (intent != null) {

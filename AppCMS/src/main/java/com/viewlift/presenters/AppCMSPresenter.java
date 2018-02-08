@@ -5978,6 +5978,19 @@ public class AppCMSPresenter {
                                  List<String> modules,
                                  boolean usedCachedAPI,
                                  Action1<AppCMSPageAPI> readyAction) {
+        if (appCMSPageAPICall == null ||
+                appCMSStreamingInfoCall == null ||
+                appCMSVideoDetailCall == null) {
+            AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
+                    .appCMSAPIModule(new AppCMSAPIModule(currentActivity,
+                            appCMSMain.getApiBaseUrl(),
+                            apikey))
+                    .build();
+            appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
+            appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
+            appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
+        }
+
         AppCMSPageAPI appCMSPageAPI = null;
         if (platformType == PlatformType.ANDROID) {
             try {
@@ -7325,14 +7338,14 @@ public class AppCMSPresenter {
 
                         getAppCMSSite(platformType);
 
-                        AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
-                                .appCMSAPIModule(new AppCMSAPIModule(currentActivity,
-                                        appCMSMain.getApiBaseUrl(),
-                                        apikey))
-                                .build();
-                        appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
-                        appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
-                        appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
+//                        AppCMSAPIComponent appCMSAPIComponent = DaggerAppCMSAPIComponent.builder()
+//                                .appCMSAPIModule(new AppCMSAPIModule(currentActivity,
+//                                        appCMSMain.getApiBaseUrl(),
+//                                        apikey))
+//                                .build();
+//                        appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
+//                        appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
+//                        appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
                     }
                 } catch (Exception e) {
                     //Log.e(TAG, "Error retrieving main.json: " + e.getMessage());
