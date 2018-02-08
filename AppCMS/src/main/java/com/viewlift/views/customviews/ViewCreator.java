@@ -3645,13 +3645,14 @@ public class ViewCreator {
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
-                if (module.getId().equals(moduleAPI.getId()) && moduleAPI.getContentData() !=null) {
+                if (module.getId().equals(moduleAPI.getId()) &&
+                        (moduleAPI.getContentData() !=null || moduleAPI.getRawText()!=null)) {
                     return moduleAPI;
                 } else if (jsonValueKeyMap.get(module.getType()) != null &&
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
                         jsonValueKeyMap.get(module.getType()) ==
                                 jsonValueKeyMap.get(moduleAPI.getModuleType()) &&
-                        moduleAPI.getContentData() !=null) {
+                        (moduleAPI.getContentData() !=null || moduleAPI.getRawText()!=null)) {
                     return moduleAPI;
                 }
             }
@@ -3666,6 +3667,7 @@ public class ViewCreator {
                     case PAGE_AUTOPLAY_MODULE_KEY_03:
                     case PAGE_DOWNLOAD_SETTING_MODULE_KEY:
                     case PAGE_DOWNLOAD_MODULE_KEY:
+                    case PAGE_AUTHENTICATION_MODULE_KEY:
 
                         if (appCMSPageAPI.getModules() != null
                                 && !appCMSPageAPI.getModules().isEmpty()) {
