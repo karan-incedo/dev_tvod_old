@@ -1231,15 +1231,17 @@ public class ViewCreator {
                 }
 
                 Module moduleAPI = matchModuleAPIToModuleUI(module, appCMSPageAPI, jsonValueKeyMap);
-                View childView = createModuleView(context, module, moduleAPI,
-                        appCMSAndroidModules,
-                        pageView,
-                        jsonValueKeyMap,
-                        appCMSPresenter);
-                if (childView != null) {
+                if (moduleAPI!=null) {
+                    View childView = createModuleView(context, module, moduleAPI,
+                            appCMSAndroidModules,
+                            pageView,
+                            jsonValueKeyMap,
+                            appCMSPresenter);
+                    if (childView != null) {
 //                    childrenContainer.addView(childView);
-                    if (moduleAPI == null) {
+                        if (moduleAPI == null) {
 //                        childView.setVisibility(View.GONE);
+                        }
                     }
                 }
             }
@@ -3640,12 +3642,13 @@ public class ViewCreator {
                                             Map<String, AppCMSUIKeyType> jsonValueKeyMap) {
         if (appCMSPageAPI != null && appCMSPageAPI.getModules() != null) {
             for (Module moduleAPI : appCMSPageAPI.getModules()) {
-                if (module.getId().equals(moduleAPI.getId())) {
+                if (module.getId().equals(moduleAPI.getId()) && moduleAPI.getContentData() !=null) {
                     return moduleAPI;
                 } else if (jsonValueKeyMap.get(module.getType()) != null &&
                         jsonValueKeyMap.get(moduleAPI.getModuleType()) != null &&
                         jsonValueKeyMap.get(module.getType()) ==
-                                jsonValueKeyMap.get(moduleAPI.getModuleType())) {
+                                jsonValueKeyMap.get(moduleAPI.getModuleType()) &&
+                        moduleAPI.getContentData() !=null) {
                     return moduleAPI;
                 }
             }

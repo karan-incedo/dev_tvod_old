@@ -6840,6 +6840,27 @@ public class AppCMSPresenter {
         }).execute();
     }
 
+    public int getBrandPrimaryCtaColor(){
+        if (getAppCMSMain()!=null &&
+                getAppCMSMain().getBrand() !=null &&
+                getAppCMSMain().getBrand().getCta() !=null &&
+                getAppCMSMain().getBrand().getCta().getPrimary() !=null &&
+                getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() !=null
+                ) {
+            return Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+        }else {
+            return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
+        }
+    }
+    public int getGeneralTextColor(){
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getBrand() != null &&
+                getAppCMSMain().getBrand().getGeneral() != null &&
+                getAppCMSMain().getBrand().getGeneral().getTextColor() != null  ) {
+            return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getTextColor());
+        }
+        return Color.parseColor(currentActivity.getString(R.color.colorNavBarText));
+    }
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
     }

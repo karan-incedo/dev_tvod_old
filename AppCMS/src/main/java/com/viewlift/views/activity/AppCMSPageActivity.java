@@ -16,6 +16,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -595,6 +597,9 @@ public class AppCMSPageActivity extends AppCompatActivity implements
             appCMSPresenter.setmFireBaseAnalytics(mFireBaseAnalytics);
         }
 
+
+        setToolItemsUIColor();
+
         closeButton.setOnClickListener(v -> {
                     View view = this.getCurrentFocus();
                     if (view != null) {
@@ -707,6 +712,24 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         return false;
     }
 
+    public void setToolItemsUIColor(){
+        int fillColor = appCMSPresenter.getGeneralTextColor();
+
+        mMediaRouteButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+        mMediaRouteButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+        mMediaRouteButton.getBackground().setTint(fillColor);
+        mMediaRouteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
+
+        mProfileTopButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+        mProfileTopButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+
+        mSearchTopButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+        mSearchTopButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+
+        closeButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
+        closeButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+
+    }
     private void inflateCastMiniController() {
         if (GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this) ==
                 ConnectionResult.SUCCESS && appCMSPresenter.isNetworkConnected()) {
@@ -1938,10 +1961,10 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter, weight);
                 int highlightColor = 0;
-                if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
-                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+                if (appCMSPresenter!= null ) {
+                    highlightColor = appCMSPresenter.getBrandPrimaryCtaColor();
                 } else {
-                    highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
+                    highlightColor = ContextCompat.getColor(this, R.color.colorNavBarText);
                 }
 
                 String tabLabel = navigationItem.getTitle();
