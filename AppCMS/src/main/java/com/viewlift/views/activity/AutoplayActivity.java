@@ -44,7 +44,7 @@ public class AutoplayActivity
             }
         };
 
-        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_SCREEN_ACTION));
+        registerReceiver(handoffReceiver, new IntentFilter(AppCMSPresenter.PRESENTER_CLOSE_AUTOPLAY_SCREEN));
         appCMSPresenter = ((AppCMSApplication) getApplication()).getAppCMSPresenterComponent().appCMSPresenter();
 
         try {
@@ -85,7 +85,12 @@ public class AutoplayActivity
                 binder.getCurrentPlayingVideoIndex() + 1,
                 binder.getContentData().getGist().getWatchedTime());
         binder.setCurrentPlayingVideoIndex(binder.getCurrentPlayingVideoIndex() + 1);
-//        finish();
+        finish();
+    }
+
+    @Override
+    public void cancelCountdown() {
+        finish();
     }
 
     @Override

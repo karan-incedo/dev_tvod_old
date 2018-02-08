@@ -766,6 +766,8 @@ public class AppCmsSubNavigationFragment extends Fragment {
                 iconResId = R.drawable.st_settings_icon_signin;
             } else if (icon.equalsIgnoreCase(getString(R.string.st_signout_icon_key))) {
                 iconResId = R.drawable.st_settings_icon_signout;
+            }else if (icon.equalsIgnoreCase(getString(R.string.st_about_us_icon_key))) {
+                iconResId = R.drawable.st_settings_icon_about_us;
             }
             return iconResId;
         }

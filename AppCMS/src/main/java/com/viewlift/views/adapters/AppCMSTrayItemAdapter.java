@@ -30,6 +30,7 @@ import com.viewlift.models.data.appcms.ui.page.Component;
 import com.viewlift.presenters.AppCMSPresenter;
 import com.viewlift.views.customviews.InternalEvent;
 import com.viewlift.views.customviews.OnInternalEvent;
+import com.viewlift.views.customviews.ViewCreator;
 
 import net.nightwhistler.htmlspanner.HtmlSpanner;
 
@@ -51,6 +52,8 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private static final String TAG = "AppCMSTrayAdapter";
 
     private static final int SECONDS_PER_MINS = 60;
+
+    protected  ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator;
     protected List<Component> components;
     protected AppCMSPresenter appCMSPresenter;
     protected Map<String, AppCMSUIKeyType> jsonValueKeyMap;
@@ -69,12 +72,14 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
     private String moduleId;
 
     public AppCMSTrayItemAdapter(Context context,
+                                 ViewCreator.CollectionGridItemViewCreator collectionGridItemViewCreator,
                                  List<ContentDatum> adapterData,
                                  List<Component> components,
                                  AppCMSPresenter appCMSPresenter,
                                  Map<String, AppCMSUIKeyType> jsonValueKeyMap,
                                  String viewType,
                                  RecyclerView listView) {
+        this.collectionGridItemViewCreator = collectionGridItemViewCreator;
         this.adapterData = adapterData;
         this.sortData();
         this.components = components;
@@ -138,6 +143,7 @@ public class AppCMSTrayItemAdapter extends RecyclerView.Adapter<AppCMSTrayItemAd
         View view = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.continue_watching_item, parent, false);
+//        View view = collectionGridItemViewCreator.createView(parent.getContext());
         ViewHolder viewHolder = new ViewHolder(view);
         applyStyles(viewHolder);
         return viewHolder;

@@ -81,6 +81,7 @@ import com.viewlift.tv.views.presenter.AppCmsListRowPresenter;
 import com.viewlift.tv.views.presenter.CardPresenter;
 import com.viewlift.tv.views.presenter.JumbotronPresenter;
 import com.viewlift.tv.views.presenter.PlayerPresenter;
+import com.viewlift.views.binders.AppCMSSwitchSeasonBinder;
 import com.viewlift.views.customviews.BaseView;
 import com.viewlift.views.customviews.CreditBlocksView;
 import com.viewlift.views.customviews.OnInternalEvent;
@@ -90,6 +91,7 @@ import com.viewlift.views.customviews.ViewCreatorTitleLayoutListener;
 
 import org.jsoup.Jsoup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -248,24 +250,40 @@ public class TVViewCreator {
               //  module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "grid01.json"), ModuleList.class);
                 isGrid = true;
             }
-
-
-            if (null == mRowsAdapter) {
-                AppCmsListRowPresenter appCmsListRowPresenter;
-
-                if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
-                    appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter , FocusHighlight.ZOOM_FACTOR_NONE);
-                }else{
-                    appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
-                }
-
-                mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+            if (module.getBlockName().equalsIgnoreCase("tray04")) {
+                module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "tray04.json"), ModuleList.class);
             }
+
             for (Component component : module.getComponents()) {
                 createTrayModule(context, component, module.getLayout(), module, moduleAPI,
                         pageView, jsonValueKeyMap, appCMSPresenter, appCMSPageAPI, isCaurosel , isGrid);
             }
             return null;
+        } else if ("AC ShowDetail 01".equalsIgnoreCase(module.getView())){
+            module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "showdetail.json"), ModuleList.class);
+            moduleView = new ShowDetailModuleView(
+                    context,
+                    module,
+                    appCMSPageAPI,
+                    this,
+                    appCMSPresenter,
+                    jsonValueKeyMap);
+            final TVPageView finalPageView = pageView;
+            if (null != moduleAPI.getContentData()
+                    && null != moduleAPI.getContentData().get(0)
+                    && null != moduleAPI.getContentData().get(0).getGist()
+                    && null != moduleAPI.getContentData().get(0).getGist().getVideoImageUrl()) {
+                Glide.with(context).load(moduleAPI.getContentData().get(0).getGist().getVideoImageUrl())
+                        .asBitmap().into(new SimpleTarget<Bitmap>(TVBaseView.DEVICE_WIDTH,
+                        TVBaseView.DEVICE_HEIGHT) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Drawable drawable = new BitmapDrawable(context.getResources(), resource);
+                        finalPageView.setBackground(drawable);
+                        finalPageView.getChildrenContainer().setBackgroundColor(ContextCompat.getColor(context, R.color.appcms_detail_screen_shadow_color));
+                    }
+                });
+            }
         } else {
             if (context.getResources().getString(R.string.appcms_watchlist_module).equalsIgnoreCase(module.getView())) {
              //   module = new GsonBuilder().create().fromJson(Utils.loadJsonFromAssets(context, "watchlist.json"), ModuleList.class);
@@ -374,6 +392,18 @@ public class TVViewCreator {
                                  boolean isCarousel,
                                  boolean isGrid) {
 
+        if (null == mRowsAdapter) {
+            AppCmsListRowPresenter appCmsListRowPresenter;
+
+            if(appCMSPresenter.getTemplateType() == AppCMSPresenter.TemplateType.SPORTS){
+                appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter , FocusHighlight.ZOOM_FACTOR_NONE);
+            }else{
+                appCmsListRowPresenter = new AppCmsListRowPresenter(context, appCMSPresenter);
+            }
+
+            mRowsAdapter = new ArrayObjectAdapter(appCmsListRowPresenter);
+        }
+
         // Sort the data in case of continue watching tray
         if (jsonValueKeyMap.get(moduleUI.getType()) == AppCMSUIKeyType.PAGE_CONTINUE_WATCHING_MODULE_KEY) {
             if (moduleData != null && moduleData.getContentData() != null) {
@@ -394,7 +424,15 @@ public class TVViewCreator {
             case PAGE_LABEL_KEY:
                 switch (componentKey) {
                     case PAGE_TRAY_TITLE_KEY:
-                        if (moduleData != null) {
+                        if (moduleData != null
+                                && moduleData.getContentData() != null
+                                && moduleData.getContentData().get(0) != null
+                                && moduleData.getContentData().get(0).getGist() != null
+                                && moduleData.getContentData().get(0).getGist().getContentType() != null
+                                && moduleData.getContentData().get(0).getGist().getContentType().equalsIgnoreCase("SERIES")) {
+                            customHeaderItem = null;
+                            createHeaderItem(component, context, moduleUI, moduleData, moduleData.getTitle() != null ? moduleData.getTitle() : "SEASON 1", isCarousel);
+                        } else {
                             customHeaderItem = null;
                             createHeaderItem(component, context, moduleUI, moduleData, (moduleData != null && moduleData.getTitle() != null) ? moduleData.getTitle() : "", isCarousel);
                         }
@@ -433,8 +471,8 @@ public class TVViewCreator {
                 }
                 if (null != moduleData) {
                     CardPresenter trayCardPresenter = new CardPresenter(context, appCMSPresenter,
-                            Integer.valueOf(component.getLayout().getTv().getHeight()),
-                            Integer.valueOf(component.getLayout().getTv().getWidth()),
+                            Integer.valueOf(component.getLayout().getTv().getHeight() != null ? component.getLayout().getTv().getHeight() : "0"),
+                            Integer.valueOf(component.getLayout().getTv().getWidth() != null ? component.getLayout().getTv().getWidth() : "0"),
                             component.getTrayBackground(),
                             jsonValueKeyMap
                     );
@@ -470,6 +508,31 @@ public class TVViewCreator {
                                 }
                             }
                         }
+                    } else if (moduleData.getModuleType() != null
+                            && moduleData.getModuleType().equalsIgnoreCase("ShowDetailModule")
+                            && moduleData.getContentData() != null
+                            && moduleData.getContentData().get(0) != null) {
+                        Log.d(TAG, "It's a series");
+                        ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
+                        List<Component> components = component.getComponents();
+                        List<ContentDatum> episodes = moduleData.getContentData().get(0).getSeason().get(0).getEpisodes();
+                        for (int i = 0; i < episodes.size(); i++) {
+                            List<String> relatedVids = new ArrayList<>();
+                            for (int j = i + 1; j < episodes.size(); j++) {
+                                ContentDatum contentDatum = episodes.get(j);
+                                relatedVids.add(contentDatum.getGist().getId());
+                            }
+                            ContentDatum contentDatum = episodes.get(i);
+                            BrowseFragmentRowData rowData = new BrowseFragmentRowData();
+                            rowData.contentData = contentDatum;
+                            rowData.relatedVideoIds = relatedVids;
+                            rowData.uiComponentList = components;
+                            rowData.action = component.getTrayClickAction();
+                            rowData.blockName = moduleUI.getBlockName();
+                            rowData.rowNumber = trayIndex;
+                            traylistRowAdapter.add(rowData);
+                        }
+                        mRowsAdapter.add(new ListRow(customHeaderItem, traylistRowAdapter));
                     }else{
                         ArrayObjectAdapter traylistRowAdapter = new ArrayObjectAdapter(trayCardPresenter);
                         if (moduleData.getContentData() != null && moduleData.getContentData().size() > 0) {
@@ -525,10 +588,13 @@ public class TVViewCreator {
     private void createHeaderItem(Component component, Context context, ModuleList moduleUI, Module moduleData, String name, boolean mIsCarousal) {
         customHeaderItem = new CustomHeaderItem(context, trayIndex++, name);
         customHeaderItem.setmIsCarousal(mIsCarousal);
-        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
-        customHeaderItem.setmListRowRightMargin(Integer.valueOf(moduleUI.getLayout().getTv().getPadding()));
+        String padding = moduleUI.getLayout().getTv().getPadding();
+        customHeaderItem.setmListRowLeftMargin(Integer.valueOf(padding != null ? padding : "0"));
+        customHeaderItem.setmListRowRightMargin(Integer.valueOf(padding != null ? padding : "0"));
         customHeaderItem.setmBackGroundColor(moduleUI.getLayout().getTv().getBackgroundColor());
-        customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+        if (null != moduleUI.getLayout().getTv().getHeight()) {
+            customHeaderItem.setmListRowHeight(Integer.valueOf(moduleUI.getLayout().getTv().getHeight()));
+        }
         if(null != moduleUI.getLayout().getTv().getWidth()) {
             customHeaderItem.setmListRowWidth(Integer.valueOf(moduleUI.getLayout().getTv().getWidth()));
         }
@@ -648,6 +714,20 @@ public class TVViewCreator {
                         Utils.getFocusColor(context, appCMSPresenter)));
 
                 switch (componentKey) {
+                    case PAGE_SHOW_SWITCH_SEASONS_KEY:
+                        componentViewResult.componentView.setOnClickListener(v -> {
+                            AppCMSSwitchSeasonBinder appCMSSwitchSeasonBinder =
+                                    new AppCMSSwitchSeasonBinder(
+                                            moduleAPI.getContentData().get(0).getSeason(),
+                                            null,
+                                            component,
+                                            component.getAction(),
+                                            component.getBlockName(),
+                                            0,
+                                            0);
+                            Utils.showSwitchSeasonsDialog(appCMSSwitchSeasonBinder , appCMSPresenter);
+                        });
+                        break;
                     case PAGE_INFO_KEY:
                         componentViewResult.componentView.setBackground(context.getDrawable(R.drawable.info_icon));
                         componentViewResult.componentView.setFocusable(false);
@@ -692,6 +772,54 @@ public class TVViewCreator {
 //                                                component.getAction() +
 //                                                " hls URL: " +
 //                                                moduleAPI.getContentData().get(0).getStreamingInfo().getVideoAssets().getHls());
+                                    }
+
+                                    // Disable the button for 1 second and enable it back in handler
+                                    btnWatchTrailer.setClickable(false);
+
+                                    // enable the button after 1 second
+                                    new Handler().postDelayed(() ->
+                                            btnWatchTrailer.setClickable(true), 1000);
+                                }
+                            });
+                        } else {
+                            componentViewResult.componentView = null;
+                        }
+                        break;
+
+
+                    case PAGE_SHOW_WATCH_TRAILER_KEY:
+                        if (moduleAPI.getContentData().get(0).getShowDetails() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().size() > 0 &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0) != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getPermalink() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId() != null &&
+                                moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getVideoAssets() != null) {
+                            View btnWatchTrailer = componentViewResult.componentView;
+                            componentViewResult.componentView.setFocusable(true);
+                            componentViewResult.componentView.setTag("WATCH_TRAILER");
+                            componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                    appCMSPresenter.showLoadingDialog(true);
+                                    String[] extraData = new String[4];
+                                    Trailer trailerInfo = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0);
+                                    extraData[0] = trailerInfo.getPermalink();
+                                    extraData[1] = trailerInfo.getVideoAssets().getHls() != null ? trailerInfo.getVideoAssets().getHls() :
+                                            (trailerInfo.getVideoAssets().getMpeg().size() > 0) ? trailerInfo.getVideoAssets().getMpeg().get(0).getUrl() : null;
+
+                                    extraData[2] = moduleAPI.getContentData().get(0).getShowDetails().getTrailers().get(0).getId();
+                                    if (!appCMSPresenter.launchTVButtonSelectedAction(moduleAPI.getContentData().get(0).getGist().getPermalink(),
+                                            component.getAction(),
+                                            moduleAPI.getContentData().get(0).getGist().getTitle(),
+                                            extraData,
+                                            moduleAPI.getContentData().get(0),
+                                            false,
+                                            -1,
+                                            null)) {
+                                        appCMSPresenter.showLoadingDialog(false);
                                     }
 
                                     // Disable the button for 1 second and enable it back in handler
@@ -818,16 +946,41 @@ public class TVViewCreator {
 
                         }
 
-                        componentViewResult.componentView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                playVideo(appCMSPresenter, context, component, moduleAPI);
-                                componentViewResult.componentView.setClickable(false);
+                        View componentView = componentViewResult.componentView;
+                        componentView.setOnClickListener(v -> {
+                            playVideo(appCMSPresenter, context, component, moduleAPI);
+                            componentView.setClickable(false);
 
-                                new Handler().postDelayed(() -> {
-                                    componentViewResult.componentView.setClickable(true);
-                                }, 3000);
-                            }
+                            new Handler().postDelayed(() -> {
+                                componentView.setClickable(true);
+                            }, 3000);
+                        });
+                        break;
+
+                    case PAGE_SHOW_START_WATCHING_BUTTON_KEY:
+                        startWatchingButton = (Button) componentViewResult.componentView;
+                        if (appCMSPresenter.isUserLoggedIn()) {
+                            appCMSPresenter.getUserVideoStatus(
+                                    moduleAPI.getContentData().get(0).getGist().getId(),
+                                    userVideoStatusResponse -> {
+                                        if (null != userVideoStatusResponse) {
+                                            Log.d(TAG , "time = " + userVideoStatusResponse.getWatchedTime()
+                                            );
+                                            if(userVideoStatusResponse.getWatchedTime() > 0){
+                                                startWatchingButton.setText(context.getString(R.string.resume_watching));
+                                            }
+                                        }
+                                    });
+                        }
+
+                        componentView = componentViewResult.componentView;
+                        componentView.setOnClickListener(v -> {
+                            playEpisode(appCMSPresenter, context, component, moduleAPI);
+                            componentView.setClickable(false);
+
+                            new Handler().postDelayed(() -> {
+                                componentView.setClickable(true);
+                            }, 3000);
                         });
                         break;
 
@@ -1662,7 +1815,8 @@ public class TVViewCreator {
                     case PAGE_VIDEO_IMAGE_KEY:
                         ImageView imageView = new ImageView(componentViewResult.componentView.getContext());
 
-                        int padding = Integer.valueOf(component.getLayout().getTv().getPadding());
+                        String pad = component.getLayout().getTv().getPadding();
+                        int padding = Integer.valueOf(pad != null ? pad : "0");
                         imageView.setPadding(padding + 1, padding, padding + 1, padding);
 
                         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
@@ -1847,7 +2001,6 @@ public class TVViewCreator {
                         if (!TextUtils.isEmpty(component.getImageName())) {
                             Glide.with(context)
                                     .load(component.getImageName()).diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                                    //.error(ContextCompat.getDrawable(context, R.drawable.poster_image_placeholder))
                                     .into((ImageView) componentViewResult.componentView);
                         }
                 }
@@ -2154,6 +2307,10 @@ public class TVViewCreator {
                     return moduleAPI;
                 }
             }
+
+            if (module.getId().equalsIgnoreCase("d3de2b27-0e90-492e-974a-54fcc220a638")){
+                return appCMSPageAPI.getModules().get(1);
+            }
         }
         return null;
     }
@@ -2224,6 +2381,30 @@ public class TVViewCreator {
             return context.getString(R.string.color_hash_prefix) + color;
         }
         return color;
+    }
+
+    private void playEpisode(AppCMSPresenter appCMSPresenter, Context context, Component component, Module moduleAPI) {
+        appCMSPresenter.showLoadingDialog(true);
+        if (moduleAPI.getContentData() != null &&
+                moduleAPI.getContentData().size() > 0 &&
+                moduleAPI.getContentData().get(0) != null &&
+                moduleAPI.getContentData().get(0).getSeason() != null &&
+                moduleAPI.getContentData().get(0).getSeason().get(0) != null &&
+                moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes() != null &&
+                moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0) != null) {
+
+            List<String> relatedVideosIds = new ArrayList<>();
+            for (ContentDatum episode : moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes()) {
+                relatedVideosIds.add(episode.getGist().getId());
+            }
+
+            appCMSPresenter.launchTVVideoPlayer(
+                    moduleAPI.getContentData().get(0).getSeason().get(0).getEpisodes().get(0),
+                    0,
+                    relatedVideosIds,
+                    0);
+
+        }
     }
 
     private void playVideo(AppCMSPresenter appCMSPresenter, Context context, Component component, Module moduleAPI) {

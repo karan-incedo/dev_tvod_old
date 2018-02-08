@@ -40,10 +40,6 @@ public class Navigation implements Serializable {
     @Expose
     Settings settings;
 
-
-
-
-
     public List<NavigationPrimary> getLeft() {
         return left;
     }

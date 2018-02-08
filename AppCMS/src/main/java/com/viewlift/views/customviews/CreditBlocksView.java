@@ -158,7 +158,8 @@ public class CreditBlocksView extends RelativeLayout {
                     directorList,
                     null,
                     true,
-                    moreBackgroundColor));
+                    moreBackgroundColor,
+                    true));
         }
 
         if (!TextUtils.isEmpty(starringListTitle) && !TextUtils.isEmpty(starringList) &&
@@ -173,7 +174,8 @@ public class CreditBlocksView extends RelativeLayout {
                     starringList,
                     null,
                     true,
-                    moreBackgroundColor));
+                    moreBackgroundColor,
+                    true));
         }
     }
 }

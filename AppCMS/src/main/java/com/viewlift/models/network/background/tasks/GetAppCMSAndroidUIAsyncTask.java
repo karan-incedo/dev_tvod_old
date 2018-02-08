@@ -24,6 +24,7 @@ public class GetAppCMSAndroidUIAsyncTask {
     public static class Params {
         String url;
         boolean loadFromFile;
+        boolean bustCache;
         public static class Builder {
             private Params params;
             public Builder() {
@@ -35,6 +36,10 @@ public class GetAppCMSAndroidUIAsyncTask {
             }
             public Builder loadFromFile(boolean loadFromFile) {
                 params.loadFromFile = loadFromFile;
+                return this;
+            }
+            public Builder bustCache(boolean bustCache) {
+                params.bustCache = bustCache;
                 return this;
             }
             public Params build() {
@@ -59,7 +64,10 @@ public class GetAppCMSAndroidUIAsyncTask {
                 .fromCallable(() -> {
                     if (params != null) {
                         try {
-                            return call.call(params.url, params.loadFromFile, 0);
+                            return call.call(params.url,
+                                    params.loadFromFile,
+                                    params.bustCache,
+                                    0);
                         } catch (IOException e) {
                             //Log.e(TAG, "Error retrieving AppCMS Android file with params " +
 //                                    params.toString() + ": " +

@@ -206,22 +206,15 @@
           "layout": {
             "mobile": {
               "gridHeight": 90,
-              "leftMargin": 0,
-              "topMargin": 9.59,
-              "rightMargin": 0,
-              "bottomMargin": 9
+              "yAxis": 65
             },
             "tabletLandscape": {
-              "gridHeight": 92,
-              "yAxis": 65,
-              "leftMargin": 0,
-              "rightMargin": 0
+              "gridHeight": 90,
+              "yAxis": 65
             },
             "tabletPortrait": {
-              "gridHeight": 92,
-              "yAxis": 65,
-              "leftMargin": 0,
-              "rightMargin": 0
+              "gridHeight": 90,
+              "yAxis": 65
             }
           },
           "trayClickAction": "lectureDetailPage",
@@ -230,19 +223,19 @@
               "layout": {
                 "mobile": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 },
                 "tabletLandscape": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 },
                 "tabletPortrait": {
                   "leftMargin": 2.67,
-                  "topMargin": 0,
+                  "topMargin": 1,
                   "width": 56,
                   "height": 80
                 }

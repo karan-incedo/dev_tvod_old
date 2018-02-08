@@ -29,14 +29,16 @@ public class TabCreator {
     private OnClickHandler onClickHandler;
 
     public void create(Context context, int currentIndex, NavigationPrimary tabItem) {
-        final NavBarItemView navBarItemView =
-                (NavBarItemView) appCMSTabNavContainer.getChildAt(currentIndex);
-        int highlightColor;
-        try {
-            highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
-                    .getGeneral().getBlockTitleColor());
-        } catch (Exception e) {
-            //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
+        if (appCMSTabNavContainer.getChildAt(currentIndex) instanceof
+                NavBarItemView) {
+            final NavBarItemView navBarItemView =
+                    (NavBarItemView) appCMSTabNavContainer.getChildAt(currentIndex);
+            int highlightColor;
+            try {
+                highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand()
+                        .getGeneral().getBlockTitleColor());
+            } catch (Exception e) {
+                //Log.w(TAG, "Failed to set AppCMS branding color for navigation item: " +
 //                            e.getMessage());
             highlightColor = ContextCompat.getColor(context, R.color.colorAccent);
         }
@@ -59,9 +61,10 @@ public class TabCreator {
                     tabItem.getTitle());
         });
 
-        navBarItemView.setTag(tabItem.getPageId());
-        if (navBarItemView.getParent() == null) {
-            appCMSTabNavContainer.addView(navBarItemView);
+            navBarItemView.setTag(tabItem.getPageId());
+            if (navBarItemView.getParent() == null) {
+                appCMSTabNavContainer.addView(navBarItemView);
+            }
         }
     }
 

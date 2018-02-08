@@ -1,7 +1,6 @@
 <resources>
-    <string name="app_cms_main_url">%1$s%2$s/main.json?x=%3$d</string>
+    <string name="app_cms_main_url">%1$s/%2$s/main.json</string>
 
-    <string name="app_cms_url_with_appended_timestamp">%1$s</string>
     <string name="app_cms_site_api_url">%1$s/content/sites?domainName=%2$s</string>
 
     <!-- AppCMS StreamingInfo API -->
@@ -63,6 +62,8 @@
     <!--<string name="app_cms_shows_status_api_url">%1$s/content/pages?path=/shows/title/sujith&amp;site=%2$s&amp;includeContent=true</string>-->
     <string name="app_cms_shows_status_api_url">%1$s%2$s?path=%3$s&amp;site=%4$s&amp;includeContent=true</string>
 
+    <string name="app_cms_pages_api_url">%1$s/pages?site=%2$s&amp;modules=%3$s</string>
+
     <!-- Restore Purchase API -->
     <string name="app_cms_restore_purchase_api_url">%1$s/identity/signin/android?site=%2$s</string>
 
@@ -83,6 +84,7 @@
         <item>AC Masthead 01</item>
         <item>AC Footer 01</item>
         <item>AC WebFrame 01</item>
+        <item>AC Footer 02</item>
         <item>AC Banner 01</item>
     </string-array>
 
@@ -229,9 +231,11 @@
     <string name="app_cms_page_thumbnail_image_video_key">videoThumbnailImage</string>
     <string name="app_cms_page_video_play_button_key">playButton</string>
     <string name="app_cms_page_start_watching_button_key">startWatching</string>
+    <string name="app_cms_page_show_start_watching_button_key">showStartWatching</string>
     <string name="app_cms_page_video_description_key">videoDescriptionText</string>
     <string name="app_cms_page_show_video_description_key">showDescriptionText</string>
     <string name="app_cms_page_video_title_key">videoTitle</string>
+    <string name="app_cms_page_show_title_key">showTitle</string>
     <string name="app_cms_page_download_setting_title_key">DownloadQualityTitle</string>
     <string name="app_cms_page_video_subtitle_key">videoSubTitle</string>
     <string name="app_cms_page_video_publishdate_key">videopublishdate</string>
@@ -242,7 +246,9 @@
     <string name="app_cms_page_video_close_key">closeButton</string>
     <string name="app_cms_page_video_watchnow_key">watchNow</string>
     <string name="app_cms_page_watchTrailer_key">watchTrailer</string>
+    <string name="app_cms_show_watchTrailer_key">watchShowTrailer</string>
     <string name="app_cms_start_watching_key">startWatching</string>
+    <string name="app_cms_switch_seasons_key">switchSeasons</string>
     <string name="app_cms_page_share_key">shareButton</string>
     <string name="app_cms_page_video_starrating_key">starRating</string>
     <string name="app_cms_page_video_credits_director_key">Director</string>
@@ -357,8 +363,8 @@
 
     <!-- AppCMS Data values -->
     <string name="app_cms_page_api_url">%1$s%2$s?site=%3$s&amp;%4$s%5$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=%6$s</string>
-    <string name="app_cms_cached_page_api_url">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
-    <string name="app_cms_cached_page_api_url_with_user_id">https://prod-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=null&amp;gzip=true</string>
+    <string name="app_cms_cached_page_api_url">https://release-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;gzip=true</string>
+    <string name="app_cms_cached_page_api_url_with_user_id">https://release-api-cached.viewlift.com/content/pages?site=%1$s&amp;pageId=%2$s&amp;includeContent=true&amp;includeWatchHistory=true&amp;userId=null&amp;gzip=true</string>
 
     <string name="app_cms_page_api_view_plans_url">%1$s%2$s?site=%3$s&amp;device=%4$s&amp;path=/viewplans&amp;includeContent=true</string>
     <string name="app_cms_page_id_query_parameter">pageId=</string>
@@ -407,19 +413,17 @@
     <string name="app_cms_get_current_subscription_api_url">%1$s/subscription/user?userid=%2$s&amp;site=%3$s</string>
 
     <!-- AppCMS Navigation menu -->
-    <string name="app_cms_menu_icon_name">menu_</string>
+    <string name="app_cms_menu_icon_name">icon-menu</string>
     <string name="app_cms_menu_label">Menu</string>
     <string name="app_cms_live_icon_name">live_</string>
-    <string name="app_cms_home_icon_name">home_page_</string>
-    <string name="app_cms_shows_icon_name">shows_</string>
+    <string name="app_cms_home_icon_name">icon-home</string>
     <string name="app_cms_team_icon_name">teams_</string>
-
     <string name="app_cms_home_label">Home</string>
-    <string name="app_cms_movies_icon_name">categories_page_categories</string>
+    <string name="app_cms_movies_icon_name">icon-movies</string>
     <string name="app_cms_movies_label">Movies</string>
-    <string name="app_cms_search_icon_name">search_</string>
+    <string name="app_cms_search_icon_name">icon-search</string>
     <string name="app_cms_search_label">Search</string>
-
+    <string name="app_cms_shows_icon_name">icon-shows</string>
     <string name="app_cms_shows_label">Shows</string>
     <string name="app_cms_teams_label">Teams</string>
     <string name="app_cms_my_profile_label">My %1$s</string>
@@ -547,7 +551,7 @@
     <string name="app_cms_plan_renewal_cycle_type_daily">DAY</string>
     <string name="plan_type_day">Month</string>
 
-    <string name="app_cms_page_download_size_key">videoSize</string>
+    <string name="app_cms_page_download_size_key">downloadDuration</string>
     <string name="app_cms_page_download_duration_key">downloadDuration</string>
     <string name="app_cms_page_download_description_key">listItemDescription</string>
     <string name="app_cms_page_delete_download_key">deleteDownload</string>
