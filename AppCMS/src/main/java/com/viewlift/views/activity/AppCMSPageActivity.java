@@ -717,6 +717,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         mMediaRouteButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
         mMediaRouteButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
+        mMediaRouteButton.getBackground().setTint(fillColor);
+        mMediaRouteButton.getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
 
         mProfileTopButton.getDrawable().setColorFilter(new PorterDuffColorFilter(fillColor, PorterDuff.Mode.MULTIPLY));
         mProfileTopButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent));
