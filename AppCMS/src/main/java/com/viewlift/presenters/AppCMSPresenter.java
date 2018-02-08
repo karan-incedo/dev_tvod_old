@@ -59,6 +59,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -6848,9 +6849,21 @@ public class AppCMSPresenter {
                 getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() !=null
                 ) {
             return Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
-        }else {
+        }else if (currentActivity !=null ){
             return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
         }
+        return 0;
+    }
+    public int getGeneralBackgroundColor() {
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getBrand() != null &&
+                getAppCMSMain().getBrand().getGeneral() != null &&
+                getAppCMSMain().getBrand().getGeneral().getTextColor() != null) {
+            return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getBackgroundColor());
+        }else if (currentActivity !=null ){
+            return ContextCompat.getColor(currentActivity, R.color.backgroundColor);
+        }
+        return 0;
     }
     public int getGeneralTextColor(){
         if (getAppCMSMain() != null &&
@@ -6858,8 +6871,10 @@ public class AppCMSPresenter {
                 getAppCMSMain().getBrand().getGeneral() != null &&
                 getAppCMSMain().getBrand().getGeneral().getTextColor() != null  ) {
             return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getTextColor());
+        }else if (currentActivity !=null ){
+            return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
         }
-        return Color.parseColor(currentActivity.getString(R.color.colorNavBarText));
+        return 0;
     }
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
@@ -7302,9 +7317,14 @@ public class AppCMSPresenter {
                                 Color.parseColor(appCMSMain.getBrand()
                                         .getGeneral()
                                         .getBackgroundColor())));
+
                         if (currentActivity.getWindow().isActive()) {
                             try {
                                 dialog.show();
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(textColor);
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(textColor);
+
+
                             } catch (Exception e) {
                                 //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
@@ -7355,9 +7375,12 @@ public class AppCMSPresenter {
                         Color.parseColor(appCMSMain.getBrand()
                                 .getGeneral()
                                 .getBackgroundColor())));
+
                 if (currentActivity.getWindow().isActive()) {
                     try {
                         dialog.show();
+                        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(textColor);
+                        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(textColor);
                     } catch (Exception e) {
                         //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());
@@ -7404,7 +7427,7 @@ public class AppCMSPresenter {
         if (currentActivity != null) {
             int textColor = ContextCompat.getColor(currentContext, android.R.color.white);
             try {
-                textColor = Color.parseColor(appCMSMain.getBrand().getGeneral().getTextColor());
+                textColor = getGeneralTextColor();
             } catch (Exception e) {
                 //Log.w(TAG, "Failed to get branding text color - defaulting to accent color: " +
 //                    e.getMessage());
@@ -7569,20 +7592,23 @@ public class AppCMSPresenter {
             if (dialog.getWindow() != null) {
                 try {
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
-                            Color.parseColor(appCMSMain.getBrand()
-                                    .getGeneral()
-                                    .getBackgroundColor())));
+                            getGeneralBackgroundColor()));
+                    dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(textColor);
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(textColor);
                 } catch (Exception e) {
                     //Log.w(TAG, "Failed to set background color from AppCMS branding - defaulting to colorPrimaryDark: " +
 //                            e.getMessage());
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(
                             ContextCompat.getColor(currentContext, R.color.colorPrimaryDark)));
                 }
+                int finalTextColor = textColor;
                 currentActivity.runOnUiThread(() -> {
                     if (currentActivity.getWindow().isActive()) {
                         try {
                             if (!dialog.isShowing())
                                 dialog.show();
+                            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(finalTextColor);
+                            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(finalTextColor);
                         } catch (Exception e) {
                             //Log.e(TAG, "An exception has occurred when attempting to show the dialogType dialog: "
 //                                + e.toString());

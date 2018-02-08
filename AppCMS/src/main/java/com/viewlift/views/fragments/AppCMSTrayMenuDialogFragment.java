@@ -3,6 +3,7 @@ package com.viewlift.views.fragments;
 import android.app.DialogFragment;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
@@ -87,12 +88,13 @@ public class AppCMSTrayMenuDialogFragment extends DialogFragment implements View
 
         addToWatchList.setOnClickListener(this);
 
-        ShapeDrawable shapedrawable = new ShapeDrawable();
-        shapedrawable.setShape(new RectShape());
-        shapedrawable.getPaint().setColor(appCMSPresenter.getGeneralTextColor());
-        shapedrawable.getPaint().setStrokeWidth(5f);
-        shapedrawable.getPaint().setStyle(Paint.Style.STROKE);
-        closeBtn.setBackground(shapedrawable);
+
+
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(appCMSPresenter.getGeneralBackgroundColor()); // Changes this drawbale to use a single color instead of a gradient
+        gd.setStroke(5, appCMSPresenter.getGeneralTextColor());
+
+        closeBtn.setBackground(gd);
         closeBtn.setOnClickListener(this);
     }
 
