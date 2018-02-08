@@ -1946,7 +1946,7 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                 NavBarItemView navBarItemView = new NavBarItemView(this, tabBarModule, appCMSPresenter, weight);
                 int highlightColor = 0;
                 if (appCMSPresenter.getAppCMSMain() != null && appCMSPresenter.getAppCMSMain().getBrand() != null) {
-                    highlightColor = Color.parseColor("#f4181c");
+                    highlightColor = Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
                 } else {
                     highlightColor = ContextCompat.getColor(this, R.color.colorAccent);
                 }

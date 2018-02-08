@@ -53,6 +53,10 @@ public class AppCMSArticleResult {
     @Expose
     StreamingInfo streamingInfo;
 
+    @SerializedName("relatedArticleIds")
+    @Expose
+    List<String> relatedArticleIds;
+
     public AppCMSPageAPI convertToAppCMSPageAPI(String Id) {
         AppCMSPageAPI appCMSPageAPI = new AppCMSPageAPI();
         Module module = new Module();
@@ -65,6 +69,7 @@ public class AppCMSArticleResult {
         contentDatum.setContentDetails(this.contentDetails);
         contentDatum.setCategories(this.categories);
         contentDatum.setTags(this.tags);
+        contentDatum.setRelatedArticleIds(this.relatedArticleIds);
         data.add(contentDatum);
 
         module.setContentData(data);
