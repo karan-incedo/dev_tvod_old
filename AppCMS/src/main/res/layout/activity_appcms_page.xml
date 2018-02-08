@@ -44,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/new_version_available_parent"
-        android:background="?attr/colorPrimaryDark"
+        android:background="?attr/colorPrimary"
         android:elevation="@dimen/appbar_elevation"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -76,7 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
                     android:layout_centerVertical="true"
-                    android:background="@drawable/logo_icon"
+                    android:src="@drawable/logo_icon"
                     android:scaleType="centerInside" />
 
                 <LinearLayout

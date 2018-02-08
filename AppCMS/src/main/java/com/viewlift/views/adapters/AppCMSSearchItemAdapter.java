@@ -2,6 +2,7 @@ package com.viewlift.views.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -95,6 +96,11 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         viewHolder.parentLayout.setOnClickListener(v -> {
             if (action != null) {
                 Observable.just("progress").subscribe(action);
+            }
+            if (appCMSSearchResults.get(adapterPosition).getGist() != null && appCMSSearchResults.get(adapterPosition).getGist().getMediaType() != null
+                    && appCMSSearchResults.get(adapterPosition).getGist().getMediaType().toLowerCase().contains(context.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+                appCMSPresenter.navigateToArticlePage(appCMSSearchResults.get(adapterPosition).getGist().getId(), appCMSSearchResults.get(adapterPosition).getGist().getTitle(), false);
+                return;
             }
             String permalink = appCMSSearchResults.get(adapterPosition).getGist().getPermalink();
             String action = viewHolder.view.getContext().getString(R.string.app_cms_action_detailvideopage_key);
@@ -270,7 +276,7 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
         this.action = action;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public  class ViewHolder extends RecyclerView.ViewHolder {
         View view;
         FrameLayout parentLayout;
         ImageView filmThumbnail;
@@ -323,8 +329,8 @@ public class AppCMSSearchItemAdapter extends RecyclerView.Adapter<AppCMSSearchIt
             this.filmTitle.setLayoutParams(filmTitleLayoutParams);
             this.filmTitle.setTextSize(textSize);
             this.filmTitle.setMaxLines(1);
-            this.filmTitle.setTextColor(ContextCompat.getColor(view.getContext(),
-                    android.R.color.white));
+
+            this.filmTitle.setTextColor(Color.parseColor(appCMSPresenter.getAppCMSMain().getBrand().getGeneral().getTextColor()));
             this.filmTitle.setEllipsize(TextUtils.TruncateAt.END);
             this.titleLayout.addView(this.filmTitle);
 

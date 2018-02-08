@@ -6841,6 +6841,27 @@ public class AppCMSPresenter {
         }).execute();
     }
 
+    public int getBrandPrimaryCtaColor(){
+        if (getAppCMSMain()!=null &&
+                getAppCMSMain().getBrand() !=null &&
+                getAppCMSMain().getBrand().getCta() !=null &&
+                getAppCMSMain().getBrand().getCta().getPrimary() !=null &&
+                getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor() !=null
+                ) {
+            return Color.parseColor(getAppCMSMain().getBrand().getCta().getPrimary().getBackgroundColor());
+        }else {
+            return ContextCompat.getColor(currentActivity, R.color.colorNavBarText);
+        }
+    }
+    public int getGeneralTextColor(){
+        if (getAppCMSMain() != null &&
+                getAppCMSMain().getBrand() != null &&
+                getAppCMSMain().getBrand().getGeneral() != null &&
+                getAppCMSMain().getBrand().getGeneral().getTextColor() != null  ) {
+            return Color.parseColor(getAppCMSMain().getBrand().getGeneral().getTextColor());
+        }
+        return Color.parseColor(currentActivity.getString(R.color.colorNavBarText));
+    }
     public AppCMSMain getAppCMSMain() {
         return appCMSMain;
     }
@@ -11303,12 +11324,22 @@ public class AppCMSPresenter {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
     }
 
-    public void openVideoPageFromSearch(String[] searchResultClick) {
+    public void searchSuggestionClick(String[] searchResultClick) {
         String permalink = searchResultClick[3];
         String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
         String title = searchResultClick[0];
         String runtime = searchResultClick[1];
+        String mediaType = searchResultClick[4];
+        String contentType = searchResultClick[5];
+        String gistId = searchResultClick[6];
         //Log.d(TAG, "Launching " + permalink + ":" + action);
+
+        if (mediaType.toLowerCase().contains(currentContext.getString(R.string.app_cms_article_key_type).toLowerCase())) {
+            navigateToArticlePage(gistId, title, false);
+            return;
+        }
+
+
         if (!launchButtonSelectedAction(permalink,
                 action,
                 title,
@@ -11888,7 +11919,7 @@ public class AppCMSPresenter {
 
     public String getLastWatchedTime(ContentDatum contentDatum) {
         long currentTime = System.currentTimeMillis();
-        long lastWatched = contentDatum.getGist().getUpdateDate();
+        long lastWatched = Long.parseLong(contentDatum.getGist().getUpdateDate());
 
         if (currentTime == 0) {
             lastWatched = 0;

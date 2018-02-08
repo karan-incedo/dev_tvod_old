@@ -95,12 +95,12 @@ public class NavBarItemView extends LinearLayout {
     public void select(boolean hasFocus, AppCMSPageActivity.NavTabTag navigationTabBar) {
 
         this.hasFocus = hasFocus;
-        int color = getBrandPrimaryColor();
+        int color = appCMSPresenter.getGeneralTextColor();
 
         if (hasFocus) {
             color = highlightColor;
             if (navigationTabBar.getNavigationModuleItem().isBackgroundSelectable()) {
-                setTabBg();
+                //setTabBg();
             }
         } else {
             this.setBackgroundResource(0);
@@ -108,7 +108,8 @@ public class NavBarItemView extends LinearLayout {
 
         for (int i = 0; i < navigationTabBar.getNavigationModuleItem().getComponents().size(); i++) {
             String type = navigationTabBar.getNavigationModuleItem().getComponents().get(i).getType();
-            if (navLabel != null && type.equalsIgnoreCase("label") && navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
+            if (navLabel != null && type.equalsIgnoreCase("label") ){
+                //&& navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
                 navLabel.setTextColor(color);
            // } else if (navImage != null && type.equalsIgnoreCase("image") &&   // Commented due to somehow  isSelectable returning false all the time
                 // navigationTabBar.getNavigationModuleItem().getComponents().get(i).isSelectable()) {
@@ -121,7 +122,7 @@ public class NavBarItemView extends LinearLayout {
     }
 
     private void setTabBg() {
-        int[] ButtonColors = {Color.parseColor("#f4181c"), Color.parseColor("#00000000")};
+        int[] ButtonColors = {appCMSPresenter.getBrandPrimaryCtaColor(), Color.parseColor("#00000000")};
         GradientDrawable gradientDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.BOTTOM_TOP, ButtonColors);
         gradientDrawable.setCornerRadius(0f);
@@ -136,6 +137,7 @@ public class NavBarItemView extends LinearLayout {
         for (int i = 0; i < navTabBar.getComponents().size(); i++) {
 
             String componentType = navTabBar.getComponents().get(i).getType();
+            int colorTint =appCMSPresenter.getGeneralTextColor();
             switch (componentType) {
                 case "image":
                     navImage = new ImageView(getContext());
@@ -147,7 +149,7 @@ public class NavBarItemView extends LinearLayout {
                     LinearLayout.LayoutParams navImageLayoutParams =
                             new LinearLayout.LayoutParams(BaseView.dpToPx(R.dimen.nav_image_width, getContext()), BaseView.dpToPx(R.dimen.nav_image_height, getContext()));
                     navImageLayoutParams.gravity = Gravity.CENTER_HORIZONTAL;
-                    // navImage.setLayoutParams(navImageLayoutParams)
+                    navImage.setLayoutParams(navImageLayoutParams);
 
                     addView(navImage);
 
@@ -162,7 +164,7 @@ public class NavBarItemView extends LinearLayout {
                     navLabel.setLayoutParams(navLabelLayoutParams);
                     navLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                             getResources().getDimension(R.dimen.nav_item_text_size));
-                    navLabel.setTextColor(ContextCompat.getColor(getContext(), R.color.colorNavBarText));
+                    navLabel.setTextColor(colorTint);
                     navLabel.setGravity(Gravity.CENTER_HORIZONTAL);
                     addView(navLabel);
 

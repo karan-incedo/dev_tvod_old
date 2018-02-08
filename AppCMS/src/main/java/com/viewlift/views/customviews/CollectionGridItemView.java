@@ -242,7 +242,7 @@ public class CollectionGridItemView extends BaseView {
         final Component childComponent = matchComponentToView(view);
         if (childComponent != null) {
             view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                    childComponent, data,position));
+                    childComponent, data, position));
             boolean bringToFront = true;
             AppCMSUIKeyType appCMSUIcomponentViewType = jsonValueKeyMap.get(componentViewType);
             AppCMSUIKeyType componentType = jsonValueKeyMap.get(childComponent.getType());
@@ -420,7 +420,7 @@ public class CollectionGridItemView extends BaseView {
                                     .override(childViewWidth, childViewHeight)
                                     .into((ImageView) view);
                         }
-                    }else if (data.getGist().getImageGist() != null &&
+                    } else if (data.getGist().getImageGist() != null &&
                             data.getGist().getImageGist().get_16x9() != null) {
                         String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getImageGist().get_16x9(),
@@ -475,12 +475,12 @@ public class CollectionGridItemView extends BaseView {
                     }
                 } else {
                     view.setOnClickListener(v -> onClickHandler.click(CollectionGridItemView.this,
-                            childComponent, data,position));
+                            childComponent, data, position));
                 }
             } else if (componentType == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                 view.setOnClickListener(v ->
                         onClickHandler.click(CollectionGridItemView.this,
-                                childComponent, data,position));
+                                childComponent, data, position));
             } else if (componentType == AppCMSUIKeyType.PAGE_LABEL_KEY &&
                     view instanceof TextView) {
                 if (TextUtils.isEmpty(((TextView) view).getText())) {
@@ -497,28 +497,28 @@ public class CollectionGridItemView extends BaseView {
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_THUMBNAIL_TITLE_KEY) {
                         ((TextView) view).setText(data.getGist().getTitle());
-                    }else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_TITLE_KEY && !TextUtils.isEmpty(data.getGist().getTitle())) {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(2);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         ((TextView) view).setText(data.getGist().getTitle());
 
                         if (!TextUtils.isEmpty(childComponent.getTextColor())) {
-                          int  textColor = Color.parseColor(getColor(getContext(),
-                                  childComponent.getTextColor()));
+                            int textColor = Color.parseColor(getColor(getContext(),
+                                    childComponent.getTextColor()));
                             ((TextView) view).setTextColor(textColor);
                         }
-                    }else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_DESCRIPTION_KEY && !TextUtils.isEmpty(data.getGist().getDescription())) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_ARTICLE_DESCRIPTION_KEY && !TextUtils.isEmpty(data.getGist().getDescription())) {
                         ((TextView) view).setSingleLine(false);
                         ((TextView) view).setMaxLines(3);
                         ((TextView) view).setEllipsize(TextUtils.TruncateAt.END);
                         ((TextView) view).setText(data.getGist().getDescription());
                         if (!TextUtils.isEmpty(childComponent.getTextColor())) {
-                            int  textColor = Color.parseColor(getColor(getContext(),
+                            int textColor = Color.parseColor(getColor(getContext(),
                                     childComponent.getTextColor()));
                             ((TextView) view).setTextColor(textColor);
                         }
-                    }else if (componentKey == AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY) {
+                    } else if (componentKey == AppCMSUIKeyType.PAGE_DELETE_DOWNLOAD_VIDEO_SIZE_KEY) {
                         ((TextView) view).setText(appCMSPresenter.getDownloadedFileSize(data.getGist().getId()));
                     } else if (componentKey == AppCMSUIKeyType.PAGE_HISTORY_WATCHED_TIME_KEY) {
                         ((TextView) view).setText(appCMSPresenter.getLastWatchedTime(data));
@@ -542,7 +542,7 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        String thumbInfo = getDateFormat(data.getGist().getPublishDate(), "MMM dd");
+                        String thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
                         if(data.getGist() != null && data.getGist().getReadTime() != null) {
                             StringBuilder readTimeText = new StringBuilder()
                                     .append(data.getGist().getReadTime())
@@ -755,7 +755,7 @@ public class CollectionGridItemView extends BaseView {
     public interface OnClickHandler {
         void click(CollectionGridItemView collectionGridItemView,
                    Component childComponent,
-                   ContentDatum data,int clickPosition);
+                   ContentDatum data, int clickPosition);
 
         void play(Component childComponent, ContentDatum data);
     }

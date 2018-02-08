@@ -161,7 +161,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
             public boolean onSuggestionClick(int position) {
                 Cursor cursor = (Cursor) appCMSSearchView.getSuggestionsAdapter().getItem(position);
                 String[] searchHintResult = cursor.getString(cursor.getColumnIndex("suggest_intent_data")).split(",");
-                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                appCMSPresenter.searchSuggestionClick(searchHintResult);
                 finish();
                 return true;
             }
@@ -237,7 +237,7 @@ public class AppCMSSearchActivity extends AppCompatActivity {
 
             if (Intent.ACTION_VIEW.equals(intent.getAction())) {
                 String[] searchHintResult = intent.getDataString().split(",");
-                appCMSPresenter.openVideoPageFromSearch(searchHintResult);
+                appCMSPresenter.searchSuggestionClick(searchHintResult);
 
             } else {
                 queryTerm = intent.getStringExtra(SearchManager.QUERY);
