@@ -281,7 +281,7 @@ public class CollectionGridItemView extends BaseView {
 
                     if (0 < childViewWidth && 0 < childViewHeight) {
                         if (childViewWidth < childViewHeight) {
-                            childViewWidth = (int) ((float) childViewHeight * 3.0f / 4.0f);
+                            childViewHeight = (int) ((float) childViewWidth * 4.0f / 3.0f);
                         } else {
                             childViewHeight = (int) ((float) childViewWidth * 9.0f / 16.0f);
                         }
