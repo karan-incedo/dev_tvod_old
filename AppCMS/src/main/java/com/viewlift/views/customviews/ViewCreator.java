@@ -1193,7 +1193,7 @@ public class ViewCreator {
                             loadJsonFromAssets(context, "article_hub.json"),
                             AppCMSPageUI.class);
                     module = appCMSPageUI1.getModuleList().get(5);
-                } else if (moduleInfo.getBlockName().contains("articleDetail01")) {
+                }  else if (moduleInfo.getBlockName().contains("articleDetail01")) {
                     AppCMSPageUI appCMSPageUI1 = new GsonBuilder().create().fromJson(
                             loadJsonFromAssets(context, "article_details.json"),
                             AppCMSPageUI.class);
@@ -1809,10 +1809,6 @@ public class ViewCreator {
                                 } else {
                                     numCols = settings.getColumns().getMobile();
                                 }
-                            }
-                            //Todo remove later when cplum valye updated from UI
-                            if (parentViewType == AppCMSUIKeyType.PAGE_ARTICLE_FEED_MODULE_KEY){
-                                numCols = 1;
                             }
                             ((RecyclerView) componentViewResult.componentView)
                                     .setLayoutManager(new GridLayoutManager(context,
