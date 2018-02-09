@@ -143,7 +143,6 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
     private StreamingQualitySelectorAdapter listViewAdapter;
 
     private boolean fullScreenMode;
-    private StreamingQualitySelector streamingQualitySelector;
 
     public VideoPlayerView(Context context) {
         super(context);
@@ -211,6 +210,10 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 }
             }
 
+        } else {
+            if (ccToggleButton != null) {
+                ccToggleButton.setVisibility(GONE);
+            }
         }
 
     }
@@ -369,6 +372,13 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
                 getContext().getString(R.string.app_cms_user_agent));
 
         ccToggleButton = playerView.findViewById(R.id.ccButton);
+
+        if (ccToggleButton != null) {
+            if (appCMSPresenter != null && appCMSPresenter.getPlatformType().equals(AppCMSPresenter.PlatformType.TV)) {
+                ccToggleButton.setVisibility(GONE);
+            }
+        }
+
         ccToggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (onClosedCaptionButtonClicked != null) {
                 onClosedCaptionButtonClicked.call(isChecked);
@@ -1238,19 +1248,5 @@ public class VideoPlayerView extends FrameLayout implements Player.EventListener
 
     public boolean fullScreenModeEnabled() {
         return fullScreenMode;
-    }
-
-    public interface StreamingQualitySelector {
-        List<String> getAvailableStreamingQualities();
-        String getStreamingQualityUrl(String streamingQuality);
-        String getMpegResolutionFromUrl(String mpegUrl);
-    }
-
-    public StreamingQualitySelector getStreamingQualitySelector() {
-        return streamingQualitySelector;
-    }
-
-    public void setStreamingQualitySelector(StreamingQualitySelector streamingQualitySelector) {
-        this.streamingQualitySelector = streamingQualitySelector;
     }
 }
