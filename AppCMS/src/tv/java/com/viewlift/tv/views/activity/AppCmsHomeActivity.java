@@ -1055,11 +1055,15 @@ public class AppCmsHomeActivity extends AppCmsBaseActivity implements
                                 appCMSMain.getApiBaseUrl(),
                                 endPoint,
                                 appCMSSite.getGist().getSiteInternalName(),
-                                appCMSBinder.getPagePath());
+                                appCMSBinder.getPagePath(),
+                                appCMSBinder.getAppCMSPageUI().getCaching() != null &&
+                                        !appCMSBinder.getAppCMSPageUI().getCaching().shouldOverrideCaching() &&
+                                        appCMSBinder.getAppCMSPageUI().getCaching().isEnabled());
 
                         //appCMSPresenter.getPageAPILruCache().remove(appCMSBinder.getPagePath());
                         appCMSPresenter.getPageIdContent(apiUrl,
                                 appCMSBinder.getPagePath(),
+                                null,
                                 appCMSPageAPI -> {
                                     if (appCMSPageAPI != null) {
                                         boolean updatedHistory = false;

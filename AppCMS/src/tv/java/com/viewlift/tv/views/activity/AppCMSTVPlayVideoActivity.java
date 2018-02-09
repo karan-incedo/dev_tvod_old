@@ -566,6 +566,11 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
     }
 
     @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    @Override
     public void onMovieFinished() {
         if (appCMSPresenter.getAutoplayEnabledUserPref(getApplication())) {
             if (!binder.isTrailer()
@@ -629,5 +634,10 @@ public class AppCMSTVPlayVideoActivity extends Activity implements
             }
         }
         return null;
+    }
+
+    @Override
+    public int getMpegResolutionIndexFromUrl(String mpegUrl) {
+        return 0;
     }
 }

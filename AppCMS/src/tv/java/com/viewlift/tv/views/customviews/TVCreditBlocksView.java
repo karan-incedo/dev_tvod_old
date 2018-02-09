@@ -164,7 +164,7 @@ public class TVCreditBlocksView extends RelativeLayout {
                     directorList,
                     null,
                     true,
-                    moreBackgroundColor));
+                    moreBackgroundColor, false));
         }
 
         if (!TextUtils.isEmpty(starringListTitle) && !TextUtils.isEmpty(starringList) &&
@@ -179,7 +179,7 @@ public class TVCreditBlocksView extends RelativeLayout {
                     starringList,
                     null,
                     true,
-                    moreBackgroundColor));
+                    moreBackgroundColor, false));
         }
     }
 
