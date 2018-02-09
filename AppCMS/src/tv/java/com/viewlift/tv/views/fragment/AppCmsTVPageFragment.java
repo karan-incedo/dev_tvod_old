@@ -157,7 +157,11 @@ public class AppCmsTVPageFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        focusableView = getActivity().getCurrentFocus();
+        if (getActivity() != null
+                && getActivity().getCurrentFocus() != null
+                && getActivity().getCurrentFocus().getId() != R.id.nav_item_layout) {
+            focusableView = getActivity().getCurrentFocus();
+        }
     }
 
     @Override
