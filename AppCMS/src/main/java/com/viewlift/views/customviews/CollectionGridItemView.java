@@ -345,7 +345,7 @@ public class CollectionGridItemView extends BaseView {
                         int deviceWidth = getContext().getResources().getDisplayMetrics().widthPixels;
                         final String imageUrl = context.getString(R.string.app_cms_image_with_resize_query,
                                 data.getGist().getVideoImageUrl(),
-                                childViewWidth,
+                                deviceWidth,
                                 childViewHeight);
                         //Log.d(TAG, "Loading image: " + imageUrl);
                         try {
