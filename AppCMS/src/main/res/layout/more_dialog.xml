@@ -9,7 +9,7 @@
        android:orientation="vertical"
        android:layout_width="match_parent"
        android:gravity="center"
-       android:background="@android:color/black"
+       android:background="@color/backgroundColor"
        android:paddingLeft="@dimen/tray_item_more_dialog_PanelPedding"
        android:paddingRight="@dimen/tray_item_more_dialog_PanelPedding"
        app:layout_heightPercent="@fraction/tray_item_more_dialog_Height">

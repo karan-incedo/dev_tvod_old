@@ -448,6 +448,8 @@ public class CollectionGridItemView extends BaseView {
                 } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_OPTION_KEY) {
                     if (viewTypeKey == AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY) {
                         ((Button) view).setBackground(context.getDrawable(R.drawable.dots_more_grey));
+                        ((Button) view).getBackground().setTint(appCMSPresenter.getGeneralTextColor());
+                        ((Button) view).getBackground().setTintMode(PorterDuff.Mode.MULTIPLY);
                     }
                 }
 
@@ -542,13 +544,25 @@ public class CollectionGridItemView extends BaseView {
                             ((TextView) view).setText(runtimeText);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_GRID_THUMBNAIL_INFO) {
-                        try {
-                            if (data.getGist().getPublishDate() != null) {
-                                String thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
-                                ((TextView) view).setText(thumbInfo);
+                        String thumbInfo = null;
+                        if(data.getGist().getPublishDate() != null) {
+                             thumbInfo = getDateFormat(Long.parseLong(data.getGist().getPublishDate()), "MMM dd");
+                        }
+                        if(data.getGist() != null && data.getGist().getReadTime() != null) {
+                            StringBuilder readTimeText = new StringBuilder()
+                                    .append(data.getGist().getReadTime())
+                                    .append(" ")
+                                    .append(context.getString(R.string.mins_abbreviation))
+                                    .append(" ")
+                                    .append("|");
+
+                            if(thumbInfo != null) {
+                                readTimeText.append(" ")
+                                .append(thumbInfo);
                             }
-                        } catch (NumberFormatException e) {
-                            e.printStackTrace();
+                            ((TextView) view).setText(readTimeText);
+                        }else{
+                            ((TextView) view).setText(thumbInfo);
                         }
                     } else if (componentKey == AppCMSUIKeyType.PAGE_API_TITLE ||
                             componentKey == AppCMSUIKeyType.PAGE_EPISODE_TITLE_KEY) {
