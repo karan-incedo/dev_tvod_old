@@ -482,6 +482,9 @@ public class AppCMSUIModule {
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_subscription_selectionplan_02_key),
                 AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_02_KEY);
 
+        jsonValueKeyMap.put(context.getString(R.string.app_cms_page_photo_gallery_02_key),
+                AppCMSUIKeyType.PAGE_PHOTO_GALLERY_TRAY_02_KEY);
+
         jsonValueKeyMap.put(context.getString(R.string.app_cms_page_article_tray_key),
                 AppCMSUIKeyType.PAGE_ARTICLE_TRAY_KEY);
 

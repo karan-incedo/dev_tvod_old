@@ -1757,7 +1757,44 @@ public class ViewCreator {
                                     .id(moduleId + component.getKey())
                                     .build());
                         }
-                    } else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
+                    } else if (moduleType == AppCMSUIKeyType.PAGE_PHOTO_GALLERY_TRAY_02_KEY) {
+                        LinearLayoutManager layoutManager = null;
+                        if (BaseView.isTablet(context)) {
+                            layoutManager = BaseView.isLandscape(context) ?
+                                    new LinearLayoutManager(context,LinearLayoutManager.HORIZONTAL,false) :
+                                    new GridLayoutManager(context, 6,GridLayoutManager.VERTICAL, false);
+                        } else {
+                            layoutManager = new GridLayoutManager(context, 3,
+                                            GridLayoutManager.VERTICAL, false);
+                        }
+                        ((RecyclerView) componentViewResult.componentView).setLayoutManager(layoutManager);
+                        appCMSViewAdapter = new AppCMSViewAdapter(context,
+                                this,
+                                appCMSPresenter,
+                                settings,
+                                component.getLayout(),
+                                false,
+                                component,
+                                jsonValueKeyMap,
+                                moduleAPI,
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.WRAP_CONTENT,
+                                viewType,
+                                appCMSAndroidModules);
+
+                        if (!BaseView.isTablet(context)) {
+                            componentViewResult.useWidthOfScreen = true;
+                        }
+
+                        ((RecyclerView) componentViewResult.componentView).setAdapter(appCMSViewAdapter);
+                        if (pageView != null) {
+                            pageView.addListWithAdapter(new ListWithAdapter.Builder()
+                                    .adapter(appCMSViewAdapter)
+                                    .listview((RecyclerView) componentViewResult.componentView)
+                                    .id(moduleId + component.getKey())
+                                    .build());
+                        }
+                    }else if (moduleType == AppCMSUIKeyType.PAGE_SUBSCRIPTION_SELECTPLAN_01_KEY) {
 
                         if (BaseView.isTablet(context)) {
                             ((RecyclerView) componentViewResult.componentView)

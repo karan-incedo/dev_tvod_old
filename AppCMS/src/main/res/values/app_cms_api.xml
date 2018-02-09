@@ -273,6 +273,7 @@
     <string name="app_cms_action_open_option_dialog">openOptionDialog</string>
     <string name="app_cms_action_purchase_plan">purchasePlan</string>
 
+
     <!-- Subscription Keys -->
     <string name="app_cms_page_subscription_selectionplan_02_key">AC SelectPlan 02</string>
     <string name="app_cms_page_subscription_selectionplan_01_key">AC SelectPlan 01</string>
@@ -284,6 +285,7 @@
     <string name="app_cms_plan_bestvalue_key">planBestValueLabel</string>
     <string name="app_cms_plan_purchase_button_key">planPurchaseButton</string>
     <string name="app_cms_plan_meta_dataview_key">planMetaDataView</string>
+    <string name="app_cms_page_photo_gallery_02_key">AC PhotoGallery 02</string>
 
     <string name="app_cms_navigation_page_tag">navigation</string>
     <string name="app_cms_team_page_tag">Teams</string>
