@@ -7792,6 +7792,14 @@ public class AppCMSPresenter {
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
+                if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO ) {
+                    title = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_required_title);
+                    message = currentActivity.getString(R.string.app_cms_login_and_subscription_audio_required_message);
+
+                    //Set Firebase User Property when user is not logged in and unsubscribed
+                    mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_OUT);
+                    mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
+                }
 
                 if (dialogType == DialogType.CANNOT_UPGRADE_SUBSCRIPTION) {
                     String paymentProcessor = getActiveSubscriptionProcessor();
@@ -7860,7 +7868,7 @@ public class AppCMSPresenter {
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
 
-                if (dialogType == DialogType.SUBSCRIPTION_REQUIRED || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER) {
+                if (dialogType == DialogType.SUBSCRIPTION_REQUIRED || dialogType == DialogType.SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.SUBSCRIPTION_REQUIRED_AUDIO) {
                     mFireBaseAnalytics.setUserProperty(LOGIN_STATUS_KEY, LOGIN_STATUS_LOGGED_IN);
                     mFireBaseAnalytics.setUserProperty(SUBSCRIPTION_STATUS_KEY, SUBSCRIPTION_NOT_SUBSCRIBED);
                 }
@@ -7904,7 +7912,7 @@ public class AppCMSPresenter {
                                     //Log.e(TAG, "Error cancelling dialog while logging out with running download: " + e.getMessage());
                                 }
                             });
-                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER) {
+                } else if (dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER || dialogType == DialogType.LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO) {
                     builder.setPositiveButton(R.string.app_cms_login_button_text,
                             (dialog, which) -> {
                                 try {
@@ -8614,7 +8622,51 @@ public class AppCMSPresenter {
         DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return formatter.format(new Date(System.currentTimeMillis()));
     }
+    public void searchSuggestionClick(String[] searchResultClick) {
+        String permalink = searchResultClick[3];
+        String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
+        String title = searchResultClick[0];
+        String runtime = searchResultClick[1];
+        String mediaType = searchResultClick[4];
+        String contentType = searchResultClick[5];
+        String gistId = searchResultClick[6];
+        //Log.d(TAG, "Launching " + permalink + ":" + action);
 
+        /*get audio details on tray click item and play song*/
+        if (mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_audio).toLowerCase()) &&
+                contentType != null &&
+                contentType.toLowerCase().contains(currentContext.getString(R.string.content_type_audio).toLowerCase())) {
+            List<String> audioPlaylistId = new ArrayList<String>();
+            audioPlaylistId.add(gistId);
+            AudioPlaylistHelper.getInstance().setCurrentPlaylistData(null);
+            AudioPlaylistHelper.getInstance().setPlaylist(audioPlaylistId);
+            getCurrentActivity().sendBroadcast(new Intent(AppCMSPresenter
+                    .PRESENTER_PAGE_LOADING_ACTION));
+            AudioPlaylistHelper.getInstance().playAudioOnClickItem(gistId, 0);
+            return;
+        }
+
+                                /*Get playlist data and open playlist page*/
+        if (mediaType != null
+                && mediaType.toLowerCase().contains(currentContext.getString(R.string.media_type_playlist).toLowerCase())) {
+            navigateToPlaylistPage(gistId, title, false);
+            return;
+        }
+        if (!launchButtonSelectedAction(permalink,
+                action,
+                title,
+                null,
+                null,
+                false,
+                0,
+                null)) {
+            //Log.e(TAG, "Could not launch action: " +
+//                    " permalink: " +
+//                    permalink +
+//                    " action: " +
+//                    action);
+        }
+    }
     private String getEnvironment() {
         String environment = "unknown";
         if (appCMSMain.getApiBaseUrl().contains("prod")) {
@@ -12124,30 +12176,7 @@ public class AppCMSPresenter {
         return currentActivity.getString(R.string.app_cms_network_connectivity_error_message);
     }
 
-    public void openVideoPageFromSearch(String[] searchResultClick) {
-        String permalink = searchResultClick[3];
-        String action = currentActivity.getString(R.string.app_cms_action_detailvideopage_key);
-        if (permalink.contains(currentActivity.getString(R.string.app_cms_shows_deeplink_path_name))) {
-            action = currentActivity.getString(R.string.app_cms_action_showvideopage_key);
-        }
-        String title = searchResultClick[0];
-        String runtime = searchResultClick[1];
-        //Log.d(TAG, "Launching " + permalink + ":" + action);
-        if (!launchButtonSelectedAction(permalink,
-                action,
-                title,
-                null,
-                null,
-                false,
-                0,
-                null)) {
-            //Log.e(TAG, "Could not launch action: " +
-//                    " permalink: " +
-//                    permalink +
-//                    " action: " +
-//                    action);
-        }
-    }
+
 
     @SuppressWarnings("unused")
     public NavigationUser getLoginNavigation() {
@@ -12815,8 +12844,12 @@ public class AppCMSPresenter {
         DELETE_ALL_DOWNLOAD_ITEMS,
         LOGIN_REQUIRED,
         SUBSCRIPTION_REQUIRED,
+        SUBSCRIPTION_REQUIRED_AUDIO,
+
         SUBSCRIPTION_REQUIRED_PLAYER,
         LOGIN_AND_SUBSCRIPTION_REQUIRED,
+        LOGIN_AND_SUBSCRIPTION_REQUIRED_AUDIO,
+
         LOGIN_AND_SUBSCRIPTION_REQUIRED_PLAYER,
         LOGOUT_WITH_RUNNING_DOWNLOAD,
         EXISTING_SUBSCRIPTION,
