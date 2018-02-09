@@ -68,7 +68,6 @@ public class AppCMSMainUICall {
             appCMSMainUrlSb.append(now.getTime());
         }
         AppCMSMain main = null;
-        AppCMSMain mainInStorage = null;
         try {
             //Log.d(TAG, "Attempting to retrieve main.json: " + appCMSMainUrl);
 
@@ -85,23 +84,25 @@ public class AppCMSMainUICall {
                 Log.w(TAG, "Failed to read main.json from network: " + e.getMessage());
             }
 
-            String filename = getResourceFilename(appCMSMainUrlSb.toString());
-            try {
-                mainInStorage = readMainFromFile(filename);
-            } catch (Exception exception) {
-                Log.w(TAG, "Previous version of main.json file is not in storage");
-            }
+            final AppCMSMain mainfromNetwork = main;
+            new Thread(() -> {
+                AppCMSMain mainInStorage = null;
+                String filename = getResourceFilename(appCMSMainUrlSb.toString());
+                try {
+                    mainInStorage = readMainFromFile(filename);
+                } catch (Exception exception) {
+                    Log.w(TAG, "Previous version of main.json file is not in storage");
+                }
 
-            if (main != null && mainInStorage != null) {
-                Log.d(TAG, "Read main.json in storage version: " + mainInStorage.getVersion());
-                main.setLoadFromFile(main.getVersion().equals(mainInStorage.getVersion()));
-            }
+                if (mainfromNetwork != null && mainInStorage != null) {
+                    Log.d(TAG, "Read main.json in storage version: " + mainInStorage.getVersion());
+                    mainfromNetwork.setLoadFromFile(mainfromNetwork.getVersion().equals(mainInStorage.getVersion()));
+                }
 
-            if (main != null) {
-                Log.d(TAG, "Read main.json version: " + main.getVersion());
-            }
-
-            main = writeMainToFile(filename, main);
+                if (mainfromNetwork != null) {
+                    Log.d(TAG, "Read main.json version: " + mainfromNetwork.getVersion());
+                }
+            });
         } catch (Exception e) {
             Log.e(TAG, "A serious error has occurred: " + e.getMessage());
         }
