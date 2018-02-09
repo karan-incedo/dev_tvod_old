@@ -689,10 +689,7 @@ public class AppCMSPresenter {
                            Map<String, AppCMSPageAPI> actionToPageAPIMap,
                            Map<String, AppCMSActionType> actionToActionTypeMap,
 
-                           ReferenceQueue<Object> referenceQueue,
-
-                           UrbanAirshipEventPresenter urbanAirshipEventPresenter,
-                           UANamedUserEventCall uaNamedUserEventCall) {
+                           ReferenceQueue<Object> referenceQueue) {
         this.gson = gson;
 
         this.appCMSMainUICall = appCMSMainUICall;
@@ -792,9 +789,6 @@ public class AppCMSPresenter {
         this.updateDownloadImageIconActionMap = new HashMap<>();
 
         this.temporaryWatchlist = new ArrayList<>();
-
-        this.urbanAirshipEventPresenter = urbanAirshipEventPresenter;
-        this.uaNamedUserEventCall = uaNamedUserEventCall;
 
         this.purchaseFromRestore = false;
 
@@ -5992,6 +5986,8 @@ public class AppCMSPresenter {
             appCMSPageAPICall = appCMSAPIComponent.appCMSPageAPICall();
             appCMSStreamingInfoCall = appCMSAPIComponent.appCMSStreamingInfoCall();
             appCMSVideoDetailCall = appCMSAPIComponent.appCMSVideoDetailCall();
+            urbanAirshipEventPresenter = appCMSAPIComponent.urbanAirshipEventPresenter();
+            uaNamedUserEventCall = appCMSAPIComponent.uaNamedUserEventCall();
         }
 
         AppCMSPageAPI appCMSPageAPI = null;
@@ -7867,11 +7863,14 @@ public class AppCMSPresenter {
                             }
                         },
                         () -> {
-                            launched = true;
-                            launchBlankPage();
-                            sendStopLoadingPageAction(false, null);
-                            showNoNetworkConnectivityToast();
-                            showNetworkConnectivity = false;
+                            if (currentActivity != null) {
+                                currentActivity.finish();
+                            }
+//                            launched = true;
+//                            launchBlankPage();
+//                            sendStopLoadingPageAction(false, null);
+//                            showNoNetworkConnectivityToast();
+//                            showNetworkConnectivity = false;
                         });
                 return;
             }
@@ -9827,24 +9826,26 @@ public class AppCMSPresenter {
 
     public void launchBlankPage() {
         if (currentActivity != null) {
-            Bundle args = getPageActivityBundle(currentActivity,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    false,
-                    true,
-                    false,
-                    true,
-                    false,
-                    null,
-                    ExtraScreenType.BLANK);
-            Intent appCMSIntent = new Intent(currentActivity, AppCMSPageActivity.class);
-            appCMSIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
-            appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            currentActivity.startActivity(appCMSIntent);
+            if (!(currentActivity instanceof AppCMSPageActivity)) {
+                Bundle args = getPageActivityBundle(currentActivity,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        false,
+                        true,
+                        false,
+                        true,
+                        false,
+                        null,
+                        ExtraScreenType.BLANK);
+                Intent appCMSIntent = new Intent(currentActivity, AppCMSPageActivity.class);
+                appCMSIntent.putExtra(currentActivity.getString(R.string.app_cms_bundle_key), args);
+                appCMSIntent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                currentActivity.startActivity(appCMSIntent);
+            }
         }
     }
 

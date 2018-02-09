@@ -109,10 +109,7 @@ public class AppCMSPresenterModule {
                                                    Map<String, AppCMSPageAPI> actionToPageAPIMap,
                                                    Map<String, AppCMSActionType> actionToActionTypeMap,
 
-                                                   ReferenceQueue<Object> referenceQueue,
-
-                                                   UrbanAirshipEventPresenter urbanAirshipEventPresenter,
-                                                   UANamedUserEventCall uaNamedUserEventCall) {
+                                                   ReferenceQueue<Object> referenceQueue) {
         return new AppCMSPresenter(gson,
                 appCMSMainUICall,
                 appCMSAndroidUICall,
@@ -161,9 +158,6 @@ public class AppCMSPresenterModule {
                 actionToPageAPIMap,
                 actionToActionTypeMap,
 
-                referenceQueue,
-
-                urbanAirshipEventPresenter,
-                uaNamedUserEventCall);
+                referenceQueue);
     }
 }

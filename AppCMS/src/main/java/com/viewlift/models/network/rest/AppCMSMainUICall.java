@@ -102,6 +102,11 @@ public class AppCMSMainUICall {
                 if (mainfromNetwork != null) {
                     Log.d(TAG, "Read main.json version: " + mainfromNetwork.getVersion());
                 }
+                try {
+                    writeMainToFile(filename, mainfromNetwork);
+                } catch (Exception e) {
+
+                }
             });
         } catch (Exception e) {
             Log.e(TAG, "A serious error has occurred: " + e.getMessage());

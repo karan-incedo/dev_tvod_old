@@ -758,12 +758,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
 
         appCMSPresenter.sendCloseOthersAction(null, false, false);
 
-        if (updatedAppCMSBinder != null) {
-            handleLaunchPageAction(updatedAppCMSBinder,
-                    false,
-                    false,
-                    false);
-        }
 //        Log.d(TAG, "onCreate()");
     }
 
@@ -1531,8 +1525,6 @@ public class AppCMSPageActivity extends AppCompatActivity implements
         } else {
             if (appCMSPresenter.isNetworkConnected()) {
                 finish();
-            } else {
-                appCMSPresenter.launchBlankPage();
             }
         }
     }
@@ -1996,6 +1988,8 @@ public class AppCMSPageActivity extends AppCompatActivity implements
                         .getTextColor()));
             } catch (IllegalArgumentException e) {
                 //Log.e(TAG, "Error in parsing color. " + e.getLocalizedMessage());
+            } catch (Exception e) {
+                toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.colorAccent));
             }
             setSupportActionBar(toolbar);
             ActionBar supportActionBar = getSupportActionBar();
